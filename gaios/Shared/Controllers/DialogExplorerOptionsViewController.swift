@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 
 protocol DialogExplorerOptionsViewControllerDelegate: AnyObject {
     func didSelect(_ option: ExplorerOption)

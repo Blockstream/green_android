@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 
 protocol DialogMnemonicLengthViewControllerDelegate: AnyObject {
     func didSelect(_ option: MnemonicLengthOption)

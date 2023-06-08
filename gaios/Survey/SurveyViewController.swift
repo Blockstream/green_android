@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 
 enum SurveyAction {
     case close

@@ -1,5 +1,5 @@
 import Foundation
-import PromiseKit
+
 import gdk
 import greenaddress
 import hw
@@ -14,7 +14,7 @@ public enum LoginError: Error, Equatable {
 }
 
 class SessionManager {
-
+    
     //var notificationManager: NotificationManager?
     var twoFactorConfig: TwoFactorConfig?
     var settings: Settings?
@@ -22,48 +22,47 @@ class SessionManager {
     var gdkNetwork: GdkNetwork
     var registry: AssetsManager?
     var blockHeight: UInt32 = 0
-
+    
     var connected = false
     var logged = false
-
+    
     // Serial reconnect queue for network events
     static let reconnectionQueue = DispatchQueue(label: "reconnection_queue")
     let bgq = DispatchQueue.global(qos: .background)
-
+    
     var isResetActive: Bool? {
         get { twoFactorConfig?.twofactorReset.isResetActive }
     }
-
+    
     init(_ gdkNetwork: GdkNetwork) {
         self.gdkNetwork = gdkNetwork
         session = GDKSession()
         registry = AssetsManager(testnet: !gdkNetwork.mainnet)
     }
-
+    
     deinit {
         logged = false
         connected = false
     }
-
-    public func connect() -> Promise<Void> {
+    
+    public func connect() async throws {
         if connected {
-            return Promise().asVoid()
+            return
         }
-        return Guarantee()
-            .compactMap(on: SessionManager.reconnectionQueue) { self.networkConnect() }
-            .compactMap(on: SessionManager.reconnectionQueue) { try self.connect(network: self.gdkNetwork.network) }
-            .compactMap { AnalyticsManager.shared.setupSession(session: self.session) } // Update analytics endpoint with session tor/proxy
+        self.networkConnect()
+        try await self.connect(network: self.gdkNetwork.network)
+        AnalyticsManager.shared.setupSession(session: self.session) // Update analytics endpoint with session tor/proxy
     }
-
-    public func disconnect() {
+    
+    public func disconnect() async throws {
         logged = false
         connected = false
         SessionManager.reconnectionQueue.async {
             self.session = GDKSession()
         }
     }
-
-    private func connect(network: String, params: [String: Any]? = nil) throws {
+    
+    private func connect(network: String, params: [String: Any]? = nil) async throws {
         do {
             session?.setNotificationHandler(notificationCompletionHandler: newNotification)
             try session?.connect(netParams: GdkSettings.read()?.toNetworkParams(network).toDict() ?? [:])
@@ -77,14 +76,14 @@ class SessionManager {
             }
         }
     }
-
+    
     func walletIdentifier(credentials: Credentials) -> WalletIdentifier? {
         let res = try? self.session?.getWalletIdentifier(
             net_params: GdkSettings.read()?.toNetworkParams(gdkNetwork.network).toDict() ?? [:],
             details: credentials.toDict() ?? [:])
         return WalletIdentifier.from(res ?? [:]) as? WalletIdentifier
     }
-
+    
     func walletIdentifier(masterXpub: String) -> WalletIdentifier? {
         let details = ["master_xpub": masterXpub]
         let res = try? self.session?.getWalletIdentifier(
@@ -92,21 +91,21 @@ class SessionManager {
             details: details)
         return WalletIdentifier.from(res ?? [:]) as? WalletIdentifier
     }
-
+    
     func existDatadir(masterXpub: String) -> Bool  {
         if let hash = walletIdentifier(masterXpub: masterXpub) {
             return existDatadir(walletHashId: hash.walletHashId)
         }
         return false
     }
-
+    
     func existDatadir(credentials: Credentials) -> Bool  {
         if let hash = walletIdentifier(credentials: credentials) {
             return existDatadir(walletHashId: hash.walletHashId)
         }
         return false
     }
-
+    
     func existDatadir(walletHashId: String) -> Bool  {
         // true for multisig
         if gdkNetwork.multisig {
@@ -118,374 +117,299 @@ class SessionManager {
         }
         return false
     }
-
+    
     func removeDatadir(masterXpub: String) {
         if let hash = walletIdentifier(masterXpub: masterXpub) {
             removeDatadir(walletHashId: hash.walletHashId)
         }
     }
-
+    
     func removeDatadir(credentials: Credentials) {
         if let hash = walletIdentifier(credentials: credentials) {
             removeDatadir(walletHashId: hash.walletHashId)
         }
     }
-
+    
     func removeDatadir(walletHashId: String) {
         if let path = GdkInit.defaults().datadir {
             let dir = "\(path)/state/\(walletHashId)"
             try? FileManager.default.removeItem(atPath: dir)
         }
     }
-
+    
     func enabled() -> Bool {
         return true
     }
 
-    func transactions(subaccount: UInt32, first: UInt32 = 0) -> Promise<Transactions> {
-        return Guarantee()
-            .compactMap(on: bgq) { _ in try self.session?.getTransactions(details: ["subaccount": subaccount,
-                                                                           "first": first,
-                                                                           "count": Constants.trxPerPage]) }
-            .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain, session: self).run() }
-            .compactMap { data in
-                let result = data["result"] as? [String: Any]
-                let dict = result?["transactions"] as? [[String: Any]]
-                let list = dict?.map { Transaction($0) }
-                return Transactions(list: list ?? [])
-            }.tapLogger()
+    func transactions(subaccount: UInt32, first: UInt32 = 0) async throws -> Transactions {
+        let txs = try self.session?.getTransactions(details: ["subaccount": subaccount,
+                                                              "first": first,
+                                                              "count": Constants.trxPerPage])
+        let res = try await ResolverManager(txs, chain: self.gdkNetwork.chain).run()
+        let result = res?["result"] as? [String: Any]
+        let dict = result?["transactions"] as? [[String: Any]]
+        let list = dict?.map { Transaction($0) }
+        return Transactions(list: list ?? [])
+    }
+    
+    func subaccount(_ pointer: UInt32) async throws -> WalletItem? {
+        let subaccount = try self.session?.getSubaccount(subaccount: pointer)
+        let res = try await ResolverManager(subaccount, chain: self.gdkNetwork.chain).run()
+        let result = res?["result"] as? [String: Any]
+        let wallet = WalletItem.from(result ?? [:]) as? WalletItem
+        wallet?.network = self.gdkNetwork.network
+        return wallet
     }
 
-    func subaccount(_ pointer: UInt32) -> Promise<WalletItem> {
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.getSubaccount(subaccount: pointer) }
-            .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain, session: self).run() }
-            .compactMap { data in
-                let result = data["result"] as? [String: Any]
-                let wallet = WalletItem.from(result ?? [:]) as? WalletItem
-                wallet?.network = self.gdkNetwork.network
-                return wallet
-            }.tapLogger()
-    }
-
-    func subaccounts(_ refresh: Bool = false) -> Promise<[WalletItem]> {
+    func subaccounts(_ refresh: Bool = false) async throws -> [WalletItem] {
         let params = GetSubaccountsParams(refresh: refresh)
-        return Guarantee()
-            .then(on: bgq) { self.wrapper(fun: self.session?.getSubaccounts, params: params) }
-            .compactMap(on: bgq) { $0 }
-            .compactMap(on: bgq) { (res: GetSubaccountsResult) in
-                let wallets = res.subaccounts
-                wallets.forEach { $0.network = self.gdkNetwork.network }
-                return wallets.sorted()
-            }
+        let res: GetSubaccountsResult = try await wrapperAsync(fun: self.session?.getSubaccounts, params: params)
+        let wallets = res.subaccounts
+        wallets.forEach { $0.network = self.gdkNetwork.network }
+        return wallets.sorted()
     }
-
-    func parseTxInput(_ input: String, satoshi: Int64?, assetId: String?) -> Promise<ValidateAddresseesResult> {
+    
+    func parseTxInput(_ input: String, satoshi: Int64?, assetId: String?) async throws -> ValidateAddresseesResult {
         let asset = assetId == AssetInfo.btcId ? nil : assetId
         let addressee = Addressee.from(address: input, satoshi: satoshi, assetId: asset)
         let addressees = ValidateAddresseesParams(addressees: [addressee])
-        return Guarantee()
-            .then(on: bgq) { self.wrapper(fun: self.session?.validate, params: addressees) }
-            .compactMap(on: bgq) { $0 }
+        return try await self.wrapperAsync(fun: self.session?.validate, params: addressees)
     }
-
-    func loadTwoFactorConfig() -> Promise<TwoFactorConfig> {
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.getTwoFactorConfig() }
-            .compactMap(on: bgq) { dataTwoFactorConfig in
-                let res = TwoFactorConfig.from(dataTwoFactorConfig) as? TwoFactorConfig
-                self.twoFactorConfig = res
-                return res
-            }.tapLogger()
+    
+    func loadTwoFactorConfig() async throws -> TwoFactorConfig? {
+        if let dataTwoFactorConfig = try self.session?.getTwoFactorConfig() {
+            let res = TwoFactorConfig.from(dataTwoFactorConfig) as? TwoFactorConfig
+            self.twoFactorConfig = res
+        }
+        return self.twoFactorConfig
     }
-
-    func loadSettings() -> Promise<Settings?> {
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.getSettings() }
-            .compactMap { data in
-                self.settings = Settings.from(data)
-                return self.settings
-            }.tapLogger()
+    
+    func loadSettings() async throws -> Settings? {
+        if let data = try self.session?.getSettings() {
+            self.settings = Settings.from(data)
+        }
+        return self.settings
     }
-
+    
     // create a default segwit account if doesn't exist on singlesig
-    func createDefaultSubaccount(wallets: [WalletItem]) -> Promise<Void> {
+    func createDefaultSubaccount(wallets: [WalletItem]) async throws {
         let notFound = !wallets.contains(where: {$0.type == AccountType.segWit })
         if gdkNetwork.electrum && notFound {
-            return Guarantee()
-                .compactMap(on: bgq) { try self.session?.createSubaccount(details: ["name": "",
-                                                                           "type": AccountType.segWit.rawValue]) }
-                .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain, session: self).run() }
-                .tapLogger()
-                .asVoid()
+            let res = try self.session?.createSubaccount(details: ["name": "", "type": AccountType.segWit.rawValue])
+            _ = try await ResolverManager(res, chain: self.gdkNetwork.chain).run()
         }
-        return Promise<Void>().asVoid()
     }
-
-    func reconnect() -> Promise<Void> {
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.loginUserSW(details: [:]) }
-            .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain, session: self).run() }
-            .tapLogger()
-            .asVoid()
+    
+    func reconnect() async throws {
+        let res = try self.session?.loginUserSW(details: [:])
+        _ = try await ResolverManager(res, chain: self.gdkNetwork.chain).run()
     }
-
-    func loginUser(_ params: Credentials, restore: Bool) -> Promise<LoginUserResult> {
-        return connect()
-            .then(on: bgq) { self.wrapper(fun: self.session?.loginUserSW, params: params) }
-            .compactMap(on: bgq) { $0 }
-            .then { res in self.onLogin(res).compactMap { res } }
+    
+    func loginUser(_ params: Credentials, restore: Bool) async throws -> LoginUserResult {
+        try await connect()
+        let res: LoginUserResult = try await self.wrapperAsync(fun: self.session?.loginUserSW, params: params)
+        try await onLogin(res)
+        return res
     }
-
-    func loginUser(_ params: HWDevice, restore: Bool) -> Promise<LoginUserResult> {
-        return connect()
-            .then(on: bgq) { self.wrapper(fun: self.session?.loginUserHW, params: params) }
-            .compactMap(on: bgq) { $0 }
-            .then(on: bgq) { res in self.onLogin(res).compactMap { res } }
+    
+    func loginUser(_ params: HWDevice, restore: Bool) async throws -> LoginUserResult {
+        try await connect()
+        let res: LoginUserResult = try await self.wrapperAsync(fun: self.session?.loginUserHW, params: params)
+        try await onLogin(res)
+        return res
     }
-
-    func loginUser(credentials: Credentials? = nil, hw: HWDevice? = nil, restore: Bool) -> Promise<LoginUserResult> {
+    
+    func loginUser(credentials: Credentials? = nil, hw: HWDevice? = nil, restore: Bool) async throws -> LoginUserResult {
         if let credentials = credentials {
-            return loginUser(credentials, restore: restore)
+            return try await loginUser(credentials, restore: restore)
         } else if let hw = hw {
-            return loginUser(hw, restore: restore)
+            return try await loginUser(hw, restore: restore)
         } else {
-            return Promise<LoginUserResult>() { seal in seal.reject(GaError.GenericError("No login method specified")) }
+            throw GaError.GenericError("No login method specified")
         }
     }
-
-    private func onLogin(_ data: LoginUserResult) -> Promise<Void> {
+    
+    private func onLogin(_ data: LoginUserResult) async throws {
         logged = true
-        if !self.gdkNetwork.electrum {
-            return self.loadTwoFactorConfig().asVoid().recover {_ in }
+        if self.gdkNetwork.multisig {
+            //try await self.loadTwoFactorConfig()
         }
-        return Promise().asVoid()
     }
-
+    
     typealias GdkFunc = ([String: Any]) throws -> TwoFactorCall
 
-    func wrapper<T: Codable, K: Codable>(fun: GdkFunc?, params: T) -> Promise<K?> {
+    func wrapperAsync<T: Codable, K: Codable>(fun: GdkFunc?, params: T) async throws -> K {
         let dict = params.toDict()
-        return Guarantee()
-            .compactMap(on: bgq) { try fun?(dict ?? [:]) }
-            .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain, session: self).run() }
-            .compactMap { res in
-                let result = res["result"] as? [String: Any]
-                return K.from(result ?? [:]) as? K
-            }.tapLogger()
+        if let fun = try fun?(dict ?? [:]) {
+            let res = try await ResolverManager(fun, chain: self.gdkNetwork.chain).run()
+            let result = res?["result"] as? [String: Any]
+            if let res = K.from(result ?? [:]) as? K {
+                return res
+            }
+        }
+        throw GaError.GenericError()
     }
-
-    func decryptWithPin(_ params: DecryptWithPinParams) -> Promise<Credentials> {
-        return wrapper(fun: self.session?.decryptWithPin, params: params)
-            .compactMap { $0 }
+    
+    func decryptWithPin(_ params: DecryptWithPinParams) async throws -> Credentials {
+        return try await wrapperAsync(fun: self.session?.decryptWithPin, params: params)
     }
-
-    func load(refreshSubaccounts: Bool = true) -> Promise<Void> {
-        return Guarantee()
-            .then(on: bgq) { _ -> Promise<Void> in
-                if refreshSubaccounts {
-                    return self.subaccounts(true)
-                        .recover { _ in self.subaccounts(false) }
-                        .then(on: self.bgq) { self.createDefaultSubaccount(wallets: $0) }
-                }
-                return Promise<Void>().asVoid()
-            }.tapLogger()
+    
+    func load(refreshSubaccounts: Bool = true) async throws {
+        if refreshSubaccounts {
+            do {
+                _ = try await self.subaccounts(true)
+            } catch { }
+            let subaccounts = try await self.subaccounts(false)
+            _ = try await createDefaultSubaccount(wallets: subaccounts)
+        }
     }
-
-    func getCredentials(password: String) -> Promise<Credentials> {
+    
+    func getCredentials(password: String) async throws -> Credentials? {
         let cred = Credentials(password: password)
-        return wrapper(fun: self.session?.getCredentials, params: cred)
-            .compactMap { $0 }
+        let res: Credentials = try await wrapperAsync(fun: self.session?.getCredentials, params: cred)
+        return res
     }
 
-    func register(credentials: Credentials? = nil, hw: HWDevice? = nil) -> Promise<Void> {
-        return Guarantee()
-            .then(on: bgq) { self.connect() }
-            .compactMap(on: bgq) { try self.session?.registerUser(details: credentials?.toDict() ?? [:], hw_device: ["device": hw?.toDict() ?? [:]]) }
-            .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain, session: self).run() }
-            .tapLogger()
-            .asVoid()
+    func register(credentials: Credentials? = nil, hw: HWDevice? = nil) async throws {
+        try await self.connect()
+        let res = try self.session?.registerUser(details: credentials?.toDict() ?? [:], hw_device: ["device": hw?.toDict() ?? [:]])
+        _ = try await ResolverManager(res, chain: self.gdkNetwork.chain).run()
+    }
+    
+    func encryptWithPin(_ params: EncryptWithPinParams) async throws -> EncryptWithPinResult {
+        return try await wrapperAsync(fun: self.session?.encryptWithPin, params: params)
     }
 
-    func encryptWithPin(_ params: EncryptWithPinParams) -> Promise<EncryptWithPinResult> {
-        return wrapper(fun: self.session?.encryptWithPin, params: params)
-            .compactMap { $0 }
+    func resetTwoFactor(email: String, isDispute: Bool) async throws {
+        let res = try self.session?.resetTwoFactor(email: email, isDispute: isDispute)
+        _ = try await ResolverManager(res, chain: self.gdkNetwork.chain).run()
+    }
+    
+    func cancelTwoFactorReset() async throws {
+        let res = try self.session?.cancelTwoFactorReset()
+        _ = try await ResolverManager(res, chain: self.gdkNetwork.chain).run()
+    }
+    
+    func undoTwoFactorReset(email: String) async throws {
+        let res = try self.session?.undoTwoFactorReset(email: email)
+        _ = try await ResolverManager(res, chain: self.gdkNetwork.chain).run()
+    }
+    
+    func setWatchOnly(username: String, password: String) async throws {
+        _ = try self.session?.setWatchOnly(username: username, password: password)
+    }
+    
+    func getWatchOnlyUsername() async throws -> String? {
+        return try session?.getWatchOnlyUsername()
     }
 
-    func resetTwoFactor(email: String, isDispute: Bool) -> Promise<Void> {
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.resetTwoFactor(email: email, isDispute: isDispute) }
-            .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain, session: self).run() }
-            .asVoid()
-            .tapLogger()
+    func setCSVTime(value: Int) async throws {
+        let res = try self.session?.setCSVTime(details: ["value": value])
+        _ = try await ResolverManager(res, chain: self.gdkNetwork.chain).run()
     }
-
-    func cancelTwoFactorReset() -> Promise<Void> {
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.cancelTwoFactorReset() }
-            .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain, session: self).run() }
-            .asVoid()
-            .tapLogger()
+    
+    func setTwoFactorLimit(details: [String: Any]) async throws {
+        let res = try self.session?.setTwoFactorLimit(details: details)
+        _ = try await ResolverManager(res, chain: self.gdkNetwork.chain).run()
     }
-
-    func undoTwoFactorReset(email: String) -> Promise<Void> {
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.undoTwoFactorReset(email: email) }
-            .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain, session: self).run() }
-            .asVoid()
-            .tapLogger()
-    }
-
-    func setWatchOnly(username: String, password: String) -> Promise<Void> {
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.setWatchOnly(username: username, password: password) }
-            .tapLogger()
-    }
-
-    func getWatchOnlyUsername() -> Promise<String> {
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.getWatchOnlyUsername() }
-            .tapLogger()
-    }
-
-    func setCSVTime(value: Int) -> Promise<Void> {
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.setCSVTime(details: ["value": value]) }
-            .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain, session: self).run() }
-            .asVoid()
-    }
-
-    func setTwoFactorLimit(details: [String: Any]) -> Promise<Void> {
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.setTwoFactorLimit(details: details) }
-            .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain, session: self).run() }
-            .asVoid()
-            .tapLogger()
-    }
-
+    
     func convertAmount(input: [String: Any]) throws -> [String: Any] {
         try self.session?.convertAmount(input: input) ?? [:]
     }
-
+    
     func refreshAssets(icons: Bool, assets: Bool, refresh: Bool) throws {
         try self.session?.refreshAssets(params: ["icons": icons, "assets": assets, "refresh": refresh])
     }
-
-    func getReceiveAddress(subaccount: UInt32) -> Promise<Address> {
+    
+    func getReceiveAddress(subaccount: UInt32) async throws -> Address {
         let params = Address(address: nil, pointer: nil, branch: nil, subtype: nil, userPath: nil, subaccount: subaccount, scriptType: nil, addressType: nil, script: nil)
-        return wrapper(fun: self.session?.getReceiveAddress, params: params)
-            .compactMap { $0 }
+        let res: Address = try await wrapperAsync(fun: self.session?.getReceiveAddress, params: params)
+        return res
+    }
+    
+    func getBalance(subaccount: UInt32, numConfs: Int) async throws -> [String: Int64] {
+        let balance = try self.session?.getBalance(details: ["subaccount": subaccount, "num_confs": numConfs])
+        let res = try await ResolverManager(balance, chain: self.gdkNetwork.chain).run()
+        return res?["result"] as? [String: Int64] ?? [:]
+    }
+    
+    func changeSettingsTwoFactor(method: TwoFactorType, config: TwoFactorConfigItem) async throws {
+        let res = try self.session?.changeSettingsTwoFactor(method: method.rawValue, details: config.toDict() ?? [:])
+        _ = try await ResolverManager(res, chain: self.gdkNetwork.chain).run()
+    }
+    
+    func updateSubaccount(subaccount: UInt32, hidden: Bool) async throws {
+        let res = try self.session?.updateSubaccount(details: ["subaccount": subaccount, "hidden": hidden])
+        _ = try await ResolverManager(res, chain: self.gdkNetwork.chain).run()
+    }
+    
+    func createSubaccount(_ details: CreateSubaccountParams) async throws -> WalletItem {
+        let wallet: WalletItem = try await wrapperAsync(fun: self.session?.createSubaccount, params: details)
+        wallet.network = self.gdkNetwork.network
+        return wallet
+    }
+    
+    func renameSubaccount(subaccount: UInt32, newName: String) async throws {
+        try self.session?.renameSubaccount(subaccount: subaccount, newName: newName)
+    }
+    
+    func changeSettings(settings: Settings) async throws -> Settings? {
+        return try await wrapperAsync(fun: self.session?.changeSettings, params: settings)
+    }
+    
+    func getUnspentOutputs(subaccount: UInt32, numConfs: Int) async throws -> [String: Any] {
+        let utxos = try self.session?.getUnspentOutputs(details: ["subaccount": subaccount, "num_confs": numConfs])
+        let res = try await ResolverManager(utxos, chain: self.gdkNetwork.chain).run()
+        let result = res?["result"] as? [String: Any]
+        return result?["unspent_outputs"] as? [String: Any] ?? [:]
+    }
+    
+    func wrapperTransaction(fun: GdkFunc?, tx: Transaction) async throws -> Transaction {
+        if let fun = try fun?(tx.details) {
+            let res = try await ResolverManager(fun, chain: self.gdkNetwork.chain).run()
+            let result = res?["result"] as? [String: Any]
+            return Transaction(result ?? [:], subaccount: tx.subaccount)
+        }
+        throw GaError.GenericError()
     }
 
-    func getBalance(subaccount: UInt32, numConfs: Int) -> Promise<[String: Int64]> {
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.getBalance(details: ["subaccount": subaccount, "num_confs": numConfs]) }
-            .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain, session: self).run() }
-            .compactMap { $0["result"] as? [String: Int64] }
-            .tapLogger()
+    func createTransaction(tx: Transaction) async throws -> Transaction {
+        try await wrapperTransaction(fun: self.session?.createTransaction, tx: tx)
     }
 
-    func changeSettingsTwoFactor(method: TwoFactorType, config: TwoFactorConfigItem) -> Promise<Void> {
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.changeSettingsTwoFactor(method: method.rawValue, details: config.toDict() ?? [:]) }
-            .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain, session: self).run() }
-            .asVoid()
-            .tapLogger()
+    func blindTransaction(tx: Transaction) async throws -> Transaction {
+        try await wrapperTransaction(fun: self.session?.blindTransaction, tx: tx)
     }
 
-    func updateSubaccount(subaccount: UInt32, hidden: Bool) -> Promise<Void> {
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.updateSubaccount(details: ["subaccount": subaccount, "hidden": hidden]) }
-            .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain, session: self).run() }
-            .asVoid()
-            .tapLogger()
+    func signTransaction(tx: Transaction) async throws -> Transaction {
+        try await wrapperTransaction(fun: self.session?.signTransaction, tx: tx)
     }
 
-    func createSubaccount(_ details: CreateSubaccountParams) -> Promise<WalletItem> {
-        return wrapper(fun: self.session?.createSubaccount, params: details)
-            .compactMap { $0 }
-            .compactMap { (wallet: WalletItem) in wallet.network = self.gdkNetwork.network; return wallet }
+    func sendTransaction(tx: Transaction) async throws {
+        _ = try await wrapperTransaction(fun: self.session?.sendTransaction, tx: tx)
     }
 
-    func renameSubaccount(subaccount: UInt32, newName: String) -> Promise<Void> {
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.renameSubaccount(subaccount: subaccount, newName: newName) }
-            .tapLogger()
-            .asVoid()
+    func broadcastTransaction(txHex: String) async throws {
+        _ = try self.session?.broadcastTransaction(tx_hex: txHex)
     }
 
-    func changeSettings(settings: Settings) -> Promise<Settings?> {
-        return wrapper(fun: self.session?.changeSettings, params: settings)
-    }
-
-    func getUnspentOutputs(subaccount: UInt32, numConfs: Int) -> Promise<[String: Any]> {
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.getUnspentOutputs(details: ["subaccount": subaccount, "num_confs": numConfs]) }
-            .then { ResolverManager($0, chain: self.gdkNetwork.chain, session: self).run() }
-            .compactMap(on: bgq) { res in
-                let result = res["result"] as? [String: Any]
-                return result?["unspent_outputs"] as? [String: Any]
-            }.tapLogger()
-    }
-
-    func wrapperTransaction(fun: GdkFunc?, tx: Transaction) -> Promise<Transaction> {
-        return Guarantee()
-            .compactMap(on: bgq) { try fun?(tx.details) }
-            .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain, session: self).run() }
-            .compactMap { res in
-                let result = res["result"] as? [String: Any]
-                return Transaction(result ?? [:], subaccount: tx.subaccount)
-            }.tapLogger()
-    }
-
-    func createTransaction(tx: Transaction) -> Promise<Transaction> {
-        wrapperTransaction(fun: self.session?.createTransaction, tx: tx)
-    }
-
-    func blindTransaction(tx: Transaction) -> Promise<Transaction> {
-        wrapperTransaction(fun: self.session?.blindTransaction, tx: tx)
-    }
-
-    func signTransaction(tx: Transaction) -> Promise<Transaction> {
-        wrapperTransaction(fun: self.session?.signTransaction, tx: tx)
-    }
-
-    func sendTransaction(tx: Transaction) -> Promise<Void> {
-        wrapperTransaction(fun: self.session?.sendTransaction, tx: tx).asVoid()
-    }
-
-    func broadcastTransaction(txHex: String) -> Promise<Void> {
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.broadcastTransaction(tx_hex: txHex) }
-            .tapLogger()
-            .asVoid()
-    }
-
-
-    func getFeeEstimates() -> [UInt64]? {
+    func getFeeEstimates() async throws -> [UInt64]? {
         let estimates = try? session?.getFeeEstimates()
         return estimates == nil ? nil : estimates!["fees"] as? [UInt64]
     }
 
-    func loadSystemMessage() -> Promise<String?> {
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.getSystemMessage() }
-            .tapLogger()
+    func loadSystemMessage() async throws -> String? {
+        try self.session?.getSystemMessage()
     }
 
-    func ackSystemMessage(message: String) -> Promise<Void> {
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.ackSystemMessage(message: message) }
-            .then(on: bgq) { ResolverManager($0, chain: self.gdkNetwork.chain, session: self).run() }
-            .tapLogger()
-            .asVoid()
+    func ackSystemMessage(message: String) async throws {
+        let res = try self.session?.ackSystemMessage(message: message)
+        _ = try await ResolverManager(res, chain: self.gdkNetwork.chain).run()
     }
 
-    func getAvailableCurrencies() -> Promise<[String: [String]]> {
-        return Guarantee()
-            .compactMap(on: bgq) { try self.session?.getAvailableCurrencies() }
-            .compactMap(on: bgq) { $0?["per_exchange"] as? [String: [String]] }
-            .tapLogger()
+    func getAvailableCurrencies() async throws -> [String: [String]] {
+        let res = try self.session?.getAvailableCurrencies()
+        return res?["per_exchange"] as? [String: [String]] ?? [:]
     }
 
     func validBip21Uri(uri: String) -> Bool {
@@ -502,15 +426,15 @@ class SessionManager {
         return nil
     }
 
-    func discovery() -> Promise<Bool> {
-        return Guarantee()
-            .then(on: bgq) { self.subaccounts(true) }
-            .recover { _ in Promise(error: LoginError.connectionFailed()) }
-            .compactMap { $0.filter({ $0.pointer == 0 }).first }
-            .compactMap { $0.gdkNetwork.electrum && !($0.bip44Discovered ?? false) }
-            .then(on: bgq) { $0 ? self.updateSubaccount(subaccount: 0, hidden: true) : Promise().asVoid() }
-            .then(on: bgq) { _ in self.subaccounts() }
-            .compactMap { !$0.filter({ $0.bip44Discovered ?? false }).isEmpty }
+    func discovery() async throws -> Bool {
+        do {
+            let subaccounts = try await self.subaccounts(true)
+            if let first = subaccounts.filter({ $0.pointer == 0 }).first,
+               first.isSinglesig && !(first.bip44Discovered ?? false) {
+                _ = try await self.updateSubaccount(subaccount: 0, hidden: true)
+            }
+            return !subaccounts.filter({ $0.bip44Discovered ?? false }).isEmpty
+        } catch { throw LoginError.connectionFailed() }
     }
 
     func networkConnect() {
@@ -556,9 +480,8 @@ extension SessionManager {
                 }
             }
         case .TwoFactorReset:
-            loadTwoFactorConfig()
-                .done { _ in self.post(event: .TwoFactorReset, userInfo: data) }
-                .catch { print($0) }
+            Task { try? await loadTwoFactorConfig() }
+            self.post(event: .TwoFactorReset, userInfo: data)
         case .Settings:
             settings = Settings.from(data)
             post(event: .Settings, userInfo: data)
@@ -572,13 +495,13 @@ extension SessionManager {
                 return
             }
             // Restore connection through hidden login
-            reconnect().done { _ in
-                self.post(event: EventType.Network, userInfo: data)
-            }.catch { err in
-                print("Error on reconnected with hw: \(err.localizedDescription)")
+            //do {
+                //try await reconnect()
+            //    self.post(event: EventType.Network, userInfo: data)
+            //}.catch { err in
+                //print("Error on reconnected with hw: \(err.localizedDescription)")
                 //let appDelegate = UIApplication.shared.delegate as? AppDelegate
                 //appDelegate?.logout(with: false)
-            }
         case .Tor:
             post(event: .Tor, userInfo: data)
         case .Ticker:

@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 import gdk
 
 class WalletViewModel {
@@ -16,14 +16,8 @@ class WalletViewModel {
     var headerIcon: UIImage { return UIImage(named: wm?.prominentNetwork.gdkNetwork.mainnet == true ? "ic_wallet" : "ic_wallet_testnet")!.maskWithColor(color: .white) }
 
     /// Cached data
-    private var cachedTransactions = [Transaction]()
-    private var cachedBalance = [(String, Int64)]()
-
-    /// reload by section with animation
-    var reloadSections: (([WalletSection], Bool) -> Void)?
-
-    /// to avoid duplication of observers in account detail
-    var reloadAccountView: (() -> Void)?
+    var cachedTransactions = [Transaction]()
+    var cachedBalance: AssetAmountList?
 
     /// if no accounts show the layer
     var welcomeLayerVisibility: (() -> Void)?
@@ -32,36 +26,18 @@ class WalletViewModel {
     var preselectAccount: ((Int) -> Void)?
 
     /// cell models
-    var accountCellModels = [AccountCellModel]() {
-        didSet {
-            self.reloadSections?([WalletSection.account], false)
-        }
-    }
+    var accountCellModels = [AccountCellModel]()
     var accountLightningCellModels: AccountCellModel? {
         accountCellModels.filter { $0.networkType == .lightning }.first
     }
-    var txCellModels = [TransactionCellModel]() {
-        didSet {
-            self.reloadSections?( [WalletSection.transaction, .account ], false)
-        }
-    }
-    var balanceCellModel: BalanceCellModel? {
-        didSet {
-            isBalanceLoading = false
-            self.reloadSections?([WalletSection.balance], false)
-        }
-    }
-    var alertCardCellModel = [AlertCardCellModel]() {
-        didSet {
-            self.reloadSections?([WalletSection.card], false)
-        }
-    }
+    var txCellModels = [TransactionCellModel]()
+    var balanceCellModel: BalanceCellModel?
+    var alertCardCellModel = [AlertCardCellModel]()
 
     var walletAssetCellModels: [WalletAssetCellModel] {
-        return cachedBalance
-            .sorted()
-            .nonZero()
-            .map { WalletAssetCellModel(assetId: $0.0, satoshi: $0.1) }
+        return cachedBalance?
+            .nonZeroAmounts()
+            .compactMap { WalletAssetCellModel(assetId: $0.0, satoshi: $0.1) } ?? []
     }
 
     var remoteAlert: RemoteAlert?
@@ -76,7 +52,7 @@ class WalletViewModel {
         remoteAlert = RemoteAlertManager.shared.alerts(screen: .walletOverview, networks: wm?.activeNetworks ?? []).first
     }
 
-    func loadSubaccounts() {
+    func loadSubaccounts() async {
         self.accountCellModels = self.subaccounts.map { AccountCellModel(subaccount: $0, satoshi: $0.btc) }
     }
 
@@ -84,26 +60,6 @@ class WalletViewModel {
         if let idx = self.accountCellModels.firstIndex(where: {$0.account == newAccount}) {
             self.preselectAccount?(idx)
         }
-    }
-
-    func loadBalances() -> Promise<Void> {
-        return Guarantee()
-            .compactMap { self.wm }
-            .then(on: bgq) { $0.balances(subaccounts: self.subaccounts) }
-            .map(on: bgq) { self.cachedBalance = AssetAmountList($0).sorted() }
-            .compactMap(on: bgq) { self.subaccounts.map { AccountCellModel(subaccount: $0, satoshi: $0.btc) }}
-            .map { self.accountCellModels = $0 }
-            .compactMap(on: bgq) { self.sumBalances(self.subaccounts) }
-            .compactMap(on: bgq) { BalanceCellModel(satoshi: $0,
-                                                    cachedBalance: self.cachedBalance,
-                                                    mode: self.balanceDisplayMode,
-                                                    assetId: self.getAssetId()) }
-            .compactMap { cells in
-                self.balanceCellModel = cells
-                self.reloadAccountView?()
-                self.welcomeLayerVisibility?()
-                self.callAnalytics()
-            }
     }
 
     func getAssetId() -> String {
@@ -115,19 +71,28 @@ class WalletViewModel {
         }
     }
 
-    func loadTransactions(max: Int? = nil) -> Promise<Void> {
+    func loadBalances() async throws {
+        let balances = try await wm?.balances(subaccounts: self.subaccounts)
+        let cachedBalance = await AssetAmountList(balances ?? [:])
+        self.accountCellModels = subaccounts.map { AccountCellModel(subaccount: $0, satoshi: $0.btc) }
+        self.cachedBalance = cachedBalance
+        let satoshi = cachedBalance.satoshi()
+        balanceCellModel = BalanceCellModel(satoshi: satoshi,
+                                            cachedBalance: cachedBalance,
+                                            mode: self.balanceDisplayMode,
+                                            assetId: self.getAssetId())
+        self.welcomeLayerVisibility?()
+        self.callAnalytics()
+    }
+
+    func loadTransactions(max: Int? = nil) async throws {
         isTxLoading = true
-        return Guarantee()
-            .compactMap { self.wm }
-            .then(on: bgq) { $0.transactions(subaccounts: self.subaccounts) }
-            .compactMap(on: bgq) { txs in
-                self.cachedTransactions = Array(txs.sorted(by: >).prefix(max ?? txs.count))
-                return self.cachedTransactions
+        let txs = try await wm?.transactions(subaccounts: self.subaccounts)
+        self.cachedTransactions = Array(txs?.sorted(by: >).prefix(max ?? txs?.count ?? 0) ?? [])
+        self.txCellModels = self.cachedTransactions
                     .map { ($0, self.getNodeBlockHeight(subaccountHash: $0.subaccount!)) }
                     .map { TransactionCellModel(tx: $0.0, blockHeight: $0.1) }
-            }
-            .ensure { self.isTxLoading = false }
-            .compactMap { cells in self.txCellModels = cells }
+        self.isTxLoading = false
     }
 
     func getNodeBlockHeight(subaccountHash: Int) -> UInt32 {
@@ -150,13 +115,13 @@ class WalletViewModel {
         return total
     }
 
-    func rotateBalanceDisplayMode() {
+    func rotateBalanceDisplayMode() async throws {
         var isBTC = false
         if let session = self.session, let settings = session.settings {
             isBTC = settings.denomination == .BTC
         }
         balanceDisplayMode = balanceDisplayMode.next(isBTC)
-        loadBalances()
+        try await loadBalances()
     }
 
     func loadDisputeCards() -> [AlertCardType] {
@@ -205,58 +170,28 @@ class WalletViewModel {
         return cards
     }
 
-    func reloadAlertCards() {
+    func reloadAlertCards() async {
         guard let wm = wm, let session = session else { return }
         var cards: [AlertCardType] = []
-        Guarantee()
-            .compactMap(on: bgq) { cards += self.loadMetadataCards() }
-            .compactMap(on: bgq) { cards += self.loadDisputeCards() }
-            .compactMap(on: bgq) { Balance.fromSatoshi(0, assetId: session.gdkNetwork.getFeeAsset())?.toFiat().0 == "n/a" }
-            .map { $0 ? cards.append(AlertCardType.fiatMissing) : () }
-            .then(on: bgq) { wm.loadSystemMessages() }
-            .done { (messages: [SystemMessage]) in
-                messages.forEach { msg in
-                    if !msg.text.isEmpty {
-                        cards.append(AlertCardType.systemMessage(msg))
-                    }
-                }
-                self.alertCardCellModel = cards.map { AlertCardCellModel(type: $0) }
-            }.catch { err in
-                self.alertCardCellModel = cards.map { AlertCardCellModel(type: $0) }
-                print(err.localizedDescription)
-            }
-    }
-
-    func reload() {
-        loadSubaccounts()
-        loadBalances()
-        loadTransactions(max: 10)
-    }
-
-    func handleEvent(_ notification: Notification) {
-        guard let eventType = EventType(rawValue: notification.name.rawValue) else { return }
-        print("..... \(eventType.rawValue)")
-        switch eventType {
-        case .Transaction, .InvoicePaid, .PaymentFailed, .PaymentSucceed:
-            reload()
-        case .Block:
-            if cachedTransactions.filter({ $0.blockHeight == 0 }).first != nil {
-                reload()
-            }
-        case .AssetsUpdated:
-            reload()
-        case .Network:
-            guard let dict = notification.userInfo as NSDictionary? else { return }
-            guard let connected = dict["connected"] as? Bool else { return }
-            guard let loginRequired = dict["login_required"] as? Bool else { return }
-            if connected == true && loginRequired == false {
-                reload()
-            }
-        case .Settings, .Ticker, .TwoFactorReset:
-            reload()
-        default:
-            break
+        cards += self.loadMetadataCards()
+        cards += self.loadDisputeCards()
+        
+        if Balance.fromSatoshi(0, assetId: session.gdkNetwork.getFeeAsset())?.toFiat().0 == "n/a" {
+            cards.append(AlertCardType.fiatMissing)
         }
+        let messages = try? await wm.loadSystemMessages()
+        messages?.forEach { msg in
+            if !msg.text.isEmpty {
+                cards.append(AlertCardType.systemMessage(msg))
+            }
+        }
+        self.alertCardCellModel = cards.map { AlertCardCellModel(type: $0) }
+    }
+
+    func reload() async {
+        await loadSubaccounts()
+        try? await loadBalances()
+        try? await loadTransactions(max: 10)
     }
 
     func onCreateAccount(_ wallet: WalletItem) {

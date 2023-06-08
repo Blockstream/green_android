@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 import gdk
 import greenaddress
 
@@ -94,33 +94,30 @@ class DialogWatchOnlySetUpViewController: KeyboardViewController {
     }
 
     func updateWatchOnly(username: String, password: String, action: WatchOnlySetUpAction) {
-        let bgq = DispatchQueue.global(qos: .background)
-        firstly {
-            self.startAnimating()
-            return Guarantee()
-        }.then(on: bgq) {
-            self.session.setWatchOnly(username: username, password: password)
-        }.ensure {
-            self.stopAnimating()
-        }.done { _ in
-            self.load()
-            self.dismiss(action)
-        }.catch { err in
-            switch err {
-            case GaError.ReconnectError(let msg),
-                GaError.TimeoutError(let msg),
-                GaError.SessionLost(let msg),
-                GaError.GenericError(let msg):
-                self.showError(msg ?? "id_error")
-            default:
-                self.showError(err.localizedDescription)
+        startAnimating()
+        Task {
+            do {
+                try await session.setWatchOnly(username: username, password: password)
+                load()
+                dismiss(action)
+            } catch {
+                switch error {
+                case GaError.ReconnectError(let msg),
+                    GaError.TimeoutError(let msg),
+                    GaError.SessionLost(let msg),
+                    GaError.GenericError(let msg):
+                    self.showError(msg ?? "id_error")
+                default:
+                    self.showError(error.localizedDescription)
+                }
             }
         }
+        stopAnimating()
     }
 
     func load() {
-        session.getWatchOnlyUsername().done { username in
-            self.username = username
+        Task {
+            username = try? await session.getWatchOnlyUsername()
             if username != "" {
                 self.btnSave.setTitle(NSLocalizedString("id_update", comment: ""), for: .normal)
                 self.usernameField.text = username

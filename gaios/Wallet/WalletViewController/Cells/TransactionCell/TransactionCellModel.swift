@@ -15,9 +15,12 @@ class TransactionCellModel {
     var date: String
     var icon = UIImage()
     var subaccount: WalletItem?
-    var amounts = [(key: String, value: Int64)]()
+    var amounts = [String: Int64]()
 
     private let wm = WalletManager.current
+    var assetAmountList: AssetAmountList {
+        get async { await AssetAmountList(amounts) }
+    }
 
     init(tx: Transaction, blockHeight: UInt32) {
         self.tx = tx
@@ -27,7 +30,6 @@ class TransactionCellModel {
         if let subaccount = self.subaccount {
             self.amounts = amounts(self.tx, subaccount)
         }
-
         switch tx.type {
         case .redeposit:
             // For redeposits we show fees paid in btc
@@ -81,18 +83,16 @@ class TransactionCellModel {
                                      progress: nil)
     }
 
-    func amounts(_ tx: Transaction, _ subaccount: WalletItem) -> [(key: String, value: Int64)] {
-        var amounts = [(key: String, value: Int64)]()
+    func amounts(_ tx: Transaction, _ subaccount: WalletItem) -> [String: Int64] {
         let feeAsset = subaccount.gdkNetwork.getFeeAsset()
         if tx.type == .redeposit {
-            amounts = [(key: feeAsset, value: -1 * Int64(tx.fee))]
+            return [feeAsset: -1 * Int64(tx.fee)]
         } else {
-            amounts = tx.assetamounts
             // remove L-BTC asset only if fee on outgoing transactions
             if tx.type == .some(.outgoing) || tx.type == .some(.mixed) {
-                amounts = amounts.filter({ !($0.key == feeAsset && abs($0.value) == Int64(tx.fee)) })
+                return tx.amounts.filter({ !($0.key == feeAsset && abs($0.value) == Int64(tx.fee)) })
             }
         }
-        return amounts
+        return tx.amounts
     }
 }

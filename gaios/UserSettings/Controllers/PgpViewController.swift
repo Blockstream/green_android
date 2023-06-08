@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 import gdk
 
 class PgpViewController: KeyboardViewController {
@@ -36,26 +36,32 @@ class PgpViewController: KeyboardViewController {
             .first
     }
 
-    func setPgp(pgp: String) -> Promise<Void> {
-         let sessions = WalletManager.current?.activeSessions.values
-            .filter { !$0.gdkNetwork.electrum }
-         return Promise<Void>.chain(sessions ?? [], 1) { self.changeSettings(session: $0, pgp: pgp).asVoid() }.asVoid()
+    func setPgp(pgp: String) async throws {
+         let sessions = WalletManager.current?.activeSessions
+            .filter { !$0.value.gdkNetwork.electrum }
+            .values
+        for session in sessions! {
+            try await self.changeSettings(session: session, pgp: pgp)
+        }
     }
 
-    func changeSettings(session: SessionManager, pgp: String) -> Promise<Void> {
-        guard let settings = session.settings else { return Promise().asVoid() }
-        let bgq = DispatchQueue.global(qos: .background)
+    func changeSettings(session: SessionManager, pgp: String) async throws {
+        guard let settings = session.settings else { return }
         settings.pgp = pgp
-        return Guarantee().then(on: bgq) { session.changeSettings(settings: settings) }.asVoid()
+        try await session.changeSettings(settings: settings)
     }
 
     @objc func save(_ sender: UIButton) {
         guard let txt = self.textarea.text, !txt.isEmpty else { return }
-        let bgq = DispatchQueue.global(qos: .background)
-        firstly { self.startAnimating(); return Guarantee() }
-        .then(on: bgq) { self.setPgp(pgp: txt) }
-        .ensure { self.stopAnimating() }
-        .done {_ in self.navigationController?.popViewController(animated: true) }
-        .catch {_ in self.showError(NSLocalizedString("id_invalid_pgp_key", comment: "")) }
+        self.startAnimating()
+        Task {
+            do {
+                try await self.setPgp(pgp: txt)
+                self.navigationController?.popViewController(animated: true)
+            } catch {
+                self.showError(NSLocalizedString("id_invalid_pgp_key", comment: ""))
+            }
+            self.stopAnimating()
+        }
     }
 }

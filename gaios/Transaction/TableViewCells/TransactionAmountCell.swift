@@ -70,7 +70,7 @@ class TransactionAmountCell: UITableViewCell {
             icon.image = UIImage(named: "ic_lightning_btc")
         } else {
             let registry = WalletManager.current?.registry
-            icon.image =  registry?.image(for: id)
+            Task { icon.image = await registry?.image(for: id) }
         }
 
         if let balance = Balance.fromSatoshi(value, assetId: id) {

@@ -1,5 +1,5 @@
 import UIKit
-import PromiseKit
+
 import RiveRuntime
 import gdk
 import BreezSDK
@@ -64,19 +64,6 @@ class WalletViewController: UIViewController {
         ["AccountCell", "BalanceCell", "TransactionCell", "AlertCardCell" ].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
-        let reloadSections: (([WalletSection], Bool) -> Void)? = { [weak self] (sections, animated) in
-            self?.reloadSections(sections, animated: animated)
-        }
-        viewModel.reloadSections = reloadSections
-
-        let reloadAccountView: (() -> Void)? = { [weak self] () in
-            guard let model = self?.viewModel.accountCellModels[safe: self?.sIdx ?? 0] else { return }
-            if let vc = self?.navigationController?.viewControllers.last as? AccountViewController {
-                vc.reloadFromParent(model)
-            }
-        }
-        viewModel.reloadAccountView = reloadAccountView
-        viewModel.welcomeLayerVisibility = welcomeLayerVisibility
         viewModel.preselectAccount = {[weak self] idx in
             self?.sIdx = idx
         }
@@ -94,6 +81,7 @@ class WalletViewController: UIViewController {
         }
     }
 
+    @MainActor
     func welcomeLayerVisibility() {
         navigationItem.leftBarButtonItem = nil
         navigationItem.rightBarButtonItems = []
@@ -107,6 +95,7 @@ class WalletViewController: UIViewController {
         }
     }
 
+    @MainActor
     func surveyUI(_ widget: CountlyWidget) {
         let storyboard = UIStoryboard(name: "Survey", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SurveyViewController") as? SurveyViewController {
@@ -124,16 +113,16 @@ class WalletViewController: UIViewController {
         super.viewWillAppear(animated)
 
         if userWillLogout == true { return }
-        viewModel.reloadAlertCards()
-        viewModel.loadSubaccounts()
-        viewModel.loadBalances().then { self.viewModel.loadTransactions(max: 10) }.done { _ in }
+        reload()
 
         EventType.allCases.forEach {
             let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: $0.rawValue),
                                                                   object: nil,
                                                                   queue: .main,
-                                                                  using: { [weak self] data in
-                self?.viewModel.handleEvent(data)
+                                                                  using: { [weak self] notification in
+                if let eventType = EventType(rawValue: notification.name.rawValue) {
+                    self?.handleEvent(eventType, details: notification.userInfo ?? [:])
+                }
             })
             notificationObservers.append(observer)
         }
@@ -158,6 +147,29 @@ class WalletViewController: UIViewController {
         drawerIcon(false)
     }
 
+    func handleEvent(_ eventType: EventType, details: [AnyHashable: Any]) {
+        switch eventType {
+        case .Transaction, .InvoicePaid, .PaymentFailed, .PaymentSucceed:
+            reload()
+        case .Block:
+            if viewModel.cachedTransactions.filter({ $0.blockHeight == 0 }).first != nil {
+                reload()
+            }
+        case .AssetsUpdated:
+            reload()
+        case .Network:
+            guard let connected = details["connected"] as? Bool else { return }
+            guard let loginRequired = details["login_required"] as? Bool else { return }
+            if connected == true && loginRequired == false {
+                reload()
+            }
+        case .Settings, .Ticker, .TwoFactorReset:
+            reload()
+        default:
+            break
+        }
+    }
+
     func drawerIcon(_ show: Bool) {
         if let bar = navigationController?.navigationBar {
             if show {
@@ -171,6 +183,7 @@ class WalletViewController: UIViewController {
         }
     }
 
+    @MainActor
     func reloadSections(_ sections: [WalletSection], animated: Bool) {
         if animated {
             tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
@@ -182,7 +195,6 @@ class WalletViewController: UIViewController {
         if sections.contains(WalletSection.account) {
             tableView.selectRow(at: IndexPath(row: sIdx, section: WalletSection.account.rawValue), animated: false, scrollPosition: .none)
         }
-
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
             self.tableView.refreshControl?.endRefreshing()
         }
@@ -239,9 +251,20 @@ class WalletViewController: UIViewController {
 
     // tableview refresh gesture
     @objc func callPullToRefresh(_ sender: UIRefreshControl? = nil) {
-        viewModel.reloadAlertCards()
-        viewModel.loadSubaccounts()
-        viewModel.loadBalances().then { self.viewModel.loadTransactions(max: 10) }.done { _ in }
+        reload()
+    }
+
+    func reload() {
+        Task {
+            await viewModel.loadSubaccounts()
+            reloadSections([.account], animated: true)
+            try? await viewModel.loadBalances()
+            reloadSections([.account, .balance], animated: true)
+            await viewModel.reloadAlertCards()
+            reloadSections([.card], animated: true)
+            try? await viewModel.loadTransactions(max: 10)
+            reloadSections([.transaction], animated: true)
+        }
     }
 
     // open wallet selector drawer
@@ -305,7 +328,7 @@ class WalletViewController: UIViewController {
         print(model)
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountViewController") as? AccountViewController {
-            let balance = AssetAmountList(model.account.satoshi ?? [:]).sorted()
+            let balance = AssetAmountList(model.account.satoshi ?? [:])
             vc.viewModel = AccountViewModel(model: model, account: model.account, cachedBalance: balance)
             vc.delegate = self
             navigationController?.pushViewController(vc, animated: true)
@@ -323,8 +346,10 @@ class WalletViewController: UIViewController {
 
     // dismiss remote alert
     func remoteAlertDismiss() {
-        viewModel.remoteAlert = nil
-        viewModel.reloadAlertCards()
+        Task {
+            viewModel.remoteAlert = nil
+            await viewModel.reloadAlertCards()
+        }
     }
 
     // open system message view
@@ -445,7 +470,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                                onAssets: {[weak self] in
                     self?.assetsScreen()
                 }, onConvert: { [weak self] in
-                    self?.viewModel.rotateBalanceDisplayMode()
+                    Task { try? await self?.viewModel.rotateBalanceDisplayMode() }
                 }, onExchange: { [weak self] in
                     self?.showDenominationExchange()
                 })
@@ -641,7 +666,7 @@ extension WalletViewController: DialogRenameViewControllerDelegate {
 extension WalletViewController: UserSettingsViewControllerDelegate, Learn2faViewControllerDelegate {
     func userLogout() {
         userWillLogout = true
-        self.presentedViewController?.dismiss(animated: true, completion: {
+        /*self.presentedViewController?.dismiss(animated: true, completion: {
             let account = self.viewModel.wm?.account
             if account?.isHW ?? false {
                 BLEViewModel.shared.dispose()
@@ -652,11 +677,11 @@ extension WalletViewController: UserSettingsViewControllerDelegate, Learn2faView
                 let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController
                 UIApplication.shared.keyWindow?.rootViewController = nav
             }
-        })
+        })*/
     }
 
     func refresh() {
-        viewModel.loadSubaccounts()
+        reload()
     }
 }
 
@@ -881,9 +906,10 @@ extension WalletViewController: DialogScanViewControllerDelegate {
 
     func didScan(value: String, index: Int?) {
         var account = viewModel.accountCellModels[sIdx].account
-        let parser = Parser(selectedAccount: account, input: value, discoverable: true)
-        parser.parse()
-            .done { [self] _ in
+        Task {
+            do {
+                let parser = Parser(selectedAccount: account, input: value, discoverable: true)
+                try await parser.parse()
                 switch parser.lightningType {
                 case .lnUrlAuth(let data):
                     ltAuthViewController(requestData: data)
@@ -905,7 +931,8 @@ extension WalletViewController: DialogScanViewControllerDelegate {
                                               transaction: tx,
                                               input: value)
                 self.sendViewController(model: sendModel)
-            }.catch { _ in DropAlert().warning(message: parser.error ?? "Invalid QR code") }
+            } catch { DropAlert().warning(message: error.localizedDescription) }
+        }
     }
 
     func ltAuthViewController(requestData: LnUrlAuthRequestData) {

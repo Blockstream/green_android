@@ -1,5 +1,5 @@
 import Foundation
-import PromiseKit
+
 import greenaddress
 
 public struct GdkNetwork: Codable, Equatable, Comparable {
@@ -58,10 +58,10 @@ public struct GdkNetwork: Codable, Equatable, Comparable {
     }
 
     public static func < (lhs: GdkNetwork, rhs: GdkNetwork) -> Bool {
-        let index: ((_ network: GdkNetwork) -> Int) = {
-            $0.liquid ? 2 : $0.lightning ? 1 : 0
-        }
-        return index(lhs) < index(rhs)
+        let rules: [NetworkSecurityCase] = [.bitcoinSS, .testnetSS, .bitcoinSS, .bitcoinMS, .lightning, .liquidSS, .testnetLiquidSS, .liquidMS, .testnetLiquidMS]
+        let lnet = NetworkSecurityCase(rawValue: lhs.network) ?? .bitcoinSS
+        let rnet = NetworkSecurityCase(rawValue: rhs.network) ?? .bitcoinSS
+        return rules.firstIndex(of: lnet) ?? 0 < rules.firstIndex(of: rnet) ?? 0
     }
 }
 

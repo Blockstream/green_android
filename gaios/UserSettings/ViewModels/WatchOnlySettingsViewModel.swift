@@ -1,7 +1,8 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 import gdk
+import greenaddress
 
 class WatchOnlySettingsViewModel {
 
@@ -39,7 +40,7 @@ class WatchOnlySettingsViewModel {
         return section == .Multisig ? multisigCellModels : singlesigCellModels
     }
 
-    func load() {
+    func load() async {
         self.multisigCellModels = []
         let bitcoinSession = wm.sessions
             .filter { ["mainnet", "testnet"].contains($0.key) }
@@ -48,48 +49,43 @@ class WatchOnlySettingsViewModel {
             .filter { ["liquid", "testnet-liquid"].contains($0.key) }
             .first?.value
         if let session = bitcoinSession, session.logged {
-            self.loadWOSession(session)
-                .done { self.multisigCellModels += [$0] }
-                .catch { err in self.error?(err.localizedDescription) }
+            if let model = try? await self.loadWOSession(session) {
+                multisigCellModels += [model]
+            }
         }
         if let session = liquidSession, session.logged {
-            self.loadWOSession(session)
-                .done { self.multisigCellModels += [$0] }
-                .catch { err in self.error?(err.localizedDescription) }
+            if let model = try? await self.loadWOSession(session) {
+                multisigCellModels += [model]
+            }
         }
         let cellHeaderPubKeys = WatchOnlySettingsCellModel(
             title: "id_extended_public_keys".localized,
             subtitle: "id_tip_you_can_use_the".localized,
             network: nil)
-        self.singlesigCellModels = [cellHeaderPubKeys]
-        Promise()
-            .then { self.loadWOExtendedPubKeys() }
-            .done { self.singlesigCellModels += $0 }
-            .catch { err in self.error?(err.localizedDescription) }
+        singlesigCellModels = [cellHeaderPubKeys]
+        let models = self.loadWOExtendedPubKeys()
+        singlesigCellModels += models
     }
 
-    func loadWOSession(_ session: SessionManager) -> Promise<WatchOnlySettingsCellModel> {
-        return Guarantee().compactMap { session }
-            .then { $0.getWatchOnlyUsername() }
-            .map { WatchOnlySettingsCellModel(
-                title: session.gdkNetwork.name,
-                subtitle: $0.isEmpty ? "id_set_up_watchonly_credentials".localized : String(format: "id_enabled_1s".localized, $0),
-                network: session.gdkNetwork.network) }
+    func loadWOSession(_ session: SessionManager) async throws -> WatchOnlySettingsCellModel {
+        let username = try await session.getWatchOnlyUsername()
+        guard let username = username else { throw GaError.GenericError()}
+        return WatchOnlySettingsCellModel(
+            title: session.gdkNetwork.name,
+            subtitle: username.isEmpty ? "id_set_up_watchonly_credentials".localized : String(format: "id_enabled_1s".localized, username),
+            network: session.gdkNetwork.network)
     }
 
-    func loadWOExtendedPubKeys() -> Promise<[WatchOnlySettingsCellModel]> {
-        let promises = WalletManager.current!.subaccounts
-            .filter { $0.gdkNetwork.electrum && !$0.gdkNetwork.liquid && !$0.hidden}
-            .compactMap { $0.session?.subaccount($0.pointer) }
-        return when(fulfilled: promises).compactMap { subaccounts in
-            return subaccounts.map {
+    func loadWOExtendedPubKeys() -> [WatchOnlySettingsCellModel] {
+        return WalletManager.current!.subaccounts
+            .filter { $0.gdkNetwork.electrum && !$0.gdkNetwork.liquid && !$0.hidden }
+            .compactMap {
                 WatchOnlySettingsCellModel(
                     title: $0.localizedName,
                     subtitle: $0.extendedPubkey ?? "",
                     network: $0.gdkNetwork.network,
                     isExtended: true)
             }
-        }
     }
 
     func loadWOOutputDescriptors() -> [WatchOnlySettingsCellModel] {

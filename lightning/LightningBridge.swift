@@ -183,8 +183,8 @@ public class LightningBridge {
         return try? breezSdk?.payLnurl(reqData: requestData, amountSats: amount, comment: comment)
     }
 
-    public func authLnUrl(requestData: LnUrlAuthRequestData) -> LnUrlCallbackStatus? {
-        return try? breezSdk?.lnurlAuth(reqData: requestData)
+    public func authLnUrl(requestData: LnUrlAuthRequestData) throws -> LnUrlCallbackStatus? {
+        return try breezSdk?.lnurlAuth(reqData: requestData)
     }
 
     public func withdrawLnurl(requestData: LnUrlWithdrawRequestData, amount: Long, description: String?) -> LnUrlCallbackStatus? {

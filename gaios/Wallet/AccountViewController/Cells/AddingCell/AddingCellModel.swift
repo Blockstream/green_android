@@ -7,7 +7,7 @@ class AddingCellModel {
 
     init() {
 
-        var lbl = "id_increase_the_security_of_your".localized
+        let lbl = "id_increase_the_security_of_your".localized
         let strs = ["id_adding_a_2fa"]
 
         let attributedText = NSMutableAttributedString.init(string: lbl)

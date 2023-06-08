@@ -1,5 +1,5 @@
 import Foundation
-import PromiseKit
+
 import UIKit
 import gdk
 import greenaddress
@@ -11,8 +11,6 @@ struct WOCellModel {
 }
 
 class WOViewModel {
-
-    let bgq = DispatchQueue.global(qos: .background)
 
     let types: [WOCellModel] = [
         WOCellModel(img: UIImage(named: "ic_key_ss")!,
@@ -39,48 +37,42 @@ class WOViewModel {
         return Account(name: name, network: network, username: "")
     }
 
-    func loginMultisig(for account: Account, password: String?) -> Promise<Void> {
+    func loginMultisig(for account: Account, password: String?) async throws {
         guard let username = account.username,
               let password = !password.isNilOrEmpty ? password : account.password else {
-            return Promise(error: GaError.GenericError("Invalid credentials"))
+            throw GaError.GenericError("Invalid credentials")
         }
         AnalyticsManager.shared.loginWalletStart()
         let wm = WalletsRepository.shared.getOrAdd(for: account)
-        return Guarantee()
-            .compactMap { Credentials.watchonlyMultisig(username: username, password: password) }
-            .then(on: bgq) { wm.loginWatchonly(credentials: $0) }
-            .map { _ in AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .watchOnly) }
+        let credentials = Credentials.watchonlyMultisig(username: username, password: password)
+        try await wm.loginWatchonly(credentials: credentials)
+        AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .watchOnly)
     }
 
-    func setupSinglesig(for account: Account, enableBio: Bool, credentials: Credentials) -> Promise<Void> {
+    func setupSinglesig(for account: Account, enableBio: Bool, credentials: Credentials) async throws {
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         let session = wm.prominentSession!
         let password = enableBio ? String.random(length: 14) : ""
-        return Guarantee()
-            .then(on: bgq) { session.connect() }
-            .compactMap { EncryptWithPinParams(pin: password, credentials: credentials) }
-            .then(on: bgq) { session.encryptWithPin($0) }
-            .compactMap(on: bgq) { encrypted in
-                if enableBio {
-                    try AuthenticationTypeHandler.addBiometry(pinData: encrypted.pinData, extraData: password, forNetwork: account.keychain)
-                } else {
-                    try AuthenticationTypeHandler.addPIN(pinData: encrypted.pinData, forNetwork: account.keychain)
-                }
-            }
+        try await session.connect()
+        let encrypt = EncryptWithPinParams(pin: password, credentials: credentials)
+        let encrypted = try await session.encryptWithPin(encrypt)
+        if enableBio {
+            try AuthenticationTypeHandler.addBiometry(pinData: encrypted.pinData, extraData: password, forNetwork: account.keychain)
+        } else {
+            try AuthenticationTypeHandler.addPIN(pinData: encrypted.pinData, forNetwork: account.keychain)
+        }
     }
 
-    func loginSinglesig(for account: Account) -> Promise<Void> {
+    func loginSinglesig(for account: Account) async throws {
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         let session = wm.prominentSession!
         let bioEnabled = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: account.keychain)
         AnalyticsManager.shared.loginWalletStart()
-        return Guarantee()
-            .then(on: bgq) { session.connect() }
-            .compactMap { try account.auth(bioEnabled ? .AuthKeyBiometric : .AuthKeyPIN) }
-            .compactMap { DecryptWithPinParams(pin: $0.plaintextBiometric ?? "", pinData: $0) }
-            .then(on: bgq) { session.decryptWithPin($0) }
-            .then(on: bgq) { wm.loginWatchonly(credentials: $0) }
-            .map { _ in AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .watchOnly) }
-            .asVoid()
+        try await session.connect()
+        let data = try account.auth(bioEnabled ? .AuthKeyBiometric : .AuthKeyPIN)
+        let decrypt = DecryptWithPinParams(pin: data.plaintextBiometric ?? "", pinData: data)
+        let credentials = try await session.decryptWithPin(decrypt)
+        try await wm.loginWatchonly(credentials: credentials)
+        AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .watchOnly)
     }
 }

@@ -1,5 +1,5 @@
 import UIKit
-import PromiseKit
+
 
 enum AccountArchiveSection: Int, CaseIterable {
     case account = 0
@@ -54,7 +54,7 @@ class AccountArchiveViewController: UIViewController {
             self?.reloadSections(sections, animated: true)
         }
         viewModel.reloadSections = reloadSections
-        viewModel.loadSubaccounts()
+        Task { try? await viewModel.loadSubaccounts() }
     }
 
     func presentUnarchiveMenu(frame: CGRect, index: Int) {
@@ -149,7 +149,7 @@ extension AccountArchiveViewController: PopoverMenuUnarchiveDelegate {
         switch option {
         case .unarchive:
             let subaccount = viewModel.subaccounts[index]
-            viewModel.unarchiveSubaccount(subaccount)
+            Task { try? await viewModel.unarchiveSubaccount(subaccount) }
         }
     }
 }

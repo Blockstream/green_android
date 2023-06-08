@@ -1,5 +1,5 @@
 import Foundation
-import PromiseKit
+
 
 public class WalletItem: Codable, Equatable, Comparable, Hashable {
 

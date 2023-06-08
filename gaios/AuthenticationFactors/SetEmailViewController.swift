@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 import gdk
 
 class SetEmailViewController: KeyboardViewController {
@@ -68,28 +68,24 @@ class SetEmailViewController: KeyboardViewController {
     @objc func click(_ sender: UIButton) {
         let bgq = DispatchQueue.global(qos: .background)
         guard let text = textField.text else { return }
-        firstly {
-            self.startAnimating()
-            return Guarantee()
-        }.compactMap {
-            TwoFactorConfigItem(enabled: self.isSetRecovery ? false : true, confirmed: true, data: text)
-        }.then(on: bgq) { config in
-            self.session.changeSettingsTwoFactor(method: .email, config: config)
-        }.then(on: bgq) { _ in
-            self.session.loadTwoFactorConfig()
-        }.ensure {
-            self.stopAnimating()
-        }.done { _ in
-            self.navigationController?.popViewController(animated: true)
-        }.catch { error in
-            if let twofaError = error as? TwoFactorCallError {
-                switch twofaError {
-                case .failure(let localizedDescription), .cancel(let localizedDescription):
-                    DropAlert().error(message: localizedDescription)
+        self.startAnimating()
+        Task {
+            do {
+                let config = TwoFactorConfigItem(enabled: self.isSetRecovery ? false : true, confirmed: true, data: text)
+                try await session.changeSettingsTwoFactor(method: .email, config: config)
+                try await session.loadTwoFactorConfig()
+                self.navigationController?.popViewController(animated: true)
+            } catch {
+                if let twofaError = error as? TwoFactorCallError {
+                    switch twofaError {
+                    case .failure(let localizedDescription), .cancel(let localizedDescription):
+                        DropAlert().error(message: localizedDescription)
+                    }
+                } else {
+                    DropAlert().error(message: error.localizedDescription)
                 }
-            } else {
-                DropAlert().error(message: error.localizedDescription)
             }
+            self.stopAnimating()
         }
     }
 

@@ -1,4 +1,4 @@
-public enum AccountType: String, CaseIterable, Codable, Comparable {
+public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable {
     /// multiSig
     case standard = "2of2"
     case amp = "2of2_no_recovery"
@@ -70,13 +70,7 @@ public enum AccountType: String, CaseIterable, Codable, Comparable {
     }
 
     public static func < (a: AccountType, b: AccountType) -> Bool {
-        if a == .legacy || a == .standard {
-            return true
-        } else if b == .legacy || b == .standard {
-            return false
-        } else {
-           return a.rawValue < b.rawValue
-        }
+        return a.rawValue < b.rawValue
     }
 }
 

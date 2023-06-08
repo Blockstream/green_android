@@ -1,6 +1,6 @@
 import Foundation
 import BreezSDK
-import PromiseKit
+
 import gdk
 
 struct CreateTransaction {
@@ -64,14 +64,14 @@ class Parser {
         "id_insufficient_funds",
         "id_invalid_payment_request_assetid",
         "id_invalid_asset_id" ]
-
+    
     init(selectedAccount: WalletItem, input: String, discoverable: Bool) {
         self.selectedAccount = selectedAccount
         self.input = input
         self.discoverable = discoverable
     }
-
-    private func parseLightning() {
+    
+    private func parseLightning() async throws {
         if discoverable || selectedAccount.gdkNetwork.lightning {
             if let session = lightningSession,
                let type = session.parseLightningInputType(input) {
@@ -86,37 +86,32 @@ class Parser {
             }
         }
     }
-
-    private func parseGdk() -> Promise<Void> {
-        if self.selectedAccount.gdkNetwork.lightning {
-            return Promise().asVoid()
-        }
-        return Guarantee()
-            .compactMap { self.selectedAccount.session }
-            .then { $0.parseTxInput(self.input, satoshi: nil, assetId: nil) }
-            .map { res in
-                if res.isValid {
-                    self.createTx = CreateTransaction(addressee: res.addressees.first)
-                } else if let error = res.errors.first {
-                    if Parser.IgnorableErrors.contains(error) {
-                        let addressee = Addressee.from(address: self.input, satoshi: nil, assetId: nil)
-                        self.createTx = CreateTransaction(addressee: addressee)
-                    } else {
-                        self.createTx = CreateTransaction(error: error)
-                    }
-                    self.error = error
-                } else {
-                    self.createTx = CreateTransaction(error: "id_invalid_address".localized)
-                    self.error = "id_invalid_address".localized
-                }
+    
+    private func parseGdk() async throws {
+        if selectedAccount.gdkNetwork.lightning { return }
+        guard let session = selectedAccount.session else { return }
+        let res = try await session.parseTxInput(self.input, satoshi: nil, assetId: nil)
+        if res.isValid {
+            createTx = CreateTransaction(addressee: res.addressees.first)
+        } else if let error = res.errors.first {
+            if Parser.IgnorableErrors.contains(error) {
+                let addressee = Addressee.from(address: self.input, satoshi: nil, assetId: nil)
+                self.createTx = CreateTransaction(addressee: addressee)
+            } else {
+                self.createTx = CreateTransaction(error: error)
             }
+            self.error = error
+        } else {
+            self.createTx = CreateTransaction(error: "id_invalid_address".localized)
+            self.error = "id_invalid_address".localized
+        }
     }
 
-    func parse() -> Promise<Void> {
-        return Guarantee()
-            .compactMap { self.parseLightning() }
-            .thenIf(self.lightningType == nil) { self.parseGdk() }
-            .asVoid()
+    func parse() async throws {
+        try await parseLightning()
+        if lightningType == nil {
+            try await self.parseGdk()
+        }
     }
     
     var txType: TxType {

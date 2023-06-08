@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 import gdk
 
 enum AmpEducationalMode {
@@ -12,9 +12,8 @@ enum AmpEducationalMode {
 class AccountViewModel {
 
     private var wm: WalletManager { WalletManager.current! }
-    private var cachedBalance: [(String, Int64)]
-    private var cachedTransactions = [Transaction]()
-    private let bgq = DispatchQueue.global(qos: .background)
+    private var cachedBalance: AssetAmountList
+    var cachedTransactions = [Transaction]()
     var account: WalletItem!
     var page = 0
     var fetchingTxs = false
@@ -28,13 +27,7 @@ class AccountViewModel {
     }
 
     var satoshi: Int64 {
-        cachedBalance.first(where: { $0.0 == account.gdkNetwork.getFeeAsset() })?.1 ?? account.btc ?? 0
-    }
-
-    var accountCellModels: [AccountCellModel] {
-        didSet {
-            reloadSections?([AccountSection.account], true)
-        }
+        cachedBalance.amounts.first(where: { $0.0 == account.gdkNetwork.getFeeAsset() })?.1 ?? account.btc ?? 0
     }
 
     var inboundCellModels: [LTInboundCellModel] {
@@ -67,7 +60,7 @@ class AccountViewModel {
             return .hidden
         } else {
             let satoshi = account.satoshi?[account.gdkNetwork.getFeeAsset()] ?? 0
-            let assets = AssetAmountList(self.account.satoshi ?? [:]).sorted()
+            let assets = cachedBalance.amounts
             if satoshi > 0 || assets.count > 1 {
                 return .header
             } else {
@@ -76,64 +69,52 @@ class AccountViewModel {
         }
     }
 
-    var txCellModels = [TransactionCellModel]() {
-        didSet {
-            reloadSections?( [AccountSection.transaction], false )
-        }
-    }
+    var accountCellModels: [AccountCellModel]
+    var txCellModels = [TransactionCellModel]()
+    var assetCellModels = [WalletAssetCellModel]()
 
-    var assetCellModels = [WalletAssetCellModel]() {
-        didSet {
-            reloadSections?( [AccountSection.assets], true )
-        }
-    }
-
-    /// reload by section with animation
-    var reloadSections: (([AccountSection], Bool) -> Void)?
-
-    init(model: AccountCellModel, account: WalletItem, cachedBalance: [(String, Int64)]) {
+    init(model: AccountCellModel, account: WalletItem, cachedBalance: AssetAmountList) {
         self.accountCellModels = [model]
         self.account = account
         self.cachedBalance = cachedBalance
     }
 
-    func getTransactions(restart: Bool = true, max: Int? = nil) {
+    
+    func getTransactions(restart: Bool = true, max: Int? = nil) async throws {
         if fetchingTxs {
             return
         }
         fetchingTxs = true
-        Guarantee()
-            .then(on: bgq) { self.wm.transactions(subaccounts: [self.account], first: (restart == true) ? 0 : self.cachedTransactions.count) }
-            .done { txs in
-                if restart {
-                    self.page = 0
-                    self.cachedTransactions = []
-                    self.txCellModels = []
-                }
-                print("-----------> \(self.page) \(txs.count)")
-                if txs.count > 0 {
-                    self.page += 1
-                    self.cachedTransactions += txs
-                    self.txCellModels += txs
-                        .map { ($0, self.getNodeBlockHeight(subaccountHash: $0.subaccount!)) }
-                        .map { TransactionCellModel(tx: $0.0, blockHeight: $0.1) }
-                }
-            }.ensure {
-                self.fetchingTxs = false
-                if self.txCellModels.count == 0 {
-                    self.reloadSections?( [AccountSection.transaction], true )
-                }
-            }.catch { err in print(err) }
+        do {
+            let txs = try await wm.transactions(subaccounts: [account], first: (restart == true) ? 0 : cachedTransactions.count)
+            if restart {
+                page = 0
+                cachedTransactions = []
+                txCellModels = []
+            }
+            print("-----------> \(self.page) \(txs.count)")
+            if txs.count > 0 {
+                page += 1
+                cachedTransactions += txs
+                txCellModels += txs
+                    .map { ($0, self.getNodeBlockHeight(subaccountHash: $0.subaccount!)) }
+                    .map { TransactionCellModel(tx: $0.0, blockHeight: $0.1) }
+            }
+            
+            self.cachedTransactions = Array(txs.sorted(by: >).prefix(max ?? txs.count ) )
+            self.txCellModels = cachedTransactions
+                .map { ($0, getNodeBlockHeight(subaccountHash: $0.subaccount!)) }
+                .map { TransactionCellModel(tx: $0.0, blockHeight: $0.1) }
+        } catch { print(error) }
+        fetchingTxs = false
     }
 
-    func getBalance() {
-        Guarantee()
-            .then(on: bgq) { self.wm.balances(subaccounts: [self.account]) }
-            .done { _ in
-                self.cachedBalance = AssetAmountList(self.account.satoshi ?? [:]).sorted()
-                self.accountCellModels = [AccountCellModel(subaccount: self.account, satoshi: self.satoshi)]
-                self.assetCellModels = self.cachedBalance.map { WalletAssetCellModel(assetId: $0.0, satoshi: $0.1) }
-            }.catch { err in print(err.localizedDescription)}
+    func getBalance() async throws {
+        if let balances = try? await wm.balances(subaccounts: [account]) {
+            cachedBalance = AssetAmountList(balances)
+        }
+        accountCellModels = [AccountCellModel(subaccount: account, satoshi: satoshi)]
+        assetCellModels = cachedBalance.amounts.map { WalletAssetCellModel(assetId: $0.0, satoshi: $0.1) }
     }
 
     func getNodeBlockHeight(subaccountHash: Int) -> UInt32 {
@@ -145,65 +126,36 @@ class AccountViewModel {
         return 0
     }
 
-    func archiveSubaccount() -> Promise<Void> {
+    func archiveSubaccount() async throws {
         guard let session = wm.sessions[account.gdkNetwork.network] else {
-            return Promise().asVoid()
+            return
         }
-        return Guarantee()
-            .then(on: bgq) { session.updateSubaccount(subaccount: self.account.pointer, hidden: true) }
-            .then(on: bgq) { self.wm.subaccount(account: self.account) }
-            .compactMap { self.account = $0 }
-            .compactMap { self.accountCellModels = [AccountCellModel(subaccount: self.account, satoshi: self.satoshi)] }
-            .asVoid()
+        try await session.updateSubaccount(subaccount: account.pointer, hidden: true)
+        account = try await wm.subaccount(account: account)
+        accountCellModels = [AccountCellModel(subaccount: account, satoshi: satoshi)]
     }
 
-    func removeSubaccount() -> Promise<Void> {
+    func removeSubaccount() async throws {
         guard let prominentSession = wm.prominentSession,
                 let session = wm.sessions[account.gdkNetwork.network] else {
-            return Promise().asVoid()
+            return
         }
-        return Guarantee()
-            .then(on: bgq) { prominentSession.getCredentials(password: "") }
-            .compactMap(on: bgq) { session.walletIdentifier(credentials: $0) }
-            .compactMap(on: bgq) {
-                session.disconnect()
-                session.removeDatadir(walletHashId: $0.walletHashId )
-                LightningRepository.shared.remove(for: $0.walletHashId)
-            }.then(on: bgq) { self.wm.subaccounts() }
-            .asVoid()
+        if let credentials = try await prominentSession.getCredentials(password: ""),
+           let walletId = session.walletIdentifier(credentials: credentials)
+        {
+            try await session.disconnect()
+            session.removeDatadir(walletHashId: walletId.walletHashId )
+            LightningRepository.shared.remove(for: walletId.walletHashId)
+            _ = try await wm.subaccounts()
+        }
     }
 
-    func renameSubaccount(name: String) -> Promise<Void> {
+    func renameSubaccount(name: String) async throws {
         guard let session = wm.sessions[account.gdkNetwork.network] else {
-            return Promise().asVoid()
+            return
         }
-        return Guarantee()
-            .then(on: bgq) { session.renameSubaccount(subaccount: self.account.pointer, newName: name) }
-            .then(on: bgq) { self.wm.subaccount(account: self.account) }
-            .compactMap { self.account = $0 }
-            .compactMap { self.accountCellModels = [AccountCellModel(subaccount: self.account, satoshi: self.satoshi)] }
-            .asVoid()
-    }
-
-    func handleEvent(_ notification: Notification) {
-        let eventType = EventType(rawValue: notification.name.rawValue)
-        switch eventType {
-        case .Transaction, .InvoicePaid, .PaymentFailed, .PaymentSucceed:
-            getBalance()
-            getTransactions(restart: true, max: cachedTransactions.count)
-        case .Block:
-            if cachedTransactions.filter({ $0.blockHeight == 0 }).first != nil {
-                getBalance()
-            }
-        case .Network:
-            guard let dict = notification.userInfo as NSDictionary? else { return }
-            guard let connected = dict["connected"] as? Bool else { return }
-            guard let loginRequired = dict["login_required"] as? Bool else { return }
-            if connected == true && loginRequired == false {
-                getBalance()
-            }
-        default:
-            break
-        }
+        try await session.renameSubaccount(subaccount: account.pointer, newName: name)
+        account = try await wm.subaccount(account: account)
+        accountCellModels = [AccountCellModel(subaccount: account, satoshi: satoshi)]
     }
 }

@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 import gdk
 
 class TwoFactorLimitViewController: KeyboardViewController {
@@ -104,24 +104,22 @@ class TwoFactorLimitViewController: KeyboardViewController {
         guard amount != nil else { return }
         let details = isFiat ? ["is_fiat": isFiat, "fiat": amount!] : ["is_fiat": isFiat, denomination.rawValue: amount!]
         let bgq = DispatchQueue.global(qos: .background)
-        firstly {
-            self.startAnimating()
-            return Guarantee()
-        }.then(on: bgq) {
-            self.session.setTwoFactorLimit(details: details)
-        }.ensure {
-            self.stopAnimating()
-        }.done { _ in
-            self.navigationController?.popViewController(animated: true)
-        }.catch { error in
-            if let twofaError = error as? TwoFactorCallError {
-                switch twofaError {
-                case .failure(let localizedDescription), .cancel(let localizedDescription):
-                    DropAlert().error(message: localizedDescription)
+        self.startAnimating()
+        Task {
+            do {
+                try await self.session.setTwoFactorLimit(details: details)
+                self.navigationController?.popViewController(animated: true)
+            } catch {
+                if let twofaError = error as? TwoFactorCallError {
+                    switch twofaError {
+                    case .failure(let localizedDescription), .cancel(let localizedDescription):
+                        DropAlert().error(message: localizedDescription)
+                    }
+                } else {
+                    DropAlert().error(message: error.localizedDescription)
                 }
-            } else {
-                DropAlert().error(message: error.localizedDescription)
             }
+            self.stopAnimating()
         }
     }
 

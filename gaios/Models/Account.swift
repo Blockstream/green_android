@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 import gdk
 
 struct Account: Codable, Equatable {
@@ -157,21 +157,17 @@ struct Account: Codable, Equatable {
         }
     }
     
-    func addBiometrics(session: SessionManager, credentials: Credentials) -> Promise<Void> {
+    func addBiometrics(session: SessionManager, credentials: Credentials) async throws {
         let password = String.random(length: 14)
-        let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee()
-            .compactMap { EncryptWithPinParams(pin: password, credentials: credentials) }
-            .then(on: bgq) { session.encryptWithPin($0) }
-            .compactMap(on: bgq) { try AuthenticationTypeHandler.addBiometry(pinData: $0.pinData, extraData: password, forNetwork: keychain) }
+        let params = EncryptWithPinParams(pin: password, credentials: credentials)
+        let encrypted = try await session.encryptWithPin(params)
+        try AuthenticationTypeHandler.addBiometry(pinData: encrypted.pinData, extraData: password, forNetwork: keychain)
     }
 
-    func addPin(session: SessionManager, pin: String, mnemonic: String) -> Promise<Void> {
-        let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee()
-            .compactMap { EncryptWithPinParams(pin: pin, credentials: Credentials(mnemonic: mnemonic)) }
-            .then(on: bgq) { session.encryptWithPin($0) }
-            .map(on: bgq) { try AuthenticationTypeHandler.addPIN(pinData: $0.pinData, forNetwork: keychain) }
+    func addPin(session: SessionManager, pin: String, mnemonic: String) async throws {
+        let params = EncryptWithPinParams(pin: pin, credentials: Credentials(mnemonic: mnemonic))
+        let encrypted = try await session.encryptWithPin(params)
+        try AuthenticationTypeHandler.addPIN(pinData: encrypted.pinData, forNetwork: keychain)
     }
 
     var gdkNetwork: GdkNetwork { networkType.gdkNetwork }

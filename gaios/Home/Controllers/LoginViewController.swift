@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 import gdk
 import greenaddress
 
@@ -209,37 +209,35 @@ class LoginViewController: UIViewController {
     }
 
     fileprivate func decryptMnemonic(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) {
-        let bgq = DispatchQueue.global(qos: .background)
-        let session = SessionManager(account.gdkNetwork)
-        self.session = session
-        firstly {
-            self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
-            return Guarantee()
-        }.then(on: bgq) {
-            session.connect()
-        }.compactMap {
-            try self.account.auth(usingAuth)
-        }.compactMap {
-            DecryptWithPinParams(pin: withPIN ?? "", pinData: $0)
-        }.then(on: bgq) {
-            session.decryptWithPin($0)
-        }.ensure {
-            self.stopLoader()
-        }.done { credentials in
-            let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "ShowMnemonicsViewController") as? ShowMnemonicsViewController {
-                vc.credentials = credentials
-                self.navigationController?.pushViewController(vc, animated: true)
+        self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
+        Task(priority: .background) {
+            do {
+                let session = SessionManager(account.gdkNetwork)
+                self.session = session
+                try await session.connect()
+                let pinData = try self.account.auth(usingAuth)
+                let decrypt = DecryptWithPinParams(pin: withPIN ?? "", pinData: pinData)
+                let credentials = try await session.decryptWithPin(decrypt)
+                successDecrypt(credentials)
+            } catch {
+                failure(error: error, enableFailingCounter: false)
             }
-            self.pinCode = ""
-            self.reload()
-        }.catch { err in
-            self.errorLogin(error: err, enableFailingCounter: false)
         }
+    }
+    
+    @MainActor
+    fileprivate func successDecrypt(_ credentials: Credentials) {
+        self.stopLoader()
+        let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "ShowMnemonicsViewController") as? ShowMnemonicsViewController {
+            vc.credentials = credentials
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
+        self.pinCode = ""
+        self.reload()
     }
 
     fileprivate func loginWithPin(usingAuth: AuthenticationTypeHandler.AuthType, withPIN: String?, bip39passphrase: String?) {
-        let bgq = DispatchQueue.global(qos: .background)
         var currentAccount = account!
         if !account.isEphemeral && !bip39passphrase.isNilOrEmpty {
             currentAccount = Account(name: account.name, network: account.networkType, keychain: account.keychain)
@@ -248,34 +246,36 @@ class LoginViewController: UIViewController {
             currentAccount.xpubHashId = account.xpubHashId
         }
         AnalyticsManager.shared.loginWalletStart()
-        let wm = WalletsRepository.shared.getOrAdd(for: currentAccount)
-        self.session = wm.prominentSession
-        firstly {
-            return Guarantee()
-        }.compactMap {
-            try self.account.auth(usingAuth)
-        }.get { _ in
-            self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
-        }.then(on: bgq) { pinData -> Promise<Void> in
-            let pin = withPIN ?? pinData.plaintextBiometric ?? ""
-            return wm.loginWithPin(pin: pin, pinData: pinData, bip39passphrase: bip39passphrase)
-        }.get { _ in
-            self.startLoader(message: NSLocalizedString("id_loading_wallet", comment: ""))
-        }.done { _ in
-            if withPIN != nil {
-                self.account.attempts = 0
+        self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
+        Task(priority: .background) {
+            do {
+                let wm = WalletsRepository.shared.getOrAdd(for: currentAccount)
+                self.session = wm.prominentSession
+                let pinData = try self.account.auth(usingAuth)
+                let pin = withPIN ?? pinData.plaintextBiometric ?? ""
+                _ = try await wm.loginWithPin(pin: pin, pinData: pinData, bip39passphrase: bip39passphrase)
+                success(withPIN: withPIN != nil, account: account)
+            } catch {
+                failure(error: error, enableFailingCounter: true)
             }
-            AnalyticsManager.shared.loginWalletEnd(account: currentAccount,
-                                                   loginType: withPIN != nil ? .pin : .biometrics)
-            AnalyticsManager.shared.activeWalletStart()
-            _ = AccountNavigator.goLogged(account: currentAccount, nv: self.navigationController)
-            self.stopLoader()
-        }.catch { error in
-            self.errorLogin(error: error, enableFailingCounter: true)
         }
     }
 
-    func errorLogin(error: Error, enableFailingCounter: Bool) {
+    @MainActor
+    func success(withPIN: Bool, account: Account) {
+        self.startLoader(message: NSLocalizedString("id_loading_wallet", comment: ""))
+        if withPIN {
+            self.account.attempts = 0
+        }
+        AnalyticsManager.shared.loginWalletEnd(account: account,
+                                               loginType: withPIN ? .pin : .biometrics)
+        AnalyticsManager.shared.activeWalletStart()
+        _ = AccountNavigator.goLogged(account: account, nv: self.navigationController)
+        self.stopLoader()
+    }
+    
+    @MainActor
+    func failure(error: Error, enableFailingCounter: Bool) {
         var prettyError = "id_login_failed"
         self.stopLoader()
         switch error {

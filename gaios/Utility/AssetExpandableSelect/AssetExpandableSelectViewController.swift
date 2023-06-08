@@ -1,5 +1,5 @@
 import UIKit
-import PromiseKit
+
 import gdk
 
 protocol AssetExpandableSelectViewControllerDelegate: AnyObject {
@@ -178,31 +178,35 @@ extension AssetExpandableSelectViewController: UITableViewDelegate, UITableViewD
             tableView.reloadSections(IndexSet([section]), with: .fade)
         } else {
             if viewModel.selectedSection != -1 {
-                let old = viewModel.selectedSection
-                viewModel.selectedSection = -1
-                tableView.reloadSections(IndexSet([old]), with: .fade)
-
-                viewModel.selectedSection = section
-                let cnt = viewModel.assetSelectCellModelsFilter.count
-                if cnt == section && viewModel.enableAnyAsset {
-                    viewModel.loadAccountsForAsset(nil)
-                } else {
-                    if let asset = viewModel.assetSelectCellModelsFilter[section].asset?.assetId {
-                        viewModel.loadAccountsForAsset(asset)
+                Task {
+                    let old = viewModel.selectedSection
+                    viewModel.selectedSection = -1
+                    tableView.reloadSections(IndexSet([old]), with: .fade)
+                    
+                    viewModel.selectedSection = section
+                    let cnt = viewModel.assetSelectCellModelsFilter.count
+                    if cnt == section && viewModel.enableAnyAsset {
+                        viewModel.loadAccountsForAsset(nil)
+                    } else {
+                        if let asset = viewModel.assetSelectCellModelsFilter[section].asset?.assetId {
+                            viewModel.loadAccountsForAsset(asset)
+                        }
                     }
+                    tableView.reloadSections(IndexSet([section]), with: .fade)
                 }
-                tableView.reloadSections(IndexSet([section]), with: .fade)
             } else {
-                viewModel.selectedSection = section
-                let cnt = viewModel.assetSelectCellModelsFilter.count
-                if cnt == section && viewModel.enableAnyAsset {
-                    viewModel.loadAccountsForAsset(nil)
-                } else {
-                    if let asset = viewModel.assetSelectCellModelsFilter[section].asset?.assetId {
-                        viewModel.loadAccountsForAsset(asset)
+                Task {
+                    viewModel.selectedSection = section
+                    let cnt = viewModel.assetSelectCellModelsFilter.count
+                    if cnt == section && viewModel.enableAnyAsset {
+                        viewModel.loadAccountsForAsset(nil)
+                    } else {
+                        if let asset = viewModel.assetSelectCellModelsFilter[section].asset?.assetId {
+                            viewModel.loadAccountsForAsset(asset)
+                        }
                     }
+                    tableView.reloadSections(IndexSet([section]), with: .fade)
                 }
-                tableView.reloadSections(IndexSet([section]), with: .fade)
             }
         }
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {

@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 import RxSwift
 
 public protocol HWProtocol {

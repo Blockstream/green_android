@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import gdk
+import Combine
 
 struct RecipientCellModel {
 
@@ -18,11 +19,15 @@ struct RecipientCellModel {
     }
 
     var asset: AssetInfo? {
-        WalletManager.current?.registry.info(for: assetId ?? "")
+        get async throws {
+            await WalletManager.current?.registry.info(for: assetId ?? "")
+        }
     }
 
     var assetImage: UIImage? {
-        WalletManager.current?.registry.image(for: assetId ?? "")
+        get async throws {
+            await WalletManager.current?.registry.image(for: assetId ?? "")
+        }
     }
 
     func isBipAddress() -> Bool {

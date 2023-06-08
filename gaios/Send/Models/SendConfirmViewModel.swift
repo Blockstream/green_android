@@ -1,9 +1,9 @@
 import Foundation
-import PromiseKit
+
 import gdk
 
 class SendConfirmViewModel {
-
+    
     var wm: WalletManager? { WalletManager.current }
     var account: WalletItem
     var tx: Transaction
@@ -18,20 +18,18 @@ class SendConfirmViewModel {
         self.addresseeCellModels = [AddresseeCellModel(tx: tx, index: 0)]
         self.remoteAlert = RemoteAlertManager.shared.alerts(screen: .sendConfirm, networks: wm?.activeNetworks ?? []).first
     }
-
-    func send() -> Promise<Void> {
-        let bgq = session.bgq
-        return Guarantee()
-            .compactMap(on: bgq) { self.tx.subaccountItem?.gdkNetwork.liquid ?? false }
-            .then(on: bgq) { $0 ? self.session.blindTransaction(tx: self.tx) : Promise.value(self.tx) }
-            .then(on: bgq) { self.session.signTransaction(tx: $0) }
-            .then(on: bgq) { tx -> Promise<Void> in
-                if self.tx.isSweep {
-                    return self.session.broadcastTransaction(txHex: tx.transaction ?? "")
-                } else {
-                    return self.session.sendTransaction(tx: tx)
-                }
-            }
+    
+    func send() async throws {
+        let liquid = tx.subaccountItem?.gdkNetwork.liquid
+        if liquid ?? false {
+            tx = try await session.blindTransaction(tx: tx)
+        }
+        try await tx = session.signTransaction(tx: tx)
+        if tx.isSweep {
+            return try await session.broadcastTransaction(txHex: tx.transaction ?? "")
+        } else {
+            return try await session.sendTransaction(tx: tx)
+        }
     }
 
     func nodeId() -> String? {

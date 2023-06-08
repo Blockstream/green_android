@@ -42,7 +42,7 @@ class AccountNavigator {
     }
 
     static func goLogout(account: Account, nv: UINavigationController?) -> UINavigationController {
-        WalletsRepository.shared.get(for: account.id)?.disconnect()
+        //WalletsRepository.shared.get(for: account.id)?.disconnect()
         let appDelegate = UIApplication.shared.delegate
         let nv = goLogin(account: account, nv: nv)
         appDelegate?.window??.rootViewController = nv

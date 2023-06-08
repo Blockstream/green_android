@@ -1,11 +1,11 @@
 import Foundation
 import UIKit
-import PromiseKit
 import gdk
 import greenaddress
 import hw
 import BreezSDK
 import lightning
+import RxSwift
 
 enum ReceiveType: Int, CaseIterable {
     case address
@@ -40,32 +40,20 @@ class ReceiveViewModel {
         return account.localizedName
     }
 
-    func newAddress() -> Promise<Void> {
+    func newAddress() async throws {
         switch type {
         case .address:
             address = nil
-            return Guarantee()
-                .compactMap { self.wm.sessions[self.account.gdkNetwork.network] }
-                .then(on: bgq) { $0.getReceiveAddress(subaccount: self.account.pointer) }
-                .compactMap { self.address = $0 }
-                .asVoid()
+            let session = self.wm.sessions[account.gdkNetwork.network]
+            address = try await session?.getReceiveAddress(subaccount: account.pointer)
         case .bolt11:
             invoice = nil
             if satoshi == nil {
-                return Promise().asVoid()
+                return
             }
-            return Guarantee()
-                .compactMap { self.wm.lightningSession }
-                .compactMap(on: bgq) { try $0.createInvoice(satoshi: UInt64(self.satoshi ?? 0), description: self.description ?? "") }
-                .compactMap { self.invoice = $0 }
-                .asVoid()
+            invoice = try await wm.lightningSession?.createInvoice(satoshi: UInt64(satoshi ?? 0), description: description ?? "")
         case .swap:
-            swap = nil
-            return Guarantee()
-                .compactMap { self.wm.lightningSession?.lightBridge }
-                .compactMap(on: bgq) { $0.receiveOnchain() }
-                .compactMap { self.swap = $0 }
-                .asVoid()
+            swap = try await wm.lightningSession?.lightBridge?.receiveOnchain()
         }
     }
 
@@ -74,15 +62,46 @@ class ReceiveViewModel {
         return session?.validBip21Uri(uri: addr) ?? false
     }
 
-    func validateHw() -> Promise<Bool> {
+    func validateHw() async throws -> Bool {
         let hw: HWProtocol = wm.account.isLedger ? Ledger.shared : Jade.shared
         let chain = account.gdkNetwork.chain
         guard let addr = address else {
-            return Promise() { $0.reject(GaError.GenericError()) }
+            throw GaError.GenericError()
         }
-        return Guarantee()
-            .then(on: bgq) { Address.validate(with: self.account, hw: hw, addr: addr, network: chain) }
-            .compactMap { return self.address?.address == $0 }
+        let validated = try await validate(with: self.account, hw: hw, addr: addr, network: chain)
+        return validated == addr.address
+    }
+
+    public func validate(with wallet: WalletItem, hw: HWProtocol, addr: Address, network: String) async throws -> String {
+        return try await withCheckedThrowingContinuation  { continuation in
+            newReceiveAddress(with: wallet, hw: hw, addr: addr, network: network) { result in
+                switch result {
+                case .success(let data):
+                    continuation.resume(returning: data)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
+    func newReceiveAddress(with wallet: WalletItem, hw: HWProtocol, addr: Address, network: String,
+                           _ completion: @escaping (Result<String, Error>) -> Void) {
+        let network = wallet.gdkNetwork
+        _ = hw.newReceiveAddress(chain: network.chain,
+                                 mainnet: network.mainnet,
+                                 multisig: !network.electrum,
+                                 chaincode: wallet.recoveryChainCode,
+                                 recoveryPubKey: wallet.recoveryPubKey,
+                                 walletPointer: wallet.pointer,
+                                 walletType: wallet.type.rawValue,
+                                 path: addr.userPath ?? [],
+                                 csvBlocks: addr.subtype ?? 0)
+        .subscribe(onNext: { data in
+            completion(.success(data))
+        }, onError: { err in
+            completion(.failure(err))
+        })
     }
 
     func addressToUri(address: String, satoshi: Int64) -> String {
@@ -160,5 +179,36 @@ class ReceiveViewModel {
 
     var addressCellModel: ReceiveAddressCellModel {
         return ReceiveAddressCellModel(text: text, tyoe: type)
+    }
+
+    func getAssetSelectViewModel() -> AssetSelectViewModel {
+        let isLiquid = account.gdkNetwork.liquid
+        let showAmp = accounts.filter { $0.type == .amp }.count > 0
+        let showLiquid = accounts.filter { $0.gdkNetwork.liquid }.count > 0
+        let showBtc = accounts.filter { !$0.gdkNetwork.liquid }.count > 0
+        let assets = WalletManager.current?.registry.all
+            .filter {
+                (showAmp && $0.amp ?? false) ||
+                (showLiquid && $0.assetId != AssetInfo.btcId) ||
+                (showBtc && $0.assetId == AssetInfo.btcId)
+            }
+        let list = AssetAmountList.from(assetIds: assets?.map { $0.assetId } ?? [])
+        return AssetSelectViewModel(assets: list, enableAnyAsset: isLiquid)
+    }
+
+    func getAssetExpandableSelectViewModel() -> AssetExpandableSelectViewModel {
+        let isWO = AccountsRepository.shared.current?.isWatchonly ?? false
+        let isLiquid = account.gdkNetwork.liquid
+        var assets = WalletManager.current?.registry.all ?? []
+        if isWO {
+            let showBtc = !(AccountsRepository.shared.current?.gdkNetwork.liquid ?? false)
+            let showLiquid = (AccountsRepository.shared.current?.gdkNetwork.liquid ?? false)
+            assets = assets.filter {
+                (showLiquid && $0.assetId != AssetInfo.btcId) ||
+                (showBtc && $0.assetId == AssetInfo.btcId)
+            }
+        }
+        let list = AssetAmountList.from(assetIds: assets.map { $0.assetId })
+        return AssetExpandableSelectViewModel(assets: list, enableAnyAsset: isLiquid, onlyFunded: false)
     }
 }

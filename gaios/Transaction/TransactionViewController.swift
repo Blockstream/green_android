@@ -1,5 +1,5 @@
 import UIKit
-import PromiseKit
+
 import gdk
 
 enum TransactionSection: Int, CaseIterable {
@@ -22,6 +22,7 @@ class TransactionViewController: UIViewController {
 
     var wallet: WalletItem!
     var transaction: Transaction!
+    var assetAmountList: AssetAmountList!
 
     var isWatchonly: Bool {
         WalletManager.current?.account.isWatchonly ?? false
@@ -218,10 +219,8 @@ class TransactionViewController: UIViewController {
     }
 
     func refreshTransaction(_ notification: Notification) {
-        Guarantee().done { [weak self] _ in
-            DispatchQueue.main.async {
-                self?.tableView.reloadData {}
-            }
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
         }
     }
 
@@ -234,9 +233,9 @@ class TransactionViewController: UIViewController {
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
 
-    func getFeeRate() -> UInt64 {
+    func getFeeRate() async -> UInt64 {
         var fee: UInt64 = self.transaction.feeRate
-        if let estimates = wallet.session?.getFeeEstimates(), estimates.count > 2 {
+        if let estimates = try? await wallet.session?.getFeeEstimates(), estimates.count > 2 {
             fee = estimates[3]
         }
         return fee
@@ -245,18 +244,13 @@ class TransactionViewController: UIViewController {
     func increaseFeeTapped() {
         if self.cantBumpFees { return }
         guard let session = wallet.session else { return }
-        firstly {
-            return Guarantee()
-        }.then(on: bgq) {
-            session.getUnspentOutputs(subaccount: self.wallet?.pointer ?? 0, numConfs: 1)
-        }.compactMap { unspentOutputs in
-            return ["previous_transaction": self.transaction.details,
-                    "fee_rate": self.getFeeRate() + 10,
-                    "subaccount": self.wallet.pointer,
-                    "utxos": unspentOutputs]
-        }.then(on: bgq) { details in
-            session.createTransaction(tx: Transaction(details))
-        }.done { tx in
+        Task {
+            let unspentOutputs = try? await session.getUnspentOutputs(subaccount: self.wallet?.pointer ?? 0, numConfs: 1)
+            let details = ["previous_transaction": self.transaction.details,
+                           "fee_rate": await self.getFeeRate() + 10,
+                           "subaccount": self.wallet.pointer,
+                           "utxos": unspentOutputs]
+            let tx = try? await session.createTransaction(tx: Transaction(details))
             let storyboard = UIStoryboard(name: "Send", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
                 vc.viewModel = SendViewModel(account: self.wallet,
@@ -267,22 +261,21 @@ class TransactionViewController: UIViewController {
                 vc.fixedAsset = true
                 self.navigationController?.pushViewController(vc, animated: true)
             }
-        }.catch { err in
-            print(err.localizedDescription)
         }
     }
 
     func didSelectAmountAt(_ index: Int) {
         if !transaction.isLiquid { return }
-
-        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogDetailViewController") as? DialogDetailViewController {
-            let amount = transaction.amountsWithoutFees[index]
-            vc.tag = amount.0
-            vc.asset = wallet.session?.registry?.info(for: amount.0)
-            vc.satoshi = wallet?.satoshi?[amount.0] ?? 0
-            vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
+        Task {
+            let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "DialogDetailViewController") as? DialogDetailViewController {
+                let assetAmount = assetAmountList.amounts[index]
+                vc.tag = assetAmount.0
+                vc.asset = (assetAmountList?.assets[vc.tag])!
+                vc.satoshi = assetAmount.1
+                vc.modalPresentationStyle = .overFullScreen
+                present(vc, animated: false, completion: nil)
+            }
         }
     }
 }
@@ -304,7 +297,7 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch sections[section] {
         case TransactionSection.amount:
-            return transaction.amountsWithoutFees.count
+            return assetAmountList.amounts.count
         case TransactionSection.fee:
             return 1
         case TransactionSection.status:
@@ -326,11 +319,11 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
                 self?.copyToClipboard(value)
             }
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionAmountCell") as? TransactionAmountCell {
-                let amount = transaction.amountsWithoutFees[indexPath.row]
+                let assetAmount = assetAmountList.amounts[indexPath.row]
                 cell.configure(tx: transaction,
                                isLightning: wallet.type.lightning,
-                               id: amount.0,
-                               value: amount.1,
+                               id: assetAmount.0,
+                               value: assetAmount.1,
                                hideBalance: hideBalance,
                                copyAmount: copyAmount, copyRecipient: copyRecipient)
                 cell.selectionStyle = .none
@@ -461,16 +454,13 @@ extension TransactionViewController: DialogEditViewControllerDelegate {
 
     func didSave(_ note: String) {
         self.startAnimating()
-        let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().map(on: bgq) { _ in
-            try? self.wallet.session?.session?.setTransactionMemo(txhash_hex: self.transaction.hash, memo: note, memo_type: 0)
+        Task {
+            try? await self.wallet.session?.session?.setTransactionMemo(txhash_hex: self.transaction.hash, memo: note, memo_type: 0)
             self.transaction.memo = note
             self.delegate?.onMemoEdit()
-            }.ensure {
-                self.stopAnimating()
-            }.done {
-                self.tableView.reloadData {}
-            }.catch { _ in}
+            self.stopAnimating()
+            self.tableView.reloadData()
+        }
     }
 
     func didClose() { }

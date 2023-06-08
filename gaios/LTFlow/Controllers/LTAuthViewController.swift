@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 import BreezSDK
-import PromiseKit
+import greenaddress
 import lightning
 
 class LTAuthViewController: UIViewController {
@@ -46,23 +46,22 @@ class LTAuthViewController: UIViewController {
     }
 
     func lnAuth(requestData: LnUrlAuthRequestData) {
-        guard let lightBridge = WalletManager.current?.lightningSession?.lightBridge else { return }
-        let bgq = DispatchQueue.global(qos: .background)
         startAnimating()
-        Guarantee()
-            .compactMap(on: bgq) { lightBridge.authLnUrl(requestData: requestData) }
-            .ensure { [self] in stopAnimating() }
-            .done {
-                switch $0 {
-                case LnUrlCallbackStatus.ok:
+        Task {
+            do {
+                let lightBridge = WalletManager.current?.lightningSession?.lightBridge
+                guard let res = try lightBridge?.authLnUrl(requestData: requestData) else {
+                    throw GaError.GenericError()
+                }
+                switch res {
+                case .ok:
                     DropAlert().success(message: "Authentication successful")
                     self.navigationController?.popViewController(animated: true)
-                case LnUrlCallbackStatus.errorStatus(let data):
+                case .errorStatus(let data):
                     DropAlert().error(message: data.reason)
                 }
-            }
-            .catch {
-                switch $0 {
+            } catch {
+                switch error {
                 case BreezSDK.SdkError.Generic(let msg),
                     BreezSDK.SdkError.LspConnectFailed(let msg),
                     BreezSDK.SdkError.PersistenceFailure(let msg),
@@ -72,5 +71,7 @@ class LTAuthViewController: UIViewController {
                     DropAlert().error(message: "id_operation_failure".localized)
                 }
             }
+            stopAnimating()
+        }
     }
 }

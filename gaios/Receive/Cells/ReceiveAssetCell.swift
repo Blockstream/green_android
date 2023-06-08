@@ -25,7 +25,9 @@ class ReceiveAssetCell: UITableViewCell {
     }
 
     func configure(model: ReceiveAssetCellModel, onTap: (() -> Void)?) {
-        self.lblAsset.text = model.assetName ?? model.ticker
+        let name = model.assetName
+        let ticker = model.ticker
+        self.lblAsset.text = name ?? ticker
         self.iconAsset.image = model.icon
         self.lblAccount1.text = model.account.localizedName.uppercased()
         self.lblAccount2.text = model.account.localizedType.uppercased()

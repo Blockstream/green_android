@@ -1,5 +1,5 @@
 import UIKit
-import PromiseKit
+
 import gdk
 
 protocol Learn2faViewControllerDelegate: AnyObject {
@@ -61,68 +61,53 @@ class Learn2faViewController: UIViewController {
     }
 
     func canceltwoFactorReset() {
-        //AnalyticsManager.shared.recordView(.walletSettings2FACancelDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsRepository.shared.current, walletItem: wallet?.type, twoFactorType: nil))
-
-        let bgq = DispatchQueue.global(qos: .background)
-        guard let session = session else { return }
-        firstly {
-            self.startAnimating()
-            return Guarantee()
-        }.then(on: bgq) {
-            session.cancelTwoFactorReset()
-        }.then(on: bgq) { _ in
-            session.loadTwoFactorConfig()
-        }.ensure {
-            self.stopAnimating()
-        }.done { _ in
-            DropAlert().success(message: "Reset Cancelled")
-            self.dismiss(animated: true, completion: nil)
-        }.catch {_ in
-            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_cancel_twofactor_reset", comment: ""))
+        //AnalyticsManager.shared.recordView(.walletSettings2FACancelDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsRepository.shared.current, walletType: wallet?.type, twoFactorType: nil))
+        self.startAnimating()
+        Task {
+            do {
+                guard let session = session else { return }
+                try await session.cancelTwoFactorReset()
+                try await session.loadTwoFactorConfig()
+                DropAlert().success(message: "Reset Cancelled")
+                self.dismiss(animated: true, completion: nil)
+            } catch {
+                self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_cancel_twofactor_reset", comment: ""))
+            }
         }
+        self.stopAnimating()
     }
 
     func disputeReset(email: String) {
-        //AnalyticsManager.shared.recordView(.walletSettings2FADispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsRepository.shared.current, walletItem: wallet?.type, twoFactorType: nil))
-
-        let bgq = DispatchQueue.global(qos: .background)
-        guard let session = session else { return }
-        firstly {
-            self.startAnimating()
-            return Guarantee()
-        }.then(on: bgq) {
-            session.resetTwoFactor(email: email, isDispute: true)
-        }.then(on: bgq) { _ in
-            session.loadTwoFactorConfig()
-        }.ensure {
-            self.stopAnimating()
-        }.done { _ in
-            DropAlert().success(message: "Reset Disputed")
-            self.dismiss(animated: true, completion: nil)
-        }.catch {_ in
-            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_dispute_twofactor_reset", comment: ""))
+        //AnalyticsManager.shared.recordView(.walletSettings2FADispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsRepository.shared.current, walletType: wallet?.type, twoFactorType: nil))
+        self.startAnimating()
+        Task {
+            do {
+                guard let session = session else { return }
+                try await session.resetTwoFactor(email: email, isDispute: true)
+                try await session.loadTwoFactorConfig()
+                DropAlert().success(message: "Reset Disputed")
+                self.dismiss(animated: true, completion: nil)
+            } catch {
+                self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_dispute_twofactor_reset", comment: ""))
+            }
         }
+        self.stopAnimating()
     }
 
     func undoReset(email: String) {
-        //AnalyticsManager.shared.recordView(.walletSettings2FAUndoDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsRepository.shared.current, walletItem: wallet?.type, twoFactorType: nil))
-
-        let bgq = DispatchQueue.global(qos: .background)
-        guard let session = session else { return }
-        firstly {
-            self.startAnimating()
-            return Guarantee()
-        }.then(on: bgq) {
-            session.undoTwoFactorReset(email: email)
-        }.then(on: bgq) { _ in
-            session.loadTwoFactorConfig()
-        }.ensure {
+        //AnalyticsManager.shared.recordView(.walletSettings2FAUndoDispute, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsRepository.shared.current, walletType: wallet?.type, twoFactorType: nil))
+        self.startAnimating()
+        Task {
+            do {
+                guard let session = session else { return }
+                try await session.undoTwoFactorReset(email: email)
+                try await session.loadTwoFactorConfig()
+                DropAlert().success(message: "Reset Undone")
+                self.dismiss(animated: true, completion: nil)
+            } catch {
+                self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_undo_2fa_dispute", comment: ""))
+            }
             self.stopAnimating()
-        }.done { _ in
-            DropAlert().success(message: "Reset Undone")
-            self.dismiss(animated: true, completion: nil)
-        }.catch {_ in
-            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_undo_2fa_dispute", comment: ""))
         }
     }
 

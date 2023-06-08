@@ -1,5 +1,5 @@
 import UIKit
-import PromiseKit
+
 import RxBluetoothKit
 import gdk
 import lightning

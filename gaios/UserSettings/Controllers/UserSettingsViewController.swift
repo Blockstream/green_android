@@ -1,5 +1,5 @@
 import UIKit
-import PromiseKit
+
 import gdk
 import greenaddress
 
@@ -14,7 +14,6 @@ class UserSettingsViewController: UIViewController {
     weak var delegate: UserSettingsViewControllerDelegate?
 
     var session = { WalletManager.current?.prominentSession }()
-    var multiSigSession = { WalletManager.current?.activeSessions.values.filter { !$0.gdkNetwork.electrum }.first }()
     var headerH: CGFloat = 54.0
     var viewModel = UserSettingsViewModel()
     var account: Account? { get { viewModel.wm?.account } }
@@ -133,12 +132,13 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
                 navigationController?.pushViewController(vc, animated: true)
             }
         case .ChangePin:
-            viewModel.wm?.prominentSession?.getCredentials(password: "").done { credentials in
-                    let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-                    if let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
-                        vc.pinFlow = .settings
-                        vc.viewModel = SetPinViewModel(credentials: credentials, testnet: self.viewModel.wm?.testnet ?? false)
-                        self.navigationController?.pushViewController(vc, animated: true)
+            Task {
+                let credentials = try? await viewModel.wm.prominentSession?.getCredentials(password: "")
+                let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+                if let credentials = credentials, let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
+                    vc.pinFlow = .settings
+                    vc.viewModel = SetPinViewModel(credentials: credentials, testnet: self.viewModel.wm?.testnet ?? false)
+                    self.navigationController?.pushViewController(vc, animated: true)
                 }
             }
         case.LoginWithBiometrics:
@@ -155,34 +155,26 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
         case .Version:
             break
         case .SupportID:
-
-            let multiSigSessions = { WalletManager.current?.activeSessions.values.filter { !$0.gdkNetwork.electrum } }()
-            let msMainSession = multiSigSessions?.filter{ $0.gdkNetwork.liquid == false }.first
-            let msLiquidSession = multiSigSessions?.filter{ $0.gdkNetwork.liquid == true }.first
-            guard let uuid = UserDefaults.standard.string(forKey: AppStorage.analyticsUUID) else { return }
-
-            var str = ""
-            str += "id:\(uuid)"
-
-            var promises: [Promise<WalletItem>] = []
-            if let msMainSession = msMainSession { promises.append(msMainSession.subaccount(0)) }
-            if let msLiquidSession = msLiquidSession { promises.append(msLiquidSession.subaccount(0)) }
             
-            when(fulfilled: promises)
-                .done{ list in
-                    if let item = list.filter({$0.gdkNetwork.liquid == false}).first, item.receivingId != "" {
-                        str += ",bitcoin:\(item.receivingId)"
-                    }
-                    if let item = list.filter({$0.gdkNetwork.liquid == true}).first, item.receivingId != ""  {
-                        str += ",liquidnetwork:\(item.receivingId)"
-                    }
+            let multiSigSessions = { WalletManager.current?.activeSessions.values.filter { !$0.gdkNetwork.electrum } }()
+            let msMainSession = multiSigSessions?.filter{ !$0.gdkNetwork.liquid }.first
+            let msLiquidSession = multiSigSessions?.filter{ $0.gdkNetwork.liquid }.first
+            let uuid = UserDefaults.standard.string(forKey: AppStorage.analyticsUUID)
+            var str = "id:\(uuid ?? "")"
+            
+            Task {
+                if let item = try? await msMainSession?.subaccount(0) {
+                    str += ",bitcoin:\(item.receivingId)"
+                }
+                if let item = try? await msLiquidSession?.subaccount(0) {
+                    str += ",liquidnetwork:\(item.receivingId)"
+                }
+                await MainActor.run {
                     UIPasteboard.general.string = str
                     DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 1.0)
                     UINotificationFeedbackGenerator().notificationOccurred(.success)
                 }
-                .catch { error in
-                  print(error)
-                }
+            }
         case .ArchievedAccounts:
             openArchivedAccounts()
         case .WatchOnly:
@@ -270,22 +262,24 @@ extension UserSettingsViewController {
         list.forEach { (item: String) in
             alert.addAction(UIAlertAction(title: item, style: item == selected  ? .destructive : .default) { _ in
                 settings.autolock = AutoLockType.from(item)
-                self.changeSettings(settings)
-                    .done { self.viewModel.load() }
-                    .catch { error in self.showAlert(error) }
+                Task {
+                    do {
+                        try await self.changeSettings(settings)
+                        self.viewModel.load()
+                    } catch {
+                        self.showError(error)
+                    }
+                }
             })
         }
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
         self.present(alert, animated: true, completion: nil)
     }
 
-    func changeSettings(_ settings: Settings) -> Promise<Void> {
-        let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee().map { _ in self.startAnimating() }
-            .compactMap { self.session }
-            .then(on: bgq) { $0.changeSettings(settings: settings) }
-            .asVoid()
-            .ensure { self.stopAnimating() }
+    func changeSettings(_ settings: Settings) async {
+        startAnimating()
+        try? await self.session?.changeSettings(settings: settings)
+        stopAnimating()
     }
 }
 
@@ -298,27 +292,24 @@ extension UserSettingsViewController {
             return
         }
         guard let session = self.session else { return }
-        let bgq = DispatchQueue.global(qos: .background)
-        firstly {
-            self.startAnimating()
-            return Guarantee()
-        }.then {
-            session.getCredentials(password: "")
-        }.then(on: bgq) {
-            account.addBiometrics(session: session, credentials: $0)
-        }.ensure {
-            self.stopAnimating()
-        }.done {
-            self.viewModel.load()
-        }.catch { error in
-            if error is GaError {
-                self.onAuthError(message: NSLocalizedString("id_connection_failed", comment: ""))
-            } else if let err = error as? AuthenticationTypeHandler.AuthError {
-                self.onBioAuthError(message: err.localizedDescription)
-            } else if !error.localizedDescription.isEmpty {
-                self.onAuthError(message: NSLocalizedString(error.localizedDescription, comment: ""))
-            } else {
-                self.onAuthError(message: NSLocalizedString("id_operation_failure", comment: ""))
+        self.startAnimating()
+        Task {
+            do {
+                if let credentials = try await session.getCredentials(password: "") {
+                    try await account.addBiometrics(session: session, credentials: credentials)
+                }
+                stopAnimating()
+                viewModel.load()
+            } catch {
+                if error is GaError {
+                    self.onAuthError(message: NSLocalizedString("id_connection_failed", comment: ""))
+                } else if let err = error as? AuthenticationTypeHandler.AuthError {
+                    self.onBioAuthError(message: err.localizedDescription)
+                } else if !error.localizedDescription.isEmpty {
+                    self.onAuthError(message: NSLocalizedString(error.localizedDescription, comment: ""))
+                } else {
+                    self.onAuthError(message: NSLocalizedString("id_operation_failure", comment: ""))
+                }
             }
         }
     }

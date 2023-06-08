@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 import gdk
 
 class SetGauthViewController: UIViewController {
@@ -92,29 +92,24 @@ class SetGauthViewController: UIViewController {
 
     @objc func click(_ sender: UIButton) {
         guard let gauth = gauthData else { return }
-        let bgq = DispatchQueue.global(qos: .background)
-        firstly {
-            self.startAnimating()
-            return Guarantee()
-        }.compactMap {
-            TwoFactorConfigItem(enabled: true, confirmed: true, data: gauth)
-        }.then(on: bgq) { config in
-            self.session.changeSettingsTwoFactor(method: .gauth, config: config)
-        }.then(on: bgq) { _ in
-            self.session.loadTwoFactorConfig()
-        }.ensure {
-            self.stopAnimating()
-        }.done { _ in
-            self.navigationController?.popViewController(animated: true)
-        }.catch { error in
-            if let twofaError = error as? TwoFactorCallError {
-                switch twofaError {
-                case .failure(let localizedDescription), .cancel(let localizedDescription):
-                    DropAlert().error(message: localizedDescription)
+        self.startAnimating()
+        Task {
+            do {
+                let config = TwoFactorConfigItem(enabled: true, confirmed: true, data: gauth)
+                try await session.changeSettingsTwoFactor(method: .gauth, config: config)
+                try await self.session.loadTwoFactorConfig()
+                self.navigationController?.popViewController(animated: true)
+            } catch {
+                if let twofaError = error as? TwoFactorCallError {
+                    switch twofaError {
+                    case .failure(let localizedDescription), .cancel(let localizedDescription):
+                        DropAlert().error(message: localizedDescription)
+                    }
+                } else {
+                    DropAlert().error(message: error.localizedDescription)
                 }
-            } else {
-                DropAlert().error(message: error.localizedDescription)
             }
+            self.stopAnimating()
         }
     }
 

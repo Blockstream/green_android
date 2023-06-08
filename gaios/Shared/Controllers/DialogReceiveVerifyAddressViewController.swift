@@ -1,7 +1,5 @@
 import Foundation
 import UIKit
-import PromiseKit
-import gdk
 
 class DialogReceiveVerifyAddressViewController: UIViewController {
 

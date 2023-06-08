@@ -1,10 +1,10 @@
 import Foundation
 import BreezSDK
 import UIKit
-import PromiseKit
 import LinkPresentation
 import gdk
 import hw
+import Combine
 
 public enum TransactionBaseType: UInt32 {
     case BTC = 0
@@ -21,7 +21,7 @@ enum ReceiveSection: Int, CaseIterable {
 }
 
 class ReceiveViewController: KeyboardViewController {
-
+    
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var btnShare: UIButton!
     @IBOutlet weak var btnEdit: UIButton!
@@ -30,14 +30,14 @@ class ReceiveViewController: KeyboardViewController {
     @IBOutlet weak var btnOnChain: UIButton!
     @IBOutlet weak var btnConfirm: UIButton!
     @IBOutlet weak var stackBottom: NSLayoutConstraint!
-
+    
     private var selectedType = TransactionBaseType.BTC
     private var lightningAmountEditing = true
     private var newAddressToken, invoicePaidToken: NSObjectProtocol?
     private var headerH: CGFloat = 36.0
     private var loading = true
     var viewModel: ReceiveViewModel!
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -47,20 +47,19 @@ class ReceiveViewController: KeyboardViewController {
         
         view.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.view
         btnOptions.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.moreOptionsBtn
-        
+    
         AnalyticsManager.shared.recordView(.receive, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletItem: viewModel.account))
-
         reload()
         newAddress()
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         invoicePaidToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.InvoicePaid.rawValue), object: nil, queue: .main, using: invoicePaid)
         newAddressToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil, queue: .main, using: newAddress)
     }
-
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if let token = newAddressToken {
@@ -70,20 +69,20 @@ class ReceiveViewController: KeyboardViewController {
             NotificationCenter.default.removeObserver(token)
         }
     }
-
+    
     override func keyboardWillShow(notification: Notification) {
         super.keyboardWillShow(notification: notification)
         let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
-
+        
         let inset = (UIApplication.shared.windows.first?.safeAreaInsets.bottom ?? 0) - 5
         stackBottom.constant = keyboardFrame.height - inset
-
+        
         //btnOnChain.isHidden = true
         UIView.animate(withDuration: 0.5, animations: { [weak self] in
             self?.view.layoutIfNeeded()
         })
     }
-
+    
     override func keyboardWillHide(notification: Notification) {
         super.keyboardWillShow(notification: notification)
         stackBottom.constant = 0.0
@@ -92,13 +91,13 @@ class ReceiveViewController: KeyboardViewController {
             self?.view.layoutIfNeeded()
         })
     }
-
+    
     func register() {
         ["ReceiveAssetCell", "ReceiveAddressCell", "LTAmountCell", "LTInfoCell", "LTNoteCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
     }
-
+    
     func setContent() {
         title = "id_receive".localized
         btnShare.setTitle("id_share".localized, for: .normal)
@@ -107,13 +106,13 @@ class ReceiveViewController: KeyboardViewController {
         btnVerify.setTitle("id_verify_on_device".localized, for: .normal)
         btnConfirm.setTitle("Confirm", for: .normal)
     }
-
+    
     func setStyle() {
         [btnShare, btnConfirm].forEach{ $0.setStyle(.primary) }
         [btnEdit, btnOptions, btnVerify].forEach{ $0.setStyle(.outlinedWhite) }
         btnOnChain.semanticContentAttribute = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft ? .forceLeftToRight : .forceRightToLeft
     }
-
+    
     var sections: [ReceiveSection] {
         switch viewModel.type {
         case .bolt11:
@@ -130,7 +129,7 @@ class ReceiveViewController: KeyboardViewController {
             return [.asset, .address]
         }
     }
-
+    
     func reload() {
         let network = viewModel.account.gdkNetwork
         btnOnChain.isHidden = true // !network.lightning
@@ -144,7 +143,7 @@ class ReceiveViewController: KeyboardViewController {
         reloadNavigationBtns()
         tableView.reloadData()
     }
-
+    
     func reloadNavigationBtns() {
         let network = viewModel.account.gdkNetwork
         if network.lightning {
@@ -160,13 +159,14 @@ class ReceiveViewController: KeyboardViewController {
             navigationItem.rightBarButtonItem = UIBarButtonItem(customView: helpBtn)
         }
     }
-
+    
     func invoicePaid(_ notification: Notification? = nil) {
-        let invoice = notification?.object as? InvoicePaidDetails
-        let account = WalletManager.current?.lightningSubaccount
-        let parser = Parser(selectedAccount: account!, input: invoice?.bolt11 ?? "", discoverable: true)
-        parser.parse()
-            .done() { [self] _ in
+        Task {
+            do {
+                let invoice = notification?.object as? InvoicePaidDetails
+                let account = WalletManager.current?.lightningSubaccount
+                let parser = Parser(selectedAccount: account!, input: invoice?.bolt11 ?? "", discoverable: true)
+                try await parser.parse()
                 switch parser.lightningType {
                 case .some(.bolt11(let invoice)):
                     if let balance = Balance.fromSatoshi(invoice.amountSatoshi ?? 0, assetId: AssetInfo.btcId) {
@@ -177,40 +177,45 @@ class ReceiveViewController: KeyboardViewController {
                 default:
                     break
                 }
-            }.catch { _ in }
+            } catch { print(error) }
+        }
     }
 
     func newAddress(_ notification: Notification? = nil) {
         loading = true
         reload()
-        viewModel?.newAddress()
-            .map { self.loading = false }
-            .done { self.reload() }
-            .catch {
-                switch $0 {
-                case BreezSDK.SdkError.Generic(let msg),
-                    BreezSDK.SdkError.LspConnectFailed(let msg),
-                    BreezSDK.SdkError.PersistenceFailure(let msg),
-                    BreezSDK.SdkError.ReceivePaymentFailed(let msg):
-                    self.showError(msg)
-                default:
-                    self.showError($0)
-                }
-            }
+        Task {
+            do {
+                try await viewModel?.newAddress()
+            } catch { failure(error) }
+            self.loading = false
+            self.reload()
+        }
+    }
+    
+    func failure(_ err: Error) {
+        switch err {
+        case BreezSDK.SdkError.Generic(let msg),
+            BreezSDK.SdkError.LspConnectFailed(let msg),
+            BreezSDK.SdkError.PersistenceFailure(let msg),
+            BreezSDK.SdkError.ReceivePaymentFailed(let msg):
+            self.showError(msg)
+        default:
+            super.showError(err)
+        }
     }
 
     func validate() {
-        viewModel?.validateHw()
-            .ensure {
-                self.presentedViewController?.dismiss(animated: true, completion: nil)
-            }.done { equal in
-                if equal {
+        Task {
+            do {
+                let res = try await viewModel?.validateHw()
+                if res ?? false {
                     DropAlert().success(message: NSLocalizedString("id_the_address_is_valid", comment: ""))
                 } else {
                     DropAlert().error(message: NSLocalizedString("id_the_addresses_dont_match", comment: ""))
                 }
-            }.catch { err in
-                switch err {
+            } catch {
+                switch error {
                 case HWError.Abort(let desc),
                     HWError.URLError(let desc),
                     HWError.Declined(let desc):
@@ -219,6 +224,7 @@ class ReceiveViewController: KeyboardViewController {
                     DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
                 }
             }
+        }
     }
 
     func isBipAddress(_ addr: String) -> Bool {
@@ -268,42 +274,21 @@ class ReceiveViewController: KeyboardViewController {
         }
     }
 
-    func onChangeReceiver() {
+    func onChangeReceiver() async {
         AnalyticsManager.shared.changeAsset(account: AccountsRepository.shared.current)
-        let isWO = AccountsRepository.shared.current?.isWatchonly ?? false
-
         let previousViewController = navigationController?.viewControllers.last { $0 != navigationController?.topViewController }
         let storyboard = UIStoryboard(name: "Utility", bundle: nil)
         if previousViewController is WalletViewController {
             // from WalletViewController, show assets and account selection
             if let vc = storyboard.instantiateViewController(withIdentifier: "AssetExpandableSelectViewController") as? AssetExpandableSelectViewController {
-                var assets = WalletManager.current?.registry.all ?? []
-
-                if isWO {
-                    let showBtc = !(AccountsRepository.shared.current?.gdkNetwork.liquid ?? false)
-                    let showLiquid = (AccountsRepository.shared.current?.gdkNetwork.liquid ?? false)
-                    assets = assets.filter {
-                        (showLiquid && $0.assetId != AssetInfo.btcId) ||
-                        (showBtc && $0.assetId == AssetInfo.btcId)
-                    }
-                }
-
-                vc.viewModel = AssetExpandableSelectViewModel(assets: assets, enableAnyAsset: !isWO, onlyFunded: false)
+                vc.viewModel = viewModel.getAssetExpandableSelectViewModel()
                 vc.delegate = self
                 navigationController?.pushViewController(vc, animated: true)
             }
         } else {
             // from AccountViewController, show only assets selection
             if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
-                let showAmp = viewModel.accounts.filter { $0.type == .amp }.count > 0
-                let showLiquid = viewModel.accounts.filter { $0.gdkNetwork.liquid }.count > 0
-                let showBtc = viewModel.accounts.filter { !$0.gdkNetwork.liquid }.count > 0
-                let assets: AssetAmountList? = WalletManager.current?.registry.all.filter {
-                    (showAmp && $0.amp ?? false) ||
-                    (showLiquid && $0.assetId != AssetInfo.btcId) ||
-                    (showBtc && $0.assetId == AssetInfo.btcId)
-                }.map { ($0.assetId, 0) }
-                vc.viewModel = AssetSelectViewModel(assets: assets ?? AssetAmountList(), enableAnyAsset: !isWO)
+                vc.viewModel = viewModel.getAssetSelectViewModel()
                 vc.delegate = self
                 navigationController?.pushViewController(vc, animated: true)
             }
@@ -551,7 +536,7 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
         case ReceiveSection.asset:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "ReceiveAssetCell") as? ReceiveAssetCell {
                 let model = viewModel.assetCellModel
-                cell.configure(model: model, onTap: { [weak self] in self?.onChangeReceiver() })
+                cell.configure(model: model, onTap: { [weak self] in Task { await self?.onChangeReceiver() } })
                 cell.selectionStyle = .none
                 return cell
             }
@@ -565,8 +550,7 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
         case ReceiveSection.address:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "ReceiveAddressCell") as? ReceiveAddressCell {
                 let model = viewModel.addressCellModel
-                cell.configure(model: model, isAnimating: loading) { [weak self] in
-                    self?.copyToClipboard()
+                cell.configure(model: model, isAnimating: loading) { [weak self] in self?.copyToClipboard()
                 } onRefreshClick: { [weak self] in
                     self?.onRefreshClick()
                 } onLongpress: { [weak self] in

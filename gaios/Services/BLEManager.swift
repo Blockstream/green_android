@@ -1,5 +1,5 @@
 import Foundation
-import PromiseKit
+
 import RxSwift
 import RxBluetoothKit
 import CoreBluetooth
@@ -147,7 +147,7 @@ class BLEManager {
             return Observable.just(p)
             .flatMap { _ in self.getLedgerNetwork() }
             .compactMap { self.session = SessionManager($0.gdkNetwork) }
-            .compactMap { try? self.session?.connect().wait() }
+            .flatMap { Observable.create { try? await self.session?.connect() }}
             .compactMap { true }
         }
         return Observable.just(p)
@@ -161,17 +161,20 @@ class BLEManager {
                 let chain = networkType.chain
                 // connect to network pin server
                 self.session = SessionManager(networkType.gdkNetwork)
-                try? self.session?.connect().wait()
-                // JADE_STATE => READY  (device unlocked / ready to use)
-                // anything else ( LOCKED | UNSAVED | UNINIT | TEMP) will need an authUser first to unlock
-                switch version.jadeState {
-                case "READY":
-                    return Observable.just(true)
-                case "TEMP":
-                    return Jade.shared.unlock(network: chain)
-                default:
-                    return Jade.shared.auth(network: chain)
-                            .retry(3)
+                return Observable.create {
+                    try? await self.session?.connect()
+                }.flatMap {
+                    // JADE_STATE => READY  (device unlocked / ready to use)
+                    // anything else ( LOCKED | UNSAVED | UNINIT | TEMP) will need an authUser first to unlock
+                    switch version.jadeState {
+                    case "READY":
+                        return Observable.just(true)
+                    case "TEMP":
+                        return Jade.shared.unlock(network: chain)
+                    default:
+                        return Jade.shared.auth(network: chain)
+                                .retry(3)
+                    }
                 }
             }
     }
@@ -203,13 +206,9 @@ class BLEManager {
             .compactMap { self.normalizeAccount($0) }
             .compactMap { WalletsRepository.shared.getOrAdd(for: $0) }
             .flatMap { wm in
-                return Observable<WalletManager>.create { observer in
-                    wm.login(device: device, masterXpub: masterXpub)
-                        .done { _ in
-                            observer.onNext(wm)
-                            observer.onCompleted()
-                        }.catch { err in observer.onError(err) }
-                    return Disposables.create { }
+                return Observable<WalletManager>.create {
+                    try await wm.login(device: device, masterXpub: masterXpub)
+                    return wm
                 }
             }
     }
@@ -328,5 +327,20 @@ class BLEManager {
 extension BLEManager: JadeGdkRequest {
     func httpRequest(params: [String: Any]) -> [String: Any]? {
         return self.session?.httpRequest(params: params)
+    }
+}
+extension Observable {
+    static func create(_ fn: @escaping () async throws -> Element) -> Observable<Element> {
+        Observable.create { observer in
+            let task = Task {
+                do {
+                    observer.on(.next(try await fn()))
+                    observer.on(.completed)
+                } catch {
+                    observer.on(.error(error))
+                }
+            }
+            return Disposables.create { task.cancel() }
+        }
     }
 }

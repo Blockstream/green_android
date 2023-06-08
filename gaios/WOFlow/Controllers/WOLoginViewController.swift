@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 import gdk
 
 class WOLoginViewController: KeyboardViewController {
@@ -145,28 +145,33 @@ class WOLoginViewController: KeyboardViewController {
 
     func login() {
         let password = self.passwordTextField.text ?? ""
-        firstly {
-            dismissKeyboard()
-            self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
-            return Guarantee()
-        }.then { self.isSS ? self.viewModel.loginSinglesig(for: self.account) : self.viewModel.loginMultisig(for: self.account, password: password) }
-        .ensure { self.stopLoader() }
-        .done { _ = AccountNavigator.goLogged(account: self.account, nv: self.navigationController) }
-        .catch { error in
-            var prettyError = "id_login_failed"
-            switch error {
-            case TwoFactorCallError.failure(let localizedDescription):
-                prettyError = localizedDescription
-            case LoginError.connectionFailed:
-                prettyError = "id_connection_failed"
-            case LoginError.failed:
-                prettyError = "id_login_failed"
-            default:
-                break
+        dismissKeyboard()
+        startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
+        Task {
+            do {
+                if self.isSS {
+                    try await self.viewModel.loginSinglesig(for: self.account)
+                } else {
+                    try await self.viewModel.loginMultisig(for: self.account, password: password)
+                }
+                AccountNavigator.goLogged(account: self.account, nv: self.navigationController)
+            } catch {
+                var prettyError = "id_login_failed"
+                switch error {
+                case TwoFactorCallError.failure(let localizedDescription):
+                    prettyError = localizedDescription
+                case LoginError.connectionFailed:
+                    prettyError = "id_connection_failed"
+                case LoginError.failed:
+                    prettyError = "id_login_failed"
+                default:
+                    break
+                }
+                DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
+                AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: prettyError)
+                WalletsRepository.shared.delete(for: self.account)
             }
-            DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
-            AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: prettyError)
-            WalletsRepository.shared.delete(for: self.account)
+            stopLoader()
         }
     }
 

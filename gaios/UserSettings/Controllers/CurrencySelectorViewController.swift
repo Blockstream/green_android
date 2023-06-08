@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 
 class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
 
@@ -86,40 +86,33 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
 
     func setExchangeRate(_ currency: CurrencyItem) {
         guard let session = session, let settings = session.settings else { return }
-        let bgq = DispatchQueue.global(qos: .background)
-
         var pricing = [String: String]()
         pricing["currency"] = currency.currency
         pricing["exchange"] = currency.exchange
-
-        Guarantee().compactMap {
-            settings.pricing = pricing
-        }.then(on: bgq) { _ in
-            session.changeSettings(settings: settings)
-        }.done { _ in
-            self.delegate?.refresh()
-            self.navigationController?.popViewController(animated: true)
-        }.catch {_ in
-            self.showError(NSLocalizedString("id_your_favourite_exchange_rate_is", comment: ""))
+        Task {
+            do {
+                settings.pricing = pricing
+                try await session.changeSettings(settings: settings)
+                self.delegate?.refresh()
+                self.navigationController?.popViewController(animated: true)
+            } catch {
+                self.showError(NSLocalizedString("id_your_favourite_exchange_rate_is", comment: ""))
+            }
         }
     }
 
     func getExchangeRate() {
-        let bgq = DispatchQueue.global(qos: .background)
         guard let session = session else { return }
-        Guarantee().then(on: bgq) {
-            session.getAvailableCurrencies()
-        }.done { perExchange in
+        Task {
+            let perExchange = try? await session.getAvailableCurrencies()
             self.currencyList.removeAll()
-            for (exchange, array) in perExchange {
+            for (exchange, array) in perExchange ?? [:] {
                 for currency in array {
                     self.currencyList.append(CurrencyItem(exchange: exchange, currency: currency))
                 }
             }
             self.searchCurrencyList = self.currencyList
             self.tableView.reloadData()
-        }.catch {_ in
-
         }
     }
 }

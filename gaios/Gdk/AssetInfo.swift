@@ -36,32 +36,3 @@ extension AssetInfo {
                          ticker: DenominationType.denominationsLTEST[denom])
         }
 }
-
-extension AssetInfo: Comparable {
-
-    // comparing functions
-    public static func < (lhs: AssetInfo, rhs: AssetInfo) -> Bool {
-        if [btcId, testId].contains(lhs.assetId) { return true }
-        if [btcId, testId].contains(rhs.assetId) { return false }
-        if [lbtcId, ltestId].contains(lhs.assetId) { return true }
-        if [lbtcId, ltestId].contains(rhs.assetId) { return false }
-        let registry = WalletManager.current?.registry
-        let lhsImage = registry?.hasImage(for: lhs.assetId) ?? false
-        let rhsImage = registry?.hasImage(for: rhs.assetId) ?? false
-        if lhsImage && !rhsImage { return true }
-        if !lhsImage && rhsImage { return false }
-        if lhs.ticker != nil && rhs.ticker == nil { return true }
-        if lhs.ticker == nil && rhs.ticker != nil { return false }
-        let lhsw = lhs.weight ?? 0
-        let rhsw = rhs.weight ?? 0
-        if lhsw > rhsw {
-            return true
-        } else {
-            return false
-        }
-    }
-
-    public static func == (lhs: AssetInfo, rhs: AssetInfo) -> Bool {
-        return lhs.assetId == rhs.assetId
-    }
-}

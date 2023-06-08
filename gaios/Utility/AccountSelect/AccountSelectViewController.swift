@@ -1,5 +1,5 @@
 import UIKit
-import PromiseKit
+
 import gdk
 
 enum AccountSelectSection: Int, CaseIterable {

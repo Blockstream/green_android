@@ -12,20 +12,25 @@ extension Transaction {
         subaccountItem?.gdkNetwork.getFeeAsset() ?? ""
     }
 
-    var assetamounts: AssetAmountList {
-        get {
-            return AssetAmountList(amounts).sorted()
+    func amountsWithFees() -> [String: Int64] {
+        if type == .redeposit {
+            return [feeAsset: -1 * Int64(fee)]
+        } else {
+            // remove L-BTC asset only if fee on outgoing transactions
+            if type == .some(.outgoing) || type == .some(.mixed) {
+                return amounts.filter({ !($0.key == feeAsset && abs($0.value) == Int64(fee)) })
+            }
         }
+        return amounts
     }
-
-    var amountsWithoutFees: AssetAmountList {
+    
+    var amountsWithoutFees: [String: Int64] {
         if type == .some(.redeposit) {
-            return []
+            return [:]
         }
-        var amounts = assetamounts
         // remove L-BTC asset only if fee on outgoing transactions
         if type == .some(.outgoing) || type == .some(.mixed) {
-            amounts = amounts.filter({ !($0.0 == feeAsset && abs($0.1) == Int64(fee)) })
+            return amounts.filter({ !($0.0 == feeAsset && abs($0.1) == Int64(fee)) })
         }
         return amounts
     }

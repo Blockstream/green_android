@@ -72,6 +72,8 @@ class AccountCell: UITableViewCell {
             $0.cornerRadius = $0.frame.size.width / 2.0
             $0.clipsToBounds = true
         }
+        icContainers.forEach { $0.isHidden = true }
+        icImgViews.forEach { $0.image = UIImage() }
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -112,10 +114,10 @@ class AccountCell: UITableViewCell {
         self.onCopy = onCopy
         self.onShield = onShield
         self.onExperiental = onExperiental
-
+        
         lblType.text = model.lblType
         lblName.text = NSLocalizedString(model.name, comment: "")
-
+        
         if hideBalance {
             lblFiat.attributedText = Common.obfuscate(color: .white, size: 12, length: 5)
             lblAmount.attributedText = Common.obfuscate(color: .white, size: 16, length: 5)
@@ -134,24 +136,27 @@ class AccountCell: UITableViewCell {
         btcImg.isHidden = network.liquid
         btcImg.image = backgroundImage(network: network)
         imgMS.image = backgroundIcon(network: network)
-
+        
         ltExperimental.isHidden = !(model.networkType.lightning && AppSettings.shared.lightningEnabled)
         lblLtEXperimental.text = "Experimental"
         ltIconExp.image = UIImage(named: "ic_lightning_info")?.maskWithColor(color: .white)
         lblLtExpBg.layer.cornerRadius = 4.0
-
+        
         [bg, effectView, btnShield].forEach {
             $0?.backgroundColor = cColor
         }
         btnSelect.isHidden = onSelect == nil
         btnCopy.isHidden = onCopy == nil || model.account.type != .amp // only for amp
+        reloadAmounts(model)
+    }
 
+    func reloadAmounts(_ model: AccountCellModel) {
         let list = model.hasTxs ? model.account.satoshi ?? [:] : [:]
-        let assets = AssetAmountList(list).sorted()
+        let assets = AssetAmountList(list)
         let registry = WalletManager.current?.registry
         var icons = [UIImage]()
-        assets.compactMap {
-            if network == .lightning && $0.0 == "btc" {
+        assets.amounts.compactMap {
+            if model.networkType.lightning && $0.0 == "btc" {
                 return UIImage(named: "ic_lightning_btc")
             }
             return registry?.image(for: $0.0)

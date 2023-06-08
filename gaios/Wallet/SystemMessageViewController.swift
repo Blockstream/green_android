@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 import gdk
 
 class SystemMessageViewController: UIViewController {
@@ -50,11 +50,14 @@ class SystemMessageViewController: UIViewController {
     }
 
     @IBAction func confirmBtn(_ sender: Any) {
-        let bgq = DispatchQueue.global(qos: .background)
         let session = WalletManager.current?.sessions.filter { $0.key == msg.network }.values.first
-        Guarantee().compactMap { session }
-            .then(on: bgq) { $0.ackSystemMessage(message: self.msg.text) }
-            .done { _ in self.navigationController?.popViewController(animated: true) }
-            .catch { _ in self.showError("Error on system message") }
+        Task {
+            do {
+                try await session?.ackSystemMessage(message: self.msg.text)
+                navigationController?.popViewController(animated: true)
+            } catch {
+                self.showError("Error on system message")
+            }
+        }
     }
 }

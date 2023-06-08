@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 
 protocol DialogLoginPassphraseViewControllerDelegate: AnyObject {
     func didConfirm(passphrase: String, alwaysAsk: Bool)

@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 import gdk
 import hw
 import greenaddress
@@ -31,7 +31,7 @@ class SecuritySelectViewModel {
     // on errors
     var error: ((Error) -> Void)?
 
-    var unarchiveCreateDialog: (() -> Promise<Bool>)?
+    var unarchiveCreateDialog: (( @escaping (Bool) -> ()) -> ())?
 
     var showAll = false {
         didSet {
@@ -78,34 +78,35 @@ class SecuritySelectViewModel {
         }
     }
 
-    func create(policy: PolicyCellType, asset: String, params: CreateSubaccountParams?) -> Promise<WalletItem> {
+    func create(policy: PolicyCellType, asset: String, params: CreateSubaccountParams?) async throws -> WalletItem? {
         let network = policy.getNetwork(testnet: wm.testnet, liquid: asset != "btc")!
         let prominentSession = wm.prominentSession!
         if network.lightning, let session = wm.lightningSession {
             if session.logged {
-                return Promise(error: GaError.GenericError("Lightning account already exist"))
+                throw GaError.GenericError("Lightning account already exist")
             } else if wm.account.isHW {
-                return Promise(error: GaError.GenericError("Cannot create a lightning account for an hardware wallet"))
+                throw GaError.GenericError("Cannot create a lightning account for an hardware wallet")
             }
-            return Guarantee()
-                .then(on: bgq) { session.connect() }
-                .then(on: bgq) { prominentSession.getCredentials(password: "")}
-                .then(on: bgq) { session.register(credentials: $0) }
-                .then(on: bgq) { _ in self.wm.subaccounts() }
-                .then(on: bgq) { _ in session.subaccount(0) }
+            try await session.connect()
+            guard let credentials = try await prominentSession.getCredentials(password: "") else { throw GaError.GenericError() }
+            try await session.register(credentials: credentials)
+            try await wm.subaccounts()
+            return try await session.subaccount(0)
         } else if let session = getSession(for: network) {
             let params = params ?? CreateSubaccountParams(name: uniqueName(policy.accountType, liquid: asset != "btc"),
                                                           type: policy.accountType,
                                                           recoveryMnemonic: nil,
                                                           recoveryXpub: nil)
-            return Guarantee()
-                .then(on: bgq) { !session.logged ? self.registerSession(session: session) : Promise().asVoid() }
-                .map(on: bgq) { self.wm.subaccounts.filter { $0.gdkNetwork == session.gdkNetwork && $0.type == params.type && $0.hidden} }
-                .then(on: bgq) { accounts in self.wm.transactions(subaccounts: accounts).map { (accounts, $0) } }
-                .then(on: bgq) { self.createOrUnarchiveSubaccount(session: session, accounts: $0.0, txs: $0.1, params: params) }
-                .then(on: bgq) { res in self.wm.subaccounts().map { _ in res } }
+            if !session.logged {
+                try await registerSession(session: session)
+            }
+            let accounts = self.wm.subaccounts.filter { $0.gdkNetwork == session.gdkNetwork && $0.type == params.type && $0.hidden }
+            let txs = try await self.wm.transactions(subaccounts: accounts)
+            let account = try await self.createOrUnarchiveSubaccount(session: session, accounts: accounts, txs: txs, params: params)
+            try await self.wm.subaccounts()
+            return account
         } else {
-           return Promise(error: GaError.GenericError("Invalid session")) 
+           throw GaError.GenericError("Invalid session")
         }
     }
 
@@ -113,68 +114,71 @@ class SecuritySelectViewModel {
         return wm.account.isJade ? .defaultJade(fmwVersion: nil) : .defaultLedger()
     }
 
-    func registerSession(session: SessionManager) -> Promise<Void> {
+    func registerSession(session: SessionManager) async throws {
         if session.gdkNetwork.liquid && wm.account.isLedger {
-            return Promise() { seal in seal.reject(GaError.GenericError("Liquid not supported on Ledger Nano X"))}
+            throw GaError.GenericError("Liquid not supported on Ledger Nano X")
         } else if wm.account.isHW {
             let hw = wm.account.isJade ? HWDevice.defaultJade(fmwVersion: nil) : HWDevice.defaultLedger()
-            return self.registerSession(session: session, credentials: nil, hw: hw)
+            try await registerSession(session: session, credentials: nil, hw: hw)
         } else if let prominentSession = wm.prominentSession {
-            return prominentSession.getCredentials(password: "")
-                .then { self.registerSession(session: session, credentials: $0, hw: nil) }
+            let credentials = try await prominentSession.getCredentials(password: "")
+            try await registerSession(session: session, credentials: credentials, hw: nil)
         } else {
-            return Promise() { seal in seal.reject(GaError.GenericError("Invalid session"))}
+            throw GaError.GenericError("Invalid session")
         }
     }
 
-    func registerSession(session: SessionManager, credentials: Credentials? = nil, hw: HWDevice? = nil) -> Promise<Void> {
-        return Promise()
-            .then(on: bgq) { session.register(credentials: credentials, hw: hw) }
-            .then(on: bgq) { _ in session.loginUser(credentials: credentials, hw: hw, restore: false) }
-            .then(on: bgq) { _ in session.subaccounts(true) }
-            .then(on: bgq) { self.isUsedDefaultAccount(for: session, account: $0.first) }
-            .then(on: bgq) { !$0 ? session.updateSubaccount(subaccount: 0, hidden: true).asVoid() : Promise().asVoid() }
-            .then(on: bgq) { self.wm.subaccounts() }
-            .asVoid()
+    func registerSession(session: SessionManager, credentials: Credentials? = nil, hw: HWDevice? = nil) async throws {
+        try await session.register(credentials: credentials, hw: hw)
+        try await session.loginUser(credentials: credentials, hw: hw, restore: false)
+        let subaccounts = try await session.subaccounts(true)
+        let used = try await self.isUsedDefaultAccount(for: session, account: subaccounts.first)
+        if used {
+            try await session.updateSubaccount(subaccount: 0, hidden: true)
+        }
+        try await wm.subaccounts()
     }
 
-    func isUsedDefaultAccount(for session: SessionManager, account: WalletItem?) -> Promise<Bool> {
+    func isUsedDefaultAccount(for session: SessionManager, account: WalletItem?) async throws -> Bool {
         guard let account = account else {
-            return Promise() { $0.reject(GaError.GenericError("No subaccount found")) }
+            throw GaError.GenericError("No subaccount found")
         }
         if account.gdkNetwork.multisig {
             // check balance for multisig
-            return session.getBalance(subaccount: account.pointer, numConfs: 0)
-                .compactMap { $0.map { $0.value }.reduce(0, +) > 0 }
+            let balance = try await session.getBalance(subaccount: account.pointer, numConfs: 0)
+            return balance.map { $0.value }.reduce(0, +) > 0
         }
         // check bip44Discovered on singlesig
-        return Promise() { $0.fulfill(account.bip44Discovered ?? false) }
+        return account.bip44Discovered ?? false
     }
 
-    func createOrUnarchiveSubaccount(session: SessionManager, accounts: [WalletItem], txs: [Transaction], params: CreateSubaccountParams) -> Promise<WalletItem> {
+    func createOrUnarchiveSubaccount(session: SessionManager, accounts: [WalletItem], txs: [Transaction], params: CreateSubaccountParams) async throws -> WalletItem? {
         let items = accounts.map { account in
             (account, txs.filter { $0.subaccount == account.hashValue }.count)
         }
         let unfunded = items.filter { $0.1 == 0 }.map { $0.0 }.first
         if let unfunded = unfunded {
             // automatically unarchive it
-            return session.updateSubaccount(subaccount: unfunded.pointer, hidden: false)
-                .then { session.subaccount(unfunded.pointer) }
+            try await session.updateSubaccount(subaccount: unfunded.pointer, hidden: false)
+            try await session.subaccount(unfunded.pointer)
         }
         let funded = items.filter { $0.1 > 0 }.map { $0.0 }.first
         if let funded = funded, let dialog = self.unarchiveCreateDialog {
             // ask user to unarchive o create a new one
-            return dialog().then { (create: Bool) -> Promise<WalletItem> in
-                if create {
-                    return session.createSubaccount(params)
-                } else {
-                    return session.updateSubaccount(subaccount: funded.pointer, hidden: false)
-                        .then { session.subaccount(funded.pointer) }
+            dialog() { create in
+                Task {
+                    if create {
+                        try? await session.createSubaccount(params)
+                    } else {
+                        try? await session.updateSubaccount(subaccount: funded.pointer, hidden: false)
+                        try? await session.subaccount(funded.pointer)
+                    }
                 }
             }
+            return nil
         }
         // automatically create a new account
-        return session.createSubaccount(params)
+        return try await session.createSubaccount(params)
     }
 
     func getSession(for network: NetworkSecurityCase) -> SessionManager? {

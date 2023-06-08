@@ -45,24 +45,25 @@ class BalanceCell: UITableViewCell {
         self.model = model
         lblBalanceValue.text = ""
         lblBalanceFiat.text = ""
-
-        var assets: [(String, Int64)] = [(String, Int64)]()
-        if let model = model {
-            assets = model.cachedBalance.sorted().nonZero()
-        }
-        assetsBox.isHidden = assets.count < 2
-
+        
+        let assetsCount = model?.cachedBalance.nonZeroAmounts().count ?? 0
+        assetsBox.isHidden = assetsCount < 2
+        
         let uLineAttr = [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue]
-        let str = NSAttributedString(string: String(format: "id_d_assets_in_total".localized, assets.count), attributes: uLineAttr)
+        let str = NSAttributedString(string: String(format: "id_d_assets_in_total".localized, assetsCount), attributes: uLineAttr)
         btnAssets.setAttributedTitle(str, for: .normal)
         self.onAssets = onAssets
         self.onHide = onHide
         self.onConvert = onConvert
         self.onExchange = onExchange
+        refreshVisibility()
+        for v in iconsStack.subviews {
+            v.removeFromSuperview()
+        }
+        let assets = model?.cachedBalance
         var icons: [UIImage] = []
-        for asset in assets {
-            let tag = asset.0
-            if let icon = WalletManager.current?.registry.image(for: tag) {
+        for asset in assets?.ids ?? [] {
+            if let icon = assets?.image(for: asset) {
                 if icons.count > 0 {
                     if icon != icons.last {
                         icons.append(icon)
@@ -72,25 +73,16 @@ class BalanceCell: UITableViewCell {
                 }
             }
         }
-
-        for v in iconsStack.subviews {
-            v.removeFromSuperview()
-        }
-
         icons = Array(icons.prefix(10))
         iconsStackWidth.constant = CGFloat(icons.count) * iconW - CGFloat(icons.count - 1) * 5.0
         setImages(icons)
         iconsView.isHidden = false //!showAccounts || !gdkNetwork.liquid
-        refreshVisibility()
     }
 
     func setImages(_ images: [UIImage]) {
         for img in images {
             let imageView = UIImageView()
             imageView.image = img
-//            imageView.heightAnchor.constraint(equalToConstant: iconW).isActive = true
-//            imageView.widthAnchor.constraint(equalToConstant: iconW).isActive = true
-
             iconsStack.addArrangedSubview(imageView)
         }
     }

@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 
 protocol DialogReceiveShareTypeViewControllerDelegate: AnyObject {
     func didSelect(_ option: ReceiveShareOption)

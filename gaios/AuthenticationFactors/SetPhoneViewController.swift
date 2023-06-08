@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 import gdk
 
 class SetPhoneViewController: KeyboardViewController {
@@ -68,28 +68,25 @@ class SetPhoneViewController: KeyboardViewController {
             DropAlert().warning(message: NSLocalizedString("id_invalid_phone_number_format", comment: ""))
             return
         }
-        firstly {
-            self.startAnimating()
-            return Guarantee()
-        }.compactMap {
-            TwoFactorConfigItem(enabled: true, confirmed: true, data: countryCode + phone)
-        }.then(on: bgq) { config in
-            self.session.changeSettingsTwoFactor(method: method, config: config)
-        }.then(on: bgq) { _ in
-            self.session.loadTwoFactorConfig()
-        }.ensure {
-            self.stopAnimating()
-        }.done { _ in
-            self.navigationController?.popViewController(animated: true)
-        }.catch { error in
-            if let twofaError = error as? TwoFactorCallError {
-                switch twofaError {
-                case .failure(let localizedDescription), .cancel(let localizedDescription):
-                    DropAlert().error(message: localizedDescription)
+        self.startAnimating()
+        Task {
+            do {
+                let config = TwoFactorConfigItem(enabled: true, confirmed: true, data: countryCode + phone)
+                try await session.changeSettingsTwoFactor(method: method, config: config)
+                try await session.loadTwoFactorConfig()
+                
+                self.navigationController?.popViewController(animated: true)
+            } catch {
+                if let twofaError = error as? TwoFactorCallError {
+                    switch twofaError {
+                    case .failure(let localizedDescription), .cancel(let localizedDescription):
+                        DropAlert().error(message: localizedDescription)
+                    }
+                } else {
+                    DropAlert().error(message: error.localizedDescription)
                 }
-            } else {
-                DropAlert().error(message: error.localizedDescription)
             }
+            self.stopAnimating()
         }
     }
 }

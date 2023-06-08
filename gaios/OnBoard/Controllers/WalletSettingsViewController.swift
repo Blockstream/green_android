@@ -1,5 +1,5 @@
 import UIKit
-import PromiseKit
+
 
 protocol WalletSettingsViewControllerDelegate: AnyObject {
     func didSet(tor: Bool)

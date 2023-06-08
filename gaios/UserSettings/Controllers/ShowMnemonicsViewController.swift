@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 import gdk
-import PromiseKit
+
 
 class ShowMnemonicsViewController: UIViewController {
 
@@ -10,12 +10,7 @@ class ShowMnemonicsViewController: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     var items: [String] = []
     var bip39Passphrase: String?
-    var credentials: Credentials? {
-        didSet {
-            self.items = credentials?.mnemonic?.split(separator: " ").map(String.init) ?? []
-            self.bip39Passphrase = credentials?.bip39Passphrase
-        }
-    }
+    var credentials: Credentials?
     var showBip85: Bool = false
     var lightningMnemonic: String?
 
@@ -27,25 +22,18 @@ class ShowMnemonicsViewController: UIViewController {
             self.collectionView.reloadData()
             return
         }
-
-        if showBip85 {
-            Guarantee()
-                .compactMap{ WalletManager.current?.prominentSession }
-                .then{ $0.getCredentials(password: "") }
-                .get { self.credentials = $0 }
-                .compactMap{ WalletManager.current?.lightningSession?.getLightningMnemonic(credentials: $0) }
-                .get {
-                    self.lightningMnemonic = $0
+        Task {
+            do {
+                self.credentials = try await WalletManager.current?.prominentSession?.getCredentials(password: "")
+                self.items = credentials?.mnemonic?.split(separator: " ").map(String.init) ?? []
+                self.bip39Passphrase = credentials?.bip39Passphrase
+                if showBip85, let credentials = self.credentials {
+                    self.lightningMnemonic = try await WalletManager.current?.lightningSession?.getLightningMnemonic(credentials: credentials)
                     self.items = self.lightningMnemonic?.split(separator: " ").map(String.init) ?? []
-                    self.collectionView.reloadData()
                 }
-                .catch { err in print(err)}
-        } else {
-            WalletManager.current?.prominentSession?.getCredentials(password: "").done {
-                self.credentials = $0
                 self.collectionView.reloadData()
-            }.catch { err in
-                print(err)
+            } catch {
+                print(error)
             }
         }
     }

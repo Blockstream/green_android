@@ -1,9 +1,9 @@
 import Foundation
-import PromiseKit
+
 
 class AssetSelectViewModel {
 
-    var assets = AssetAmountList()
+    var assets: AssetAmountList?
     var reload: (() -> Void)?
     var enableAnyAsset: Bool
 
@@ -33,10 +33,9 @@ class AssetSelectViewModel {
     }
 
     init(assets: AssetAmountList, enableAnyAsset: Bool) {
-        self.assets = assets.sorted()
+        self.assets = assets
         self.enableAnyAsset = enableAnyAsset
-        assetSelectCellModels = self.assets
-            .map { AssetSelectCellModel(assetId: $0.0, satoshi: $0.1) }
+        assetSelectCellModels = self.assets?.amounts.map { AssetSelectCellModel(assetId: $0.0, satoshi: $0.1) } ?? []
         assetSelectCellModelsFilter = assetSelectCellModels
         reload?()
     }

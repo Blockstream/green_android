@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 import gdk
 import greenaddress
 
@@ -33,7 +33,8 @@ class SendViewController: KeyboardViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.view
         btnNext.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.nextBtn
         AnalyticsManager.shared.recordView(.send, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletItem: viewModel.account))
-
+        
+        Task(priority: .high) { await viewModel.loadFees() }
         if viewModel.transaction != nil {
             viewModel.reload()
             refreshAmountCell()
@@ -77,22 +78,25 @@ class SendViewController: KeyboardViewController {
     }
 
     func validateTransaction() {
-        Guarantee()
-        .then { self.viewModel.validateTransaction() }
-        .done { tx in
-            if let error = tx?.error, !error.isEmpty, !self.viewModel.inlineErrors.contains(error) {
-                DropAlert().error(message: error.localized)
+        Task {
+            let task = try await viewModel.validateTransaction()
+            switch await task?.result {
+            case .success(let tx):
+                if let error = tx?.error, !error.isEmpty, !self.viewModel.inlineErrors.contains(error) {
+                    DropAlert().error(message: error.localized)
+                }
+            case .failure(let err):
+                switch err {
+                case TransactionError.invalid(let localizedDescription):
+                    DropAlert().error(message: localizedDescription)
+                case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
+                    DropAlert().error(message: "id_you_are_not_connected".localized)
+                default:
+                    DropAlert().error(message: err.localizedDescription)
+                }
+            case .none:
+                break
             }
-        }.catch { error in
-            switch error {
-            case TransactionError.invalid(let localizedDescription):
-                DropAlert().error(message: localizedDescription)
-            case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
-                DropAlert().error(message: "id_you_are_not_connected".localized)
-            default:
-                DropAlert().error(message: error.localizedDescription)
-            }
-        }.finally {
             self.refreshAmountCell()
             self.updateBtnNext()
             self.reloadSections([.accountAsset, .address, .fee], animated: false)
@@ -359,15 +363,14 @@ extension SendViewController: AccountAssetViewControllerDelegate {
         viewModel.account = account
         viewModel.assetId = asset.assetId
         tableView.reloadData()
-        viewModel.validateInput()
-            .done {
-                self.refreshAmountCell()
-                self.reloadSections([.address], animated: false)
-                if self.viewModel.satoshi != nil {
-                    self.validateTransaction()
-                }
+        Task {
+            try await viewModel.validateInput()
+            self.refreshAmountCell()
+            self.reloadSections([.address], animated: false)
+            if self.viewModel.satoshi != nil {
+                self.validateTransaction()
             }
-            .catch { print($0) }
+        }
     }
 }
 
@@ -396,15 +399,14 @@ extension SendViewController: AddressEditCellDelegate {
         viewModel.input = text
         viewModel.satoshi = nil
         cleanAmountCell()
-        viewModel.validateInput()
-            .done {
-                self.refreshAmountCell()
-                self.reloadSections([.address], animated: false)
-                if self.viewModel.satoshi != nil {
-                    self.validateTransaction()
-                }
+        Task {
+            try? await viewModel.validateInput()
+            self.refreshAmountCell()
+            self.reloadSections([.address], animated: false)
+            if self.viewModel.satoshi != nil {
+                self.validateTransaction()
             }
-            .catch { print($0) }
+        }
     }
 }
 

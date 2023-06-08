@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 import gdk
 
 protocol DialogCustomFeeViewControllerDelegate: AnyObject {
@@ -28,8 +28,8 @@ class DialogCustomFeeViewController: KeyboardViewController {
     var buttonConstraint: NSLayoutConstraint?
     var account: WalletItem!
 
-    func minFeeRate() -> UInt64 {
-        guard let estimates = account.session?.getFeeEstimates() else {
+    func minFeeRate() async -> UInt64 {
+        guard let estimates = try? await account.session?.getFeeEstimates() else {
             let defaultMinFee = account.gdkNetwork.liquid ? 100 : 1000
             return UInt64(defaultMinFee)
         }
@@ -83,27 +83,28 @@ class DialogCustomFeeViewController: KeyboardViewController {
     }
 
     func validate() {
-
-        var feeRate: UInt64
-        var minFeeRate = self.minFeeRate()
-        if let storedFeeRate = storedFeeRate {
-            feeRate = storedFeeRate
-        } else if let settings = account.session?.settings {
-            feeRate = UInt64(settings.customFeeRate ?? minFeeRate)
-        } else {
-            feeRate = minFeeRate
+        Task {
+            var feeRate: UInt64
+            let minFeeRate = await self.minFeeRate()
+            if let storedFeeRate = storedFeeRate {
+                feeRate = storedFeeRate
+            } else if let settings = account.session?.settings {
+                feeRate = UInt64(settings.customFeeRate ?? minFeeRate)
+            } else {
+                feeRate = minFeeRate
+            }
+            guard var amountText = feeTextField.text else { return }
+            amountText = amountText.isEmpty ? "0" : amountText
+            amountText = amountText.unlocaleFormattedString(8)
+            guard let number = Double(amountText), number > 0 else { return }
+            if 1000 * number >= Double(UInt64.max) { return }
+            feeRate = UInt64(1000 * number)
+            if feeRate < minFeeRate {
+                DropAlert().warning(message: String(format: NSLocalizedString("id_fee_rate_must_be_at_least_s", comment: ""), String(minFeeRate)))
+                return
+            }
+            dismiss(.save, feeRate: feeRate)
         }
-        guard var amountText = feeTextField.text else { return }
-        amountText = amountText.isEmpty ? "0" : amountText
-        amountText = amountText.unlocaleFormattedString(8)
-        guard let number = Double(amountText), number > 0 else { return }
-        if 1000 * number >= Double(UInt64.max) { return }
-        feeRate = UInt64(1000 * number)
-        if feeRate < minFeeRate {
-            DropAlert().warning(message: String(format: NSLocalizedString("id_fee_rate_must_be_at_least_s", comment: ""), String(minFeeRate)))
-            return
-        }
-        dismiss(.save, feeRate: feeRate)
     }
 
     override func keyboardWillShow(notification: Notification) {

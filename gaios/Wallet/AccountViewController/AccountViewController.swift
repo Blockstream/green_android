@@ -1,5 +1,5 @@
 import UIKit
-import PromiseKit
+
 import BreezSDK
 import lightning
 import gdk
@@ -59,11 +59,6 @@ class AccountViewController: UIViewController {
         setContent()
         setStyle()
         tableView.selectRow(at: IndexPath(row: sIdx, section: AccountSection.account.rawValue), animated: false, scrollPosition: .none)
-
-        viewModel.reloadSections = reloadSections
-        viewModel.getBalance()
-        viewModel.getTransactions()
-
         AnalyticsManager.shared.recordView(.accountOverview, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
     }
 
@@ -75,11 +70,14 @@ class AccountViewController: UIViewController {
             let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: $0.rawValue),
                                                                   object: nil,
                                                                   queue: .main,
-                                                                  using: { [weak self] data in
-                self?.viewModel.handleEvent(data)
+                                                                  using: { [weak self] notification in
+                if let eventType = EventType(rawValue: notification.name.rawValue) {
+                    self?.handleEvent(eventType, details: notification.userInfo ?? [:])
+                }
             })
             notificationObservers.append(observer)
         }
+        reload()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -89,27 +87,33 @@ class AccountViewController: UIViewController {
         }
         notificationObservers = []
     }
-
-    func reloadSections(_ sections: [AccountSection], animated: Bool) {
-        if animated {
-            tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
-        } else {
-            UIView.performWithoutAnimation {
-                tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
-            }
+    
+    func reload() {
+        Task {
+            try? await viewModel.getBalance()
+            reloadSections([.disclose, .adding, .account, .assets], animated: true)
+            try? await viewModel.getTransactions()
+            reloadSections([.transaction], animated: true)
         }
-        if sections.contains(AccountSection.account) {
-            tableView.selectRow(at: IndexPath(row: sIdx, section: AccountSection.account.rawValue), animated: false, scrollPosition: .none)
+    }
+
+    @MainActor
+    func reloadSections(_ sections: [AccountSection], animated: Bool) {
+        DispatchQueue.main.async {
+            if animated {
+                self.tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
+            } else {
+                UIView.performWithoutAnimation {
+                    self.tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
+                }
+            }
+            if sections.contains(AccountSection.account) {
+                self.tableView.selectRow(at: IndexPath(row: self.sIdx, section: AccountSection.account.rawValue), animated: false, scrollPosition: .none)
+            }
         }
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
             self.tableView.refreshControl?.endRefreshing()
         }
-    }
-
-    func reloadFromParent(_ model: AccountCellModel) {
-        viewModel.accountCellModels = [model]
-        viewModel.getBalance()
-        viewModel.getTransactions(restart: true)
     }
 
     func register() {
@@ -168,8 +172,7 @@ class AccountViewController: UIViewController {
 
     // tableview refresh gesture
     @objc func callPullToRefresh(_ sender: UIRefreshControl? = nil) {
-        viewModel?.getBalance()
-        viewModel.getTransactions(restart: true)
+        reload()
     }
 
     // open settings
@@ -230,33 +233,37 @@ class AccountViewController: UIViewController {
     }
 
     func rename(name: String) {
-        firstly { self.startLoader(); return Guarantee() }
-            .then { self.viewModel.renameSubaccount(name: name) }
-            .ensure { self.stopLoader() }
-            .done { }
-            .catch { err in self.showError(err) }
+        Task {
+            do {
+                startLoader()
+                try await viewModel.renameSubaccount(name: name)
+                stopLoader()
+            } catch { showError(error) }
+        }
     }
 
     func removeSubaccount() {
-        firstly { self.startLoader(); return Guarantee() }
-            .then { self.viewModel.removeSubaccount() }
-            .ensure { self.stopLoader() }
-            .done {
-                self.delegate?.didArchiveAccount()
-                self.navigationController?.popViewController(animated: true)
-            }
-            .catch { err in self.showError(err) }
+        Task {
+            do {
+                startLoader()
+                try await viewModel.removeSubaccount()
+                stopLoader()
+                delegate?.didArchiveAccount()
+                navigationController?.popViewController(animated: true)
+            } catch { showError(error) }
+        }
     }
 
     func archive() {
-        firstly { self.startLoader(message: "Archiving"); return Guarantee() }
-            .then { self.viewModel.archiveSubaccount() }
-            .ensure { self.stopLoader() }
-            .done {
-//                DropAlert().success(message: "id_account_has_been_archived".localized)
-                self.delegate?.didArchiveAccount()
-                self.showDialog()
-            } .catch { err in self.showError(err) }
+        Task {
+            do {
+                startLoader(message: "Archiving")
+                try await viewModel.archiveSubaccount()
+                stopLoader()
+                delegate?.didArchiveAccount()
+                showDialog()
+            } catch { showError(error) }
+        }
     }
 
     func showDialog() {
@@ -326,6 +333,25 @@ class AccountViewController: UIViewController {
         if let vc = DialogScanViewController.vc {
             vc.delegate = self
             present(vc, animated: false, completion: nil)
+        }
+    }
+
+    func handleEvent(_ eventType: EventType, details: [AnyHashable: Any]) {
+        switch eventType {
+        case .Transaction, .InvoicePaid, .PaymentFailed, .PaymentSucceed:
+            reload()
+        case .Block:
+            if viewModel.cachedTransactions.filter({ $0.blockHeight == 0 }).first != nil {
+                reload()
+            }
+        case .Network:
+            guard let connected = details["connected"] as? Bool else { return }
+            guard let loginRequired = details["login_required"] as? Bool else { return }
+            if connected == true && loginRequired == false {
+                reload()
+            }
+        default:
+            break
         }
     }
 }
@@ -523,7 +549,10 @@ extension AccountViewController: UITableViewDataSourcePrefetching {
         let filteredIndexPaths = indexPaths.filter { $0.section == AccountSection.transaction.rawValue }
         let row = filteredIndexPaths.last?.row ?? 0
         if viewModel.page > 0 && row > (viewModel.txCellModels.count - 3) {
-            viewModel.getTransactions(restart: false, max: nil)
+            Task {
+                try? await viewModel.getTransactions(restart: false, max: nil)
+                reloadSections([.transaction], animated: true)
+            }
         }
     }
 }
@@ -685,7 +714,7 @@ extension AccountViewController: DialogRenameViewControllerDelegate {
 
 extension AccountViewController: TransactionViewControllerDelegate {
     func onMemoEdit() {
-        viewModel.getTransactions(restart: true)
+        Task { try? await viewModel.getTransactions(restart: true) }
     }
 }
 
@@ -707,10 +736,11 @@ extension AccountViewController: AccountArchivedViewControllerDelegate {
 extension AccountViewController: DialogScanViewControllerDelegate {
 
     func didScan(value: String, index: Int?) {
-        var account = viewModel.account!
-        let parser = Parser(selectedAccount: account, input: value, discoverable: true)
-        parser.parse()
-            .done { [self] _ in
+        Task {
+            do {
+                var account = viewModel.account!
+                let parser = Parser(selectedAccount: account, input: value, discoverable: true)
+                try await parser.parse()
                 // open lightning auth
                 switch parser.lightningType {
                 case .lnUrlAuth(let data):
@@ -733,7 +763,8 @@ extension AccountViewController: DialogScanViewControllerDelegate {
                                               transaction: tx,
                                               input: value)
                 self.sendViewController(model: sendModel)
-            }.catch { _ in DropAlert().warning(message: parser.error ?? "Invalid QR code") }
+            } catch { DropAlert().warning(message: error.localizedDescription) }
+        }
     }
 
     func ltAuthViewController(requestData: LnUrlAuthRequestData) {

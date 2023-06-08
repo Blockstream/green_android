@@ -21,7 +21,7 @@ class WatchOnlySettingsViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.load()
+        Task { await viewModel.load() }
     }
 
     func initViewModel() {
@@ -173,7 +173,7 @@ extension WatchOnlySettingsViewController: DialogWatchOnlySetUpViewControllerDel
     func watchOnlyDidUpdate(_ action: WatchOnlySetUpAction) {
             switch action {
             case .save, .delete:
-                viewModel.load()
+                Task { await viewModel.load() }
             default:
                 break
             }

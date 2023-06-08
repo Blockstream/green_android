@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 
 protocol DialogDeleteViewControllerDelegate: AnyObject {
     func didDelete(_ index: String?)

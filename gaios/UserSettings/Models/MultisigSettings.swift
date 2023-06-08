@@ -1,5 +1,5 @@
 import Foundation
-import PromiseKit
+
 
 enum MSItem: String, Codable, CaseIterable {
     case WatchOnly = "id_watchonly_login"

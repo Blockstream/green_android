@@ -1,5 +1,5 @@
 import Foundation
-import PromiseKit
+
 import BreezSDK
 import hw
 
@@ -37,26 +37,6 @@ public struct Address: Codable {
         self.scriptType = scriptType
         self.addressType = addressType
         self.script = script
-    }
-
-    public static func validate(with wallet: WalletItem, hw: HWProtocol, addr: Address, network: String) -> Promise<String> {
-        return Promise { seal in
-            let network = wallet.gdkNetwork
-            _ = hw.newReceiveAddress(chain: network.chain,
-                                     mainnet: network.mainnet,
-                                     multisig: !network.electrum,
-                                     chaincode: wallet.recoveryChainCode,
-                                     recoveryPubKey: wallet.recoveryPubKey,
-                                     walletPointer: wallet.pointer,
-                                     walletType: wallet.type.rawValue,
-                                     path: addr.userPath ?? [],
-                                     csvBlocks: addr.subtype ?? 0)
-                .subscribe(onNext: { data in
-                    seal.fulfill(data)
-                }, onError: { err in
-                    seal.reject(err)
-                })
-        }
     }
 
     public static func from(invoice: LnInvoice) -> Address {

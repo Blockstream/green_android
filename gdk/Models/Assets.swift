@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 
 public struct AssentEntity: Codable {
     public let domain: String
@@ -13,7 +13,7 @@ public struct SortingAsset {
     public let value: Int64
 }
 
-public struct AssetInfo: Codable {
+public struct AssetInfo: Codable, Equatable {
 
     enum CodingKeys: String, CodingKey {
         case assetId = "asset_id"
@@ -42,6 +42,10 @@ public struct AssetInfo: Codable {
 
     public func encode() -> [String: Any]? {
         return try? JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any]
+    }
+
+    public static func == (lhs: AssetInfo, rhs: AssetInfo) -> Bool {
+        lhs.assetId == rhs.assetId
     }
 
     // Default asset id

@@ -90,13 +90,15 @@ class ScreenLocker {
         }
         let countdown: TimeInterval = CACurrentMediaTime() - countdownInterval
 
-        WalletsRepository.shared.wallets.forEach { (id, wm) in
-            if let settings = wm.prominentSession?.settings,
-               Int(countdown) >= settings.altimeout * 60 {
-                if id == wm.account.id {
-                    self.isScreenLockLocked = true
+        Task {
+            for (id, wm) in WalletsRepository.shared.wallets {
+                if let settings = wm.prominentSession?.settings,
+                   Int(countdown) >= settings.altimeout * 60 {
+                    if id == wm.account.id {
+                        self.isScreenLockLocked = true
+                    }
+                    await WalletsRepository.shared.get(for: id)?.disconnect()
                 }
-                WalletsRepository.shared.get(for: id)?.disconnect()
             }
         }
     }

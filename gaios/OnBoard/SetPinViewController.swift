@@ -1,5 +1,5 @@
 import UIKit
-import PromiseKit
+
 import gdk
 import greenaddress
 
@@ -193,7 +193,7 @@ class SetPinViewController: UIViewController {
                 navigationController?.pushViewController(vc, animated: true)
             }
         case .verify:
-            setPin(pinCode)
+            Task { await setPin(pinCode) }
         }
     }
 
@@ -201,36 +201,42 @@ class SetPinViewController: UIViewController {
         moveToNext()
     }
 
-    fileprivate func setPin(_ pin: String) {
-        let bgq = DispatchQueue.global(qos: .background)
+    fileprivate func setPin(_ pin: String) async {
         switch pinFlow {
         case .settings:
-            self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""), isRive: false)
-            Guarantee()
-                .then(on: bgq) { self.viewModel.setup(pin: pin) }
-                .ensure { self.stopLoader() }
-                .done { self.navigationController?.popToViewController(ofClass: UserSettingsViewController.self, animated: true) }
-                .catch { self.error($0)}
+            self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""), isRive: true)
+            do {
+                try await self.viewModel.setup(pin: pin)
+            } catch {
+                self.failure(error)
+            }
+            self.stopLoader()
+            self.navigationController?.popToViewController(ofClass: UserSettingsViewController.self, animated: true)
         case .restore:
             self.startLoader(message: NSLocalizedString("id_restoring_your_wallet", comment: ""), isRive: true)
-            Guarantee()
-                .then(on: bgq) { self.viewModel.restore(pin: pin) }
-                .ensure { self.stopLoader() }
-                .done { _ = AccountNavigator.goLogged(account: AccountsRepository.shared.current!,
-                                                  nv: self.navigationController) }
-                .catch { self.error($0)}
+            do {
+                try await self.viewModel.restore(pin: pin)
+            } catch {
+                self.failure(error)
+            }
+            self.stopLoader()
+            AccountNavigator.goLogged(account: AccountsRepository.shared.current!,
+                                      nv: self.navigationController)
         case .create:
-            self.startLoader(message: NSLocalizedString("id_finishing_up", comment: ""), isRive: false)
-            Guarantee()
-                .then(on: bgq) { self.viewModel.create(pin: pin) }
-                .ensure { self.stopLoader() }
-                .done { _ = AccountNavigator.goLogged(account: AccountsRepository.shared.current!,
-                                                  nv: self.navigationController) }
-                .catch { self.error($0)}
+            self.startLoader(message: NSLocalizedString("id_finishing_up", comment: ""), isRive: true)
+            do {
+                try await self.viewModel.create(pin: pin)
+            } catch {
+                self.failure(error)
+            }
+            self.stopLoader()
+            AccountNavigator.goLogged(account: AccountsRepository.shared.current!,
+                                      nv: self.navigationController)
         }
     }
 
-    func error(_ error: Error) {
+    @MainActor
+    func failure(_ error: Error) {
         switch error {
         case GaError.GenericError(_), GaError.NotAuthorizedError(_), LoginError.connectionFailed(_), AuthenticationTypeHandler.AuthError.ConnectionFailed:
             self.showError("id_connection_failed".localized)

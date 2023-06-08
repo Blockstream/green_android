@@ -1,160 +1,261 @@
 import Foundation
 import UIKit
-import PromiseKit
 import RxSwift
+import Combine
 
 public protocol HwResolverDelegate {
-    func resolveCode(action: String, device: HWDevice, requiredData: [String: Any], chain: String?) -> Promise<HWResolverResult>
+    func resolveCode(action: String, device: HWDevice, requiredData: [String: Any], chain: String?) async throws -> HWResolverResult
 }
 
 public class HWResolver: HwResolverDelegate {
-
+    
     public init() { }
-
-    public func resolveCode(action: String, device: HWDevice, requiredData: [String: Any], chain: String?) -> Promise<HWResolverResult> {
+    
+    public func resolveCode(action: String, device: HWDevice, requiredData: [String: Any], chain: String?) async throws -> HWResolverResult {
         let hw: HWProtocol = device.isJade ? Jade.shared : Ledger.shared
         let chain = chain ?? "mainnet"
         switch action {
         case "get_xpubs":
             guard let paths = requiredData["paths"] as? [[Int]] else {
-                return Promise { $0.reject(HWError.Abort("Invalid xpubs request")) }
+                throw HWError.Abort("Invalid xpubs request")
             }
-            return getXpubs(hw: hw, paths: paths, chain: chain).compactMap { HWResolverResult(xpubs: $0) }
+            let res = try await getXpubs(hw: hw, paths: paths, chain: chain)
+            return HWResolverResult(xpubs: res)
         case "sign_message":
             guard let params = HWSignMessageParams.from(requiredData) as? HWSignMessageParams else {
-                return Promise { $0.reject(HWError.Abort("Invalid sign message request")) }
+                throw HWError.Abort("Invalid sign message request")
             }
-            return signMessage(hw: hw, params: params).compactMap { HWResolverResult(signerCommitment: $0.signerCommitment, signature: $0.signature) }
+            let res = try await signMessage(hw: hw, params: params)
+            return HWResolverResult(signerCommitment: res.signerCommitment, signature: res.signature)
         case "sign_tx":
             let data = HWSignTxParams(requiredData)
-            return signTransaction(hw: hw, params: data, chain: chain).compactMap { HWResolverResult(signerCommitments: $0.signerCommitments, signatures: $0.signatures) }
+            let res = try await signTransaction(hw: hw, params: data, chain: chain)
+            return HWResolverResult(signerCommitments: res.signerCommitments, signatures: res.signatures)
         case "get_blinding_factors":
             let usedUtxos = requiredData["used_utxos"] as? [[String: Any]]
             let transactionOutputs = requiredData["transaction_outputs"] as? [[String: Any]]
             let params = HWBlindingFactorsParams(usedUtxos: usedUtxos ?? [], transactionOutputs: transactionOutputs ?? [])
-            return getBlindingFactors(hw: hw, params: params).compactMap { HWResolverResult(assetblinders: $0.assetblinders, amountblinders: $0.amountblinders) }
+            let res = try await getBlindingFactors(hw: hw, params: params)
+            return HWResolverResult(assetblinders: res.assetblinders, amountblinders: res.amountblinders)
         case "get_blinding_nonces":
             guard let scripts = requiredData["scripts"] as? [String],
                   let publicKeys = requiredData["public_keys"] as? [String] else {
-                return Promise { $0.reject(HWError.Abort("Invalid nonces request")) }
+                throw HWError.Abort("Invalid nonces request")
             }
             var nonces = [String]()
-            return getBlindingNonces(hw: hw, scripts: scripts, publicKeys: publicKeys)
-                .compactMap { nonces = $0 }
-                .then { _ -> Promise<[String]> in
-                    if let blindingKeysRequired = requiredData["blinding_keys_required"] as? Bool,
-                       blindingKeysRequired {
-                        return self.getBlindingPublicKeys(hw: hw, scripts: scripts)
-                    }
-                    return Promise<[String]> { seal in seal.fulfill([]) }
-                }.compactMap { HWResolverResult(nonces: nonces, publicKeys: $0) }
+            var keys = [String]()
+            for (script, publicKey) in Array(zip(scripts, publicKeys)) {
+                nonces += [try await getBlindingNonce(hw: hw, script: script, publicKey: publicKey)]
+            }
+             if let blindingKeysRequired = requiredData["blinding_keys_required"] as? Bool,
+                blindingKeysRequired {
+                 for script in scripts {
+                     keys += [try await getBlindingKey(hw: hw, script: script)]
+                 }
+             }
+             return HWResolverResult(nonces: nonces, publicKeys: keys)
         case "get_blinding_public_keys":
             guard let scripts = requiredData["scripts"] as? [String] else {
-                return Promise { $0.reject(HWError.Abort("Invalid public keys request")) }
+                throw HWError.Abort("Invalid public keys request")
             }
-            return getBlindingPublicKeys(hw: hw, scripts: scripts).compactMap { HWResolverResult(publicKeys: $0)
+            
+            var keys = [String]()
+            for script in scripts {
+                keys += [try await getBlindingKey(hw: hw, script: script)]
             }
+            return HWResolverResult(publicKeys: keys)
         case "get_master_blinding_key":
-            return getMasterBlindingKey(hw: hw).compactMap { HWResolverResult(masterBlindingKey: $0)
-            }
+            let res = try await getMasterBlindingKey(hw: hw)
+            return HWResolverResult(masterBlindingKey: res)
         default:
-            return Promise { $0.reject(HWError.Abort("Invalid request")) }
+            throw HWError.Abort("Invalid request")
         }
     }
-
-    func getXpubs(hw: HWProtocol, paths: [[Int]], chain: String) -> Promise<[String]> {
-        return Promise { seal in
-            _ = hw.xpubs(network: chain, paths: paths)
-                .subscribe(onNext: { data in
-                    seal.fulfill(data)
-                }, onError: { err in
-                    seal.reject(err)
-                })
-        }
+    
+    func getXpubs(hw: HWProtocol,
+                  paths: [[Int]],
+                  chain: String,
+                  _ completion: @escaping (Result<[String], Error>) -> Void) {
+        _ = hw.xpubs(network: chain, paths: paths)
+            .subscribe(onNext: { data in
+                completion(.success(data))
+            }, onError: { err in
+                completion(.failure(err))
+            })
     }
 
-    func signMessage(hw: HWProtocol, params: HWSignMessageParams) -> Promise<HWSignMessageResult> {
-        return Promise { seal in
-            _ = Observable.just(params)
-                .observeOn(SerialDispatchQueueScheduler(qos: .background))
-                .flatMap { _ in hw.signMessage(params) }
-                .takeLast(1)
-                .subscribe(onNext: { res in
-                    seal.fulfill(res)
-                }, onError: { err in
-                    seal.reject(err)
-                })
-        }
-    }
-
-    func signTransaction(hw: HWProtocol, params: HWSignTxParams, chain: String) -> Promise<HWSignTxResponse> {
-        return Promise { seal in
-            // Increment connection timeout for sign transaction command
-            Ledger.shared.TIMEOUT = 120
-            _ = Observable.just(hw)
-                .flatMap { hw -> Observable<HWSignTxResponse> in
-                    if chain.contains("liquid") {
-                        return hw.signLiquidTransaction(network: chain, params: params)
-                    }
-                    return hw.signTransaction(network: chain, params: params)
-                }.subscribe(onNext: { res in
-                    seal.fulfill(res)
-                    Ledger.shared.TIMEOUT = 30
-                }, onError: { err in
-                    seal.reject(err)
-                })
+    func getXpubs(hw: HWProtocol,
+                  paths: [[Int]],
+                  chain: String) async throws -> [String] {
+        return try await withCheckedThrowingContinuation { continuation in
+            getXpubs(hw: hw, paths: paths, chain: chain) { result in
+                switch result {
+                case .success(let data):
+                    continuation.resume(returning: data)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
             }
+        }
     }
-
-    func getBlindingFactors(hw: HWProtocol, params: HWBlindingFactorsParams) -> Promise<HWBlindingFactorsResult> {
-        return Promise { seal in
-            _ = hw.getBlindingFactors(params: params)
-                .subscribe(onNext: { data in
-                    seal.fulfill(data)
-                }, onError: { err in
-                    seal.reject(err)
-                })
+    
+    func signMessage(hw: HWProtocol,
+                  params: HWSignMessageParams,
+                  _ completion: @escaping (Result<HWSignMessageResult, Error>) -> Void) {
+        _ = hw.signMessage(params)
+            .subscribe(onNext: { data in
+                completion(.success(data))
+            }, onError: { err in
+                completion(.failure(err))
+            })
+    }
+    
+    func signMessage(hw: HWProtocol,
+                  params: HWSignMessageParams) async throws -> HWSignMessageResult {
+        return try await withCheckedThrowingContinuation { continuation in
+            signMessage(hw: hw, params: params) { result in
+                switch result {
+                case .success(let data):
+                    continuation.resume(returning: data)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+    
+    
+    func signTransaction(hw: HWProtocol,
+                         params: HWSignTxParams,
+                         chain: String,
+                         _ completion: @escaping (Result<HWSignTxResponse, Error>) -> Void) {
+        // Increment connection timeout for sign transaction command
+        Ledger.shared.TIMEOUT = 120
+        _ = Observable.just(hw)
+            .flatMap { hw -> Observable<HWSignTxResponse> in
+                if chain.contains("liquid") {
+                    return hw.signLiquidTransaction(network: chain, params: params)
+                }
+                return hw.signTransaction(network: chain, params: params)
+            }.subscribe(onNext: { res in
+                completion(.success(res))
+                Ledger.shared.TIMEOUT = 30
+            }, onError: { err in
+                completion(.failure(err))
+            })
+    }
+    
+    func signTransaction(hw: HWProtocol,
+                         params: HWSignTxParams,
+                         chain: String) async throws -> HWSignTxResponse {
+        return try await withCheckedThrowingContinuation { continuation in
+            signTransaction(hw: hw, params: params, chain: chain) { result in
+                switch result {
+                case .success(let data):
+                    continuation.resume(returning: data)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
         }
     }
 
-    func getBlindingNonce(hw: HWProtocol, pubkey: String, script: String) -> Promise<String> {
-        return Promise { seal in
-            _ = hw.getSharedNonce(pubkey: pubkey, scriptHex: script)
-                .subscribe(onNext: { data in
-                    seal.fulfill(data!.description)
-                }, onError: { err in
-                    seal.reject(err)
-                })
+    func getBlindingFactors(hw: HWProtocol,
+                  params: HWBlindingFactorsParams,
+                  _ completion: @escaping (Result<HWBlindingFactorsResult, Error>) -> Void) {
+        _ = hw.getBlindingFactors(params: params)
+            .subscribe(onNext: { data in
+                completion(.success(data))
+            }, onError: { err in
+                completion(.failure(err))
+            })
+    }
+
+    func getBlindingFactors(hw: HWProtocol,
+                  params: HWBlindingFactorsParams) async throws -> HWBlindingFactorsResult {
+        return try await withCheckedThrowingContinuation { continuation in
+            getBlindingFactors(hw: hw, params: params) { result in
+                switch result {
+                case .success(let data):
+                    continuation.resume(returning: data)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+    
+    func getBlindingNonce(hw: HWProtocol,
+                           script: String,
+                           publicKey: String,
+                  _ completion: @escaping (Result<String, Error>) -> Void) {
+        _ = hw.getSharedNonce(pubkey: publicKey, scriptHex: script)
+            .subscribe(onNext: { data in
+                completion(.success(data!))
+            }, onError: { err in
+                completion(.failure(err))
+            })
+    }
+
+    func getBlindingNonce(hw: HWProtocol,
+                           script: String,
+                           publicKey: String) async throws -> String {
+        return try await withCheckedThrowingContinuation { continuation in
+                getBlindingNonce(hw: hw, script: script, publicKey: publicKey) { result in
+                    switch result {
+                    case .success(let data):
+                        continuation.resume(returning: data)
+                    case .failure(let error):
+                        continuation.resume(throwing: error)
+                    }
+            }
         }
     }
 
-    func getBlindingNonces(hw: HWProtocol, scripts: [String], publicKeys: [String]) -> Promise<[String]> {
-        return Promise<[String]>.chain(Array(zip(scripts, publicKeys)), 1) { self.getBlindingNonce(hw: hw, pubkey: $0.1, script: $0.0) }
+    func getBlindingKey(hw: HWProtocol,
+                        script: String,
+                  _ completion: @escaping (Result<String, Error>) -> Void) {
+        _ = hw.getBlindingKey(scriptHex: script)
+            .subscribe(onNext: { data in
+                completion(.success(data!.description))
+            }, onError: { err in
+                completion(.failure(err))
+            })
     }
-
-    func getBlindingKey(hw: HWProtocol, script: String) -> Promise<String> {
-        return Promise { seal in
-            _ = hw.getBlindingKey(scriptHex: script)
-                .subscribe(onNext: { data in
-                    seal.fulfill(data!.description)
-                }, onError: { err in
-                    seal.reject(err)
-                })
+    
+    func getBlindingKey(hw: HWProtocol, script: String) async throws -> String {
+        return try await withCheckedThrowingContinuation { continuation in
+            getBlindingKey(hw: hw, script: script) { result in
+                switch result {
+                case .success(let data):
+                    continuation.resume(returning: data)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
         }
     }
-
-    func getBlindingPublicKeys(hw: HWProtocol, scripts: [String]) -> Promise<[String]> {
-        return Promise<[String]>.chain(scripts, 1) { self.getBlindingKey(hw: hw, script: $0) }
+    
+    func getMasterBlindingKey(hw: HWProtocol,
+                  _ completion: @escaping (Result<String, Error>) -> Void) {
+        _ = hw.getMasterBlindingKey()
+            .subscribe(onNext: { data in
+                completion(.success(data.description))
+            }, onError: { err in
+                completion(.success(""))
+            })
     }
-
-    func getMasterBlindingKey(hw: HWProtocol) -> Promise<String> {
-        return Promise { seal in
-            _ = hw.getMasterBlindingKey()
-                .subscribe(onNext: { data in
-                    seal.fulfill(data.description)
-                }, onError: { _ in
-                    seal.fulfill("")
-                })
+    
+    func getMasterBlindingKey(hw: HWProtocol) async throws -> String {
+        return try await withCheckedThrowingContinuation { continuation in
+            getMasterBlindingKey(hw: hw) { result in
+                switch result {
+                case .success(let data):
+                    continuation.resume(returning: data)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
 import Foundation
 import BreezSDK
-import PromiseKit
+
 import gdk
 import greenaddress
 import lightning
@@ -16,9 +16,8 @@ class LightningSessionManager: SessionManager {
     
     var chainNetwork: NetworkSecurityCase { gdkNetwork.mainnet ? .bitcoinSS : .testnetSS }
 
-    override func connect() -> Promise<Void> {
+    override func connect() async throws {
         connected = true
-        return Promise().asVoid()
     }
 
     private func initLightningBridge(_ params: Credentials) -> LightningBridge {
@@ -36,27 +35,10 @@ class LightningSessionManager: SessionManager {
         return lightBridge?.connectToGreenlight(mnemonic: mnemonic, isRestore: isRestore) ?? false
     }
 
-    override func loginUser(_ params: Credentials, restore: Bool) -> Promise<LoginUserResult> {
-        let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee()
-            .then(on: bgq) {
-                return Promise { seal in
-                    seal.fulfill( try self.loginUser_(params, restore: restore) )
-                }
-            }
+    override func register(credentials: Credentials? = nil, hw: HWDevice? = nil) async throws {
+        _ = try self.loginUser_(credentials!, restore: false)
     }
 
-    override func register(credentials: Credentials? = nil, hw: HWDevice? = nil) -> Promise<Void> {
-        let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee()
-            .then(on: bgq) {
-                return Promise { seal in
-                    seal.fulfill( try self.loginUser_(credentials!, restore: false) )
-                }
-            }.asVoid()
-    }
-
-    
     private func loginUser_(_ params: Credentials, restore: Bool) throws -> LoginUserResult {
         let walletId = walletIdentifier(credentials: params)
         let walletHashId = walletId!.walletHashId
@@ -86,7 +68,7 @@ class LightningSessionManager: SessionManager {
         lightBridge?.stop()
     }
 
-    override func disconnect() {
+    override func disconnect() async throws {
         logged = false
         connected = false
         lightBridge?.stop()
@@ -121,37 +103,26 @@ class LightningSessionManager: SessionManager {
         return AppSettings.shared.lightningEnabled && AppSettings.shared.experimental
     }
 
-    override func getBalance(subaccount: UInt32, numConfs: Int) -> Promise<[String : Int64]> {
-        return Promise { seal in
-            let sats = lightBridge?.balance()
-            let balance = [gdkNetwork.getFeeAsset(): Int64(sats ?? 0)]
-            seal.fulfill(balance)
-        }
+    override func getBalance(subaccount: UInt32, numConfs: Int) async throws -> [String : Int64] {
+        let sats = lightBridge?.balance()
+        let balance = [gdkNetwork.getFeeAsset(): Int64(sats ?? 0)]
+        return balance
     }
 
-    func subaccount_() -> WalletItem {
+    override func subaccount(_ pointer: UInt32) async throws -> WalletItem {
         return WalletItem(name: "", pointer: 0, receivingId: "", type: .lightning, hidden: false, network: NetworkSecurityCase.lightning.network)
     }
 
-    override func subaccount(_ pointer: UInt32) -> Promise<WalletItem> {
-        return Guarantee()
-            .compactMap(on: bgq) { self.subaccount_() }
+    override func subaccounts(_ refresh: Bool = false) async throws -> [WalletItem] {
+        let subaccount = try await subaccount(0)
+        return [subaccount]
     }
 
-    override func subaccounts(_ refresh: Bool = false) -> Promise<[WalletItem]> {
-        return subaccount(0)
-            .compactMap { [$0] }
+    override func signTransaction(tx: Transaction) async throws -> Transaction {
+        return tx
     }
 
-    override func signTransaction(tx: Transaction) -> Promise<Transaction> {
-        return Promise.value(tx)
-    }
-
-    override func sendTransaction(tx: Transaction) -> Promise<Void> {
-        return Guarantee().compactMap(on: bgq) { try self.sendTransaction_(tx: tx) }
-    }
-
-    private func sendTransaction_(tx: Transaction) throws {
+    override func sendTransaction(tx: Transaction) async throws {
         let invoiceOrLnUrl = tx.addressees.first?.address
         let satoshi = tx.addressees.first?.satoshi ?? 0
         let comment = tx.memo
@@ -203,11 +174,7 @@ class LightningSessionManager: SessionManager {
         return nil
     }
 
-    override func createTransaction(tx: Transaction) -> Promise<Transaction> {
-        return Guarantee().compactMap(on: bgq) { try self.createTransaction_(tx: tx) }
-    }
-
-    private func createTransaction_(tx: Transaction) -> Transaction {
+    override func createTransaction(tx: Transaction) async throws -> Transaction {
         let address = tx.addressees.first?.address ?? ""
         let userInputSatoshi = tx.addressees.first?.satoshi ?? 0
         switch lightBridge?.parseBoltOrLNUrl(input: address) {
@@ -252,22 +219,17 @@ class LightningSessionManager: SessionManager {
         }
     }
 
-    override func discovery() -> Promise<Bool> {
-        return Guarantee()
-            .then(on: bgq) { self.getBalance(subaccount: 0, numConfs: 0) }
-            .compactMap { $0["btc"] != 0 }
+    override func discovery() async throws -> Bool {
+        return try await getBalance(subaccount: 0, numConfs: 0)["btc"] != 0
     }
 
-    func createInvoice(satoshi: UInt64, description: String) throws -> LnInvoice {
-        let invoice = try lightBridge?.createInvoice(satoshi: satoshi, description: description)
-        if let invoice = invoice { return invoice }
-        throw GaError.GenericError("Invalid invoice")
+    func createInvoice(satoshi: UInt64, description: String) async throws -> LnInvoice? {
+        try lightBridge?.createInvoice(satoshi: satoshi, description: description)
     }
 
-    override func parseTxInput(_ input: String, satoshi: Int64?, assetId: String?) -> Promise<ValidateAddresseesResult> {
-        return Guarantee()
-            .compactMap(on: bgq) { self.parseLightningInputType(input) }
-            .compactMap(on: bgq) { self.parseLightningTxInput(input, inputType: $0) }
+    override func parseTxInput(_ input: String, satoshi: Int64?, assetId: String?) async throws -> ValidateAddresseesResult {
+        let inputType = parseLightningInputType(input)!
+        return parseLightningTxInput(input, inputType: inputType)
     }
 
     func parseLightningInputType(_ input: String) -> InputType? {
@@ -291,23 +253,22 @@ class LightningSessionManager: SessionManager {
         }
     }
 
-    override func getReceiveAddress(subaccount: UInt32) -> Promise<Address> {
-        return Guarantee()
-            .compactMap { self.lightBridge }
-            .compactMap { $0.receiveOnchain() }
-            .compactMap { Address.from(swapInfo: $0) }
-    }
-
-    override func transactions(subaccount: UInt32, first: UInt32 = 0) -> Promise<Transactions> {
-        if first > 0 {
-            return Promise.value(Transactions(list: []))
+    override func getReceiveAddress(subaccount: UInt32) async throws -> Address {
+        guard let addr = lightBridge?.receiveOnchain() else {
+            throw GaError.GenericError()
         }
-        return Guarantee()
-                .compactMap(on: bgq) { self.transactions_(subaccount: subaccount, first: first)}
+        return Address.from(swapInfo: addr)
     }
 
-    func transactions_(subaccount: UInt32, first: UInt32 = 0) -> Transactions {
-        let subaccount = self.subaccount_().hashValue
+    override func transactions(subaccount: UInt32, first: UInt32 = 0) async throws -> Transactions {
+        if first > 0 {
+            return Transactions(list: [])
+        }
+        return try await transactions_(subaccount: subaccount, first: first)
+    }
+
+    func transactions_(subaccount: UInt32, first: UInt32 = 0) async throws -> Transactions {
+        let subaccount = try await subaccounts().first.hashValue
         guard let lb = self.lightBridge else {
             return Transactions(list: [])
         }

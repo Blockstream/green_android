@@ -1,5 +1,5 @@
 import UIKit
-import PromiseKit
+
 
 class MultisigSettingsViewController: UIViewController {
 
@@ -21,7 +21,7 @@ class MultisigSettingsViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.load()
+        Task { try? await viewModel.load() }
     }
 
     func initViewModel() {
@@ -104,13 +104,26 @@ extension MultisigSettingsViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
+
+    func showRecoveryTransactions() {
+        let enabled = viewModel.settings.notifications?.emailOutgoing ?? false
+        let alert = UIAlertController(title: NSLocalizedString("id_recovery_transaction_emails", comment: ""), message: "", preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_enable", comment: ""), style: enabled ? .destructive : .default) { [self] _ in
+            Task { try? await viewModel.enableRecoveryTransactions(true) }
+        })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_disable", comment: ""), style: !enabled ? .destructive : .default) { _ in
+            Task { try? await self.viewModel.enableRecoveryTransactions(false) }
+        })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+        self.present(alert, animated: true, completion: nil)
+    }
 }
 
 extension MultisigSettingsViewController: DialogWatchOnlySetUpViewControllerDelegate {
     func watchOnlyDidUpdate(_ action: WatchOnlySetUpAction) {
         switch action {
         case .save, .delete:
-            viewModel.load()
+            Task { try? await viewModel.load() }
         default:
             break
         }

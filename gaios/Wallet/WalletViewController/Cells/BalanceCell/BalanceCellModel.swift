@@ -20,11 +20,10 @@ class BalanceCellModel {
 
     var value: String
     var valueChange: String
-    var cachedBalance: [(String, Int64)]
     var assetId: String
 
     init(satoshi: Int64,
-         cachedBalance: [(String, Int64)],
+         cachedBalance: AssetAmountList,
          mode: BalanceDisplayMode,
          assetId: String) {
         self.cachedBalance = cachedBalance

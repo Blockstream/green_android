@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 import gdk
 
 class MultisigSettingsViewModel {
@@ -58,10 +58,18 @@ class MultisigSettingsViewModel {
         return [watchOnly, twoFactorAuthentication, pgp]
     }
 
-    func load() {
-        Guarantee().then { self.session.getWatchOnlyUsername() }
-            .map { self.getItems(username: $0) }
-            .done { self.cellModels = $0.map { MultisigSettingsCellModel($0) } }
-            .catch { err in self.error?(err.localizedDescription) }
+    func load() async throws {
+        if let username = try await session.getWatchOnlyUsername() {
+            let items = getItems(username: username)
+            cellModels = items.map { MultisigSettingsCellModel($0) }
+            
+        }
+    }
+
+    func enableRecoveryTransactions(_ enable: Bool) async throws {
+        let settings = session.settings!
+        settings.notifications = SettingsNotifications(emailIncoming: enable, emailOutgoing: enable)
+        try await session.changeSettings(settings: settings)
+        try await load()
     }
 }

@@ -1,5 +1,5 @@
 import UIKit
-import PromiseKit
+
 import gdk
 import greenaddress
 
@@ -174,27 +174,25 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         }
     }
 
-    func getMnemonicString() -> Promise<(String, String)> {
-        return Promise { seal in
-            if self.itemsCount() == 27 {
-                let alert = UIAlertController(title: NSLocalizedString("id_encryption_passphrase", comment: ""), message: NSLocalizedString("id_please_provide_your_passphrase", comment: ""), preferredStyle: .alert)
-                alert.addTextField { textField in
-                    textField.keyboardType = .asciiCapable
-                    textField.isSecureTextEntry = true
-                }
-                alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in
-                    seal.reject(GaError.GenericError())
-                })
-                alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { (_: UIAlertAction) in
-                    let textField = alert.textFields![0]
-                    seal.fulfill((self.mnemonic.prefix(upTo: 27).joined(separator: " ").lowercased(), textField.text!))
-                })
-                DispatchQueue.main.async {
-                    self.present(alert, animated: true, completion: nil)
-                }
-            } else {
-                seal.fulfill((mnemonic.prefix(upTo: 24).joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines).lowercased(), String()))
+    func getMnemonicString(completition: @escaping (String?, String?) -> Void) {
+        if self.itemsCount() == 27 {
+            let alert = UIAlertController(title: NSLocalizedString("id_encryption_passphrase", comment: ""), message: NSLocalizedString("id_please_provide_your_passphrase", comment: ""), preferredStyle: .alert)
+            alert.addTextField { textField in
+                textField.keyboardType = .asciiCapable
+                textField.isSecureTextEntry = true
             }
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in
+                completition(nil,nil)
+            })
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { (_: UIAlertAction) in
+                let textField = alert.textFields![0]
+                completition(self.mnemonic.prefix(upTo: 27).joined(separator: " ").lowercased(), textField.text!)
+            })
+            DispatchQueue.main.async {
+                self.present(alert, animated: true, completion: nil)
+            }
+        } else {
+            completition(mnemonic.prefix(upTo: 24).joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines).lowercased(), String())
         }
     }
 
@@ -233,30 +231,36 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     }
 
     func addSubaccount() {
-        Guarantee()
-            .then { self.getMnemonicString() }
-            .then { self.viewModel.validateMnemonic($0.0) }
-            .done {
-                self.dismiss(animated: true)
-                let phrase = self.mnemonic.joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-                self.delegate?.didExistingRecoveryPhrase(phrase)
-            }.catch { err in self.showLoginError(err) }
+        getMnemonicString() { (mnemonic, password) in
+            guard let mnemonic = mnemonic else { return }
+            Task {
+                do {
+                    try await self.viewModel.validateMnemonic(mnemonic)
+                    self.dismiss(animated: true)
+                    let phrase = self.mnemonic.joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+                    self.delegate?.didExistingRecoveryPhrase(phrase)
+                } catch { self.showLoginError(error) }
+            }
+        }
     }
 
     func restoreWallet() {
         let testnet = OnBoardManager.shared.chainType == .testnet
-        Guarantee()
-            .then { self.getMnemonicString() }
-            .then { res in self.viewModel.validateMnemonic(res.0).map { res } }
-            .compactMap { Credentials(mnemonic: $0.0, password: $0.1) }
-            .done { credentials in
-                let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-                if let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
-                    vc.pinFlow = .restore
-                    vc.viewModel = SetPinViewModel(credentials: credentials, testnet: testnet, restoredAccount: self.restoredAccount)
-                    self.navigationController?.pushViewController(vc, animated: true)
-                }
-            }.catch { err in self.showLoginError(err) }
+        getMnemonicString() { (mnemonic, password) in
+            guard let mnemonic = mnemonic else { return }
+            Task {
+                do {
+                    try await self.viewModel.validateMnemonic(mnemonic)
+                    let credentials = Credentials(mnemonic: mnemonic, password: password)
+                    let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+                    if let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
+                        vc.pinFlow = .restore
+                        vc.viewModel = SetPinViewModel(credentials: credentials, testnet: testnet, restoredAccount: self.restoredAccount)
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    }
+                } catch { self.showLoginError(error) }
+            }
+        }
     }
 
     @IBAction func doneButtonClicked(_ sender: Any) {

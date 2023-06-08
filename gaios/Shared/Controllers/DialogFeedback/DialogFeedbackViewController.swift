@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 
 protocol DialogFeedbackViewControllerDelegate: AnyObject {
     func didSend(rating: Int, email: String?, comment: String)

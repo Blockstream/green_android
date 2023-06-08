@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 import gdk
 
 protocol AssetsListViewControllerDelegate: AnyObject {
@@ -12,16 +12,10 @@ class AssetsListViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var btnDismiss: UIButton!
 
-    var wallet: WalletItem?
+    var assetAmountList: AssetAmountList!
     var index: Int?
 
     weak var delegate: AssetsListViewControllerDelegate?
-
-    private var assets: AssetAmountList {
-        get {
-            return AssetAmountList(wallet!.satoshi ?? [:]).sorted()
-        }
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,15 +52,16 @@ extension AssetsListViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
-        return assets.count
+        return assetAmountList.amounts.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: "AssetCell") as? AssetCell {
-            let tag = assets[indexPath.row].0
-            let info = WalletManager.current?.registry.info(for: tag)
+            let assetAmount = assetAmountList.amounts[indexPath.row]
+            let tag = assetAmount.0
+            let info = assetAmountList.assets[tag]
             let icon = WalletManager.current?.registry.image(for: tag)
-            let satoshi = assets[indexPath.row].1
+            let satoshi = assetAmount.1
             cell.configure(tag: tag, info: info, icon: icon, satoshi: satoshi)
             cell.selectionStyle = .none
             return cell
@@ -79,7 +74,7 @@ extension AssetsListViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let tag = assets[indexPath.row].0
+        let tag = assetAmountList.amounts[indexPath.row].0
         delegate?.didSelect(assetId: tag, index: index)
         dismiss(animated: true)
     }

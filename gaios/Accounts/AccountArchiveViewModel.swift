@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 import gdk
 
 class AccountArchiveViewModel {
@@ -22,22 +22,15 @@ class AccountArchiveViewModel {
         }
     }
 
-    func loadSubaccounts() {
-        wm.subaccounts()
-            .compactMap { $0.filter { $0.hidden } }
-            .then { self.wm.balances(subaccounts: $0) }
-            .done { _ in
-                self.accountCellModels = self.subaccounts.map { AccountCellModel(subaccount: $0, satoshi: $0.btc) }
-            }.catch { err in
-                print(err)
-            }
+    func loadSubaccounts() async throws {
+        let subaccounts = try await wm.subaccounts().filter { $0.hidden }
+        let res = try? await wm.balances(subaccounts: subaccounts)
+        self.accountCellModels = subaccounts.map { AccountCellModel(subaccount: $0, satoshi: $0.btc) }
     }
 
-    func unarchiveSubaccount(_ subaccount: WalletItem) {
+    func unarchiveSubaccount(_ subaccount: WalletItem) async throws {
         guard let session = WalletManager.current?.sessions[subaccount.gdkNetwork.network] else { return }
-        session.updateSubaccount(subaccount: subaccount.pointer, hidden: false)
-            .done { _ in self.loadSubaccounts() }
-            .catch { e in print(e.localizedDescription) }
+        try? await session.updateSubaccount(subaccount: subaccount.pointer, hidden: false)
+        try? await loadSubaccounts()
     }
-
 }

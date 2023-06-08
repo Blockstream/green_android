@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 
 protocol DialogShareTxOptionViewControllerDelegate: AnyObject {
     func didSelect(_ option: TxShareOption)

@@ -1,5 +1,5 @@
 import UIKit
-import PromiseKit
+
 import gdk
 
 enum SecuritySelectSection: Int, CaseIterable {
@@ -52,23 +52,21 @@ class SecuritySelectViewController: UIViewController {
         setStyle()
     }
 
-    func unarchiveCreateDialog() -> Promise<Bool> {
-        return Promise { result in
-            let alert = UIAlertController(title: NSLocalizedString("Archived Account", comment: ""),
+    func unarchiveCreateDialog(completion: @escaping (Bool) -> ()) {
+        let alert = UIAlertController(title: NSLocalizedString("Archived Account", comment: ""),
                                           message: NSLocalizedString("There is already an archived account. Do you want to create a new one?", comment: ""),
                                           preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("Unarchived Account", comment: ""),
                                           style: .cancel) { (_: UIAlertAction) in
-                result.fulfill(false)
+                completion(false)
             })
             alert.addAction(UIAlertAction(title: NSLocalizedString("Create", comment: ""),
                                           style: .default) { (_: UIAlertAction) in
-                result.fulfill(true)
+                completion(true)
             })
             DispatchQueue.main.async {
                 self.present(alert, animated: true, completion: nil)
             }
-        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -201,8 +199,10 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         case .asset:
             let storyboard = UIStoryboard(name: "Utility", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "AssetSelectViewController") as? AssetSelectViewController {
-                let assets: AssetAmountList? = WalletManager.current?.registry.all.map { ($0.assetId, 0) }
-                vc.viewModel = AssetSelectViewModel(assets: assets ?? AssetAmountList(), enableAnyAsset: true)
+                let assetIds = WalletManager.current?.registry.all.map { ($0.assetId, Int64(0)) }
+                let dict = Dictionary(uniqueKeysWithValues: assetIds ?? [])
+                let list = AssetAmountList(dict)
+                vc.viewModel = AssetSelectViewModel(assets: list, enableAnyAsset: true)
                 vc.delegate = self
                 navigationController?.pushViewController(vc, animated: true)
             }
@@ -237,16 +237,20 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
     }
 
     func accountCreate(_ policy: PolicyCellType) {
-        let bgq = DispatchQueue.global(qos: .background)
         let msg = "Creating \(policy.accountType.shortString) account...".localized
-        firstly { self.startLoader(message: msg); return Guarantee() }
-            .then(on: bgq) { self.viewModel.create(policy: policy, asset: self.viewModel.asset, params: nil) }
-            .ensure { self.stopLoader() }
-            .done { wallet in
-                DropAlert().success(message: "id_new_account_created".localized)
-                self.navigationController?.popViewController(animated: true)
-                self.delegate?.didCreatedWallet(wallet)
-            }.catch { err in self.showError(err)}
+        self.startLoader(message: msg)
+        Task {
+            do {
+                if let wallet = try await viewModel.create(policy: policy, asset: self.viewModel.asset, params: nil) {
+                    DropAlert().success(message: "id_new_account_created".localized)
+                    self.navigationController?.popViewController(animated: true)
+                    self.delegate?.didCreatedWallet(wallet)
+                }
+            } catch {
+                self.showError(error)
+            }
+            self.stopLoader()
+        }
     }
 
     func showHWCheckDialog() {
@@ -262,15 +266,18 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         if AccountsRepository.shared.current?.isHW ?? false {
             showHWCheckDialog()
         }
-        let bgq = DispatchQueue.global(qos: .background)
-        firstly { self.startLoader(message: ""); return Guarantee() }
-            .then(on: bgq) { self.viewModel.create(policy: policy, asset: asset, params: params) }
-            .ensure { self.stopLoader(); self.dialogJadeCheckViewController?.dismiss()}
-            .done { wallet in
-                DropAlert().success(message: "id_new_account_created".localized)
-                self.navigationController?.popToViewController(ofClass: WalletViewController.self, animated: true)
-                self.delegate?.didCreatedWallet(wallet)
-            }.catch { err in self.showError(err)}
+        Task {
+            do {
+                if let wallet = try await viewModel.create(policy: policy, asset: asset, params: params) {
+                    DropAlert().success(message: "id_new_account_created".localized)
+                    self.navigationController?.popToViewController(ofClass: WalletViewController.self, animated: true)
+                    self.delegate?.didCreatedWallet(wallet)
+                }
+            } catch {
+                self.showError(error)
+            }
+            self.stopLoader()
+        }
     }
 }
 

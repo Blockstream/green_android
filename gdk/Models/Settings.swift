@@ -1,5 +1,5 @@
 import Foundation
-import PromiseKit
+
 
 // Section of settings
 public enum SettingsSections: String, Codable, CaseIterable {

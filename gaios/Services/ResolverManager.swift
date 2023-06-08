@@ -1,5 +1,5 @@
 import Foundation
-import PromiseKit
+
 import UIKit
 import gdk
 import greenaddress
@@ -10,7 +10,7 @@ class ResolverManager {
     let resolver: GDKResolver
     let session: SessionManager?
     
-    init(_ factor: TwoFactorCall, chain: String, connected: @escaping() -> Bool = { true }, session: SessionManager?) {
+    init(_ factor: TwoFactorCall, chain: String, connected: @escaping() -> Bool = { true }, session: SessionManager? = nil) {
         self.session = session
         resolver = GDKResolver(factor,
                                popupDelegate: PopupResolver(),
@@ -20,25 +20,12 @@ class ResolverManager {
         
     }
 
-    func run() -> Promise<[String: Any]> {
-        return resolver.resolve()
-            .recover { err in
-                switch err {
-                case TwoFactorCallError.cancel(let txt), TwoFactorCallError.failure(let txt):
-                    if txt == "Authentication Required" {
-                        self.session?.reconnect()
-                            .done { print("reconnected") }
-                            .catch { _ in print ("reconnection failure") }
-                    }
-                default:
-                    break
-                }
-                return Promise<[String: Any]>(error: err)
-            }.get { _ in
-                DispatchQueue.main.async {
-                    UIApplication.topViewController()?.stopAnimating()
-                }
-            }
+    func run() async throws -> [String: Any]? {
+        let res = try await resolver.resolve()
+        DispatchQueue.main.async {
+            UIApplication.topViewController()?.stopAnimating()
+        }
+        return res
     }
 }
 
@@ -62,60 +49,71 @@ class CodeAlertController: UIAlertController {
 
 class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate {
 
-    func code(_ method: String) -> Promise<String> {
+    private var textContinuation: CheckedContinuation<String, Error>?
+    
+    func code(_ method: String) async throws -> String {
         DispatchQueue.main.async {
             UIApplication.topViewController()?.stopAnimating()
         }
-        return Promise { result in
-            let methodDesc: String
-            if method == TwoFactorType.email.rawValue { methodDesc = "id_email" } else if method == TwoFactorType.phone.rawValue { methodDesc = "id_phone_call" } else if method == TwoFactorType.sms.rawValue { methodDesc = "id_sms" } else { methodDesc = "id_authenticator_app" }
-            let title = String(format: NSLocalizedString("id_please_provide_your_1s_code", comment: ""), NSLocalizedString(methodDesc, comment: ""))
-            let alert = CodeAlertController(title: title, message: "", preferredStyle: .alert)
-            alert.addTextField {[weak self] (textField: UITextField!) in
-                textField.placeholder = ""
-                textField.keyboardType = .numberPad
-                textField.delegate = self
-                //textField.addTarget(self, action: #selector(alert.codeResolverTextFieldDidChange), for: .editingChanged)
-            }
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in
-                result.reject(TwoFactorCallError.cancel(localizedDescription: NSLocalizedString("id_action_canceled", comment: "")))
-            })
-            alert.didDisappearBlock = {[weak alert] _ in
-                if alert?.textFields?.first?.text?.count == 6 {
-                    result.fulfill((alert?.textFields?.first?.text)!)
-                    DispatchQueue.main.async {
-                        UIApplication.topViewController()?.startAnimating()
-                    }
-                }
-            }
-            DispatchQueue.main.async {
-                UIApplication.topViewController()?.present(alert, animated: true, completion: nil)
-            }
+        return try await withCheckedThrowingContinuation { continuation in
+            textContinuation = continuation
+            codeDialog(method)
         }
     }
 
-    func method(_ methods: [String]) -> Promise<String> {
+    func codeDialog(_ method: String) {
+        let methodDesc: String
+        if method == TwoFactorType.email.rawValue { methodDesc = "id_email" } else if method == TwoFactorType.phone.rawValue { methodDesc = "id_phone_call" } else if method == TwoFactorType.sms.rawValue { methodDesc = "id_sms" } else { methodDesc = "id_authenticator_app" }
+        let title = String(format: NSLocalizedString("id_please_provide_your_1s_code", comment: ""), NSLocalizedString(methodDesc, comment: ""))
+        let alert = CodeAlertController(title: title, message: "", preferredStyle: .alert)
+        alert.addTextField {[weak self] (textField: UITextField!) in
+            textField.placeholder = ""
+            textField.keyboardType = .numberPad
+            textField.delegate = self
+            //textField.addTarget(self, action: #selector(alert.codeResolverTextFieldDidChange), for: .editingChanged)
+        }
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in
+            self.textContinuation?.resume(throwing: TwoFactorCallError.cancel(localizedDescription: "id_action_canceled".localized))
+        })
+        alert.didDisappearBlock = {[weak alert] _ in
+            if let text = alert?.textFields?.first?.text, text.count == 6 {
+                self.textContinuation?.resume(returning: text)
+                DispatchQueue.main.async {
+                    UIApplication.topViewController()?.startAnimating()
+                }
+            }
+        }
+        DispatchQueue.main.async {
+            UIApplication.topViewController()?.present(alert, animated: true, completion: nil)
+        }
+    }
+
+    func method(_ methods: [String]) async throws -> String {
         DispatchQueue.main.async {
             UIApplication.topViewController()?.stopAnimating()
         }
-        return Promise { result in
-            let alert = UIAlertController(title: NSLocalizedString("id_choose_twofactor_authentication", comment: ""), message: NSLocalizedString("id_choose_method_to_authorize_the", comment: ""), preferredStyle: .alert)
-            methods.forEach { (method: String) in
-                let methodDesc: String
-                if method == TwoFactorType.email.rawValue { methodDesc = "id_email" } else if method == TwoFactorType.phone.rawValue { methodDesc = "id_phone_call" } else if method == TwoFactorType.sms.rawValue { methodDesc = "id_sms" } else { methodDesc = "id_authenticator_app" }
-                alert.addAction(UIAlertAction(title: NSLocalizedString(methodDesc, comment: ""), style: .default) { (_: UIAlertAction) in
-                    result.fulfill(method)
-                    DispatchQueue.main.async {
-                        UIApplication.topViewController()?.startAnimating()
-                    }
-                })
-            }
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in
-                result.reject(TwoFactorCallError.cancel(localizedDescription: NSLocalizedString("id_action_canceled", comment: "")))
+        return try await withCheckedThrowingContinuation { continuation in
+            textContinuation = continuation
+            methodDialog(methods)
+        }
+    }
+    func methodDialog(_ methods: [String]) {
+        let alert = UIAlertController(title: NSLocalizedString("id_choose_twofactor_authentication", comment: ""), message: NSLocalizedString("id_choose_method_to_authorize_the", comment: ""), preferredStyle: .alert)
+        methods.forEach { (method: String) in
+            let methodDesc: String
+            if method == TwoFactorType.email.rawValue { methodDesc = "id_email" } else if method == TwoFactorType.phone.rawValue { methodDesc = "id_phone_call" } else if method == TwoFactorType.sms.rawValue { methodDesc = "id_sms" } else { methodDesc = "id_authenticator_app" }
+            alert.addAction(UIAlertAction(title: NSLocalizedString(methodDesc, comment: ""), style: .default) { (_: UIAlertAction) in
+                self.textContinuation?.resume(returning: method)
+                DispatchQueue.main.async {
+                    UIApplication.topViewController()?.startAnimating()
+                }
             })
-            DispatchQueue.main.async {
-                UIApplication.topViewController()?.present(alert, animated: true, completion: nil)
-            }
+        }
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in
+            self.textContinuation?.resume(throwing: TwoFactorCallError.cancel(localizedDescription: "id_action_canceled".localized))
+        })
+        DispatchQueue.main.async {
+            UIApplication.topViewController()?.present(alert, animated: true, completion: nil)
         }
     }
 

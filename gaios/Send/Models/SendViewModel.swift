@@ -1,17 +1,18 @@
 import Foundation
-import PromiseKit
+
 import BreezSDK
 import UIKit
 import gdk
 
 class SendViewModel {
-
+    
     var wm: WalletManager? { WalletManager.current }
     var recipientCellModels = [RecipientCellModel]()
     var transaction: Transaction?
     var inputType: TxType
     var remoteAlert: RemoteAlert?
-
+    var validateTask: Task<Transaction?, Error>?
+    
     var account: WalletItem {
         didSet {
             transaction = nil
@@ -29,7 +30,7 @@ class SendViewModel {
     var feeRate: UInt64? = nil
     var isFiat: Bool = false
     var editable: Bool = true
-
+    
     var transactionPriority: TransactionPriority = .Medium {
         didSet {
             if transactionPriority != .Custom {
@@ -64,31 +65,27 @@ class SendViewModel {
         }
     }
     var defaultMinFee: UInt64 { session.gdkNetwork.liquid ? 100 : 1000 }
-    var feeBtcEstimates = [UInt64?]()
-    var feeLiquidEstimates = [UInt64?]()
-    var feeEstimates: [UInt64?] {
+    var feeLiquidEstimates = [UInt64](repeating: 100, count: 25)
+    var feeBtcEstimates = [UInt64](repeating: 1000, count: 25)
+    var feeEstimates: [UInt64] {
         session.gdkNetwork.liquid ? feeLiquidEstimates : feeBtcEstimates
     }
-
-    func loadFees() {
-        feeLiquidEstimates = [UInt64?](repeating: 100, count: 25)
-        feeBtcEstimates = [UInt64?](repeating: 1000, count: 25)
-        Guarantee()
-            .compactMap { self.wm?.activeSessions.values.filter { !$0.gdkNetwork.liquid && !$0.gdkNetwork.lightning }.first }
-            .compactMap(on: bgq) { $0.getFeeEstimates() }
-            .done { self.feeBtcEstimates = $0 }
-            .catch { _ in }
+    
+    func loadFees() async {
+        let session = self.wm?.activeSessions.values.filter { !$0.gdkNetwork.liquid && !$0.gdkNetwork.lightning }.first
+        if let fees = try? await session?.getFeeEstimates() {
+            self.feeBtcEstimates = fees
+        }
     }
-
+    
     private var session: SessionManager { account.session! }
     private var isLiquid: Bool { session.gdkNetwork.liquid }
     private var isBtc: Bool { !session.gdkNetwork.liquid }
     private var isLightning: Bool { !session.gdkNetwork.lightning }
     private var btc: String { session.gdkNetwork.getFeeAsset() }
     private var feeAsset: String { session.gdkNetwork.getFeeAsset() }
-    private var validateTask: ValidateTask?
     private let bgq = DispatchQueue.global(qos: .userInitiated)
-
+    
     init(account: WalletItem, inputType: TxType, transaction: Transaction?, input: String?) {
         self.account = account
         self.transaction = transaction
@@ -97,48 +94,72 @@ class SendViewModel {
         self.transactionPriority = inputType == .bumpFee ? .Custom : .Medium
         self.remoteAlert = RemoteAlertManager.shared.alerts(screen: .send, networks: wm?.activeNetworks ?? []).first
         self.input = input
-        self.loadFees()
     }
-
-    func validateTransaction() -> Promise<Transaction?> {
-        var tx = Transaction(self.transaction?.details ?? [:], subaccount: account.hashValue)
-        switch inputType {
-        case .transaction:
-            let asset = assetId == "btc" ? nil : assetId
-            tx.addressees = [Addressee.from(address: input ?? "", satoshi: satoshi ?? 0, assetId: asset)]
-            tx.feeRate = feeRate ?? feeEstimates[transactionPriority.rawValue] ?? defaultMinFee
-            tx.sendAll = sendAll
-        case .sweep:
-            tx.privateKey = input
-            tx.feeRate = feeRate ?? feeEstimates[transactionPriority.rawValue] ?? defaultMinFee
-        case .bumpFee:
-            tx.feeRate = feeRate ?? feeEstimates[transactionPriority.rawValue] ?? defaultMinFee
-        case .bolt11:
-            break
-        case .lnurl:
-            if var addressee = tx.addressees.first {
-                addressee.satoshi = satoshi ?? 0
-                tx.addressees = [addressee]
+    
+    func validateTransaction() async throws -> Task<Transaction?, Error>? {
+        let tx = Transaction(self.transaction?.details ?? [:], subaccount: account.hashValue)
+        validateTask?.cancel()
+        validateTask = Task {
+            let tx = await validate(tx: tx)
+            if let tx = tx {
+                self.transaction = tx
+                reload()
+            }
+            return tx
+        }
+        return validateTask
+    }
+    
+    func validate(tx: Transaction) async -> Transaction? {
+        var tx = tx
+        if Task.isCancelled { return nil }
+        if let subaccount = tx.subaccountItem,
+           let session = subaccount.session {
+            switch inputType {
+            case .transaction:
+                let asset = assetId == "btc" ? nil : assetId
+                tx.addressees = [Addressee.from(address: input ?? "", satoshi: satoshi ?? 0, assetId: asset)]
+                tx.feeRate = feeRate ?? feeEstimates[transactionPriority.rawValue]
+                tx.sendAll = sendAll
+            case .sweep:
+                tx.privateKey = input
+                tx.feeRate = feeRate ?? feeEstimates[transactionPriority.rawValue]
+            case .bumpFee:
+                tx.feeRate = feeRate ?? feeEstimates[transactionPriority.rawValue]
+            case .bolt11:
+                break
+            case .lnurl:
+                if var addressee = tx.addressees.first {
+                    addressee.satoshi = satoshi ?? 0
+                    tx.addressees = [addressee]
+                }
+            }
+            if Task.isCancelled { return nil }
+            if tx.isSweep && tx.addressees.isEmpty {
+                let address = try? await session.getReceiveAddress(subaccount: subaccount.pointer)
+                tx.addressees = [Addressee.from(address: address?.address ?? "", satoshi: nil, assetId: nil)]
+            } else if !subaccount.gdkNetwork.lightning && tx.utxos == nil {
+                let unspent = try? await session.getUnspentOutputs(subaccount: subaccount.pointer, numConfs: 0)
+                tx.utxos = unspent ?? [:]
+            }
+            if Task.isCancelled { return nil }
+            if let created = try? await session.createTransaction(tx: tx) {
+                tx = created
+                tx.subaccount = subaccount.hashValue
             }
         }
-        validateTask?.cancel()
-        validateTask = ValidateTask(tx: tx)
-        if let validateTask = validateTask {
-            return validateTask.execute()
-                .get { self.transaction = $0}
-                .get { _ in self.reload() }
-        }
-        return Promise.value(tx)
+        if Task.isCancelled { return nil }
+        return tx
     }
-
+    
     var amountError: String? {
         return ["id_invalid_amount", "id_no_amount_specified", "id_insufficient_funds", "id_invalid_payment_request_assetid", "id_invalid_asset_id"].contains(inputError) ? inputError : nil
     }
-
+    
     var addressError: String? {
         return ["id_invalid_address", "id_invalid_private_key"].contains(inputError) ? inputError : nil
     }
-
+    
     var inlineErrors = [
         "id_invalid_address",
         "id_invalid_private_key",
@@ -148,7 +169,7 @@ class SendViewModel {
         "id_invalid_payment_request_assetid",
         "id_invalid_asset_id"
     ]
-
+    
     func reload() {
         guard let tx = self.transaction else { return }
         inputError = tx.error
@@ -178,14 +199,14 @@ class SendViewModel {
             editable = false
         }
     }
-
+    
     var alertCellModel: AlertCardCellModel? {
         if let remoteAlert = remoteAlert {
             return AlertCardCellModel(type: .remoteAlert(remoteAlert))
         }
         return nil
     }
-
+    
     var feeCellModel: FeeEditCellModel {
         return FeeEditCellModel(fee: fee,
                                 feeRate: feeRate,
@@ -193,7 +214,7 @@ class SendViewModel {
                                 feeEstimates: feeEstimates,
                                 transactionPriority: transactionPriority)
     }
-
+    
     var accountAssetCellModel: ReceiveAssetCellModel {
         return ReceiveAssetCellModel(assetId: assetId ?? AssetInfo.btcId, account: account)
     }
@@ -202,27 +223,24 @@ class SendViewModel {
         let balance = account.satoshi?[assetId ?? feeAsset]
         return AmountEditCellModel(text: amount, error: amountError, balance: balance, assetId: assetId ?? AssetInfo.btcId, editable: editable, sendAll: sendAll, isFiat: isFiat, isLightning: account.type.lightning)
     }
-
+    
     var addressEditCellModel: AddressEditCellModel {
         return AddressEditCellModel(text: input, error: addressError, editable: editable)
     }
-
-    func validateInput() -> Promise<Void> {
-        guard let input = input, !input.isEmpty else { return Promise().asVoid() }
+    
+    func validateInput() async throws {
+        guard let input = input, !input.isEmpty else { return }
         if inputType == .bumpFee {
-            return Promise().asVoid() // nothing to do
+            return // nothing to do
         } else if inputType == .sweep {
             transaction?.privateKey = input
-            return Promise().asVoid()
+            return
         }
         let parser = Parser(selectedAccount: account, input: input, discoverable: false)
-        return Guarantee()
-            .then { parser.parse() }
-            .compactMap { [self] _ in
-                transaction = parser.createTx?.tx
-                inputType = parser.txType
-                inputError = parser.createTx?.error
-            }.compactMap { self.reload() }
-            .asVoid()
+        try await parser.parse()
+        transaction = parser.createTx?.tx
+        inputType = parser.txType
+        inputError = parser.createTx?.error
+        self.reload()
     }
 }

@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 import gdk
 
 class ContainerViewController: UIViewController {
@@ -46,16 +46,12 @@ class ContainerViewController: UIViewController {
 
     // tor notification handler
     func updateTor(_ notification: Notification) {
-        Guarantee().map { () -> UInt32 in
+        Task {
             let json = try JSONSerialization.data(withJSONObject: notification.userInfo!, options: [])
             let tor = try JSONDecoder().decode(TorNotification.self, from: json)
-            return tor.progress
-        }.done { progress in
-            self.networkText.text = NSLocalizedString("id_tor_status", comment: "") + " \(progress)%"
+            self.networkText.text = NSLocalizedString("id_tor_status", comment: "") + " \(tor.progress)%"
             self.networkView.backgroundColor = UIColor.errorRed()
-            self.networkView.isHidden = progress == 100
-        }.catch { err in
-            print(err.localizedDescription)
+            self.networkView.isHidden = tor.progress == 100
         }
     }
 

@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 import gdk
 
 class AssetExpandableSelectViewModel {
@@ -9,9 +9,9 @@ class AssetExpandableSelectViewModel {
     var allSections: [Int] = []
     var enableAnyAsset = true
     var onlyFunded = true
-    var assets: [AssetInfo] = [] {
+    var assets: AssetAmountList {
         didSet {
-            for i in 0..<assets.count {
+            for i in 0..<assets.amounts.count {
                 allSections.append(i)
             }
         }
@@ -19,10 +19,9 @@ class AssetExpandableSelectViewModel {
     var accountSelectSubCellModels: [AccountSelectSubCellModel] = []
     var assetSelectCellModels: [AssetSelectCellModel] = []
     var assetSelectCellModelsFilter: [AssetSelectCellModel] = []
-
     let wm = WalletManager.current!
 
-    init(assets: [AssetInfo], enableAnyAsset: Bool, onlyFunded: Bool) {
+    init(assets: AssetAmountList, enableAnyAsset: Bool, onlyFunded: Bool) {
         self.assets = assets
         self.enableAnyAsset = enableAnyAsset
         self.onlyFunded = onlyFunded
@@ -63,7 +62,7 @@ class AssetExpandableSelectViewModel {
     }
 
     func loadAssets() {
-        assetSelectCellModels = assets.map { AssetSelectCellModel(assetId: $0.assetId, satoshi: 0) }
+        assetSelectCellModels = assets.amounts.map { AssetSelectCellModel(assetId: $0.0, satoshi: 0) }
         assetSelectCellModelsFilter = assetSelectCellModels
     }
 }

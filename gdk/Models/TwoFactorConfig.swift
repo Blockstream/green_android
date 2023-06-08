@@ -1,5 +1,5 @@
 import Foundation
-import PromiseKit
+
 
 public struct TwoFactorReset: Codable {
     enum CodingKeys: String, CodingKey {

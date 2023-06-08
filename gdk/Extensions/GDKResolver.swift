@@ -1,17 +1,17 @@
 import Foundation
 import UIKit
-import PromiseKit
+
 import greenaddress
 import hw
+
+public protocol PopupResolverDelegate {
+    func code(_ method: String) async throws -> String
+    func method(_ methods: [String]) async throws -> String
+}
 
 public enum ResolverError: Error {
     case failure(localizedDescription: String)
     case cancel(localizedDescription: String)
-}
-
-public protocol PopupResolverDelegate {
-    func code(_ method: String) -> Promise<String>
-    func method(_ methods: [String]) -> Promise<String>
 }
 
 public enum TwoFactorCallError: Error {
@@ -23,11 +23,11 @@ public class GDKResolver {
     
     let chain: String
     let connected: () -> Bool
-    let twoFactorCall: TwoFactorCall
+    let twoFactorCall: TwoFactorCall?
     let popupDelegate: PopupResolverDelegate?
     let hwDelegate: HwResolverDelegate?
 
-    public init(_ twoFactorCall: TwoFactorCall,
+    public init(_ twoFactorCall: TwoFactorCall?,
          popupDelegate: PopupResolverDelegate? = nil,
          hwDelegate: HwResolverDelegate? = nil,
          chain: String,
@@ -39,85 +39,75 @@ public class GDKResolver {
         self.connected = connected
     }
 
-    public func resolve() -> Promise<[String: Any]> {
-        func step() -> Promise<[String: Any]> {
-            let bgq = DispatchQueue.global(qos: .background)
-            return Guarantee().map(on: bgq) {
-                try self.twoFactorCall.getStatus()!
-            }.then { json in
-                try self.resolving(json: json).map { _ in json }
-            }.then(on: bgq) { json -> Promise<[String: Any]> in
-                guard let status = json["status"] as? String else { throw GaError.GenericError() }
-                if status == "done" {
-                    return Promise<[String: Any]> { seal in seal.fulfill(json) }
-                } else {
-                    return step()
-                }
-            }
+    public func resolve() async throws -> [String: Any]? {
+        let res = try self.twoFactorCall?.getStatus()
+        let status = res?["status"] as? String
+        if status == "done" {
+            return res
+        } else {
+            try await resolving(res ?? [:])
+            return try await resolve()
         }
-        return step()
     }
 
-    private func resolving(json: [String: Any]) throws -> Promise<Void> {
-        guard let status = json["status"] as? String else { throw GaError.GenericError() }
-        let bgq = DispatchQueue.global(qos: .background)
-        print("\(chain) \(json)")
+    private func resolving(_ res: [String: Any]) async throws {
+        let status = res["status"] as? String
+        print("\(chain) \(res)")
         switch status {
         case "done":
-            return Guarantee().asVoid()
+            break
         case "error":
-            let error = json["error"] as? String ?? ""
+            let error = res["error"] as? String ?? ""
             throw TwoFactorCallError.failure(localizedDescription: error)
         case "call":
-            return Promise().map(on: bgq) { try self.twoFactorCall.call() }
+            try self.twoFactorCall?.call()
         case "request_code":
-            let methods = json["methods"] as? [String] ?? []
+            let methods = res["methods"] as? [String] ?? []
             if methods.count > 1 {
-                return Promise()
-                    .compactMap { self.popupDelegate }
-                    .then { $0.method(methods) }
-                    .then(on: bgq) { code in self.waitConnection().map { return code} }
-                    .map(on: bgq) { method in try self.twoFactorCall.requestCode(method: method) }
+                let method = try await self.popupDelegate?.method(methods)
+                try await self.waitConnection()
+                try self.twoFactorCall?.requestCode(method: method)
             } else {
-                return Promise().map(on: bgq) { try self.twoFactorCall.requestCode(method: methods[0]) }
+                try self.twoFactorCall?.requestCode(method: methods[0])
             }
         case "resolve_code":
             // Hardware wallet interface resolver
-            if let requiredData = json["required_data"] as? [String: Any],
+            if let requiredData = res["required_data"] as? [String: Any],
                 let action = requiredData["action"] as? String,
                 let device = requiredData["device"] as? [String: Any],
                 let json = try? JSONSerialization.data(withJSONObject: device, options: []),
                 let hwdevice = try? JSONDecoder().decode(HWDevice.self, from: json) {
-                return HWResolver().resolveCode(action: action, device: hwdevice, requiredData: requiredData, chain: chain)
-                    .compactMap { $0.stringify() }
-                    .compactMap(on: bgq) { try self.twoFactorCall.resolveCode(code: $0) }
+                do {
+                    let res = try await HWResolver().resolveCode(action: action, device: hwdevice, requiredData: requiredData, chain: chain)
+                    try self.twoFactorCall?.resolveCode(code: res.stringify())
+                } catch {
+                    throw TwoFactorCallError.failure(localizedDescription: error.localizedDescription)
+                }
+            } else {
+                // Software wallet interface resolver
+                let method = res["method"] as? String ?? ""
+                let code = try await self.popupDelegate?.code(method)
+                try await self.waitConnection()
+                try self.twoFactorCall?.resolveCode(code: code)
             }
-            // Software wallet interface resolver
-            let method = json["method"] as? String ?? ""
-            return Promise()
-                .compactMap { self.popupDelegate }
-                .then { $0.code(method) }
-                .then(on: bgq) { code in self.waitConnection().map { return code} }
-                .compactMap(on: bgq) { code in try self.twoFactorCall.resolveCode(code: code) }
         default:
-            return Guarantee().asVoid()
+            break
         }
     }
 
-    func waitConnection() -> Promise<Void> {
+    func waitConnection() async throws {
         var attempts = 0
-        func attempt() -> Promise<Void> {
+        func attempt() async throws {
+            if attempts == 5 {
+                throw GaError.TimeoutError()
+            }
             attempts += 1
-            return Guarantee().map {
-                let status = self.connected()
-                if !status {
-                    throw GaError.TimeoutError()
-                }
-            }.recover { error -> Promise<Void> in
-                guard attempts < 5 else { throw error }
-                return after(DispatchTimeInterval.seconds(3)).then(on: nil, attempt)
+            let status = self.connected()
+            if !status {
+                try await Task.sleep(nanoseconds:  3 * 1_000_000_000)
+                try await attempt()
             }
         }
-        return attempt()
+        return try await attempt()
     }
 }

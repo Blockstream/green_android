@@ -1,5 +1,5 @@
 import UIKit
-import PromiseKit
+
 import gdk
 
 protocol TwoFactorAuthenticationViewControllerDelegate: AnyObject {
@@ -153,12 +153,12 @@ class TwoFactorAuthenticationViewController: UIViewController {
         reset2faView.isHidden = !session.logged || liquid
         thresholdView.isHidden = !session.logged || liquid
         expiryView.isHidden = !session.logged
-        viewModel.getTwoFactors(session: session)
-            .done { factors in
-                self.factors = factors
-                self.tableView2faMethods.reloadData()
-                self.reloadThreshold()
-            }.catch { err in print(err) }
+        Task {
+            let res = try? await viewModel.getTwoFactors(session: session)
+            factors = res ?? []
+            tableView2faMethods.reloadData()
+            reloadThreshold()
+        }
     }
 
     func updateCopy() {
@@ -202,14 +202,13 @@ class TwoFactorAuthenticationViewController: UIViewController {
 
     func disable(_ type: TwoFactorType) {
         self.startLoader()
-        firstly { Guarantee() }
-            .then { self.viewModel.disable(session: self.session, type: type) }
-            .ensure { self.stopLoader() }
-            .done { _ in
+        Task {
+            do {
+                try await viewModel.disable(session: self.session, type: type)
                 self.reloadData()
                 let notification = NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue)
                 NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
-            }.catch { error in
+            } catch {
                 if let twofaError = error as? TwoFactorCallError {
                     switch twofaError {
                     case .failure(let localizedDescription), .cancel(let localizedDescription):
@@ -219,17 +218,18 @@ class TwoFactorAuthenticationViewController: UIViewController {
                     DropAlert().error(message: error.localizedDescription)
                 }
             }
+            stopLoader()
+        }
     }
 
     func setCsvTimeLock(csv: Settings.CsvTime) {
         self.startLoader()
-        firstly { Guarantee() }
-            .then { self.viewModel.setCsvTimeLock(session: self.session, csv: csv) }
-            .ensure { self.stopLoader() }
-            .done { _ in
-                self.reloadData()
+        Task {
+            do {
+                try await viewModel.setCsvTimeLock(session: self.session, csv: csv)
+                reloadData()
                 DropAlert().success(message: String(format: "%@: %@", NSLocalizedString("id_twofactor_authentication_expiry", comment: ""), csv.label()))
-            }.catch { error in
+            } catch {
                 if let twofaError = error as? TwoFactorCallError {
                     switch twofaError {
                     case .failure(let localizedDescription), .cancel(let localizedDescription):
@@ -239,6 +239,8 @@ class TwoFactorAuthenticationViewController: UIViewController {
                     DropAlert().error(message: "Error changing csv time")
                 }
             }
+            stopLoader()
+        }
     }
 
     func showResetTwoFactor() {
@@ -258,18 +260,17 @@ class TwoFactorAuthenticationViewController: UIViewController {
     }
 
     func resetTwoFactor(email: String) {
-        //AnalyticsManager.shared.recordView(.walletSettings2FAReset, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsRepository.shared.current, walletItem: wallet?.type, twoFactorType: nil))
-        self.startLoader()
-        firstly { Guarantee() }
-            .then { self.viewModel.resetTwoFactor(session: self.session, email: email) }
-            .ensure { self.stopLoader() }
-            .done { _ in
+        //AnalyticsManager.shared.recordView(.walletSettings2FAReset, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsRepository.shared.current, walletType: wallet?.type, twoFactorType: nil))
+        startLoader()
+        Task {
+            do {
+                try await self.viewModel.resetTwoFactor(session: self.session, email: email)
                 self.reloadData()
                 DropAlert().success(message: NSLocalizedString("id_2fa_reset_in_progress", comment: ""))
                 let notification = NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue)
                 NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
                 self.delegate?.userLogout()
-            }.catch { error in
+            } catch {
                 if let twofaError = error as? TwoFactorCallError {
                     switch twofaError {
                     case .failure(let localizedDescription), .cancel(let localizedDescription):
@@ -279,6 +280,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
                     DropAlert().error(message: error.localizedDescription)
                 }
             }
+        }
     }
 
     @IBAction func btnReset2fa(_ sender: Any) {
