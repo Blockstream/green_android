@@ -260,8 +260,8 @@ class AnalyticsManager {
     private func updateUserProperties() {
         let accounts = AccountsRepository.shared.swAccounts
 
-        let bitcoin_wallets = accounts.filter { $0.network == "mainnet"}
-        let liquid_wallets = accounts.filter { $0.network == "liquid"}
+        let bitcoin_wallets = accounts.filter { !$0.gdkNetwork.liquid }
+        let liquid_wallets = accounts.filter { $0.gdkNetwork.liquid }
 
         var props: [String: String] = [:]
         props[AnalyticsManager.strUserPropertyTotalWallets] = "\((bitcoin_wallets + liquid_wallets).count)"

@@ -242,7 +242,7 @@ class LoginViewController: UIViewController {
         let bgq = DispatchQueue.global(qos: .background)
         var currentAccount = account!
         if !account.isEphemeral && !bip39passphrase.isNilOrEmpty {
-            currentAccount = Account(name: account.name, network: account?.network ?? "mainnet", keychain: account.keychain, isSingleSig: account?.isSingleSig ?? true)
+            currentAccount = Account(name: account.name, network: account.networkName, keychain: account.keychain, isSingleSig: account?.isSingleSig ?? true)
             currentAccount.isEphemeral = true
             currentAccount.attempts = account.attempts
             currentAccount.xpubHashId = account.xpubHashId

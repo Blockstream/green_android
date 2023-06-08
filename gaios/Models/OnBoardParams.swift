@@ -21,7 +21,7 @@ struct OnBoardParams: Codable {
         let network: NetworkSecurityCase = testnet ?? false ? .testnetSS : .bitcoinSS
         return Account(id: accountId ?? UUID().uuidString,
                        name: walletName ?? "",
-                       network: network.network,
+                       network: network.chain,
                        xpubHashId: xpubHashId ?? "")
     }
 }

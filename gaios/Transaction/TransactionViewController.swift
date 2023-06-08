@@ -32,10 +32,10 @@ class TransactionViewController: UIViewController {
 
     var viewInExplorerPreference: Bool {
         get {
-            return UserDefaults.standard.bool(forKey: getNetwork() + "_view_in_explorer")
+            return UserDefaults.standard.bool(forKey: wallet.gdkNetwork.chain + "_view_in_explorer")
         }
         set {
-            UserDefaults.standard.set(newValue, forKey: getNetwork() + "_view_in_explorer")
+            UserDefaults.standard.set(newValue, forKey: wallet.gdkNetwork.chain + "_view_in_explorer")
         }
     }
 

@@ -8,10 +8,6 @@ func getAppDelegate() -> AppDelegate? {
     return UIApplication.shared.delegate as? AppDelegate
 }
 
-func getNetwork() -> String {
-    AccountsRepository.shared.current?.network ?? "mainnet"
-}
-
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 

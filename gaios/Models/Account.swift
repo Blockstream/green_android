@@ -13,7 +13,8 @@ struct Account: Codable, Equatable {
         case username
         case password
         case keychain
-        case network
+        case chain = "network"
+        case network = "gdknetwork"
         case isSingleSig
         case walletHashId = "wallet_hash_id"
         case askEphemeral = "ask_ephemeral"
@@ -29,7 +30,8 @@ struct Account: Codable, Equatable {
     let username: String?
     var password: String?
     let keychain: String
-    var network: String?
+    var chain: String?
+    private var network: String?
     var isSingleSig: Bool? // optional to support pre singleSig stored wallets
     var walletHashId: String?
     var xpubHashId: String?
@@ -178,10 +180,14 @@ struct Account: Codable, Equatable {
 
     var networkName: String {
         get {
-            let isSingleSig = self.isSingleSig ?? false
-            let ntw = self.network ?? "electrum-mainnet"
-
-            return (isSingleSig ? Constants.electrumPrefix + ntw : ntw)
+            if let network = network {
+                return network
+            }
+            let chain = self.chain ?? "mainnet"
+            return isSingleSig ?? false ? Constants.electrumPrefix + chain : chain
+        }
+        set {
+            self.network = newValue
         }
     }
 

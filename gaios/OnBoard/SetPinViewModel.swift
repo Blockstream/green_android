@@ -44,7 +44,7 @@ class SetPinViewModel {
             }.then { wm.login(credentials: self.credentials) }
             .map { _ in
                 if let network = wm.activeNetworks.first(where: { $0.multisig }) {
-                    wm.account.network = network.chain
+                    wm.account.networkName = network.network
                     wm.account.isSingleSig = network.singlesig
                     wm.prominentNetwork = network
                 }
