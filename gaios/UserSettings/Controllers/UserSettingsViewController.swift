@@ -158,8 +158,6 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
             openTwoFactorAuthentication()
         case .PgpKey:
             openPgp()
-        case .RecoveryTransactions:
-            break
         case .Version:
             break
         case .SupportID:

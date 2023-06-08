@@ -36,6 +36,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
     @IBOutlet weak var lbl2faEmptyStateTitle: UILabel!
     @IBOutlet weak var lbl2faEmptyStateHint: UILabel!
     @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet weak var btnRecoveryTransactions: UIButton!
 
     private let viewModel = TwoFactorSettingsViewModel()
     private var factors = [TwoFactorItem]()
@@ -75,6 +76,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
             let title = NetworkSecurityCase(rawValue: net)?.chain.firstCapitalized
             networkSegmentedControl.setTitle(title, forSegmentAt: i)
         }
+        btnRecoveryTransactions.setTitle("id_recovery_transactions".localized, for: .normal)
     }
 
     func setStyle() {
@@ -117,6 +119,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
         networkSegmentedControl.setTitleTextAttributes (
             [NSAttributedString.Key.foregroundColor: UIColor.white], for: .normal)
         networkSegmentedControl.selectedSegmentIndex = showBitcoin ? 0 : 1
+        btnRecoveryTransactions.setStyle(.outlined)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -293,6 +296,14 @@ class TwoFactorAuthenticationViewController: UIViewController {
     @IBAction func btnRecoveryTool(_ sender: Any) {
         if let url = URL(string: "https://github.com/greenaddress/garecovery") {
             UIApplication.shared.open(url)
+        }
+    }
+
+    @IBAction func btnRecoveryTransactions(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryTransactionsViewController") as? RecoveryTransactionsViewController {
+            vc.session = self.session
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 }

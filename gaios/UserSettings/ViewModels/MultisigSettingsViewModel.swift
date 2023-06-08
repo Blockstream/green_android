@@ -51,34 +51,17 @@ class MultisigSettingsViewModel {
             title: MSItem.TwoFactorAuthentication.string,
             subtitle: "",
             type: .TwoFactorAuthentication)
-        var locktimeRecoveryEnable = false
-        if let notifications = self.settings?.notifications {
-            locktimeRecoveryEnable = notifications.emailOutgoing == true
-        }
-        let locktimeRecovery = MultisigSettingsItem(
-            title: MSItem.RecoveryTransactions.string,
-            subtitle: locktimeRecoveryEnable ? NSLocalizedString("id_enabled", comment: "") : NSLocalizedString("id_disabled", comment: ""),
-            type: .RecoveryTransactions)
         let pgp = MultisigSettingsItem(
             title: MSItem.Pgp.string,
             subtitle: "",
             type: .Pgp)
-        return [watchOnly, twoFactorAuthentication, locktimeRecovery, pgp]
+        return [watchOnly, twoFactorAuthentication, pgp]
     }
 
     func load() {
         Guarantee().then { self.session.getWatchOnlyUsername() }
             .map { self.getItems(username: $0) }
             .done { self.cellModels = $0.map { MultisigSettingsCellModel($0) } }
-            .catch { err in self.error?(err.localizedDescription) }
-    }
-
-    func enableRecoveryTransactions(_ enable: Bool) {
-        var settings = session.settings!
-        settings.notifications = SettingsNotifications(emailIncoming: enable, emailOutgoing: enable)
-        Guarantee()
-            .then(on: bgq) { self.session.changeSettings(settings: settings) }
-            .done { _ in self.load() }
             .catch { err in self.error?(err.localizedDescription) }
     }
 }

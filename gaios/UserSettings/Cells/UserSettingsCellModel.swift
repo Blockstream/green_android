@@ -16,7 +16,7 @@ class UserSettingsCellModel {
         type = item.type
         switcher = item.switcher
         switch type {
-        case .Logout, .ArchievedAccounts, .ChangePin, .BackUpRecoveryPhrase, .TwoFactorAuthication, .RecoveryTransactions, .WatchOnly, .PgpKey :
+        case .Logout, .ArchievedAccounts, .ChangePin, .BackUpRecoveryPhrase, .TwoFactorAuthication, .WatchOnly, .PgpKey :
             disclosure = true
             disclosureImage = UIImage(named: "ic_settings_disclose")!
         default:

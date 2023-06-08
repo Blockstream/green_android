@@ -132,15 +132,10 @@ class UserSettingsViewModel {
             subtitle: "id_touch_to_display".localized,
             section: .Recovery,
             type: .BackUpRecoveryPhrase)
-        let recoveryTxs = UserSettingsItem(
-            title: USItem.RecoveryTransactions.string,
-            subtitle: "id_legacy_script_coins".localized,
-            section: .Recovery,
-            type: .RecoveryTransactions)
         if isHW {
-            return [recoveryTxs]
+            return []
         } else if wm.hasMultisig {
-            return [recovery, recoveryTxs]
+            return [recovery]
         } else {
             return [recovery]
         }

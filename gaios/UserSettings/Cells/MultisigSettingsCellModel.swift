@@ -15,7 +15,7 @@ class MultisigSettingsCellModel {
         type = item.type
 
         switch type {
-        case .TwoFactorAuthentication, .RecoveryTransactions:
+        case .TwoFactorAuthentication:
             disclosure = true
             disclosureImage = UIImage(named: "rightArrow")?.maskWithColor(color: .white)
         default:
