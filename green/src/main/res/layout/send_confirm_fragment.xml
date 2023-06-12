@@ -73,12 +73,13 @@
                 android:layout_marginBottom="32dp"
                 android:orientation="vertical">
 
-                <com.google.android.material.progressindicator.CircularProgressIndicator
-                    android:id="@+id/progress"
+                <app.rive.runtime.kotlin.RiveAnimationView
+                    android:id="@+id/rive"
+                    isVisible="@{vm.onProgress &amp;&amp; vm.account.lightning}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:indeterminate="true" />
+                    app:riveResource="@raw/lightning_transaction" />
+
 
                 <TextView
                     android:layout_width="match_parent"
