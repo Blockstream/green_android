@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.8] - 2023-06-12
+
+### Changed
+- Fix for un-initialized Jade wallets
+
 ## [4.0.7] - 2023-06-08
 
 ### Changed
