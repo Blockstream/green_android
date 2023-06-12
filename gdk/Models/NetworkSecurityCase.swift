@@ -13,7 +13,6 @@ public enum NetworkSecurityCase: String, CaseIterable {
     
     case lightning = "lightning-mainnet"
     case testnetLightning = "lightning-testnet"
-    
 
     public var network: String {
         self.rawValue

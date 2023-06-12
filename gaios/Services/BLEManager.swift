@@ -193,13 +193,12 @@ class BLEManager {
 
     func logging(_ peripheral: Peripheral, account: Account) -> Observable<WalletManager> {
         let device: HWDevice = peripheral.isJade() ? .defaultJade(fmwVersion: self.fmwVersion) : .defaultLedger()
-        let network = NetworkSecurityCase(rawValue: account.networkName)
         var account = account
         var masterXpub = ""
         
-        return getMasterXpub(device, gdkNetwork: network?.gdkNetwork)
+        return getMasterXpub(device, gdkNetwork: account.gdkNetwork)
             .compactMap { masterXpub = $0; return $0 }
-            .compactMap { self.getWalletIdentifier(network: network!.gdkNetwork, xpub: $0) }
+            .compactMap { self.getWalletIdentifier(network: account.gdkNetwork, xpub: $0) }
             .compactMap { account.xpubHashId = $0; return account }
             .compactMap { self.normalizeAccount($0) }
             .compactMap { WalletsRepository.shared.getOrAdd(for: $0) }
@@ -228,10 +227,10 @@ class BLEManager {
         return network(peripheral)
             .compactMap { network in
                 return Account(name: peripheral.name ?? device.name,
-                                      network: network.chain,
+                                      network: network,
                                       isJade: device.isJade,
                                       isLedger: device.isLedger,
-                                      isSingleSig: network.gdkNetwork.electrum ?? true,
+                                      isSingleSig: network.gdkNetwork.electrum,
                                       uuid: peripheral.identifier)
             }
     }

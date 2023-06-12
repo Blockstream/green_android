@@ -23,18 +23,20 @@ class WOViewModel {
                     hint: "id_log_in_to_your_multisig_shield".localized)
     ]
 
-    func newAccountMultisig(for network: GdkNetwork, username: String, password: String, remember: Bool ) -> Account {
+    func newAccountMultisig(for gdkNetwork: GdkNetwork, username: String, password: String, remember: Bool ) -> Account {
         let name = AccountsRepository.shared.getUniqueAccountName(
-            testnet: !network.mainnet,
+            testnet: !gdkNetwork.mainnet,
             watchonly: true)
-        return Account(name: name, network: network.chain, username: username, password: remember ? password : nil, isSingleSig: network.electrum)
+        let network = NetworkSecurityCase(rawValue: gdkNetwork.network) ?? .bitcoinSS
+        return Account(name: name, network: network, username: username, password: remember ? password : nil)
     }
 
-    func newAccountSinglesig(for network: GdkNetwork) -> Account {
+    func newAccountSinglesig(for gdkNetwork: GdkNetwork) -> Account {
         let name = AccountsRepository.shared.getUniqueAccountName(
-            testnet: !network.mainnet,
+            testnet: !gdkNetwork.mainnet,
             watchonly: true)
-        return Account(name: name, network: network.chain, username: "", isSingleSig: network.electrum)
+        let network = NetworkSecurityCase(rawValue: gdkNetwork.network) ?? .bitcoinSS
+        return Account(name: name, network: network, username: "")
     }
 
     func loginMultisig(for account: Account, password: String?) -> Promise<Void> {

@@ -44,7 +44,8 @@ class MigratorManager {
             let bioData = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: network)
             let pinData = AuthenticationTypeHandler.findAuth(method: .AuthKeyPIN, forNetwork: network)
             if pinData || bioData {
-                var account = Account(name: network.firstCapitalized, network: network, keychain: network, isSingleSig: false)
+                let networkType = NetworkSecurityCase(rawValue: network) ?? .bitcoinMS
+                var account = Account(name: network.firstCapitalized, network: networkType, keychain: network)
                 account.attempts = UserDefaults.standard.integer(forKey: network + "_pin_attempts")
                 accounts.append(account)
             }

@@ -30,24 +30,22 @@ struct Account: Codable, Equatable {
     let username: String?
     var password: String?
     let keychain: String
-    var chain: String?
-    private var network: String?
-    var isSingleSig: Bool? // optional to support pre singleSig stored wallets
+    private var network: String? // use NetworkType for retro-compatibility
+    private var chain: String? // legacy field
+    private var isSingleSig: Bool? // legacy field
     var walletHashId: String?
     var xpubHashId: String?
     var hidden: Bool? = false
     var uuid: UUID?
-    var networkType: NetworkSecurityCase { NetworkSecurityCase(rawValue: networkName)!  }
-    var gdkNetwork: GdkNetwork { networkType.gdkNetwork }
     var isEphemeral: Bool = false
     var askEphemeral: Bool?
     var ephemeralId: Int?
 
-    init(id: String? = nil, name: String, network: String, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool? = nil, isEphemeral: Bool = false, askEphemeral: Bool = false, xpubHashId: String? = nil, uuid: UUID? = nil) {
+    init(id: String? = nil, name: String, network: NetworkSecurityCase, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool? = nil, isEphemeral: Bool = false, askEphemeral: Bool = false, xpubHashId: String? = nil, uuid: UUID? = nil) {
         // Software / Hardware wallet account
         self.id = id ?? UUID().uuidString
         self.name = name
-        self.network = network
+        self.network = network.network
         self.isJade = isJade
         self.isLedger = isLedger
         self.username = nil
@@ -70,30 +68,28 @@ struct Account: Codable, Equatable {
         }
     }
 
-    init(name: String, network: String, username: String, password: String? = nil, isSingleSig: Bool) {
+    init(name: String, network: NetworkSecurityCase, username: String, password: String? = nil) {
         // Watchonly account
         id = UUID().uuidString
         self.name = name
-        self.network = network
+        self.network = network.network
         self.isJade = false
         self.isLedger = false
         self.username = username
         self.password = password
         self.keychain = id
-        self.isSingleSig = isSingleSig
     }
 
-    init(name: String, network: String, keychain: String, isSingleSig: Bool) {
+    init(name: String, network: NetworkSecurityCase, keychain: String) {
         // Migrated account
         id = UUID().uuidString
         self.name = name
-        self.network = network
+        self.network = network.network
         self.keychain = keychain
         self.isJade = false
         self.isLedger = false
         self.username = nil
         self.password = nil
-        self.isSingleSig = isSingleSig
     }
 
     var isHW: Bool { isJade || isLedger }
@@ -178,16 +174,18 @@ struct Account: Codable, Equatable {
             .map(on: bgq) { try AuthenticationTypeHandler.addPIN(pinData: $0.pinData, forNetwork: keychain) }
     }
 
-    var networkName: String {
+    var gdkNetwork: GdkNetwork { networkType.gdkNetwork }
+    var networkType: NetworkSecurityCase {
         get {
             if let network = network {
-                return network
+                return NetworkSecurityCase(rawValue: network) ?? .bitcoinSS
             }
             let chain = self.chain ?? "mainnet"
-            return isSingleSig ?? false ? Constants.electrumPrefix + chain : chain
+            let name =  isSingleSig ?? false ? Constants.electrumPrefix + chain : chain
+            return NetworkSecurityCase(rawValue: name) ?? .bitcoinSS
         }
         set {
-            self.network = newValue
+            self.network = newValue.rawValue
         }
     }
 }

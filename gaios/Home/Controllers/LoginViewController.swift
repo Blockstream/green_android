@@ -91,7 +91,7 @@ class LoginViewController: UIViewController {
         setStyle()
 
         alertCard.isHidden = true
-        self.remoteAlert = RemoteAlertManager.shared.alerts(screen: .login, networks: [NetworkSecurityCase(rawValue: account.networkName) ?? .bitcoinSS]).first
+        self.remoteAlert = RemoteAlertManager.shared.alerts(screen: .login, networks: [account.networkType]).first
         if remoteAlert != nil {
             alertCard.isHidden = false
             alertTitle.text = remoteAlert?.title
@@ -242,7 +242,7 @@ class LoginViewController: UIViewController {
         let bgq = DispatchQueue.global(qos: .background)
         var currentAccount = account!
         if !account.isEphemeral && !bip39passphrase.isNilOrEmpty {
-            currentAccount = Account(name: account.name, network: account.networkName, keychain: account.keychain, isSingleSig: account?.isSingleSig ?? true)
+            currentAccount = Account(name: account.name, network: account.networkType, keychain: account.keychain)
             currentAccount.isEphemeral = true
             currentAccount.attempts = account.attempts
             currentAccount.xpubHashId = account.xpubHashId

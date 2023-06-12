@@ -13,8 +13,7 @@ class WalletsRepository {
             wallets[account.id] = wm
             return
         }
-        let network = NetworkSecurityCase(rawValue: account.networkName)
-        let wm = WalletManager(account: account, prominentNetwork: network)
+        let wm = WalletManager(account: account, prominentNetwork: account.networkType)
         wallets[account.id] = wm
     }
 

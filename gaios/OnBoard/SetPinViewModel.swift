@@ -24,7 +24,7 @@ class SetPinViewModel {
     func restore(pin: String) -> Promise<Void> {
         let name = AccountsRepository.shared.getUniqueAccountName(testnet: testnet)
         let mainNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
-        let account = restoredAccount ?? Account(name: name, network: mainNetwork.network)
+        let account = restoredAccount ?? Account(name: name, network: mainNetwork)
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         return Promise()
             .compactMap { wm.prominentSession }
@@ -44,8 +44,7 @@ class SetPinViewModel {
             }.then { wm.login(credentials: self.credentials) }
             .map { _ in
                 if let network = wm.activeNetworks.first(where: { $0.multisig }) {
-                    wm.account.networkName = network.network
-                    wm.account.isSingleSig = network.singlesig
+                    wm.account.networkType = network
                     wm.prominentNetwork = network
                 }
                 wm.account.attempts = 0
@@ -57,7 +56,7 @@ class SetPinViewModel {
     func create(pin: String) -> Promise<Void> {
         let name = AccountsRepository.shared.getUniqueAccountName(testnet: testnet)
         let mainNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
-        let account = Account(name: name, network: mainNetwork.network)
+        let account = Account(name: name, network: mainNetwork)
         let wm = WalletsRepository.shared.getOrAdd(for: account)
         return Guarantee()
             .then { [self] in wm.create(credentials) }
