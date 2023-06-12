@@ -20,7 +20,6 @@ public enum SettingsType: String, Codable {
     case ReferenceExchangeRate = "pricing"
     case SetupTwoFactor
     case ThresholdTwoFactor
-    case LockTimeRecovery
     case LockTimeRequest
     case SetRecoveryEmail
     case ResetTwoFactor

@@ -41,7 +41,7 @@ class RecoveryTransactionsViewController: UIViewController {
 
     func update() {
         if let notifications = session?.settings?.notifications {
-            actionSwitch.isOn = notifications.emailOutgoing == true
+            actionSwitch.isOn = notifications.emailIncoming == true
         }
     }
 
@@ -70,6 +70,7 @@ class RecoveryTransactionsViewController: UIViewController {
             }.ensure {
                 self.stopAnimating()
             }.done {
+                DropAlert().success(message: "id_recovery_transaction_request".localized)
             }.catch { error in
                 self.showError(error.localizedDescription)
             }
