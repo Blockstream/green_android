@@ -62,7 +62,17 @@ class RecoveryTransactionsViewController: UIViewController {
     }
 
     @IBAction func btnRequest(_ sender: Any) {
-        self.showError("To be defined")
+        guard let session = session else { return }
+        self.startAnimating()
+        let bgq = DispatchQueue.global(qos: .background)
+        Guarantee().map(on: bgq) { _ in
+            try? session.session?.sendNlocktimes()
+            }.ensure {
+                self.stopAnimating()
+            }.done {
+            }.catch { error in
+                self.showError(error.localizedDescription)
+            }
     }
 
     @IBAction func btnMoreInfo(_ sender: Any) {
