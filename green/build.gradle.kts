@@ -130,7 +130,7 @@ android {
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     testOptions {
@@ -152,7 +152,7 @@ ksp {
 }
 
 kotlin {
-    jvmToolchain(11)
+    jvmToolchain(17)
 }
 
 // Configure kapt to correct error types by setting correctErrorTypes to true
