@@ -205,7 +205,7 @@ class SetPinViewController: UIViewController {
         let bgq = DispatchQueue.global(qos: .background)
         switch pinFlow {
         case .settings:
-            self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""), isRive: true)
+            self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""), isRive: false)
             Guarantee()
                 .then(on: bgq) { self.viewModel.setup(pin: pin) }
                 .ensure { self.stopLoader() }
@@ -220,7 +220,7 @@ class SetPinViewController: UIViewController {
                                                   nv: self.navigationController) }
                 .catch { self.error($0)}
         case .create:
-            self.startLoader(message: NSLocalizedString("id_finishing_up", comment: ""), isRive: true)
+            self.startLoader(message: NSLocalizedString("id_finishing_up", comment: ""), isRive: false)
             Guarantee()
                 .then(on: bgq) { self.viewModel.create(pin: pin) }
                 .ensure { self.stopLoader() }

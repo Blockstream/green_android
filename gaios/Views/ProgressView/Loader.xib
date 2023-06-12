@@ -71,7 +71,7 @@
                             </constraints>
                         </view>
                     </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.44430938444108764" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.79766569108761332" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstItem="rCJ-3n-6KM" firstAttribute="leading" secondItem="tn4-hX-RYH" secondAttribute="leading" constant="44" id="L8l-TP-daU"/>
                         <constraint firstItem="rCJ-3n-6KM" firstAttribute="centerY" secondItem="tn4-hX-RYH" secondAttribute="centerY" id="P2w-ef-dw6"/>
