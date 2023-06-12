@@ -38,7 +38,7 @@ class PinMatrixBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<PinM
 
         for (i in buttons.indices) {
             buttons[i].setOnClickListener { button: View ->
-                if (pin.length < 9) {
+                if (pin.length <= 50) {
                     pin.append(i + 1)
                     updatePinView()
                     button.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
