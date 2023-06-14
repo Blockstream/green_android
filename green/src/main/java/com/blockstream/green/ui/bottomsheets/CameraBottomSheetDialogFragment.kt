@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.findNavController
 import com.blockstream.green.R
 import com.blockstream.green.databinding.CameraBottomSheetBinding
+import com.blockstream.green.extensions.makeItConstant
 import com.blockstream.green.extensions.setNavigationResult
 import com.blockstream.green.ui.onboarding.AbstractOnboardingFragment
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
@@ -34,6 +35,8 @@ class CameraBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<CameraB
 
     private lateinit var capture: CaptureManager
     private var isTorchOn: Boolean = false
+    override val expanded: Boolean
+        get() = true
 
     private val isDecodeContinuous by lazy { arguments?.getBoolean(DECODE_CONTINUOUS, false) == true }
 
@@ -71,6 +74,9 @@ class CameraBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<CameraB
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Keep the height of the window always constant
+        makeItConstant(0.85)
 
         binding.buttonClose.setOnClickListener {
             dismiss()

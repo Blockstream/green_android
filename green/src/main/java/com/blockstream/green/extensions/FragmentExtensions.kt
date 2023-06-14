@@ -292,11 +292,11 @@ fun Fragment.showChoiceDialog(
 }
 
 
-fun BottomSheetDialogFragment.makeItConstant(){
+fun BottomSheetDialogFragment.makeItConstant(percent: Double = 1.0) {
     // Keep the height of the window always constant
     view?.also {
         val params = it.layoutParams
-        params.height = resources.displayMetrics.heightPixels
+        params.height = (resources.displayMetrics.heightPixels * percent).toInt()
         it.layoutParams = params
     }
 }
