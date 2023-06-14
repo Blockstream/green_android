@@ -40,7 +40,7 @@ data class WalletBalanceListItem constructor(val session: GdkSession, val countl
 
     var isFiat = false
 
-    private var denomination: Denomination = Denomination.BTC
+    private var denomination: Denomination = Denomination.default(session)
 
     private suspend fun balanceInBtc() = session.starsOrNull ?: session.walletTotalBalanceFlow.value.toAmountLook(
         session = session,
@@ -65,7 +65,7 @@ data class WalletBalanceListItem constructor(val session: GdkSession, val countl
     override fun createScope(): CoroutineScope = session.createScope(Dispatchers.Main)
 
     fun reset() {
-        denomination = Denomination.BTC
+        denomination = Denomination.default(session)
     }
 
     override fun bindView(binding: ListItemWalletBalanceBinding, payloads: List<Any>) {
@@ -87,13 +87,14 @@ data class WalletBalanceListItem constructor(val session: GdkSession, val countl
         listOf(binding.balanceTextView,  binding.fiatTextView).setOnClickListener {
             val walletDenomination = Denomination.default(session)
 
-            denomination = (when {
-                denomination is Denomination.FIAT -> {
-                    Denomination.BTC
-                }
-                denomination != walletDenomination  -> {
+            denomination = (when (denomination) {
+                is Denomination.FIAT -> {
                     walletDenomination
                 }
+                // Disable BTC
+                // denomination == walletDenomination && denomination != Denomination.BTC -> {
+                //    Denomination.BTC
+                // }
                 else -> {
                     Denomination.fiat(session)
                 }

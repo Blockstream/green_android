@@ -1,6 +1,7 @@
 package com.blockstream.green.ui.add
 
 import androidx.lifecycle.MutableLiveData
+import com.blockstream.gdk.SATOSHI_UNIT
 import com.blockstream.gdk.data.Account
 import com.blockstream.gdk.data.AccountType
 import com.blockstream.gdk.data.Network
@@ -34,6 +35,7 @@ open class AbstractAddAccountViewModel constructor(
 
         doUserAction({
             if(accountType.isLightning()){
+                val isEmptyWallet = session.accounts.isEmpty()
                 session.initLightningIfNeeded()
 
                 // Persist Lightning
@@ -48,6 +50,14 @@ open class AbstractAddAccountViewModel constructor(
                     )
 
                     walletRepository.insertOrReplaceLoginCredentials(loginCredentials)
+                }
+
+                // If wallet is new and LN is created, default to Satoshi
+                if (isEmptyWallet) {
+                    session.getSettings()?.also {
+                        session.changeGlobalSettings(it.copy(unit = SATOSHI_UNIT))
+                        session.updateSettings()
+                    }
                 }
 
                 return@doUserAction session.lightningAccount

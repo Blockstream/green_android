@@ -1644,6 +1644,13 @@ class GdkSession constructor(
 
                     // Wallet Assets
                     val walletAssets = linkedMapOf<String, Long>()
+
+                    // Fix for only LN + Liquid wallets when LN is not fully initialized.
+                    // The denomination Liquid based as we reside in the first key of _walletAssetsFlow to identify the main assetId
+                    if(hasLightning){
+                        walletAssets[BTC_POLICY_ASSET] = 0
+                    }
+
                     accounts.forEach { account ->
                         accountAssetsFlow(account).value.forEach { (key, value) ->
                             walletAssets[key] = (walletAssets[key] ?: 0) + value
