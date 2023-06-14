@@ -12,8 +12,7 @@ enum USSection: String, Codable, CaseIterable {
 
 enum USItem: String, Codable, CaseIterable {
     case Logout = "id_logout"
-    case BitcoinDenomination = "id_bitcoin_denomination"
-    case ReferenceExchangeRate = "id_reference_exchange_rate"
+    case UnifiedDenominationExchange = "Denomination & Exchange Rate"
     case ArchievedAccounts = "id_archived_accounts"
     case WatchOnly = "id_watchonly"
     case ChangePin = "id_change_pin"
@@ -30,6 +29,7 @@ enum USItem: String, Codable, CaseIterable {
 struct UserSettingsItem {
     var title: String
     var subtitle: String
+    var attributed: NSMutableAttributedString?
     var section: USSection
     var type: USItem
     var switcher: Bool?

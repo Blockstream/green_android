@@ -100,16 +100,13 @@ class UserSettingsViewModel {
     func getGeneral() -> [UserSettingsItem] {
         guard let settings = settings, let session = session else { return [] }
         let network: NetworkSecurityCase = session.gdkNetwork.mainnet ? .bitcoinSS : .testnetSS
-        let bitcoinDenomination = UserSettingsItem(
-            title: USItem.BitcoinDenomination.string,
-            subtitle: settings.denomination.string(for: network.gdkNetwork),
+        
+        let unifiedDenominationExchange = UserSettingsItem(
+            title: USItem.UnifiedDenominationExchange.string,
+            subtitle: "",
+            attributed: getDenominationExchangeInfo(settings: settings, network: network),
             section: .General,
-            type: .BitcoinDenomination)
-        let referenceExchangeRate = UserSettingsItem(
-            title: USItem.ReferenceExchangeRate.string,
-            subtitle: "\(settings.pricing["currency"]!)/\(settings.pricing["exchange"]!.capitalized)",
-            section: .General,
-            type: .ReferenceExchangeRate)
+            type: .UnifiedDenominationExchange)
         let archievedAccounts = UserSettingsItem(
             title: USItem.ArchievedAccounts.string,
             subtitle: "",
@@ -121,9 +118,9 @@ class UserSettingsViewModel {
             section: .General,
             type: .WatchOnly)
         if isWatchonly && isSinglesig {
-            return [bitcoinDenomination, referenceExchangeRate]
+            return [unifiedDenominationExchange]
         }
-        return [bitcoinDenomination, referenceExchangeRate, archievedAccounts, watchOnly]
+        return [unifiedDenominationExchange, archievedAccounts, watchOnly]
     }
 
     func getRecovery() -> [UserSettingsItem] {
@@ -168,5 +165,20 @@ class UserSettingsViewModel {
             }
         }
         cellModels = items.mapValues { $0.map { UserSettingsCellModel($0) } }
+    }
+
+    func getDenominationExchangeInfo(settings: Settings, network: NetworkSecurityCase) -> NSMutableAttributedString {
+        let den = settings.denomination.string(for: network.gdkNetwork)
+        let pricing = settings.pricing["currency"] ?? ""
+        let exchange = (settings.pricing["exchange"] ?? "").uppercased()
+        let plain = "Display values in \(den) and exchange rate in \(pricing) using \(exchange)"
+        let iAttr: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.white.withAlphaComponent(0.7)
+        ]
+        let attrStr = NSMutableAttributedString(string: plain)
+        attrStr.setAttributes(iAttr, for: den)
+        attrStr.setAttributes(iAttr, for: pricing)
+        attrStr.setAttributes(iAttr, for: exchange)
+        return attrStr
     }
 }

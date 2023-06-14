@@ -32,6 +32,10 @@ class UserSettingsCell: UITableViewCell {
             disclosure.isHidden = !(viewModel?.disclosure ?? false)
             disclosure.image = viewModel?.disclosureImage
             copyImg.isHidden = viewModel?.type != .SupportID
+            if viewModel?.type == .UnifiedDenominationExchange {
+                lblHint.attributedText = viewModel?.attributed ?? NSAttributedString(string: viewModel?.subtitle ?? "")
+                lblHint.numberOfLines = 0
+            }
         }
     }
 }

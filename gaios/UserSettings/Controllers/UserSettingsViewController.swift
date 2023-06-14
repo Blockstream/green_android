@@ -124,14 +124,8 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
         switch item?.type {
         case .Logout:
             delegate?.userLogout()
-        case .BitcoinDenomination:
-            showBitcoinDenomination()
-        case .ReferenceExchangeRate:
-            let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "CurrencySelectorViewController") as? CurrencySelectorViewController {
-                vc.delegate = self
-                navigationController?.pushViewController(vc, animated: true)
-            }
+        case .UnifiedDenominationExchange:
+            showDenominationExchange()
         case .BackUpRecoveryPhrase:
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "OnBoardInfoViewController") as? OnBoardInfoViewController {
@@ -236,21 +230,12 @@ extension UserSettingsViewController {
         }
     }
 
-    func showBitcoinDenomination() {
-        guard let session = session, let settings = session.settings else { return }
-
-        let list: [DenominationType] = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats]
-        let selected = settings.denomination
-        let network: NetworkSecurityCase = session.gdkNetwork.mainnet ? .bitcoinSS : .testnetSS
-
-        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogDenominationViewController") as? DialogDenominationViewController {
-            vc.viewModel = DialogDenominationViewModel(denomination: selected,
-                                                       denominations: list,
-                                                       network: network)
-            vc.delegate = self
+    func showDenominationExchange() {
+        let ltFlow = UIStoryboard(name: "DenominationExchangeFlow", bundle: nil)
+        if let vc = ltFlow.instantiateViewController(withIdentifier: "DenominationExchangeViewController") as? DenominationExchangeViewController {
             vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
+            vc.delegate = self
+            self.present(vc, animated: false, completion: nil)
         }
     }
 
@@ -384,16 +369,9 @@ extension UserSettingsViewController: DialogWatchOnlySetUpViewControllerDelegate
     }
 }
 
-extension UserSettingsViewController: DialogDenominationViewControllerDelagate {
-    func didSelect(denomination: DenominationType) {
-        guard let session = session, let settings = session.settings else { return }
-        settings.denomination = denomination
-        changeSettings(settings)
-            .done {
-                self.viewModel.load()
-                self.delegate?.refresh()
-            }.catch { error in
-                self.showAlert(error)
-            }
+extension UserSettingsViewController: DenominationExchangeViewControllerDelegate {
+    func onDenominationExchangeSave() {
+        self.viewModel.load()
+        self.delegate?.refresh()
     }
 }

@@ -96,13 +96,23 @@ class WalletViewModel {
             .compactMap(on: bgq) { self.sumBalances(self.subaccounts) }
             .compactMap(on: bgq) { BalanceCellModel(satoshi: $0,
                                                     cachedBalance: self.cachedBalance,
-                                                    mode: self.balanceDisplayMode ) }
+                                                    mode: self.balanceDisplayMode,
+                                                    assetId: self.getAssetId()) }
             .compactMap { cells in
                 self.balanceCellModel = cells
                 self.reloadAccountView?()
                 self.welcomeLayerVisibility?()
                 self.callAnalytics()
             }
+    }
+
+    func getAssetId() -> String {
+        let lSubs: [WalletItem] = subaccounts.filter{ $0.gdkNetwork.liquid == true }
+        if lSubs.count == subaccounts.count {
+            return lSubs.first?.gdkNetwork.mainnet ?? true ? Balance.lbtc : Balance.ltest
+        } else {
+            return "btc"
+        }
     }
 
     func loadTransactions(max: Int? = nil) -> Promise<Void> {

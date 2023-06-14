@@ -12,11 +12,13 @@ class BalanceCell: UITableViewCell {
     @IBOutlet weak var btnEye: UIButton!
     @IBOutlet weak var assetsBox: UIView!
     @IBOutlet weak var loader: UIActivityIndicatorView!
-    
+    @IBOutlet weak var btnExchange: UIButton!
+
     private var model: BalanceCellModel?
     private var onAssets: (() -> Void)?
     private var onConvert: (() -> Void)?
     private var onHide: ((Bool) -> Void)?
+    private var onExchange: (() -> Void)?
     private let iconW: CGFloat = 20.0
     private var hideBalance = false
 
@@ -26,6 +28,7 @@ class BalanceCell: UITableViewCell {
         super.awakeFromNib()
         lblBalanceTitle.text = "id_total_balance".localized
         lblBalanceTitle.font = .systemFont(ofSize: 18.0, weight: .bold)
+        btnExchange.setImage(UIImage(named: "ic_coins_exchange")?.maskWithColor(color: .white.withAlphaComponent(0.4)), for: .normal)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -36,7 +39,8 @@ class BalanceCell: UITableViewCell {
                    hideBalance: Bool,
                    onHide: ((Bool) -> Void)?,
                    onAssets: (() -> Void)?,
-                   onConvert:(() -> Void)?) {
+                   onConvert: (() -> Void)?,
+                   onExchange: (() -> Void)?) {
         self.hideBalance = hideBalance
         self.model = model
         lblBalanceValue.text = ""
@@ -54,6 +58,7 @@ class BalanceCell: UITableViewCell {
         self.onAssets = onAssets
         self.onHide = onHide
         self.onConvert = onConvert
+        self.onExchange = onExchange
         var icons: [UIImage] = []
         for asset in assets {
             let tag = asset.0
@@ -118,5 +123,9 @@ class BalanceCell: UITableViewCell {
 
     @IBAction func btnAssets(_ sender: Any) {
         onAssets?()
+    }
+
+    @IBAction func onExchange(_ sender: Any) {
+        onExchange?()
     }
 }

@@ -374,6 +374,15 @@ class WalletViewController: UIViewController {
         }
     }
 
+    func showDenominationExchange() {
+        let ltFlow = UIStoryboard(name: "DenominationExchangeFlow", bundle: nil)
+        if let vc = ltFlow.instantiateViewController(withIdentifier: "DenominationExchangeViewController") as? DenominationExchangeViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            self.present(vc, animated: false, completion: nil)
+        }
+    }
+
     @IBAction func btnSend(_ sender: Any) {
         sendfromWallet()
     }
@@ -435,6 +444,8 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                     self?.assetsScreen()
                 }, onConvert: { [weak self] in
                     self?.viewModel.rotateBalanceDisplayMode()
+                }, onExchange: { [weak self] in
+                    self?.showDenominationExchange()
                 })
                 cell.selectionStyle = .none
                 return cell
@@ -913,5 +924,11 @@ extension WalletViewController: DialogScanViewControllerDelegate {
     }
 
     func didStop() {
+    }
+}
+
+extension WalletViewController: DenominationExchangeViewControllerDelegate {
+    func onDenominationExchangeSave() {
+        _ = viewModel.loadBalances().then { self.viewModel.loadTransactions(max: 10) }.done { _ in }
     }
 }
