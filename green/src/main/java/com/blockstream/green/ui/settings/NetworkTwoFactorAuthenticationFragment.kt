@@ -22,6 +22,7 @@ import com.blockstream.green.extensions.clearNavigationResult
 import com.blockstream.green.extensions.endIconCustomMode
 import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.getNavigationResult
+import com.blockstream.green.extensions.isNotBlank
 import com.blockstream.green.extensions.localized2faMethods
 import com.blockstream.green.gdk.getNetworkIcon
 import com.blockstream.green.ui.bottomsheets.TwoFactorResetBottomSheetDialogFragment
@@ -408,7 +409,10 @@ class NetworkTwoFactorAuthenticationFragment :
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 try {
                     val isFiat = binding.currencySpinner.selectedItemPosition == 1
-                    val input = UserInput.parseUserInput(session, binding.amount, denomination = if(isFiat) Denomination.fiat(session) else null)
+                    val input = UserInput.parseUserInputSafe(
+                        session = session,
+                        input = binding.amount.takeIf { it.isNotBlank() } ?: "0",
+                        denomination = Denomination.fiatOrNull(session, isFiat))
 
                     viewModel.setLimits(network, input.toLimit(), DialogTwoFactorResolver(requireContext()))
                 } catch (e: Exception) {
