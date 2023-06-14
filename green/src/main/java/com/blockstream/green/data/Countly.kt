@@ -664,6 +664,7 @@ class Countly constructor(
         val hasBitcoin = session.accounts.any { it.isBitcoin } // check for unarchived bitcoin accounts
         val hasLiquid = session.accounts.any { it.isLiquid } // check for unarchived liquid accounts
 
+        // "Networks: mainnet / liquid / mainnet-mixed / testnet / testnet-liquid / testnet-mixed
         val network = when{
             hasBitcoin && !hasLiquid -> "mainnet".takeIf { isMainnet } ?: "testnet"
             !hasBitcoin && hasLiquid -> "liquid".takeIf { isMainnet } ?: "testnet-liquid"
@@ -673,19 +674,27 @@ class Countly constructor(
 
         val hasSinglesig = session.accounts.any { it.isSinglesig } // check for unarchived singlesig accounts
         val hasMultisig = session.accounts.any { it.isMultisig } // check for unarchived multisig accounts
+        val hasLightning = session.accounts.any { it.isLightning } // check for unarchived multisig accounts
 
-        // TODO add lightning
-        // singlesig / multisig / lightning / single-multi / single-light / multi-light / single-multi-light
-        val security = when{
-            hasSinglesig && !hasMultisig -> "singlesig"
-            !hasSinglesig && hasMultisig -> "multisig"
-            hasSinglesig && hasMultisig -> "single-multi"
-            else -> "none"
+        // Security: singlesig / multisig / lightning / single-multi / single-light / multi-light / single-multi-light"
+        val security = mutableListOf<String>()
+
+        if(hasSinglesig) {
+            security += if(hasMultisig || hasLightning) "single" else "singlesig"
         }
+
+        if(hasMultisig){
+            security += if(hasSinglesig || hasLightning) "multi" else "multisig"
+        }
+
+        if(hasLightning){
+            security += if(hasSinglesig || hasMultisig) "light" else "lightning"
+        }
+
 
         return baseSegmentation().also{
             it[PARAM_NETWORKS] = network
-            it[PARAM_SECURITY] = security
+            it[PARAM_SECURITY] = security.joinToString("-")
         }
     }
 
