@@ -11,6 +11,7 @@ import com.blockstream.gdk.data.Credentials
 import com.blockstream.green.R
 import com.blockstream.green.databinding.RecoveryPhraseFragmentBinding
 import com.blockstream.green.ui.AppViewModel
+import com.blockstream.green.ui.dialogs.QrDialogFragment
 import com.blockstream.green.ui.items.RecoveryWordListItem
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
@@ -77,9 +78,16 @@ class RecoveryPhraseFragment : AbstractWalletFragment<RecoveryPhraseFragmentBind
             openBrowser(Urls.HELP_BIP39_PASSPHRASE)
         }
 
-        binding.recoveryQR.setImageDrawable(BitmapDrawable(resources, createQrBitmap(mnemonic)).also { bitmap ->
-            bitmap.isFilterBitmap = false
-        })
+        createQrBitmap(mnemonic)?.also { bitmap ->
+            binding.recoveryQR.setImageDrawable(BitmapDrawable(resources, bitmap).also {
+                it.isFilterBitmap = false
+            })
+
+            binding.recoveryQR.setOnLongClickListener {
+                QrDialogFragment.show(bitmap, childFragmentManager)
+                true
+            }
+        }
 
         binding.buttonShowQR.setOnClickListener {
             binding.showQR = true

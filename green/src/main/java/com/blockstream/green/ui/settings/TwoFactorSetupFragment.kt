@@ -21,6 +21,7 @@ import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.gdk.getNetworkIcon
 import com.blockstream.green.ui.bottomsheets.FilterBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.FilterableDataProvider
+import com.blockstream.green.ui.dialogs.QrDialogFragment
 import com.blockstream.green.ui.items.CountryListItem
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
@@ -212,6 +213,14 @@ class TwoFactorSetupFragment : AbstractWalletFragment<TwofactorSetupFragmentBind
             binding.authenticatorQR.setImageDrawable(BitmapDrawable(resources, it).also { bitmap ->
                 bitmap.isFilterBitmap = false
             })
+        }
+
+        binding.authenticatorQR.setOnLongClickListener {
+            viewModel.authenticatorQRBitmap.value?.also {
+                QrDialogFragment.show(it, childFragmentManager)
+            }
+
+            true
         }
 
         viewModel.onError.observe(viewLifecycleOwner) { event ->

@@ -45,6 +45,7 @@ import com.blockstream.green.ui.bottomsheets.MenuDataProvider
 import com.blockstream.green.ui.bottomsheets.NoteBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.RequestAmountLabelBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.VerifyAddressBottomSheetDialogFragment
+import com.blockstream.green.ui.dialogs.QrDialogFragment
 import com.blockstream.green.ui.items.MenuListItem
 import com.blockstream.green.ui.wallet.AbstractAssetWalletFragment
 import com.blockstream.green.utils.AmountTextWatcher
@@ -215,6 +216,14 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
                 account = account,
                 session = session
             )
+        }
+
+        binding.addressQrWrap.setOnLongClickListener {
+            viewModel.addressQRBitmap.value?.also {
+                QrDialogFragment.show(it, childFragmentManager)
+            }
+
+            true
         }
 
         binding.assetWhitelistWarning.setOnClickListener {
