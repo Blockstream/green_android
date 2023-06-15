@@ -18,9 +18,10 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp">
+            android:clipToPadding="false"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp">
 
             <ImageView
                 android:id="@+id/icon"
@@ -37,10 +38,10 @@
                 android:id="@+id/name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:textAppearance="?attr/textAppearanceLabelMedium"
-                android:textStyle="bold"
+                android:layout_marginStart="8dp"
                 android:layout_marginEnd="16dp"
+                android:textAppearance="?attr/textAppearanceLabelLarge"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/icon"
                 app:layout_constraintTop_toTopOf="parent"
