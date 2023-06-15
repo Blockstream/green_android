@@ -36,6 +36,8 @@ enum AnalyticsEventName: String {
     case jadeVerifyAddress = "verify_address"
     case jadeOtaStart = "ota_start"
     case jadeOtaComplete = "ota_complete"
+
+    case qrScan = "qr_scan"
 }
 
 extension AnalyticsManager {
@@ -253,6 +255,23 @@ extension AnalyticsManager {
     func otaCompleteJade(account: Account?, firmware: Firmware) {
         if let s = firmwareSgmt(account, firmware: firmware) {
             endEvent(.jadeOtaComplete, sgmt: s)
+        }
+    }
+
+    func scanQr(account: Account?, screen: QrScanScreen) {
+        switch screen {
+        case .addAccountPK, .send, .walletOverview:
+            if var s = sessSgmt(account) {
+                s[AnalyticsManager.strScreen] = screen.rawValue
+                recordEvent(.qrScan, sgmt: s)
+            }
+        case .onBoardRecovery:
+            if var s = onBoardSgmtUnified(flow: .strRestore) {
+                s[AnalyticsManager.strScreen] = screen.rawValue
+                recordEvent(.qrScan, sgmt: s)
+            }
+        case .onBoardWOCredentials:
+            break
         }
     }
 }

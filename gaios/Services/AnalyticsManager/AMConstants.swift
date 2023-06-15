@@ -58,6 +58,7 @@ extension AnalyticsManager {
 
     static let strType = "type"
     static let strMedia = "media"
+    static let strScreen = "screen"
 
     static let strSelectedConfig = "selected_config"
     static let strSelectedDelta = "selected_delta"
@@ -95,5 +96,13 @@ extension AnalyticsManager {
         case singlesig
         case multisig
         case singleMulti = "single-multi"
+    }
+
+    enum QrScanScreen: String {
+        case addAccountPK = "AddAccountPublicKey"
+        case onBoardRecovery = "OnBoardEnterRecovery"
+        case onBoardWOCredentials = "OnBoardWatchOnlyCredentials"
+        case walletOverview = "WalletOverview"
+        case send = "Send"
     }
 }

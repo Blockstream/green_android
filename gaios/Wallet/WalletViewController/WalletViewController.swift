@@ -391,6 +391,8 @@ class WalletViewController: UIViewController {
         if let vc = DialogScanViewController.vc {
             vc.delegate = self
             present(vc, animated: false, completion: nil)
+
+            AnalyticsManager.shared.scanQr(account: AccountsRepository.shared.current, screen: .walletOverview)
         }
     }
 }

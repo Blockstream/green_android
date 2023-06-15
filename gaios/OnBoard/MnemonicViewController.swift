@@ -104,6 +104,15 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
             present(vc, animated: false, completion: nil)
+
+            switch mnemonicActionType {
+            case .recoverWallet:
+                AnalyticsManager.shared.scanQr(account: nil,
+                                               screen: .onBoardRecovery)
+                
+            case .addSubaccount:
+                break
+            }
         }
     }
 

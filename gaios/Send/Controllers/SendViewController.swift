@@ -378,6 +378,9 @@ extension SendViewController: AddressEditCellDelegate {
             vc.index = nil
             vc.delegate = self
             present(vc, animated: false, completion: nil)
+
+            AnalyticsManager.shared.scanQr(account: AccountsRepository.shared.current,
+                                           screen: .send)
         }
     }
     

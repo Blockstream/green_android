@@ -96,6 +96,9 @@ class AccountCreatePublicKeyViewController: UIViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
             present(vc, animated: false, completion: nil)
+
+            AnalyticsManager.shared.scanQr(account: AccountsRepository.shared.current,
+                                           screen: .addAccountPK)
         }
     }
 
