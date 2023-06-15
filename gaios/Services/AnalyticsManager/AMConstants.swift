@@ -1,6 +1,6 @@
 extension AnalyticsManager {
 
-    static let strNetwork = "network"
+    static let strNetwork = "networks"
     static let strSecurity = "security"
     static let strAccountType = "account_type"
     static let str2fa = "2fa"

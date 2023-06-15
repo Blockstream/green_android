@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import PromiseKit
+import gdk
 
 class DialogReceiveVerifyAddressViewController: UIViewController {
 
@@ -15,6 +16,7 @@ class DialogReceiveVerifyAddressViewController: UIViewController {
 
     var isLedger = false
     var address = ""
+    var accountType: AccountType?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,7 +32,9 @@ class DialogReceiveVerifyAddressViewController: UIViewController {
         }
         lblAddress.text = address
 
-        AnalyticsManager.shared.recordView(.verifyAddress, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
+        if let accountType = accountType {
+            AnalyticsManager.shared.recordView(.verifyAddress, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletType: accountType))
+        }
     }
 
     func setContent() {
