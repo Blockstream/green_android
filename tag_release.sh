@@ -58,11 +58,11 @@ check_command sed
 # --- Execution
 printf "\nUpdating versionCode & VersionName...\n\n"
 
-currentVersionCode=`awk '/ versionCode / {print $2}' $GRADLE_BUILD_FILE`
+currentVersionCode=`awk '/ versionCode = / {print $3}' $GRADLE_BUILD_FILE`
 newVersionCode=$(($currentVersionCode + 1))
 
-sed -i '' -e "s/versionCode .*/versionCode ${newVersionCode}/" $GRADLE_BUILD_FILE`
-sed -i '' -e "s/versionName .*/versionName \"${VERSION_NAME}\"/" $GRADLE_BUILD_FILE`
+sed -i '' -e "s/versionCode = .*/versionCode = ${newVersionCode}/" $GRADLE_BUILD_FILE`
+sed -i '' -e "s/versionName = .*/versionName = \"${VERSION_NAME}\"/" $GRADLE_BUILD_FILE`
 
 printf "* versionCode: \t${newVersionCode}\n"
 printf "* versionName: \t${VERSION_NAME}\n"

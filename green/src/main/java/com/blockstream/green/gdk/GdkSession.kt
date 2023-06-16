@@ -52,6 +52,7 @@ import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import mu.KLogging
 import java.io.File
+import java.lang.Long.max
 import java.net.URL
 import kotlin.math.absoluteValue
 import kotlin.properties.Delegates
@@ -1596,11 +1597,20 @@ class GdkSession constructor(
             }
 
         }else{
-            gdkBridge.getFeeEstimates(gdkSession(network))
+            gdkBridge.getFeeEstimates(gdkSession(network)).let {
+                // Temp fix
+                if(network.isSinglesig && network.isLiquid) {
+                    FeeEstimation(it.fees.map { fee ->
+                        max(100L, fee)
+                    })
+                }else{
+                    it
+                }
+            }
         }
     } catch (e: Exception) {
         e.printStackTrace()
-        FeeEstimation(fees = listOf(network.defaultFee))
+        FeeEstimation(fees = mutableListOf(network.defaultFee))
     }
 
     fun getTransactions(account: Account, params: TransactionParams = TransactionParams(subaccount = 0)) = (if (account.network.isLightning) {

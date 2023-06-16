@@ -3,6 +3,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.9] - 2023-06-16
+
+### Changed
+- Make QR code scanner take 85% of the screen
+- Long press a QR code to show it full screen
+
+### Fixed
+- Remove PIN character limit for Trezor One
+- Hide Denomination & Exchange dialog for watch-only multisig
+- Fix 2FA threshold with empty string
+- Fixes on denomination behaviors
+- Fix receive address ellipsize middle
+
 ## [4.0.8] - 2023-06-09
 
 ### Changed
