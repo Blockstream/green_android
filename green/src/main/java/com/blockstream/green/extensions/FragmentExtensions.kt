@@ -22,6 +22,8 @@ import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
 import com.blockstream.green.gdk.isConnectionError
 import com.blockstream.green.gdk.isNotAuthorized
+import com.blockstream.green.ui.AppFragment
+import com.blockstream.green.utils.AppReviewHelper
 import com.blockstream.green.utils.clearClipboard
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -125,7 +127,7 @@ fun Fragment.errorDialog(throwable: Throwable, listener: (() -> Unit)? = null) {
     errorDialog(throwable, false, listener)
 }
 
-fun Fragment.errorDialog(throwable: Throwable, showCopy: Boolean, listener: (() -> Unit)? = null) {
+fun Fragment.errorDialog(throwable: Throwable, showReport: Boolean, listener: (() -> Unit)? = null) {
     if (isDevelopmentFlavor) {
         throwable.printStackTrace()
     }
@@ -138,7 +140,7 @@ fun Fragment.errorDialog(throwable: Throwable, showCopy: Boolean, listener: (() 
 
     errorDialog(
         error = errorFromResourcesAndGDK(throwable),
-        showCopy = showCopy,
+        showReport = showReport,
         listener = listener
     )
 }
@@ -146,15 +148,17 @@ fun Fragment.errorDialog(error: String, listener: (() -> Unit)? = null) {
     errorDialog(error, false, listener)
 }
 
-fun Fragment.errorDialog(error: String, showCopy: Boolean, listener: (() -> Unit)? = null) {
+fun Fragment.errorDialog(error: String, showReport: Boolean = false, listener: (() -> Unit)? = null) {
     MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_Green_MaterialAlertDialog)
         .setTitle(R.string.id_error)
         .setMessage(error)
         .setPositiveButton(android.R.string.ok, null)
-        .apply {
-            if(showCopy) {
-                setNeutralButton(android.R.string.copy) { _, _ ->
-                    copyToClipboard("Error", content = error, showCopyNotification = true)
+        .also {
+            if(showReport) {
+                it.setNeutralButton(R.string.id_report) { _, _ ->
+                    (this as? AppFragment<*>)?.also{
+                        AppReviewHelper.showErrorReport(error, it)
+                    }
                 }
             }
         }

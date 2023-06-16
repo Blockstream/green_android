@@ -978,7 +978,6 @@ class Countly constructor(
             Countly.CountlyFeatureNames.location,
             Countly.CountlyFeatureNames.scrolls,
             Countly.CountlyFeatureNames.clicks,
-            Countly.CountlyFeatureNames.crashes,
             Countly.CountlyFeatureNames.apm
         )
 
@@ -990,6 +989,7 @@ class Countly constructor(
             Countly.CountlyFeatureNames.feedback,
             Countly.CountlyFeatureNames.remoteConfig,
             Countly.CountlyFeatureNames.attribution,
+            Countly.CountlyFeatureNames.crashes
         )
     }
 }

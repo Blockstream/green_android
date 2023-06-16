@@ -72,7 +72,7 @@ class LnUrlAuthFragment :
 
         viewModel.onError.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let { throwable ->
-                errorDialog(throwable, showCopy = true) {
+                errorDialog(throwable, showReport = true) {
                     popBackStack()
                 }
             }

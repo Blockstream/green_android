@@ -1370,4 +1370,6 @@
   <string name="id_close_channel">Close Channel</string>
   <string name="id_we_have_initiated_transfer_of_your_funds">We have initiated transfer of your funds</string>
   <string name="id_are_you_sure_you_want_to_remove_your_lightning">Are you sure you want to remove your Lightning accoun?</string>
+  <string name="id_send_error_report">Send error report</string>
+  <string name="id_report">Report</string>
 </resources>
