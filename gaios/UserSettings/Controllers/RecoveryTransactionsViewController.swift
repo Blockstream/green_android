@@ -92,13 +92,18 @@ class RecoveryTransactionsViewController: UIViewController {
         self.startAnimating()
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().map(on: bgq) { _ in
-            try? session.session?.sendNlocktimes()
+            try session.session?.sendNlocktimes()
             }.ensure {
                 self.stopAnimating()
             }.done {
                 DropAlert().success(message: "id_recovery_transaction_request".localized)
             }.catch { error in
-                self.showError(error.localizedDescription)
+                switch error {
+                case GaError.GenericError(let msg):
+                    self.showError(msg ?? "id_error".localized)
+                default:
+                    self.showError(error.localizedDescription)
+                }
             }
     }
 
