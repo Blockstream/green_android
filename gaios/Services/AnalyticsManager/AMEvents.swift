@@ -271,7 +271,10 @@ extension AnalyticsManager {
                 recordEvent(.qrScan, sgmt: s)
             }
         case .onBoardWOCredentials:
-            break
+            if var s = onBoardSgmtUnified(flow: .watchOnly) {
+                s[AnalyticsManager.strScreen] = screen.rawValue
+                recordEvent(.qrScan, sgmt: s)
+            }
         }
     }
 }
