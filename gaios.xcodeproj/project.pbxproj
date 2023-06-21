@@ -200,6 +200,7 @@
 		3469701C2779D81200796D37 /* DialogCustomFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3469701B2779D81200796D37 /* DialogCustomFeeViewController.swift */; };
 		3469A2462887D23700B2F640 /* StoreReviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3469A2452887D23700B2F640 /* StoreReviewManager.swift */; };
 		3469A2482887D56E00B2F640 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3469A2472887D56E00B2F640 /* Date.swift */; };
+		3470646B2A42C1710096313C /* RecoveryTransactionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470646A2A42C1710096313C /* RecoveryTransactionsViewModel.swift */; };
 		3470F9F02600A8D7009B5E33 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470F9EF2600A8D7009B5E33 /* Bundle.swift */; };
 		3478E88A2A2DD0190080B50E /* Illustration Rocket.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3478E8892A2DD0190080B50E /* Illustration Rocket.riv */; };
 		347C037C272838D500C2EEF6 /* ReceiveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347C037B272838D500C2EEF6 /* ReceiveViewController.swift */; };
@@ -825,6 +826,7 @@
 		3469701B2779D81200796D37 /* DialogCustomFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogCustomFeeViewController.swift; sourceTree = "<group>"; };
 		3469A2452887D23700B2F640 /* StoreReviewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreReviewManager.swift; sourceTree = "<group>"; };
 		3469A2472887D56E00B2F640 /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
+		3470646A2A42C1710096313C /* RecoveryTransactionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryTransactionsViewModel.swift; sourceTree = "<group>"; };
 		3470F9EF2600A8D7009B5E33 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
 		3478E8892A2DD0190080B50E /* Illustration Rocket.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Rocket.riv"; sourceTree = "<group>"; };
 		347C037B272838D500C2EEF6 /* ReceiveViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveViewController.swift; sourceTree = "<group>"; };
@@ -2799,6 +2801,7 @@
 				81A5919A29156011001D1A65 /* MultisigSettingsViewModel.swift */,
 				81A4969529102FCB00CA218D /* UserSettingsViewModel.swift */,
 				812DBDBD2972509A002992D6 /* WatchOnlySettingsViewModel.swift */,
+				3470646A2A42C1710096313C /* RecoveryTransactionsViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -3614,6 +3617,7 @@
 				3488FC6F290BCB2500122628 /* AccountCellModel.swift in Sources */,
 				34E0CA8E298139B200695304 /* SurveyViewController.swift in Sources */,
 				3445498F29FBF7D9006725D2 /* LTSuccessViewController.swift in Sources */,
+				3470646B2A42C1710096313C /* RecoveryTransactionsViewModel.swift in Sources */,
 				347C037C272838D500C2EEF6 /* ReceiveViewController.swift in Sources */,
 				3457F4B529239F2400EF33B5 /* DialogListCellModel.swift in Sources */,
 				34386C8A26F086BA00EBB6A6 /* DialogAccountIdViewController.swift in Sources */,

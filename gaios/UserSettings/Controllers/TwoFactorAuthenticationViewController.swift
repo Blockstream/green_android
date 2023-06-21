@@ -302,7 +302,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
     @IBAction func btnRecoveryTransactions(_ sender: Any) {
         let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryTransactionsViewController") as? RecoveryTransactionsViewController {
-            vc.session = self.session
+            vc.viewModel = RecoveryTransactionsViewModel(session: session)
             navigationController?.pushViewController(vc, animated: true)
         }
     }
