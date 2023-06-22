@@ -42,6 +42,10 @@ class SetGauthViewController: UIViewController {
         subtitleLabel.textColor = .white.withAlphaComponent(0.6)
         btnCopy.setTitle("id_copy_address".localized, for: .normal)
         btnCopy.cornerRadius = 3.0
+
+        qrCodeImageView.isUserInteractionEnabled = true
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
+        qrCodeImageView.addGestureRecognizer(longPressRecognizer)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -66,6 +70,23 @@ class SetGauthViewController: UIViewController {
               let json = try? JSONSerialization.data(withJSONObject: data, options: []),
               let connection = try? JSONDecoder().decode(Connection.self, from: json) {
             self.connected = connection.connected
+        }
+    }
+
+    func magnifyQR() {
+        let stb = UIStoryboard(name: "Utility", bundle: nil)
+        if let vc = stb.instantiateViewController(withIdentifier: "MagnifyQRViewController") as? MagnifyQRViewController, let txt = gauthData {
+            vc.qrTxt = txt
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: false, completion: nil)
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
+        }
+    }
+
+    @objc func longPressed(sender: UILongPressGestureRecognizer) {
+
+        if sender.state == UIGestureRecognizer.State.began {
+            magnifyQR()
         }
     }
 

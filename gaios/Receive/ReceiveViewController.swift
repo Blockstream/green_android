@@ -311,6 +311,16 @@ class ReceiveViewController: KeyboardViewController {
         newAddress()
     }
 
+    func magnifyQR() {
+        let stb = UIStoryboard(name: "Utility", bundle: nil)
+        if let vc = stb.instantiateViewController(withIdentifier: "MagnifyQRViewController") as? MagnifyQRViewController {
+            vc.qrTxt = viewModel.text
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: false, completion: nil)
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
+        }
+    }
+
     func ltSuccessViewController(model: LTSuccessViewModel) {
         let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "LTSuccessViewController") as? LTSuccessViewController {
@@ -556,6 +566,8 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
                     self?.copyToClipboard()
                 } onRefreshClick: { [weak self] in
                     self?.onRefreshClick()
+                } onLongpress: { [weak self] in
+                    self?.magnifyQR()
                 }
                 cell.selectionStyle = .none
                 return cell

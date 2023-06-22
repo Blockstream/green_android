@@ -13,6 +13,7 @@ class ReceiveAddressCell: UITableViewCell {
 
     var onCopyToClipboard: (() -> Void)?
     var onRefreshClick: (() -> Void)?
+    var onLongpress: (() -> Void)?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -20,6 +21,9 @@ class ReceiveAddressCell: UITableViewCell {
         bgCardQR.layer.cornerRadius = 5.0
         //btnCopy.setTitle("id_copy_address".localized, for: .normal)
         btnCopy.cornerRadius = 5.0
+
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
+        qrFrame.addGestureRecognizer(longPressRecognizer)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -29,7 +33,9 @@ class ReceiveAddressCell: UITableViewCell {
     func configure(model: ReceiveAddressCellModel,
                    isAnimating: Bool,
                    onCopyToClipboard: (() -> Void)?,
-                   onRefreshClick: (() -> Void)?) {
+                   onRefreshClick: (() -> Void)?,
+                   onLongpress: (() -> Void)? = nil
+    ) {
         lblAddress.text = model.text
         self.onCopyToClipboard = onCopyToClipboard
         self.onRefreshClick = onRefreshClick
@@ -49,6 +55,14 @@ class ReceiveAddressCell: UITableViewCell {
             loader.startAnimating()
         } else {
             loader.stopAnimating()
+        }
+        self.onLongpress = onLongpress
+    }
+
+    @objc func longPressed(sender: UILongPressGestureRecognizer) {
+
+        if sender.state == UIGestureRecognizer.State.began {
+            onLongpress?()
         }
     }
 

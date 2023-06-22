@@ -329,6 +329,7 @@
 		34D535E429A773AF00D3B5C5 /* SharePrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D535E329A773AF00D3B5C5 /* SharePrefs.swift */; };
 		34D535E629A77D4B00D3B5C5 /* MoreOptPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D535E529A77D4B00D3B5C5 /* MoreOptPrefs.swift */; };
 		34D66CED29CA10EF00BBBC5C /* PopoverMenuHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D66CEC29CA10EF00BBBC5C /* PopoverMenuHomeViewController.swift */; };
+		34DBF17B2A44315000066479 /* MagnifyQRViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DBF17A2A44315000066479 /* MagnifyQRViewController.swift */; };
 		34DDD0A9260A486300020380 /* Shared.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34DDD0A8260A486300020380 /* Shared.storyboard */; };
 		34DEF525272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */; };
 		34E0CA8C2981395600695304 /* Survey.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34E0CA8B2981395600695304 /* Survey.storyboard */; };
@@ -956,6 +957,7 @@
 		34D535E329A773AF00D3B5C5 /* SharePrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePrefs.swift; sourceTree = "<group>"; };
 		34D535E529A77D4B00D3B5C5 /* MoreOptPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreOptPrefs.swift; sourceTree = "<group>"; };
 		34D66CEC29CA10EF00BBBC5C /* PopoverMenuHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverMenuHomeViewController.swift; sourceTree = "<group>"; };
+		34DBF17A2A44315000066479 /* MagnifyQRViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagnifyQRViewController.swift; sourceTree = "<group>"; };
 		34DDD0A8260A486300020380 /* Shared.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Shared.storyboard; sourceTree = "<group>"; };
 		34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveVerifyAddressViewController.swift; sourceTree = "<group>"; };
 		34E0CA8B2981395600695304 /* Survey.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Survey.storyboard; sourceTree = "<group>"; };
@@ -1343,6 +1345,7 @@
 		3420470D291B913E00EDE945 /* Utility */ = {
 			isa = PBXGroup;
 			children = (
+				34DBF1792A442F4D00066479 /* MagnifyQRViewController */,
 				34927BC52971449D00D741DB /* AccountAssetSelectViewController */,
 				34B8DA092938FAB1001DA9B9 /* AccountCreateFooterView */,
 				3457F4BB292408BE00EF33B5 /* AssetExpandableSelect */,
@@ -2264,6 +2267,14 @@
 				34C978A7268DC14D0061264D /* Extensions.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		34DBF1792A442F4D00066479 /* MagnifyQRViewController */ = {
+			isa = PBXGroup;
+			children = (
+				34DBF17A2A44315000066479 /* MagnifyQRViewController.swift */,
+			);
+			path = MagnifyQRViewController;
 			sourceTree = "<group>";
 		};
 		34DDD0A7260A484E00020380 /* Shared */ = {
@@ -3542,6 +3553,7 @@
 				813872942A0480E30092CFD2 /* LightningSessionManager.swift in Sources */,
 				34FE20142A1CA98000301746 /* DialogNodeViewModel.swift in Sources */,
 				3448B5CB29D47647008D5746 /* DialogScanViewController.swift in Sources */,
+				34DBF17B2A44315000066479 /* MagnifyQRViewController.swift in Sources */,
 				81E8C35B292000B400B2196B /* AccountArchiveViewModel.swift in Sources */,
 				34EB6703282138710036D615 /* AMSegmentation.swift in Sources */,
 				34A31EAF26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift in Sources */,

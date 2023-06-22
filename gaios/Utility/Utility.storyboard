@@ -357,10 +357,91 @@
             </objects>
             <point key="canvasLocation" x="3869" y="2239"/>
         </scene>
+        <!--MagnifyQR View Controller-->
+        <scene sceneID="YI5-Dj-rZ2">
+            <objects>
+                <viewController storyboardIdentifier="MagnifyQRViewController" id="Zk2-qf-M3R" customClass="MagnifyQRViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="haW-57-N1E">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KiG-zm-z3n">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.85670249281661637" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                            </view>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="idE-ry-gUR">
+                                <rect key="frame" x="0.0" y="59" width="393" height="759"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dJc-a1-lQU">
+                                        <rect key="frame" x="0.0" y="0.0" width="393" height="759"/>
+                                        <subviews>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GIm-hK-EOt">
+                                                <rect key="frame" x="19.666666666666657" y="172.66666666666666" width="353.66666666666674" height="353.66666666666674"/>
+                                                <subviews>
+                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_qr" translatesAutoresizingMaskIntoConstraints="NO" id="P5j-xj-HLY">
+                                                        <rect key="frame" x="0.0" y="0.0" width="353.66666666666669" height="353.66666666666669"/>
+                                                    </imageView>
+                                                </subviews>
+                                                <color key="backgroundColor" name="gBlackBg"/>
+                                                <constraints>
+                                                    <constraint firstItem="P5j-xj-HLY" firstAttribute="centerY" secondItem="GIm-hK-EOt" secondAttribute="centerY" id="32i-CN-Wu7"/>
+                                                    <constraint firstItem="P5j-xj-HLY" firstAttribute="centerX" secondItem="GIm-hK-EOt" secondAttribute="centerX" id="3jj-Ku-sl6"/>
+                                                    <constraint firstAttribute="width" secondItem="GIm-hK-EOt" secondAttribute="height" id="CvY-6y-NGw"/>
+                                                    <constraint firstItem="P5j-xj-HLY" firstAttribute="height" secondItem="GIm-hK-EOt" secondAttribute="height" id="Urx-hF-poA"/>
+                                                    <constraint firstItem="P5j-xj-HLY" firstAttribute="width" secondItem="GIm-hK-EOt" secondAttribute="width" id="XLT-Du-dET"/>
+                                                </constraints>
+                                            </view>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstItem="GIm-hK-EOt" firstAttribute="centerY" secondItem="dJc-a1-lQU" secondAttribute="centerY" constant="-30" id="4k1-rs-GJA"/>
+                                            <constraint firstItem="GIm-hK-EOt" firstAttribute="centerX" secondItem="dJc-a1-lQU" secondAttribute="centerX" id="Cax-U1-6J0"/>
+                                            <constraint firstItem="GIm-hK-EOt" firstAttribute="width" secondItem="dJc-a1-lQU" secondAttribute="width" multiplier="0.9" id="bco-XY-3RE"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="dJc-a1-lQU" secondAttribute="trailing" id="5ge-fG-2P3"/>
+                                    <constraint firstItem="dJc-a1-lQU" firstAttribute="top" secondItem="idE-ry-gUR" secondAttribute="top" id="AJR-BC-mu4"/>
+                                    <constraint firstItem="dJc-a1-lQU" firstAttribute="leading" secondItem="idE-ry-gUR" secondAttribute="leading" id="VwV-KK-inM"/>
+                                    <constraint firstItem="dJc-a1-lQU" firstAttribute="height" secondItem="idE-ry-gUR" secondAttribute="height" id="X61-Fr-nqS"/>
+                                    <constraint firstAttribute="bottom" secondItem="dJc-a1-lQU" secondAttribute="bottom" id="nOu-eR-ka0"/>
+                                </constraints>
+                                <viewLayoutGuide key="contentLayoutGuide" id="W1V-h4-1Cl"/>
+                                <viewLayoutGuide key="frameLayoutGuide" id="U9O-mD-zMY"/>
+                            </scrollView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="vF0-lE-c2i"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="dJc-a1-lQU" firstAttribute="width" secondItem="haW-57-N1E" secondAttribute="width" id="49z-hB-EZl"/>
+                            <constraint firstItem="KiG-zm-z3n" firstAttribute="leading" secondItem="vF0-lE-c2i" secondAttribute="leading" id="I9C-zh-KwM"/>
+                            <constraint firstItem="vF0-lE-c2i" firstAttribute="bottom" secondItem="idE-ry-gUR" secondAttribute="bottom" id="Oa8-j8-P0I"/>
+                            <constraint firstItem="idE-ry-gUR" firstAttribute="leading" secondItem="vF0-lE-c2i" secondAttribute="leading" id="PIA-Za-1bP"/>
+                            <constraint firstItem="KiG-zm-z3n" firstAttribute="top" secondItem="haW-57-N1E" secondAttribute="top" id="RFf-sc-Pqu"/>
+                            <constraint firstAttribute="bottom" secondItem="KiG-zm-z3n" secondAttribute="bottom" id="RxN-Cg-Viu"/>
+                            <constraint firstItem="vF0-lE-c2i" firstAttribute="top" secondItem="idE-ry-gUR" secondAttribute="top" id="ZTg-kK-Ad4"/>
+                            <constraint firstItem="vF0-lE-c2i" firstAttribute="trailing" secondItem="idE-ry-gUR" secondAttribute="trailing" id="aje-SH-5vN"/>
+                            <constraint firstItem="vF0-lE-c2i" firstAttribute="trailing" secondItem="KiG-zm-z3n" secondAttribute="trailing" id="qaO-e7-zdb"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="bgLayer" destination="KiG-zm-z3n" id="wIM-aI-0nJ"/>
+                        <outlet property="cardView" destination="GIm-hK-EOt" id="BDo-Sd-zmt"/>
+                        <outlet property="qr" destination="P5j-xj-HLY" id="ovT-ef-i58"/>
+                        <outlet property="scrollView" destination="idE-ry-gUR" id="d5c-HS-NMl"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="YXs-Th-YbU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4560" y="2239"/>
+        </scene>
     </scenes>
     <resources>
         <image name="bg_actions" width="375" height="192"/>
         <image name="ic_amp_warn" width="15.333333015441895" height="16"/>
+        <image name="ic_qr" width="60" height="60"/>
         <image name="ic_search" width="16.666666030883789" height="16.666666030883789"/>
         <namedColor name="gBlackBg">
             <color red="0.075000002980232239" green="0.086000002920627594" blue="0.11400000005960464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
