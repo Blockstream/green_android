@@ -53,8 +53,10 @@ class ReceiveAddressCell: UITableViewCell {
         }
         if isAnimating {
             loader.startAnimating()
+            loader.isHidden = false
         } else {
             loader.stopAnimating()
+            loader.isHidden = true
         }
         self.onLongpress = onLongpress
     }
