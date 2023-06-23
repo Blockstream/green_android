@@ -10,14 +10,25 @@ class FooterQrCell: UICollectionReusableView {
     @IBOutlet weak var bip85View: UIView!
     @IBOutlet weak var infoPanel: UIView!
     @IBOutlet weak var lblBip85: UILabel!
-
     @IBOutlet weak var actionBtn: UIButton!
-    var mnemonic: String?
     @IBOutlet weak var qrImg: UIImageView!
 
-    func configure(mnemonic: String?, bip39Passphrase: String?) {
-        self.mnemonic = mnemonic
+    var mnemonic: String?
+    var onLongpress: (() -> Void)?
 
+    override func awakeFromNib() {
+        super.awakeFromNib()
+
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
+        qrImg.isUserInteractionEnabled = true
+        qrImg.addGestureRecognizer(longPressRecognizer)
+    }
+
+    func configure(mnemonic: String?,
+                   bip39Passphrase: String?,
+                   onLongpress: (() -> Void)?) {
+        self.mnemonic = mnemonic
+        self.onLongpress = onLongpress
         qrImg.image = QRImageGenerator.imageForTextWhite(text: mnemonic ?? "", frame: qrImg.frame)
         qrImg.isHidden = true
 
@@ -34,9 +45,10 @@ class FooterQrCell: UICollectionReusableView {
         bip85View.isHidden = true
     }
 
-    func configureBip85(mnemonic: String?) {
+    func configureBip85(mnemonic: String?,
+                        onLongpress: (() -> Void)?) {
         self.mnemonic = mnemonic
-
+        self.onLongpress = onLongpress
         qrImg.image = QRImageGenerator.imageForTextWhite(text: mnemonic ?? "", frame: qrImg.frame)
         qrImg.isHidden = true
         passphraseView.isHidden = true
@@ -45,6 +57,13 @@ class FooterQrCell: UICollectionReusableView {
         infoPanel.cornerRadius = 5.0
         infoPanel.backgroundColor = UIColor.gGreenFluo().withAlphaComponent(0.2)
         lblBip85.text = "This is your BIP85 derived recovery phrase only for your Lightning account.\n\nWARNING: You can't fully restore your wallet with that."
+    }
+
+    @objc func longPressed(sender: UILongPressGestureRecognizer) {
+
+        if sender.state == UIGestureRecognizer.State.began {
+            onLongpress?()
+        }
     }
 
     @IBAction func actionBtn(_ sender: Any) {

@@ -49,6 +49,16 @@ class ShowMnemonicsViewController: UIViewController {
             }
         }
     }
+
+    func magnifyQR() {
+        let stb = UIStoryboard(name: "Utility", bundle: nil)
+        if let vc = stb.instantiateViewController(withIdentifier: "MagnifyQRViewController") as? MagnifyQRViewController {
+            vc.qrTxt = self.items.joined(separator: " ")
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: false, completion: nil)
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
+        }
+    }
 }
 
 extension ShowMnemonicsViewController: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -71,10 +81,15 @@ extension ShowMnemonicsViewController: UICollectionViewDelegate, UICollectionVie
                                                                          withReuseIdentifier: "FooterQrCell",
                                                                          for: indexPath) as? FooterQrCell {
               if showBip85 {
-                  fView.configureBip85(mnemonic: self.items.joined(separator: " "))
+                  fView.configureBip85(mnemonic: self.items.joined(separator: " ")) {
+                      [weak self] in self?.magnifyQR()
+                  }
                   return fView
               } else {
-                  fView.configure(mnemonic: self.items.joined(separator: " "), bip39Passphrase: self.bip39Passphrase)
+                  fView.configure(mnemonic: self.items.joined(separator: " "),
+                                  bip39Passphrase: self.bip39Passphrase) {
+                      [weak self] in self?.magnifyQR()
+                  }
                   return fView
               }
           }
