@@ -78,7 +78,7 @@ class WalletManager {
             addSession(for: .liquidSS)
             addSession(for: .bitcoinMS)
             addSession(for: .liquidMS)
-            //addLightningSession(for: .lightning)
+            addLightningSession(for: .lightning)
         } else {
             addSession(for: .testnetSS)
             addSession(for: .testnetLiquidSS)
@@ -102,7 +102,7 @@ class WalletManager {
     func addLightningSession(for network: NetworkSecurityCase) {
         let session = LightningSessionManager(network.gdkNetwork)
         session.accountId = account.id
-        //sessions[network.rawValue] = session
+        sessions[network.rawValue] = session
     }
     
     var lightningSession: LightningSessionManager? {
@@ -210,7 +210,6 @@ class WalletManager {
         failureSessions = [:]
         let loginTask: ((_ session: SessionManager) async throws -> ()) = { session in
             let walletHashId = walletId(session)!.walletHashId
-            let network = session.gdkNetwork.network
             let removeDatadir = !existDatadir(session) && session.gdkNetwork.network != self.prominentNetwork.network
             let restore = fullRestore || !existDatadir(session)
             do {
@@ -286,13 +285,13 @@ class WalletManager {
         let liquidNetworks: [NetworkSecurityCase] = testnet ? [.testnetLiquidSS, .testnetLiquidMS ] : [.liquidSS, .liquidMS ]
         let liquidSessions = sessions.filter { liquidNetworks.map { $0.rawValue }.contains($0.key) }
         if let session = liquidSessions.filter({ $0.value.logged }).first?.value {
-            return try await registry.loadAsync(session: session)
+            try await registry.load(session: session)
         } else if let session = liquidSessions.filter({ $0.value.connected }).first?.value {
-            return try await registry.loadAsync(session: session)
+            try await registry.load(session: session)
         } else {
             let liquidNetworks: [NetworkSecurityCase] = testnet ? [.testnetLiquidSS, .testnetLiquidMS ] : [.liquidSS, .liquidMS ]
             let session = SessionManager(liquidNetworks.first!.gdkNetwork)
-            return try await registry.loadAsync(session: session)
+            try await registry.load(session: session)
         }
     }
 

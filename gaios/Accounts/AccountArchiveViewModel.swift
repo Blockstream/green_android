@@ -12,15 +12,8 @@ class AccountArchiveViewModel {
         wm.subaccounts.filter { $0.hidden }
     }
 
-    /// reload by section with animation
-    var reloadSections: (([AccountArchiveSection], Bool) -> Void)?
-
     /// cell models
-    var accountCellModels = [AccountCellModel]() {
-        didSet {
-            reloadSections?([AccountArchiveSection.account], false)
-        }
-    }
+    var accountCellModels = [AccountCellModel]()
 
     func loadSubaccounts() async throws {
         let subaccounts = try await wm.subaccounts().filter { $0.hidden }

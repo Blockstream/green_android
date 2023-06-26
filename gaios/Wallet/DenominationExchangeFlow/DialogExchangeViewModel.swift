@@ -1,6 +1,5 @@
 import Foundation
 import gdk
-import PromiseKit
 
 class DialogExchangeViewModel {
 
@@ -21,22 +20,21 @@ class DialogExchangeViewModel {
     }
 
     func getExchanges() {
-        guard let session = session else { return }
-        let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().then(on: bgq) {
-            session.getAvailableCurrencies()
-        }.done { perExchange in
-            self.exchangeList.removeAll()
-            var list: [CurrencyItem] = []
-            for (exchange, array) in perExchange {
-                for currency in array {
-                    list.append(CurrencyItem(exchange: exchange, currency: currency))
+        Task {
+            do {
+                let perExchange = try await session?.getAvailableCurrencies()
+                await MainActor.run {
+                    self.exchangeList.removeAll()
+                    var list: [CurrencyItem] = []
+                    for (exchange, array) in perExchange ?? [:]{
+                        for currency in array {
+                            list.append(CurrencyItem(exchange: exchange, currency: currency))
+                        }
+                    }
+                    self.exchangeList = list.sorted(by: { $0.currency < $1.currency })
+                    self.onReady?()
                 }
-            }
-            self.exchangeList = list.sorted(by: { $0.currency < $1.currency })
-            self.onReady?()
-        }.catch {_ in
-
+            } catch { print (error) }
         }
     }
 

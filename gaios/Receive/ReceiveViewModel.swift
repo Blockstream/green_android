@@ -26,7 +26,6 @@ class ReceiveViewModel {
     var swap: SwapInfo?
 
     var wm: WalletManager { WalletManager.current! }
-    let bgq = DispatchQueue.global(qos: .background)
 
     init(account: WalletItem, accounts: [WalletItem]) {
         self.account = account

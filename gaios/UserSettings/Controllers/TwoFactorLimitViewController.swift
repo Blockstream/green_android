@@ -103,7 +103,6 @@ class TwoFactorLimitViewController: KeyboardViewController {
     @objc func nextClick(_ sender: UIButton) {
         guard amount != nil else { return }
         let details = isFiat ? ["is_fiat": isFiat, "fiat": amount!] : ["is_fiat": isFiat, denomination.rawValue: amount!]
-        let bgq = DispatchQueue.global(qos: .background)
         self.startAnimating()
         Task {
             do {

@@ -15,24 +15,16 @@ class WatchOnlySettingsViewController: UIViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.SettingsScreen.view
 
         AnalyticsManager.shared.recordView(.walletSettings, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
-
-        initViewModel()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        Task { await viewModel.load() }
-    }
-
-    func initViewModel() {
-        viewModel.reloadTableView = { [weak self] in
-            DispatchQueue.main.async {
-                self?.tableView.reloadData()
-            }
-        }
-        viewModel.error = { [weak self] text in
-            DispatchQueue.main.async {
-                self?.showError(text)
+        Task {
+            do {
+                await viewModel.load()
+                await MainActor.run {  tableView.reloadData() }
+            } catch {
+                showError(error)
             }
         }
     }

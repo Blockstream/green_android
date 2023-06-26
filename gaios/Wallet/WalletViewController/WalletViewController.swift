@@ -49,6 +49,7 @@ class WalletViewController: UIViewController {
     private var cachedAccount: WalletItem?
     private var notificationObservers: [NSObjectProtocol] = []
     private let drawerItem = ((Bundle.main.loadNibNamed("DrawerBarItem", owner: WalletViewController.self, options: nil)![0] as? DrawerBarItem)!)
+    private var isReloading = false
 
     var showScan = true
 
@@ -69,7 +70,6 @@ class WalletViewController: UIViewController {
         }
         setContent()
         setStyle()
-        welcomeLayerVisibility()
 
         AnalyticsManager.shared.recordView(.walletOverview, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
         AnalyticsManager.shared.getSurvey { [weak self] widget in
@@ -256,14 +256,17 @@ class WalletViewController: UIViewController {
 
     func reload() {
         Task {
+            if isReloading { return }
+            isReloading = true
             await viewModel.loadSubaccounts()
             reloadSections([.account], animated: true)
             try? await viewModel.loadBalances()
-            reloadSections([.account, .balance], animated: true)
+            reloadSections([.account, .balance, .card], animated: true)
             await viewModel.reloadAlertCards()
             reloadSections([.card], animated: true)
             try? await viewModel.loadTransactions(max: 10)
             reloadSections([.transaction], animated: true)
+            isReloading = false
         }
     }
 
@@ -470,7 +473,10 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                                onAssets: {[weak self] in
                     self?.assetsScreen()
                 }, onConvert: { [weak self] in
-                    Task { try? await self?.viewModel.rotateBalanceDisplayMode() }
+                    Task {
+                        try? await self?.viewModel.rotateBalanceDisplayMode()
+                        await MainActor.run { self?.reloadSections([.balance, .account, .transaction], animated: false) }
+                    }
                 }, onExchange: { [weak self] in
                     self?.showDenominationExchange()
                 })
@@ -958,6 +964,11 @@ extension WalletViewController: DialogScanViewControllerDelegate {
 
 extension WalletViewController: DenominationExchangeViewControllerDelegate {
     func onDenominationExchangeSave() {
-        _ = viewModel.loadBalances().then { self.viewModel.loadTransactions(max: 10) }.done { _ in }
+        Task {
+            try? await viewModel.loadBalances()
+            reloadSections([.account, .balance], animated: true)
+            try? await self.viewModel.loadTransactions(max: 10)
+            reloadSections([.transaction], animated: true)
+        }
     }
 }

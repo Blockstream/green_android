@@ -39,6 +39,7 @@ class AccountArchiveViewController: UIViewController {
         navigationController?.popViewController(animated: true)
     }
 
+    @MainActor
     func reloadSections(_ sections: [AccountArchiveSection], animated: Bool) {
         if animated {
             tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
@@ -50,11 +51,10 @@ class AccountArchiveViewController: UIViewController {
     }
 
     func setContent() {
-        let reloadSections: (([AccountArchiveSection], Bool) -> Void)? = { [weak self] (sections, animated) in
-            self?.reloadSections(sections, animated: true)
+        Task {
+            try? await viewModel.loadSubaccounts()
+            reloadSections([.account], animated: true)
         }
-        viewModel.reloadSections = reloadSections
-        Task { try? await viewModel.loadSubaccounts() }
     }
 
     func presentUnarchiveMenu(frame: CGRect, index: Int) {
@@ -149,7 +149,10 @@ extension AccountArchiveViewController: PopoverMenuUnarchiveDelegate {
         switch option {
         case .unarchive:
             let subaccount = viewModel.subaccounts[index]
-            Task { try? await viewModel.unarchiveSubaccount(subaccount) }
+            Task {
+                try? await viewModel.unarchiveSubaccount(subaccount)
+                await MainActor.run { tableView.reloadData() }
+            }
         }
     }
 }

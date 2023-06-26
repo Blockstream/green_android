@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 import gdk
-import PromiseKit
 
 protocol DenominationExchangeViewControllerDelegate: AnyObject {
     func onDenominationExchangeSave()
@@ -82,6 +81,7 @@ class DenominationExchangeViewController: UIViewController {
         super.viewWillAppear(animated)
     }
 
+    @MainActor
     func dismiss(_ action: DenExAction) {
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0
@@ -131,19 +131,16 @@ class DenominationExchangeViewController: UIViewController {
         if let pricing = viewModel.pricing() {
             settings.pricing = pricing
         }
-
-        let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().map { _ in self.startAnimating() }
-            .compactMap { self.viewModel.session }
-            .then(on: bgq) { $0.changeSettings(settings: self.viewModel.settings!) }
-            .asVoid()
-            .done {
+        Task {
+            do {
+                self.startAnimating()
+                _ = try await self.viewModel.session?.changeSettings(settings: self.viewModel.settings!)
                 self.dismiss(.ok)
-            }.ensure { self.stopAnimating() }
-            .catch { error in
-                self.showError(error.localizedDescription)
+            } catch {
+                self.showError(error)
             }
-
+            self.stopAnimating()
+        }
     }
 
     @IBAction func btnDen(_ sender: Any) {

@@ -13,8 +13,7 @@ class TwoFactorSettingsViewModel {
     var sessionLiquid: SessionManager? { wm.sessions["liquid"] }
     var networks: [String] { wm.testnet ? ["testnet", "testnet-liquid"] : ["mainnet", "liquid"] }
     var sessions: [SessionManager] { networks.compactMap { wm.sessions[$0] }}
-    
-    private let bgq = DispatchQueue.global(qos: .background)
+
     private var csvTypes = [Settings.CsvTime]()
     private var csvValues = [Int]()
     private var newCsv: Int?

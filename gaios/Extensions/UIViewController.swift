@@ -5,6 +5,7 @@ import greenaddress
 
 extension UIViewController {
 
+    @MainActor
     func showAlert(title: String, message: String) {
         DispatchQueue.main.async {
             let alert = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
@@ -12,7 +13,7 @@ extension UIViewController {
             self.present(alert, animated: true, completion: nil)
         }
     }
-
+    @MainActor
     func showError(_ message: String) {
         DispatchQueue.main.async {
             let alert = UIAlertController(title: NSLocalizedString("id_error", comment: ""), message: message, preferredStyle: .alert)
@@ -20,7 +21,7 @@ extension UIViewController {
             self.present(alert, animated: true, completion: nil)
         }
     }
-
+    @MainActor
     func showError(_ err: Error) {
         DispatchQueue.main.async {
             let alert = UIAlertController(title: NSLocalizedString("id_error", comment: ""), message: self.getError(err), preferredStyle: .alert)

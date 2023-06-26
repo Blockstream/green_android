@@ -27,8 +27,6 @@ class MultisigSettingsViewModel {
         }
     }
 
-    let bgq = DispatchQueue.global(qos: .background)
-
     init(session: SessionManager) {
         self.session = session
     }

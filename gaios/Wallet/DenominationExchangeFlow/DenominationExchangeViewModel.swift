@@ -1,6 +1,5 @@
 import Foundation
 import gdk
-import PromiseKit
 
 class DenominationExchangeViewModel {
 
@@ -47,7 +46,6 @@ class DenominationExchangeViewModel {
         let list: [DenominationType] = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats]
         let selected = settings.denomination
         let network: NetworkSecurityCase = session.gdkNetwork.mainnet ? .bitcoinSS : .testnetSS
-
         return DialogDenominationViewModel(denomination: selected,
                                            denominations: list,
                                            network: network)

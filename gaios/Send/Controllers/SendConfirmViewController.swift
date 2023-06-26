@@ -61,6 +61,7 @@ class SendConfirmViewController: KeyboardViewController {
         reloadSections([SendConfirmSection.remoteAlerts], animated: true)
     }
 
+    @MainActor
     func reloadSections(_ sections: [SendConfirmSection], animated: Bool) {
         DispatchQueue.main.async {
             if animated {
@@ -98,56 +99,65 @@ class SendConfirmViewController: KeyboardViewController {
                 vc.account = viewModel.account
                 present(vc, animated: false, completion: nil)
             }
+        } else if viewModel.isLightning {
+            self.presentLightning()
         } else {
             viewModel.isLightning ? self.presentLightning() :  self.startAnimating()
         }
         Task {
             do {
                 try await self.viewModel.send()
-                self.executeOnDone()
+                executeOnDone()
             } catch {
-                if account?.isHW ?? false {
-                    self.dismissHWSummary()
-                }
-                self.sliderView.isUserInteractionEnabled = true
-                self.sliderView.reset()
-                let prettyError: String = {
-                    switch error {
-                    case BreezSDK.SdkError.Generic(let msg),
-                        BreezSDK.SdkError.LspConnectFailed(let msg),
-                        BreezSDK.SdkError.PersistenceFailure(let msg),
-                        BreezSDK.SdkError.ReceivePaymentFailed(let msg):
-                        return msg.localized
-                    case HWError.Abort(let desc),
-                        HWError.Declined(let desc):
-                        return desc
-                    case BleLedgerConnection.LedgerError.IOError,
-                        BleLedgerConnection.LedgerError.InvalidParameter:
-                        return "id_operation_failure"
-                    case TwoFactorCallError.failure(let localizedDescription),
-                        TwoFactorCallError.cancel(let localizedDescription):
-                        return localizedDescription
-                    case TransactionError.invalid(let localizedDescription):
-                        return localizedDescription
-                    case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
-                        return "id_you_are_not_connected"
-                    default:
-                        return error.localizedDescription
-                    }
-                }()
-                let isSendAll = self.viewModel.tx.sendAll
-                let withMemo = !self.viewModel.tx.memo.isEmpty
-                let transSgmt = AnalyticsManager.TransactionSegmentation(transactionType: self.inputType,
-                                                                         addressInputType: self.addressInputType,
-                                                                         sendAll: isSendAll)
-                AnalyticsManager.shared.failedTransaction(account: AccountsRepository.shared.current,
-                                                          walletItem: self.viewModel.account,
-                                                          transactionSgmt: transSgmt, withMemo: withMemo, error: error, prettyError: prettyError)
-                AnalyticsManager.shared.recordException(prettyError)
+                failure(error)
             }
-            self.viewModel.isLightning ? self.dismiss(animated: true) : self.stopAnimating()
         }
     }
+
+    @MainActor
+    func failure(_ error: Error) {
+        let account = WalletManager.current?.account
+        if account?.isHW ?? false {
+            self.dismissHWSummary()
+        }
+        self.viewModel.isLightning ? self.dismiss(animated: true) : self.stopAnimating()
+        self.sliderView.isUserInteractionEnabled = true
+        self.sliderView.reset()
+        let prettyError: String = {
+            switch error {
+            case BreezSDK.SdkError.Generic(let msg),
+                BreezSDK.SdkError.LspConnectFailed(let msg),
+                BreezSDK.SdkError.PersistenceFailure(let msg),
+                BreezSDK.SdkError.ReceivePaymentFailed(let msg):
+                return msg
+            case HWError.Abort(let desc),
+                HWError.Declined(let desc):
+                return desc
+            case BleLedgerConnection.LedgerError.IOError,
+                BleLedgerConnection.LedgerError.InvalidParameter:
+                return "id_operation_failure"
+            case TwoFactorCallError.failure(let localizedDescription),
+                TwoFactorCallError.cancel(let localizedDescription):
+                return localizedDescription
+            case TransactionError.invalid(let localizedDescription):
+                return localizedDescription
+            case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
+                return "id_you_are_not_connected"
+            default:
+                return error.localizedDescription
+            }
+        }()
+        self.showBreezError(prettyError.localized)
+        let isSendAll = self.viewModel.tx.sendAll
+        let withMemo = !self.viewModel.tx.memo.isEmpty
+        let transSgmt = AnalyticsManager.TransactionSegmentation(transactionType: self.inputType,
+                                                                 addressInputType: self.addressInputType,
+                                                                 sendAll: isSendAll)
+        AnalyticsManager.shared.failedTransaction(account: AccountsRepository.shared.current,
+                                                  walletItem: self.viewModel.account,
+                                                  transactionSgmt: transSgmt, withMemo: withMemo, error: error, prettyError: prettyError)
+        AnalyticsManager.shared.recordException(prettyError)
+}
 
     @MainActor
     func showBreezError(_ message: String) {
@@ -160,6 +170,7 @@ class SendConfirmViewController: KeyboardViewController {
         }
     }
     
+    @MainActor
     func executeOnDone() {
         let isSendAll = viewModel.tx.sendAll
         let withMemo = !viewModel.tx.memo.isEmpty
@@ -169,17 +180,19 @@ class SendConfirmViewController: KeyboardViewController {
         AnalyticsManager.shared.endSendTransaction(account: AccountsRepository.shared.current,
                                walletItem: viewModel.account,
                                transactionSgmt: transSgmt, withMemo: withMemo)
-
-        self.startAnimating(message: NSLocalizedString("id_transaction_sent", comment: ""))
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) { [weak self] in
-            self?.stopAnimating()
-            self?.navigationController?.popToRootViewController(animated: true)
-
-            StoreReviewHelper
-                .shared
-                .request(isSendAll: isSendAll,
-                         account: AccountsRepository.shared.current,
-                         walletItem: self?.viewModel.account)
+        if viewModel.isLightning {
+            self.dismiss(animated: true)
+        } else {
+            self.startAnimating(message: NSLocalizedString("id_transaction_sent", comment: ""))
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) { [weak self] in
+                self?.stopAnimating()
+                self?.navigationController?.popToRootViewController(animated: true)
+                StoreReviewHelper
+                    .shared
+                    .request(isSendAll: isSendAll,
+                             account: AccountsRepository.shared.current,
+                             walletType: self?.viewModel.account.type)
+            }
         }
     }
 

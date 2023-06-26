@@ -36,10 +36,11 @@ class LightningSessionManager: SessionManager {
     }
 
     override func register(credentials: Credentials? = nil, hw: HWDevice? = nil) async throws {
-        _ = try self.loginUser_(credentials!, restore: false)
+        _ = try await self.loginUser(credentials!, restore: false)
     }
 
-    private func loginUser_(_ params: Credentials, restore: Bool) throws -> LoginUserResult {
+    override func loginUser(credentials: Credentials? = nil, hw: HWDevice? = nil, restore: Bool) async throws -> LoginUserResult {
+        guard let params = credentials else { throw LoginError.connectionFailed() }
         let walletId = walletIdentifier(credentials: params)
         let walletHashId = walletId!.walletHashId
         let res = LoginUserResult(xpubHashId: walletId?.xpubHashId ?? "", walletHashId: walletId?.walletHashId ?? "")

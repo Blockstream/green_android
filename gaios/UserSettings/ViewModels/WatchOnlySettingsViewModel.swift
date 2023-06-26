@@ -8,27 +8,12 @@ class WatchOnlySettingsViewModel {
 
     // load wallet manager for current logged session
     var wm: WalletManager { WalletManager.current! }
-    let bgq = DispatchQueue.global(qos: .background)
-
-    // reload all contents
-    var reloadTableView: (() -> Void)?
-
-    // show errors
-    var error: ((String) -> Void)?
 
     // settings cell models
     var sections = WOSection.allCases
     var items = [WOSection: [UserSettingsItem]]()
-    var multisigCellModels = [WatchOnlySettingsCellModel]() {
-        didSet {
-            reloadTableView?()
-        }
-    }
-    var singlesigCellModels = [WatchOnlySettingsCellModel]() {
-        didSet {
-            reloadTableView?()
-        }
-    }
+    var multisigCellModels = [WatchOnlySettingsCellModel]()
+    var singlesigCellModels = [WatchOnlySettingsCellModel]()
 
     func getCellModel(at indexPath: IndexPath) -> WatchOnlySettingsCellModel? {
         let section = sections[indexPath.section]
@@ -63,8 +48,8 @@ class WatchOnlySettingsViewModel {
             subtitle: "id_tip_you_can_use_the".localized,
             network: nil)
         singlesigCellModels = [cellHeaderPubKeys]
-        let models = self.loadWOExtendedPubKeys()
-        singlesigCellModels += models
+        let models = try? await self.loadWOExtendedPubKeys()
+        singlesigCellModels += models ?? []
     }
 
     func loadWOSession(_ session: SessionManager) async throws -> WatchOnlySettingsCellModel {
@@ -76,8 +61,15 @@ class WatchOnlySettingsViewModel {
             network: session.gdkNetwork.network)
     }
 
-    func loadWOExtendedPubKeys() -> [WatchOnlySettingsCellModel] {
-        return WalletManager.current!.subaccounts
+    func loadWOExtendedPubKeys() async throws -> [WatchOnlySettingsCellModel] {
+        var subaccounts = [WalletItem]()
+        for subaccount in WalletManager.current?.subaccounts ?? [] {
+            let session = subaccount.session
+            if let account = try? await session?.subaccount(subaccount.pointer) {
+                subaccounts += [account]
+            }
+        }
+        return subaccounts
             .filter { $0.gdkNetwork.electrum && !$0.gdkNetwork.liquid && !$0.hidden }
             .compactMap {
                 WatchOnlySettingsCellModel(

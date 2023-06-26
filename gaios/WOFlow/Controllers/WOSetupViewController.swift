@@ -169,24 +169,36 @@ class WOSetupViewController: KeyboardViewController {
         Task {
             do {
                 try await self.viewModel.loginMultisig(for: account, password: self.passwordTextField.text)
-                AccountNavigator.goLogged(account: account, nv: self.navigationController)
+                success(account: account)
             } catch {
-                var prettyError = "id_login_failed"
-                switch error {
-                case TwoFactorCallError.failure(let localizedDescription):
-                    prettyError = localizedDescription
-                case LoginError.connectionFailed:
-                    prettyError = "id_connection_failed"
-                case LoginError.failed:
-                    prettyError = "id_login_failed"
-                default:
-                    break
-                }
-                DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
-                AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: prettyError)
-                WalletsRepository.shared.delete(for: account)
+                failure(error, account: account)
             }
         }
+    }
+    
+    @MainActor
+    func success(account: Account) {
+        stopLoader()
+        AccountNavigator.goLogged(account: account, nv: self.navigationController)
+    }
+    
+    @MainActor
+    func failure(_ error: Error, account: Account) {
+        var prettyError = "id_login_failed"
+        switch error {
+        case TwoFactorCallError.failure(let localizedDescription):
+            prettyError = localizedDescription
+        case LoginError.connectionFailed:
+            prettyError = "id_connection_failed"
+        case LoginError.failed:
+            prettyError = "id_login_failed"
+        default:
+            break
+        }
+        stopLoader()
+        DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
+        AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: prettyError)
+        WalletsRepository.shared.delete(for: account)
     }
 }
 

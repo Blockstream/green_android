@@ -10,9 +10,17 @@ class ShowMnemonicsViewController: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     var items: [String] = []
     var bip39Passphrase: String?
-    var credentials: Credentials?
     var showBip85: Bool = false
-    var lightningMnemonic: String?
+    var credentials: Credentials? {
+        didSet {
+            items = credentials?.mnemonic?.split(separator: " ").map(String.init) ?? []
+        }
+    }
+    var lightningMnemonic: String? {
+        didSet {
+            items = lightningMnemonic?.split(separator: " ").map(String.init) ?? []
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,13 +33,13 @@ class ShowMnemonicsViewController: UIViewController {
         Task {
             do {
                 self.credentials = try await WalletManager.current?.prominentSession?.getCredentials(password: "")
-                self.items = credentials?.mnemonic?.split(separator: " ").map(String.init) ?? []
                 self.bip39Passphrase = credentials?.bip39Passphrase
                 if showBip85, let credentials = self.credentials {
                     self.lightningMnemonic = try await WalletManager.current?.lightningSession?.getLightningMnemonic(credentials: credentials)
-                    self.items = self.lightningMnemonic?.split(separator: " ").map(String.init) ?? []
                 }
-                self.collectionView.reloadData()
+                await MainActor.run {
+                    self.collectionView.reloadData()
+                }
             } catch {
                 print(error)
             }

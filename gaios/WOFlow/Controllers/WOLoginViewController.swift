@@ -22,7 +22,7 @@ class WOLoginViewController: KeyboardViewController {
     private var progressToken: NSObjectProtocol?
     private let viewModel = WOViewModel()
     let menuButton = UIButton(type: .system)
-    var isSS: Bool { account.gdkNetwork.electrum ?? false }
+    var isSS: Bool { account.gdkNetwork.electrum }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -154,27 +154,39 @@ class WOLoginViewController: KeyboardViewController {
                 } else {
                     try await self.viewModel.loginMultisig(for: self.account, password: password)
                 }
-                AccountNavigator.goLogged(account: self.account, nv: self.navigationController)
+                success()
             } catch {
-                var prettyError = "id_login_failed"
-                switch error {
-                case TwoFactorCallError.failure(let localizedDescription):
-                    prettyError = localizedDescription
-                case LoginError.connectionFailed:
-                    prettyError = "id_connection_failed"
-                case LoginError.failed:
-                    prettyError = "id_login_failed"
-                default:
-                    break
-                }
-                DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
-                AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: prettyError)
-                WalletsRepository.shared.delete(for: self.account)
+                failure(error)
             }
             stopLoader()
         }
     }
 
+    @MainActor
+    func success() {
+        stopLoader()
+        AccountNavigator.goLogged(account: self.account, nv: self.navigationController)
+    }
+    
+    @MainActor
+    func failure(_ error: Error) {
+        var prettyError = "id_login_failed"
+        switch error {
+        case TwoFactorCallError.failure(let localizedDescription):
+            prettyError = localizedDescription
+        case LoginError.connectionFailed:
+            prettyError = "id_connection_failed"
+        case LoginError.failed:
+            prettyError = "id_login_failed"
+        default:
+            break
+        }
+        stopLoader()
+        DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
+        AnalyticsManager.shared.failedWalletLogin(account: self.account, error: error, prettyError: prettyError)
+        WalletsRepository.shared.delete(for: self.account)
+    }
+    
     @objc func click(_ sender: Any) {
         view.endEditing(true)
         login()

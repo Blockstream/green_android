@@ -48,18 +48,20 @@ class PgpViewController: KeyboardViewController {
     func changeSettings(session: SessionManager, pgp: String) async throws {
         guard let settings = session.settings else { return }
         settings.pgp = pgp
-        try await session.changeSettings(settings: settings)
+        _ = try await session.changeSettings(settings: settings)
     }
 
     @objc func save(_ sender: UIButton) {
-        guard let txt = self.textarea.text, !txt.isEmpty else { return }
+        let txt = self.textarea.text
         self.startAnimating()
         Task {
             do {
-                try await self.setPgp(pgp: txt)
-                self.navigationController?.popViewController(animated: true)
+                try await self.setPgp(pgp: txt ?? "")
+                await MainActor.run {
+                    self.navigationController?.popViewController(animated: true)
+                }
             } catch {
-                self.showError(NSLocalizedString("id_invalid_pgp_key", comment: ""))
+                self.showError(error)
             }
             self.stopAnimating()
         }

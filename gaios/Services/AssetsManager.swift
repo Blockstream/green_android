@@ -13,6 +13,13 @@ class AssetsManager {
 
     init(testnet: Bool) {
         self.testnet = testnet
+        if testnet {
+            infos = [AssetInfo.testId: AssetInfo.test,
+                     AssetInfo.ltestId: AssetInfo.ltest]
+        } else {
+            infos = [AssetInfo.btcId: AssetInfo.btc,
+                     AssetInfo.lbtcId: AssetInfo.lbtc]
+        }
     }
 
     var all: [AssetInfo] {
@@ -62,33 +69,24 @@ class AssetsManager {
         return getImage(for: key ?? "") != nil
     }
 
-    func loadAsync(session: SessionManager?) async throws {
-        if testnet {
-            infos = [AssetInfo.testId: AssetInfo.test,
-                     AssetInfo.ltestId: AssetInfo.ltest]
-        } else {
-            infos = [AssetInfo.btcId: AssetInfo.btc,
-                     AssetInfo.lbtcId: AssetInfo.lbtc]
-        }
-        do {
-            self.session = session ?? self.session
-            try await self.session?.connect()
-            self.fetchFromCountly(session: self.session)
-            _ = try self.session?.refreshAssets(icons: true, assets: true, refresh: true)
-            let notification = NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue)
-            NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
-        } catch { print("Asset registry loading failure") }
+    func load(session: SessionManager?) async throws {
+        self.session = session ?? self.session
+        try await self.session?.connect()
+        try await self.fetchFromCountly(session: self.session)
+        _ = try await self.session?.refreshAssets(icons: true, assets: true, refresh: true)
+        let notification = NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue)
+        NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
     }
 
-    func getAssetsFromCountly() -> [EnrichedAsset] {
+    func getAssetsFromCountly() async throws -> [EnrichedAsset] {
         let assets = AnalyticsManager.shared.getRemoteConfigValue(key: Constants.countlyRemoteConfigAssets) as? [[String: Any]]
         let json = try? JSONSerialization.data(withJSONObject: assets ?? [], options: [])
         let res = try? JSONDecoder().decode([EnrichedAsset].self, from: json ?? Data())
         return res ?? []
     }
 
-    func fetchFromCountly(session: SessionManager?) {
-        let assets = getAssetsFromCountly()
+    func fetchFromCountly(session: SessionManager?) async throws {
+        let assets = try await getAssetsFromCountly()
         let res = session?.getAssets(params: GetAssetsParams(assetsId: assets.map { $0.id }))
         self.infos.merge(res?.assets ?? [:], uniquingKeysWith: {_, new in new})
         self.icons.merge(res?.icons ?? [:], uniquingKeysWith: {_, new in new})

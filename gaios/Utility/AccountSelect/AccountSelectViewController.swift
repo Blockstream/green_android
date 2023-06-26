@@ -30,11 +30,6 @@ class AccountSelectViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let reloadSections: (([AccountSelectSection], Bool) -> Void)? = { [weak self] (sections, animated) in
-            self?.reloadSections(sections, animated: true)
-        }
-        viewModel?.reloadSections = reloadSections
-
         ["AccountSelectCell" ].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
@@ -56,6 +51,7 @@ class AccountSelectViewController: UIViewController {
 
     }
 
+    @MainActor
     func reloadSections(_ sections: [AccountSelectSection], animated: Bool) {
         if animated {
             tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)

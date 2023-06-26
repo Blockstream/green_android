@@ -254,7 +254,7 @@ class LoginViewController: UIViewController {
                 let pinData = try self.account.auth(usingAuth)
                 let pin = withPIN ?? pinData.plaintextBiometric ?? ""
                 _ = try await wm.loginWithPin(pin: pin, pinData: pinData, bip39passphrase: bip39passphrase)
-                success(withPIN: withPIN != nil, account: account)
+                success(withPIN: withPIN != nil, account: currentAccount)
             } catch {
                 failure(error: error, enableFailingCounter: true)
             }

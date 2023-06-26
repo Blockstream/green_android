@@ -42,6 +42,7 @@ class AccountViewController: UIViewController {
 
     private var sIdx: Int = 0
     private var notificationObservers: [NSObjectProtocol] = []
+    private var isReloading = false
 
     private var hideBalance: Bool {
         return UserDefaults.standard.bool(forKey: AppStorage.hideBalance)
@@ -90,26 +91,28 @@ class AccountViewController: UIViewController {
     
     func reload() {
         Task {
+            if isReloading { return }
+            isReloading = true
             try? await viewModel.getBalance()
             reloadSections([.disclose, .adding, .account, .assets], animated: true)
             try? await viewModel.getTransactions()
+            print (viewModel.txCellModels.count)
             reloadSections([.transaction], animated: true)
+            isReloading = false
         }
     }
 
     @MainActor
     func reloadSections(_ sections: [AccountSection], animated: Bool) {
-        DispatchQueue.main.async {
-            if animated {
+        if animated {
+            self.tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
+        } else {
+            UIView.performWithoutAnimation {
                 self.tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
-            } else {
-                UIView.performWithoutAnimation {
-                    self.tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
-                }
             }
-            if sections.contains(AccountSection.account) {
-                self.tableView.selectRow(at: IndexPath(row: self.sIdx, section: AccountSection.account.rawValue), animated: false, scrollPosition: .none)
-            }
+        }
+        if sections.contains(AccountSection.account) {
+            self.tableView.selectRow(at: IndexPath(row: self.sIdx, section: AccountSection.account.rawValue), animated: false, scrollPosition: .none)
         }
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
             self.tableView.refreshControl?.endRefreshing()
@@ -238,6 +241,7 @@ class AccountViewController: UIViewController {
                 startLoader()
                 try await viewModel.renameSubaccount(name: name)
                 stopLoader()
+                reloadSections([.account], animated: true)
             } catch { showError(error) }
         }
     }
@@ -249,7 +253,7 @@ class AccountViewController: UIViewController {
                 try await viewModel.removeSubaccount()
                 stopLoader()
                 delegate?.didArchiveAccount()
-                navigationController?.popViewController(animated: true)
+                await MainActor.run { navigationController?.popViewController(animated: true) }
             } catch { showError(error) }
         }
     }
@@ -266,6 +270,7 @@ class AccountViewController: UIViewController {
         }
     }
 
+    @MainActor
     func showDialog() {
         let storyboard = UIStoryboard(name: "HWFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AccountArchivedViewController") as? AccountArchivedViewController {
@@ -551,6 +556,7 @@ extension AccountViewController: UITableViewDataSourcePrefetching {
         if viewModel.page > 0 && row > (viewModel.txCellModels.count - 3) {
             Task {
                 try? await viewModel.getTransactions(restart: false, max: nil)
+                print (viewModel.txCellModels.count)
                 reloadSections([.transaction], animated: true)
             }
         }

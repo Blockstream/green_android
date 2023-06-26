@@ -17,7 +17,4 @@ class AccountSelectViewModel {
         self.accountSelectCellModelsFilter = accountSelectCellModels
         self.ampWarn = ampWarn
     }
-
-    /// reload by section with animation
-    var reloadSections: (([AccountSelectSection], Bool) -> Void)?
 }

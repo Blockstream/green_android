@@ -67,16 +67,6 @@ class OnBoardInfoViewController: UIViewController {
         navigationController?.popViewController(animated: true)
     }
 
-    func reloadSections(_ sections: [SecuritySelectSection], animated: Bool) {
-        if animated {
-            tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
-        } else {
-            UIView.performWithoutAnimation {
-                tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
-            }
-        }
-    }
-
     func setContent() {
         title = "id_before_you_backup".localized
         btnNext.setTitle("id_show_recovery_phrase".localized, for: .normal)

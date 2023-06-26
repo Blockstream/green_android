@@ -9,14 +9,11 @@ class AccountAssetViewModel {
     var accountAssetCellModels: [AccountAssetCellModel] = []
     let registry = WalletManager.current?.registry
 
-    /// reload by section with animation
-    var reloadSections: (([AccountAssetSection], Bool) -> Void)?
-
     init(accounts: [WalletItem]) {
         self.accounts = accounts
         load()
     }
-    
+
     func load() {
         var models: [AccountAssetCellModel] = []
         for subaccount in accounts {

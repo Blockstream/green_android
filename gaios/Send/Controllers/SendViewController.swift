@@ -56,6 +56,7 @@ class SendViewController: KeyboardViewController {
         btnNext.setStyle(.primary)
     }
 
+    @MainActor
     func reloadSections(_ sections: [SendSection], animated: Bool) {
         DispatchQueue.main.async {
             if animated {

@@ -12,7 +12,6 @@ class SecuritySelectViewModel {
     var asset: String {
         didSet {
             assetCellModel = AssetSelectCellModel(assetId: asset, satoshi: 0)
-            reloadSections?([.asset], false)
         }
     }
     private var wm: WalletManager { WalletManager.current! }
@@ -22,24 +21,9 @@ class SecuritySelectViewModel {
         self.assetCellModel = AssetSelectCellModel(assetId: asset, satoshi: 0)
     }
 
-    /// reload by section with animation
-    var reloadSections: (([SecuritySelectSection], Bool) -> Void)?
-
-    // on success
-    var success: (() -> Void)?
-
-    // on errors
-    var error: ((Error) -> Void)?
-
     var unarchiveCreateDialog: (( @escaping (Bool) -> ()) -> ())?
 
-    var showAll = false {
-        didSet {
-            reloadSections?([SecuritySelectSection.policy], false)
-        }
-    }
-
-    let bgq = DispatchQueue.global(qos: .background)
+    var showAll = false
 
     func isAdvancedEnable() -> Bool {
         let asset = WalletManager.current?.registry.info(for: asset)
@@ -103,7 +87,7 @@ class SecuritySelectViewModel {
             let accounts = self.wm.subaccounts.filter { $0.gdkNetwork == session.gdkNetwork && $0.type == params.type && $0.hidden }
             let txs = try await self.wm.transactions(subaccounts: accounts)
             let account = try await self.createOrUnarchiveSubaccount(session: session, accounts: accounts, txs: txs, params: params)
-            try await self.wm.subaccounts()
+            _ = try await self.wm.subaccounts()
             return account
         } else {
            throw GaError.GenericError("Invalid session")
@@ -119,10 +103,10 @@ class SecuritySelectViewModel {
             throw GaError.GenericError("Liquid not supported on Ledger Nano X")
         } else if wm.account.isHW {
             let hw = wm.account.isJade ? HWDevice.defaultJade(fmwVersion: nil) : HWDevice.defaultLedger()
-            try await registerSession(session: session, credentials: nil, hw: hw)
+            return try await registerSession(session: session, hw: hw)
         } else if let prominentSession = wm.prominentSession {
             let credentials = try await prominentSession.getCredentials(password: "")
-            try await registerSession(session: session, credentials: credentials, hw: nil)
+            return try await registerSession(session: session, credentials: credentials)
         } else {
             throw GaError.GenericError("Invalid session")
         }
@@ -130,10 +114,10 @@ class SecuritySelectViewModel {
 
     func registerSession(session: SessionManager, credentials: Credentials? = nil, hw: HWDevice? = nil) async throws {
         try await session.register(credentials: credentials, hw: hw)
-        try await session.loginUser(credentials: credentials, hw: hw, restore: false)
+        _ = try await session.loginUser(credentials: credentials, hw: hw, restore: false)
         let subaccounts = try await session.subaccounts(true)
         let used = try await self.isUsedDefaultAccount(for: session, account: subaccounts.first)
-        if used {
+        if !used {
             try await session.updateSubaccount(subaccount: 0, hidden: true)
         }
         _ = try await wm.subaccounts()
@@ -160,7 +144,7 @@ class SecuritySelectViewModel {
         if let unfunded = unfunded {
             // automatically unarchive it
             try await session.updateSubaccount(subaccount: unfunded.pointer, hidden: false)
-            _ = try await session.subaccount(unfunded.pointer)
+            return try await session.subaccount(unfunded.pointer)
         }
         let funded = items.filter { $0.1 > 0 }.map { $0.0 }.first
         if let funded = funded, let dialog = self.unarchiveCreateDialog {

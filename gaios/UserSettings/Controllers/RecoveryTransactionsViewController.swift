@@ -1,5 +1,4 @@
 import UIKit
-import PromiseKit
 import gdk
 import greenaddress
 
@@ -19,8 +18,6 @@ class RecoveryTransactionsViewController: UIViewController {
     @IBOutlet weak var actionSwitch: UISwitch!
 
     var viewModel: RecoveryTransactionsViewModel!
-
-    let bgq = DispatchQueue.global(qos: .background)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,10 +44,12 @@ class RecoveryTransactionsViewController: UIViewController {
         btnMoreInfo.setStyle(.outlined)
     }
 
+    @MainActor
     func update() {
         emailIsSet(false)
-        viewModel.getTwoFactorItemEmail()
-            .done { twoFactorEmail in
+        Task {
+            do {
+                let twoFactorEmail = try await viewModel.getTwoFactorItemEmail()
                 if let twoFactorEmail = twoFactorEmail {
                     if let maskedData = twoFactorEmail.maskedData, maskedData.count > 1 {
                         self.emailIsSet(true)
@@ -58,9 +57,10 @@ class RecoveryTransactionsViewController: UIViewController {
                         self.emailIsSet(false)
                     }
                 }
-            }.catch { err in print(err) }
-        if let notifications = viewModel?.session.settings?.notifications {
-            actionSwitch.isOn = notifications.emailIncoming == true
+            } catch { print(error) }
+            if let notifications = viewModel?.session.settings?.notifications {
+                actionSwitch.isOn = notifications.emailIncoming == true
+            }
         }
     }
 
@@ -75,12 +75,14 @@ class RecoveryTransactionsViewController: UIViewController {
         guard let session = viewModel?.session, let settings = viewModel?.session.settings else { return }
         settings.notifications = SettingsNotifications(emailIncoming: enable,
                                                        emailOutgoing: enable)
-        Guarantee()
-            .then(on: bgq) { session.changeSettings(settings: settings) }
-            .done { _ in self.update() }
-            .catch { err in
-                self.showError( err.localizedDescription )
+        Task {
+            do {
+                _ = try await session.changeSettings(settings: settings)
+                self.update()
+            } catch {
+                self.showError(error)
             }
+        }
     }
 
     @IBAction func actionSwitchChange(_ sender: Any) {
@@ -90,21 +92,17 @@ class RecoveryTransactionsViewController: UIViewController {
     @IBAction func btnRequest(_ sender: Any) {
         guard let session = viewModel?.session else { return }
         self.startAnimating()
-        let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().map(on: bgq) { _ in
-            try session.session?.sendNlocktimes()
-            }.ensure {
-                self.stopAnimating()
-            }.done {
-                DropAlert().success(message: "id_recovery_transaction_request".localized)
-            }.catch { error in
-                switch error {
-                case GaError.GenericError(let msg):
-                    self.showError(msg ?? "id_error".localized)
-                default:
-                    self.showError(error.localizedDescription)
+        Task {
+            do {
+                try await session.session?.sendNlocktimes()
+                await MainActor.run {
+                    DropAlert().success(message: "id_recovery_transaction_request".localized)
                 }
+            } catch {
+                self.showError(error)
             }
+        }
+        self.stopAnimating()
     }
 
     @IBAction func btnSetEmail(_ sender: Any) {

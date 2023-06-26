@@ -61,7 +61,6 @@ class SetPhoneViewController: KeyboardViewController {
     }
 
     @objc func click(_ sender: UIButton) {
-        let bgq = DispatchQueue.global(qos: .background)
         let method = self.sms == true ? TwoFactorType.sms : TwoFactorType.phone
         guard let countryCode = countryCodeField.text, let phone = textField.text else { return }
         if countryCode.isEmpty || phone.isEmpty {

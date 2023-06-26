@@ -41,6 +41,7 @@ extension UIViewController {
         }
     }
 
+    @MainActor
     @objc func startAnimating(message: String = "") {
         if let window = UIApplication.shared.keyWindow {
             if progressIndicator == nil {
@@ -53,6 +54,7 @@ extension UIViewController {
         }
     }
 
+    @MainActor
     @objc func stopAnimating() {
         UIApplication.shared.windows.forEach { window in
             window.subviews.forEach { view in

@@ -83,10 +83,12 @@ extension UIViewController {
         }
     }
 
+    @MainActor
     func startLoader(message: String = "", isRive: Bool = false) {
         startLoader(message: NSMutableAttributedString(string: message), isRive: isRive)
     }
 
+    @MainActor
     @objc func startLoader(message: NSMutableAttributedString, isRive: Bool = false) {
         if let window = UIApplication.shared.windows.filter({ $0.isKeyWindow }).first {
             if loader == nil {
@@ -101,6 +103,7 @@ extension UIViewController {
         }
     }
 
+    @MainActor
     @objc func stopLoader() {
         UIApplication.shared.windows.forEach { window in
             window.subviews.forEach { view in

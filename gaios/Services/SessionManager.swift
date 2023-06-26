@@ -20,7 +20,6 @@ class SessionManager {
     var settings: Settings?
     var session: GDKSession?
     var gdkNetwork: GdkNetwork
-    var registry: AssetsManager?
     var blockHeight: UInt32 = 0
     
     var connected = false
@@ -29,7 +28,6 @@ class SessionManager {
     
     // Serial reconnect queue for network events
     static let reconnectionQueue = DispatchQueue(label: "reconnection_queue")
-    let bgq = DispatchQueue.global(qos: .background)
     
     var isResetActive: Bool? {
         get { twoFactorConfig?.twofactorReset.isResetActive }
@@ -38,7 +36,6 @@ class SessionManager {
     init(_ gdkNetwork: GdkNetwork) {
         self.gdkNetwork = gdkNetwork
         session = GDKSession()
-        registry = AssetsManager(testnet: !gdkNetwork.mainnet)
     }
     
     deinit {
@@ -50,7 +47,7 @@ class SessionManager {
         if connected {
             return
         }
-        self.networkConnect()
+        //self.networkConnect()
         try await self.connect(network: self.gdkNetwork.network)
         AnalyticsManager.shared.setupSession(session: self.session) // Update analytics endpoint with session tor/proxy
     }
@@ -323,7 +320,7 @@ class SessionManager {
         try self.session?.convertAmount(input: input) ?? [:]
     }
     
-    func refreshAssets(icons: Bool, assets: Bool, refresh: Bool) throws {
+    func refreshAssets(icons: Bool, assets: Bool, refresh: Bool) async throws {
         try self.session?.refreshAssets(params: ["icons": icons, "assets": assets, "refresh": refresh])
     }
     

@@ -21,7 +21,7 @@ class TransactionViewController: UIViewController {
     weak var delegate: TransactionViewControllerDelegate?
 
     var wallet: WalletItem!
-    var transaction: Transaction!
+    var transaction: Transaction! { didSet { assetAmountList = AssetAmountList(transaction.amountsWithoutFees) }}
     var assetAmountList: AssetAmountList!
 
     var isWatchonly: Bool {
@@ -42,7 +42,6 @@ class TransactionViewController: UIViewController {
 
     private var transactionToken: NSObjectProtocol?
     private var blockToken: NSObjectProtocol?
-    private let bgq = DispatchQueue.global(qos: .background)
     private var cantBumpFees: Bool {
         return wallet.session?.isResetActive ?? false ||
             !transaction.canRBF || isWatchonly

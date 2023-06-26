@@ -84,7 +84,6 @@ class SendViewModel {
     private var isLightning: Bool { !session.gdkNetwork.lightning }
     private var btc: String { session.gdkNetwork.getFeeAsset() }
     private var feeAsset: String { session.gdkNetwork.getFeeAsset() }
-    private let bgq = DispatchQueue.global(qos: .userInitiated)
     
     init(account: WalletItem, inputType: TxType, transaction: Transaction?, input: String?) {
         self.account = account

@@ -1,6 +1,5 @@
 import Foundation
 import UIKit
-import PromiseKit
 import gdk
 
 protocol DialogExchangeViewControllerDelagate: AnyObject {

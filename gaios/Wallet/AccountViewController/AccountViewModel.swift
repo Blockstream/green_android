@@ -90,19 +90,15 @@ class AccountViewModel {
             if restart {
                 page = 0
                 cachedTransactions = []
-                txCellModels = []
             }
-            print("-----------> \(self.page) \(txs.count)")
             if txs.count > 0 {
                 page += 1
-                cachedTransactions += txs
-                txCellModels += txs
-                    .map { ($0, self.getNodeBlockHeight(subaccountHash: $0.subaccount!)) }
-                    .map { TransactionCellModel(tx: $0.0, blockHeight: $0.1) }
             }
-            
-            self.cachedTransactions = Array(txs.sorted(by: >).prefix(max ?? txs.count ) )
-            self.txCellModels = cachedTransactions
+            cachedTransactions += txs
+            cachedTransactions = Array((cachedTransactions)
+                .sorted(by: >)
+                .prefix(max ?? cachedTransactions.count))
+            txCellModels = cachedTransactions
                 .map { ($0, getNodeBlockHeight(subaccountHash: $0.subaccount!)) }
                 .map { TransactionCellModel(tx: $0.0, blockHeight: $0.1) }
         } catch { print(error) }

@@ -46,8 +46,6 @@ class WalletViewModel {
 
     var analyticsDone = false
 
-    let bgq = DispatchQueue.global(qos: .background)
-
     init() {
         remoteAlert = RemoteAlertManager.shared.alerts(screen: .walletOverview, networks: wm?.activeNetworks ?? []).first
     }

@@ -28,11 +28,6 @@ class AccountAssetViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let reloadSections: (([AccountAssetSection], Bool) -> Void)? = { [weak self] (sections, animated) in
-            self?.reloadSections(sections, animated: true)
-        }
-        viewModel?.reloadSections = reloadSections
-
         ["AccountAssetCell" ].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
@@ -43,16 +38,6 @@ class AccountAssetViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-    }
-
-    func reloadSections(_ sections: [AccountAssetSection], animated: Bool) {
-        if animated {
-            tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
-        } else {
-            UIView.performWithoutAnimation {
-                tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
-            }
-        }
     }
 
     func setContent() {

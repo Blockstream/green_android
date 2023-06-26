@@ -32,16 +32,6 @@ class SecuritySelectViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        let reloadSections: (([SecuritySelectSection], Bool) -> Void)? = { [weak self] (sections, animated) in
-            //self?.reloadSections(sections, animated: true)
-            self?.tableView.reloadData()
-        }
-        viewModel.reloadSections = reloadSections
-        viewModel.success = { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
-        }
-        viewModel.error = showError
         viewModel.unarchiveCreateDialog = unarchiveCreateDialog
 
         ["PolicyCell", "AssetSelectCell" ].forEach {
@@ -69,11 +59,7 @@ class SecuritySelectViewController: UIViewController {
             }
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-    }
-
+    @MainActor
     func reloadSections(_ sections: [SecuritySelectSection], animated: Bool) {
         if animated {
             tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
@@ -94,6 +80,7 @@ class SecuritySelectViewController: UIViewController {
 
     @IBAction func btnAdvanced(_ sender: Any) {
         viewModel?.showAll.toggle()
+        reloadSections([.policy], animated: true)
         visibilityState = !visibilityState
         setContent()
     }
@@ -319,12 +306,14 @@ extension SecuritySelectViewController {
 extension SecuritySelectViewController: AssetSelectViewControllerDelegate {
     func didSelectAsset(_ assetId: String) {
         viewModel?.asset = assetId
+        reloadSections([.asset, .policy], animated: true)
     }
 
     func didSelectAnyAsset() {
         /// handle any asset case
         print("didSelectAnyAsset")
         viewModel?.asset = AssetInfo.lbtcId
+        reloadSections([.asset, .policy], animated: true)
     }
 }
 
