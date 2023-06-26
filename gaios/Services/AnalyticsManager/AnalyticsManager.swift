@@ -321,9 +321,13 @@ class AnalyticsManager {
     func recordException(_ msg: String) {
         if !msg.isEmpty && !skipExceptionRecording.contains(msg) {
             exceptionCounter += 1
-            let exception = NSException(name: NSExceptionName(rawValue: msg), reason: "")
-            guard consent == .authorized else { return }
-            Countly.sharedInstance().recordHandledException(exception)
+            let exception = NSException(name: NSExceptionName(rawValue: msg), reason: msg)
+//            guard consent == .authorized else { return }
+//            Countly.sharedInstance().recordHandledException(exception)
+            Countly.sharedInstance().record(exception,
+                                            isFatal: false,
+                                            stackTrace: Thread.callStackSymbols,
+                                            segmentation:nil)
         }
     }
 
