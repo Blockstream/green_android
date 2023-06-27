@@ -113,7 +113,7 @@ class SendViewController: KeyboardViewController {
         vc.forEach({ item in
             if let cell = item as? AmountEditCell {
                 if let text = cell.amountTextField.text,
-                    text.isEmpty {
+                   text.isEmpty || self.viewModel.sendAll {
                     cell.amountTextField.isEnabled = self.viewModel.editable
                     cell.amountTextField.isUserInteractionEnabled = self.viewModel.editable
                     cell.amountTextField.text = self.viewModel.amount
@@ -317,6 +317,7 @@ extension SendViewController: DialogScanViewControllerDelegate {
 
 extension SendViewController: DialogCustomFeeViewControllerDelegate {
     func didSave(fee: UInt64?) {
+        viewModel.fee = nil
         viewModel.feeRate = fee ?? 1000
         viewModel.transactionPriority = .Custom
         validateTransaction()

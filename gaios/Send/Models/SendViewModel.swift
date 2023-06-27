@@ -33,6 +33,7 @@ class SendViewModel {
     var transactionPriority: TransactionPriority = .Medium {
         didSet {
             if transactionPriority != .Custom {
+                fee = nil
                 feeRate = feeEstimates[transactionPriority.rawValue]
             }
         }
