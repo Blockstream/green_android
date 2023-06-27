@@ -138,6 +138,7 @@ class WalletManager {
             .then { _ in btcSession.updateSubaccount(subaccount: 0, hidden: true) }
             .map { AccountsRepository.shared.current = self.account }
             .then { self.subaccounts() }
+            .compactMap { _ in self.loadRegistry() }
             .asVoid()
     }
 
