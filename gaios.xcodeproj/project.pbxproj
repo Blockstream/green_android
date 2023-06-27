@@ -28,9 +28,12 @@
 		34019C2728D35F2400E64BEE /* DrawerBarItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34019C2628D35F2400E64BEE /* DrawerBarItem.xib */; };
 		34019C2928D35F3F00E64BEE /* DrawerBarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34019C2828D35F3F00E64BEE /* DrawerBarItem.swift */; };
 		3403BDAC2630282600118C64 /* Learn2faViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3403BDAB2630282600118C64 /* Learn2faViewController.swift */; };
+		3407F5CD2A49BBC3005EF8E1 /* LTConfirmingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3407F5CC2A49BBC3005EF8E1 /* LTConfirmingViewController.swift */; };
+		3407F5D12A49C28A005EF8E1 /* Illustration Lightning Transaction.riv in Resources */ = {isa = PBXBuildFile; fileRef = 3407F5D02A49C28A005EF8E1 /* Illustration Lightning Transaction.riv */; };
+		3407F5D42A4ABC94005EF8E1 /* DialogFeedbackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3407F5D32A4ABC94005EF8E1 /* DialogFeedbackViewController.swift */; };
+		3407F5D62A4AD034005EF8E1 /* LTErrorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3407F5D52A4AD034005EF8E1 /* LTErrorViewController.swift */; };
 		340A5F5428E339E0003D56B1 /* SafeNavigationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340A5F5328E339E0003D56B1 /* SafeNavigationManager.swift */; };
 		340A5F5628E33F51003D56B1 /* DialogSafeNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340A5F5528E33F51003D56B1 /* DialogSafeNavigationViewController.swift */; };
-		340A5F7928EAC3F3003D56B1 /* DialogSendFeedbackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340A5F7828EAC3F3003D56B1 /* DialogSendFeedbackViewController.swift */; };
 		340EF8D828B3718D001AE87B /* WalletListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340EF8D628B3718D001AE87B /* WalletListCell.swift */; };
 		340EF8D928B3718D001AE87B /* WalletListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 340EF8D728B3718D001AE87B /* WalletListCell.xib */; };
 		340F07E42620499A0065A986 /* NetworkSelectorBarItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 340F07E32620499A0065A986 /* NetworkSelectorBarItem.xib */; };
@@ -662,9 +665,12 @@
 		34019C2628D35F2400E64BEE /* DrawerBarItem.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DrawerBarItem.xib; sourceTree = "<group>"; };
 		34019C2828D35F3F00E64BEE /* DrawerBarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerBarItem.swift; sourceTree = "<group>"; };
 		3403BDAB2630282600118C64 /* Learn2faViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Learn2faViewController.swift; sourceTree = "<group>"; };
+		3407F5CC2A49BBC3005EF8E1 /* LTConfirmingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTConfirmingViewController.swift; sourceTree = "<group>"; };
+		3407F5D02A49C28A005EF8E1 /* Illustration Lightning Transaction.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Illustration Lightning Transaction.riv"; sourceTree = "<group>"; };
+		3407F5D32A4ABC94005EF8E1 /* DialogFeedbackViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogFeedbackViewController.swift; sourceTree = "<group>"; };
+		3407F5D52A4AD034005EF8E1 /* LTErrorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTErrorViewController.swift; sourceTree = "<group>"; };
 		340A5F5328E339E0003D56B1 /* SafeNavigationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeNavigationManager.swift; sourceTree = "<group>"; };
 		340A5F5528E33F51003D56B1 /* DialogSafeNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DialogSafeNavigationViewController.swift; sourceTree = "<group>"; };
-		340A5F7828EAC3F3003D56B1 /* DialogSendFeedbackViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DialogSendFeedbackViewController.swift; sourceTree = "<group>"; };
 		340EF8D628B3718D001AE87B /* WalletListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListCell.swift; sourceTree = "<group>"; };
 		340EF8D728B3718D001AE87B /* WalletListCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletListCell.xib; sourceTree = "<group>"; };
 		340F07E32620499A0065A986 /* NetworkSelectorBarItem.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NetworkSelectorBarItem.xib; sourceTree = "<group>"; };
@@ -1311,6 +1317,14 @@
 				7E88DA8680A9CE15F3154259 /* libPods-gaiosUITests.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		3407F5D22A4ABC4E005EF8E1 /* DialogFeedback */ = {
+			isa = PBXGroup;
+			children = (
+				3407F5D32A4ABC94005EF8E1 /* DialogFeedbackViewController.swift */,
+			);
+			path = DialogFeedback;
 			sourceTree = "<group>";
 		};
 		34128F9C27391A99002E19F5 /* Receive */ = {
@@ -2145,6 +2159,7 @@
 		34AFA8E429D1723F00C4F3E6 /* Rive */ = {
 			isa = PBXGroup;
 			children = (
+				3407F5D02A49C28A005EF8E1 /* Illustration Lightning Transaction.riv */,
 				3478E8892A2DD0190080B50E /* Illustration Rocket.riv */,
 				3487656829D43B290059D05F /* Illustration Account Archived.riv */,
 				3487656929D43B290059D05F /* Illustration Checklist.riv */,
@@ -2267,6 +2282,8 @@
 				344915E42A0BA27100D35818 /* LTSuccessViewModel.swift */,
 				344915E22A0A3C8000D35818 /* LTExperimentalViewController.swift */,
 				345402F62A20A6A7002CB598 /* LTAuthViewController.swift */,
+				3407F5CC2A49BBC3005EF8E1 /* LTConfirmingViewController.swift */,
+				3407F5D52A4AD034005EF8E1 /* LTErrorViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -2318,7 +2335,6 @@
 				349E5F8B264AD48700EACB9B /* DialogRegistryFailViewController.swift */,
 				34386C8926F086BA00EBB6A6 /* DialogAccountIdViewController.swift */,
 				34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */,
-				340A5F7828EAC3F3003D56B1 /* DialogSendFeedbackViewController.swift */,
 				34BEEAEE2857274700C0187D /* DialogWatchOnlySetUpViewController.swift */,
 				34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */,
 				3448E63A2730141400C7ADFF /* DialogReceiveShareTypeViewController.swift */,
@@ -2333,6 +2349,7 @@
 				81E8C358291FDAF000B2196B /* DialogTableViewController.swift */,
 				34A862A02979432C0018E636 /* DialogShowQRViewController.swift */,
 				816C3DFD298D0AF9003D29F1 /* DialogJadeCheckViewController.swift */,
+				3407F5D22A4ABC4E005EF8E1 /* DialogFeedback */,
 				345402E02A1E42BF002CB598 /* Dialogdenomination */,
 				34FE20102A1CA1DB00301746 /* DialogNode */,
 				34F164ED29E84B1D00FE5B64 /* DialogDelete */,
@@ -3210,6 +3227,7 @@
 				3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */,
 				3487657F29D43B2A0059D05F /* Jade 03 - Faster + BG + Side Scroll.riv in Resources */,
 				344915EA2A0CE24700D35818 /* ReceiveAssetCell.xib in Resources */,
+				3407F5D12A49C28A005EF8E1 /* Illustration Lightning Transaction.riv in Resources */,
 				676FCF2C1F9D0CF800354E93 /* LaunchScreen.storyboard in Resources */,
 				34EDF6BD28BF6EDC00145AD4 /* AlertCardCell.xib in Resources */,
 				67439CD921D92AEA00280FE2 /* KeyboardSuggestions.xib in Resources */,
@@ -3491,6 +3509,7 @@
 				34CAEBA3288E6C0600FF0C14 /* DialogLoginPassphraseViewController.swift in Sources */,
 				811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */,
 				3487653729D337150059D05F /* OnBoardManager.swift in Sources */,
+				3407F5CD2A49BBC3005EF8E1 /* LTConfirmingViewController.swift in Sources */,
 				6713533921E23E7200A9ACC0 /* QRCodeReaderView.swift in Sources */,
 				3499655F29E5962D0092B5BD /* DialogEditViewController.swift in Sources */,
 				34C7AD08272143E700F437B5 /* DialogOTAViewController.swift in Sources */,
@@ -3581,6 +3600,7 @@
 				34FE20142A1CA98000301746 /* DialogNodeViewModel.swift in Sources */,
 				3448B5CB29D47647008D5746 /* DialogScanViewController.swift in Sources */,
 				34DBF17B2A44315000066479 /* MagnifyQRViewController.swift in Sources */,
+				3407F5D62A4AD034005EF8E1 /* LTErrorViewController.swift in Sources */,
 				81E8C35B292000B400B2196B /* AccountArchiveViewModel.swift in Sources */,
 				34EB6703282138710036D615 /* AMSegmentation.swift in Sources */,
 				34A31EAF26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift in Sources */,
@@ -3616,10 +3636,10 @@
 				812DBDC82977FACF002992D6 /* TwoFactorSettingsCellModel.swift in Sources */,
 				348EB95229FA93860001CC47 /* LTAmountCell.swift in Sources */,
 				81961AAC29E4B01F00E9B94D /* NetworkSecurityCase.swift in Sources */,
+				3407F5D42A4ABC94005EF8E1 /* DialogFeedbackViewController.swift in Sources */,
 				81865F49299F7D24002CBA87 /* MigratorManager.swift in Sources */,
 				340F07E826204AA40065A986 /* NetworkSelectorBarItem.swift in Sources */,
 				3488FC6D290AE28700122628 /* BalanceCellModel.swift in Sources */,
-				340A5F7928EAC3F3003D56B1 /* DialogSendFeedbackViewController.swift in Sources */,
 				81E8C35D292041F800B2196B /* EnrichedAsset.swift in Sources */,
 				34204717291B9A8600EDE945 /* PolicyCell.swift in Sources */,
 				811EFEE72A2BAFFB0054EBFE /* GdkSettings.swift in Sources */,

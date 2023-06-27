@@ -34,10 +34,11 @@ class SendConfirmViewModel {
             }
     }
 
-    func compose(_ msg: String) -> String {
-        if let nodeId =  lightningSession?.nodeState?.id {
-            return msg + ", {\"nodeId\": \(nodeId)}"
-        }
-        return msg
+    func nodeId() -> String? {
+        return lightningSession?.nodeState?.id
+    }
+
+    func isLightning() -> Bool {
+        return lightningSession != nil
     }
 }

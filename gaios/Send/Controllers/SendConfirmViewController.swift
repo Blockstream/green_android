@@ -77,6 +77,14 @@ class SendConfirmViewController: KeyboardViewController {
         presentedViewController?.dismiss(animated: false, completion: nil)
     }
 
+    func presentLightning() {
+        let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
+        if let vc = ltFlow.instantiateViewController(withIdentifier: "LTConfirmingViewController") as? LTConfirmingViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: false, completion: nil)
+        }
+    }
+
     func send() {
         let account = WalletManager.current?.account
         let bgq = DispatchQueue.global(qos: .background)
@@ -92,7 +100,7 @@ class SendConfirmViewController: KeyboardViewController {
                     present(vc, animated: false, completion: nil)
                 }
             } else {
-                self.startAnimating()
+                viewModel.isLightning() ? self.presentLightning() :  self.startAnimating()
             }
             return Guarantee()
         }.then(on: bgq) {
@@ -101,7 +109,7 @@ class SendConfirmViewController: KeyboardViewController {
             if account?.isHW ?? false {
                 self.dismissHWSummary()
             }
-            self.stopAnimating()
+            self.viewModel.isLightning() ? self.dismiss(animated: true) : self.stopAnimating()
         }.done { _ in
             self.executeOnDone()
         }.catch { [weak self] error in
@@ -144,14 +152,12 @@ class SendConfirmViewController: KeyboardViewController {
 
     func showBreezError(_ message: String) {
 
-        DispatchQueue.main.async {
-            let alert = UIAlertController(title: NSLocalizedString("id_error", comment: ""), message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("Copy error", comment: ""), style: .default) { _ in
-                UIPasteboard.general.string = self.viewModel.compose(message)
-                DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 2.0)
-            })
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in })
-            self.present(alert, animated: true, completion: nil)
+        let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
+        if let vc = ltFlow.instantiateViewController(withIdentifier: "LTErrorViewController") as? LTErrorViewController {
+            vc.delegate = self
+            vc.errorStr = message
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: false, completion: nil)
         }
     }
     
@@ -192,6 +198,19 @@ class SendConfirmViewController: KeyboardViewController {
         if let token = updateToken {
             NotificationCenter.default.removeObserver(token)
             updateToken = nil
+        }
+    }
+
+    func openFeedback(_ errorStr: String?) {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogFeedbackViewController") as? DialogFeedbackViewController,
+           let errorStr = errorStr, let nodeId = viewModel.nodeId() {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            vc.isLightningScope = true
+            vc.nodeId = nodeId
+            vc.breezErrStr = errorStr
+            present(vc, animated: false, completion: nil)
         }
     }
 }
@@ -318,5 +337,26 @@ extension SendConfirmViewController: SliderViewDelegate {
         if position == 1 {
             send()
         }
+    }
+}
+
+extension SendConfirmViewController: LTErrorViewControllerDelegate {
+    func onReport(_ errorStr: String?) {
+        openFeedback(errorStr)
+    }
+    
+    func onDone() {
+        //
+    }
+}
+
+extension SendConfirmViewController: DialogFeedbackViewControllerDelegate {
+    func didSend(rating: Int, email: String?, comment: String) {
+        AnalyticsManager.shared.recordFeedback(rating: rating, email: email, comment: comment)
+        DropAlert().info(message: "id_thank_you_for_your_feedback".localized)
+    }
+    
+    func didCancel() {
+        //
     }
 }

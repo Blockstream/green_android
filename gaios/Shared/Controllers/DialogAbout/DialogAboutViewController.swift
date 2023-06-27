@@ -128,8 +128,8 @@ class DialogAboutViewController: KeyboardViewController {
     }
 
     func openFeedback() {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogSendFeedbackViewController") as? DialogSendFeedbackViewController {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogFeedbackViewController") as? DialogFeedbackViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
             present(vc, animated: false, completion: nil)
@@ -205,7 +205,7 @@ extension DialogAboutViewController: UITableViewDelegate, UITableViewDataSource 
     }
 }
 
-extension DialogAboutViewController: DialogSendFeedbackViewControllerDelegate {
+extension DialogAboutViewController: DialogFeedbackViewControllerDelegate {
 
     func didCancel() {
         //
