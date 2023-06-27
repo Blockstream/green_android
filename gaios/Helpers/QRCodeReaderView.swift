@@ -180,12 +180,12 @@ class QRCodeReaderView: UIView {
 
     func startScan() {
 #if !(arch(i386) || arch(x86_64))
-        DispatchQueue.main.async {
-            if !self.captureSession.isRunning && self.authorizationStatus == .authorized {
+        if !self.captureSession.isRunning && self.authorizationStatus == .authorized {
+            DispatchQueue.global().async {
                 self.captureSession.startRunning()
-                if let rectOfInterest = self.previewLayer?.metadataOutputRectConverted(fromLayerRect: self.borderView.frame) {
-                    self.captureMetadataOutput?.rectOfInterest = rectOfInterest
-                }
+            }
+            if let rectOfInterest = self.previewLayer?.metadataOutputRectConverted(fromLayerRect: self.borderView.frame) {
+                self.captureMetadataOutput?.rectOfInterest = rectOfInterest
             }
         }
 #endif
@@ -202,7 +202,9 @@ class QRCodeReaderView: UIView {
     func stopScan() {
 #if !(arch(i386) || arch(x86_64))
         if captureSession.isRunning {
-            captureSession.stopRunning()
+            DispatchQueue.global().async {
+                self.captureSession.stopRunning()
+            }
         }
 #endif
     }
