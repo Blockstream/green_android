@@ -138,6 +138,7 @@ class SendConfirmViewController: KeyboardViewController {
                 self?.showError(NSLocalizedString(prettyError, comment: ""))
             }
             AnalyticsManager.shared.failedTransaction(account: AccountsRepository.shared.current, error: error, prettyError: prettyError)
+            AnalyticsManager.shared.recordException(prettyError)
         }
     }
 
