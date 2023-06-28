@@ -128,7 +128,7 @@ class DialogFeedbackViewController: KeyboardViewController {
 
     func setStyle() {
         btnSend.setStyle(.primaryDisabled)
-        btnCopy.setStyle(.primary)
+        btnCopy.setStyle(.outlinedWhite)
         emailField.setLeftPaddingPoints(10.0)
         emailField.setRightPaddingPoints(10.0)
         cardView.layer.cornerRadius = 20
@@ -147,7 +147,7 @@ class DialogFeedbackViewController: KeyboardViewController {
            segment.selectedSegmentIndex != -1 {
             btnSend.setStyle(.primary)
         } else {
-            btnSend.setStyle(.primaryDisabled)
+            btnSend.setStyle( isLightningScope ? .primary : .primaryDisabled)
         }
     }
 
@@ -189,8 +189,7 @@ class DialogFeedbackViewController: KeyboardViewController {
                 if self.segment.selectedSegmentIndex > -1,
                    var comment = self.messageTextView.text {
                     if let nodeId = self.nodeId, let breezErrStr = self.breezErrStr {
-                        let msg = "\n" + breezErrStr + ", {\"nodeId\": \(nodeId)}"
-                        comment = comment + msg
+                        comment += "\n" + "nodeId: \(nodeId)" + "\n" + breezErrStr
                     }
                     self.delegate?.didSend(rating: self.segment.selectedSegmentIndex + 1,
                                            email: self.emailField.text,

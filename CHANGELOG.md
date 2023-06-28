@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - New unified dialog to change denomination and exchange 
-
+- Improve Lightning send
 
 ## [4.0.8] - 2023-06-12
 
