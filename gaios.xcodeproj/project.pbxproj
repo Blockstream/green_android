@@ -332,12 +332,12 @@
 		34D535E429A773AF00D3B5C5 /* SharePrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D535E329A773AF00D3B5C5 /* SharePrefs.swift */; };
 		34D535E629A77D4B00D3B5C5 /* MoreOptPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D535E529A77D4B00D3B5C5 /* MoreOptPrefs.swift */; };
 		34D66CED29CA10EF00BBBC5C /* PopoverMenuHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D66CEC29CA10EF00BBBC5C /* PopoverMenuHomeViewController.swift */; };
-		34DBF17B2A44315000066479 /* MagnifyQRViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DBF17A2A44315000066479 /* MagnifyQRViewController.swift */; };
 		34D761342A384EF800DE57F5 /* DenominationExchangeFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34D761332A384EF800DE57F5 /* DenominationExchangeFlow.storyboard */; };
 		34D761362A38501F00DE57F5 /* DenominationExchangeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D761352A38501F00DE57F5 /* DenominationExchangeViewController.swift */; };
 		34D761382A38639D00DE57F5 /* DenominationExchangeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D761372A38639D00DE57F5 /* DenominationExchangeViewModel.swift */; };
 		34D7613A2A3892ED00DE57F5 /* DialogExchangeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D761392A3892ED00DE57F5 /* DialogExchangeViewController.swift */; };
 		34D7613C2A38935200DE57F5 /* DialogExchangeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D7613B2A38935200DE57F5 /* DialogExchangeViewModel.swift */; };
+		34DBF17B2A44315000066479 /* MagnifyQRViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DBF17A2A44315000066479 /* MagnifyQRViewController.swift */; };
 		34DDD0A9260A486300020380 /* Shared.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34DDD0A8260A486300020380 /* Shared.storyboard */; };
 		34DEF525272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */; };
 		34E0CA8C2981395600695304 /* Survey.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34E0CA8B2981395600695304 /* Survey.storyboard */; };
@@ -968,12 +968,12 @@
 		34D535E329A773AF00D3B5C5 /* SharePrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePrefs.swift; sourceTree = "<group>"; };
 		34D535E529A77D4B00D3B5C5 /* MoreOptPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreOptPrefs.swift; sourceTree = "<group>"; };
 		34D66CEC29CA10EF00BBBC5C /* PopoverMenuHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverMenuHomeViewController.swift; sourceTree = "<group>"; };
-		34DBF17A2A44315000066479 /* MagnifyQRViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagnifyQRViewController.swift; sourceTree = "<group>"; };
 		34D761332A384EF800DE57F5 /* DenominationExchangeFlow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = DenominationExchangeFlow.storyboard; sourceTree = "<group>"; };
 		34D761352A38501F00DE57F5 /* DenominationExchangeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DenominationExchangeViewController.swift; sourceTree = "<group>"; };
 		34D761372A38639D00DE57F5 /* DenominationExchangeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DenominationExchangeViewModel.swift; sourceTree = "<group>"; };
 		34D761392A3892ED00DE57F5 /* DialogExchangeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogExchangeViewController.swift; sourceTree = "<group>"; };
 		34D7613B2A38935200DE57F5 /* DialogExchangeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogExchangeViewModel.swift; sourceTree = "<group>"; };
+		34DBF17A2A44315000066479 /* MagnifyQRViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagnifyQRViewController.swift; sourceTree = "<group>"; };
 		34DDD0A8260A486300020380 /* Shared.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Shared.storyboard; sourceTree = "<group>"; };
 		34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveVerifyAddressViewController.swift; sourceTree = "<group>"; };
 		34E0CA8B2981395600695304 /* Survey.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Survey.storyboard; sourceTree = "<group>"; };
@@ -2296,14 +2296,6 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
-		34DBF1792A442F4D00066479 /* MagnifyQRViewController */ = {
-			isa = PBXGroup;
-			children = (
-				34DBF17A2A44315000066479 /* MagnifyQRViewController.swift */,
-			);
-			path = MagnifyQRViewController;
-			sourceTree = "<group>";
-		};
 		34D761322A384E9000DE57F5 /* DenominationExchangeFlow */ = {
 			isa = PBXGroup;
 			children = (
@@ -2314,6 +2306,14 @@
 				34D7613B2A38935200DE57F5 /* DialogExchangeViewModel.swift */,
 			);
 			path = DenominationExchangeFlow;
+			sourceTree = "<group>";
+		};
+		34DBF1792A442F4D00066479 /* MagnifyQRViewController */ = {
+			isa = PBXGroup;
+			children = (
+				34DBF17A2A44315000066479 /* MagnifyQRViewController.swift */,
+			);
+			path = MagnifyQRViewController;
 			sourceTree = "<group>";
 		};
 		34DDD0A7260A484E00020380 /* Shared */ = {
@@ -4082,7 +4082,7 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = D9W37S9468;
 				ENABLE_BITCODE = NO;
@@ -4096,7 +4096,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.8;
+				MARKETING_VERSION = 4.0.9;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
@@ -4126,7 +4126,7 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = D9W37S9468;
 				ENABLE_BITCODE = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -4138,7 +4138,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.8;
+				MARKETING_VERSION = 4.0.9;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
@@ -4848,7 +4848,7 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = D9W37S9468;
 				ENABLE_BITCODE = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -4859,7 +4859,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.8;
+				MARKETING_VERSION = 4.0.9;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
