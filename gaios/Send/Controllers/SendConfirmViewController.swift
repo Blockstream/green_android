@@ -100,7 +100,7 @@ class SendConfirmViewController: KeyboardViewController {
                     present(vc, animated: false, completion: nil)
                 }
             } else {
-                viewModel.isLightning() ? self.presentLightning() :  self.startAnimating()
+                viewModel.isLightning ? self.presentLightning() :  self.startAnimating()
             }
             return Guarantee()
         }.then(on: bgq) {
@@ -109,7 +109,7 @@ class SendConfirmViewController: KeyboardViewController {
             if account?.isHW ?? false {
                 self.dismissHWSummary()
             }
-            self.viewModel.isLightning() ? self.dismiss(animated: true) : self.stopAnimating()
+            self.viewModel.isLightning ? self.dismiss(animated: true) : self.stopAnimating()
         }.done { _ in
             self.executeOnDone()
         }.catch { [weak self] error in

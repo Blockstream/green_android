@@ -330,7 +330,7 @@ extension LightningSessionManager: LightningEventListener {
         case .paymentSucceed(let details):
             DispatchQueue.main.async {
                 self.post(event: .PaymentSucceed)
-                DropAlert().success(message: "Payment Succeed \(details.amountSatoshi) sats".localized)
+                DropAlert().success(message: "Payment Successful \(details.amountSatoshi) sats".localized)
             }
         case .paymentFailed(_):
             DispatchQueue.main.async {

@@ -10,7 +10,7 @@ class SendConfirmViewModel {
     var addresseeCellModels: [AddresseeCellModel]
     var session: SessionManager { account.session! }
     var remoteAlert: RemoteAlert?
-    var lightningSession: LightningSessionManager? { WalletManager.current?.lightningSession }
+    var isLightning: Bool { account.gdkNetwork.lightning }
 
     init(account: WalletItem, tx: Transaction) {
         self.account = account
@@ -35,10 +35,6 @@ class SendConfirmViewModel {
     }
 
     func nodeId() -> String? {
-        return lightningSession?.nodeState?.id
-    }
-
-    func isLightning() -> Bool {
-        return lightningSession != nil
+        return WalletManager.current?.lightningSession?.nodeState?.id
     }
 }
