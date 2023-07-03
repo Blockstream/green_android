@@ -263,23 +263,21 @@ extension UserSettingsViewController {
             alert.addAction(UIAlertAction(title: item, style: item == selected  ? .destructive : .default) { _ in
                 settings.autolock = AutoLockType.from(item)
                 Task {
+                    self.startAnimating()
                     do {
-                        try await self.changeSettings(settings)
-                        self.viewModel.load()
+                        _ = try await self.session?.changeSettings(settings: settings)
+                        await MainActor.run {
+                            self.viewModel.load()
+                        }
                     } catch {
                         self.showError(error)
                     }
+                    self.stopAnimating()
                 }
             })
         }
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
         self.present(alert, animated: true, completion: nil)
-    }
-
-    func changeSettings(_ settings: Settings) async {
-        startAnimating()
-        try? await self.session?.changeSettings(settings: settings)
-        stopAnimating()
     }
 }
 

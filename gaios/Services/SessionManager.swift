@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 import gdk
 import greenaddress
@@ -498,13 +499,14 @@ extension SessionManager {
                 return
             }
             // Restore connection through hidden login
-            //do {
-                //try await reconnect()
-            //    self.post(event: EventType.Network, userInfo: data)
-            //}.catch { err in
-                //print("Error on reconnected with hw: \(err.localizedDescription)")
-                //let appDelegate = UIApplication.shared.delegate as? AppDelegate
-                //appDelegate?.logout(with: false)
+            Task {
+                do {
+                    try await reconnect()
+                    post(event: EventType.Network, userInfo: data)
+                } catch {
+                    print("Error on reconnected with hw: \(error.localizedDescription)")
+                }
+            }
         case .Tor:
             post(event: .Tor, userInfo: data)
         case .Ticker:
