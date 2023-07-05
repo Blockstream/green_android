@@ -42,8 +42,8 @@ android {
     defaultConfig {
         minSdk = 23
         targetSdk = 33
-        versionCode = 409
-        versionName = "4.0.9"
+        versionCode = 410
+        versionName = "4.0.10"
         setProperty("archivesBaseName", "BlockstreamGreen-v$versionName")
 
         testApplicationId = "com.blockstream.green.test"
