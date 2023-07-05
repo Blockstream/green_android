@@ -3,16 +3,15 @@ package com.greenaddress.greenbits.wallets
 import android.os.SystemClock
 import android.util.Base64
 import com.blockstream.DeviceBrand
-import com.blockstream.gdk.GAJson
 import com.blockstream.jade.HttpRequestProvider
 import com.blockstream.jade.JadeAPI
 import com.blockstream.jade.data.VersionInfo
 import com.blockstream.jade.entities.JadeVersion
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import mu.KLogging
@@ -22,14 +21,11 @@ import java.security.MessageDigest
 
 // A firmware instance on the file server
 // Meta data, and optionally the actual fw binary
-@Serializable
-class FirmwareFileData constructor(
-    @SerialName("filepath") val filepath: String,
-    @SerialName("image") val image: FirmwareImage,
-    @SerialName("firmware") var firmware: ByteArray? = null
-) : GAJson<FirmwareFileData>() {
-    override fun kSerializer() = serializer()
-}
+class FirmwareFileData(
+    val filepath: String,
+    val image: FirmwareImage,
+    var firmware: ByteArray? = null
+)
 
 @Serializable
 data class FirmwareImage constructor(
@@ -41,26 +37,30 @@ data class FirmwareImage constructor(
     @SerialName("from_version") val fromVersion: String? = null,
     @SerialName("from_config") val fromConfig: String? = null,
     @SerialName("patch_size") val patchSize: Int? = null
-) : GAJson<FirmwareImage>() {
-    override fun kSerializer() = serializer()
-}
+)
 
 @Serializable
 data class FirmwareImages constructor(
     @SerialName("full") val full: List<FirmwareImage>? = null,
     @SerialName("delta") val delta: List<FirmwareImage>? = null
-) : GAJson<FirmwareImages>() {
-    override fun kSerializer() = serializer()
-}
+)
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Serializable
 data class FirmwareChannels constructor(
     @SerialName("beta") val beta: FirmwareImages? = null,
     @SerialName("stable") val stable: FirmwareImages? = null,
     @SerialName("previous") val previous: FirmwareImages? = null
-) : GAJson<FirmwareChannels>() {
-    override fun kSerializer() = serializer()
+){
+    companion object{
+        fun fromHttpRequest(response: JsonElement) : FirmwareChannels{
+            val deserializer = Json {
+                ignoreUnknownKeys = true
+                isLenient = true
+            }
+
+            return deserializer.decodeFromJsonElement(response.jsonObject["body"]!!.jsonObject)
+        }
+    }
 }
 
 class JadeFirmwareManager constructor(
@@ -144,16 +144,12 @@ class JadeFirmwareManager constructor(
     @Throws(IOException::class)
     private fun downloadIndex(path: String): FirmwareChannels {
         logger.info { "Fetching index file: $path" }
-        val ret = httpRequestProvider.httpRequest.httpRequest("GET", urls(path), null, "json", emptyList())
-        if(!ret.jsonObject.containsKey("body")){
+        val response = httpRequestProvider.httpRequest.httpRequest("GET", urls(path), null, "json", emptyList())
+        if(!response.jsonObject.containsKey("body")){
             throw IOException("Failed to fetch firmware file: $path")
         }
-        val deserializer = Json {
-            ignoreUnknownKeys = true
-            isLenient = true
-        }
-        val body = ret.jsonObject["body"]!!.jsonPrimitive.content
-        return deserializer.decodeFromString(body)
+
+        return FirmwareChannels.fromHttpRequest(response)
     }
 
     // Get index file and filter channels as appropriate for the passed info
@@ -174,6 +170,7 @@ class JadeFirmwareManager constructor(
                 }
             }
         } catch (e: Exception) {
+            e.printStackTrace()
             logger.info { "Error downloading firmware index file: $e" }
             null
         }
