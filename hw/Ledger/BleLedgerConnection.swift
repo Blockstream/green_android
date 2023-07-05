@@ -14,7 +14,7 @@ public class BleLedgerConnection: HWConnectionProtocol {
     public static let SERVICE_UUID = UUID(uuidString: "13D63400-2C97-0004-0000-4C6564676572")!
     public let WRITE_CHARACTERISTIC_UUID = UUID(uuidString: "13D63400-2C97-0004-0002-4C6564676572")!
     public let READ_CHARACTERISTIC_CONFIG = UUID(uuidString: "13D63400-2C97-0004-0001-4C6564676572")!
-    
+
     public var connected = false
     private var MTU = 128
     private let semaphore = AsyncSemaphore(value: 1)
@@ -22,7 +22,7 @@ public class BleLedgerConnection: HWConnectionProtocol {
     private var cancellable: AnyCancellable?
     private var queue = [Data]()
     private let reqMtu = Data([0x08,0x00,0x00,0x00,0x00])
-    
+
     public enum LedgerError: Error {
         case InvalidParameter
         case IOError
@@ -48,12 +48,12 @@ public class BleLedgerConnection: HWConnectionProtocol {
             self.code = code
         }
     }
-    
+
     public init(peripheral: Peripheral, centralManager: CentralManager?) {
         self.peripheral = peripheral
         self.centralManager = centralManager
     }
-    
+
     public func open() async throws {
         try await centralManager?.connect(peripheral)
         let mtu = peripheral.maximumWriteValueLength(for: .withResponse)
@@ -72,6 +72,7 @@ public class BleLedgerConnection: HWConnectionProtocol {
             .sink(receiveValue: { [self] value in
                 self.queue.append(value ?? Data())
                 semaphoreQueue.signal()
+                semaphore.signal()
             })
         
         let resMtu = try await exchange(reqMtu)
@@ -110,7 +111,7 @@ public class BleLedgerConnection: HWConnectionProtocol {
     static func wrapCommandAPDU(command: Data, packetSize: Int) throws -> Data? {
         if packetSize < 3 { throw LedgerError.InvalidParameter }
         var buffer = [UInt8]()
-
+        
         var sequenceIdx: UInt16 = 0
         var offset = 0
         //buffer += [channel >> 8, channel]
@@ -129,7 +130,7 @@ public class BleLedgerConnection: HWConnectionProtocol {
                        UInt8(sequenceIdx >> 8),
                        UInt8(sequenceIdx)]
             sequenceIdx += 1
-            blockSize = (command.count - offset > packetSize - 5 - 2 ? packetSize - 5 - 2: command.count - offset)
+            blockSize = (command.count - offset > packetSize - 5 + 2 ? packetSize - 5 + 2: command.count - offset)
             buffer += command[Int(offset)..<Int(offset + blockSize)]
             offset += blockSize
         }
@@ -163,7 +164,7 @@ public class BleLedgerConnection: HWConnectionProtocol {
         var blockSize = responseLength > packetSize - 5 ? packetSize - 5 : Int(responseLength)
         buffer += data[offset..<Int(offset + blockSize)]
         offset += blockSize
-
+        
         while buffer.count != responseLength {
             sequenceIdx += 1
             if offset == data.count { throw LedgerError.IOError }
@@ -241,5 +242,40 @@ public class BleLedgerConnection: HWConnectionProtocol {
         }
         semaphore.signal()
         return Data()
+    }
+
+    func exchangeApduSplit(cla: UInt8, ins: UInt8, p1: UInt8, p2: UInt8, data: Data) async throws -> Data {
+        var offset = 0
+        var result = Data()
+        while offset < data.count {
+            let blockLength = (data.count - offset) > 255 ? 255 : data.count - offset
+            var buffer = Data([cla, ins, p1, p2, UInt8(blockLength)])
+            buffer += data.bytes[offset..<(offset+blockLength)]
+            result = try await exchange(buffer)
+            offset += blockLength
+        }
+        return result
+    }
+
+    func exchangeApduSplit2(cla: UInt8, ins: UInt8, p1: UInt8, p2: UInt8, data1: Data, data2: Data) async throws -> Data {
+        // If data is empty, just send data2 immediately
+        if data1.count == 0 {
+            return try await exchangeAdpu(cla: cla, ins: ins, p1: p1, p2: p2, data: data2)
+        }
+        var offset = 0
+        var result = Data()
+        var maxBlockSize = 255 - data2.count
+        while offset < data1.count {
+            let blockLength = (data1.count - offset) > maxBlockSize ? maxBlockSize : data1.count - offset
+            let lastBlock = offset + blockLength == data1.count
+            var buffer = Data([cla, ins, p1, p2, UInt8(blockLength + (lastBlock ? data2.count : 0))])
+            buffer += data1.bytes[offset..<(offset+blockLength)]
+            if lastBlock {
+                buffer += data2.bytes
+            }
+            result = try await exchange(buffer)
+            offset += blockLength
+        }
+        return result
     }
 }

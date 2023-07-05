@@ -29,7 +29,7 @@ class LedgerWaitViewController: HWFlowBaseViewController {
         scanCancellable = scanModel?.objectWillChange.sink(receiveValue: { [weak self] in
             DispatchQueue.main.async {
                 if self?.selectedItem != nil { return }
-                if let peripheral = self?.scanModel?.peripherals.filter({ $0.ledger }).first {
+                if let peripheral = self?.scanModel?.peripherals.first {
                     self?.selectedItem = peripheral
                     Task { await self?.scanModel?.stopScan() }
                     self?.scanCancellable?.cancel()

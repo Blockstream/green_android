@@ -15,27 +15,26 @@ public class BleLedgerCommands: BleLedgerConnection {
     let INS_GET_APP_NAME_AND_VERSION: UInt8 = 0x01
     let INS_GET_WALLET_PUBLIC_KEY: UInt8 = 0x40
     let INS_SIGN_MESSAGE: UInt8 = 0x4e
+    let INS_GET_TRUSTED_INPUT: UInt8 = 0x42
     let INS_HASH_INPUT_START: UInt8 = 0x44
     let INS_HASH_SIGN: UInt8 = 0x48
     let INS_HASH_INPUT_FINALIZE_FULL: UInt8 = 0x4a
     let INS_EXIT: UInt8 = 0xA7
+    
 
     func finalizeInputFull(data: Data) async throws -> [String: Any] {
-        var datas = [Data]()
-        datas.append(Data([0]))
+        let res = try await exchangeAdpu(cla: self.CLA_BOLOS, ins: self.INS_HASH_INPUT_FINALIZE_FULL, p1: 0xFF, p2: 0x00, data: [0x00].data!)
+        
+        var result = Data()
         var offset = 0
         while offset < data.count {
             let blockLength = (data.count - offset) > 255 ? 255 : data.count - offset
-            datas.append(data[offset..<offset+blockLength])
+            let p1: UInt8 = offset + blockLength == data.count ? 0x80 : 0x00
+            let buffer = data[offset..<offset+blockLength]
+            result = try await exchangeAdpu(cla: self.CLA_BOLOS, ins: self.INS_HASH_INPUT_FINALIZE_FULL, p1: p1, p2: 0x00, data: buffer)
             offset += blockLength
         }
-        var result = [Data]()
-        for item in datas.enumerated() {
-            let p1: UInt8 = item.offset == 0 ? 0xFF : item.offset == datas.count - 1 ? 0x80 : 0x00
-            let res = try await exchangeAdpu(cla: self.CLA_BOLOS, ins: self.INS_HASH_INPUT_FINALIZE_FULL, p1: p1, p2: 0x00, data: item.element)
-            result += [res]
-        }
-        return convertResponseToOutput(result.last ?? Data())
+        return convertResponseToOutput(result)
     }
 
     func convertResponseToOutput(_ buffer: Data) -> [String: Any] {
@@ -66,16 +65,16 @@ public class BleLedgerCommands: BleLedgerConnection {
     }
 
     func outputBytes(_ outputs: [InputOutput]) -> Data? {
-        var buffer = outputs.count.varInt()
+        var buffer = VarintUtils.write(outputs.count)
         for out in outputs {
-            let script = out.scriptpubkey
-            let hex = script!.hexToData()
-            buffer += (out.satoshi ?? 0).uint64LE() + hex.count.varInt() + hex
+            let satoshi = (out.satoshi ?? 0).uint64LE()
+            let script = out.scriptpubkey!.hexToData()
+            buffer += satoshi + VarintUtils.write(script.count) + script
         }
         return Data(buffer)
     }
 
-    func untrustedHashSign(privateKeyPath: [Int], pin: String, lockTime: UInt, sigHashType: UInt8) async throws -> Data {
+    func untrustedHashSign(privateKeyPath: [Int], pin: String, lockTime: UInt32, sigHashType: UInt8) async throws -> Data {
         let path: [UInt8] = try! pathToData(privateKeyPath)
         let data = Array(path) + [UInt8(pin.count)] + Array(pin.utf8) + lockTime.uint32BE() + [sigHashType]
         let buffer = try await exchangeAdpu(cla: CLA_BOLOS, ins: INS_HASH_SIGN, p1: 0, p2: 0, data: Data(data))
@@ -84,15 +83,12 @@ public class BleLedgerCommands: BleLedgerConnection {
     }
 
     // swiftlint:disable function_parameter_count
-    func startUntrustedTransaction(txVersion: UInt, newTransaction: Bool, inputIndex: Int64, usedInputList: [[String: Any]], redeemScript: Data, segwit: Bool) async throws {
+    func startUntrustedTransaction(txVersion: UInt32, newTransaction: Bool, inputIndex: Int64, usedInputList: [[String: Any]], redeemScript: Data, segwit: Bool) async throws {
         // Start building a fake transaction with the passed inputs
         let buffer = txVersion.uint32LE() + UInt(usedInputList.count).varint()
         let p2: UInt8 = newTransaction ? (segwit ? 0x02 : 0x00) : 0x80
         _ = try await exchangeAdpu(cla: CLA_BOLOS, ins: INS_HASH_INPUT_START, p1: 0x00, p2: p2, data: Data(buffer))
-        try await self.hashInputs(usedInputList: usedInputList, inputIndex: inputIndex, redeemScript: redeemScript)
-    }
-
-    func hashInputs(usedInputList: [[String: Any]], inputIndex: Int64, redeemScript: Data) async throws {
+        
         for input in usedInputList.enumerated() {
             let script = input.offset == inputIndex ? redeemScript : Data()
             try await hashInput(input.element, script: script)
@@ -102,13 +98,45 @@ public class BleLedgerCommands: BleLedgerConnection {
     func hashInput(_ input: [String: Any], script: Data) async throws {
         let isTrusted = input["trusted"] as? Bool ?? false
         let isSegwit = input["segwit"] as? Bool ?? true
-        let first: UInt8 = isSegwit ? 0x02 : isTrusted ? 0x01 : 0x00
+        let first: UInt8 = isTrusted ? 0x01 : isSegwit ? 0x02 : 0x00
         let value: [UInt8] = Array((input["value"] as? Data)!)
         let len: [UInt8] = UInt(script.count).varint()
         let data: [UInt8] = [first] + (isTrusted ? [UInt8(value.count)] : []) + value + len
         _ = try await  exchangeAdpu(cla: CLA_BOLOS, ins: INS_HASH_INPUT_START, p1: 0x80, p2: 0x00, data: Data(data))
-        let buffer = Array(script) + Array((input["sequence"] as? Data)!)
-        _ = try await exchangeAdpu(cla: self.CLA_BOLOS, ins: self.INS_HASH_INPUT_START, p1: 0x80, p2: 0x00, data: Data(buffer))
+        let buffer: [UInt8] = script.bytes + (input["sequence"] as? [UInt8] ?? [])
+        _ = try await exchangeApduSplit(cla: CLA_BOLOS, ins: INS_HASH_INPUT_START, p1: 0x80, p2: 0x00, data: Data(buffer))
+    }
+    
+    func getTrustedInput(transaction: HWTransactionLedger, index: Int, sequence: Int, segwit: Bool) async throws -> [String: Any] {
+        var buffer = Data()
+        // Header
+        buffer += index.uint32BE()
+        buffer += transaction.version
+        buffer += VarintUtils.write(transaction.inputs.count)
+        _ = try await exchangeAdpu(cla: CLA_BOLOS, ins: INS_GET_TRUSTED_INPUT, p1: 0x00, p2: 0x00, data: buffer)
+        // Each input
+        for input in transaction.inputs {
+            buffer = input.prevOut
+            buffer += VarintUtils.write(input.script.count)
+            _ = try await exchangeAdpu(cla: CLA_BOLOS, ins: INS_GET_TRUSTED_INPUT, p1: 0x80, p2: 0x00, data: buffer)
+            //_ = try await exchangeAdpu(cla: CLA_BOLOS, ins: INS_GET_TRUSTED_INPUT, p1: 0x80, p2: 0x00, data: buffer + input.sequence)
+            _ = try await exchangeApduSplit2(cla: CLA_BOLOS, ins: INS_GET_TRUSTED_INPUT, p1: 0x80, p2: 0x00, data1: input.script, data2: input.sequence)
+        }
+        //  Number of outputs
+        buffer = VarintUtils.write(transaction.outputs.count)
+        _ = try await exchangeAdpu(cla: CLA_BOLOS, ins: INS_GET_TRUSTED_INPUT, p1: 0x80, p2: 0x00, data: buffer)
+        // Each output
+        for output in transaction.outputs {
+            buffer = output.amount
+            buffer += VarintUtils.write(output.script.count)
+            _ = try await exchangeAdpu(cla: CLA_BOLOS, ins: INS_GET_TRUSTED_INPUT, p1: 0x80, p2: 0x00, data: buffer)
+            //_ = try await exchangeAdpu(cla: CLA_BOLOS, ins: INS_GET_TRUSTED_INPUT, p1: 0x80, p2: 0x00, data: buffer)
+            _ = try await exchangeApduSplit(cla: CLA_BOLOS, ins: INS_GET_TRUSTED_INPUT, p1: 0x80, p2: 0x00, data: output.script)
+        }
+        // Locktime
+        let res = try await exchangeAdpu(cla: CLA_BOLOS, ins: INS_GET_TRUSTED_INPUT, p1: 0x80, p2: 0x00, data: transaction.locktime)
+        let sequence = sequence.uint32LE()
+        return ["value": res, "sequence": sequence, "trusted": true, "segwit": segwit]
     }
 
     func signMessagePrepare(path: [Int], message: Data) async throws -> Bool {
@@ -142,7 +170,7 @@ public class BleLedgerCommands: BleLedgerConnection {
         if path.count == 0 {
             return [0]
         } else if path.count > 10 {
-            throw HWError.Abort("")
+            throw HWError.Abort("Path too long")
         }
         var buffer = [UInt8(path.count)]
         for p in path {

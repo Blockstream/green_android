@@ -70,6 +70,101 @@ public extension HWTransaction {
     var transactionLocktime: UInt? { take("transaction_locktime")}
 }
 
+public struct HWTransactionInputLedger {
+    let prevOut: Data
+    let script: Data
+    let sequence: Data
+    var size = 0
+    
+    init(_ data: Data) {
+        let data = Data(data.bytes)
+        prevOut = Data(data[0..<36])
+        let (scriptSize, len) = VarintUtils.read(data[36...])
+        var offset = 36 + len
+        script = data[offset..<offset+scriptSize]
+        offset += scriptSize
+        sequence = data[offset..<offset+4]
+        size = offset + 4
+    }
+    
+    func serialize() -> Data {
+        var buffer = Data()
+        buffer.append(prevOut)
+        buffer.append(VarintUtils.write(script.count))
+        buffer.append(script)
+        buffer.append(sequence)
+        return buffer
+    }
+}
+    
+public struct HWTransactionOutputLedger {
+    let amount: Data
+    let script: Data
+    var size = 0
+    
+    init(_ data: Data) {
+        let data = Data(data.bytes)
+        amount = data[0..<8]
+        let (scriptSize, len) = VarintUtils.read(data[8...])
+        size = 8 + len + scriptSize
+        script = data[8+len..<size]
+    }
+    
+    func serialize() -> Data {
+        var buffer = Data()
+        buffer.append(amount)
+        buffer.append(VarintUtils.write(script.count))
+        buffer.append(script)
+        return buffer
+    }
+}
+
+public struct HWTransactionLedger {
+    var version: Data
+    var segwit = false
+    var locktime: Data
+    var inputs = [HWTransactionInputLedger]()
+    var outputs = [HWTransactionOutputLedger]()
+    
+    init(data: Data) {
+        
+        version = data[0..<4]
+        // If num-inputs is zero, this should rather be the segwit flag
+        var offset = 4
+        var (numberItems, len) = VarintUtils.read(data[4...])
+        offset += len
+        if numberItems == 0 {
+            var (flag, len) = VarintUtils.read(data[offset...])
+            offset += len
+            if flag != 1 {
+                print("Invalid segwit flag value")
+            }
+            segwit = true
+            // The actual number of inputs
+            (numberItems, len) = VarintUtils.read(data[offset...])
+            offset += len
+        }
+        // Inputs
+        for _ in 0..<numberItems {
+            let input = HWTransactionInputLedger(data[offset...])
+            offset += input.size
+            self.inputs.append(input)
+        }
+        // Outputs
+        (numberItems, len) = VarintUtils.read(data[offset...])
+        offset += len
+        for _ in 0..<numberItems {
+            let output = HWTransactionOutputLedger(data[offset...])
+            offset += output.size
+            self.outputs.append(output)
+        }
+        // if segwit, we need to skip over the withness data
+        // we know the last 4 bytes are the locktime
+        locktime = data[data.count-4..<data.count]
+    }
+    
+}
+
 public struct HWSignTxParams {
     enum CodingKeys: String, CodingKey {
         case transaction
@@ -78,13 +173,13 @@ public struct HWSignTxParams {
         case signingTxs = "signing_transactions"
         case useAeProtocol = "use_ae_protocol"
     }
-    let transaction: HWTransaction?
+    let transaction: String?
     let signingInputs: [InputOutput]
     let txOutputs: [InputOutput]
     let signingTxs: [String: String]
     let useAeProtocol: Bool
     init(_ details: [String: Any]) {
-        transaction = details["transaction"] as? HWTransaction
+        transaction = details["transaction"] as? String
         signingInputs = details["transaction_inputs"] as? [InputOutput] ?? []
         txOutputs = details["transaction_outputs"] as? [InputOutput] ?? []
         signingTxs = details["signing_transactions"] as? [String: String] ?? [:]

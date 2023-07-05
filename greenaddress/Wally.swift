@@ -140,15 +140,29 @@ public class Wally {
     }
 
     public static func txFromBytes(
-        tx: [UInt8]
+        tx: [UInt8],
+        elements: Bool = false,
+        segwit: Bool = false
     ) -> UnsafeMutablePointer<ga.wally_tx>? {
         let txPtr: UnsafePointer<UInt8> = UnsafePointer(tx)
         var bufferPtr: UnsafeMutablePointer<ga.wally_tx>?
-        
-        if wally_tx_from_bytes(txPtr, tx.count, UInt32(WALLY_TX_FLAG_USE_ELEMENTS), &bufferPtr) != WALLY_OK {
+        let flag = elements ? WALLY_TX_FLAG_USE_ELEMENTS : segwit ? WALLY_TX_FLAG_USE_WITNESS : 0
+        if wally_tx_from_bytes(txPtr, tx.count, UInt32(flag), &bufferPtr) != WALLY_OK {
             return nil
         }
         return bufferPtr
+    }
+
+    public static func txVersion(
+        wallyTx: UnsafeMutablePointer<ga.wally_tx>
+    ) -> UInt32 {
+        return wallyTx.pointee.version
+    }
+
+    public static func txLocktime(
+        wallyTx: UnsafeMutablePointer<ga.wally_tx>
+    ) -> UInt32 {
+        return wallyTx.pointee.locktime
     }
 
     public static func txGetOutputAsset(

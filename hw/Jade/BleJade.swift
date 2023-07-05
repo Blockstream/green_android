@@ -95,7 +95,7 @@ public class BleJade: BleJadeCommands, HWProtocol {
         }
         // Need to truncate lead byte if recoverable signature
         if sigDecoded.count == Wally.WALLY_EC_SIGNATURE_RECOVERABLE_LEN {
-            sigDecoded = sigDecoded[1...sigDecoded.count-1]
+            sigDecoded = sigDecoded[1..<sigDecoded.count]
         }
         let sigDer = try Wally.sigToDer(sig: Array(sigDecoded))
         return HWSignMessageResult(signature: sigDer.hex, signerCommitment: result?.signerCommitment)
@@ -233,7 +233,7 @@ public class BleJade: BleJadeCommands, HWProtocol {
                                 numInputs: params.signingInputs.count,
                                 trustedCommitments: nil,
                                 useAeProtocol: params.useAeProtocol,
-                                txn: params.transaction?.transaction?.hexToData() ?? Data())
+                                txn: params.transaction?.hexToData() ?? Data())
         let res: JadeResponse<Bool> = try await exchange(JadeRequest(method: "sign_tx", params: signtx))
         if let result = res.result, !result {
             throw HWError.Abort("Invalid signature")
@@ -335,7 +335,7 @@ public class BleJade: BleJadeCommands, HWProtocol {
         // NOTE: 0.1.48+ Jade fw does need these extra values passed explicitly so
         // no need to parse/load the transaction into wally.
         // FIXME: remove when 0.1.48 is made minimum allowed version.
-        let wallytx = !version.hasSwapSupport ? Wally.txFromBytes(tx: params.transaction?.transaction?.hexToBytes() ?? []) : nil
+        let wallytx = !version.hasSwapSupport ? Wally.txFromBytes(tx: params.transaction?.hexToBytes() ?? [], elements: true) : nil
         let txInputs = params.signingInputs
             .map { (txInput: InputOutput) -> TxInputLiquid in
             return TxInputLiquid(isWitness: txInput.isSegwit,
@@ -376,7 +376,7 @@ public class BleJade: BleJadeCommands, HWProtocol {
                                 numInputs: txInputs.count,
                                 trustedCommitments: trustedCommitments,
                                 useAeProtocol: params.useAeProtocol,
-                                txn: params.transaction?.transaction?.hexToData() ?? Data())
+                                txn: params.transaction?.hexToData() ?? Data())
         guard try await signLiquidTx(params: params) else {
             throw HWError.Abort("Invalid sign tx")
         }

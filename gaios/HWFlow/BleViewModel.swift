@@ -31,7 +31,7 @@ enum DeviceError: Error {
 class BleViewModel {
     static let shared = BleViewModel()
     private let centralManager: CentralManager
-    var deviceType: DeviceType = .Jade
+    var type: DeviceType = .Jade
     var jade: BleJadeManager?
     var ledger: BleLedgerManager?
     var peripheralID: UUID? {
@@ -48,7 +48,6 @@ class BleViewModel {
         }
         return nil
     }
-    var type: DeviceType { peripheral?.name?.contains("Nano") ?? false ? .Ledger : .Jade }
 
     func setup() {
         guard let peripheral = peripheral else { return }
@@ -162,7 +161,7 @@ class BleViewModel {
     }
     
     func ping() async throws {
-        switch deviceType {
+        switch type {
         case .Jade:
             _ = try await jade?.ping()
         case .Ledger:

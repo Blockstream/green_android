@@ -88,7 +88,7 @@ public struct TransactionOutput: Codable {
     public let address: String?
     public let domain: String?
     public let assetId: String?
-    public let isChange: Bool
+    public let isChange: Bool?
     public let satoshi: Int64
     public static func fromLnInvoice(_ invoice: LnInvoice, fallbackAmount: Int64?) -> TransactionOutput {
         return TransactionOutput(

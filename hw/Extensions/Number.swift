@@ -1,5 +1,45 @@
 import Foundation
 
+public struct VarintUtils {
+    public static func read(_ data: Data) -> (Int, Int) {
+        let data = Data(data.bytes)
+        var result  = 0
+        var len = 0
+        let val1 = data[0] & 0xff
+        if val1 < 0xfd {
+            result = Int(val1)
+            len = 1
+        } else if val1 == 0xfd {
+            result |= Int(data[1] & 0xff)
+            result |= Int(data[2] & 0xff) << 8
+            len = 2
+        } else if val1 == 0xfe {
+            result |= Int(data[1] & 0xff)
+            result |= Int(data[2] & 0xff) << 8
+            result |= Int(data[3] & 0xff) << 16
+            result |= Int(data[4] & 0xff) << 24
+            len = 4
+        }
+        return (result, len)
+    }
+    public static func write(_ value: Int) -> Data {
+        var result = [UInt8]()
+        if value < 0xfd {
+            result = [UInt8(value)]
+        } else if value <= 0xfffff {
+            result += [0xfd]
+            result += [UInt8(value & 0xff)]
+            result += [UInt8((value >> 8) & 0xff)]
+        } else {
+            result += [0xfe]
+            result += [UInt8(value & 0xff)]
+            result += [UInt8((value >> 8) & 0xff)]
+            result += [UInt8((value >> 16) & 0xff)]
+            result += [UInt8((value >> 24) & 0xff)]
+        }
+        return Data(result)
+    }
+}
 extension Int {
     func varInt() -> [UInt8] {
         switch varIntSize() {
@@ -12,6 +52,16 @@ extension Int {
         default:
             return [255] + UInt64(self).uint64LE()
         }
+    }
+
+    func uint32LE() -> [UInt8] {
+        return [UInt8(self & 0xff), UInt8((self >> 8) & 0xff),
+                UInt8((self >> 16) & 0xff), UInt8((self >> 24) & 0xff)]
+    }
+
+    func uint32BE() -> [UInt8] {
+        return [UInt8((self >> 24) & 0xff), UInt8((self >> 16) & 0xff),
+                UInt8((self >> 8) & 0xff), UInt8(self & 0xff)]
     }
 
     func varIntSize() -> UInt8 {
@@ -59,6 +109,11 @@ extension UInt32 {
     func uint32LE() -> [UInt8] {
         return [UInt8(self & 0xff), UInt8((self >> 8) & 0xff),
                 UInt8((self >> 16) & 0xff), UInt8((self >> 24) & 0xff)]
+    }
+
+    func uint32BE() -> [UInt8] {
+        return [UInt8((self >> 24) & 0xff), UInt8((self >> 16) & 0xff),
+                UInt8((self >> 8) & 0xff), UInt8(self & 0xff)]
     }
 }
 

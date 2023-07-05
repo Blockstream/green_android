@@ -60,13 +60,11 @@ class ConnectViewController: HWFlowBaseViewController {
         Task {
             do {
                 await scanViewModel?.stopScan()
-                if bleViewModel?.peripheralID != item.identifier {
-                    bleViewModel?.peripheralID = item.identifier
-                }
-                bleViewModel?.deviceType = .Jade
+                bleViewModel?.type = item.type
+                bleViewModel?.peripheralID = item.identifier
                 progress("id_connecting".localized)
-                try? await bleViewModel?.connect()
-                if pairingState != .unknown {
+                try await bleViewModel?.connect()
+                if pairingState != .unknown && account.isJade {
                     try? await bleViewModel?.disconnect()
                     try await Task.sleep(nanoseconds:  5 * 1_000_000_000)
                     await MainActor.run {
@@ -78,8 +76,9 @@ class ConnectViewController: HWFlowBaseViewController {
                 try await bleViewModel?.ping()
                 print("pinged")
                 let version = try await bleViewModel?.versionJade()
-                if version?.jadeHasPin ?? false {
-                    // login
+                if account.isLedger {
+                    progress("id_connect_your_ledger_to_use_it".localized)
+                } else if version?.jadeHasPin ?? false {
                     progress("id_unlock_jade_to_continue".localized)
                 } else {
                     progress("id_follow_the_instructions_on_jade".localized)
@@ -189,7 +188,6 @@ class ConnectViewController: HWFlowBaseViewController {
         super.viewDidAppear(animated)
         activeToken = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main, using: applicationDidBecomeActive)
         resignToken = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main, using: applicationWillResignActive)
-        startScan()
     }
 
     override func viewWillDisappear(_ animated: Bool) {

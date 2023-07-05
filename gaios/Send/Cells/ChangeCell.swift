@@ -23,7 +23,7 @@ class ChangeCell: UITableViewCell {
         if let outputs = transaction.transactionOutputs, !outputs.isEmpty {
             var changeAddress = [String]()
             outputs.forEach { output in
-                if output.isChange, let address = output.address {
+                if output.isChange ?? false, let address = output.address {
                     changeAddress.append(address)
                 }
             }

@@ -23,7 +23,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
         mash.isHidden = true
         setContent()
         setStyle()
-        if bleViewModel?.deviceType == .Jade {
+        if bleViewModel?.type == .Jade {
             loadNavigationBtns()
         }
         // if account just exist
@@ -38,8 +38,8 @@ class PairingSuccessViewController: HWFlowBaseViewController {
         lblHint.text = "id_follow_the_instructions_on_your".localized
         btnContinue.setTitle("id_continue".localized, for: .normal)
         lblRemember.text = "id_remember_device_connection".localized
-        imgDevice.image = UIImage(named: bleViewModel?.deviceType == .Jade ? "il_jade_welcome_1" : "il_ledger")
-        lblHint.text = bleViewModel?.deviceType == .Jade ? "Blockstream" : ""
+        imgDevice.image = UIImage(named: bleViewModel?.type == .Jade ? "il_jade_welcome_1" : "il_ledger")
+        lblHint.text = bleViewModel?.type == .Jade ? "Blockstream" : ""
         btnAppSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
     }
 

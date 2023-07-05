@@ -166,7 +166,7 @@ extension ScanViewController: UITableViewDelegate, UITableViewDataSource {
 
         Task {
             await viewModel.stopScan()
-            BleViewModel.shared.deviceType = peripheral.type ?? .Jade
+            BleViewModel.shared.type = peripheral.type
             BleViewModel.shared.peripheralID = peripheral.identifier
             try? await BleViewModel.shared.connect()
             await MainActor.run { self.next() }

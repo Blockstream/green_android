@@ -24,7 +24,7 @@ public extension InputOutput {
     var script: String? { take("script")}
     var scriptType: UInt32? { take("script_type")}
     var scriptpubkey: String? { take("scriptpubkey")}
-    var sequence: UInt { take("sequence") ?? 0}
+    var sequence: Int { take("sequence") ?? 0}
     var subaccount: UInt32? { take("subaccount")}
     var subtype: UInt32? { take("subtype")}
     var txHash: String? { take("txhash")}

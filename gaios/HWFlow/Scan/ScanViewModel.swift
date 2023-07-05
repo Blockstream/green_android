@@ -42,7 +42,8 @@ class ScanViewModel: ObservableObject {
     func scan(deviceType: DeviceType) async throws {
         if self.isScanning == false { return }
         try await self.centralManager.waitUntilReady()
-        let scanDataStream = try await centralManager.scanForPeripherals(withServices: nil)
+        let service = deviceType == .Jade ? BleJade.SERVICE_UUID : BleLedger.SERVICE_UUID
+        let scanDataStream = try await centralManager.scanForPeripherals(withServices: [CBUUID(string: service.uuidString)])
         for await scanData in scanDataStream {
             addPeripheral(scanData.peripheral, for: deviceType)
         }
@@ -50,8 +51,8 @@ class ScanViewModel: ObservableObject {
     func addPeripheral(_ peripheral: Peripheral, for deviceType: DeviceType) {
         let identifier = peripheral.identifier
         let name = peripheral.name ?? ""
-        let peripheral = ScanListItem(identifier: identifier, name: name)
-        if let type = peripheral.type, type == deviceType {
+        let peripheral = ScanListItem(identifier: identifier, name: name, type: deviceType)
+        if peripheral.type == deviceType {
             DispatchQueue.main.async {
                 if self.peripherals.contains(where: { $0.identifier == identifier || $0.name == name }) {
                     self.peripherals.removeAll(where: { $0.identifier == identifier || $0.name == name })
