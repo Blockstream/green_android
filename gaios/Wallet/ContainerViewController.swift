@@ -7,8 +7,7 @@ class ContainerViewController: UIViewController {
 
     private var networkToken: NSObjectProtocol?
     private var torToken: NSObjectProtocol?
-    private var timer = Timer()
-    private var seconds = 0
+    private var requests: Int = 0
 
     var presentingWallet: WalletItem!
 
@@ -22,12 +21,6 @@ class ContainerViewController: UIViewController {
         torToken  = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil, queue: .main, using: updateTor)
         self.networkView.isHidden = true
         view.accessibilityIdentifier = AccessibilityIdentifiers.ContainerScreen.view
-
-        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "WalletViewController") as? WalletViewController {
-            let nav = UINavigationController(rootViewController: vc)
-            add(nav, frame: view.frame)
-        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -40,18 +33,17 @@ class ContainerViewController: UIViewController {
             NotificationCenter.default.removeObserver(token)
             torToken = nil
         }
-
-        if self.timer.isValid { self.timer.invalidate() }
     }
 
     // tor notification handler
     func updateTor(_ notification: Notification) {
-        Task {
-            let json = try JSONSerialization.data(withJSONObject: notification.userInfo!, options: [])
-            let tor = try JSONDecoder().decode(TorNotification.self, from: json)
-            self.networkText.text = NSLocalizedString("id_tor_status", comment: "") + " \(tor.progress)%"
-            self.networkView.backgroundColor = UIColor.errorRed()
-            self.networkView.isHidden = tor.progress == 100
+        DispatchQueue.main.async {
+            if let json = try? JSONSerialization.data(withJSONObject: notification.userInfo!, options: []),
+               let tor = try? JSONDecoder().decode(TorNotification.self, from: json) {
+                self.networkText.text = NSLocalizedString("id_tor_status", comment: "") + " \(tor.progress)%"
+                self.networkView.backgroundColor = UIColor.errorRed()
+                self.networkView.isHidden = tor.progress == 100
+            }
         }
     }
 
@@ -60,44 +52,32 @@ class ContainerViewController: UIViewController {
         let currentState = notification.userInfo?["current_state"] as? String
         let waitMs = notification.userInfo?["wait_ms"] as? Int
         let connected = currentState == "connected"
-        self.seconds = (waitMs ?? 0) / 1000
-
-        // Show connection bar, if a disconnection task is runned
-        if connected && self.timer.isValid {
-            self.connected()
+        // Show connection bar, only for tor
+        if AppSettings.shared.gdkSettings?.tor ?? false {
+            if connected {
+                self.connected()
+            } else {
+                self.offline()
+            }
         }
-        if self.timer.isValid {
-            self.timer.invalidate()
-        }
-
-        // Avoid show network bar for short downtime
-        if connected || self.seconds == 0 {
-            return
-        }
-        self.offline(nil)
-        self.timer = Timer.scheduledTimer(timeInterval: 1.0,
-                                          target: self,
-                                          selector: #selector(self.offline(_:)),
-                                          userInfo: nil,
-                                          repeats: true)
     }
 
     // show network bar on offline mode
-    @objc private func offline(_ timer: Timer?) {
+    @objc private func offline() {
         DispatchQueue.main.async {
             self.networkView.backgroundColor = UIColor.errorRed()
             self.networkView.isHidden = false
-            if self.seconds > 0 {
-                self.seconds -= 1
-                self.networkText.text = String(format: NSLocalizedString("id_not_connected_connecting_in_ds_", comment: ""), self.seconds)
-            }
+            self.networkText.text = "id_connecting".localized
         }
     }
 
     // show network bar on connected mode
     func connected() {
+        let sessions = WalletManager.current?.activeSessions ?? [:]
+        let reconnected = sessions.filter { !$0.value.paused }
+        guard sessions.count == reconnected.count else { return }
         DispatchQueue.main.async {
-            self.networkText.text = NSLocalizedString("id_you_are_now_connected", comment: "")
+            self.networkText.text = "id_you_are_now_connected".localized
             self.networkView.backgroundColor = UIColor.customMatrixGreen()
             self.networkView.isHidden = false
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + DispatchTimeInterval.milliseconds(2000)) {

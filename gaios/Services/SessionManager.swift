@@ -25,6 +25,7 @@ class SessionManager {
     
     var connected = false
     var logged = false
+    var paused = false
     weak var hw: BLEDevice?
     
     // Serial reconnect queue for network events
@@ -141,7 +142,10 @@ class SessionManager {
     }
     
     func resolve(_ twoFactorCall: TwoFactorCall?) async throws -> [String: Any]? {
-        let rm = ResolverManager(twoFactorCall, chain: self.gdkNetwork.chain, hwDevice: hw?.interface)
+        let rm = ResolverManager(twoFactorCall,
+                                 chain: self.gdkNetwork.chain,
+                                 connected: { self.connected && self.logged && !self.paused },
+                                 hwDevice: hw?.interface)
         return try await rm.run()
     }
     
@@ -442,13 +446,18 @@ class SessionManager {
     }
 
     func networkConnect() {
+        NSLog("tor_hint: connect")
         SessionManager.reconnectionQueue.async {
+            NSLog("tor_hint: async connect")
             try? self.session?.reconnectHint(hint: ["tor_hint": "connect", "hint": "connect"])
         }
     }
 
     func networkDisconnect() {
+        NSLog("tor_hint: disconnect")
+        paused = true
         SessionManager.reconnectionQueue.async {
+            NSLog("tor_hint: async disconnect")
             try? self.session?.reconnectHint(hint: ["tor_hint": "disconnect", "hint": "disconnect"])
         }
     }
@@ -458,6 +467,7 @@ class SessionManager {
     }
 }
 extension SessionManager {
+    @MainActor
     public func newNotification(notification: [String: Any]?) {
         guard let notificationEvent = notification?["event"] as? String,
                 let event = EventType(rawValue: notificationEvent),
@@ -465,7 +475,7 @@ extension SessionManager {
             return
         }
         #if DEBUG
-        print("notification \(event): \(data)")
+        NSLog("\(gdkNetwork.network) \(event): \(data)")
         #endif
         switch event {
         case .Block:
@@ -495,13 +505,16 @@ extension SessionManager {
             guard connected && logged else { return }
             // notify disconnected network state
             if connection.currentState == "disconnected" {
+                paused = true
                 self.post(event: EventType.Network, userInfo: data)
                 return
             }
             // Restore connection through hidden login
             Task {
                 do {
+                    NSLog("\(self.gdkNetwork.network) reconnect")
                     try await reconnect()
+                    paused = false
                     post(event: EventType.Network, userInfo: data)
                 } catch {
                     print("Error on reconnected with hw: \(error.localizedDescription)")
@@ -516,6 +529,7 @@ extension SessionManager {
         }
     }
 
+    @MainActor
     func post(event: EventType, object: Any? = nil, userInfo: [String: Any] = [:]) {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: event.rawValue),
                                         object: object, userInfo: userInfo)
