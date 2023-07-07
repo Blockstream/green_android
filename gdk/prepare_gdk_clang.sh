@@ -7,7 +7,7 @@ fi
 echo ${JAVA_HOME:?}
 echo ${ANDROID_NDK:?}
 
-TAGNAME="release_0.0.63"
+TAGNAME="release_0.0.65"
 
 if [ -d gdk ]; then
     cd gdk
@@ -37,7 +37,7 @@ for arch in $all_archs; do
     #./tools/build.sh --buildtype=debug --install $PWD/gdk-android-jni$arch --ndk $arch
     ./tools/build.sh --install $PWD/gdk-android-jni$arch --ndk $arch
     cp gdk-android-jni$arch/lib/$arch/*.so ../src/main/jniLibs/$arch
-    cp gdk-android-jni$arch/share/java/com/blockstream/libgreenaddress/GDK.java ../src/main/java/com/blockstream/libgreenaddress/GDK.java
+    cp gdk-android-jni$arch/share/java/com/blockstream/libgreenaddress/GDKJNI.java ../src/main/java/com/blockstream/libgreenaddress/GDKJNI.java
     cp gdk-android-jni$arch/share/java/com/blockstream/libwally/Wally.java ../src/main/java/com/blockstream/libwally/Wally.java
 done
 

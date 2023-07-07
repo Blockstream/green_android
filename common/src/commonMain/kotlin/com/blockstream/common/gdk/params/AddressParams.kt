@@ -7,10 +7,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AddressParams constructor(
     @SerialName("address") val address: String,
+    @SerialName("is_greedy") var isGreedy: Boolean,
     @SerialName("asset_id") var assetId: String? = null,
-    @SerialName("satoshi") var satoshi: Long? = null,
+    @SerialName("satoshi") var satoshi: Long,
 ) : GdkJson<AddressParams>() {
-    override val encodeDefaultsValues = false
+    override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()
 }

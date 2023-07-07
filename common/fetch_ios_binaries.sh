@@ -24,11 +24,11 @@ ARM_SIM_NAME="gdk-iphone-sim"
 ARM_TARBALL="${ARM_NAME}.tar.gz"
 ARM_SIM_TARBALL="${ARM_SIM_NAME}.tar.gz"
 # The version of gdk to fetch and its sha256 checksum for integrity checking
-TAGNAME="release_0.0.63"
+TAGNAME="release_0.0.65"
 ARM_URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${ARM_TARBALL}"
 ARM_SIM_URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${ARM_SIM_TARBALL}"
-ARM_SHA256="646aaa497fd68779dfe42637de9d29393decd6edd59cf445b891db655bcc809b"
-ARM_SIM_SHA256="d27fc10621c092002189bed5f5f33dceaeda0a8011c67301c3052dc1cd42fd5e"
+ARM_SHA256="0af310818a50c94dc1b93e0ef1b6fe577d45e9a181f73d54537ef46419f6322b"
+ARM_SIM_SHA256="82377284665eca221ae4e5df7ee894058596044f3a4a1b014b66e7c3e4084a37"
 VALIDATE_CHECKSUM=true
 COMMIT=false
 GCLOUD_URL="https://storage.googleapis.com/green-gdk-builds/gdk-"
@@ -86,17 +86,6 @@ fi
 rm -rf $COMMON_MODULE_ROOT/src/include
 
 mkdir -p $COMMON_MODULE_ROOT/src/include
-
-#rm -rf gdk-android-jni* ${GDK_JAVA_DIR}/src/main/jniLibs \
-#  ${GDK_JAVA_DIR}/libgreenaddress/GDK.java \
-#  ${GDK_JAVA_DIR}/libwally/Wally.java
-
-#if [[ $COMMIT != false ]]; then
-#  ARM_URL="${GCLOUD_URL}${COMMIT}/ios/${TARBALL}"
-#  ARM_SIM_URL="${GCLOUD_URL}${COMMIT}/ios/${TARBALL}"
-#  VALIDATE_CHECKSUM=false
-#  echo $COMMIT > gdk_commit
-#fi
 
 download() {
   IS_SIM=$1

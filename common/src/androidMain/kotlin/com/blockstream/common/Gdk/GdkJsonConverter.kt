@@ -1,8 +1,8 @@
 package com.blockstream.common.gdk
 
-import com.blockstream.libgreenaddress.GDK
+import com.blockstream.libgreenaddress.GDKJNI
 
-class GdkJsonConverter constructor(private val jsonConverter: JsonConverter): GDK.JSONConverter {
+class GdkJsonConverter constructor(private val jsonConverter: JsonConverter): GDKJNI.JSONConverter {
     override fun toJSONObject(jsonString: String?): Any? {
         return jsonConverter.toJSONObject(jsonString)
     }

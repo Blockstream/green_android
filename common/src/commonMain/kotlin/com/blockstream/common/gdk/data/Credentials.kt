@@ -1,6 +1,5 @@
 package com.blockstream.common.gdk.data
 
-import com.arkivanov.essenty.parcelable.IgnoredOnParcel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.gdk.GdkJson
@@ -16,8 +15,7 @@ data class Credentials constructor(
     @SerialName("seed") val seed: String? = null,
 ) : GdkJson<Credentials>(), Parcelable {
 
-    @IgnoredOnParcel
-    override val encodeDefaultsValues = false
+    override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()
 

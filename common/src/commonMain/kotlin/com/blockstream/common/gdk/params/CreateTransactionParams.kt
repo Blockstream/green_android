@@ -3,13 +3,15 @@ package com.blockstream.common.gdk.params
 import com.blockstream.common.gdk.GdkJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlinx.serialization.json.JsonElement
 
 @Serializable
 data class CreateTransactionParams constructor(
     @SerialName("subaccount") val subaccount: Long? = null,
-    @SerialName("addressees") val addressees: List<AddressParams>? = null, // This can also be a BIP21 URI
-    @SerialName("send_all") val sendAll: Boolean = false,
+    @SerialName("addressees") val addressees: List<JsonElement>? = null, // This can also be a BIP21 URI
+    @Transient
+    val addresseesAsParams: List<AddressParams>? = null, // This can also be a BIP21 URI
     @SerialName("fee_rate") val feeRate: Long? = null,
     @SerialName("private_key") val privateKey: String? = null, // sweep
     @SerialName("passphrase") val passphrase: String? = null, // sweep
@@ -17,7 +19,8 @@ data class CreateTransactionParams constructor(
     @SerialName("memo") val memo: String? = null,
     @SerialName("utxos") val utxos: JsonElement? = null,
 ) : GdkJson<CreateTransactionParams>() {
-    override val encodeDefaultsValues = false
+
+    override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()
 }

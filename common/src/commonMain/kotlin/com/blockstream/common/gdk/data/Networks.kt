@@ -12,7 +12,7 @@ data class Networks(
     @SerialName("networks") val networks: MutableMap<String, Network>
 ) : GdkJson<Networks>() {
 
-    override val keepJsonElement = true
+    override fun keepJsonElement() = true
 
     val lightning by lazy {
         Network(
@@ -152,7 +152,7 @@ data class Networks(
                 }
             }.let { jsonObject ->
                 json.decodeFromJsonElement<Networks>(jsonObject).apply {
-                    if(keepJsonElement) {
+                    if(keepJsonElement()) {
                         jsonElement = jsonObject
                     }
                 }

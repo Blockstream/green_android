@@ -12,7 +12,6 @@ data class CreateSwapParams constructor(
 
     @SerialName("liquidex_v0") val liquidexV0: LiquidDexV0Params,
 ) : GdkJson<CreateSwapParams>() {
-    override val encodeDefaultsValues = true
 
     override fun kSerializer() = serializer()
 }

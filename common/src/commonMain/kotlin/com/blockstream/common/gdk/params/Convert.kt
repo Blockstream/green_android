@@ -24,8 +24,7 @@ data class Convert constructor(
     @SerialName("fiat_rate") val fiatRate: String? = "0",
 ) : GdkJson<Convert>() {
 
-    override val encodeDefaultsValues: Boolean
-        get() = false
+    override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()
 

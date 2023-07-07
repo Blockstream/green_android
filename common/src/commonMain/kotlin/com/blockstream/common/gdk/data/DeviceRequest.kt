@@ -1,6 +1,5 @@
 package com.blockstream.common.gdk.data
 
-import com.blockstream.common.gdk.data.Device
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
@@ -15,7 +14,7 @@ data class DeviceRequest(
     @SerialName("transaction") val transaction: JsonElement,
 
     // TODO InputOutputData
-    @SerialName("signing_inputs") val signingInputs: List<JsonElement>,
+    @SerialName("transaction_inputs") val transactionInputs: List<JsonElement>,
     @SerialName("transaction_outputs") val transactionOutputs: List<JsonElement>,
 
     @SerialName("signing_transactions") var signingTransactions: Map<String, String>,

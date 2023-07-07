@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 data class Transactions(
     @SerialName("transactions") val transactions: List<Transaction> = listOf(),
 ): GdkJson<Transactions>(){
-    override val keepJsonElement: Boolean = true
+    override fun keepJsonElement() = true
 
     override fun kSerializer(): KSerializer<Transactions> = serializer()
 }

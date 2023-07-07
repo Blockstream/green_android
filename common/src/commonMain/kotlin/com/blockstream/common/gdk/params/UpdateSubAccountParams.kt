@@ -11,8 +11,7 @@ data class UpdateSubAccountParams constructor(
     @SerialName("name") val name: String? = null,
     @SerialName("hidden") val hidden: Boolean? = null,
 ) : GdkJson<UpdateSubAccountParams>() {
-    override val encodeDefaultsValues: Boolean
-        get() = false
+    override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()
 }

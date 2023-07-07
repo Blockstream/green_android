@@ -3,6 +3,7 @@ package com.blockstream.green.ui.send;
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.blockstream.common.gdk.TwoFactorResolver
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.SendTransactionSuccess
 import com.blockstream.green.data.Countly
@@ -11,7 +12,6 @@ import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.data.TransactionSegmentation
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.common.gdk.TwoFactorResolver
 import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.bottomsheets.INote
 import com.blockstream.green.ui.wallet.AbstractAccountWalletViewModel
@@ -48,7 +48,7 @@ class SendConfirmViewModel @AssistedInject constructor(
                 memo = transactionNote
             )
             var transaction = session.pendingTransaction!!.second
-            val isSwap = transaction.signWith.containsAll(listOf("user", "green-backend"))
+            val isSwap = transaction.isSwap()
 
             if (!isSwap) {
                 transaction = session.createTransaction(network, params).also { tx ->
@@ -71,7 +71,7 @@ class SendConfirmViewModel @AssistedInject constructor(
 
             // Send or Broadcast
             if (broadcast) {
-                if (signedTransaction.isSweep || isSwap) {
+                if (signedTransaction.isSweep() || isSwap) {
                     session.broadcastTransaction(network, signedTransaction.transaction ?: "")
                 } else {
                     session.sendTransaction(

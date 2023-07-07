@@ -291,7 +291,6 @@ class SwapViewModel @AssistedInject constructor(
             val params = CreateTransactionParams(
                 subaccount = enabledAccounts.first().pointer,
                 addressees = null,
-                sendAll = false,
                 feeRate = null,
                 utxos = null
             )
@@ -307,7 +306,7 @@ class SwapViewModel @AssistedInject constructor(
         tmp.put("sign_with", JSONArray(listOf("user", "green-backend").toTypedArray()) )
         val json = JsonDeserializer.parseToJsonElement(tmp.toString())
         val updatedTx = JsonDeserializer.decodeFromJsonElement<CreateTransaction>(json).let {
-            if (it is GdkJson<*> && it.keepJsonElement) {
+            if (it is GdkJson<*> && it.keepJsonElement()) {
                 it.jsonElement = json
             }
             it

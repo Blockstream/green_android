@@ -123,7 +123,7 @@ class GreenModules {
 
         return SettingsManager(
             analyticsFeatureEnabled = context.resources.getBoolean(R.bool.feature_analytics),
-            lightningFeatureEnabled = context.resources.getBoolean(R.bool.feature_lightning),
+            lightningFeatureEnabled = context.resources.getBoolean(R.bool.feature_lightning) && com.blockstream.crypto.BuildConfig.BREEZ_API_KEY.isNotBlank(),
             rateGooglePlayEnabled = context.resources.getBoolean(R.bool.feature_rate_google_play),
             settings = settings
         )

@@ -2,20 +2,23 @@ package com.blockstream.common.gdk
 
 
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Transient
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
 abstract class GdkJson<T> {
-    open val encodeDefaultsValues = true
-    open val keepJsonElement = false
+    open fun encodeDefaultsValues() = true
 
+    open fun keepJsonElement() = false
+
+    @Transient
     var jsonElement: JsonElement? = null
 
     abstract fun kSerializer(): KSerializer<T>
 
     protected val json by lazy {
         Json {
-            encodeDefaults = encodeDefaultsValues
+            encodeDefaults = encodeDefaultsValues()
             ignoreUnknownKeys = true
         }
     }

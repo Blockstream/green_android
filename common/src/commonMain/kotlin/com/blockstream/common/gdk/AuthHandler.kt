@@ -25,7 +25,7 @@ class AuthHandler constructor(
     private var gaAuthHandler: GAAuthHandler,
     private val network: Network,
     private val gdkHwWallet: GdkHardwareWallet?,
-    private val gdk: Gdk
+    private val gdk: GdkBinding
 ) {
     var isCompleted = false
         private set
@@ -140,7 +140,7 @@ class AuthHandler constructor(
 
         return result?.let { result ->
             JsonDeserializer.decodeFromJsonElement<T>(result).let{
-                if(it is GdkJson<*> && it.keepJsonElement) {
+                if(it is GdkJson<*> && it.keepJsonElement()) {
                     it.jsonElement = result
                 }
                 it

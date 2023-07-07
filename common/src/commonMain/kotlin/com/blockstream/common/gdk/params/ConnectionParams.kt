@@ -18,9 +18,10 @@ data class ConnectionParams constructor(
     @SerialName("electrum_url") val electrumUrl: String? = null,
     @SerialName("electrum_onion_url") val electrumOnionUrl: String? = null,
     @SerialName("spv_servers") val spvServers: List<String>? = null,
+    // @SerialName("gap_limit") val gapLimit: Int? = null,
 ) : GdkJson<ConnectionParams>() {
 
-    override val encodeDefaultsValues: Boolean = false
+    override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()
 }

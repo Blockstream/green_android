@@ -14,14 +14,14 @@ class DeviceResolver constructor(
     override fun requestDataFromDevice(network: Network, requiredData: DeviceRequiredData): CompletableDeferred<String> {
         return CompletableDeferred<String>().also { deferred ->
             try {
-                deferred.complete(requestDataFromHardware(network, requiredData))
+                deferred.complete(requestData(network, requiredData))
             } catch (e: Exception) {
                 deferred.completeExceptionally(e)
             }
         }
     }
 
-    private fun requestDataFromHardware(network: Network, requiredData: DeviceRequiredData): String {
+    private fun requestData(network: Network, requiredData: DeviceRequiredData): String {
 
         return when (requiredData.action) {
             "get_xpubs" -> {
@@ -57,7 +57,7 @@ class DeviceResolver constructor(
                     network = network,
                     hwInteraction = hwInteraction,
                     transaction = requiredData.transaction!!,
-                    inputs = requiredData.signingInputs!!,
+                    inputs = requiredData.transactionInputs!!,
                     outputs = requiredData.transactionOutputs!!,
                     transactions = requiredData.signingTransactions,
                     useAeProtocol = requiredData.useAeProtocol ?: false
@@ -72,7 +72,7 @@ class DeviceResolver constructor(
             "get_blinding_factors" -> {
                 gdkHardwareWallet.getBlindingFactors(
                     hwInteraction = hwInteraction,
-                    inputs = requiredData.usedUtxos,
+                    inputs = requiredData.transactionInputs,
                     outputs = requiredData.transactionOutputs
                 ).let {
                     DeviceResolvedData(

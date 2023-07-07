@@ -77,12 +77,4 @@ class JadeHWWallet constructor(
             mFirmwareVersion = it
         }
     }
-
-    companion object:KLogging(){
-        private val objectMapper by lazy { ObjectMapper() }
-
-        fun toObjectNode(jsonElement: JsonElement?): ObjectNode {
-            return objectMapper.readTree(Json.encodeToString(jsonElement)) as ObjectNode
-        }
-    }
 }

@@ -11,7 +11,7 @@ data class EncryptWithPinParams constructor(
     @SerialName("pin") val pin: String,
     @SerialName("plaintext") val plaintext: JsonElement
 ) : GdkJson<EncryptWithPinParams>() {
-    override val encodeDefaultsValues = false
+    override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()
 

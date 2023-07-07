@@ -10,7 +10,7 @@ import kotlinx.serialization.json.*
 data class UnspentOutputs(
     @SerialName("unspent_outputs") val unspentOutputs: Map<String, List<Utxo>>
 ) : GdkJson<UnspentOutputs>() {
-    override val keepJsonElement = true
+    override fun keepJsonElement() = true
 
     val unspentOutputsAsJsonElement: JsonElement
         get() = jsonElement!!.jsonObject["unspent_outputs"]!!

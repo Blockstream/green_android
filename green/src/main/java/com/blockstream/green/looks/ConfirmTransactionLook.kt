@@ -1,9 +1,9 @@
 package com.blockstream.green.looks
 
-import com.blockstream.common.gdk.params.Convert
 import com.blockstream.common.gdk.data.CreateTransaction
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.UtxoView
+import com.blockstream.common.gdk.params.Convert
 import com.blockstream.green.data.Denomination
 import com.blockstream.green.databinding.TransactionUtxoLayoutBinding
 import com.blockstream.green.gdk.GdkSession
@@ -16,6 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.absoluteValue
 
 data class ConfirmTransactionLook constructor(
     val transaction: CreateTransaction,
@@ -53,7 +54,7 @@ data class ConfirmTransactionLook constructor(
         }
 
     private fun totalPolicyAsLong(): Long {
-        return (transaction.satoshi[network.policyAsset] ?: 0) + (transaction.fee ?: 0)
+        return (transaction.satoshi[network.policyAsset] ?: 0).absoluteValue + (transaction.fee ?: 0)
     }
     suspend fun total(): String = totalPolicyAsLong().toAmountLookOrNa(
         session = session,

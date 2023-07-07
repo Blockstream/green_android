@@ -2,6 +2,7 @@ package com.blockstream.common.gdk.data
 
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.blockstream.common.gdk.GdkJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -18,7 +19,14 @@ data class Address constructor(
     @SerialName("subaccount") val subaccount: Int? = null,
     @SerialName("subtype") val subType: Long? = null,
     @SerialName("user_path") val userPath: List<Long>? = null,
-) : Parcelable {
+
+    // Used only as AddressParams Sweep
+    @SerialName("satoshi") var satoshi: Long = 0,
+    @SerialName("is_greedy") var isGreedy: Boolean = true,
+) : GdkJson<Address>(), Parcelable {
+    override fun encodeDefaultsValues() = true
+
+    override fun kSerializer() = serializer()
 
     fun userPathAsInt(): List<Int> {
         return userPath?.map { it.toInt() } ?: listOf()

@@ -11,7 +11,7 @@ data class ReceiveAddressParams(
     @SerialName("ignore_gap_limit") val ignoreGapLimit: Boolean = false,
 ) : GdkJson<ReceiveAddressParams>() {
 
-    override val encodeDefaultsValues: Boolean = false
+    override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()
 }

@@ -25,7 +25,7 @@ data class DeviceResolvedData constructor(
     @SerialName("public_keys") val publicKeys: List<String?>? = null,
 
 ): GdkJson<DeviceResolvedData>() {
-    override val encodeDefaultsValues = false
+    override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()
 }

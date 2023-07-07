@@ -30,6 +30,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
 import mu.KLogging
+import kotlin.math.absoluteValue
 
 class SendViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
@@ -318,14 +319,21 @@ class SendViewModel @AssistedInject constructor(
 
     private suspend fun createTransactionParams(): CreateTransactionParams {
         if(account.isLightning){
-            return CreateTransactionParams(
-                addressees = recipients.value!!.map {
-                    it.toAddressParams(session = session, isSendAll = false)
-                }
-            )
+            return recipients.value!!.map {
+                it.toAddressParams(session = session, isGreedy = false)
+            }.let { params ->
+                CreateTransactionParams(
+                    addressees = params.map { it.toJsonElement() },
+                    addresseesAsParams = params
+                )
+            }
         }
 
-        val unspentOutputs = session.getUnspentOutputs(account, isBump)
+        val unspentOutputs = if(isSweep){
+            session.getUnspentOutputs(account.network, recipients.value?.get(0)?.address?.value?.trim() ?: "")
+        }else{
+            session.getUnspentOutputs(account, isBump)
+        }
 
         return when{
             isBump -> {
@@ -338,35 +346,41 @@ class SendViewModel @AssistedInject constructor(
                 )
             }
             isSweep -> {
-                CreateTransactionParams(
-                    feeRate = getFeeRate(),
-                    privateKey = recipients.value?.get(0)?.address?.value?.trim() ?: "", // private key
-                    passphrase = "",
-                    addressees = listOf(
-                        AddressParams(
-                        address = session.getReceiveAddress(account).address
+                listOf(
+                    session.getReceiveAddress(account)
+                ).let { params ->
+                    CreateTransactionParams(
+                        feeRate = getFeeRate(),
+                        privateKey = recipients.value?.get(0)?.address?.value?.trim() ?: "", // private key
+                        passphrase = "",
+                        addressees = params.map { it.toJsonElement() },
+                        addresseesAsParams = params.map {
+                            AddressParams(
+                                address = it.address,
+                                satoshi = 0,
+                                isGreedy = true
+                            )
+                        },
+                        utxos = unspentOutputs.unspentOutputsAsJsonElement
                     )
-                    )
-                )
+                }
             }
             else -> {
-                val isSendAll = isSendAll()
-                CreateTransactionParams(
-                    subaccount = account.pointer,
-                    addressees = recipients.value!!.map {
-                        it.toAddressParams(session = session, isSendAll = isSendAll)
-                    },
-                    sendAll = isSendAll,
-                    feeRate = getFeeRate(),
-                    utxos = unspentOutputs.unspentOutputsAsJsonElement
-                )
+                recipients.value!!.map {
+                    it.toAddressParams(session = session, isGreedy = it.isSendAll.boolean())
+                }.let { params ->
+                    CreateTransactionParams(
+                        subaccount = account.pointer,
+                        addressees = params.map { it.toJsonElement() },
+                        addresseesAsParams = params,
+                        feeRate = getFeeRate(),
+                        utxos = unspentOutputs.unspentOutputsAsJsonElement
+                    )
+                }
+
             }
          }
     }
-
-    // This method helps between differences between multisig/singlesig returned values
-    private fun getSendAmountCompat(index: Int, assetId: String, tx: CreateTransaction) = tx.satoshi[assetId]
-
 
     private fun checkTransaction(userInitiated: Boolean = false, finalCheckBeforeContinue: Boolean = false) {
         logger.info { "checkTransaction" }
@@ -432,7 +446,7 @@ class SendViewModel @AssistedInject constructor(
                                     recipient.denomination.postValue(Denomination.default(session))
                                 }
 
-                                recipient.amount.postValue(getSendAmountCompat(recipient.index, assetId, tx)?.let { sendAmount ->
+                                recipient.amount.postValue(tx.satoshi[assetId]?.absoluteValue?.let { sendAmount ->
                                     // Avoid UI glitches if isSweep and amount is zero (probably error)
                                     if(isSweep && sendAmount == 0L){
                                         ""
@@ -464,7 +478,7 @@ class SendViewModel @AssistedInject constructor(
 
                 checkedTransaction = tx
 
-                feeAmount.postValue(tx.fee?.toAmountLook(session = session, denomination = getRecipientLiveData(0)?.denomination?.value, withUnit = true, withGrouping = true, withMinimumDigits = false) ?: "")
+                feeAmount.postValue(tx.fee?.toAmountLook(session = session, assetId = network.policyAsset, denomination = getRecipientLiveData(0)?.denomination?.value, withUnit = true, withGrouping = true, withMinimumDigits = false) ?: "")
                 feeAmountRate.postValue(tx.feeRateWithUnit() ?: "")
                 feeAmountFiat.postValue(tx.fee?.toAmountLook(session = session, denomination = Denomination.fiat(session), withUnit = true, withGrouping = true) ?: "")
 
@@ -553,7 +567,7 @@ class SendViewModel @AssistedInject constructor(
 
     private fun isSendAll(): Boolean {
         return recipients.value?.map {
-            it.isSendAll.value ?: false
+            it.isSendAll.boolean()
         }?.reduceOrNull { acc, b ->
             acc || b
         } ?: false
@@ -567,62 +581,6 @@ class SendViewModel @AssistedInject constructor(
             }
         }
     }
-
-//    fun toggleCurrency(index: Int) {
-//        getRecipientLiveData(index)?.let { addressParams ->
-//
-//            viewModelScope.launch {
-//                val isFiat = addressParams.isFiat.value ?: false
-//
-//                // Toggle it first as the amount trigger will be called with wrong isFiat value
-//                addressParams.isFiat.value = !isFiat
-//
-//                // Get value from the transaction object to get the actual send all amount
-//                val amountToConvert = if (checkedTransaction?.isSendAll == true) {
-//                    addressParams.accountAsset.value?.assetId?.let { assetId ->
-//                        checkedTransaction?.let {
-//                            getSendAmountCompat(addressParams.index, assetId, it)
-//                        }
-//                            ?.toAmountLook(
-//                                session = session,
-//                                assetId = assetId,
-//                                withUnit = false,
-//                                withMinimumDigits = false,
-//                                withGrouping = false
-//                            )
-//                    }
-//                } else {
-//                    addressParams.amount.value ?: ""
-//                }
-//
-//                // If isSend All, skip conversion and get the actual value
-//                if (checkedTransaction?.isSendAll == true && isFiat) {
-//                    addressParams.amount.value = amountToConvert
-//                } else {
-//                    // Convert between BTC / Fiat
-//                    addressParams.amount.value = try {
-//                        UserInput
-//                            .parseUserInput(
-//                                session = session,
-//                                input = amountToConvert,
-//                                denomination = Denomination.defaultOrFiat(session, isFiat)
-//                            )
-//                            .getBalance()
-//                            ?.toAmountLook(
-//                                session = session,
-//                                isFiat = !isFiat,
-//                                withUnit = false,
-//                                withGrouping = false,
-//                                withMinimumDigits = false
-//                            )
-//                    } catch (e: Exception) {
-//                        e.printStackTrace()
-//                        ""
-//                    }
-//                }
-//            }
-//        }
-//    }
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
@@ -661,7 +619,7 @@ class SendViewModel @AssistedInject constructor(
             if (checkedTransaction?.isSendAll == true) {
                 addressParams.accountAsset.value?.assetId?.let { assetId ->
                     checkedTransaction?.let {
-                        getSendAmountCompat(addressParams.index, assetId, it)
+                        it.satoshi[assetId]?.absoluteValue
                     }?.toAmountLook(
                         session = session,
                         assetId = assetId,
@@ -679,54 +637,8 @@ class SendViewModel @AssistedInject constructor(
 
     override fun setDenomination(denominatedValue: DenominatedValue) {
         getRecipientLiveData(0)?.also {
-
             it.amount.value = denominatedValue.asInput(session) ?: ""
             it.denomination.value = denominatedValue.denomination
-
-
-//            // Get value from the transaction object to get the actual send all amount
-//            val amountToConvert = if (checkedTransaction?.isSendAll == true) {
-//                addressParams.accountAsset.value?.assetId?.let { assetId ->
-//                    checkedTransaction?.let {
-//                        getSendAmountCompat(addressParams.index, assetId, it)
-//                    }
-//                        ?.toAmountLook(
-//                            session = session,
-//                            assetId = assetId,
-//                            withUnit = false,
-//                            withMinimumDigits = false,
-//                            withGrouping = false
-//                        )
-//                }
-//            } else {
-//                addressParams.amount.value ?: ""
-//            }
-//
-//            // If isSend All, skip conversion and get the actual value
-//            if (checkedTransaction?.isSendAll == true && isFiat) {
-//                addressParams.amount.value = amountToConvert
-//            } else {
-//                // Convert between BTC / Fiat
-//                addressParams.amount.value = try {
-//                    UserInput
-//                        .parseUserInput(
-//                            session = session,
-//                            input = amountToConvert,
-//                            denomination = Denomination.defaultOrFiat(session, isFiat)
-//                        )
-//                        .getBalance()
-//                        ?.toAmountLook(
-//                            session = session,
-//                            isFiat = !isFiat,
-//                            withUnit = false,
-//                            withGrouping = false,
-//                            withMinimumDigits = false
-//                        )
-//                } catch (e: Exception) {
-//                    e.printStackTrace()
-//                    ""
-//                }
-//            }
         }
     }
 }
@@ -753,10 +665,10 @@ data class AddressParamsLiveData constructor(
     val network: Network
         get() = accountAsset.value!!.account.network
 
-    suspend fun toAddressParams(session: GdkSession, isSendAll: Boolean): AddressParams {
+    suspend fun toAddressParams(session: GdkSession, isGreedy: Boolean): AddressParams {
 
         val satoshi = when {
-            isSendAll -> 0
+            isGreedy -> 0
             accountAsset.value?.assetId.isPolicyAsset(session) -> {
                 UserInput.parseUserInputSafe(session = session, input = amount.value, denomination = denomination.value)
                     .getBalance()?.satoshi
@@ -769,8 +681,9 @@ data class AddressParamsLiveData constructor(
 
         return AddressParams(
             address = address.value ?: "",
+            isGreedy = isGreedy,
             assetId = if (accountAsset.value?.account?.network?.isLiquid == true) accountAsset.value?.assetId else null,
-            satoshi = satoshi
+            satoshi = satoshi ?: 0
         )
     }
 

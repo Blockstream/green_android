@@ -11,7 +11,7 @@ data class WatchOnlyCredentials constructor(
     @SerialName("core_descriptors") val coreDescriptors: List<String>? = null,
     @SerialName("slip132_extended_pubkeys") val slip132ExtendedPubkeys: List<String>? = null,
 ): GdkJson<WatchOnlyCredentials>() {
-    override val encodeDefaultsValues: Boolean = false
+    override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()
 

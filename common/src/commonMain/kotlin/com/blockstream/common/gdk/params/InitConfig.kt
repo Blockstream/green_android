@@ -11,7 +11,5 @@ data class InitConfig constructor(
     @SerialName("enable_ss_liquid_hww") val enableSinglesigLiquidHWW: Boolean = true,
 ) : GdkJson<InitConfig>() {
 
-    override val encodeDefaultsValues: Boolean = true
-
     override fun kSerializer() = serializer()
 }

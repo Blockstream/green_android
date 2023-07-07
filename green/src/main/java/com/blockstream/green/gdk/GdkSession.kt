@@ -40,7 +40,6 @@ import com.blockstream.common.gdk.data.Output
 import com.blockstream.common.gdk.data.PreviousAddresses
 import com.blockstream.common.gdk.data.SendTransactionSuccess
 import com.blockstream.common.gdk.data.Settings
-import com.blockstream.common.gdk.data.SubAccount
 import com.blockstream.common.gdk.data.TorEvent
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.gdk.data.Transactions
@@ -54,7 +53,6 @@ import com.blockstream.common.gdk.device.DeviceInterface
 import com.blockstream.common.gdk.device.DeviceState
 import com.blockstream.common.gdk.device.GdkHardwareWallet
 import com.blockstream.common.gdk.device.HardwareWalletInteraction
-import com.blockstream.common.gdk.params.AddressParams
 import com.blockstream.common.gdk.params.AssetsParams
 import com.blockstream.common.gdk.params.BalanceParams
 import com.blockstream.common.gdk.params.CompleteSwapParams
@@ -77,6 +75,7 @@ import com.blockstream.common.gdk.params.SubAccountParams
 import com.blockstream.common.gdk.params.SubAccountsParams
 import com.blockstream.common.gdk.params.TransactionParams
 import com.blockstream.common.gdk.params.TransactionParams.Companion.TRANSACTIONS_PER_PAGE
+import com.blockstream.common.gdk.params.UnspentOutputsPrivateKeyParams
 import com.blockstream.common.gdk.params.UpdateSubAccountParams
 import com.blockstream.common.gdk.params.ValidateAddresseesParams
 import com.blockstream.common.lightning.AppGreenlightCredentials
@@ -804,7 +803,7 @@ class GdkSession constructor(
         }
     }
 
-    fun <T> initNetworkIfNeeded(network: Network, action: () -> T) : T{
+    fun <T> initNetworkIfNeeded(network: Network, hardwareWalletResolver: HardwareWalletResolver? = null, action: () -> T) : T{
         if(!activeSessions.contains(network)){
 
             try {
@@ -830,7 +829,7 @@ class GdkSession constructor(
                     deviceParams = deviceParams,
                     loginCredentialsParams = loginCredentialsParams
                 )
-            ).resolve()
+            ).resolve(hardwareWalletResolver = hardwareWalletResolver)
 
             authHandler(
                 network,
@@ -839,7 +838,7 @@ class GdkSession constructor(
                     deviceParams = deviceParams,
                     loginCredentialsParams = loginCredentialsParams
                 )
-            ).resolve()
+            ).resolve(hardwareWalletResolver = hardwareWalletResolver)
 
             activeSessions.add(network)
 
@@ -1535,7 +1534,7 @@ class GdkSession constructor(
         params: SubAccountParams,
         hardwareWalletResolver: HardwareWalletResolver? = null
     ): Account {
-        return initNetworkIfNeeded(network) {
+        return initNetworkIfNeeded(network, hardwareWalletResolver) {
             authHandler(network, gdk.createSubAccount(gdkSession(network), params))
                 .result<Account>(
                     hardwareWalletResolver = hardwareWalletResolver
@@ -2066,6 +2065,13 @@ class GdkSession constructor(
         it.fillUtxosJsonElement()
     }
 
+    private fun getUnspentOutputsForPrivateKey(network: Network, params: UnspentOutputsPrivateKeyParams) = authHandler(
+        network,
+        gdk.getUnspentOutputsForPrivateKey(gdkSession(network), params)
+    ).result<UnspentOutputs>().also {
+        it.fillUtxosJsonElement()
+    }
+
     fun getUnspentOutputs(account: Account, isBump: Boolean = false): UnspentOutputs {
         return getUnspentOutputs(account.network, BalanceParams(
             subaccount = account.pointer,
@@ -2081,17 +2087,10 @@ class GdkSession constructor(
         }
     }
 
-    fun createTransaction(network: Network, subAccount: SubAccount, unspentOutputs: UnspentOutputs, addresses: List<AddressParams>): CreateTransaction {
-        val params = CreateTransactionParams(
-            subaccount = subAccount.pointer,
-            utxos = unspentOutputs.unspentOutputsAsJsonElement,
-            addressees = addresses
-        )
-
-        return authHandler(
-            network,
-            gdk.createTransaction(gdkSession(network), params)
-        ).result<CreateTransaction>()
+    fun getUnspentOutputs(network: Network, privateKey: String): UnspentOutputs {
+        return getUnspentOutputsForPrivateKey(network, UnspentOutputsPrivateKeyParams(
+            privateKey = privateKey
+        ))
     }
 
     suspend fun createTransaction(network: Network, params: CreateTransactionParams) =
@@ -2125,8 +2124,8 @@ class GdkSession constructor(
     private suspend fun createLightningTransaction(network: Network, params: CreateTransactionParams): CreateTransaction {
         logger.info { "createLightningTransaction $params" }
 
-        val address = params.addressees?.firstOrNull()?.address ?: ""
-        val userInputSatoshi = params.addressees?.firstOrNull()?.satoshi
+        val address = params.addresseesAsParams?.firstOrNull()?.address ?: ""
+        val userInputSatoshi = params.addresseesAsParams?.firstOrNull()?.satoshi
 
         return when (val lightningInputType = lightningSdk.parseBoltOrLNUrlAndCache(address)) {
             is InputType.Bolt11 -> {

@@ -19,7 +19,7 @@ data class LoginCredentialsParams(
     @SerialName("core_descriptors") val coreDescriptors: List<String>? = null,
     @SerialName("slip132_extended_pubkeys") val slip132ExtendedPubkeys: List<String>? = null,
 ) : GdkJson<LoginCredentialsParams>() {
-    override val encodeDefaultsValues = false
+    override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()
 

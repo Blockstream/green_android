@@ -18,7 +18,7 @@ data class CountlyWidget(
     @SerialName("appearance") val appearance: Appearance,
     @SerialName("followUpType") val followUpType: FollowUpType? = null,
 ) : GdkJson<CountlyWidget>() {
-    override val keepJsonElement: Boolean = true
+    override fun keepJsonElement() = true
 
     override fun kSerializer() = serializer()
 

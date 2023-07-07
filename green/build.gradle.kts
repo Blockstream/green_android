@@ -117,7 +117,7 @@ android {
             matchingFallbacks += listOf("normal")
 
             ndk {
-                abiFilters += listOf("armeabi-v7a", "arm64-v8a") // includes ARM & x86_64 .so files only, so no x86 .so file
+                abiFilters += listOf("armeabi-v7a", "arm64-v8a") // includes ARM & x86_64 .so files only, no x86 .so file
             }
 
             signingConfigs.getByName("release").also {
@@ -125,9 +125,6 @@ android {
                     signingConfig = it
                 }
             }
-        }
-        getByName("debug") {
-            isMinifyEnabled = true
         }
     }
     compileOptions {

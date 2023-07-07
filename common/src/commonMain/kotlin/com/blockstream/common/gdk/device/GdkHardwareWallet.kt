@@ -6,7 +6,6 @@ import com.blockstream.common.gdk.data.InputOutput
 import com.blockstream.common.gdk.data.Network
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.serialization.json.JsonElement
 
 interface HardwareWalletInteraction{
     fun interactionRequest(hw: GdkHardwareWallet, completable: CompletableDeferred<Boolean>?, text: String?)
@@ -44,7 +43,7 @@ abstract class GdkHardwareWallet {
     abstract fun signTransaction(
         network: Network,
         hwInteraction: HardwareWalletInteraction?,
-        transaction: JsonElement,
+        transaction: String,
         inputs: List<InputOutput?>,
         outputs: List<InputOutput?>,
         transactions: Map<String, String>?,

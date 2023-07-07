@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 data class CredentialsParams constructor(
     @SerialName("password") val password: String? = null
 ) : GdkJson<CredentialsParams>() {
-    override val encodeDefaultsValues = false
+    override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()
 }

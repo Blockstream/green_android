@@ -21,9 +21,9 @@ _EOF_
 NAME="gdk-android-jni"
 TARBALL="${NAME}.tar.gz"
 # The version of gdk to fetch and its sha256 checksum for integrity checking
-TAGNAME="release_0.0.63"
+TAGNAME="release_0.0.65"
 URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${TARBALL}"
-SHA256="2dd5d1fdb2a83fddf7b6f51ac53427575ace381b67222e2788a2889a5faf511d"
+SHA256="6179dc044e424b8e55e7ec8a2593ed338d17ffcfa1aa3efb65cc40fc54d9029b"
 VALIDATE_CHECKSUM=true
 COMMIT=false
 GCLOUD_URL="https://storage.googleapis.com/green-gdk-builds/gdk-"
@@ -76,7 +76,7 @@ GDK_JAVA_DIR="${GDK_MODULE_ROOT}/src/main/java/com/blockstream"
 
 # Clean up any previous install
 rm -rf gdk-android-jni* ${GDK_JAVA_DIR}/src/main/jniLibs \
-  ${GDK_JAVA_DIR}/libgreenaddress/GDK.java \
+  ${GDK_JAVA_DIR}/libgreenaddress/GDKJNI.java \
   ${GDK_JAVA_DIR}/libwally/Wally.java
 
 # Remove gdk_commit file if exists
@@ -111,7 +111,7 @@ rm -rf $JNI_LIBS_DIR
 mv ${NAME}/lib/ $JNI_LIBS_DIR
 rm -rf $JNI_LIBS_DIR/*/gdk # remove unnecessary files
 
-mv ${NAME}/share/java/com/blockstream/libgreenaddress/GDK.java ${GDK_JAVA_DIR}/libgreenaddress/GDK.java
+mv ${NAME}/share/java/com/blockstream/libgreenaddress/GDKJNI.java ${GDK_JAVA_DIR}/libgreenaddress/GDKJNI.java
 mv ${NAME}/share/java/com/blockstream/libwally/Wally.java ${GDK_JAVA_DIR}/libwally/Wally.java
 
 # Cleanup

@@ -19,7 +19,7 @@ data class Settings(
     @SerialName("unit") val unit: String,
     @SerialName("pgp") val pgp: String? = null
 ): GdkJson<Settings>() {
-    override val encodeDefaultsValues: Boolean = false
+    override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()
 

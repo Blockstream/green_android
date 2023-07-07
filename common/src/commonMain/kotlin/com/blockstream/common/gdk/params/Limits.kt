@@ -21,7 +21,7 @@ data class Limits(
     @SerialName("sats") val sats: String? = null,
     @SerialName("fiat") val fiat: String? = null,
 ) : GdkJson<Limits>() {
-    override val encodeDefaultsValues = false
+    override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()
 

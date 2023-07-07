@@ -21,7 +21,7 @@ data class AuthHandlerStatus constructor(
     // Wait for a fix #535
     @SerialName("auth_data") val authData: JsonElement? = null,
 ) : GdkJson<AuthHandlerStatus>() {
-    override val keepJsonElement = true
+    override fun keepJsonElement() = true
 
     override fun kSerializer() = serializer()
 

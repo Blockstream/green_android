@@ -15,7 +15,6 @@ data class CompleteSwapParams(
     @SerialName("liquidex_v0") val liquidexV0: LiquiDexV0List,
     @SerialName("utxos") val utxos: JsonElement,
 ) : GdkJson<CompleteSwapParams>() {
-    override val encodeDefaultsValues = true
 
     override fun kSerializer() = serializer()
 }

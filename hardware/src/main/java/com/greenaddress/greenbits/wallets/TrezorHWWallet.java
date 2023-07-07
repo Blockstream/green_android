@@ -111,18 +111,17 @@ public class TrezorHWWallet extends HWWallet {
 
     @NonNull
     @Override
-    public SignTransactionResult signTransaction(@NonNull Network network, @Nullable HardwareWalletInteraction hwInteraction, @NonNull JsonElement transaction, @NonNull List<InputOutput> inputs, @NonNull List<InputOutput> outputs, @Nullable Map<String, String> transactions, boolean useAeProtocol) {
+    public SignTransactionResult signTransaction(@NonNull Network network, @Nullable HardwareWalletInteraction hwInteraction, @NonNull String transaction, @NonNull List<InputOutput> inputs, @NonNull List<InputOutput> outputs, @Nullable Map<String, String> transactions, boolean useAeProtocol) {
         if(network.isLiquid()){
             throw new RuntimeException(network.getCanonicalName() + " is not supported");
         }
         try {
-            final ObjectNode tx = JadeHWWallet.Companion.toObjectNode(transaction);
 
             if (useAeProtocol) {
                 throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
             }
 
-            return signTransactionImpl(network, hwInteraction, tx, inputs, outputs, transactions);
+            return signTransactionImpl(network, hwInteraction, transaction, inputs, outputs, transactions);
         } finally {
             // Free all wally txs to ensure we don't leak any memory
             for (Map.Entry<String, Object> entry : mPrevTxs.entrySet()) {
@@ -132,15 +131,18 @@ public class TrezorHWWallet extends HWWallet {
         }
     }
 
-    private synchronized SignTransactionResult signTransactionImpl(final Network network, @Nullable HardwareWalletInteraction hwInteraction, final ObjectNode tx,
+    private synchronized SignTransactionResult signTransactionImpl(final Network network, @Nullable HardwareWalletInteraction hwInteraction, final String transaction,
                                              final List<InputOutput> inputs,
                                              final List<InputOutput> outputs,
                                              final Map<String, String> transactions)
     {
         final String[] signatures = new String[inputs.size()];
 
-        final int txVersion = tx.get("transaction_version").asInt();
-        final int txLocktime = tx.get("transaction_locktime").asInt();
+        final byte[] txBytes = Wally.hex_to_bytes(transaction);
+        final Object wallytx = Wally.tx_from_bytes(txBytes, Wally.WALLY_TX_FLAG_USE_WITNESS);
+
+        final int txVersion = Wally.tx_get_version(wallytx);
+        final int txLocktime = Wally.tx_get_locktime(wallytx);
 
         if (transactions != null) {
             for (Map.Entry<String, String> t : transactions.entrySet())
@@ -152,7 +154,7 @@ public class TrezorHWWallet extends HWWallet {
             for (final InputOutput in : inputs)
                 makeMultisigRedeemScript(hwInteraction, in);
             for (final InputOutput out : outputs)
-                if (out.isChange())
+                if (out.isChange() != null && out.isChange())
                     makeMultisigRedeemScript(hwInteraction, out);
         }
 
@@ -323,7 +325,7 @@ public class TrezorHWWallet extends HWWallet {
             b.setScriptType(TrezorType.OutputScriptType.PAYTOADDRESS);
         }
 
-        if (out.isChange()) {
+        if (out.isChange() != null && out.isChange()) {
             // Change address - set path elements
             b.addAllAddressN(out.getUserPathAsInts());
             if (network.isMultisig()) {

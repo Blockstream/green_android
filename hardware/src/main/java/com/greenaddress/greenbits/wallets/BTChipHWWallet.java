@@ -255,14 +255,17 @@ public class BTChipHWWallet extends HWWallet {
 
     @NonNull
     @Override
-    public synchronized SignTransactionResult signTransaction(@NonNull Network network, @Nullable HardwareWalletInteraction hwInteraction, @NonNull JsonElement transaction, @NonNull List<InputOutput> inputs, @NonNull List<InputOutput> outputs, @Nullable Map<String, String> transactions, boolean useAeProtocol) {
+    public synchronized SignTransactionResult signTransaction(@NonNull Network network, @Nullable HardwareWalletInteraction hwInteraction, @NonNull String transaction, @NonNull List<InputOutput> inputs, @NonNull List<InputOutput> outputs, @Nullable Map<String, String> transactions, boolean useAeProtocol) {
+
+        final byte[] txBytes = Wally.hex_to_bytes(transaction);
+
         if(network.isLiquid()){
             try {
-                final ObjectNode tx = JadeHWWallet.Companion.toObjectNode(transaction);
-
                 if (useAeProtocol) {
                     throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
                 }
+
+                final Object wallytx = Wally.tx_from_bytes(txBytes, Wally.WALLY_TX_FLAG_USE_ELEMENTS);
 
                 // Sanity check on the firmware version, in case devices have been swapped
                 if (!mDongle.shouldUseNewSigningApi())
@@ -277,7 +280,7 @@ public class BTChipHWWallet extends HWWallet {
 
                 // Prepare the pseudo transaction
                 // Provide the first script instead of a null script to initialize the P2SH confirmation logic
-                final long version = tx.get("transaction_version").asLong();
+                final long version = Wally.tx_get_version(wallytx);
                 final byte script0[] = Wally.hex_to_bytes(inputs.get(0).getPrevoutScript());
                 mDongle.startUntrustedLiquidTransaction(version, true, 0, hwInputs, script0);
 
@@ -300,7 +303,7 @@ public class BTChipHWWallet extends HWWallet {
 
                 // Check commitments are same as we already have in the tx from the blinding step
                 // Could be removed/commented or only run in debug mode ?
-                final Object wallytx = Wally.tx_from_hex(tx.get("transaction").asText(), Wally.WALLY_TX_FLAG_USE_ELEMENTS);
+
                 if (commitments.size() != outputs.size() || Wally.tx_get_num_outputs(wallytx) != outputs.size()) {
                     throw new RuntimeException("outputs/blinders length mismatch");
                 }
@@ -324,7 +327,7 @@ public class BTChipHWWallet extends HWWallet {
                 mDongle.provideLiquidIssuanceInformation(inputs.size());
 
                 // Sign each input
-                final long locktime = tx.get("transaction_locktime").asLong();
+                final long locktime = Wally.tx_get_locktime(wallytx);
                 final List<String> sigs = new ArrayList<>(hwInputs.length);
                 for (int i = 0; i < hwInputs.length; ++i) {
                     final InputOutput in = inputs.get(i);
@@ -342,11 +345,12 @@ public class BTChipHWWallet extends HWWallet {
             }
         }else {
             try {
-                final ObjectNode tx = JadeHWWallet.Companion.toObjectNode(transaction);
 
                 if (useAeProtocol) {
                     throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
                 }
+
+                final Object wallyTx = Wally.tx_from_bytes(txBytes, Wally.WALLY_TX_FLAG_USE_WITNESS);
 
                 boolean sw = false;
                 boolean p2sh = false;
@@ -362,8 +366,8 @@ public class BTChipHWWallet extends HWWallet {
                 if (sw && !mDongle.shouldUseNewSigningApi())
                     throw new RuntimeException("Segwit not supported");
 
-                final List<byte[]> swSigs = sw ? signSW(hwInteraction, tx, inputs, outputs, transactions) : new ArrayList<>();
-                final List<byte[]> p2shSigs = p2sh ? signNonSW(hwInteraction, tx, inputs, outputs,
+                final List<byte[]> swSigs = sw ? signSW(hwInteraction, wallyTx, inputs, outputs, transactions) : new ArrayList<>();
+                final List<byte[]> p2shSigs = p2sh ? signNonSW(hwInteraction, wallyTx, inputs, outputs,
                         transactions) : new ArrayList<>();
 
                 final List<String> sigs = new ArrayList<>(inputs.size());
@@ -406,7 +410,7 @@ public class BTChipHWWallet extends HWWallet {
         return hwInputs;
     }
 
-    private List<byte[]> signSW(final HardwareWalletInteraction hwInteraction, final ObjectNode tx,
+    private List<byte[]> signSW(final HardwareWalletInteraction hwInteraction, final Object wallyTx,
                                 final List<InputOutput> inputs,
                                 final List<InputOutput> outputs,
                                 final Map<String, String> transactions) throws BTChipException {
@@ -414,7 +418,7 @@ public class BTChipHWWallet extends HWWallet {
 
         // Prepare the pseudo transaction
         // Provide the first script instead of a null script to initialize the P2SH confirmation logic
-        final long version = tx.get("transaction_version").asLong();
+        final long version = Wally.tx_get_version(wallyTx);
         final byte[] script0 = Wally.hex_to_bytes(inputs.get(0).getPrevoutScript());
         mDongle.startUntrustedTransaction(version, true, 0, hwInputs, script0, true);
 
@@ -423,7 +427,7 @@ public class BTChipHWWallet extends HWWallet {
         }
         mDongle.finalizeInputFull(outputBytes(outputs));
 
-        final long locktime = tx.get("transaction_locktime").asLong();
+        final long locktime = Wally.tx_get_locktime(wallyTx);
 
         // Sign each input
         final BTChipDongle.BTChipInput[] singleInput = new BTChipDongle.BTChipInput[1];
@@ -441,14 +445,14 @@ public class BTChipHWWallet extends HWWallet {
         return sigs;
     }
 
-    private List<byte[]> signNonSW(final HardwareWalletInteraction hwInteraction, final ObjectNode tx,
+    private List<byte[]> signNonSW(final HardwareWalletInteraction hwInteraction, final Object wallyTx,
                                    final List<InputOutput> inputs,
                                    final List<InputOutput> outputs,
                                    final Map<String, String> transactions) throws BTChipException {
         final BTChipDongle.BTChipInput[] hwInputs = getHwInputs(inputs, transactions, false);
 
-        final long locktime = tx.get("transaction_locktime").asLong();
-        final long version = tx.get("transaction_version").asLong();
+        final long locktime = Wally.tx_get_locktime(wallyTx);
+        final long version = Wally.tx_get_version(wallyTx);
 
         final byte[] outputData = outputBytes(outputs);
         final List<byte[]> sigs = new ArrayList<>(hwInputs.length);

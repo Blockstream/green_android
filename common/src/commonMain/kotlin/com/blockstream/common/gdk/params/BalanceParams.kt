@@ -16,7 +16,7 @@ data class BalanceParams constructor(
     @SerialName("expired_at") val expiredAt: Long? = null,
     @SerialName("confidential") val confidential: Boolean? = null,
 ) : GdkJson<BalanceParams>() {
-    override val encodeDefaultsValues = false
+    override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()
 }

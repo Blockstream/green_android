@@ -90,5 +90,5 @@ echo $TARURL $SHA256
 sed -i '' -e "s/ARM_SIM_SHA256=.*/ARM_SIM_SHA256=\"${SHA256}\"/" common/fetch_ios_binaries.sh
 
 
-git add gdk/fetch_android_binaries.sh gdk/prepare_gdk_clang.sh
+git add gdk/fetch_android_binaries.sh common/fetch_ios_binaries.sh gdk/prepare_gdk_clang.sh
 git commit -m "Update GDK to ${NAME}" -S

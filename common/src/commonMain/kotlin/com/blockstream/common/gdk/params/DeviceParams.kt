@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 data class DeviceParams constructor(
     @SerialName("device") val device: Device? = null,
 ) : GdkJson<DeviceParams>() {
-    override val encodeDefaultsValues = false
+    override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()
 

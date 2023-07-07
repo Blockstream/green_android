@@ -31,6 +31,7 @@ import com.blockstream.common.gdk.params.ReconnectHintParams
 import com.blockstream.common.gdk.params.SubAccountParams
 import com.blockstream.common.gdk.params.SubAccountsParams
 import com.blockstream.common.gdk.params.TransactionParams
+import com.blockstream.common.gdk.params.UnspentOutputsPrivateKeyParams
 import com.blockstream.common.gdk.params.UpdateSubAccountParams
 import com.blockstream.common.gdk.params.ValidateAddresseesParams
 import com.blockstream.common.platformFileSystem
@@ -241,6 +242,9 @@ interface GdkBinding {
 
     @Throws(Exception::class)
     fun getUnspentOutputs(session: GASession, details: BalanceParams): GAAuthHandler
+
+    @Throws(Exception::class)
+    fun getUnspentOutputsForPrivateKey(session: GASession, details: UnspentOutputsPrivateKeyParams): GAAuthHandler
 
     @Throws(Exception::class)
     fun createTransaction(session: GASession, params: GdkJson<*>): GAAuthHandler

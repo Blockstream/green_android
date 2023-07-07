@@ -271,7 +271,7 @@ abstract public class JadeHWWalletJava extends HWWallet {
         // Get the change outputs and paths
         final List<TxChangeOutput> change = new ArrayList<>(outputs.size());
         for (final InputOutput output : outputs) {
-            if (output.isChange()) {
+            if (output.isChange() != null && output.isChange()) {
                 // change - get path
                 change.add(new TxChangeOutput(output.getUserPath(),
                                               output.getRecoveryXpub(),
@@ -287,14 +287,13 @@ abstract public class JadeHWWalletJava extends HWWallet {
 
     @NonNull
     @Override
-    public synchronized SignTransactionResult signTransaction(@NonNull Network network, @Nullable HardwareWalletInteraction hwInteraction, @NonNull JsonElement transaction, @NonNull List<InputOutput> inputs, @NonNull List<InputOutput> outputs, @Nullable Map<String, String> transactions, boolean useAeProtocol) {
+    public synchronized SignTransactionResult signTransaction(@NonNull Network network, @Nullable HardwareWalletInteraction hwInteraction, @NonNull String transaction, @NonNull List<InputOutput> inputs, @NonNull List<InputOutput> outputs, @Nullable Map<String, String> transactions, boolean useAeProtocol) {
         Log.d(TAG, "signTransaction() called for " + inputs.size() + " inputs");
 
-        final ObjectNode tx = JadeHWWallet.Companion.toObjectNode(transaction);
+        final byte[] txBytes = hexToBytes(transaction);
 
         if(network.isLiquid()){
             try {
-                final byte[] txBytes = hexToBytes(tx.get("transaction").asText());
 
                 // Load the tx into wally for legacy fw versions as will need it later
                 // to access the output's asset[generator] and value[commitment].
@@ -355,6 +354,7 @@ abstract public class JadeHWWalletJava extends HWWallet {
                 Log.d(TAG, "signLiquidTransaction() returning " + result.getSignatures().size() + " signatures");
                 return new SignTransactionResult(hexFromBytes(result.getSignatures()), hexFromBytes(result.getSignerCommitments()));
             } catch (final Exception e) {
+                e.printStackTrace();
                 throw new RuntimeException(e);
             }
         }else {
@@ -402,9 +402,7 @@ abstract public class JadeHWWalletJava extends HWWallet {
 
                 // Make jade-api call
                 final String canonicalNetworkId = network.getCanonicalNetworkId();
-                final String txhex = tx.get("transaction").asText();
-                final byte[] txn = hexToBytes(txhex);
-                final SignTxInputsResult result = this.jade.signTx(canonicalNetworkId, useAeProtocol, txn, txInputs, change);
+                final SignTxInputsResult result = this.jade.signTx(canonicalNetworkId, useAeProtocol, txBytes, txInputs, change);
 
                 Log.d(TAG, "signTransaction() returning " + result.getSignatures().size() + " signatures");
                 return new SignTransactionResult(hexFromBytes(result.getSignatures()), hexFromBytes(result.getSignerCommitments()));
@@ -421,7 +419,9 @@ abstract public class JadeHWWalletJava extends HWWallet {
 
         CompletableDeferred completable = CompletableDeferredKt.CompletableDeferred(null);
         try {
-            hwInteraction.interactionRequest(this, completable, "id_check_your_device");
+            if(hwInteraction != null) {
+                hwInteraction.interactionRequest(this, completable, "id_check_your_device");
+            }
             final byte[] masterkey = this.jade.getMasterBlindingKey();
             final String keyHex = hexFromBytes(masterkey);
             Log.d(TAG, "getMasterBlindingKey() returning " + keyHex);

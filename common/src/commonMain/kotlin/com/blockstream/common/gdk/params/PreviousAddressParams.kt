@@ -11,7 +11,7 @@ data class PreviousAddressParams constructor(
     @SerialName("last_pointer") val lastPointer: Int? = null,
 ) : GdkJson<PreviousAddressParams>() {
 
-    override val encodeDefaultsValues = false
+    override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()
 }

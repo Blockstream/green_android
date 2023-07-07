@@ -106,7 +106,7 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
         val noteAdapter = FastItemAdapter<GenericItem>()
 
         viewModel.transactionNoteLiveData.observe(viewLifecycleOwner){
-            if(!transaction.isSweep && !it.isNullOrBlank()) {
+            if(!transaction.isSweep() && !it.isNullOrBlank()) {
                 noteAdapter.set(
                     listOf(
                         NoteListItem(note = viewModel.transactionNote, isEditable = !account.isLightning)
@@ -220,7 +220,7 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
     }
 
     override fun onPrepareMenu(menu: Menu) {
-        menu.findItem(R.id.add_note).isVisible = transactionOrNull?.isSweep == false && viewModel.transactionNote.isBlank() && !account.isLightning
+        menu.findItem(R.id.add_note).isVisible = transactionOrNull?.isSweep() == false && viewModel.transactionNote.isBlank() && !account.isLightning
         menu.findItem(R.id.sign_transaction).isVisible = isDevelopmentOrDebug
     }
 

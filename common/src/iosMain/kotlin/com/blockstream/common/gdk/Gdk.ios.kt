@@ -31,6 +31,7 @@ import com.blockstream.common.gdk.params.ReconnectHintParams
 import com.blockstream.common.gdk.params.SubAccountParams
 import com.blockstream.common.gdk.params.SubAccountsParams
 import com.blockstream.common.gdk.params.TransactionParams
+import com.blockstream.common.gdk.params.UnspentOutputsPrivateKeyParams
 import com.blockstream.common.gdk.params.UpdateSubAccountParams
 import com.blockstream.common.gdk.params.ValidateAddresseesParams
 import gdk.GA_FALSE
@@ -79,6 +80,7 @@ import gdk.GA_get_thread_error_details
 import gdk.GA_get_transactions
 import gdk.GA_get_twofactor_config
 import gdk.GA_get_unspent_outputs
+import gdk.GA_get_unspent_outputs_for_private_key
 import gdk.GA_get_wallet_identifier
 import gdk.GA_get_watch_only_username
 import gdk.GA_http_request
@@ -958,6 +960,21 @@ class IOSGdkBinding constructor(config: InitConfig) : GdkBinding {
         return memScoped {
             gaAuthHandler().let { gaAuthHandler ->
                 GA_get_unspent_outputs(
+                    session = session.asGASession(),
+                    details = details.toGaJson(this),
+                    call = gaAuthHandler.ptr
+                ).okOrThrow(gaAuthHandler)
+            }
+        }
+    }
+
+    override fun getUnspentOutputsForPrivateKey(
+        session: GASession,
+        details: UnspentOutputsPrivateKeyParams
+    ): GAAuthHandler {
+        return memScoped {
+            gaAuthHandler().let { gaAuthHandler ->
+                GA_get_unspent_outputs_for_private_key(
                     session = session.asGASession(),
                     details = details.toGaJson(this),
                     call = gaAuthHandler.ptr
