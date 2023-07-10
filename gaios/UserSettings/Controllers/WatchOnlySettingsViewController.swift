@@ -20,12 +20,8 @@ class WatchOnlySettingsViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         Task {
-            do {
-                await viewModel.load()
-                await MainActor.run {  tableView.reloadData() }
-            } catch {
-                showError(error)
-            }
+            await viewModel.load()
+            await MainActor.run {  tableView.reloadData() }
         }
     }
 
@@ -165,7 +161,10 @@ extension WatchOnlySettingsViewController: DialogWatchOnlySetUpViewControllerDel
     func watchOnlyDidUpdate(_ action: WatchOnlySetUpAction) {
             switch action {
             case .save, .delete:
-                Task { await viewModel.load() }
+                Task {
+                    await viewModel.load()
+                    await MainActor.run { tableView.reloadData() }
+                }
             default:
                 break
             }
