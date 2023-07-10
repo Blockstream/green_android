@@ -37,11 +37,13 @@ class PgpViewController: KeyboardViewController {
     }
 
     func setPgp(pgp: String) async throws {
-         let sessions = WalletManager.current?.activeSessions
+        let sessions = WalletManager.current?.activeSessions
             .filter { !$0.value.gdkNetwork.electrum }
             .values
-        for session in sessions! {
-            try await self.changeSettings(session: session, pgp: pgp)
+        if let sessions = sessions {
+            for session in sessions {
+                try await self.changeSettings(session: session, pgp: pgp)
+            }
         }
     }
 
@@ -52,7 +54,7 @@ class PgpViewController: KeyboardViewController {
     }
 
     @objc func save(_ sender: UIButton) {
-        let txt = self.textarea.text
+        let txt = self.textarea.text.trimmingCharacters(in: .whitespaces)
         self.startAnimating()
         Task {
             do {
