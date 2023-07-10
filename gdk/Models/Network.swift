@@ -58,7 +58,7 @@ public struct GdkNetwork: Codable, Equatable, Comparable {
     }
 
     public static func < (lhs: GdkNetwork, rhs: GdkNetwork) -> Bool {
-        let rules: [NetworkSecurityCase] = [.bitcoinSS, .testnetSS, .bitcoinSS, .bitcoinMS, .lightning, .liquidSS, .testnetLiquidSS, .liquidMS, .testnetLiquidMS]
+        let rules: [NetworkSecurityCase] = [.bitcoinSS, .testnetSS, .bitcoinMS, .testnetMS, .lightning, .liquidSS, .testnetLiquidSS, .liquidMS, .testnetLiquidMS]
         let lnet = NetworkSecurityCase(rawValue: lhs.network) ?? .bitcoinSS
         let rnet = NetworkSecurityCase(rawValue: rhs.network) ?? .bitcoinSS
         return rules.firstIndex(of: lnet) ?? 0 < rules.firstIndex(of: rnet) ?? 0

@@ -70,7 +70,8 @@ public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable {
     }
 
     public static func < (a: AccountType, b: AccountType) -> Bool {
-        return a.rawValue < b.rawValue
+        let rules: [AccountType] = [.segwitWrapped, .segWit, .taproot, .standard, .amp, .twoOfThree, .lightning]
+        return rules.firstIndex(of: a) ?? 0 < rules.firstIndex(of: b) ?? 0
     }
 }
 
