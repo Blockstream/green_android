@@ -40,6 +40,7 @@ class SendViewModel @AssistedInject constructor(
     @Assisted accountAsset: AccountAsset,
     @Assisted val isSweep: Boolean,
     @Assisted("address") address: String?,
+    @Assisted addressType: AddressInputType?,
     @Assisted val bumpTransaction: JsonElement?,
 ) : AbstractAssetWalletViewModel(sessionManager, walletRepository, countly, wallet, accountAsset), DenominationListener {
     override val filterSubAccountsWithBalance = true
@@ -54,6 +55,7 @@ class SendViewModel @AssistedInject constructor(
             session = session,
             index = 0,
             address = address,
+            addressInputType = addressType,
             accountAsset = _accountAssetLiveData
         )
     ))
@@ -590,6 +592,7 @@ class SendViewModel @AssistedInject constructor(
             isSweep: Boolean,
             @Assisted("address")
             address: String?,
+            addressType:AddressInputType?,
             bumpTransaction: JsonElement?
         ): SendViewModel
     }
@@ -604,11 +607,12 @@ class SendViewModel @AssistedInject constructor(
             accountAsset: AccountAsset,
             isSweep: Boolean,
             address: String?,
+            addressType:AddressInputType?,
             bumpTransaction: JsonElement?
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet, accountAsset, isSweep, address, bumpTransaction) as T
+                return assistedFactory.create(wallet, accountAsset, isSweep, address, addressType, bumpTransaction) as T
             }
         }
     }
@@ -688,10 +692,10 @@ data class AddressParamsLiveData constructor(
     }
 
     companion object : KLogging() {
-        fun create(session: GdkSession, index: Int, address: String? = null, accountAsset: MutableLiveData<AccountAsset>) = AddressParamsLiveData(
+        fun create(session: GdkSession, index: Int, address: String? = null, addressInputType : AddressInputType? = null, accountAsset: MutableLiveData<AccountAsset>) = AddressParamsLiveData(
             index = index,
             address = MutableLiveData(address ?: ""),
-            addressInputType = if(address.isNullOrBlank()) null else AddressInputType.BIP21,
+            addressInputType = addressInputType,
             accountAsset = accountAsset,
             amount = MutableLiveData(""),
             denomination = MutableLiveData(Denomination.default(session))

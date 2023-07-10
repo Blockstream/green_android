@@ -6,6 +6,7 @@ import breez_sdk.InputType
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
+import com.blockstream.green.data.AddressInputType
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.extensions.clearNavigationResult
 import com.blockstream.green.extensions.getNavigationResult
@@ -85,7 +86,8 @@ interface OverviewInterface {
                                 NavGraphDirections.actionGlobalSendFragment(
                                     wallet = wallet,
                                     accountAsset = AccountAsset.fromAccount(account),
-                                    address = data
+                                    address = data,
+                                    addressType = if(isQr) AddressInputType.SCAN else AddressInputType.BIP21
                                 )
                             )
                         }

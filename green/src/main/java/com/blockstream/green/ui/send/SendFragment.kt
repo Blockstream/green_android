@@ -87,6 +87,7 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
             args.accountAsset,
             isSweep,
             args.address,
+            args.addressType,
             bumpTransaction
         )
     }

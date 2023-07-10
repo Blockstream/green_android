@@ -1778,6 +1778,7 @@ class GdkSession constructor(
                 }
             }catch (e: Exception){
                 e.printStackTrace()
+                countly.recordException(e)
             }
         }
     }

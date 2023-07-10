@@ -42,6 +42,7 @@ class SendConfirmViewModel @AssistedInject constructor(
     fun signTransaction(broadcast: Boolean, twoFactorResolver: TwoFactorResolver) {
         doUserAction({
             countly.startSendTransaction()
+            countly.startFailedTransaction()
 
             // Create transaction with memo
             val params = session.pendingTransaction!!.first.copy(
@@ -104,7 +105,7 @@ class SendConfirmViewModel @AssistedInject constructor(
         }, onError = {
             onError.postValue(ConsumableEvent(it))
             deviceAddressValidationEvent.value = ConsumableEvent(false)
-            countly.failedTransaction(session = session, error = it)
+            countly.failedTransaction(session = session, account = account, transactionSegmentation = transactionSegmentation, error = it)
         })
     }
 

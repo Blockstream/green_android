@@ -656,6 +656,11 @@
         <action
             android:id="@+id/action_sendFragment_to_sendConfirmFragment"
             app:destination="@id/sendConfirmFragment" />
+        <argument
+            android:name="addressType"
+            app:argType="com.blockstream.green.data.AddressInputType"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
 
     <fragment

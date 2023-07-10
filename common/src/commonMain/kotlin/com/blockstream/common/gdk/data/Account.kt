@@ -74,6 +74,9 @@ data class Account constructor(
     val outputDescriptors: String?
         get() = coreDescriptors?.joinToString("\n")
 
+    val countlyId
+        get() = network.countlyId
+
     @IgnoredOnParcel
     private val weight by lazy {
         when{

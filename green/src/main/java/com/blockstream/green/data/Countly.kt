@@ -382,7 +382,7 @@ class Countly constructor(
     }
 
     override fun activeWalletStart(){
-        apm.startTrace(Events.WALLET_ACTIVE.toString())
+        apm.startTrace(apmEvent(Events.WALLET_ACTIVE))
         events.cancelEvent(Events.WALLET_ACTIVE.toString())
         events.startEvent(Events.WALLET_ACTIVE.toString())
     }
@@ -394,7 +394,7 @@ class Countly constructor(
         accounts: List<Account>
     ) {
         session as GdkSession
-        apm.endTrace(Events.WALLET_ACTIVE.toString(), mutableMapOf())
+        apm.endTrace(apmEvent(Events.WALLET_ACTIVE), mutableMapOf())
         events.endEvent(
             Events.WALLET_ACTIVE.toString(),
             sessionSegmentation(session).also { segmentation ->
@@ -412,15 +412,15 @@ class Countly constructor(
     }
 
     override fun loginLightningStart(){
-        apm.startTrace(Events.LIGHTNING_LOGIN.toString())
+        apm.startTrace(apmEvent(Events.LIGHTNING_LOGIN))
     }
 
     override fun loginLightningStop(){
-        apm.endTrace(Events.LIGHTNING_LOGIN.toString(), mutableMapOf())
+        apm.endTrace(apmEvent(Events.LIGHTNING_LOGIN), mutableMapOf())
     }
 
     fun loginWalletStart(){
-        apm.startTrace(Events.WALLET_LOGIN.toString())
+        apm.startTrace(apmEvent(Events.WALLET_LOGIN))
         events.cancelEvent(Events.WALLET_LOGIN.toString())
         events.startEvent(Events.WALLET_LOGIN.toString())
     }
@@ -430,7 +430,7 @@ class Countly constructor(
         session: GdkSession,
         loginCredentials: LoginCredentials? = null
     ) {
-        apm.endTrace(Events.WALLET_LOGIN.toString(), mutableMapOf())
+        apm.endTrace(apmEvent(Events.WALLET_LOGIN), mutableMapOf())
         events
             .endEvent(
                 Events.WALLET_LOGIN.toString(),
@@ -470,7 +470,6 @@ class Countly constructor(
     }
 
     fun jadeOtaStart(device: Device, firmwareFileData: FirmwareFileData) {
-        apm.startTrace(Events.JADE_OTA.toString())
         events.recordEvent(Events.OTA_START.toString(), deviceSegmentation(device , baseSegmentation()).also { segmentation ->
             segmentation[PARAM_SELECTED_CONFIG] = firmwareFileData.image.config.lowercase()
             segmentation[PARAM_SELECTED_DELTA] = firmwareFileData.image.patchSize != null
@@ -482,7 +481,6 @@ class Countly constructor(
     }
 
     fun jadeOtaComplete(device: Device, firmwareFileData: FirmwareFileData) {
-        apm.endTrace(Events.JADE_OTA.toString(), mutableMapOf())
         events.endEvent(Events.OTA_COMPLETE.toString(), deviceSegmentation(device , baseSegmentation()).also { segmentation ->
             segmentation[PARAM_SELECTED_CONFIG] = firmwareFileData.image.config.lowercase()
             segmentation[PARAM_SELECTED_DELTA] = firmwareFileData.image.patchSize != null
@@ -568,7 +566,7 @@ class Countly constructor(
     }
 
     fun startSendTransaction(){
-        apm.startTrace(Events.SEND_TRANSACTION.toString())
+        apm.startTrace(apmEvent(Events.SEND_TRANSACTION))
         // Cancel any previous event
         events.cancelEvent(Events.SEND_TRANSACTION.toString())
         events.startEvent(Events.SEND_TRANSACTION.toString())
@@ -576,17 +574,15 @@ class Countly constructor(
 
     fun endSendTransaction(
         session: GdkSession,
-        account: Account?,
+        account: Account,
         transactionSegmentation: TransactionSegmentation,
         withMemo: Boolean
     ) {
-        apm.endTrace(Events.SEND_TRANSACTION.toString(), mutableMapOf())
+        apm.endTrace(apmEvent(Events.SEND_TRANSACTION), mutableMapOf())
         events
             .endEvent(
                 Events.SEND_TRANSACTION.toString(),
-                accountSegmentation(session, account).also {
-                    it[PARAM_TRANSACTION_TYPE] = transactionSegmentation.transactionType.toString()
-                    it[PARAM_ADDRESS_INPUT] = transactionSegmentation.addressInputType.toString()
+                transactionSegmentation(session, account, transactionSegmentation).also {
                     it[PARAM_WITH_MEMO] = withMemo
                 }
                 , 1, 0.0)
@@ -662,14 +658,26 @@ class Countly constructor(
             )
     }
 
-    fun failedTransaction(session: GdkSession, error: Throwable) {
+    fun startFailedTransaction(){
+        apm.startTrace(apmEvent(Events.FAILED_TRANSACTION))
+        events.cancelEvent(Events.FAILED_TRANSACTION.toString())
+        events.startEvent(Events.FAILED_TRANSACTION.toString())
+    }
+
+    fun failedTransaction(
+        session: GdkSession,
+        account: Account,
+        transactionSegmentation: TransactionSegmentation,
+        error: Throwable
+    ) {
+        apm.endTrace(apmEvent(Events.FAILED_TRANSACTION), mutableMapOf())
         events
-            .recordEvent(
+            .endEvent(
                 Events.FAILED_TRANSACTION.toString(),
-                sessionSegmentation(session).also {
+                transactionSegmentation(session, account, transactionSegmentation).also {
                     it[PARAM_ERROR] = error.message ?: "error"
                 }
-            )
+            , 1, 0.0)
     }
 
     private fun baseSegmentation(): HashMap<String, Any>{
@@ -719,7 +727,7 @@ class Countly constructor(
 
 
         return baseSegmentation().also{
-            it[PARAM_NETWORKS] = network
+            it[PARAM_WALLET_NETWORKS] = network
             it[PARAM_SECURITY] = security.joinToString("-")
         }
     }
@@ -768,15 +776,22 @@ class Countly constructor(
             .also { segmentation ->
                 account?.also { account ->
                     segmentation[PARAM_ACCOUNT_TYPE] = account.type.gdkType
-                    segmentation[PARAM_NETWORK] = account.networkId
+                    segmentation[PARAM_ACCOUNT_NETWORK] = account.countlyId
                 }
+            }
+
+    private fun transactionSegmentation(session: GdkSession, account: Account, transactionSegmentation: TransactionSegmentation): HashMap<String, Any> =
+        accountSegmentation(session, account)
+            .also { segmentation ->
+                segmentation[PARAM_TRANSACTION_TYPE] = transactionSegmentation.transactionType.toString()
+                segmentation[PARAM_ADDRESS_INPUT] = transactionSegmentation.addressInputType.toString()
             }
 
     fun twoFactorSegmentation(session: GdkSession, network: Network, twoFactorMethod: TwoFactorMethod): HashMap<String, Any> =
         networkSegmentation(session)
             .also { segmentation ->
                 segmentation[PARAM_2FA] = twoFactorMethod.gdkType
-                segmentation[PARAM_NETWORK] = network.id
+                segmentation[PARAM_ACCOUNT_NETWORK] = network.countlyId
             }
 
     fun recordRating(rating: Int, comment :String){
@@ -834,6 +849,14 @@ class Countly constructor(
         }catch (e: Exception){
             e.printStackTrace()
             null
+        }
+    }
+
+    fun apmEvent(event: Events): String{
+        return if(settingsManager.appSettings.tor){
+            "${event}_tor"
+        }else {
+            "$event"
         }
     }
 
@@ -926,8 +949,8 @@ class Countly constructor(
 
         const val RATING_WIDGET_ID = "5f15c01425f83c169c33cb65"
 
-        const val PARAM_NETWORKS = "networks"
-        const val PARAM_NETWORK = "network"
+        const val PARAM_WALLET_NETWORKS = "wallet_networks"
+        const val PARAM_ACCOUNT_NETWORK = "account_network"
         const val PARAM_SECURITY = "security"
         const val PARAM_ACCOUNT_TYPE = "account_type"
         const val PARAM_2FA = "2fa"
@@ -1044,7 +1067,8 @@ enum class TransactionType(val string: String) {
     override fun toString(): String = string
 }
 
-enum class AddressInputType(val string: String) {
+@Parcelize
+enum class AddressInputType(val string: String) : Parcelable {
     PASTE("paste"),
     SCAN("scan"),
     BIP21("bip21");

@@ -75,6 +75,13 @@ data class Network(
     val policyAssetOrNull
         get() = if(isLiquid) policyAsset else null
 
+    val countlyId: String
+        get() = if (isMultisig) {
+            "legacy-$id"
+        } else {
+            id
+        }
+
     @IgnoredOnParcel
     val defaultFee by lazy {
         if (isLiquid) 100L else 1000L
@@ -107,15 +114,13 @@ data class Network(
         const val ElectrumTestnet = "electrum-testnet"
         const val ElectrumTestnetLiquid = "electrum-testnet-liquid"
 
-        const val Lightning = "lightning"
-        const val LightningTestnet = "lightning-testnet"
+        const val LightningMainnet = "greenlight-mainnet"
+        const val LightningTestnet = "greenlight-testnet"
 
         const val BIP32_VER_MAIN_PUBLIC = 0x0488B21E
         const val BIP32_VER_TEST_PUBLIC = 0x043587CF
 
         fun canonicalNetworkId(id: String) = id.removePrefix("electrum-")
-
-        fun isLightning(id: String) = id.contains("lightning")
 
         fun isSinglesig(id: String) = id.contains("electrum")
         fun isMultisig(id: String) = !isSinglesig(id) && !isLightning(id)
@@ -126,7 +131,8 @@ data class Network(
         fun isBitcoinTestnet(id: String) = (id == GreenTestnet || id == ElectrumTestnet)
         fun isLiquidTestnet(id: String) = (id == GreenTestnetLiquid || id == ElectrumTestnetLiquid)
 
-        fun isLightningMainnet(id: String) = id == Lightning
+        fun isLightning(id: String) = isLightningMainnet(id) || isLightningTestnet(id)
+        fun isLightningMainnet(id: String) = id == LightningMainnet
         fun isLightningTestnet(id: String) = id == LightningTestnet
 
         fun isLiquid(id: String) = isLiquidMainnet(id) || isLiquidTestnet(id)
