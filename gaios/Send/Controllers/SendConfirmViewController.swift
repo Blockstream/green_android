@@ -180,6 +180,12 @@ class SendConfirmViewController: KeyboardViewController {
         AnalyticsManager.shared.endSendTransaction(account: AccountsRepository.shared.current,
                                walletItem: viewModel.account,
                                transactionSgmt: transSgmt, withMemo: withMemo)
+<<<<<<< HEAD
+=======
+        if account?.isHW ?? false {
+            self.dismissHWSummary()
+        }
+>>>>>>> c90c6492 (hw: dismiss hw dialog on send)
         if viewModel.isLightning {
             self.dismiss(animated: true)
         } else {
