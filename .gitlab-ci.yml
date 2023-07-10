@@ -40,7 +40,7 @@ build_dev_release:
     paths:
       - dev
   variables:
-    GDK_COMMIT: latest
+    GDK_COMMIT: 9c0b7ae753987cfdd488a06090a4ca9668a035f5
     COUNTLY_APP_KEY: $COUNTLY_APP_KEY_DEV
     COUNTLY_APP_HOST: $COUNTLY_APP_HOST
     GREENLIGHT_DEVICE_KEY: $GREENLIGHT_DEVICE_KEY
@@ -73,13 +73,15 @@ build_prod_release:
     paths:
       - prod
   variables:
+    GDK_COMMIT: 9c0b7ae753987cfdd488a06090a4ca9668a035f5
     COUNTLY_APP_KEY: $COUNTLY_APP_KEY_PROD
     COUNTLY_APP_HOST: $COUNTLY_APP_HOST
     GREENLIGHT_DEVICE_KEY: $GREENLIGHT_DEVICE_KEY
     GREENLIGHT_DEVICE_CERT: $GREENLIGHT_DEVICE_CERT
     BREEZ_API_KEY: $BREEZ_API_KEY
   script:
-    - ./tools/fetch_gdk_binaries.sh
+    - if [ "$GDK_COMMIT" != "latest" ]; then GDK_OPT="-c $GDK_COMMIT"; fi
+    - ./tools/fetch_gdk_binaries.sh $GDK_OPT
     - ./tools/setup_xcconfig.sh
     - echo "Dev"
     - cat configs/DevSettings.xcconfig
