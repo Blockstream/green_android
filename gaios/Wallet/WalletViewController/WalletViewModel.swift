@@ -55,6 +55,11 @@ class WalletViewModel {
     }
 
     func selectSubaccount(_ newAccount: WalletItem? = nil) {
+        
+        for a in self.accountCellModels {
+            print(a.name)
+            print(newAccount?.name)
+        }
         if let idx = self.accountCellModels.firstIndex(where: {$0.account == newAccount}) {
             self.preselectAccount?(idx)
         }
@@ -194,7 +199,9 @@ class WalletViewModel {
 
     func onCreateAccount(_ wallet: WalletItem) {
         analyticsDone = false
-        selectSubaccount(wallet)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+            self.selectSubaccount(wallet)
+        }
     }
 
     func callAnalytics() {

@@ -67,6 +67,7 @@ class WalletViewController: UIViewController {
         }
         viewModel.preselectAccount = {[weak self] idx in
             self?.sIdx = idx
+            self?.reloadSections([WalletSection.account], animated: true)
         }
         setContent()
         setStyle()
