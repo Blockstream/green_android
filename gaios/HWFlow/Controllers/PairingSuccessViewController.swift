@@ -26,6 +26,11 @@ class PairingSuccessViewController: HWFlowBaseViewController {
         if bleViewModel?.deviceType == .Jade {
             loadNavigationBtns()
         }
+        let accounts = AccountsRepository.shared.hwAccounts
+        if let _ = accounts.firstIndex(where: {$0.uuid == bleViewModel?.peripheralID}) {
+            rememberSwitch.isOn = false
+            rememberView.isHidden = true
+        }
         AnalyticsManager.shared.hwwConnect(account: AccountsRepository.shared.current)
     }
 
