@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
-        <import type="com.blockstream.green.extensions.ExtensionsKt" />
+        <import type="com.blockstream.common.extensions.StringExtensionsKt" />
 
         <variable
             name="vm"
@@ -121,7 +120,7 @@
 
                         <ImageButton
                             android:id="@+id/buttonClear"
-                            isVisible="@{ExtensionsKt.isNotBlank(message) &amp;&amp; signature == null}"
+                            isVisible="@{StringExtensionsKt.isNotBlank(message) &amp;&amp; signature == null}"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
@@ -138,7 +137,7 @@
 
                         <ImageButton
                             android:id="@+id/buttonPaste"
-                            isVisible="@{ExtensionsKt.isBlank(message) &amp;&amp; signature == null}"
+                            isVisible="@{StringExtensionsKt.isBlank(message) &amp;&amp; signature == null}"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
@@ -165,7 +164,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:enabled="@{!vm.onProgress &amp;&amp; message.length() > 0}"
+                android:enabled="@{!vm.onProgressAndroid &amp;&amp; message.length() > 0}"
                 android:text="@string/id_sign_message" />
         </LinearLayout>
 

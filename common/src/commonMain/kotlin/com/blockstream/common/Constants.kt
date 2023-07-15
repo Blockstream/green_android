@@ -31,6 +31,7 @@ object Urls {
     const val HELP_JADE_USB_UPGRADE = "https://help.blockstream.com/hc/en-us/articles/4408030503577"
     const val HELP_WHATS_COLLECTED = "https://help.blockstream.com/hc/en-us/articles/5988514431897"
     const val HELP_BIP39_PASSPHRASE = "https://help.blockstream.com/hc/en-us/articles/8712301763737"
+    const val HELP_LIGHTNING_SHORTCUT = "https://help.blockstream.com/hc/en-us/articles/23020279153177"
     const val HELP_AMP_ASSETS = "https://help.blockstream.com/hc/en-us/articles/5301732614169-How-do-I-receive-AMP-assets-"
     const val HELP_CENTER = "https://help.blockstream.com/hc/en-us/categories/900000056183-Blockstream-Green/"
     const val RECOVERY_TOOL = "https://github.com/greenaddress/garecovery"

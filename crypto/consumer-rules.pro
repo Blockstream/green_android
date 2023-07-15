@@ -1,2 +1,0 @@
--keep class com.blockstream.libgreenaddress.** {*;}
--keep class com.blockstream.libwally.** {*;}

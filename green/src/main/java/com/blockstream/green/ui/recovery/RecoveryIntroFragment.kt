@@ -6,21 +6,26 @@ import android.view.View
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.navArgs
+import com.arkivanov.essenty.statekeeper.stateKeeper
+import com.blockstream.common.models.recovery.RecoveryIntroViewModel
+import com.blockstream.common.events.Events
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
 import com.blockstream.green.databinding.RecoveryIntroFragmentBinding
 import com.blockstream.green.extensions.AuthenticationCallback
 import com.blockstream.green.extensions.errorDialog
-import com.blockstream.green.ui.AppViewModel
+import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.ui.wallet.WalletViewModel
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-@AndroidEntryPoint
 class RecoveryIntroFragment : AbstractWalletFragment<RecoveryIntroFragmentBinding>(
     layout = R.layout.recovery_intro_fragment,
     menuRes = 0
@@ -29,86 +34,65 @@ class RecoveryIntroFragment : AbstractWalletFragment<RecoveryIntroFragmentBindin
 
     private val args: RecoveryIntroFragmentArgs by navArgs()
 
-    override val walletOrNull by lazy { args.wallet }
-    private val networkOrNull by lazy { args.network }
+    override val walletOrNull by lazy { args.setupArgs.greenWallet }
 
-    override val screenName = "RecoveryIntro"
+    private val viewModel : RecoveryIntroViewModel by viewModel { parametersOf(args.setupArgs, stateKeeper()) }
 
-    @Inject
-    lateinit var viewModelFactory: WalletViewModel.AssistedFactory
-    val viewModel: WalletViewModel by viewModels {
-        WalletViewModel.provideFactory(viewModelFactory, args.wallet!!)
-    }
+    override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    @Inject
-    lateinit var introViewModelFactory: RecoveryIntroViewModel.AssistedFactory
-    val introViewModel: RecoveryIntroViewModel by viewModels {
-        RecoveryIntroViewModel.provideFactory(introViewModelFactory, this, arguments, !args.isAuthenticateUser)
+    private val walletViewModel: WalletViewModel by viewModel{
+        parametersOf(args.setupArgs.greenWallet!!)
     }
 
     // Recovery screens are reused in onboarding
     // where we don't have a session yet.
     override fun isSessionAndWalletRequired(): Boolean {
-        return args.wallet != null
+        return args.setupArgs.greenWallet != null
     }
 
     override fun isLoggedInRequired(): Boolean = isSessionAndWalletRequired()
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
-        binding.showRecoveryLength = !args.isAuthenticateUser
-
         binding.buttonNext.setOnClickListener {
-
-            // Onboarding
-            if(args.wallet == null){
-                navigateToWords()
-            }else{
-                if(args.isAuthenticateUser) {
-                    // If recovery is confirmed, ask for user presence
-                    if (wallet.isRecoveryPhraseConfirmed) {
-                        launchUserPresencePrompt()
-                    } else {
-                        navigateToWords()
-                    }
-                }else{
-                    navigateToWords()
-                }
-            }
+            viewModel.postEvent(Events.Continue)
         }
 
         binding.toggleRecoverySize.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if(isChecked){
-                introViewModel.recoverySize.value = checkedId
+                viewModel.mnemonicSize.value = if(checkedId == R.id.button12) 12 else 24
             }
         }
 
-        binding.toggleRecoverySize.check(introViewModel.recoverySize.value ?: R.id.button12)
+        binding.toggleRecoverySize.check(if (viewModel.mnemonicSize.value == 12) R.id.button12 else R.id.button24)
     }
 
-    private fun navigateToWords() {
-        // Onboarding
-        if (args.wallet == null || !args.isAuthenticateUser) {
-            navigate(
-                RecoveryIntroFragmentDirections.actionRecoveryIntroFragmentToRecoveryWordsFragment(
-                    wallet = args.wallet,
-                    assetId = args.assetId,
-                    onboardingOptions = args.onboardingOptions,
-                    mnemonic = introViewModel.mnemonic,
-                    network = args.network
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+        if(sideEffect is SideEffects.NavigateTo){
+            (sideEffect.destination as? NavigateDestinations.RecoveryWords)?.also {
+                navigate(
+                    RecoveryIntroFragmentDirections.actionRecoveryIntroFragmentToRecoveryWordsFragment(
+                        args = it.args
+                    )
                 )
-            )
-        } else {
-            navigate(
-                RecoveryIntroFragmentDirections.actionRecoveryIntroFragmentToRecoveryPhraseFragment(
-                    wallet = args.wallet,
-                    isLightning = args.isLightning
-                ), navOptionsBuilder = NavOptions.Builder().also {
-                    it.setPopUpTo(R.id.recoveryIntroFragment, true)
-                })
+            }
+
+            (sideEffect.destination as? NavigateDestinations.RecoveryPhrase)?.also {
+                navigate(
+                    RecoveryIntroFragmentDirections.actionRecoveryIntroFragmentToRecoveryPhraseFragment(
+                        wallet = it.args.greenWallet,
+                        isLightning = it.args.isLightning
+                    ), navOptionsBuilder = NavOptions.Builder().also {
+                        it.setPopUpTo(R.id.recoveryIntroFragment, true)
+                    }
+                )
+            }
+        } else if (sideEffect is RecoveryIntroViewModel.LocalSideEffects.LaunchUserPresence) {
+            launchUserPresencePrompt(sideEffect.navigateTo)
         }
     }
 
-    private fun launchUserPresencePrompt() {
+    private fun launchUserPresencePrompt(pendingSideEffect: SideEffects.SideEffectEvent) {
         biometricPrompt?.cancelAuthentication()
 
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
@@ -131,14 +115,14 @@ class RecoveryIntroFragment : AbstractWalletFragment<RecoveryIntroFragmentBindin
                 ) {
                     if(errorCode == BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL){
                         // User hasn't enabled any device credential,
-                        navigateToWords()
+                        viewModel.postEvent(pendingSideEffect.event)
                     }else{
                         super.onAuthenticationError(errorCode, errString)
                     }
                 }
 
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    navigateToWords()
+                    viewModel.postEvent(pendingSideEffect.event)
                 }
             })
 
@@ -149,13 +133,13 @@ class RecoveryIntroFragment : AbstractWalletFragment<RecoveryIntroFragmentBindin
             errorDialog(e) {
                 // If an unsupported method is initiated, it's better to show the words rather than
                 // block the user from retrieving his words
-                navigateToWords()
+                viewModel.postEvent(pendingSideEffect.event)
             }
         }
     }
 
     // If wallet is null, WalletFragment will give the viewModel to AppFragment, guard this behavior and return null
-    override fun getAppViewModel() : AppViewModel? = if(args.wallet == null) null else getWalletViewModel()
+    override fun getAppViewModel() : AppViewModelAndroid? = if(args.setupArgs.greenWallet == null) null else getWalletViewModel()
 
-    override fun getWalletViewModel(): AbstractWalletViewModel = if(args.wallet != null) viewModel else throw RuntimeException("Can't be happening")
+    override fun getWalletViewModel(): AbstractWalletViewModel = if(args.setupArgs.greenWallet != null) walletViewModel else throw RuntimeException("Can't be happening")
 }

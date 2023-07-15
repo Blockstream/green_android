@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import com.blockstream.common.gdk.data.Utxo
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemUtxoBinding
-import com.blockstream.green.gdk.GdkSession
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.green.extensions.bind
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import kotlinx.coroutines.CoroutineScope

@@ -4,14 +4,16 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.blockstream.common.extensions.getConfirmationsMax
+import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Transaction
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
-import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.BaseRecyclerViewBinding
 import com.blockstream.green.databinding.ListItemOverlineTextBinding
 import com.blockstream.green.databinding.ListItemTransactionHashBinding
@@ -19,10 +21,8 @@ import com.blockstream.green.databinding.ListItemTransactionNoteBinding
 import com.blockstream.green.databinding.ListItemTransactionProgressBinding
 import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.hideKeyboard
-import com.blockstream.green.extensions.isNotBlank
 import com.blockstream.green.extensions.share
 import com.blockstream.green.extensions.snackbar
-import com.blockstream.green.gdk.getConfirmationsMax
 import com.blockstream.green.gdk.getNetworkIcon
 import com.blockstream.green.looks.TransactionLook
 import com.blockstream.green.ui.bottomsheets.AssetDetailsBottomSheetFragment
@@ -49,13 +49,14 @@ import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.mikepenz.itemanimators.AlphaInAnimator
 import com.pandulapeter.beagle.Beagle
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import mu.KLogging
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-@AndroidEntryPoint
+
 class TransactionDetailsFragment : AbstractAccountWalletFragment<BaseRecyclerViewBinding>(
     layout = R.layout.base_recycler_view,
     menuRes = R.menu.menu_transaction_details
@@ -77,14 +78,10 @@ class TransactionDetailsFragment : AbstractAccountWalletFragment<BaseRecyclerVie
     override val toolbarIcon: Int
         get() = args.transaction.network.getNetworkIcon()
 
-    @Inject
-    lateinit var beagle: Beagle
+    private val beagle: Beagle by inject()
 
-    @Inject
-    lateinit var viewModelFactory: TransactionDetailsViewModel.AssistedFactory
-    val viewModel: TransactionDetailsViewModel by viewModels {
-        TransactionDetailsViewModel.provideFactory(
-            viewModelFactory,
+    val viewModel: TransactionDetailsViewModel by viewModel {
+        parametersOf(
             args.wallet,
             args.transaction.account,
             args.transaction
@@ -104,6 +101,19 @@ class TransactionDetailsFragment : AbstractAccountWalletFragment<BaseRecyclerVie
 
     override fun getAccountWalletViewModel() = viewModel
 
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+        if (sideEffect is SideEffects.Navigate) {
+            navigate(
+                TransactionDetailsFragmentDirections.actionTransactionDetailsFragmentToSendFragment(
+                    wallet = wallet,
+                    accountAsset = AccountAsset.fromAccount(account),
+                    bumpTransaction = sideEffect.data as String
+                )
+            )
+        }
+    }
+
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.vm = viewModel
 
@@ -118,18 +128,6 @@ class TransactionDetailsFragment : AbstractAccountWalletFragment<BaseRecyclerVie
             updateAdapter(it)
         }
 
-        viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
-            consumableEvent?.getContentIfNotHandledForType<NavigateEvent.NavigateWithData>()?.let {
-                navigate(
-                    TransactionDetailsFragmentDirections.actionTransactionDetailsFragmentToSendFragment(
-                        wallet = wallet,
-                        accountAsset = AccountAsset.fromAccount(account),
-                        bumpTransaction = it.data as String
-                    )
-                )
-            }
-        }
-
         viewModel.onError.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let {
                 errorDialog(it)
@@ -139,7 +137,7 @@ class TransactionDetailsFragment : AbstractAccountWalletFragment<BaseRecyclerVie
         val fastAdapter = FastAdapter.with(listOf(amountsAdapter, detailsAdapter))
 
         // Update transactions
-        session.blockFlow(network).onEach {
+        session.block(network).onEach {
             fastAdapter.notifyAdapterDataSetChanged()
         }.launchIn(lifecycleScope)
 
@@ -207,7 +205,7 @@ class TransactionDetailsFragment : AbstractAccountWalletFragment<BaseRecyclerVie
     override fun onPrepareMenu(menu: Menu) {
         menu.findItem(R.id.share).isVisible = !account.isLightning
         // No need to display "Go to Account" menu entry as we come from the Account
-        menu.findItem(R.id.account).isVisible = args.account == null
+        menu.findItem(R.id.account).isVisible = !session.isLightningShortcut && args.account == null
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {

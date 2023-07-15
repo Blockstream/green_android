@@ -5,18 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.Urls
-import com.blockstream.green.databinding.Bip39PassphraseBottomSheetBinding
 import com.blockstream.common.managers.SettingsManager
-import com.blockstream.green.ui.login.LoginViewModel
+import com.blockstream.common.models.login.LoginViewModel
+import com.blockstream.green.databinding.Bip39PassphraseBottomSheetBinding
 import com.blockstream.green.utils.openBrowser
-import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
-@AndroidEntryPoint
+
 class Bip39PassphraseBottomSheetDialogFragment: WalletBottomSheetDialogFragment<Bip39PassphraseBottomSheetBinding, LoginViewModel>(){
-    @Inject
-    lateinit var settingsManager: SettingsManager
+    private val settingsManager: SettingsManager by inject()
 
     override val segmentation: HashMap<String, Any>? = null
 
@@ -29,7 +27,7 @@ class Bip39PassphraseBottomSheetDialogFragment: WalletBottomSheetDialogFragment<
 
         binding.passphrase = viewModel.bip39Passphrase.value
 
-        binding.alwaysAskSwitch.isChecked = viewModel.wallet.askForBip39Passphrase
+        binding.alwaysAskSwitch.isChecked = viewModel.greenWallet.askForBip39Passphrase
 
         binding.buttonLearnMore.setOnClickListener {
             openBrowser(settingsManager.getApplicationSettings(), Urls.HELP_BIP39_PASSPHRASE)
@@ -45,8 +43,7 @@ class Bip39PassphraseBottomSheetDialogFragment: WalletBottomSheetDialogFragment<
         }
 
         binding.buttonContinue.setOnClickListener {
-            viewModel.bip39Passphrase.value = binding.passphrase?.trim()
-            viewModel.setBip39Passphrase(binding.passphrase, binding.alwaysAskSwitch.isChecked)
+            viewModel.postEvent(LoginViewModel.LocalEvents.Bip39Passphrase(binding.passphrase ?: "", binding.alwaysAskSwitch.isChecked))
             dismiss()
         }
     }

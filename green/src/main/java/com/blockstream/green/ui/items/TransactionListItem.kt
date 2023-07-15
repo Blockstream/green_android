@@ -7,8 +7,8 @@ import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemTransactionBinding
 import com.blockstream.green.databinding.TransactionAssetLayoutBinding
-import com.blockstream.green.gdk.GdkSession
-import com.blockstream.green.gdk.getConfirmationsMax
+import com.blockstream.common.gdk.GdkSession
+import com.blockstream.common.extensions.getConfirmationsMax
 import com.blockstream.green.looks.TransactionLook
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

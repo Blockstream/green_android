@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemOverlineTextBinding
-import com.blockstream.green.extensions.isNotBlank
+import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.green.utils.StringHolder
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 

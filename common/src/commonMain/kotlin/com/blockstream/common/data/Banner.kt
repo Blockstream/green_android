@@ -1,6 +1,6 @@
 package com.blockstream.common.data
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.serializers.HtmlEntitiesSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -16,7 +16,7 @@ data class Banner(
     @SerialName("link") val link: String? = null,
     @SerialName("screens") val screens: List<String>? = null,
     @SerialName("networks") val networks: List<String>? = null,
-): GdkJson<Banner>(){
+): GreenJson<Banner>(){
     override fun kSerializer() = serializer()
 
     val hasNetworks: Boolean

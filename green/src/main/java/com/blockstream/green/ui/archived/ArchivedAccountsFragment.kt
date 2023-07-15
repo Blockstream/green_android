@@ -3,7 +3,6 @@ package com.blockstream.green.ui.archived
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.green.R
@@ -20,10 +19,9 @@ import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-@AndroidEntryPoint
 class ArchivedAccountsFragment :
     AbstractWalletFragment<BaseRecyclerViewBinding>(R.layout.base_recycler_view, 0) {
     val args: ArchivedAccountsFragmentArgs by navArgs()
@@ -31,10 +29,8 @@ class ArchivedAccountsFragment :
 
     override val screenName = "ArchivedAccounts"
 
-    @Inject
-    lateinit var viewModelFactory: ArchivedAccountsViewModel.AssistedFactory
-    val viewModel: ArchivedAccountsViewModel by viewModels {
-        ArchivedAccountsViewModel.provideFactory(viewModelFactory, args.wallet)
+    val viewModel: ArchivedAccountsViewModel by viewModel {
+        parametersOf(args.wallet)
     }
 
     override fun getWalletViewModel() = viewModel

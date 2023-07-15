@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk.data
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 data class EncryptWithPin constructor(
     var networkInjected: Network? = null,
     @SerialName("pin_data") val pinData: PinData,
-): GdkJson<EncryptWithPin>() {
+): GreenJson<EncryptWithPin>() {
     override fun kSerializer() = serializer()
 
     val network

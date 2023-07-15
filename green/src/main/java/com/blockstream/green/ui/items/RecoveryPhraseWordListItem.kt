@@ -7,10 +7,10 @@ import com.blockstream.green.databinding.ListItemRecoveryPhraseWordBinding
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
 
-data class RecoveryPhraseWordListItem(
-    private val index: Int,
-    internal var word: CharSequence,
-    private val isActive: Boolean
+data class RecoveryPhraseWordListItem constructor(
+    val index: Int,
+    val word: String,
+    val isActive: Boolean
 ) : AbstractBindingItem<ListItemRecoveryPhraseWordBinding>() {
     override val type: Int
         get() = R.id.fastadapter_recovery_phrase_word_item_id
@@ -22,7 +22,6 @@ data class RecoveryPhraseWordListItem(
     override fun bindView(binding: ListItemRecoveryPhraseWordBinding, payloads: List<Any>) {
         binding.counter.text = index.toString()
         binding.word.text = word
-
         binding.word.setBackgroundResource(if(isActive) R.drawable.color_surface_round_stroked else R.drawable.color_surface_round)
     }
 

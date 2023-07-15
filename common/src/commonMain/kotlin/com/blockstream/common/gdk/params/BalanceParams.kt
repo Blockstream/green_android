@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk.params
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -15,7 +15,7 @@ data class BalanceParams constructor(
     @SerialName("dust_limit") val dustLimit: Int? = null,
     @SerialName("expired_at") val expiredAt: Long? = null,
     @SerialName("confidential") val confidential: Boolean? = null,
-) : GdkJson<BalanceParams>() {
+) : GreenJson<BalanceParams>() {
     override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()

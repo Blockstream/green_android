@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk.data
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -9,7 +9,7 @@ data class TwoFactorMethodConfig(
     @SerialName("confirmed") val confirmed: Boolean = false,
     @SerialName("enabled") val enabled: Boolean = false,
     @SerialName("data") val data: String = "",
-): GdkJson<TwoFactorMethodConfig>() {
+): GreenJson<TwoFactorMethodConfig>() {
 
     override fun kSerializer() = serializer()
 }

@@ -1,9 +1,9 @@
 package com.blockstream.common.managers
 
 import com.benasher44.uuid.uuid4
-import com.blockstream.common.CountlyInteface
+import com.blockstream.common.CountlyBase
 import com.blockstream.common.data.ApplicationSettings
-import com.blockstream.common.server
+import com.blockstream.common.utils.server
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.get
 import com.russhwolf.settings.set
@@ -15,21 +15,14 @@ import saschpe.kase64.base64UrlEncoded
 import kotlin.random.Random
 import kotlin.random.nextLong
 
+
 class SettingsManager constructor(
+    private val settings: Settings,
     val analyticsFeatureEnabled: Boolean,
     val lightningFeatureEnabled: Boolean,
-    val rateGooglePlayEnabled: Boolean,
-    private val settings: Settings
+    val storeRateEnabled: Boolean
 ) {
-    var lightningCodeOverride = false
-
-    fun isLightningEnabled(countly: CountlyInteface): Boolean {
-        return lightningFeatureEnabled && (countly.isLightningFeatureEnabled || lightningCodeOverride)
-    }
-
-    private var _appSettings =
-        MutableStateFlow(ApplicationSettings.fromSettings(settings))
-
+    private var _appSettings = MutableStateFlow(ApplicationSettings.fromSettings(settings))
 
     val appSettings
         get() = _appSettings.value
@@ -103,6 +96,22 @@ class SettingsManager constructor(
         settings.putLong(KEY_COUNTLY_OFFSET, 0L)
     }
 
+    fun setLightningInvitation() {
+        settings.putBoolean(KEY_LIGHTNING_INVITATION, true)
+    }
+
+    fun isLightningEnabled(countly: CountlyBase): Boolean {
+        return lightningFeatureEnabled && (countly.isLightningFeatureEnabled || settings[KEY_LIGHTNING_INVITATION, false])
+    }
+
+    fun walletCounter(): Int {
+        return settings[KEY_WALLET_COUNTER, 0]
+    }
+
+    fun increaseWalletCounter(force: Int? = null){
+        settings[KEY_WALLET_COUNTER] = force ?: (walletCounter() + 1)
+    }
+
     fun clearAll() {
         settings.clear()
     }
@@ -117,5 +126,7 @@ class SettingsManager constructor(
         const val KEY_COUNTLY_OFFSET = "countly_offset"
         const val KEY_REMEMBER_DEVICE_WALLET = "remember_device_wallet"
         const val KEY_ALLOW_CUSTOM_PIN_SERVER = "allow_custom_pin_server"
+        const val KEY_LIGHTNING_INVITATION = "lightning_invitation"
+        const val KEY_WALLET_COUNTER = "wallet_counter"
     }
 }

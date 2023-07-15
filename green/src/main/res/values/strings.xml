@@ -1264,6 +1264,7 @@
   <string name="id_waiting_for_transaction">Waiting for transaction…</string>
   <string name="id_wallet">Wallet</string>
   <string name="id_wallet_already_restored">Wallet already restored</string>
+  <string name="id_wallet_already_restored_s">Wallet already restored: %s</string>
   <string name="id_wallet_assets">Wallet Assets</string>
   <string name="id_wallet_backup">Wallet Backup</string>
   <string name="id_wallet_coins_will_require">Wallet coins will require two-factor reactivation once a year to remain protected by two-factor authentication.</string>
@@ -1397,4 +1398,15 @@
   <string name="id_copy_url">Copy URL</string>
   <string name="id_are_you_not_receiving_your_2fa_code">Are you not receiving your 2FA code?</string>
   <string name="id_try_again_using_another_2fa_method">Try again, using another 2FA method.</string>
+  <string name="id_lightning_shortcut">Lightning shortcut</string>
+  <string name="id_biometrics">Biometrics</string>
+  <string name="id_lightning_account_shortcut">Lightning Account Shortcut</string>
+  <string name="id_quickly_access_your_lightning_account">Quickly access your lightning account for payments on the go. Keep the rest of your wallet safely locked when not needed.</string>
+  <string name="id_want_to_quickly_access_your_lightning_account">Want to quickly access your Lightning account separate from your primary wallet, to maintain security and privacy of any other account in your wallet?\n\nYou won\’t need to enter your PIN to access your funds on lightning via this shortcut.</string>
+  <string name="id_maybe_later">Maybe later</string>
+  <string name="id_yes_create_a_shortcut">Yes, Create a Shortcut</string>
+  <string name="id_wallet_overview">Wallet Overview</string>
+  <string name="id_lightning_account">Lightning Account</string>
+  <string name="id_add_lightning_shortcut">Add lightning shortcut</string>
+  <string name="id_remove_lightning_shortcut">Remove lightning shortcut</string>
 </resources>

@@ -2,13 +2,12 @@ package com.blockstream.green.ui.items
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import com.blockstream.common.data.Denomination
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.green.R
-import com.blockstream.green.data.Denomination
 import com.blockstream.green.databinding.ListItemAccountBinding
-import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.getNetworkIcon
-import com.blockstream.green.gdk.policyAsset
 import com.blockstream.green.utils.toAmountLook
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +33,7 @@ data class AccountListItem constructor(
         binding.account = account
         binding.showBalance = true
 
-        val policyAsset = session.accountAssets(account).policyAsset()
+        val policyAsset = session.accountAssets(account).value.policyAsset
 
         binding.primaryValue = ""
         binding.secondaryValue = ""

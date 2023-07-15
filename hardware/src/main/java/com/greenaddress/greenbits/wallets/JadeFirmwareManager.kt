@@ -3,7 +3,7 @@ package com.greenaddress.greenbits.wallets
 import android.os.SystemClock
 import android.util.Base64
 import com.blockstream.common.gdk.device.DeviceBrand
-import com.blockstream.jade.HttpRequestProvider
+import com.blockstream.common.interfaces.HttpRequestProvider
 import com.blockstream.jade.JadeAPI
 import com.blockstream.jade.data.VersionInfo
 import com.blockstream.jade.entities.JadeVersion
@@ -16,7 +16,6 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import mu.KLogging
 import java.io.IOException
-import java.net.URL
 import java.security.MessageDigest
 
 // A firmware instance on the file server
@@ -123,9 +122,9 @@ class JadeFirmwareManager constructor(
     }
 
     // Get Jade firmware server uris - ensures Tor use as appropriate.
-    private fun urls(fwFilePath: String): List<URL> {
-        val tls = URL(JADE_FW_SERVER_HTTPS + fwFilePath)
-        val onion = URL(JADE_FW_SERVER_ONION + fwFilePath)
+    private fun urls(fwFilePath: String): List<String> {
+        val tls = JADE_FW_SERVER_HTTPS + fwFilePath
+        val onion = JADE_FW_SERVER_ONION + fwFilePath
         return listOf(tls, onion)
     }
 
@@ -246,19 +245,15 @@ class JadeFirmwareManager constructor(
     // fw-server, to read the index or download the firmware are not errors that prevent the connection
     // to Jade being made.
     // The function returns whether the current firmware is valid/allowed, regardless of any OTA occurring.
-    suspend fun checkFirmware(jade: JadeAPI, onlyIfUninitialized: Boolean, onlyIfNotMinimum: Boolean): Boolean? {
+    suspend fun checkFirmware(jade: JadeAPI, checkIfUninitialized: Boolean): Boolean? {
         try {
             // Do firmware check and ota if necessary
             val verInfo: VersionInfo = jade.versionInfo
             val currentVersion = JadeVersion(verInfo.jadeVersion)
             val fwValid = isJadeFwValid(currentVersion)
 
-            if(onlyIfUninitialized && !verInfo.jadeHasPin && fwValid){
-                return  true
-            }
-
-            if(onlyIfNotMinimum && fwValid){
-                return true
+            if(checkIfUninitialized && verInfo.jadeHasPin){
+                return fwValid
             }
 
             // Log if current firmware not valid wrt the allowed minimum version

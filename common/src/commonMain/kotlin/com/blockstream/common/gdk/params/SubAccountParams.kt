@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk.params
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.serializers.AccountTypeSerializer
 import kotlinx.serialization.SerialName
@@ -14,7 +14,7 @@ data class SubAccountParams constructor(
     @SerialName("type") val type: AccountType,
     @SerialName("recovery_mnemonic") val recoveryMnemonic: String? = null,
     @SerialName("recovery_xpub") val recoveryXpub: String? = null,
-) : GdkJson<SubAccountParams>() {
+) : GreenJson<SubAccountParams>() {
 
     override fun kSerializer() = serializer()
 }

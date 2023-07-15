@@ -9,7 +9,7 @@ import com.blockstream.green.databinding.AccountCardLayoutBinding
 import com.blockstream.green.databinding.ListItemAccountsBinding
 import com.blockstream.green.extensions.bind
 import com.blockstream.green.extensions.dialog
-import com.blockstream.green.gdk.GdkSession
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.green.views.AccordionListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

@@ -3,21 +3,21 @@ package com.blockstream.green.ui.devices
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.blockstream.green.R
 import com.blockstream.green.databinding.JadeGuideFragmentBinding
 import com.blockstream.green.extensions.setOnClickListenerIndexed
 import com.blockstream.green.ui.AppFragment
+import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.utils.fadeIn
 import com.blockstream.green.utils.fadeOut
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 
-@AndroidEntryPoint
 class JadeGuideFragment : AppFragment<JadeGuideFragmentBinding>(
     layout = R.layout.jade_guide_fragment,
     menuRes = 0
@@ -26,6 +26,10 @@ class JadeGuideFragment : AppFragment<JadeGuideFragmentBinding>(
     override val screenName = "JadeSetupGuid"
 
     var step = 0
+
+    val viewModel: AppViewModelAndroid by viewModels()
+
+    override fun getAppViewModel() = viewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

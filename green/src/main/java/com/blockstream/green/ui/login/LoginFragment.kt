@@ -10,18 +10,21 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.Urls
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.SetupArgs
+import com.blockstream.common.data.data
+import com.blockstream.common.data.isEmpty
+import com.blockstream.common.database.LoginCredentials
 import com.blockstream.common.gdk.data.Credentials
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.login.LoginViewModel
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
-import com.blockstream.green.data.NavigateEvent
-import com.blockstream.green.data.OnboardingOptions
-import com.blockstream.green.database.CredentialType
-import com.blockstream.green.database.LoginCredentials
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.databinding.LoginFragmentBinding
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.extensions.AuthenticationCallback
@@ -29,102 +32,110 @@ import com.blockstream.green.extensions.authenticateWithBiometrics
 import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.errorSnackbar
 import com.blockstream.green.extensions.hideKeyboard
-import com.blockstream.green.gdk.isConnectionError
-import com.blockstream.green.gdk.isNotAuthorized
+import com.blockstream.green.ui.AppFragment
+import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.ui.bottomsheets.Bip39PassphraseBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.DeleteWalletBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.RenameWalletBottomSheetDialogFragment
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.openBrowser
 import com.blockstream.green.views.GreenAlertView
 import com.blockstream.green.views.GreenPinViewListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
-import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import java.security.UnrecoverableKeyException
-import javax.inject.Inject
 
-@AndroidEntryPoint
-class LoginFragment : AbstractWalletFragment<LoginFragmentBinding>(
+class LoginFragment : AppFragment<LoginFragmentBinding>(
     layout = R.layout.login_fragment,
     menuRes = R.menu.login
 ) {
     val args: LoginFragmentArgs by navArgs()
-    override val walletOrNull by lazy { args.wallet }
     val device by lazy { deviceManager.getDevice(args.deviceId) }
 
-    @Inject
-    lateinit var viewModelFactory: LoginViewModel.AssistedFactory
-    val viewModel: LoginViewModel by viewModels {
-        LoginViewModel.provideFactory(viewModelFactory, args.wallet, device)
-    }
+    val viewModel: LoginViewModel by viewModel { parametersOf(args.wallet, args.isLightningShortcut, args.autoLoginWallet, device) }
 
-    @Inject
-    lateinit var appKeystore: AppKeystore
+    private val appKeystore: AppKeystore by inject()
 
-    @Inject
-    lateinit var deviceManager: DeviceManager
+    private val deviceManager: DeviceManager by inject()
 
-    @Inject
-    lateinit var walletRepository: WalletRepository
-
-    var biometricPrompt : BiometricPrompt? = null
+    private var biometricPrompt : BiometricPrompt? = null
 
     override val screenName = "Login"
 
     override fun getBannerAlertView(): GreenAlertView = binding.banner
 
-    override fun isLoggedInRequired(): Boolean = false
+    override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override fun getWalletViewModel() = viewModel
+    override fun getAppViewModel(): AppViewModelAndroid? = null
 
     override val title: String
-        get() = viewModel.wallet.name
+        get() = viewModel.greenWallet.name
 
-    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
-        binding.vm = viewModel
+    override val subtitle: String?
+        get() = if(args.isLightningShortcut) getString(R.string.id_lightning_account) else null
 
-        viewModel.onEvent.observe(viewLifecycleOwner) { onEvent ->
-            onEvent.getContentIfNotHandledForType<NavigateEvent.NavigateWithData>()?.let {
-                if(it.data is Wallet) {
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+        when (sideEffect) {
+            is SideEffects.WalletDelete -> {
+                NavGraphDirections.actionGlobalHomeFragment().let { directions ->
+                    navigate(directions.actionId, directions.arguments, isLogout = true)
+                }
+            }
+
+            is SideEffects.Navigate -> {
+                (sideEffect.data as? GreenWallet)?.also {
                     logger.info { "Login successful" }
-                    navigate(LoginFragmentDirections.actionGlobalWalletOverviewFragment(wallet = it.data))
-                }else if (it.data is Credentials){
+                    navigate(LoginFragmentDirections.actionGlobalWalletOverviewFragment(wallet = sideEffect.data as GreenWallet))
+                }
+
+                (sideEffect.data as? Credentials)?.also {
                     logger.info { "Emergency Recovery Phrase" }
                     navigate(
                         LoginFragmentDirections.actionGlobalRecoveryPhraseFragment(
                             wallet = null,
-                            credentials = it.data
+                            credentials = sideEffect.data as Credentials
                         )
                     )
                 }
             }
 
-            onEvent.getContentIfNotHandledForType<LoginViewModel.LoginEvent.LaunchBiometrics>()?.let {
-                if(args.autoLogin) {
-                    launchBiometricPrompt(it.loginCredentials)
-                }
+            is LoginViewModel.LocalSideEffects.PinError -> {
+                binding.pinView.reset(true)
             }
 
-            onEvent.getContentIfNotHandledForType<LoginViewModel.LoginEvent.LoginDevice>()?.let {
-                viewModel.loginWithDevice()
+            is LoginViewModel.LocalSideEffects.LaunchBiometrics -> {
+                launchBiometricPrompt(sideEffect.loginCredentials)
             }
 
-            onEvent.getContentIfNotHandledForType<LoginViewModel.LoginEvent.AskBip39Passphrase>()?.let {
+            is LoginViewModel.LocalSideEffects.AskBip39Passphrase -> {
                 Bip39PassphraseBottomSheetDialogFragment.show(childFragmentManager)
             }
-        }
 
-        viewModel.walletLiveData.observe(viewLifecycleOwner){
+            is LoginViewModel.LocalSideEffects.LaunchUserPresenceForLightning -> {
+                launchUserPresencePromptForLightningShortcut()
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.vm = viewModel
+
+        viewModel.walletName.onEach {
             updateToolbar()
-        }
+        }.launchIn(lifecycleScope)
 
-        viewModel.pinCredentials.observe(viewLifecycleOwner) {
-            it?.also {
+        viewModel.pinCredentials.onEach { dataState ->
+            dataState.data()?.also {
 
                 if(it.counter > 0){
-                    val errorMessage = if(it.counter == 2) {
+                    val errorMessage = if(it.counter == 2L) {
                         getString(R.string.id_last_attempt_if_failed_you_will)
                     }else {
                         getString(R.string.id_invalid_pin_you_have_1d, 3 - it.counter)
@@ -135,13 +146,12 @@ class LoginFragment : AbstractWalletFragment<LoginFragmentBinding>(
             }
 
             invalidateMenu()
-        }
+        }.launchIn(lifecycleScope)
 
-        viewModel.passwordCredentials.observe(viewLifecycleOwner) {
-            it?.also {
-
+        viewModel.passwordCredentials.onEach { dataState ->
+            dataState.data()?.also {
                 if(it.counter > 0){
-                    val errorMessage = if(it.counter == 2) {
+                    val errorMessage = if(it.counter == 2L) {
                         getString(R.string.id_last_attempt_if_failed_you_will)
                     }else {
                         getString(R.string.id_invalid_pin_you_have_1d, 3 - it.counter)
@@ -154,46 +164,23 @@ class LoginFragment : AbstractWalletFragment<LoginFragmentBinding>(
             invalidateMenu()
         }
 
-        viewModel.onError.observe(viewLifecycleOwner) {
-            it?.getContentIfNotHandledOrReturnNull()?.let { throwable ->
-
-                if (!throwable.isNotAuthorized() || viewModel.watchOnlyCredentials.value != null) {
-
-                    if(throwable.isConnectionError()){
-                        errorSnackbar(throwable = throwable, session = session, showReport = true, duration = Snackbar.LENGTH_LONG)
-                    }else {
-                        errorDialog(
-                            throwable = throwable,
-                            network = null,
-                            session = session,
-                            showReport = true
-                        ) {
-                            if (device != null) {
-                                popBackStack()
-                            }
-                        }
-                    }
-                }
-
-                binding.pinView.reset(true)
-            }
-        }
-
         binding.buttonAppSettings.setOnClickListener {
             navigate(NavGraphDirections.actionGlobalAppSettingsFragment())
         }
 
         binding.buttonLoginWithBiometrics.setOnClickListener {
-            viewModel.biometricsCredentials.value?.let {
+            viewModel.biometricsCredentials.data()?.let {
                 launchBiometricPrompt(it)
             }
         }
 
+        binding.iconLightningShortcut.setOnClickListener {
+             viewModel.postEvent(LoginViewModel.LocalEvents.LoginLightningShortcut(false))
+        }
+
         binding.pinView.listener = object : GreenPinViewListener {
             override fun onPin(pin: String) {
-                viewModel.pinCredentials.value?.let { loginCredentials ->
-                    viewModel.loginWithPin(pin, loginCredentials)
-                }
+                viewModel.postEvent(LoginViewModel.LocalEvents.LoginWithPin(pin))
             }
 
             override fun onPinChange(pinLength: Int, intermediatePin: String?) {}
@@ -206,34 +193,24 @@ class LoginFragment : AbstractWalletFragment<LoginFragmentBinding>(
         binding.buttonRestoreWallet.setOnClickListener {
             navigate(
                 LoginFragmentDirections.actionLoginFragmentToEnterRecoveryPhraseFragment(
-                    OnboardingOptions.fromWallet(viewModel.wallet), wallet = wallet
+                    setupArgs = SetupArgs.restoreMnemonic(
+                        greenWallet = viewModel.greenWallet
+                    ),
                 )
             )
         }
 
         binding.buttonWatchOnlyLogin.setOnClickListener {
-            val watchOnlyCredentials = viewModel.watchOnlyCredentials.value
-
-            if(watchOnlyCredentials?.credentialType == CredentialType.BIOMETRICS_WATCHONLY_CREDENTIALS){
-                launchBiometricPrompt(watchOnlyCredentials)
-            }else {
-                if (viewModel.initialAction.value == false && watchOnlyCredentials != null) {
-                    viewModel.loginWatchOnlyWithLoginCredentials(watchOnlyCredentials)
-                } else {
-                    viewModel.watchOnlyLogin()
-                }
-            }
+            viewModel.postEvent(LoginViewModel.LocalEvents.LoginWatchOnly)
         }
 
         binding.buttonLoginWithPassword.setOnClickListener {
-            viewModel.passwordCredentials.value?.let { loginCredentials ->
-                viewModel.loginWithPin(viewModel.password.value ?: "", loginCredentials)
-            }
+            viewModel.postEvent(LoginViewModel.LocalEvents.LoginWithPin(binding.password ?: ""))
             hideKeyboard()
         }
 
         binding.buttonLoginWithDevice.setOnClickListener {
-            viewModel.loginWithDevice()
+            viewModel.postEvent(LoginViewModel.LocalEvents.LoginWithDevice)
         }
 
         binding.passphraseButton.setOnClickListener {
@@ -241,18 +218,18 @@ class LoginFragment : AbstractWalletFragment<LoginFragmentBinding>(
         }
 
         binding.buttonEmergencyRecoveryPhrase.setOnClickListener {
-            viewModel.isEmergencyRecoveryPhrase.value = false
+            viewModel.postEvent(LoginViewModel.LocalEvents.EmergencyRecovery(false))
         }
     }
 
     override fun onPrepareMenu(menu: Menu) {
         super.onPrepareMenu(menu)
 
-        menu.findItem(R.id.help).isVisible = !wallet.isHardware && !viewModel.wallet.isWatchOnly && viewModel.pinCredentials.isReadyAndNull && viewModel.passwordCredentials.isReadyAndNull
-        menu.findItem(R.id.bip39_passphrase).isVisible = !wallet.isHardware && !wallet.isWatchOnly
-        menu.findItem(R.id.rename).isVisible = !wallet.isHardware
-        menu.findItem(R.id.delete).isVisible = !wallet.isHardware
-        menu.findItem(R.id.show_recovery_phrase).isVisible = !wallet.isHardware && !wallet.isWatchOnly
+        menu.findItem(R.id.help).isVisible = !viewModel.isLightningShortcut && !viewModel.greenWallet.isHardware && !viewModel.greenWallet.isWatchOnly && viewModel.pinCredentials.isEmpty() && viewModel.passwordCredentials.isEmpty()
+        menu.findItem(R.id.bip39_passphrase).isVisible = !viewModel.isLightningShortcut && !viewModel.greenWallet.isHardware && !viewModel.greenWallet.isWatchOnly
+        menu.findItem(R.id.rename).isVisible = !viewModel.isLightningShortcut && !viewModel.greenWallet.isHardware
+        menu.findItem(R.id.delete).isVisible = !viewModel.isLightningShortcut && !viewModel.greenWallet.isHardware
+        menu.findItem(R.id.show_recovery_phrase).isVisible = !viewModel.isLightningShortcut && !viewModel.greenWallet.isHardware && !viewModel.greenWallet.isWatchOnly
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -261,10 +238,10 @@ class LoginFragment : AbstractWalletFragment<LoginFragmentBinding>(
                 Bip39PassphraseBottomSheetDialogFragment.show(childFragmentManager)
             }
             R.id.delete -> {
-                DeleteWalletBottomSheetDialogFragment.show(wallet, childFragmentManager)
+                DeleteWalletBottomSheetDialogFragment.show(viewModel.greenWallet, childFragmentManager)
             }
             R.id.rename -> {
-                RenameWalletBottomSheetDialogFragment.show(wallet, childFragmentManager)
+                RenameWalletBottomSheetDialogFragment.show(viewModel.greenWallet, childFragmentManager)
             }
             R.id.show_recovery_phrase -> {
                 MaterialAlertDialogBuilder(requireContext())
@@ -272,8 +249,7 @@ class LoginFragment : AbstractWalletFragment<LoginFragmentBinding>(
                     .setMessage(R.string.id_if_for_any_reason_you_cant)
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(android.R.string.ok) { _, _ ->
-                        viewModel.bip39Passphrase.value = ""
-                        viewModel.isEmergencyRecoveryPhrase.value = true
+                        viewModel.postEvent(LoginViewModel.LocalEvents.EmergencyRecovery(true))
                     }
                     .show()
             }
@@ -299,7 +275,7 @@ class LoginFragment : AbstractWalletFragment<LoginFragmentBinding>(
             return
         }
 
-        loginCredentials.encryptedData?.let { encryptedData ->
+        loginCredentials.encrypted_data?.let { encryptedData ->
             val promptInfo = BiometricPrompt.PromptInfo.Builder()
                 .setTitle(getString(R.string.id_login_with_biometrics))
                 .setConfirmationRequired(true)
@@ -325,7 +301,7 @@ class LoginFragment : AbstractWalletFragment<LoginFragmentBinding>(
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                         if (isV4Authentication) {
                             result.cryptoObject?.cipher?.let {
-                                viewModel.loginWithBiometrics(it, loginCredentials)
+                                viewModel.postEvent(LoginViewModel.LocalEvents.LoginWithBiometrics(it, loginCredentials))
                             }
                         } else {
                             // Use v3 authentication system
@@ -334,7 +310,7 @@ class LoginFragment : AbstractWalletFragment<LoginFragmentBinding>(
                                     encryptedData,
                                     loginCredentials.keystore
                                 ).also {
-                                    viewModel.loginWithBiometricsV3(it, loginCredentials)
+                                    viewModel.postEvent(LoginViewModel.LocalEvents.LoginWithBiometricsV3(it, loginCredentials))
                                 }
 
                             } catch (e: Exception) {
@@ -363,13 +339,59 @@ class LoginFragment : AbstractWalletFragment<LoginFragmentBinding>(
             } catch (e: KeyPermanentlyInvalidatedException) {
                 errorSnackbar(e)
                 // Remove invalidated login credentials
-                viewModel.deleteLoginCredentials(loginCredentials)
+                viewModel.postEvent(LoginViewModel.LocalEvents.DeleteLoginCredentials(loginCredentials))
             } catch (e: UnrecoverableKeyException) {
                 errorSnackbar(e)
                 // Remove invalidated login credentials
-                viewModel.deleteLoginCredentials(loginCredentials)
+                viewModel.postEvent(LoginViewModel.LocalEvents.DeleteLoginCredentials(loginCredentials))
             } catch (e: Exception) {
                 errorDialog(e)
+            }
+        }
+    }
+
+    private fun launchUserPresencePromptForLightningShortcut() {
+        biometricPrompt?.cancelAuthentication()
+
+        val promptInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle(getString(R.string.id_authenticate))
+            .setConfirmationRequired(true)
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+            promptInfo.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+        } else {
+            promptInfo.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+        }
+
+        biometricPrompt = BiometricPrompt(
+            this,
+            ContextCompat.getMainExecutor(requireContext()),
+            object : AuthenticationCallback(this) {
+                override fun onAuthenticationError(
+                    errorCode: Int,
+                    errString: CharSequence
+                ) {
+                    if(errorCode == BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL){
+                        // User hasn't enabled any device credential,
+                        viewModel.postEvent(LoginViewModel.LocalEvents.LoginLightningShortcut(true))
+                    }else{
+                        super.onAuthenticationError(errorCode, errString)
+                    }
+                }
+
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    viewModel.postEvent(LoginViewModel.LocalEvents.LoginLightningShortcut(true))
+                }
+            })
+
+        try {
+            // Ask for user presence
+            biometricPrompt?.authenticate(promptInfo.build())
+        } catch (e: Exception) {
+            errorDialog(e) {
+                // If an unsupported method is initiated, it's better to show the words rather than
+                // block the user from retrieving his words
+                viewModel.postEvent(LoginViewModel.LocalEvents.LoginLightningShortcut(true))
             }
         }
     }

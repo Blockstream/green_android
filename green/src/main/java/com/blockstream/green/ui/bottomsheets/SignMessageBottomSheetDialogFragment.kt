@@ -8,10 +8,8 @@ import com.blockstream.green.databinding.SignMessageBottomSheetBinding
 import com.blockstream.green.extensions.copyToClipboard
 import com.blockstream.green.ui.addresses.AddressesViewModel
 import com.blockstream.green.utils.getClipboard
-import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
 
-@AndroidEntryPoint
 class SignMessageBottomSheetDialogFragment :
     WalletBottomSheetDialogFragment<SignMessageBottomSheetBinding, AddressesViewModel>() {
 

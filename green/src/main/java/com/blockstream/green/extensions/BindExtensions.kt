@@ -5,24 +5,22 @@ import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateMargins
 import androidx.core.view.updatePadding
+import com.blockstream.common.data.Denomination
+import com.blockstream.common.extensions.getAssetName
+import com.blockstream.common.extensions.hasHistory
+import com.blockstream.common.extensions.isPolicyAsset
+import com.blockstream.common.extensions.needs2faActivation
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Utxo
 import com.blockstream.green.R
-import com.blockstream.green.data.Denomination
 import com.blockstream.green.databinding.AccountAssetLayoutBinding
 import com.blockstream.green.databinding.AccountCardLayoutBinding
 import com.blockstream.green.databinding.AssetLayoutBinding
 import com.blockstream.green.databinding.UtxoLayoutBinding
-import com.blockstream.green.gdk.GdkSession
-import com.blockstream.green.gdk.balance
 import com.blockstream.green.gdk.getAssetDrawableOrNull
 import com.blockstream.green.gdk.getAssetIcon
-import com.blockstream.green.gdk.getAssetName
-import com.blockstream.green.gdk.hasHistory
-import com.blockstream.green.gdk.isPolicyAsset
-import com.blockstream.green.gdk.needs2faActivation
-import com.blockstream.green.gdk.policyAssetOrNull
 import com.blockstream.green.looks.AssetLook
 import com.blockstream.green.utils.toAmountLook
 import com.blockstream.green.utils.toPixels
@@ -138,7 +136,7 @@ fun AccountCardLayoutBinding.bind(
     val accountAssets = session.accountAssets(account)
 
     // If balance is not initiated yet, avoid showing a zero balance
-    val policyAsset = accountAssets.policyAssetOrNull()
+    val policyAsset = accountAssets.value.policyAssetOrNull
 
     // Don't update the values with empty string to avoid UI glitches
     // primaryValue = "" && secondaryValue = ""
@@ -175,7 +173,7 @@ fun AccountCardLayoutBinding.bind(
 
     if(account.hasHistory(session)) {
 
-        accountAssets.onEachIndexed { index, asset ->
+        accountAssets.value.assets?.onEachIndexed { index, asset ->
             val isAssetWithoutIcon = if (asset.key.isPolicyAsset(session)) {
                 false
             } else {
@@ -219,7 +217,7 @@ fun AccountCardLayoutBinding.bind(
                     .build()
                 imageView.adjustViewBounds = true
                 imageView.scaleType = ImageView.ScaleType.FIT_CENTER
-                imageView.elevation = (accountAssets.size - index).toFloat()
+                imageView.elevation = (accountAssets.value.assets!!.size - index).toFloat()
 
                 assetsIcons.addView(imageView)
             }

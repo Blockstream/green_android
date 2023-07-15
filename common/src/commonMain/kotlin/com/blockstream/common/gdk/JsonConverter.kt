@@ -57,7 +57,7 @@ class JsonConverter constructor(val log: Boolean, val maskSensitiveFields: Boole
         var processed = jsonString
         if(maskSensitiveFields) {
             for (mask in maskFields) {
-                processed = processed?.replace(Regex("(?<=$mask\":\")(.*?)(?=\")"), "**masked**")
+                processed = processed?.replace(Regex("(?<=$mask\":\")(.*?)(?=\")"), "**Redacted**")
             }
         }
         return processed

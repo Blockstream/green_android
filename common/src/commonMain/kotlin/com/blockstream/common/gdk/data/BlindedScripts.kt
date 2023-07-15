@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk.data
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 data class BlindedScripts(
     @SerialName("script") val script: String? = null,
     @SerialName("pubkey") val pubkey: String? = null,
-): GdkJson<BlindedScripts>() {
+): GreenJson<BlindedScripts>() {
 
     override fun kSerializer() = serializer()
 }

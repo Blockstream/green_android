@@ -1,9 +1,9 @@
 package com.blockstream.common.managers
 
-import com.blockstream.common.gdk.data.Assets
+import com.blockstream.common.gdk.data.LiquidAssets
 import com.blockstream.common.gdk.params.AssetsParams
 import com.blockstream.common.gdk.params.GetAssetsParams
-import kotlinx.coroutines.CoroutineScope
+import org.koin.core.annotation.Single
 
 interface AssetQATester {
     fun isAssetFetchDisabled(): Boolean
@@ -11,7 +11,7 @@ interface AssetQATester {
 
 interface AssetsProvider {
     fun refreshAssets(params: AssetsParams)
-    fun getAssets(params: GetAssetsParams): Assets?
+    fun getAssets(params: GetAssetsParams): LiquidAssets?
 }
 
 /*
@@ -19,13 +19,13 @@ interface AssetsProvider {
  * App Cache: cached data from apk
  * GDK Cache: cached data from a previous successful fetch
  */
+@Single
 class AssetManager constructor(
-    private val coroutineScope: CoroutineScope,
-    val qaTester: AssetQATester,
+    val qaTester: AssetQATester? = null
 ) {
 
-    private val liquidAssetManager by lazy { NetworkAssetManager(coroutineScope, qaTester)}
-    private val liquidTestnetAssetManager by lazy { NetworkAssetManager(coroutineScope, qaTester)}
+    private val liquidAssetManager by lazy { NetworkAssetManager(qaTester)}
+    private val liquidTestnetAssetManager by lazy { NetworkAssetManager(qaTester)}
 
     fun getNetworkAssetManager(isMainnet: Boolean): NetworkAssetManager {
         return if (isMainnet) {

@@ -2,39 +2,30 @@ package com.blockstream.green.ui.swap
 
 import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.HerokuResponse
+import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
 import com.blockstream.common.gdk.data.SwapProposal
-import com.blockstream.green.data.Countly
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.extensions.logException
-import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.createQrBitmap
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
+import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import mu.KLogging
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
 
-
-class SwapProposalViewModel @AssistedInject constructor(
-    sessionManager: SessionManager,
-    walletRepository: WalletRepository,
-    countly: Countly,
-    @Assisted wallet: Wallet,
-    @Assisted proposal: SwapProposal,
-) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet) {
+@KoinViewModel
+class SwapProposalViewModel constructor(
+    @InjectedParam wallet: GreenWallet,
+    @InjectedParam proposal: SwapProposal,
+) : AbstractWalletViewModel(wallet) {
 
     var qrBitmap = MutableLiveData<Bitmap?>()
     var currentFrame = MutableLiveData<Int>()
@@ -42,7 +33,7 @@ class SwapProposalViewModel @AssistedInject constructor(
     var link = MutableLiveData<String?>()
 
     init {
-        viewModelScope.launch(context = Dispatchers.IO + logException(countly)) {
+        viewModelScope.coroutineScope.launch(context = Dispatchers.IO + logException(countly)) {
             upload(proposal).let {
                 link.postValue(it)
                 qrBitmap.postValue(createQrBitmap(it, errorCorrectionLevel = ErrorCorrectionLevel.H))
@@ -81,27 +72,5 @@ class SwapProposalViewModel @AssistedInject constructor(
             }.let {
                 "/proposals/${it.proposalId}"
             }
-    }
-
-    @dagger.assisted.AssistedFactory
-    interface AssistedFactory {
-        fun create(
-            wallet: Wallet,
-            proposal: SwapProposal
-        ): SwapProposalViewModel
-    }
-
-    companion object : KLogging() {
-
-        fun provideFactory(
-            assistedFactory: AssistedFactory,
-            wallet: Wallet,
-            proposal: SwapProposal
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet, proposal) as T
-            }
-        }
     }
 }

@@ -1,6 +1,14 @@
 package com.blockstream.green.ui.settings
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.blockstream.common.data.CredentialType
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.database.LoginCredentials
+import com.blockstream.common.extensions.biometricsPinData
+import com.blockstream.common.extensions.createLoginCredentials
+import com.blockstream.common.extensions.lightningMnemonic
+import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.Settings
 import com.blockstream.common.gdk.data.SettingsNotification
@@ -10,38 +18,26 @@ import com.blockstream.common.gdk.data.TwoFactorReset
 import com.blockstream.common.gdk.params.CsvParams
 import com.blockstream.common.gdk.params.EncryptWithPinParams
 import com.blockstream.common.gdk.params.Limits
+import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.navigation.LogoutReason
+import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.common.utils.randomChars
-import com.blockstream.green.ApplicationScope
-import com.blockstream.green.data.Countly
-import com.blockstream.green.data.GdkEvent
 import com.blockstream.green.data.TwoFactorMethod
-import com.blockstream.green.database.CredentialType
-import com.blockstream.green.database.LoginCredentials
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.extensions.logException
-import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.utils.AppKeystore
-import com.blockstream.green.utils.ConsumableEvent
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
+import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 import javax.crypto.Cipher
 
-open class WalletSettingsViewModel @AssistedInject constructor(
-    sessionManager: SessionManager,
-    walletRepository: WalletRepository,
-    countly: Countly,
-    val appKeystore: AppKeystore,
-    val applicationScope: ApplicationScope,
-    @Assisted wallet: Wallet
-) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet) {
+@KoinViewModel
+open class WalletSettingsViewModel constructor(
+    @InjectedParam wallet: GreenWallet
+) : AbstractWalletViewModel(wallet) {
     private var _networkSettingsLiveData = mutableMapOf<Network, MutableLiveData<Settings>>()
     val networkSettingsLiveData
         get() = _networkSettingsLiveData
@@ -67,6 +63,8 @@ open class WalletSettingsViewModel @AssistedInject constructor(
 
     val biometricsLiveData = MutableLiveData<LoginCredentials>()
 
+    val lightningShortcutLiveData = MutableLiveData<LoginCredentials>()
+
     private val _archivedAccountsLiveData: MutableLiveData<Int> = MutableLiveData(0)
     val archivedAccountsLiveData: LiveData<Int> get() = _archivedAccountsLiveData
     val archivedAccounts: Int get() = _archivedAccountsLiveData.value ?: 0
@@ -76,33 +74,31 @@ open class WalletSettingsViewModel @AssistedInject constructor(
     init {
         session.activeSessions.forEach { network ->
             session
-                .settingsFlow(network)
+                .settings(network)
                 .onEach {
                     networkSettingsLiveData(network).value = it
-                }.launchIn(viewModelScope)
+                }.launchIn(viewModelScope.coroutineScope)
         }
 
-        session.accountsFlow.value.find {
+        session.accounts.value.find {
             it.isMultisig
         }
 
-        session.allAccountsFlow.onEach { accounts ->
-            supportId = accounts.filter { it.isMultisig && it.pointer == 0L }
-                .joinToString(",") { "${it.network.bip21Prefix}:${it.receivingId}" }
-        }.launchIn(viewModelScope)
+        session.allAccounts.onEach { accounts ->
+            supportId = accounts.filter { it.isMultisig && it.pointer == 0L || it.isLightning}
+                .joinToString(",") { "${it.network.bip21Prefix}:${if(it.isLightning) session.lightningSdk.nodeInfoStateFlow.value.id else it.receivingId}" }
+        }.launchIn(viewModelScope.coroutineScope)
 
-        walletRepository
-            .getWalletLoginCredentialsFlow(wallet.id).filterNotNull()
-            .onEach {
-                biometricsLiveData.postValue(it.biometricsPinData)
-            }
-            .launchIn(viewModelScope)
+        database.getLoginCredentialsFlow(wallet.id).onEach {
+            biometricsLiveData.postValue(it.biometricsPinData)
+            lightningShortcutLiveData.postValue(it.lightningMnemonic)
+        }.launchIn(viewModelScope.coroutineScope)
 
         session
-            .allAccountsFlow
+            .allAccounts
             .onEach { accounts ->
                 _archivedAccountsLiveData.value = accounts.count { it.hidden }
-            }.launchIn(viewModelScope)
+            }.launchIn(viewModelScope.coroutineScope)
 
         updateTwoFactorConfig()
         updateWatchOnlyUsername()
@@ -110,7 +106,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
 
     fun updateTwoFactorConfig() {
         if (!session.isWatchOnly) {
-            viewModelScope.launch(context = Dispatchers.IO + logException(countly)) {
+            viewModelScope.coroutineScope.launch(context = Dispatchers.IO + logException(countly)) {
                 session.activeSessions.filter { !it.isElectrum }.forEach {
                     networkTwoFactorConfigLiveData(it).postValue(session.getTwoFactorConfig(it))
                 }
@@ -120,7 +116,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
 
     fun updateTwoFactorConfig(network: Network) {
         if (!session.isWatchOnly) {
-            viewModelScope.launch(context = Dispatchers.IO + logException(countly)) {
+            viewModelScope.coroutineScope.launch(context = Dispatchers.IO + logException(countly)) {
                 networkTwoFactorConfigLiveData(network).postValue(session.getTwoFactorConfig(network))
             }
         }
@@ -205,7 +201,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
             }
         }, onSuccess = {
             updateTwoFactorConfig()
-            onEvent.postValue(ConsumableEvent(GdkEvent.Success))
+            postSideEffect(SideEffects.Success())
         })
     }
 
@@ -224,7 +220,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
                 .resolve(twoFactorResolver = twoFactorResolver)
         }, onSuccess = {
             updateTwoFactorConfig()
-            onEvent.postValue(ConsumableEvent(GdkEvent.Success))
+            postSideEffect(SideEffects.Success())
         })
     }
 
@@ -270,8 +266,8 @@ open class WalletSettingsViewModel @AssistedInject constructor(
                 session.encryptWithPin(null, EncryptWithPinParams(newPin, credentials))
 
             // Replace PinData
-            walletRepository.insertOrReplaceLoginCredentials(
-                LoginCredentials(
+            database.replaceLoginCredential(
+                createLoginCredentials(
                     walletId = wallet.id,
                     network = encryptWithPin.network.id,
                     credentialType = CredentialType.PIN_PINDATA,
@@ -282,16 +278,17 @@ open class WalletSettingsViewModel @AssistedInject constructor(
             // We only allow one credential type PIN / Password
             // Password comes from v2 and should be deleted when a user tries to change his
             // password to a pin
-            walletRepository.deleteLoginCredentials(wallet.id, CredentialType.PASSWORD_PINDATA)
+            database.deleteLoginCredentials(wallet.id, CredentialType.PASSWORD_PINDATA)
         }, onSuccess = {
-            onEvent.postValue(ConsumableEvent(GdkEvent.Success))
+            postSideEffect(SideEffects.Snackbar("id_you_have_successfully_changed"))
+            postSideEffect(SideEffects.Success())
         })
     }
 
     override fun saveGlobalSettings(newSettings: Settings, onSuccess: (() -> Unit)?) {
         super.saveGlobalSettings(newSettings){
             updateWatchOnlyUsername()
-            onEvent.postValue(ConsumableEvent(GdkEvent.Success))
+            postSideEffect(SideEffects.Success())
         }
     }
 
@@ -301,7 +298,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
             session.updateSettings(network)
         }, onSuccess = {
             updateWatchOnlyUsername()
-            onEvent.postValue(ConsumableEvent(GdkEvent.Success))
+            postSideEffect(SideEffects.Success())
         })
     }
 
@@ -317,7 +314,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
             }
         }, onSuccess = {
             updateWatchOnlyUsername()
-            onEvent.postValue(ConsumableEvent(GdkEvent.Success))
+            postSideEffect(SideEffects.Success())
         })
     }
 
@@ -326,7 +323,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
             session.setCsvTime(network, CsvParams(csvTime)).resolve(twoFactorResolver = twoFactorResolver)
             session.updateSettings(network)
         }, onSuccess = {
-            onEvent.postValue(ConsumableEvent(GdkEvent.Success))
+            postSideEffect(SideEffects.Success())
         })
     }
 
@@ -337,10 +334,10 @@ open class WalletSettingsViewModel @AssistedInject constructor(
             val encryptWithPin =
                 session.encryptWithPin(null, EncryptWithPinParams(pin, credentials))
 
-            val encryptedData = appKeystore.encryptData(cipher, pin.toByteArray())
+            val encryptedData = greenKeystore.encryptData(cipher, pin.toByteArray())
 
-            walletRepository.insertOrReplaceLoginCredentials(
-                LoginCredentials(
+            database.replaceLoginCredential(
+                createLoginCredentials(
                     walletId = wallet.id,
                     network = encryptWithPin.network.id,
                     credentialType = CredentialType.BIOMETRICS_PINDATA,
@@ -355,27 +352,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
 
     fun removeBiometrics() {
         applicationScope.launch(context = logException(countly)) {
-            walletRepository.deleteLoginCredentials(wallet.id, CredentialType.BIOMETRICS_PINDATA)
+            database.deleteLoginCredentials(wallet.id, CredentialType.BIOMETRICS_PINDATA)
         }
     }
-
-    @dagger.assisted.AssistedFactory
-    interface AssistedFactory {
-        fun create(
-            wallet: Wallet
-        ): WalletSettingsViewModel
-    }
-
-    companion object {
-        fun provideFactory(
-            assistedFactory: AssistedFactory,
-            wallet: Wallet
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet) as T
-            }
-        }
-    }
-
 }

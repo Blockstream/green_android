@@ -7,17 +7,18 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
 import android.security.keystore.UserNotAuthenticatedException
-import android.util.Base64
 import androidx.annotation.VisibleForTesting
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+import com.blockstream.common.crypto.GreenKeystore
+import com.blockstream.common.crypto.PlatformCipher
+import com.blockstream.common.data.EncryptedData
 import mu.KLogging
+import org.koin.core.annotation.Single
 import java.security.*
 import javax.crypto.*
 import javax.crypto.spec.IvParameterSpec
 
-class AppKeystore {
+@Single
+class AppKeystore(val context: Context): GreenKeystore {
     private var keyStore: KeyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply {
         load(null)
     }
@@ -157,7 +158,7 @@ class AppKeystore {
     }
 
     @Throws(Exception::class)
-    fun encryptData(dataToEncrypt: ByteArray): EncryptedData {
+    override fun encryptData(dataToEncrypt: ByteArray): EncryptedData {
         if (!keyStoreKeyExists(BASIC_KEYSTORE_ALIAS)) {
             initializeKeyStoreKey(BASIC_KEYSTORE_ALIAS, false)
         }
@@ -172,8 +173,12 @@ class AppKeystore {
         return EncryptedData.fromByteArray(cipher.doFinal(dataToEncrypt), cipher.iv)
     }
 
+    override fun encryptData(cipher: PlatformCipher, dataToEncrypt: ByteArray): EncryptedData {
+        return encryptData(cipher as Cipher, dataToEncrypt)
+    }
+
     @Throws(Exception::class)
-    fun decryptData(encryptedData: EncryptedData): ByteArray {
+    override fun decryptData(encryptedData: EncryptedData): ByteArray {
         if (!keyStoreKeyExists(BASIC_KEYSTORE_ALIAS)) {
             throw KeyStoreException("KeyStore Keys are not created. You have to init them first.")
         }
@@ -188,7 +193,11 @@ class AppKeystore {
         return cipher.doFinal(encryptedData.getEncryptedData())
     }
 
-    fun canUseBiometrics(context: Context): Boolean {
+    override fun decryptData(cipher: PlatformCipher, encryptedData: EncryptedData): ByteArray {
+        return decryptData(cipher as Cipher, encryptedData)
+    }
+
+    override fun canUseBiometrics(): Boolean {
         val kManager = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
         try {
             if (kManager.isDeviceSecure) {
@@ -207,20 +216,5 @@ class AppKeystore {
 
         const val BASIC_KEYSTORE_ALIAS = "v1-basic"
         const val BIOMETRICS_KEYSTORE_ALIAS = "v1-biometrics"
-    }
-}
-
-@Serializable
-data class EncryptedData constructor(private val encryptedData: String, private val iv: String) {
-    fun getEncryptedData(): ByteArray = Base64.decode(encryptedData, Base64.NO_WRAP)
-    fun getIv(): ByteArray = Base64.decode(iv, Base64.NO_WRAP)
-
-    override fun toString(): String = Json.encodeToString(this)
-
-    companion object {
-        fun fromByteArray(encryptedData: ByteArray, iv: ByteArray) = EncryptedData(
-            Base64.encodeToString(encryptedData, Base64.NO_WRAP),
-            Base64.encodeToString(iv, Base64.NO_WRAP)
-        )
     }
 }

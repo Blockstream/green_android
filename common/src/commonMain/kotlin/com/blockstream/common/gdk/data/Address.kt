@@ -2,7 +2,7 @@ package com.blockstream.common.gdk.data
 
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -23,7 +23,7 @@ data class Address constructor(
     // Used only as AddressParams Sweep
     @SerialName("satoshi") var satoshi: Long = 0,
     @SerialName("is_greedy") var isGreedy: Boolean = true,
-) : GdkJson<Address>(), Parcelable {
+) : GreenJson<Address>(), Parcelable {
     override fun encodeDefaultsValues() = true
 
     override fun kSerializer() = serializer()

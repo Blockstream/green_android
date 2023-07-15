@@ -3,7 +3,6 @@ package com.blockstream.green.ui.settings
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.gdk.data.Account
@@ -27,12 +26,11 @@ import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-@AndroidEntryPoint
 class WatchOnlyFragment :
     AbstractWalletFragment<BaseRecyclerViewBinding>(R.layout.base_recycler_view, 0) {
     val args: WatchOnlyFragmentArgs by navArgs()
@@ -40,10 +38,8 @@ class WatchOnlyFragment :
 
     override val screenName = "WalletSettingsWatchOnly"
 
-    @Inject
-    lateinit var viewModelFactory: WatchOnlyViewModel.AssistedFactory
-    val viewModel: WatchOnlyViewModel by viewModels {
-        WatchOnlyViewModel.provideFactory(viewModelFactory, args.wallet)
+    val viewModel: WatchOnlyViewModel by viewModel {
+        parametersOf(args.wallet)
     }
 
     override fun getWalletViewModel() = viewModel

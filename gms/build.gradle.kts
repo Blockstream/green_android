@@ -3,17 +3,16 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
-    id("com.google.dagger.hilt.android")
-    id("kotlin-kapt")
+    alias(libs.plugins.google.devtools.ksp)
 }
 
 android {
     namespace = "com.blockstream.gms"
-    compileSdk = 34
+    compileSdk = libs.versions.androidCompileSdk.get().toInt()
     buildToolsVersion = libs.versions.buildTools.get()
 
     defaultConfig {
-        minSdk = 23
+        minSdk = libs.versions.androidMinSdk.get().toInt()
 
         val zendeskClientId = System.getenv("ZENDESK_CLIENT_ID") ?: gradleLocalProperties(rootDir).getProperty("zendesk.clientId", "")
 
@@ -40,13 +39,11 @@ dependencies {
     implementation(libs.review.ktx)
     /** ----------------------------------------------------------------------------------------- */
 
-    /**  --- Hilt Dependency Injection  --------------------------------------------------------- */
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
+    /**  --- Koin   ----------------------------------------------------------------------------- */
+    ksp(libs.koin.ksp.compiler)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Zendesk ---------------------------------------------------------------------------- */
     implementation(libs.zendesk.support.providers)
     /** ----------------------------------------------------------------------------------------- */
-
 }

@@ -5,7 +5,6 @@
     tools:context=".ui.onboarding.WalletNameFragment">
 
     <data>
-
         <import type="com.blockstream.common.gdk.data.AccountType"/>
         <import type="com.blockstream.green.gdk.ExtensionsKt"/>
 
@@ -60,7 +59,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:text="@{vm.network.canonicalName}"
+            android:text="@{vm.setupArgs.network.canonicalName}"
             android:textAppearance="?attr/textAppearanceBodyLarge"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -88,7 +87,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:text="@{ExtensionsKt.titleRes(vm.accountType)}"
+            android:text="@{ExtensionsKt.titleRes(vm.setupArgs.accountType)}"
             android:textAppearance="?attr/textAppearanceBodyLarge"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -98,7 +97,7 @@
 
         <TextView
             android:id="@+id/recoveryKeyType"
-            isVisible="@{vm.accountType == AccountType.TWO_OF_THREE}"
+            isVisible="@{vm.setupArgs.accountType == AccountType.TWO_OF_THREE}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -117,10 +116,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:text="@{vm.mnemonic != null ? @string/id_recovery_phrase : vm.xpub != null ? @string/id_xpub : @string/id_hardware_wallet}"
+            android:text="@{vm.setupArgs.mnemonic != null ? @string/id_recovery_phrase : vm.setupArgs.xpub != null ? @string/id_xpub : @string/id_hardware_wallet}"
             android:textAppearance="?attr/textAppearanceBodyLarge"
             android:textStyle="bold"
-            isVisible="@{vm.accountType == AccountType.TWO_OF_THREE}"
+            isVisible="@{vm.setupArgs.accountType == AccountType.TWO_OF_THREE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/recoveryKeyType"
@@ -128,13 +127,13 @@
 
         <TextView
             android:id="@+id/xpub"
-            isVisible="@{vm.accountType == AccountType.TWO_OF_THREE &amp;&amp; vm.xpub != null}"
+            isVisible="@{vm.setupArgs.accountType == AccountType.TWO_OF_THREE &amp;&amp; vm.setupArgs.xpub != null}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="24dp"
-            android:text="@{vm.xpub}"
+            android:text="@{vm.setupArgs.xpub}"
             android:textIsSelectable="true"
             android:textAppearance="?attr/textAppearanceBodySmall"
             app:layout_constraintEnd_toEndOf="parent"
@@ -150,7 +149,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="24dp"
-            android:enabled="@{!vm.onProgress}"
+            android:enabled="@{!vm.onProgressAndroid}"
             android:text="@string/id_add_new_account"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -158,7 +157,7 @@
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/progress"
-            isVisible="@{vm.onProgress}"
+            isVisible="@{vm.onProgressAndroid}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"

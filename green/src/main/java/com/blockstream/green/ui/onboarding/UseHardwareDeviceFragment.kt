@@ -10,19 +10,23 @@ import com.blockstream.common.Urls
 import com.blockstream.green.R
 import com.blockstream.green.databinding.HardwarePageBinding
 import com.blockstream.green.databinding.UseHardwareDeviceFragmentBinding
+import com.blockstream.green.ui.AppFragment
+import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.utils.openBrowser
 import com.google.android.material.tabs.TabLayoutMediator
-import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-@AndroidEntryPoint
-class UseHardwareDeviceFragment :
-    AbstractOnboardingFragment<UseHardwareDeviceFragmentBinding>(
-        R.layout.use_hardware_device_fragment,
-        menuRes = 0
-    ) {
+class UseHardwareDeviceFragment : AppFragment<UseHardwareDeviceFragmentBinding>(
+    R.layout.use_hardware_device_fragment,
+    menuRes = 0
+) {
 
     override val screenName = "UseHardwareDevice"
+
+    val viewModel: AppViewModelAndroid by viewModel()
+
+    override fun getAppViewModel() = viewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

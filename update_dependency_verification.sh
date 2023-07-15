@@ -38,7 +38,7 @@ case $key in
       GRADLE="docker"
       shift ;;
     -b | --build)
-      TASK="assembleDevelopmentRelease"
+      TASK="assembleDevelopmentDebug"
       shift ;;
     -t | --test)
       TASK="test"

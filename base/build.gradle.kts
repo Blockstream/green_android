@@ -5,12 +5,13 @@ plugins {
 
 android {
     namespace = "com.blockstream.base"
-    compileSdk = 34
+    compileSdk = libs.versions.androidCompileSdk.get().toInt()
     buildToolsVersion = libs.versions.buildTools.get()
 
     defaultConfig {
-        minSdk = 23
+        minSdk = libs.versions.androidMinSdk.get().toInt()
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -51,7 +52,7 @@ dependencies {
 
     /**  --- Lifecycle -------------------------------------------------------------------------- */
     api(libs.androidx.lifecycle.livedata.ktx)
-    api(libs.androidx.lifecycle.viewmodel.ktx)
+
     api(libs.androidx.lifecycle.runtime.ktx)
     api(libs.androidx.lifecycle.process)
     /** ----------------------------------------------------------------------------------------- */

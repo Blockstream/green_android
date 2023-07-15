@@ -7,22 +7,24 @@ import android.widget.ArrayAdapter
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.databinding.ViewDataBinding
+import androidx.lifecycle.lifecycleScope
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Pricing
 import com.blockstream.common.gdk.params.ReconnectHintParams
-import com.blockstream.gdk.toString
+import com.blockstream.common.navigation.LogoutReason
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
-import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.DenominationExchangeDialogBinding
-import com.blockstream.green.extensions.snackbar
-import com.blockstream.green.gdk.GdkSession
+import com.blockstream.green.extensions.toString
 import com.blockstream.green.gdk.iconResource
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.ui.AppViewModel
-import com.blockstream.green.ui.login.LoginFragment
+import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import mu.KLogging
 
 abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
@@ -30,7 +32,7 @@ abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
     @MenuRes menuRes: Int
 ) : AppFragment<T>(layout, menuRes) {
 
-    abstract val walletOrNull: Wallet?
+    abstract val walletOrNull: GreenWallet?
 
     var sessionOrNull: GdkSession? = null
     val session: GdkSession
@@ -52,7 +54,7 @@ abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
     val isSessionConnected
         get() = isSessionNetworkInitialized && session.isConnected
 
-    val wallet: Wallet
+    val wallet: GreenWallet
         get() = getWalletViewModel().wallet
 
     override fun updateToolbar() {
@@ -74,10 +76,7 @@ abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
 
     final override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val sessionOrNull = walletOrNull?.let { wallet ->
-            sessionManager.getWalletSessionOrNull(wallet) ?: run {
-                // Try to recreate it from Wallet, only for sww and only on LoginFragment (to avoid view models to be initialized that require a connected session).
-                if (this is LoginFragment && !wallet.isHardware) sessionManager.getWalletSession(wallet) else null
-            }
+            sessionManager.getWalletSessionOrNull(wallet)
         }
 
         // Recovery intro screen is reused in onBoarding
@@ -96,7 +95,7 @@ abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
                 // without being properly initialized and can lead to a crash
                 if (isSessionInitialized) {
                     logger.info { "A logged in session is required, but session is uninitialized" }
-                    getWalletViewModel().logout(AbstractWalletViewModel.LogoutReason.TIMEOUT)
+                    getWalletViewModel().logout(LogoutReason.TIMEOUT)
                 } else {
                     logger.info { "A logged in session is required, but session is not connected" }
                     navigate(NavGraphDirections.actionGlobalLoginFragment(wallet))
@@ -106,55 +105,13 @@ abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
             }
 
             // Check if we have a disconnect event eg. the Notification button
-            sessionManager.connectionChangeEvent.observe(viewLifecycleOwner) {
+            sessionManager.connectionChangeEvent.onEach {
                 if(isLoggedInRequired() && !session.isConnected){
-                    getWalletViewModel().logout(AbstractWalletViewModel.LogoutReason.USER_ACTION)
+                    getWalletViewModel().logout(LogoutReason.USER_ACTION)
                 }
-            }
+            }.launchIn(lifecycleScope)
 
             getWalletViewModel().let {
-
-                setupDeviceInteractionEvent(it.onDeviceInteractionEvent)
-
-                it.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
-                    consumableEvent.getContentIfNotHandledForType<AbstractWalletViewModel.WalletEvent.Logout>()?.let {
-                        // If is ephemeral wallet, prefer going to intro
-                        if (wallet.isEphemeral || wallet.isHardware) {
-                            NavGraphDirections.actionGlobalIntroFragment()
-                        } else {
-                            NavGraphDirections.actionGlobalLoginFragment(wallet)
-                        }.let { directions ->
-                            navigate(directions.actionId, directions.arguments, isLogout = true)
-                        }
-
-                        when(it.reason){
-                            AbstractWalletViewModel.LogoutReason.DISCONNECTED -> {
-                                snackbar(R.string.id_unstable_internet_connection)
-                            }
-                            AbstractWalletViewModel.LogoutReason.TIMEOUT -> {
-                                snackbar(R.string.id_auto_logout_timeout_expired)
-                            }
-                            AbstractWalletViewModel.LogoutReason.DEVICE_DISCONNECTED -> {
-                                snackbar(R.string.id_your_device_was_disconnected)
-                            }
-                            AbstractWalletViewModel.LogoutReason.USER_ACTION -> {
-
-                            }
-                        }
-                    }
-                }
-
-                it.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
-                    consumableEvent?.getContentIfNotHandledForType<AbstractWalletViewModel.WalletEvent.DeleteWallet>()?.let {
-                        NavGraphDirections.actionGlobalIntroFragment().let { directions ->
-                            navigate(directions.actionId, directions.arguments, isLogout = true)
-                        }
-                    }
-
-                    consumableEvent?.getContentIfNotHandledForType<AbstractWalletViewModel.WalletEvent.RenameWallet>()?.let {
-                        updateToolbar()
-                    }
-                }
 
                 it.onReconnectEvent.observe(viewLifecycleOwner) { event ->
                     event.getContentIfNotHandledOrReturnNull()?.let{ time ->
@@ -208,7 +165,7 @@ abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
 
     abstract fun getWalletViewModel(): AbstractWalletViewModel
 
-    override fun getAppViewModel() : AppViewModel? {
+    override fun getAppViewModel() : AppViewModelAndroid? {
         // Prevent initializing WalletViewModel if session is not initialized
         if (isSessionAndWalletRequired() && (isLoggedInRequired() && !isSessionInitialized)) {
             return null
@@ -223,18 +180,18 @@ abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
         // where we don't have a session yet.
         if (isSessionAndWalletRequired()) {
             if (!isSessionInitialized && walletOrNull?.isHardware == true) {
-                navigate(NavGraphDirections.actionGlobalIntroFragment())
+                navigate(NavGraphDirections.actionGlobalHomeFragment())
             } else if (isLoggedInRequired() && !isSessionConnected) {
                 // If session is not initialized, avoid getting the ViewModel as can use GreenSession
                 // without being properly initialized and can lead to a crash
                 if (isSessionNetworkInitialized) {
-                    getWalletViewModel().logout(AbstractWalletViewModel.LogoutReason.TIMEOUT)
+                    getWalletViewModel().logout(LogoutReason.TIMEOUT)
                 } else {
                     // Use walletOrNull else wallet will trigger ViewModel initialization
                     walletOrNull?.also {
                         navigate(NavGraphDirections.actionGlobalLoginFragment(it))
                     } ?: run {
-                        navigate(NavGraphDirections.actionGlobalIntroFragment())
+                        navigate(NavGraphDirections.actionGlobalHomeFragment())
                     }
                 }
             }

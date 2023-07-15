@@ -33,14 +33,12 @@ import com.journeyapps.barcodescanner.CaptureManager
 import com.journeyapps.barcodescanner.MixedDecoder
 import com.sparrowwallet.hummingbird.ResultType
 import com.sparrowwallet.hummingbird.URDecoder
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mu.KLogging
 
 
-@AndroidEntryPoint
 class CameraBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<CameraBottomSheetBinding>(){
 
     override val screenName = "Scan"
@@ -214,12 +212,12 @@ class CameraBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<CameraB
 
     private fun setResultAndDismiss(result: String){
         if(isDevelopmentOrDebug){
-            logger.info { "QR:  $result" }
+            logger.info { "QR (DevelopmentOrDebug): $result" }
         }
 
         val session = (requireParentFragment() as? AbstractWalletFragment<*>)?.getWalletViewModel()?.session
-        val onBoardingOptions = (requireParentFragment() as? AbstractOnboardingFragment<*>)?.options
-        countly.qrScan(session = session, onBoardingOptions = onBoardingOptions, arguments?.getString(SCREEN_NAME))
+        val setupArgs = (requireParentFragment() as? AbstractOnboardingFragment<*>)?.setupArgs
+        countly.qrScan(session = session, setupArgs = setupArgs, arguments?.getString(SCREEN_NAME))
 
         setNavigationResult(result = result, key = CAMERA_SCAN_RESULT, destinationId = findNavController().currentDestination?.id)
         dismiss()

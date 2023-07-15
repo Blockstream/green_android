@@ -12,15 +12,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
 abstract class AppActivity : AppCompatActivity() {
 
-    @Inject
-    lateinit var settingsManager: SettingsManager
+    protected val settingsManager: SettingsManager by inject()
 
-    @Inject
-    lateinit var deviceManager: DeviceManager
+    private val deviceManager: DeviceManager by inject()
 
     abstract fun isDrawerOpen(): Boolean
     abstract fun closeDrawer()
@@ -40,7 +38,7 @@ abstract class AppActivity : AppCompatActivity() {
         R.id.recoveryWordsFragment,
         R.id.recoveryPhraseFragment,
         R.id.loginFragment,
-        R.id.setPinFragment,
+        R.id.pinFragment,
         R.id.changePinFragment
     )
 

@@ -4,36 +4,31 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.viewModels
-import com.blockstream.green.data.Denomination
+import com.blockstream.common.data.Denomination
+import com.blockstream.common.utils.UserInput
 import com.blockstream.green.databinding.RequestAmountLabelBottomSheetBinding
 import com.blockstream.green.extensions.endIconCustomMode
 import com.blockstream.green.ui.receive.ReceiveViewModel
 import com.blockstream.green.ui.receive.RequestAmountLabelViewModel
 import com.blockstream.green.utils.AmountTextWatcher
-import com.blockstream.green.utils.UserInput
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 
 /*
  * Request Label is hidden at the moment, as we need implementation from GDK
  * to save the address label
  */
-@AndroidEntryPoint
 class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragment<RequestAmountLabelBottomSheetBinding, ReceiveViewModel>() {
     override val screenName = "RequestAmount"
-    override val segmentation get() = countly.accountSegmentation(session, viewModel.account)
+    override val segmentation get() = countly.accountSegmentation(session, viewModel.accountValue)
 
     override fun inflate(layoutInflater: LayoutInflater) = RequestAmountLabelBottomSheetBinding.inflate(layoutInflater)
 
-    @Inject
-    lateinit var viewModelFactory: RequestAmountLabelViewModel.AssistedFactory
-    private val requestViewModel: RequestAmountLabelViewModel by viewModels {
-        RequestAmountLabelViewModel.provideFactory(
-            viewModelFactory,
+    private val requestViewModel: RequestAmountLabelViewModel by viewModel {
+        parametersOf(
             viewModel.wallet,
             viewModel.accountAsset,
             viewModel.requestAmount.value

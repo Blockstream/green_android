@@ -4,17 +4,17 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import com.blockstream.common.data.EnrichedAsset
+import com.blockstream.common.extensions.getAssetNameOrNull
+import com.blockstream.common.extensions.isPolicyAsset
+import com.blockstream.common.gdk.AssetPair
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.green.R
-import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.green.databinding.ListItemAssetAccountsBinding
 import com.blockstream.green.databinding.SelectAccountLayoutBinding
 import com.blockstream.green.extensions.bind
 import com.blockstream.green.extensions.context
-import com.blockstream.green.gdk.AssetPair
-import com.blockstream.green.gdk.GdkSession
-import com.blockstream.green.gdk.getAssetNameOrNull
-import com.blockstream.green.gdk.isPolicyAsset
 import com.blockstream.green.ui.bottomsheets.ChooseAssetAccountListener
 import com.blockstream.green.utils.toPixels
 import kotlinx.coroutines.CoroutineScope
@@ -57,7 +57,7 @@ data class AssetAccountsListItem constructor(
         }
 
         val accountExists =
-            isSelected && session.accounts.find { it.isLiquid && it.isAmp == enrichedAsset.isAmp } != null
+            isSelected && session.accounts.value.find { it.isLiquid && it.isAmp == enrichedAsset.isAmp } != null
 
         binding.messageTextView.text = context(binding).getString(
             when {
@@ -86,9 +86,9 @@ data class AssetAccountsListItem constructor(
             val layoutInflater = LayoutInflater.from(context(binding))
 
             val entries = (if (enrichedAsset.assetId.isPolicyAsset(session)) {
-                session.accounts.filter { it.network.policyAsset == enrichedAsset.assetId }
+                session.accounts.value.filter { it.network.policyAsset == enrichedAsset.assetId }
             } else {
-                session.accounts.filter { it.isLiquid && it.isAmp == enrichedAsset.isAmp }
+                session.accounts.value.filter { it.isLiquid && it.isAmp == enrichedAsset.isAmp }
             })
 
             // Cache views

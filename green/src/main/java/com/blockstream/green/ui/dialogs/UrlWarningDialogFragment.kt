@@ -4,21 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
-import com.blockstream.common.hostname
 import com.blockstream.common.managers.SettingsManager
+import com.blockstream.common.utils.hostname
 import com.blockstream.green.R
 import com.blockstream.green.databinding.UrlWarningDialogBinding
 import com.blockstream.green.ui.MainActivity
 import com.blockstream.green.utils.openNewTicket
-import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
-@AndroidEntryPoint
 class UrlWarningDialogFragment : AbstractDialogFragment<UrlWarningDialogBinding>() {
 
-    @Inject
-    lateinit var settingsManager: SettingsManager
+    private val settingsManager: SettingsManager by inject()
     override fun inflate(layoutInflater: LayoutInflater): UrlWarningDialogBinding =
         UrlWarningDialogBinding.inflate(layoutInflater)
 

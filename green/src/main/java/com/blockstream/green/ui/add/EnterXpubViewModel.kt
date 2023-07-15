@@ -1,27 +1,23 @@
 package com.blockstream.green.ui.add;
 
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asFlow
+import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.gdk.Wally
-import com.blockstream.green.data.Countly
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
+import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
-
-class EnterXpubViewModel @AssistedInject constructor(
+@KoinViewModel
+class EnterXpubViewModel constructor(
     wally: Wally,
-    sessionManager: SessionManager,
-    walletRepository: WalletRepository,
-    countly: Countly,
-    @Assisted wallet: Wallet,
-) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet) {
+    @InjectedParam wallet: GreenWallet,
+) : AbstractWalletViewModel(wallet) {
 
     val xpub = MutableLiveData<String>()
     val isXpubValid = MutableLiveData(false)
@@ -35,25 +31,6 @@ class EnterXpubViewModel @AssistedInject constructor(
                     wally.isXpubValid(it)
                 }
             }
-            .launchIn(viewModelScope)
-    }
-
-    @dagger.assisted.AssistedFactory
-    interface AssistedFactory {
-        fun create(
-            wallet: Wallet
-        ): EnterXpubViewModel
-    }
-
-    companion object {
-        fun provideFactory(
-            assistedFactory: AssistedFactory,
-            wallet: Wallet
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet) as T
-            }
-        }
+            .launchIn(viewModelScope.coroutineScope)
     }
 }

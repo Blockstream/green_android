@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice
 import android.hardware.usb.UsbDevice
 import android.os.ParcelUuid
 import android.os.SystemClock
+import com.blockstream.common.devices.ConnectionType
 import com.blockstream.common.gdk.device.DeviceBrand
 import com.blockstream.common.gdk.device.DeviceInterface
 import com.blockstream.common.gdk.device.DeviceState
@@ -115,7 +116,7 @@ class Device constructor(
             ?: bleDevice?.bluetoothDevice?.name) ?: deviceBrand.name
 
     // Jade v1 has the controller manufacturer as a productName
-    val manufacturer
+    override val manufacturer
         @SuppressLint("MissingPermission")
         get() = if (deviceBrand.isJade) deviceBrand.name else usbDevice?.productName
             ?: bleDevice?.bluetoothDevice?.name
@@ -188,10 +189,6 @@ class Device constructor(
 
         // Mark it as online if required
         _deviceState.compareAndSet(DeviceState.DISCONNECTED, DeviceState.SCANNED)
-    }
-
-    enum class ConnectionType {
-        USB, BLUETOOTH
     }
 
     companion object : KLogging() {

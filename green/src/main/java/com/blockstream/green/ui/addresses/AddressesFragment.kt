@@ -4,7 +4,6 @@ package com.blockstream.green.ui.addresses
 import android.os.Bundle
 import android.view.View
 import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.gdk.data.Address
@@ -30,11 +29,10 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-@AndroidEntryPoint
 class AddressesFragment :
     AbstractAccountWalletFragment<AddressesFragmentBinding>(R.layout.addresses_fragment, 0) {
 
@@ -43,10 +41,8 @@ class AddressesFragment :
 
     override val screenName = "PreviousAddresses"
 
-    @Inject
-    lateinit var viewModelFactory: AddressesViewModel.AssistedFactory
-    val viewModel: AddressesViewModel by viewModels {
-        AddressesViewModel.provideFactory(viewModelFactory, args.wallet, args.account)
+    val viewModel: AddressesViewModel by viewModel {
+        parametersOf(args.wallet, args.account)
     }
 
     override fun getAccountWalletViewModel() = viewModel

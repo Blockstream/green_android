@@ -5,7 +5,7 @@
 
     <data>
 
-        <import type="com.blockstream.green.extensions.ExtensionsKt" />
+        <import type="com.blockstream.common.extensions.StringExtensionsKt" />
 
         <variable
             name="title"
@@ -64,7 +64,7 @@
 
             <TextView
                 android:id="@+id/titleTextView"
-                isVisible="@{ExtensionsKt.isNotBlank(title)}"
+                isVisible="@{StringExtensionsKt.isNotBlank(title)}"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="32dp"
@@ -77,7 +77,7 @@
 
             <TextView
                 android:id="@+id/messageTextView"
-                isVisible="@{ExtensionsKt.isNotBlank(message)}"
+                isVisible="@{StringExtensionsKt.isNotBlank(message)}"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"

@@ -18,12 +18,13 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.app.ShareCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import com.blockstream.common.gdk.data.Network
+import androidx.lifecycle.repeatOnLifecycle
+import com.blockstream.common.data.ErrorReport
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
 import com.blockstream.green.databinding.DialogErrorReportBinding
-import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.isConnectionError
 import com.blockstream.green.gdk.isNotAuthorized
 import com.blockstream.green.ui.AppFragment
@@ -34,6 +35,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 fun Fragment.hideKeyboard() {
@@ -67,9 +69,11 @@ fun Fragment.clearClipboard() {
 }
 
 fun BottomSheetDialogFragment.dismissIn(timeMillis: Long){
-    lifecycleScope.launchWhenResumed {
-        delay(timeMillis)
-        dismiss()
+    lifecycleScope.launch {
+        repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            delay(timeMillis)
+            dismiss()
+        }
     }
 }
 
@@ -89,7 +93,7 @@ fun Context.localized2faMethods(methods: List<String>): List<String> = methods.m
     localized2faMethod(it)
 }
 
-fun Context.stringFromIdentifier(id: String, vararg formatArgs: String): String? {
+fun Context.stringFromIdentifierOrNull(id: String, vararg formatArgs: String): String? {
     if(id.startsWith("id_")) {
         val intRes = resources.getIdentifier(id, "string", BuildConfig.APPLICATION_ID)
         if (intRes > 0) {
@@ -99,12 +103,23 @@ fun Context.stringFromIdentifier(id: String, vararg formatArgs: String): String?
     return null
 }
 
+fun Context.stringFromIdentifier(id: String, vararg formatArgs: String): String {
+    return stringFromIdentifierOrNull(id, *formatArgs) ?: id
+}
+
 fun Fragment.errorFromResourcesAndGDK(throwable: Throwable): String = requireContext().errorFromResourcesAndGDK(throwable)
 
-fun Context.errorFromResourcesAndGDK(throwable: Throwable): String = errorFromResourcesAndGDK(throwable.cause?.message ?: throwable.message ?: "An error occurred")
+
+fun Context.errorFromResourcesAndGDK(throwable: Throwable): String =
+    (throwable.cause?.message ?: throwable.message ?: "An error occurred").let { error ->
+        errorFromResourcesAndGDK(
+            error.substring(0, error.indexOf("|").takeIf { it != -1 } ?: error.length),
+            *(error.split("|").filterIndexed { index, _ -> index != 0 }.toTypedArray())
+        )
+    }
 
 fun Context.errorFromResourcesAndGDK(error: String, vararg formatArgs: String): String {
-    stringFromIdentifier(error, *formatArgs)?.let {
+    stringFromIdentifierOrNull(error, *formatArgs)?.let {
         return it
     }
 
@@ -127,11 +142,8 @@ fun Context.errorFromResourcesAndGDK(error: String, vararg formatArgs: String): 
 
     return error
 }
-fun Fragment.errorDialog(throwable: Throwable, network: Network? = null, session: GdkSession? = null, listener: (() -> Unit)? = null) {
-    errorDialog(throwable = throwable, network = network, session = session, showReport = false, listener = listener)
-}
 
-fun Fragment.errorDialog(throwable: Throwable, network: Network?, session: GdkSession?, showReport: Boolean, listener: (() -> Unit)? = null) {
+fun Fragment.errorDialog(throwable: Throwable, errorReport: ErrorReport? = null, listener: (() -> Unit)? = null) {
     if (isDevelopmentFlavor) {
         throwable.printStackTrace()
     }
@@ -144,38 +156,32 @@ fun Fragment.errorDialog(throwable: Throwable, network: Network?, session: GdkSe
 
     errorDialog(
         error = errorFromResourcesAndGDK(throwable),
-        showReport = showReport,
-        throwable = throwable,
-        network = network,
-        session = session,
+        errorReport = errorReport,
         listener = listener
     )
 }
 fun Fragment.errorDialog(error: String, listener: (() -> Unit)? = null) {
-    errorDialog(error = error, showReport = false, throwable = null, network = null, session = null, listener)
+    errorDialog(error = error, errorReport = null, listener)
 }
 
-fun Fragment.errorDialog(error: String, showReport: Boolean = false, throwable: Throwable? = null, network: Network? = null, session: GdkSession? = null, listener: (() -> Unit)? = null) {
+fun Fragment.errorDialog(error: String, errorReport: ErrorReport? = null, listener: (() -> Unit)? = null) {
     MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_Green_MaterialAlertDialog)
         .setTitle(R.string.id_error)
         .setMessage(error)
         .setPositiveButton(android.R.string.ok, null)
         .also {
-            if(showReport && (this as? AppFragment<*>)?.zendeskSdk?.isAvailable == true) {
+            if(errorReport != null && (this as? AppFragment<*>)?.zendeskSdk?.isAvailable == true) {
                 it.setNeutralButton(R.string.id_contact_support) { _, _ ->
                     if(settingsManager.appSettings.tor){
                         openNewTicket(
                             settingsManager = settingsManager,
                             subject = "Android Error Report",
-                            network = network,
+                            errorReport = errorReport,
                         )
                         copyToClipboard("Error Report", "$error}")
                     }else {
                         showErrorReport(
-                            error = error,
-                            throwable = throwable,
-                            network = network,
-                            session = session
+                            errorReport = errorReport,
                         )
                     }
                 }
@@ -187,7 +193,7 @@ fun Fragment.errorDialog(error: String, showReport: Boolean = false, throwable: 
         .show()
 }
 
-fun AppFragment<*>.showErrorReport(error: String, throwable: Throwable?, network: Network? = null, session: GdkSession? = null) {
+fun AppFragment<*>.showErrorReport(errorReport: ErrorReport) {
     val dialogBinding =
         DialogErrorReportBinding.inflate(LayoutInflater.from(requireContext()))
 
@@ -201,21 +207,7 @@ fun AppFragment<*>.showErrorReport(error: String, throwable: Throwable?, network
                 subject = subject,
                 email = dialogBinding.emailText.text.toString(),
                 message = dialogBinding.feedbackText.text.toString(),
-                error = error,
-                throwable = throwable,
-                network = network,
-                hw = session?.let { session ->
-                    session.gdkHwWallet?.model?.lowercase()?.let {
-                        when{
-                            it.contains("jade") -> "jade"
-                            it.contains("ledger") && it.contains("s")-> "ledger_nano_s"
-                            it.contains("ledger") && it.contains("x")-> "ledger_nano_x"
-                            it.contains("trezor") && it.contains("one")-> "trezor_one"
-                            it.contains("trezor") -> "trezor_t"
-                            else -> null
-                        }
-                    }
-                }
+                errorReport = errorReport
             )
         }
         .setNegativeButton(R.string.id_cancel) { _, _ ->
@@ -292,29 +284,24 @@ fun Fragment.snackbar(text: String, duration: Int = Snackbar.LENGTH_SHORT) {
 
 fun Fragment.errorSnackbar(
     throwable: Throwable,
-    network: Network? = null,
-    session: GdkSession? = null,
-    showReport: Boolean = false,
+    errorReport: ErrorReport? = null,
     duration: Int = Snackbar.LENGTH_SHORT
 ) {
     view?.let {
         val message = errorFromResourcesAndGDK(throwable)
         Snackbar.make(it, message, duration).apply {
-            if(showReport && (this@errorSnackbar as? AppFragment<*>)?.zendeskSdk?.isAvailable == true) {
+            if(errorReport != null && (this@errorSnackbar as? AppFragment<*>)?.zendeskSdk?.isAvailable == true) {
                 setAction(R.string.id_contact_support) {
                     if(settingsManager.appSettings.tor){
                         openNewTicket(
                             settingsManager = settingsManager,
                             subject = "Android Error Report",
-                            network = network
+                            errorReport = errorReport
                         )
                         copyToClipboard("Error Report", "$message}")
                     }else {
                         showErrorReport(
-                            error = message,
-                            throwable = throwable,
-                            network = network,
-                            session = session
+                            errorReport = errorReport
                         )
                     }
                 }

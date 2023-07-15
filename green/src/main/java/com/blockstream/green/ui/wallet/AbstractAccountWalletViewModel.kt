@@ -2,26 +2,20 @@ package com.blockstream.green.ui.wallet
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.gdk.data.Account
-import com.blockstream.green.data.Countly
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.managers.SessionManager
 import mu.KLogging
 
 
 abstract class AbstractAccountWalletViewModel constructor(
-    sessionManager: SessionManager,
-    walletRepository: WalletRepository,
-    countly: Countly,
-    wallet: Wallet,
+    wallet: GreenWallet,
     account: Account
-) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet) {
+) : AbstractWalletViewModel(wallet) {
 
     val network
-        get() = account.network
+        get() = accountValue.network
 
-    open val account: Account
+    open val accountValue: Account
         get() = _accountLiveData.value!!
 
     private val _accountLiveData: MutableLiveData<Account> = MutableLiveData(account)

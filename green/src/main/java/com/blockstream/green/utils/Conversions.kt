@@ -5,15 +5,16 @@ import com.blockstream.common.BTC_UNIT
 import com.blockstream.common.MBTC_UNIT
 import com.blockstream.common.SATOSHI_UNIT
 import com.blockstream.common.UBTC_UNIT
+import com.blockstream.common.data.Denomination
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Balance
 import com.blockstream.common.gdk.data.CreateTransaction
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.params.Convert
-import com.blockstream.green.data.Denomination
-import com.blockstream.green.gdk.GdkSession
-import com.blockstream.green.gdk.getAssetTicker
-import com.blockstream.green.gdk.isPolicyAsset
-import com.blockstream.green.gdk.networkForAsset
+import com.blockstream.common.utils.UserInput
+import com.blockstream.common.extensions.getAssetTicker
+import com.blockstream.common.extensions.isPolicyAsset
+import com.blockstream.common.extensions.networkForAsset
 import java.math.RoundingMode
 import java.text.DateFormat
 import java.text.DecimalFormat
@@ -240,7 +241,7 @@ suspend fun Long?.toAmountLook(
     }
 }
 
-fun exchangeRate(session:GdkSession, assetId1: String, amount1: String, assetId2: String, amount2: String): String {
+fun exchangeRate(session: GdkSession, assetId1: String, amount1: String, assetId2: String, amount2: String): String {
     val amount1Parsed = UserInput.parseUserInput(session = session, input = amount1, assetId = assetId1)
     val amount2Parsed = UserInput.parseUserInput(session = session, input = amount2, assetId = assetId2)
 

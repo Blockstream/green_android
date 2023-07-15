@@ -1,25 +1,21 @@
 package com.blockstream.green.ui.addresses
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.Address
 import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.gdk.params.SignMessageParams
-import com.blockstream.green.data.Countly
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.wallet.AbstractAccountWalletViewModel
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
-class AddressesViewModel @AssistedInject constructor(
-    sessionManager: SessionManager,
-    walletRepository: WalletRepository,
-    countly: Countly,
-    @Assisted wallet: Wallet,
-    @Assisted account: Account,
-) : AbstractAccountWalletViewModel(sessionManager, walletRepository, countly, wallet, account) {
+@KoinViewModel
+class AddressesViewModel constructor(
+    @InjectedParam wallet: GreenWallet,
+    @InjectedParam account: Account,
+) : AbstractAccountWalletViewModel(wallet, account) {
 
     private val _addressesLiveData: MutableLiveData<List<Address>> = MutableLiveData()
     val addressesLiveData: LiveData<List<Address>> get() = _addressesLiveData
@@ -35,7 +31,7 @@ class AddressesViewModel @AssistedInject constructor(
 
     fun getPreviousAddresses(){
         doUserAction({
-            session.getPreviousAddresses(account, lastPointer)
+            session.getPreviousAddresses(accountValue, lastPointer)
         }, onSuccess = { previousAddresses ->
             lastPointer = previousAddresses.lastPointer ?: 0
 
@@ -60,26 +56,5 @@ class AddressesViewModel @AssistedInject constructor(
         }, onSuccess = { signature ->
             fn.invoke(signature)
         })
-    }
-
-    @dagger.assisted.AssistedFactory
-    interface AssistedFactory {
-        fun create(
-            wallet: Wallet,
-            account: Account,
-        ): AddressesViewModel
-    }
-
-    companion object {
-        fun provideFactory(
-            assistedFactory: AssistedFactory,
-            wallet: Wallet,
-            account: Account
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet, account) as T
-            }
-        }
     }
 }

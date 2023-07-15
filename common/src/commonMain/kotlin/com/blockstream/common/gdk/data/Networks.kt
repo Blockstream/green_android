@@ -1,16 +1,25 @@
 package com.blockstream.common.gdk.data
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonObject
 
 
 @Serializable
 data class Networks(
     @SerialName("networks") val networks: MutableMap<String, Network>
-) : GdkJson<Networks>() {
+) : GreenJson<Networks>() {
 
     override fun keepJsonElement() = true
 
@@ -22,21 +31,9 @@ data class Networks(
             isMainnet = true,
             isLiquid = false,
             isDevelopment = false,
-            isLightning = true,
-            bip21Prefix = "lightning"
-        )
-    }
-
-    val testnetLightning by lazy {
-        Network(
-            id = Network.LightningTestnet,
-            network = Network.LightningTestnet,
-            name = "Lightning Testnet",
-            isMainnet = false,
-            isLiquid = false,
-            isDevelopment = false,
-            isLightning = true,
-            bip21Prefix = "lightning-testnet"
+            bip21Prefix = "lightning",
+            policyAsset = BTC_POLICY_ASSET,
+            isLightning = true
         )
     }
 

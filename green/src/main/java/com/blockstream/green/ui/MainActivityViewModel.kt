@@ -6,31 +6,20 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ProcessLifecycleOwner
-import com.blockstream.common.managers.SettingsManager
-import com.blockstream.green.data.Countly
-import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.managers.SessionManager
+import com.blockstream.common.interfaces.HttpRequestUrlValidator
+import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.green.utils.AppKeystore
-import com.blockstream.green.utils.ConsumableEvent
-import com.blockstream.jade.HttpRequestUrlValidator
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.runBlocking
+import org.koin.android.annotation.KoinViewModel
 import java.util.Timer
-import javax.inject.Inject
 import kotlin.concurrent.schedule
 
-@HiltViewModel
-class MainActivityViewModel @Inject constructor(
-    @SuppressLint("StaticFieldLeak")
-    @ApplicationContext val context: Context,
-    val walletRepository: WalletRepository,
-    val settingsManager: SettingsManager,
-    val appKeystore: AppKeystore,
-    val sessionManager: SessionManager,
-    countly: Countly
-) : AppViewModel(countly), DefaultLifecycleObserver, HttpRequestUrlValidator {
+@KoinViewModel
+class MainActivityViewModel constructor(
+    @SuppressLint("StaticFieldLeak") val context: Context,
+    val appKeystore: AppKeystore
+) : AppViewModelAndroid(), DefaultLifecycleObserver, HttpRequestUrlValidator {
     private var lockTimer: Timer? = null
     val lockScreen = MutableLiveData(canLock())
     val buildVersion = MutableLiveData("")
@@ -44,7 +33,7 @@ class MainActivityViewModel @Inject constructor(
         sessionManager.httpRequestProvider.httpRequestUrlValidator = this
     }
 
-    private fun canLock() = settingsManager.getApplicationSettings().enhancedPrivacy && appKeystore.canUseBiometrics(context)
+    private fun canLock() = settingsManager.getApplicationSettings().enhancedPrivacy && appKeystore.canUseBiometrics()
 
     fun unlock(){
         lockScreen.value = false

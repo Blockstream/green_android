@@ -17,7 +17,7 @@ abstract class AbstractAccountWalletFragment<T : ViewDataBinding> constructor(
     override fun getWalletViewModel() = getAccountWalletViewModel()
 
     val account: Account
-        get() = getAccountWalletViewModel().account
+        get() = getAccountWalletViewModel().accountValue
 
     val network: Network
         get() = account.network

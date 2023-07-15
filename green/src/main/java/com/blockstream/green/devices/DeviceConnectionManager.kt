@@ -3,18 +3,18 @@ package com.blockstream.green.devices
 import android.content.Context
 import com.blockstream.HardwareQATester
 import com.blockstream.JadeHWWallet
+import com.blockstream.common.CountlyBase
+import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.data.DeviceSupportsAntiExfilProtocol
 import com.blockstream.common.gdk.data.DeviceSupportsLiquid
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.DeviceBrand
 import com.blockstream.common.gdk.device.GdkHardwareWallet
+import com.blockstream.common.interfaces.HttpRequestProvider
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.R
-import com.blockstream.green.data.Countly
-import com.blockstream.green.extensions.logException
 import com.blockstream.green.utils.isDevelopmentOrDebug
-import com.blockstream.jade.HttpRequestProvider
 import com.blockstream.jade.JadeAPI
 import com.blockstream.jade.JadeAPI.Companion.createBle
 import com.blockstream.jade.JadeAPI.Companion.createSerial
@@ -43,7 +43,7 @@ import kotlinx.coroutines.launch
 import mu.KLogging
 
 class DeviceConnectionManager constructor(
-    countly: Countly,
+    countly: CountlyBase,
     val gdk: Gdk,
     val settingsManager: SettingsManager,
     private val httpRequestProvider: HttpRequestProvider,

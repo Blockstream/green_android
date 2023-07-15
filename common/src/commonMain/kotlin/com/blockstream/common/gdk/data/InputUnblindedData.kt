@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk.data
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -11,6 +11,6 @@ data class InputUnblindedData(
     @SerialName("satoshi") val satoshi: Long,
     @SerialName("assetblinder") val assetblinder: String,
     @SerialName("amountblinder") val amountblinder: String,
-) : GdkJson<InputUnblindedData>() {
+) : GreenJson<InputUnblindedData>() {
     override fun kSerializer() = serializer()
 }

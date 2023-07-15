@@ -9,6 +9,7 @@ enum class DeviceState {
 interface DeviceInterface {
     val id: String
     val name: String
+    val manufacturer: String?
     val deviceBrand: DeviceBrand
     val isUsb: Boolean
     val isBle: Boolean

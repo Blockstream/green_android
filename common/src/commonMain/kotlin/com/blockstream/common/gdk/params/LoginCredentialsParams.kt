@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk.params
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.gdk.data.Credentials
 import com.blockstream.common.gdk.data.PinData
 import kotlinx.serialization.SerialName
@@ -18,7 +18,7 @@ data class LoginCredentialsParams(
     @SerialName("master_xpub") val masterXpub: String? = null,
     @SerialName("core_descriptors") val coreDescriptors: List<String>? = null,
     @SerialName("slip132_extended_pubkeys") val slip132ExtendedPubkeys: List<String>? = null,
-) : GdkJson<LoginCredentialsParams>() {
+) : GreenJson<LoginCredentialsParams>() {
     override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()

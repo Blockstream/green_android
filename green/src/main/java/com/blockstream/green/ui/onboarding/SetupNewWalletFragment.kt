@@ -4,34 +4,51 @@ import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
-import androidx.fragment.app.viewModels
-import androidx.navigation.NavDirections
-import com.blockstream.common.Urls
+import com.blockstream.common.models.onboarding.SetupNewWalletViewModel
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.databinding.SetupNewWalletFragmentBinding
-import com.blockstream.green.ui.AppViewModel
+import com.blockstream.green.ui.AppFragment
+import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.ui.bottomsheets.AbstractBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.ConsentBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.DismissBottomSheetDialogListener
 import com.blockstream.green.utils.linkedText
-import com.blockstream.green.utils.openBrowser
-import dagger.hilt.android.AndroidEntryPoint
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-@AndroidEntryPoint
-open class SetupNewWalletFragment : AbstractOnboardingFragment<SetupNewWalletFragmentBinding>(
-        R.layout.setup_new_wallet_fragment,
-        menuRes = 0
-    ), DismissBottomSheetDialogListener {
+open class SetupNewWalletFragment : AppFragment<SetupNewWalletFragmentBinding>(
+    R.layout.setup_new_wallet_fragment,
+    menuRes = 0
+), DismissBottomSheetDialogListener {
+    private var _pendingSideEffect: SetupNewWalletViewModel.LocalSideEffects.ShowConsent? = null
 
-    private var pendingNavigation: NavDirections? = null
+    private val viewModel: SetupNewWalletViewModel by viewModel()
 
-    override val screenName = "SetupNewWallet"
+    override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    private val viewModel: SetupNewWalletViewModel by viewModels()
+    override fun getAppViewModel(): AppViewModelAndroid? = null
 
-    override fun getAppViewModel(): AppViewModel = viewModel
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+
+        when (sideEffect) {
+            is SetupNewWalletViewModel.LocalSideEffects.NavigateAddWallet -> {
+                navigate(NavGraphDirections.actionGlobalAddWalletFragment())
+            }
+
+            is SetupNewWalletViewModel.LocalSideEffects.NavigateUseHardwareDevice -> {
+                navigate(SetupNewWalletFragmentDirections.actionGlobalUseHardwareDeviceFragment())
+            }
+
+            is SetupNewWalletViewModel.LocalSideEffects.ShowConsent -> {
+                _pendingSideEffect = sideEffect
+                ConsentBottomSheetDialogFragment.show(childFragmentManager)
+            }
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -39,18 +56,15 @@ open class SetupNewWalletFragment : AbstractOnboardingFragment<SetupNewWalletFra
         binding.vm = viewModel
 
         binding.termsCheckbox.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.termsChecked.value = isChecked
+            viewModel.termsOfServiceIsChecked.value = isChecked
         }
 
         binding.buttonAddWallet.setOnClickListener {
-            askForAnalyticsConsentAndNavigate(NavGraphDirections.actionGlobalAddWalletFragment())
-            countly.addWallet()
+            viewModel.postEvent(SetupNewWalletViewModel.LocalEvents.ClickAddWallet)
         }
 
         binding.buttonHardware.setOnClickListener {
-            askForAnalyticsConsentAndNavigate(SetupNewWalletFragmentDirections.actionGlobalUseHardwareDeviceFragment())
-            settingsManager.setDeviceTermsAccepted()
-            countly.hardwareWallet()
+            viewModel.postEvent(SetupNewWalletViewModel.LocalEvents.ClickUseHardwareDevice)
         }
 
         binding.buttonAppSettings.setOnClickListener {
@@ -65,28 +79,21 @@ open class SetupNewWalletFragment : AbstractOnboardingFragment<SetupNewWalletFra
             listOf(
                 R.string.id_terms_of_service to object : ClickableSpan() {
                     override fun onClick(widget: View) {
-                        openBrowser(settingsManager.getApplicationSettings(), Urls.TERMS_OF_SERVICE)
+                        viewModel.postEvent(SetupNewWalletViewModel.LocalEvents.ClickTermsOfService())
                     }
                 },
                 R.string.id_privacy_policy to object : ClickableSpan() {
                     override fun onClick(widget: View) {
-                        openBrowser(settingsManager.getApplicationSettings(), Urls.PRIVACY_POLICY)
+                        viewModel.postEvent(SetupNewWalletViewModel.LocalEvents.ClickPrivacyPolicy())
                     }
                 }
             )
         )
     }
 
-    private fun askForAnalyticsConsentAndNavigate(directions: NavDirections) {
-        if (ConsentBottomSheetDialogFragment.shouldShowConsentDialog(settingsManager)) {
-            pendingNavigation = directions
-            ConsentBottomSheetDialogFragment.show(childFragmentManager)
-        } else {
-            navigate(directions)
-        }
-    }
-
     override fun dialogDismissed(dialog: AbstractBottomSheetDialogFragment<*>) {
-        pendingNavigation?.let { navigate(it) }
+        _pendingSideEffect?.let {
+            viewModel.postEvent(it.event)
+        }
     }
 }

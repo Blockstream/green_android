@@ -1,31 +1,26 @@
 package com.blockstream.green.ui.settings
 
 import android.graphics.Bitmap
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.green.ApplicationScope
-import com.blockstream.green.data.Countly
 import com.blockstream.green.data.TwoFactorMethod
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.extensions.isEmailValid
-import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.createQrBitmap
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
-class TwoFactorSetupViewModel @AssistedInject constructor(
-    sessionManager: SessionManager,
-    walletRepository: WalletRepository,
-    countly: Countly,
-    appKeystore: AppKeystore,
-    applicationScope: ApplicationScope,
-    @Assisted wallet: Wallet,
-    @Assisted val network: Network,
-    @Assisted val method: TwoFactorMethod,
-    @Assisted val action: TwoFactorSetupAction
-) : WalletSettingsViewModel(sessionManager, walletRepository, countly, appKeystore, applicationScope, wallet) {
+@KoinViewModel
+class TwoFactorSetupViewModel constructor(
+    @InjectedParam wallet: GreenWallet,
+    @InjectedParam val network: Network,
+    @InjectedParam val method: TwoFactorMethod,
+    @InjectedParam val action: TwoFactorSetupAction
+) : WalletSettingsViewModel(wallet) {
 
     var authenticatorUrl: String? = null
     val country = MutableLiveData("")
@@ -66,30 +61,4 @@ class TwoFactorSetupViewModel @AssistedInject constructor(
 
     fun getPhoneNumberValue() = "${country.value ?: ""}${phoneNumber.value ?: ""}"
     fun getEmailValue() = email.value ?: ""
-
-    @dagger.assisted.AssistedFactory
-    interface AssistedFactory {
-        fun create(
-            wallet: Wallet,
-            network: Network,
-            method: TwoFactorMethod,
-            action: TwoFactorSetupAction
-        ): TwoFactorSetupViewModel
-    }
-
-    companion object {
-        fun provideFactory(
-            assistedFactory: AssistedFactory,
-            wallet: Wallet,
-            network: Network,
-            method: TwoFactorMethod,
-            action: TwoFactorSetupAction
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet, network, method, action) as T
-            }
-        }
-    }
-
 }

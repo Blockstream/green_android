@@ -2,8 +2,8 @@ package com.blockstream.green.ui.add
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import com.blockstream.common.data.SetupArgs
 import com.blockstream.green.R
 import com.blockstream.green.databinding.EnterXpubFragmentBinding
 import com.blockstream.green.extensions.clearNavigationResult
@@ -12,11 +12,11 @@ import com.blockstream.green.extensions.getNavigationResult
 import com.blockstream.green.gdk.getNetworkIcon
 import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 
-@AndroidEntryPoint
+
 class EnterXpubFragment : AbstractWalletFragment<EnterXpubFragmentBinding>(
     layout = R.layout.enter_xpub_fragment,
     menuRes = 0
@@ -35,10 +35,9 @@ class EnterXpubFragment : AbstractWalletFragment<EnterXpubFragmentBinding>(
     override val toolbarIcon: Int
         get() = args.network.getNetworkIcon()
 
-    @Inject
-    lateinit var viewModelFactory: EnterXpubViewModel.AssistedFactory
-    val viewModel: EnterXpubViewModel by viewModels {
-        EnterXpubViewModel.provideFactory(viewModelFactory, args.wallet)
+
+    val viewModel: EnterXpubViewModel by viewModel {
+        parametersOf(args.wallet)
     }
 
     override fun getWalletViewModel() = viewModel
@@ -61,11 +60,7 @@ class EnterXpubFragment : AbstractWalletFragment<EnterXpubFragmentBinding>(
         binding.buttonContinue.setOnClickListener {
             navigate(
                 EnterXpubFragmentDirections.actionGlobalReviewAddAccountFragment(
-                    wallet = args.wallet,
-                    assetId = args.assetId,
-                    network = args.network,
-                    accountType = args.accountType,
-                    xpub = viewModel.xpub.value ?: ""
+                    setupArgs = SetupArgs(xpub = viewModel.xpub.value ?: ""),
                 )
             )
         }

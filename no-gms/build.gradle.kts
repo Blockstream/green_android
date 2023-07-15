@@ -1,17 +1,16 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
-    id("com.google.dagger.hilt.android")
-    id("org.jetbrains.kotlin.kapt")
+    alias(libs.plugins.google.devtools.ksp)
 }
 
 android {
     namespace = "com.blockstream.gms"
-    compileSdk = 34
+    compileSdk = libs.versions.androidCompileSdk.get().toInt()
     buildToolsVersion = libs.versions.buildTools.get()
 
     defaultConfig {
-        minSdk = 23
+        minSdk = libs.versions.androidMinSdk.get().toInt()
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -28,8 +27,7 @@ dependencies {
     implementation(project(":base"))
     /** ----------------------------------------------------------------------------------------- */
 
-    /**  --- Hilt Dependency Injection  --------------------------------------------------------- */
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
+    /**  --- Koin   ----------------------------------------------------------------------------- */
+    ksp(libs.koin.ksp.compiler)
     /** ----------------------------------------------------------------------------------------- */
 }

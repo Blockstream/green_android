@@ -5,21 +5,19 @@ import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.blockstream.common.data.EnrichedAsset
-import com.blockstream.green.gdk.getAssetName
+import com.blockstream.common.extensions.getAssetName
 import com.blockstream.green.ui.items.AssetListItem
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.GenericFastItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-@AndroidEntryPoint
 class EnrichedAssetsBottomSheetDialogFragment : FilterBottomSheetDialogFragment(), FilterableDataProvider {
 
     @Suppress("UNCHECKED_CAST")
@@ -38,7 +36,7 @@ class EnrichedAssetsBottomSheetDialogFragment : FilterBottomSheetDialogFragment(
         return (setOfNotNull(
             EnrichedAsset.createOrNull(session.bitcoin?.policyAsset),
             EnrichedAsset.createOrNull(session.liquid?.policyAsset)
-        ) + (session.enrichedAssets.values.takeIf { session.liquid != null } ?: emptyList())).sortedWith(session::sortAssets)
+        ) + (session.enrichedAssets.value.values.takeIf { session.liquid != null } ?: emptyList())).sortedWith(session::sortAssets)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -57,7 +55,7 @@ class EnrichedAssetsBottomSheetDialogFragment : FilterBottomSheetDialogFragment(
             )
         }
 
-        session.enrichedAssetsFlow.onEach {
+        session.enrichedAssets.onEach {
             lifecycleScope.launch(context = Dispatchers.IO) {
                 createEnrichedAssets().also {
                     withContext(context = Dispatchers.Main) {

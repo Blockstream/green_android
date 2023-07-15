@@ -29,12 +29,12 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginStart="6dp"
-                android:src="@{accountType.mutlisig ? @drawable/ic_multisig : accountType.lightning ? @drawable/ic_lightning : @drawable/ic_singlesig}"
+                android:src="@{accountType.mutlisig ? @drawable/ic_multisig : accountType.lightning ? @drawable/ic_lightning_fill : @drawable/ic_singlesig}"
                 app:layout_constraintBottom_toBottomOf="@+id/nameTextView"
                 app:layout_constraintDimensionRatio="w,1:1"
                 app:layout_constraintStart_toEndOf="@+id/nameTextView"
                 app:layout_constraintTop_toTopOf="@+id/nameTextView"
-                tools:src="@drawable/ic_lightning" />
+                tools:src="@drawable/ic_lightning_fill" />
 
             <TextView
                 android:id="@+id/nameTextView"

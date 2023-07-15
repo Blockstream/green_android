@@ -1,6 +1,6 @@
 package com.blockstream.common.data
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -10,8 +10,8 @@ data class EnrichedAsset constructor(
     @SerialName("id") val assetId: String,
     @SerialName("amp") val isAmp: Boolean = false,
     @SerialName("weight") val weight: Int = 0,
-    @SerialName("isAnyLiquid") val isAnyLiquidAsset: Boolean = false
-) : GdkJson<EnrichedAsset>() {
+    @SerialName("isAnyLiquid") val isAnyLiquidAsset: Boolean = false // Display "Any Liquid Asset" UI element
+) : GreenJson<EnrichedAsset>() {
     override fun kSerializer() = serializer()
 
     companion object {

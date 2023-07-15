@@ -3,10 +3,10 @@ package com.blockstream.green.ui.items
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import com.blockstream.common.data.DenominatedValue
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.green.R
-import com.blockstream.green.data.DenominatedValue
 import com.blockstream.green.databinding.ListItemDenominationBinding
-import com.blockstream.green.gdk.GdkSession
 
 data class DenominationListItem constructor(
     val session: GdkSession,

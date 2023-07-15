@@ -2,9 +2,9 @@ package com.blockstream.green.ui.bottomsheets
 
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.Urls
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemActionBinding
-import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.ui.items.AbstractBindingItem
 import com.blockstream.green.ui.items.ActionListItem
 import com.blockstream.green.utils.StringHolder
@@ -12,16 +12,14 @@ import com.blockstream.green.utils.openBrowser
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
-import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
-@AndroidEntryPoint
+
 class HelpBottomSheetDialogFragment: RecyclerBottomSheetDialogFragment() {
     override val screenName = "Help"
 
-    @Inject
-    lateinit var settingsManager: SettingsManager
+    private val settingsManager: SettingsManager by inject()
 
     override fun createFastAdapter(): FastAdapter<AbstractBindingItem<*>> {
         val itemAdapter = ItemAdapter<ActionListItem>()

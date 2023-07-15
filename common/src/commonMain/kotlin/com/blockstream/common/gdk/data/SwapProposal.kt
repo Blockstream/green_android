@@ -2,7 +2,7 @@ package com.blockstream.common.gdk.data
 
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -14,7 +14,7 @@ data class SwapProposal constructor(
     @SerialName("transaction") val transaction: String,
     @SerialName("version") val version: Int,
     @SerialName("proposal") var proposal: String? = null, // This should be injected
-) : GdkJson<SwapProposal>(), Parcelable {
+) : GreenJson<SwapProposal>(), Parcelable {
     override fun kSerializer() = serializer()
 }
 
@@ -25,6 +25,6 @@ data class SwapAsset constructor(
     @SerialName("asset") val assetId: String,
     @SerialName("amount_blinder") val amountBlinder: String,
     @SerialName("asset_blinder") val assetBlinder: String,
-) : GdkJson<SwapAsset>(), Parcelable {
+) : GreenJson<SwapAsset>(), Parcelable {
     override fun kSerializer() = serializer()
 }

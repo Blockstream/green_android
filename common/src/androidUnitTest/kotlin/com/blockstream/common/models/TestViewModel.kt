@@ -1,0 +1,65 @@
+package com.blockstream.common.models
+
+import com.blockstream.common.CountlyBase
+import com.blockstream.common.data.AppInfo
+import com.blockstream.common.managers.SessionManager
+import io.mockk.every
+import io.mockk.mockkClass
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.junit.After
+import org.junit.Before
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
+import org.koin.test.KoinTest
+import org.koin.test.mock.MockProvider
+import org.koin.test.mock.declareMock
+
+@OptIn(ExperimentalCoroutinesApi::class)
+abstract class TestViewModel<VM : GreenViewModel>: KoinTest {
+    internal lateinit var viewModel : VM
+
+    private val testDispatcher = UnconfinedTestDispatcher()
+
+    @Before
+    open fun setupInternal() {
+        Dispatchers.setMain(testDispatcher)
+
+        MockProvider.register {
+            // Your way to build a Mock here
+             mockkClass(it)
+        }
+
+        startKoin {
+            modules(
+                module {
+                    single { AppInfo(userAgent = "green_test", version = "1.0.0-test", isDebug = true, isDevelopment = true) }
+
+                    declareMock<CountlyBase>{
+                        every { viewModel(any()) } returns Unit
+                        every { remoteConfigUpdateEvent } returns MutableSharedFlow<Unit>()
+                    }
+
+                    declareMock<SessionManager> {
+
+                    }
+                }
+            )
+        }
+
+        setup()
+    }
+
+    abstract fun setup()
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+        stopKoin()
+    }
+}

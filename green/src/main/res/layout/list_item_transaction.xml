@@ -6,7 +6,7 @@
     <data>
         <import type="com.blockstream.common.gdk.data.Transaction" />
         <import type="com.blockstream.common.gdk.data.Transaction.Type" />
-        <import type="com.blockstream.green.extensions.ExtensionsKt" />
+        <import type="com.blockstream.common.extensions.StringExtensionsKt" />
 
         <variable
             name="tx"
@@ -223,7 +223,7 @@
 
                     <TextView
                         android:id="@+id/memoView"
-                        isVisible="@{ExtensionsKt.isNotBlank(memo)}"
+                        isVisible="@{StringExtensionsKt.isNotBlank(memo)}"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clipToPadding="false"

@@ -4,15 +4,17 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.Urls
+import com.blockstream.common.data.Denomination
+import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.UserInput
 import com.blockstream.green.R
-import com.blockstream.green.data.Denomination
-import com.blockstream.green.data.GdkEvent
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.databinding.CustomTitleDialogBinding
 import com.blockstream.green.databinding.ListItemActionBinding
@@ -22,7 +24,6 @@ import com.blockstream.green.extensions.clearNavigationResult
 import com.blockstream.green.extensions.endIconCustomMode
 import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.getNavigationResult
-import com.blockstream.green.extensions.isNotBlank
 import com.blockstream.green.extensions.localized2faMethods
 import com.blockstream.green.gdk.getNetworkIcon
 import com.blockstream.green.ui.bottomsheets.TwoFactorResetBottomSheetDialogFragment
@@ -34,7 +35,6 @@ import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.AmountTextWatcher
 import com.blockstream.green.utils.StringHolder
-import com.blockstream.green.utils.UserInput
 import com.blockstream.green.utils.getBitcoinOrLiquidUnit
 import com.blockstream.green.utils.getFiatCurrency
 import com.blockstream.green.utils.openBrowser
@@ -46,13 +46,12 @@ import com.mikepenz.fastadapter.IAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.mikepenz.itemanimators.AlphaCrossFadeAnimator
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-@AndroidEntryPoint
 class NetworkTwoFactorAuthenticationFragment :
     AbstractWalletFragment<WalletSettingsFragmentBinding>(R.layout.wallet_settings_fragment, 0) {
     val args: TwoFactorAuthenticationFragmentArgs by navArgs()
@@ -93,10 +92,15 @@ class NetworkTwoFactorAuthenticationFragment :
     override val toolbarIcon: Int
         get() = network.getNetworkIcon()
 
-    @Inject
-    lateinit var viewModelFactory: WalletSettingsViewModel.AssistedFactory
-    val viewModel: WalletSettingsViewModel by viewModels {
-        WalletSettingsViewModel.provideFactory(viewModelFactory, args.wallet)
+    val viewModel: WalletSettingsViewModel by viewModel {
+        parametersOf(args.wallet)
+    }
+
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+        if(sideEffect is SideEffects.Success){
+            updateAdapter()
+        }
     }
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
@@ -230,12 +234,6 @@ class NetworkTwoFactorAuthenticationFragment :
         viewModel.onError.observe(viewLifecycleOwner) { event ->
             event?.getContentIfNotHandledOrReturnNull()?.let {
                 errorDialog(it)
-                updateAdapter()
-            }
-        }
-
-        viewModel.onEvent.observe(viewLifecycleOwner) { event ->
-            event?.getContentIfNotHandledForType<GdkEvent.Success>()?.let {
                 updateAdapter()
             }
         }

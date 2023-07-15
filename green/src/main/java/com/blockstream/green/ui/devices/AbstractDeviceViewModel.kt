@@ -3,21 +3,18 @@ package com.blockstream.green.ui.devices
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.HwWalletLogin
 import com.blockstream.JadeHWWallet
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.DeviceBrand
+import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.green.data.AppEvent
-import com.blockstream.green.data.Countly
-import com.blockstream.green.data.NavigateEvent
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceConnectionManager
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.devices.HardwareConnectInteraction
-import com.blockstream.green.gdk.GdkSession
-import com.blockstream.green.managers.SessionManager
-import com.blockstream.green.ui.AppViewModel
-import com.blockstream.green.utils.ConsumableEvent
+import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.utils.QATester
 import com.greenaddress.greenbits.wallets.FirmwareFileData
 import com.greenaddress.greenbits.wallets.FirmwareUpgradeRequest
@@ -27,13 +24,10 @@ import kotlinx.coroutines.runBlocking
 import mu.KLogging
 
 abstract class AbstractDeviceViewModel constructor(
-    val sessionManager: SessionManager,
-    val walletRepository: WalletRepository,
     val deviceManager: DeviceManager,
     val qaTester: QATester,
-    countly: Countly,
-    val walletOrNull: Wallet?
-) : AppViewModel(countly), HardwareConnectInteraction, HwWalletLogin {
+    val walletOrNull: GreenWallet?
+) : AppViewModelAndroid(), HardwareConnectInteraction, HwWalletLogin {
 
     protected var proceedToLogin: Boolean = false
 
@@ -96,11 +90,11 @@ abstract class AbstractDeviceViewModel constructor(
     }
 
     override fun onDeviceReady(device: Device, isJadeUninitialized: Boolean?) {
-        onProgress.postValue(true)
+        onProgressAndroid.postValue(true)
     }
 
     override fun onDeviceFailed(device: Device) {
-        onProgress.postValue(false)
+        onProgressAndroid.postValue(false)
     }
 
     override fun askForFirmwareUpgrade(
@@ -108,17 +102,16 @@ abstract class AbstractDeviceViewModel constructor(
     ): Deferred<Int?> {
         return CompletableDeferred<Int?>().also {
             askForFirmwareUpgradeEmitter = it
-
             onEvent.postValue(ConsumableEvent(DeviceEvent.AskForFirmwareUpgrade(firmwareUpgradeRequest)))
         }
     }
 
     override fun firmwareUpdated(requireReconnection: Boolean, requireBleRebonding: Boolean) {
         if(requireBleRebonding){
-            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(DeviceInfoViewModel.REQUIRE_REBONDING)))
+            postSideEffect(SideEffects.Navigate(DeviceInfoViewModel.REQUIRE_REBONDING))
         }else if(requireReconnection) {
             // on firmware update, navigate to device list
-            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateBack()))
+            postSideEffect(SideEffects.NavigateBack())
         }
     }
 
@@ -147,7 +140,7 @@ abstract class AbstractDeviceViewModel constructor(
     override fun firmwarePushedToDevice(firmwareFileData: FirmwareFileData, hash: String) {
         onEvent.postValue(ConsumableEvent(DeviceEvent.FirmwarePushedToDevice(firmwareFileData, hash)))
         device?.also {
-            countly.jadeOtaStart(it, firmwareFileData)
+            countly.jadeOtaStart(it, firmwareFileData.image.config, firmwareFileData.image.patchSize != null, firmwareFileData.image.version)
         }
     }
 
@@ -165,7 +158,7 @@ abstract class AbstractDeviceViewModel constructor(
         onEvent.postValue(ConsumableEvent(DeviceEvent.FirmwareUpdateComplete(success)))
         if(success) {
             device?.also {
-                countly.jadeOtaComplete(it, firmwareFileData)
+                countly.jadeOtaComplete(it, firmwareFileData.image.config, firmwareFileData.image.patchSize != null, firmwareFileData.image.version)
             }
         }
     }

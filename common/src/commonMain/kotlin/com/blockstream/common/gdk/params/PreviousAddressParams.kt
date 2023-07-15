@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk.params
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 data class PreviousAddressParams constructor(
     @SerialName("subaccount") val subaccount: Long,
     @SerialName("last_pointer") val lastPointer: Int? = null,
-) : GdkJson<PreviousAddressParams>() {
+) : GreenJson<PreviousAddressParams>() {
 
     override fun encodeDefaultsValues() = false
 

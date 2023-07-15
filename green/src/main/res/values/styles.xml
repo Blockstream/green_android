@@ -124,6 +124,10 @@
         <item name="shapeAppearance">@style/ShapeAppearance.Green.SmallComponent</item>
     </style>
 
+    <style name="Widget.Green.Button.Text.White" parent="Widget.Green.Button.Text">
+        <item name="android:textColor">@color/button_white</item>
+    </style>
+
     <style name="Widget.Green.Button.Text.Big" parent="Widget.Green.Button.Text">
         <item name="android:height">60dp</item>
     </style>
@@ -235,6 +239,13 @@
 
     <style name="MaterialAlertDialog.Green.Body.Text" parent="MaterialAlertDialog.Material3.Body.Text">
         <item name="android:textColor">@color/color_on_surface_emphasis_high</item>
+    </style>
+
+    <style name="MaterialAlertDialog.Green.Title.Icon" parent="MaterialAlertDialog.MaterialComponents.Title.Icon">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:layout_gravity">center</item>
     </style>
 
     <style name="RecoveryPhraseKeyboardButton" parent="Widget.Material3.Button">

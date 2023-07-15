@@ -3,11 +3,11 @@ package com.blockstream.green.ui.items
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Transaction
-import com.blockstream.gdk.createdAt
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemTransactionProgressBinding
-import com.blockstream.green.gdk.GdkSession
+import com.blockstream.green.extensions.createdAt
 import com.blockstream.green.utils.formatMediumWithTime
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 

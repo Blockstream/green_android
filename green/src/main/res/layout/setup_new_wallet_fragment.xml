@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="com.blockstream.green.ui.onboarding.SetupNewWalletViewModel" />
+            type="com.blockstream.common.models.onboarding.SetupNewWalletViewModel" />
 
     </data>
 
@@ -69,7 +69,7 @@
             android:id="@+id/termsCheckbox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:checked="@={vm.termsChecked}"
+            android:checked="@={vm.termsOfServiceIsChecked}"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="@+id/wrapButtons"
             app:layout_constraintTop_toBottomOf="@+id/wrapButtons"
@@ -104,7 +104,7 @@
                 style="@style/Widget.Green.Button.Big"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:enabled="@{vm.termsChecked}"
+                android:enabled="@{vm.termsOfServiceIsChecked}"
                 android:text="@string/id_add_wallet" />
 
             <com.google.android.material.button.MaterialButton
@@ -112,7 +112,7 @@
                 style="@style/Widget.Green.Button.White.Big"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:enabled="@{vm.termsChecked}"
+                android:enabled="@{vm.termsOfServiceIsChecked}"
                 android:text="@string/id_use_hardware_device" />
 
         </com.blockstream.green.views.GappedLinearLayout>
@@ -123,7 +123,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
-            android:enabled="@{!vm.onProgress}"
             android:text="@string/id_app_settings"
             android:textColor="@color/color_on_surface_emphasis_medium"
             android:textSize="12dp"

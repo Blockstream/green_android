@@ -7,10 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
 import com.blockstream.green.databinding.QrDialogBinding
-import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
 
-@AndroidEntryPoint
 class QrDialogFragment : AbstractDialogFragment<QrDialogBinding>() {
 
     override fun inflate(layoutInflater: LayoutInflater): QrDialogBinding =

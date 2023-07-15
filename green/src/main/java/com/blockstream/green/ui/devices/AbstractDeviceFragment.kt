@@ -16,10 +16,9 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.core.app.ActivityCompat
 import androidx.databinding.ViewDataBinding
-import com.blockstream.common.gdk.device.DeviceBrand
 import com.blockstream.common.Urls
+import com.blockstream.common.gdk.device.DeviceBrand
 import com.blockstream.green.R
-import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.PinTextDialogBinding
 import com.blockstream.green.extensions.errorSnackbar
 import com.blockstream.green.extensions.snackbar
@@ -31,8 +30,7 @@ import com.blockstream.jade.entities.JadeVersion
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.greenaddress.greenbits.wallets.FirmwareUpgradeRequest
 import mu.KLogging
-import javax.inject.Inject
-import javax.inject.Provider
+import org.koin.android.ext.android.inject
 
 
 abstract class AbstractDeviceFragment<T : ViewDataBinding>(
@@ -40,10 +38,7 @@ abstract class AbstractDeviceFragment<T : ViewDataBinding>(
     @MenuRes menuRes: Int
 ) : AppFragment<T>(layout, menuRes) {
 
-    @Inject
-    lateinit var bluetoothAdapterProvider: Provider<BluetoothAdapter?>
-
-    private val bluetoothAdapter get() = bluetoothAdapterProvider.get()
+    private val bluetoothAdapter: BluetoothAdapter? by inject()
 
     abstract val viewModel: AbstractDeviceViewModel
 
@@ -55,8 +50,6 @@ abstract class AbstractDeviceFragment<T : ViewDataBinding>(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        setupDeviceInteractionEvent(viewModel.onDeviceInteractionEvent)
 
         viewModel.onEvent.observe(viewLifecycleOwner) { onEvent ->
             onEvent.getContentIfNotHandledForType<AbstractDeviceViewModel.DeviceEvent>()?.let {
@@ -77,10 +70,6 @@ abstract class AbstractDeviceFragment<T : ViewDataBinding>(
 
                     }
                 }
-            }
-
-            onEvent.getContentIfNotHandledForType<NavigateEvent.NavigateBack>()?.let {
-                popBackStack()
             }
         }
 

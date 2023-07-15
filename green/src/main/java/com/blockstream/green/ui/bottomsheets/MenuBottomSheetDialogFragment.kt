@@ -13,10 +13,8 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
-import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
 
-@AndroidEntryPoint
 class MenuBottomSheetDialogFragment : AbstractBottomSheetDialogFragment<MenuBottomSheetBinding>() {
     override val screenName: String? = null
 

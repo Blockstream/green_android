@@ -6,11 +6,11 @@ import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.extensions.isPolicyAsset
+import com.blockstream.common.extensions.networkForAsset
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.green.R
 import com.blockstream.green.databinding.AssetDetailsBottomSheetBinding
-import com.blockstream.green.gdk.isPolicyAsset
-import com.blockstream.green.gdk.networkForAsset
 import com.blockstream.green.looks.AssetLook
 import com.blockstream.green.ui.items.OverlineTextListItem
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
@@ -18,13 +18,10 @@ import com.blockstream.green.utils.StringHolder
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 
-@AndroidEntryPoint
 class AssetDetailsBottomSheetFragment: WalletBottomSheetDialogFragment<AssetDetailsBottomSheetBinding, AbstractWalletViewModel>() {
     override val screenName = "AssetDetails"
     override val segmentation: HashMap<String, Any>? = null
@@ -75,20 +72,18 @@ class AssetDetailsBottomSheetFragment: WalletBottomSheetDialogFragment<AssetDeta
         }
 
         (if (accountOrNull == null) {
-            session.walletAssetsFlow.map {
-                it.mapValues { it.value }
-            }
+            session.walletAssets
         } else {
-            session.accountAssetsFlow(account)
+            session.accountAssets(account)
         }).onEach {
-            look.amount = it[assetId] ?: 0
+            look.amount = it.assets?.get(assetId) ?: 0
             balanceListItem.text = StringHolder(session.starsOrNull ?: look.balance(withUnit = true))
             binding.recycler.adapter?.notifyItemChanged(list.indexOf(balanceListItem))
             fastAdapter.notifyAdapterDataSetChanged()
         }.launchIn(lifecycleScope)
 
         session
-            .blockFlow(network)
+            .block(network)
             .onEach {
                 blockHeightListItem.text = StringHolder(it.height.toString())
                 fastAdapter.notifyAdapterDataSetChanged()

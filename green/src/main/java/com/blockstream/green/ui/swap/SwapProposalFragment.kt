@@ -8,7 +8,6 @@ import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import androidx.core.text.color
 import androidx.core.text.scale
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.databinding.SwapProposalFragmentBinding
@@ -16,11 +15,10 @@ import com.blockstream.green.extensions.copyToClipboard
 import com.blockstream.green.extensions.share
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.utils.toAmountLook
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-@AndroidEntryPoint
 class SwapProposalFragment : AbstractWalletFragment<SwapProposalFragmentBinding>(
     layout = R.layout.swap_proposal_fragment,
     menuRes = 0
@@ -34,14 +32,8 @@ class SwapProposalFragment : AbstractWalletFragment<SwapProposalFragmentBinding>
 
     override val screenName = "SwapProposal"
 
-    @Inject
-    lateinit var viewModelFactory: SwapProposalViewModel.AssistedFactory
-    val viewModel: SwapProposalViewModel by viewModels {
-        SwapProposalViewModel.provideFactory(
-            viewModelFactory,
-            args.wallet,
-            args.proposal
-        )
+    val viewModel: SwapProposalViewModel by viewModel {
+        parametersOf(args.wallet, args.proposal)
     }
 
     override fun getWalletViewModel() = viewModel

@@ -1,9 +1,12 @@
 package com.blockstream.green.utils
 
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.blockstream.common.data.Banner
+import com.blockstream.common.gdk.GdkSession
+import com.blockstream.common.events.Events
 import com.blockstream.green.R
-import com.blockstream.green.gdk.GdkSession
+import com.blockstream.green.adapters.bindBanner
 import com.blockstream.green.ui.AppFragment
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -11,35 +14,39 @@ import kotlinx.coroutines.flow.onEach
 
 object BannersHelper {
 
+    // Replace this until GreenViewModel also handles session
     fun handle(appFragment: AppFragment<*>, session: GdkSession?) {
-        appFragment.countly.remoteConfigUpdateEvent.onEach {
-            val oldBanner = appFragment.getAppViewModel()?.banner?.value
+        val countly = appFragment.countly
+        val screenName = appFragment.getGreenViewModel()?.screenName() ?: appFragment.screenName
 
-            appFragment.countly.getRemoteConfigValueForBanners("banners")
+        countly.remoteConfigUpdateEvent.onEach {
+            val oldBanner = appFragment.getGreenViewModel()?.banner?.value
+
+            countly.getRemoteConfigValueForBanners()
                 // Filter
                 ?.filter {
                     // Filter closed banners
-                    appFragment.getAppViewModel()?.closedBanners?.contains(it) == false &&
+                    appFragment.getGreenViewModel()?.closedBanners?.contains(it) == false &&
 
                     // Filter networks
                     (!it.hasNetworks || ((it.networks ?: listOf()).intersect((session?.activeSessions?.map { it.network } ?: setOf()).toSet()).isNotEmpty()))  &&
 
                     // Filter based on screen name
-                    (it.screens?.contains(appFragment.screenName) == true || it.screens?.contains("*") == true)
+                    (it.screens?.contains(screenName) == true || it.screens?.contains("*") == true)
                 }
                 ?.shuffled()
                 ?.let {
                     // Search for the already displayed banner, else give priority to those with screen name, else "*"
-                    it.find { it == oldBanner } ?: it.find { it.screens?.contains(appFragment.screenName) == true } ?: it.firstOrNull()
+                    it.find { it == oldBanner } ?: it.find { it.screens?.contains(screenName) == true } ?: it.firstOrNull()
                 }.also { banner ->
                     // Set banner to ViewModel
-                    appFragment.getAppViewModel()?.banner?.postValue(banner)
+                    appFragment.getGreenViewModel()?.banner?.value = banner
                 }
                 ?.also { banner ->
                     appFragment.getBannerAlertView()?.let { bannerAlertView ->
                         if(banner.dismissable == true) {
                             bannerAlertView.closeButton {
-                                dismiss(appFragment, banner)
+                                appFragment.getGreenViewModel()?.postEvent(Events.BannerDismiss)
                             }
                         }
 
@@ -47,7 +54,7 @@ object BannersHelper {
                             bannerAlertView.primaryButton("", null)
                         }else{
                             bannerAlertView.primaryButton(appFragment.requireContext().getString(R.string.id_learn_more)){
-                                handleClick(appFragment, banner)
+                                appFragment.getGreenViewModel()?.postEvent(Events.BannerAction)
                             }
                         }
                     }
@@ -55,17 +62,33 @@ object BannersHelper {
         }.launchIn(appFragment.lifecycleScope)
     }
 
-    fun dismiss(appFragment: AppFragment<*>, banner: Banner) {
-        appFragment.getAppViewModel()?.let{
-            it.closedBanners += banner
-            appFragment.getAppViewModel()?.banner?.postValue(null)
-        }
+    fun setupBanner(appFragment: AppFragment<*>, banner: Banner?){
+        appFragment.getBannerAlertView()?.let { bannerAlertView ->
+            if(banner == null){
+                bannerAlertView.isVisible = false
+            }else {
+                bannerAlertView.isVisible = true
 
-    }
+                bindBanner(bannerAlertView, banner)
 
-    fun handleClick(appFragment: AppFragment<*>, banner: Banner?) {
-        banner?.link.takeIf { !it.isNullOrBlank() }?.let {
-            appFragment.openBrowser(it)
+                if (banner.dismissable == true) {
+                    bannerAlertView.closeButton {
+                        appFragment.getGreenViewModel()?.postEvent(Events.BannerDismiss)
+                    }
+                }else{
+                    bannerAlertView.closeButton(null)
+                }
+
+                if (banner.link.isNullOrBlank()) {
+                    bannerAlertView.primaryButton("", null)
+                } else {
+                    bannerAlertView.primaryButton(
+                        appFragment.requireContext().getString(R.string.id_learn_more)
+                    ) {
+                        appFragment.getGreenViewModel()?.postEvent(Events.BannerAction)
+                    }
+                }
+            }
         }
     }
 }

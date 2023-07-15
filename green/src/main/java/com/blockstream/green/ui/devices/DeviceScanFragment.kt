@@ -2,28 +2,27 @@ package com.blockstream.green.ui.devices
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.Urls
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.deviceIcon
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.data.AppEvent
-import com.blockstream.green.data.NavigateEvent
-import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.DeviceScanFragmentBinding
 import com.blockstream.green.devices.Device
 import com.blockstream.green.extensions.navigate
 import com.blockstream.green.gdk.getIcon
-import com.blockstream.green.ui.AppViewModel
+import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.utils.openBrowser
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 
-@AndroidEntryPoint
 class DeviceScanFragment : AbstractDeviceFragment<DeviceScanFragmentBinding>(
     layout = R.layout.device_scan_fragment,
     menuRes = 0
@@ -41,31 +40,31 @@ class DeviceScanFragment : AbstractDeviceFragment<DeviceScanFragmentBinding>(
     override val title: String
         get() = wallet.name
 
-    @Inject
-    lateinit var viewModelFactory: DeviceScanViewModel.AssistedFactory
-
-    override val viewModel: DeviceScanViewModel by viewModels {
-        DeviceScanViewModel.provideFactory(viewModelFactory, args.wallet)
+    override val viewModel: DeviceScanViewModel by viewModel {
+        parametersOf(args.wallet)
     }
 
-    override fun getAppViewModel(): AppViewModel = viewModel
+    override fun getAppViewModel(): AppViewModelAndroid = viewModel
+
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+        if (sideEffect is SideEffects.Navigate){
+            if(sideEffect.data is Pair<*, *>){
+                @Suppress("UNCHECKED_CAST")
+                val data : Pair<GreenWallet, Device> = sideEffect.data as Pair<GreenWallet, Device>
+
+                NavGraphDirections.actionGlobalLoginFragment(wallet = data.first, deviceId = data.second.id).let { navDirections ->
+                    navigate(findNavController(), navDirections.actionId, navDirections.arguments, isLogout = true)
+                }
+            }
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
 
         viewModel.onEvent.observe(viewLifecycleOwner) { onEvent ->
-            onEvent.getContentIfNotHandledForType<NavigateEvent.NavigateWithData>()?.let {
-                if(it.data is Pair<*, *>){
-                   @Suppress("UNCHECKED_CAST")
-                   val data : Pair<Wallet, Device> = it.data as Pair<Wallet, Device>
-
-                    NavGraphDirections.actionGlobalLoginFragment(wallet = data.first, deviceId = data.second.id).let { navDirections ->
-                        navigate(findNavController(), navDirections.actionId, navDirections.arguments, isLogout = true)
-                    }
-                }
-            }
-
             onEvent.getContentIfNotHandledForType<DeviceScanFragmentEvent>()?.let {
                 if(it is DeviceScanFragmentEvent.RequestWalletIsDifferent){
                     MaterialAlertDialogBuilder(requireContext())

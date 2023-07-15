@@ -1,11 +1,10 @@
 package com.blockstream.common.gdk
 
-import com.blockstream.common.BuildConfig
 import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
-import com.blockstream.common.gdk.data.Assets
 import com.blockstream.common.gdk.data.AuthHandlerStatus
 import com.blockstream.common.gdk.data.Balance
 import com.blockstream.common.gdk.data.FeeEstimation
+import com.blockstream.common.gdk.data.LiquidAssets
 import com.blockstream.common.gdk.data.LoginData
 import com.blockstream.common.gdk.data.Networks
 import com.blockstream.common.gdk.data.Pricing
@@ -46,8 +45,9 @@ class AndroidGdk(log: Boolean, config: InitConfig) : GdkBinding {
     init {
         _dataDir = config.datadir
 
+        // Set maskSensitiveFields always as true for QA peace of mind
         GDKJNI.init(
-            GdkJsonConverter(JsonConverter(log, !BuildConfig.DEBUG)),
+            GdkJsonConverter(JsonConverter(log = log, maskSensitiveFields = true)),
             config
         )
     }
@@ -139,7 +139,7 @@ class AndroidGdk(log: Boolean, config: InitConfig) : GdkBinding {
     override fun refreshAssets(session: GASession, params: AssetsParams) = GDKJNI.refresh_assets(session, params)
 
 
-    override fun getAssets(session: GASession, params: GetAssetsParams): Assets {
+    override fun getAssets(session: GASession, params: GetAssetsParams): LiquidAssets {
         return JsonDeserializer.decodeFromJsonElement(
             GDKJNI.get_assets(
                 session,
@@ -311,15 +311,15 @@ class AndroidGdk(log: Boolean, config: InitConfig) : GdkBinding {
         return GDKJNI.get_unspent_outputs_for_private_key(session, details)
     }
 
-    override fun createTransaction(session: GASession, params: GdkJson<*>): GAAuthHandler {
+    override fun createTransaction(session: GASession, params: GreenJson<*>): GAAuthHandler {
         return GDKJNI.create_transaction(session, params)
     }
 
-    override fun createSwapTransaction(session: GASession, params: GdkJson<*>): GAAuthHandler {
+    override fun createSwapTransaction(session: GASession, params: GreenJson<*>): GAAuthHandler {
         return GDKJNI.create_swap_transaction(session, params)
     }
 
-    override fun completeSwapTransaction(session: GASession, params: GdkJson<*>): GAAuthHandler {
+    override fun completeSwapTransaction(session: GASession, params: GreenJson<*>): GAAuthHandler {
         return GDKJNI.complete_swap_transaction(session, params)
     }
 

@@ -4,47 +4,40 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Bundle
 import android.text.format.DateUtils
 import android.text.format.DateUtils.DAY_IN_MILLIS
 import androidx.lifecycle.*
-import androidx.savedstate.SavedStateRegistryOwner
 import breez_sdk.InputType
 import breez_sdk.LnInvoice
 import breez_sdk.SwapInfo
-import com.blockstream.green.data.Denomination
+import com.blockstream.common.data.DenominatedValue
+import com.blockstream.common.data.Denomination
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Address
+import com.blockstream.common.lightning.amountSatoshi
+import com.blockstream.common.lightning.channelFeePercent
+import com.blockstream.common.lightning.channelMinimumFeeSatoshi
+import com.blockstream.common.lightning.expireIn
+import com.blockstream.common.lightning.fromInvoice
+import com.blockstream.common.lightning.fromSwapInfo
+import com.blockstream.common.lightning.inboundLiquiditySatoshi
+import com.blockstream.common.lightning.maxReceivableSatoshi
+import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.ConsumableEvent
+import com.blockstream.common.utils.UserInput
 import com.blockstream.green.R
-import com.blockstream.green.data.Countly
-import com.blockstream.green.data.DenominatedValue
-import com.blockstream.green.data.GdkEvent
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.extensions.boolean
-import com.blockstream.green.extensions.isNotBlank
 import com.blockstream.green.extensions.string
-import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.bottomsheets.DenominationListener
 import com.blockstream.green.ui.bottomsheets.INote
 import com.blockstream.green.ui.wallet.AbstractAssetWalletViewModel
-import com.blockstream.green.utils.ConsumableEvent
-import com.blockstream.green.utils.UserInput
 import com.blockstream.green.utils.createQrBitmap
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.utils.toAmountLook
 import com.blockstream.green.utils.toAmountLookOrNa
-import com.blockstream.lightning.amountSatoshi
-import com.blockstream.lightning.channelFeePercent
-import com.blockstream.lightning.channelMinimumFeeSatoshi
-import com.blockstream.lightning.expireIn
-import com.blockstream.lightning.fromInvoice
-import com.blockstream.lightning.fromSwapInfo
-import com.blockstream.lightning.inboundLiquiditySatoshi
-import com.blockstream.lightning.maxReceivableSatoshi
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import dagger.hilt.android.qualifiers.ApplicationContext
+import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -53,21 +46,16 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
 
-class ReceiveViewModel @AssistedInject constructor(
-    @SuppressLint("StaticFieldLeak")
-    @ApplicationContext val context: Context,
-    sessionManager: SessionManager,
-    walletRepository: WalletRepository,
-    countly: Countly,
-    @Assisted private val savedStateHandle: SavedStateHandle,
-    @Assisted wallet: Wallet,
-    @Assisted initAccountAsset: AccountAsset,
+@KoinViewModel
+class ReceiveViewModel constructor(
+    @SuppressLint("StaticFieldLeak") val context: Context,
+    @InjectedParam wallet: GreenWallet,
+    @InjectedParam initAccountAsset: AccountAsset,
 ) : AbstractAssetWalletViewModel(
-    sessionManager,
-    walletRepository,
-    countly,
     wallet,
     initAccountAsset
 ), DenominationListener, INote {
@@ -122,24 +110,24 @@ class ReceiveViewModel @AssistedInject constructor(
             .distinctUntilChanged()
             .onEach {
                 clearRequestAmount()
-            }.launchIn(viewModelScope)
+            }.launchIn(viewModelScope.coroutineScope)
 
         // Generate address when account & account type changes
         accountLiveData.asFlow().onEach {
             generateAddress()
-        }.launchIn(viewModelScope)
+        }.launchIn(viewModelScope.coroutineScope)
 
         combine(accountLiveData.asFlow(), lightningInvoice.asFlow(), swapInfo.asFlow(), showOnchainAddress.asFlow()) { account, lightningInvoice, swapInfo, _ ->
             Triple(account , lightningInvoice, swapInfo)
         }.onEach {
-            if(account.isLightning){
+            if(accountValue.isLightning){
                 addressLiveData.value = if (showOnchainAddress.boolean()) swapInfo.value?.let {
                     Address.fromSwapInfo(swapInfo = it)
                 } else lightningInvoice.value?.let { Address.fromInvoice(invoice = it) }
 
                 update()
             }
-        }.launchIn(viewModelScope)
+        }.launchIn(viewModelScope.coroutineScope)
 
 
         session.lightning?.also {
@@ -152,23 +140,23 @@ class ReceiveViewModel @AssistedInject constructor(
                 channelFeePercent.value = "${lspInfo.channelFeePercent()}%"
                 channelMinFee.value = lspInfo.channelMinimumFeeSatoshi().toAmountLook(
                     session = session,
-                    assetId = account.network.policyAsset,
+                    assetId = accountValue.network.policyAsset,
                     denomination = denomination.value,
                     withUnit = true
                 )
-            }.launchIn(viewModelScope)
+            }.launchIn(viewModelScope.coroutineScope)
 
             combine(amount.asFlow(), channelFeePercent.asFlow(), channelMinFee.asFlow()) { _, _, _ ->
                 Unit
             }.onEach {
                 updateAmountExchangeRate()
             }
-            .launchIn(viewModelScope)
+            .launchIn(viewModelScope.coroutineScope)
 
             denomination.asFlow()
                 .onEach {
                     amountCurrency.value = it.unit(session, lightningAccount.network.policyAsset)
-                }.launchIn(viewModelScope)
+                }.launchIn(viewModelScope.coroutineScope)
 
             combine(session.lightningNodeInfoStateFlow, denomination.asFlow()) { nodeState, _ ->
                 nodeState
@@ -186,7 +174,7 @@ class ReceiveViewModel @AssistedInject constructor(
                     denomination = denomination.value,
                     withUnit = true
                 )
-            }.launchIn(viewModelScope)
+            }.launchIn(viewModelScope.coroutineScope)
 
             combine(swapInfo.asFlow().filterNotNull(), denomination.asFlow()) { swapInfo, _ ->
                 swapInfo
@@ -206,7 +194,7 @@ class ReceiveViewModel @AssistedInject constructor(
                     withUnit = true
                 )
 
-            }.launchIn(viewModelScope)
+            }.launchIn(viewModelScope.coroutineScope)
 
             session.lastInvoicePaid.filterNotNull().onEach { paidDetails ->
                 if(paidDetails.paymentHash == lightningInvoice.value?.paymentHash){
@@ -215,20 +203,20 @@ class ReceiveViewModel @AssistedInject constructor(
                         // Parse the actual Bolt11 invoice
                         session.parseInput(paidDetails.bolt11)
                     }?.second as? InputType.Bolt11)?.also {
-                        onEvent.value = ConsumableEvent(GdkEvent.SuccessWithData(it.invoice))
+                        postSideEffect(SideEffects.Success(it.invoice))
                         lightningInvoice.value = null
                     }
 
                 }
-            }.launchIn(viewModelScope)
+            }.launchIn(viewModelScope.coroutineScope)
         }
     }
 
     fun generateAddress() {
-        logger.info { "Generating address for ${account.name}" }
-        showAssetWhitelistWarning.value = account.isLiquid && session.device?.isLedger == true
+        logger.info { "Generating address for ${accountValue.name}" }
+        showAssetWhitelistWarning.value = accountValue.isLiquid && session.device?.isLedger == true
         canValidateAddressInDevice.value = session.device?.let { device ->
-            !account.isLightning && (
+            !accountValue.isLightning && (
             device.isJade ||
                     (device.isLedger && network.isLiquid && !network.isSinglesig) ||
                     (device.isLedger && !network.isLiquid && network.isSinglesig) ||
@@ -236,9 +224,9 @@ class ReceiveViewModel @AssistedInject constructor(
                     )
         } ?: false
 
-        if (!account.isLightning) {
+        if (!accountValue.isLightning) {
             doUserAction({
-                session.getReceiveAddress(account)
+                session.getReceiveAddress(accountValue)
             }, onSuccess = {
                 addressLiveData.value = it
                 update()
@@ -247,7 +235,7 @@ class ReceiveViewModel @AssistedInject constructor(
     }
 
     fun validateAddressInDevice() {
-        countly.verifyAddress(session, account)
+        countly.verifyAddress(session, accountValue)
 
         addressLiveData.value?.let { address ->
             deviceAddressValidationEvent.value = ConsumableEvent(null)
@@ -257,7 +245,7 @@ class ReceiveViewModel @AssistedInject constructor(
                     hwWallet.getGreenAddress(
                         network = network,
                         hwInteraction = null,
-                        account = account,
+                        account = accountValue,
                         path = address.userPath ?: listOf(),
                         csvBlocks = address.subType ?: 0
                     )
@@ -278,7 +266,7 @@ class ReceiveViewModel @AssistedInject constructor(
     }
 
     private fun updateAddressUri() {
-        if (account.isLightning) {
+        if (accountValue.isLightning) {
             if (showOnchainAddress.boolean()) {
                 addressUri.value = addressLiveData.value?.address?.takeIf { it.isNotBlank() }
                 isAddressUri.value = false
@@ -286,7 +274,7 @@ class ReceiveViewModel @AssistedInject constructor(
                 addressUri.value = addressLiveData.value?.address?.takeIf { it.isNotBlank() }?.let {
                     isAddressUri.value = false
                     Uri.Builder().also {
-                        it.scheme(account.network.bip21Prefix)
+                        it.scheme(accountValue.network.bip21Prefix)
                         it.opaquePart(addressLiveData.value?.address?.uppercase()) // bech32 is case insensitive
                     }.toString()
                 }
@@ -298,7 +286,7 @@ class ReceiveViewModel @AssistedInject constructor(
             // https://stackoverflow.com/questions/8534899/is-it-possible-to-use-uri-builder-and-not-have-the-part
 
             val scheme = Uri.Builder().also {
-                it.scheme(account.network.bip21Prefix)
+                it.scheme(accountValue.network.bip21Prefix)
                 it.opaquePart(addressLiveData.value?.address)
             }.toString()
 
@@ -341,12 +329,12 @@ class ReceiveViewModel @AssistedInject constructor(
             invoice.amountSatoshi().let { amountSatoshi ->
                 amountSatoshi.toAmountLookOrNa(
                     session = session,
-                    assetId = account.network.policyAsset,
+                    assetId = accountValue.network.policyAsset,
                     denomination = denomination.value.takeIf { it?.isFiat == false } ?: Denomination.default(session),
                     withUnit = true
                 ) to amountSatoshi.toAmountLookOrNa(
                     session = session,
-                    assetId = account.network.policyAsset,
+                    assetId = accountValue.network.policyAsset,
                     denomination = Denomination.fiat(session),
                     withUnit = true
                 )
@@ -375,7 +363,7 @@ class ReceiveViewModel @AssistedInject constructor(
             val amount = UserInput.parseUserInput(
                 session = session,
                 input = amount.value,
-                assetId = account.network.policyAsset,
+                assetId = accountValue.network.policyAsset,
                 denomination = denomination.value
             ).getBalance()?.satoshi ?: 0
 
@@ -438,7 +426,7 @@ class ReceiveViewModel @AssistedInject constructor(
             showLiquidityFee.value = amountIsValid.value == 1 && session.lspInfoStateFlow.value != null &&
                     (session.lightningNodeInfoStateFlow.value.inboundLiquidityMsats == 0uL || (balance != null && balance.satoshi >= session.lightningNodeInfoStateFlow.value.inboundLiquiditySatoshi()))
 
-            viewModelScope.launch {
+            viewModelScope.coroutineScope.launch {
                 liquidityFeeError.value = if (amountIsValid.value == -1 && balance != null) {
                     val maxReceivableSatoshi =
                         session.lightningNodeInfoStateFlow.value.maxReceivableSatoshi()
@@ -476,39 +464,6 @@ class ReceiveViewModel @AssistedInject constructor(
 
     fun clearRequestAmount() {
         setRequestAmount(null)
-    }
-
-    @dagger.assisted.AssistedFactory
-    interface AssistedFactory {
-        fun create(
-            savedStateHandle: SavedStateHandle,
-            wallet: Wallet,
-            initAccountAsset: AccountAsset
-        ): ReceiveViewModel
-    }
-
-    companion object {
-        fun provideFactory(
-            assistedFactory: AssistedFactory,
-            owner: SavedStateRegistryOwner,
-            defaultArgs: Bundle? = null,
-            wallet: Wallet,
-            initAccountAsset: AccountAsset
-        ): AbstractSavedStateViewModelFactory =
-            object : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(
-                    key: String,
-                    modelClass: Class<T>,
-                    handle: SavedStateHandle
-                ): T {
-                    return assistedFactory.create(
-                        handle,
-                        wallet,
-                        initAccountAsset,
-                    ) as T
-                }
-            }
     }
 
     override fun setDenomination(denominatedValue: DenominatedValue) {

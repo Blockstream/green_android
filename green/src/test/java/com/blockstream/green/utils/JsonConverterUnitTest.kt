@@ -1,9 +1,10 @@
 package com.blockstream.green.utils
 
+import com.blockstream.common.data.Denomination
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Pricing
 import com.blockstream.common.gdk.data.Settings
-import com.blockstream.green.data.Denomination
-import com.blockstream.green.gdk.GdkSession
+import com.blockstream.common.utils.UserInput
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -20,8 +21,8 @@ class JsonConverterUnitTest {
     @Mock
     private lateinit var session: GdkSession
 
-    private val dotLocale = Locale.US
-    private val commaLocale = Locale.ITALIAN
+    private val dotLocale = "en_US"
+    private val commaLocale = "it"
 
     private fun initMock(fiat: String) {
         val settings: Settings = mock()
@@ -160,7 +161,7 @@ class JsonConverterUnitTest {
 
     @Test
     fun test_grouping() {
-        Assert.assertEquals("123123.1", UserInput.parseUserInputSafe(session, "123,123.10", locale =  Locale.US).amount)
-        Assert.assertEquals("123123.1", UserInput.parseUserInputSafe(session, "123.123,10", locale =  Locale.ITALIAN).amount)
+        Assert.assertEquals("123123.1", UserInput.parseUserInputSafe(session, "123,123.10", locale =  dotLocale).amount)
+        Assert.assertEquals("123123.1", UserInput.parseUserInputSafe(session, "123.123,10", locale =  commaLocale).amount)
     }
 }

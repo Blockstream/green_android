@@ -1,22 +1,15 @@
 package com.blockstream.green.ui.transaction.details
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.gdk.params.TransactionParams
-import com.blockstream.green.data.Countly
-import com.blockstream.green.data.NavigateEvent
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.managers.SessionManager
+import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.green.ui.bottomsheets.INote
 import com.blockstream.green.ui.wallet.AbstractAccountWalletViewModel
-import com.blockstream.green.utils.ConsumableEvent
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
+import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -24,15 +17,15 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
-class TransactionDetailsViewModel @AssistedInject constructor(
-    sessionManager: SessionManager,
-    walletRepository: WalletRepository,
-    countly: Countly,
-    @Assisted wallet: Wallet,
-    @Assisted account: Account,
-    @Assisted val initialTransaction: Transaction
-) : AbstractAccountWalletViewModel(sessionManager, walletRepository, countly, wallet, account),
+@KoinViewModel
+class TransactionDetailsViewModel constructor(
+    @InjectedParam wallet: GreenWallet,
+    @InjectedParam account: Account,
+    @InjectedParam val initialTransaction: Transaction
+) : AbstractAccountWalletViewModel(wallet, account),
     INote {
 
     val transactionLiveData = MutableLiveData<Transaction>()
@@ -43,16 +36,16 @@ class TransactionDetailsViewModel @AssistedInject constructor(
     init {
         // Update transaction data and create a copy with a stable memo so that we can properly animate
         combine(
-            session.walletTransactionsFlow,
-            session.accountTransactionsFlow(account),
-            session.blockFlow(account.network)
+            session.walletTransactions,
+            session.accountTransactions(account),
+            session.block(account.network)
         ) { walletTransactions, accountTransactions, _ ->
             // Be sure to find the correct tx not just by hash but also with the correct type (cross-account transactions)
             walletTransactions.find { it.txHash == initialTransaction.txHash && it.txType == initialTransaction.txType }
                 ?: accountTransactions.find { it.txHash == initialTransaction.txHash }
         }.onEach {
             transactionLiveData.value = stabilizeTransaction(it ?: initialTransaction)
-        }.launchIn(viewModelScope)
+        }.launchIn(viewModelScope.coroutineScope)
     }
 
     private fun stabilizeTransaction(tx: Transaction): Transaction {
@@ -62,17 +55,19 @@ class TransactionDetailsViewModel @AssistedInject constructor(
     }
 
     override fun saveNote(note: String) {
-        if (session.setTransactionMemo(
+        try {
+            session.setTransactionMemo(
                 network,
                 txHash = transactionLiveData.value!!.txHash,
                 note
             )
-        ) {
+
             transactionNoteLiveData.postValue(note)
             // update transaction
-            session.getTransactions(account = account, isReset = false, isLoadMore = false)
-            session.updateWalletTransactions(updateForAccounts = listOf(account))
-        } else {
+            session.getTransactions(account = accountValue, isReset = false, isLoadMore = false)
+            session.updateWalletTransactions(updateForAccounts = listOf(accountValue))
+
+        }catch (e: Exception){
             onError.postValue(ConsumableEvent(Exception("id_error")))
         }
     }
@@ -80,7 +75,7 @@ class TransactionDetailsViewModel @AssistedInject constructor(
     fun bumpFee() {
         doUserAction({
             val transactions = session.getTransactions(
-                account,
+                accountValue,
                 TransactionParams(
                     subaccount = initialTransaction.accountInjected?.pointer ?: 0,
                     confirmations = 0
@@ -98,30 +93,7 @@ class TransactionDetailsViewModel @AssistedInject constructor(
                     Json.encodeToString(it)
                 } ?: throw Exception("Couldn't find the transaction")
         }, onSuccess = {
-            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(it)))
+            postSideEffect(SideEffects.Navigate(it))
         })
-    }
-
-    @dagger.assisted.AssistedFactory
-    interface AssistedFactory {
-        fun create(
-            wallet: Wallet,
-            account: Account,
-            transaction: Transaction
-        ): TransactionDetailsViewModel
-    }
-
-    companion object {
-        fun provideFactory(
-            assistedFactory: AssistedFactory,
-            wallet: Wallet,
-            account: Account,
-            transaction: Transaction
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet, account, transaction) as T
-            }
-        }
     }
 }

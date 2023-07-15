@@ -15,9 +15,12 @@ import androidx.databinding.InverseBindingListener
 import app.rive.runtime.kotlin.RiveAnimationView
 import com.blockstream.common.data.Banner
 import com.blockstream.common.gdk.data.Device
+import com.blockstream.common.gdk.device.DeviceInterface
+import com.blockstream.common.data.DataState
 import com.blockstream.green.R
 import com.blockstream.green.extensions.errorFromResourcesAndGDK
 import com.blockstream.green.extensions.fromHtml
+import com.blockstream.green.extensions.stringFromIdentifierOrNull
 import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.utils.alphaPulse
 import com.blockstream.green.utils.toPixels
@@ -35,6 +38,11 @@ fun bindAlphaPulse(view: View, isVisible: Boolean) {
     if(isVisible){
         view.alphaPulse(repeat = true)
     }
+}
+
+@BindingAdapter("hideIfEmpty")
+fun bindHideIfEmpty(view: View, data : DataState<*>) {
+    bindIsVisible(view, isVisible = !data.isEmpty())
 }
 
 @BindingAdapter("isVisible")
@@ -116,6 +124,11 @@ fun setTextResource(textView: TextView, @StringRes resource: Int) {
     }
 }
 
+@BindingAdapter("idText")
+fun setIdText(textView: TextView, idText: String) {
+    textView.text = textView.context.stringFromIdentifierOrNull(idText) ?: idText
+}
+
 @BindingAdapter("fromHtml")
 fun setFromHtml(textView: TextView, @StringRes resource: Int) {
     if(resource == 0) {
@@ -164,8 +177,8 @@ fun setGdkDevice(view: ImageView, device: Device?) {
 }
 
 @BindingAdapter("greenDevice")
-fun setGreenDevice(view: ImageView, device: com.blockstream.green.devices.Device?) {
-    view.setImageResource(device?.getIcon() ?: 0)
+fun setGreenDevice(view: ImageView, device: DeviceInterface?) {
+    view.setImageResource((device as? com.blockstream.green.devices.Device)?.getIcon() ?: 0)
 }
 
 @BindingAdapter("layoutMarginLeft")

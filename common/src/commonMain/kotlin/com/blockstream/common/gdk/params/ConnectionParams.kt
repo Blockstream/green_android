@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk.params
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -19,7 +19,7 @@ data class ConnectionParams constructor(
     @SerialName("electrum_onion_url") val electrumOnionUrl: String? = null,
     @SerialName("spv_servers") val spvServers: List<String>? = null,
     // @SerialName("gap_limit") val gapLimit: Int? = null,
-) : GdkJson<ConnectionParams>() {
+) : GreenJson<ConnectionParams>() {
 
     override fun encodeDefaultsValues() = false
 

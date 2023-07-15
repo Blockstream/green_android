@@ -1,7 +1,9 @@
 package com.blockstream.common.managers
 
+import com.blockstream.common.utils.Loggable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import org.koin.core.annotation.Single
 
 enum class LifecycleState{
     Foreground, Background;
@@ -15,13 +17,15 @@ enum class LifecycleState{
     }
 }
 
+@Single
 class LifecycleManager {
-    private var isOnForeground: Boolean = false
-
     private val _lifecycleState = MutableStateFlow(LifecycleState.Background)
     val lifecycleState = _lifecycleState.asStateFlow()
 
-    fun setOnForeground(isOnForeground: Boolean){
+    fun updateState(isOnForeground: Boolean){
+        logger.d { "updateState (isOnForeground:$isOnForeground)" }
         _lifecycleState.value = if(isOnForeground) LifecycleState.Foreground else LifecycleState.Background
     }
+
+    companion object: Loggable()
 }

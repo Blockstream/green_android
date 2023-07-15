@@ -13,23 +13,28 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.blockstream.base.ZendeskSdk
+import com.blockstream.common.ScreenView
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.Wally
-import com.blockstream.common.gdk.data.Device
+import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
-import com.blockstream.green.data.AppEvent
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.navigation.LogoutReason
+import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.data.BannerView
 import com.blockstream.green.data.Countly
-import com.blockstream.green.data.ScreenView
-import com.blockstream.green.extensions.clearNavigationResult
-import com.blockstream.green.extensions.getNavigationResult
-import com.blockstream.green.extensions.isBlank
-import com.blockstream.green.managers.SessionManager
+import com.blockstream.green.extensions.errorDialog
+import com.blockstream.green.extensions.errorSnackbar
+import com.blockstream.green.extensions.snackbar
+import com.blockstream.green.extensions.stringFromIdentifier
 import com.blockstream.green.ui.bottomsheets.DeviceInteractionRequestBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.PassphraseBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.PinMatrixBottomSheetDialogFragment
@@ -38,9 +43,12 @@ import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.utils.*
 import com.blockstream.green.views.GreenAlertView
 import com.blockstream.green.views.GreenToolbar
-import kotlinx.coroutines.CompletableDeferred
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import mu.KLogging
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
 
 /**
@@ -48,8 +56,6 @@ import javax.inject.Inject
  *
  * This class is a useful abstract base class. Extend all other Fragments if possible.
  * Some of the features can be turned on/off in the constructor.
- *
- * It's crucial every AppFragment implementation to call @AndroidEntryPoint
  *
  * @property layout the layout id of the fragment
  * is called when the fragment is not actually visible
@@ -60,40 +66,30 @@ abstract class AppFragment<T : ViewDataBinding>(
     @LayoutRes val layout: Int,
     @MenuRes val menuRes: Int
 ) : Fragment(), MenuProvider, ScreenView, BannerView {
-
-    sealed class DeviceRequestEvent : AppEvent {
-        data object RequestPinMatrix: DeviceRequestEvent()
-        data object RequestPassphrase: DeviceRequestEvent()
-    }
-
     open val isAdjustResize = false
 
     internal lateinit var binding: T
 
-    @Inject
-    internal lateinit var countly: Countly
+    val countly: Countly by inject()
 
-    @Inject
-    internal lateinit var gdk: Gdk
+    protected val gdk: Gdk by inject()
 
-    @Inject
-    internal lateinit var wally: Wally
+    protected val wally: Wally by inject()
 
-    @Inject
-    internal lateinit var sessionManager: SessionManager
+    protected val sessionManager: SessionManager by inject()
 
-    @Inject
-    lateinit var settingsManager: SettingsManager
+    val zendeskSdk: ZendeskSdk by inject()
 
-    @Inject
-    lateinit var zendeskSdk: ZendeskSdk
+    val settingsManager: SettingsManager by inject()
+    open fun getGreenViewModel() = getAppViewModel() as GreenViewModel?
 
-    open fun getAppViewModel(): AppViewModel? = null
+    abstract fun getAppViewModel(): AppViewModelAndroid?
 
     open val title : String? = null
     open val subtitle : String? = null
     open val toolbarIcon: Int? = null
 
+    override val screenName: String? = null
     override var screenIsRecorded = false
     override val segmentation: HashMap<String, Any>? = null
 
@@ -135,37 +131,17 @@ abstract class AppFragment<T : ViewDataBinding>(
             )
         }
 
-        getAppViewModel()?.let { viewModel ->
-            viewModel.onEvent.observe(viewLifecycleOwner) { onEvent ->
-                onEvent.getContentIfNotHandledForType<DeviceRequestEvent>()?.let {
-                    when(it){
-                        is DeviceRequestEvent.RequestPinMatrix -> {
-                            requestPinMatrix()
-                        }
-                        is DeviceRequestEvent.RequestPassphrase -> {
-                            requestPassphrase()
-                        }
-                    }
-                }
-            }
+        getGreenViewModel()?.let { viewModel ->
 
-            // Register listener for Passphrase result
-            getNavigationResult<String>(PassphraseBottomSheetDialogFragment.PASSPHRASE_RESULT)?.observe(viewLifecycleOwner) { result ->
-                result?.let {
-                    clearNavigationResult(PassphraseBottomSheetDialogFragment.PASSPHRASE_RESULT)
-                    getAppViewModel()?.requestPinPassphraseEmitter?.complete(result)
-                }
-            }
+            viewModel.banner.onEach {
+                BannersHelper.setupBanner(this, it)
+            }.launchIn(lifecycleScope)
 
-            // Register listener for Pin result
-            getNavigationResult<String>(PinMatrixBottomSheetDialogFragment.PIN_RESULT)?.observe(viewLifecycleOwner) { result ->
-                result?.let {
-                    clearNavigationResult(PinMatrixBottomSheetDialogFragment.PIN_RESULT)
-                    if(result.isBlank()){
-                        getAppViewModel()?.requestPinMatrixEmitter?.completeExceptionally(Exception("id_action_canceled"))
-                    }else{
-                        getAppViewModel()?.requestPinMatrixEmitter?.complete(result)
-                    }
+            viewLifecycleOwner.lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                    viewModel.sideEffect.onEach {
+                        handleSideEffect(it)
+                    }.launchIn(this)
                 }
             }
         }
@@ -189,6 +165,8 @@ abstract class AppFragment<T : ViewDataBinding>(
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        // TODO enable icons
+        // (menu as? MenuBuilder)?.setOptionalIconsVisible(true)
         menuInflater.inflate(menuRes, menu)
     }
 
@@ -238,22 +216,77 @@ abstract class AppFragment<T : ViewDataBinding>(
         findNavController().popBackStack(destinationId, inclusive)
     }
 
-    internal fun setupDeviceInteractionEvent(onDeviceInteractionEvent: MutableLiveData<ConsumableEvent<Triple<Device, CompletableDeferred<Boolean>?, String?>>>) {
-        onDeviceInteractionEvent.observe(viewLifecycleOwner) { event ->
-            event.getContentIfNotHandledOrReturnNull()?.let {
-                DeviceInteractionRequestBottomSheetDialogFragment(device = it.first, completable = it.second, text = it.third).also {
-                    it.show(childFragmentManager, it.toString())
+    open fun handleSideEffect(sideEffect: SideEffect){
+        when (sideEffect){
+            is SideEffects.OpenBrowser -> {
+                openBrowser(sideEffect.url)
+            }
+            is SideEffects.Snackbar -> {
+                view?.also { Snackbar.make(it, requireContext().stringFromIdentifier(sideEffect.text), Snackbar.LENGTH_SHORT).show() }
+            }
+            is SideEffects.ErrorSnackbar -> {
+                errorSnackbar(
+                    throwable = sideEffect.error,
+                    errorReport = sideEffect.errorReport,
+                    duration = Snackbar.LENGTH_LONG
+                )
+            }
+            is SideEffects.ErrorDialog -> {
+                errorDialog(
+                    throwable = sideEffect.error,
+                    errorReport = sideEffect.errorReport,
+                )
+            }
+            is SideEffects.DeviceRequestPin -> {
+                PinMatrixBottomSheetDialogFragment.show(childFragmentManager)
+            }
+            is SideEffects.DeviceRequestPassphrase -> {
+                PassphraseBottomSheetDialogFragment.show(childFragmentManager)
+            }
+            is SideEffects.DeviceInteraction -> {
+
+                DeviceInteractionRequestBottomSheetDialogFragment.showSingle(
+                    device = sideEffect.device,
+                    message = sideEffect.message,
+                    delay = (3000L).takeIf { sideEffect.completable == null } ?: 0L,
+                    childFragmentManager
+                )
+
+                sideEffect.completable?.also {
+                    lifecycleScope.launch {
+                        it.await()
+                        DeviceInteractionRequestBottomSheetDialogFragment.closeAll(childFragmentManager)
+                    }
+                }
+            }
+            is SideEffects.NavigateBack -> {
+                if (sideEffect.error == null) {
+                    popBackStack()
+                } else {
+                    errorDialog(sideEffect.error!!, errorReport = sideEffect.errorReport) {
+                        popBackStack()
+                    }
+                }
+            }
+            is SideEffects.CopyToClipboard -> {
+                copyToClipboard("Green", sideEffect.value, requireContext())
+                sideEffect.message?.also {
+                    snackbar(it)
+                }
+            }
+            is SideEffects.Logout -> {
+                getGreenViewModel()?.greenWalletOrNull?.also {
+                    // If is ephemeral wallet, prefer going to intro
+                    if (it.isEphemeral || it.isHardware || sideEffect.reason == LogoutReason.USER_ACTION) {
+                        NavGraphDirections.actionGlobalHomeFragment()
+                    } else {
+                        NavGraphDirections.actionGlobalLoginFragment(it)
+                    }.let { directions ->
+                        navigate(directions.actionId, directions.arguments, isLogout = true)
+                    }
                 }
             }
         }
-    }
-
-    private fun requestPinMatrix() {
-        PinMatrixBottomSheetDialogFragment.show(childFragmentManager)
-    }
-
-    private fun requestPassphrase() {
-        PassphraseBottomSheetDialogFragment.show(childFragmentManager)
     }
 
     override fun getBannerAlertView(): GreenAlertView? = null

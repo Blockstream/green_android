@@ -11,11 +11,9 @@ import com.blockstream.common.data.CountlyWidget
 import com.blockstream.green.R
 import com.blockstream.green.databinding.CountlySurveyDialogBinding
 import com.blockstream.green.extensions.snackbar
-import dagger.hilt.android.AndroidEntryPoint
 import ly.count.android.sdk.ModuleFeedback
 import mu.KLogging
 
-@AndroidEntryPoint
 class CountlySurveyDialogFragment : AbstractDialogFragment<CountlySurveyDialogBinding>() {
 
     override fun inflate(layoutInflater: LayoutInflater): CountlySurveyDialogBinding =

@@ -11,12 +11,10 @@ import com.blockstream.common.data.FollowUpType
 import com.blockstream.green.R
 import com.blockstream.green.databinding.CountlyNpsDialogBinding
 import com.blockstream.green.extensions.snackbar
-import dagger.hilt.android.AndroidEntryPoint
 import ly.count.android.sdk.ModuleFeedback
 import mu.KLogging
 
-@AndroidEntryPoint
-class CountlyNpsDialogFragment() : AbstractDialogFragment<CountlyNpsDialogBinding>() {
+class CountlyNpsDialogFragment : AbstractDialogFragment<CountlyNpsDialogBinding>() {
 
     override fun inflate(layoutInflater: LayoutInflater): CountlyNpsDialogBinding =
         CountlyNpsDialogBinding.inflate(layoutInflater)

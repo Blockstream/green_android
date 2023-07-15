@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk.data
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -11,6 +11,6 @@ data class TransactionUnblindedData(
     @SerialName("version") val version: Int,
     @SerialName("inputs") val inputs: List<InputUnblindedData>,
     @SerialName("outputs") val outputs: List<OutputUnblindedData>
-) : GdkJson<TransactionUnblindedData>() {
+) : GreenJson<TransactionUnblindedData>() {
     override fun kSerializer() = serializer()
 }

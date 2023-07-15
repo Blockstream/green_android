@@ -4,7 +4,7 @@
 
     <data>
         <import type="com.blockstream.common.gdk.data.Transaction.Type" />
-        <import type="com.blockstream.green.extensions.ExtensionsKt" />
+        <import type="com.blockstream.common.extensions.StringExtensionsKt" />
 
         <variable
             name="type"
@@ -81,7 +81,7 @@
 
             <TextView
                 android:id="@+id/fiatTextView"
-                isVisible="@{ExtensionsKt.isNotBlank(fiat)}"
+                isVisible="@{StringExtensionsKt.isNotBlank(fiat)}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"

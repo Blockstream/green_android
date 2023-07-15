@@ -13,15 +13,15 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.view.updateMargins
 import androidx.core.view.updatePadding
+import com.blockstream.common.data.Denomination
+import com.blockstream.common.extensions.isPolicyAsset
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.green.R
 import com.blockstream.green.data.Countly
-import com.blockstream.green.data.Denomination
 import com.blockstream.green.databinding.ListItemWalletBalanceBinding
 import com.blockstream.green.extensions.setOnClickListener
-import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.getAssetDrawableOrNull
 import com.blockstream.green.gdk.getAssetIcon
-import com.blockstream.green.gdk.isPolicyAsset
 import com.blockstream.green.utils.toAmountLook
 import com.blockstream.green.utils.toAmountLookOrNa
 import com.blockstream.green.utils.toPixels
@@ -43,16 +43,16 @@ data class WalletBalanceListItem constructor(val session: GdkSession, val countl
 
     private var denomination: Denomination = Denomination.default(session)
 
-    private suspend fun balanceInBtc() = session.starsOrNull ?: session.walletTotalBalanceFlow.value.toAmountLook(
+    private suspend fun balanceInBtc() = session.starsOrNull ?: session.walletTotalBalance.value.toAmountLook(
         session = session,
-        assetId = session.walletAssets.keys.firstOrNull(), // Expect the first asset to be the policy BTC or L-BTC
+        assetId = session.walletAssets.value.policyId,
         withUnit = true,
         withGrouping = true
     )
 
-    private suspend fun balanceInFiat() = session.starsOrNull ?: session.walletTotalBalanceFlow.value.toAmountLookOrNa(
+    private suspend fun balanceInFiat() = session.starsOrNull ?: session.walletTotalBalance.value.toAmountLookOrNa(
         session = session,
-        assetId = session.walletAssets.keys.firstOrNull(), // Expect the first asset to be the policy BTC or L-BTC
+        assetId = session.walletAssets.value.policyId,
         denomination = Denomination.fiat(session),
         withUnit = true,
         withGrouping = true
@@ -70,7 +70,7 @@ data class WalletBalanceListItem constructor(val session: GdkSession, val countl
 
     override fun bindView(binding: ListItemWalletBalanceBinding, payloads: List<Any>) {
         val context = binding.root.context
-        val balance = session.walletTotalBalanceFlow.value
+        val balance = session.walletTotalBalance.value
 
         binding.progressBar.isVisible = balance == -1L
         binding.balanceTextView.isInvisible = balance == -1L
@@ -120,7 +120,7 @@ data class WalletBalanceListItem constructor(val session: GdkSession, val countl
         var assetWithoutIconShown = false
 
         // Filter loading asset & zero balance assets
-        val walletAssets = session.walletAssets.filterValues { it > 0 }.keys
+        val walletAssets = session.walletAssets.value.withFunds.keys
 
         binding.assets = walletAssets.size
 

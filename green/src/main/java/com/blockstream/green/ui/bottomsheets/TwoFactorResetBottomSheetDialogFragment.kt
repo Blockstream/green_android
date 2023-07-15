@@ -24,14 +24,12 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<RecyclerBottomSheetBinding, AbstractWalletViewModel>() {
     private lateinit var twoFactorReset: TwoFactorReset
 
-    var cancelItem : ActionListItem? = null
-    var disputeItem : ActionListItem? = null
+    private var cancelItem : ActionListItem? = null
+    private var disputeItem : ActionListItem? = null
 
     override val screenName = "TwoFactorReset"
 

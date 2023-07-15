@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk.data
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 data class Bip21Params constructor(
     @SerialName("amount") val amount: String? = null,
     @SerialName("assetid") val assetId: String? = null,
-) : GdkJson<Bip21Params>() {
+) : GreenJson<Bip21Params>() {
     override fun kSerializer() = serializer()
 
     val hasAssetId : Boolean

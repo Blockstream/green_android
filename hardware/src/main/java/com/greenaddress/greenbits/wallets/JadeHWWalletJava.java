@@ -5,36 +5,33 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.blockstream.HardwareQATester;
 import com.blockstream.HwWalletLogin;
-import com.blockstream.JadeHWWallet;
+import com.blockstream.common.extensions.GdkExtensionsKt;
 import com.blockstream.common.gdk.Gdk;
-import com.blockstream.common.gdk.device.HardwareWalletInteraction;
-import com.blockstream.common.gdk.device.BlindingFactorsResult;
-import com.blockstream.common.gdk.device.SignTransactionResult;
-import com.blockstream.gdk.ExtensionsKt;
 import com.blockstream.common.gdk.data.Account;
 import com.blockstream.common.gdk.data.Device;
 import com.blockstream.common.gdk.data.InputOutput;
 import com.blockstream.common.gdk.data.Network;
-import com.blockstream.hardware.R;
+import com.blockstream.common.gdk.device.BlindingFactorsResult;
+import com.blockstream.common.gdk.device.HardwareWalletInteraction;
+import com.blockstream.common.gdk.device.SignTransactionResult;
+import com.blockstream.jade.JadeAPI;
 import com.blockstream.jade.data.JadeNetworks;
 import com.blockstream.jade.data.JadeState;
 import com.blockstream.jade.data.VersionInfo;
-import com.blockstream.jade.entities.JadeVersion;
-import com.blockstream.libwally.Wally;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.io.BaseEncoding;
-import com.greenaddress.greenapi.HWWallet;
-import com.blockstream.HardwareQATester;
-import com.blockstream.jade.JadeAPI;
 import com.blockstream.jade.entities.Commitment;
 import com.blockstream.jade.entities.JadeError;
+import com.blockstream.jade.entities.JadeVersion;
 import com.blockstream.jade.entities.SignMessageResult;
 import com.blockstream.jade.entities.SignTxInputsResult;
 import com.blockstream.jade.entities.TxChangeOutput;
 import com.blockstream.jade.entities.TxInput;
 import com.blockstream.jade.entities.TxInputBtc;
 import com.blockstream.jade.entities.TxInputLiquid;
+import com.blockstream.libwally.Wally;
+import com.google.common.io.BaseEncoding;
+import com.greenaddress.greenapi.HWWallet;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -42,11 +39,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import io.reactivex.rxjava3.subjects.CompletableSubject;
 import kotlinx.coroutines.CompletableDeferred;
 import kotlinx.coroutines.CompletableDeferredKt;
 import kotlinx.coroutines.flow.StateFlow;
-import kotlinx.serialization.json.JsonElement;
 
 abstract public class JadeHWWalletJava extends HWWallet {
     private static final String TAG = "JadeHWWallet";
@@ -97,7 +92,7 @@ abstract public class JadeHWWalletJava extends HWWallet {
         JadeState state = info.getJadeState();
         JadeNetworks networks = info.getJadeNetworks();
 
-        String network = "";
+        String network;
         if(state == JadeState.TEMP || state == JadeState.UNSAVED || state == JadeState.UNINIT || networks == JadeNetworks.ALL){
             // Ask network from user
             Network requestNetwork = hwLoginBridge.requestNetwork();
@@ -514,7 +509,7 @@ abstract public class JadeHWWalletJava extends HWWallet {
                     } else {
                         final byte[] abf = this.jade.getBlindingFactor(hashPrevouts, i, "ASSET");
                         final byte[] vbf = this.jade.getBlindingFactor(hashPrevouts, i, "VALUE");
-                        rslt.append(hexFromBytes(ExtensionsKt.reverseBytes(abf)), hexFromBytes(ExtensionsKt.reverseBytes(vbf)));
+                        rslt.append(hexFromBytes(GdkExtensionsKt.reverseBytes(abf)), hexFromBytes(GdkExtensionsKt.reverseBytes(vbf)));
                     }
                 } else {
                     // Empty string placeholders

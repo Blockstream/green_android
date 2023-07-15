@@ -1,6 +1,6 @@
 package com.blockstream.common.data
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -10,7 +10,7 @@ data class WatchOnlyCredentials constructor(
     @SerialName("password") val password: String? = null,
     @SerialName("core_descriptors") val coreDescriptors: List<String>? = null,
     @SerialName("slip132_extended_pubkeys") val slip132ExtendedPubkeys: List<String>? = null,
-): GdkJson<WatchOnlyCredentials>() {
+): GreenJson<WatchOnlyCredentials>() {
     override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()

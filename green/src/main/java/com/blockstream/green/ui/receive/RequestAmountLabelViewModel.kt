@@ -1,38 +1,34 @@
 package com.blockstream.green.ui.receive
 
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asFlow
+import com.blockstream.common.data.Denomination
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.params.Convert
-import com.blockstream.green.data.Countly
-import com.blockstream.green.data.Denomination
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.gdk.asset
-import com.blockstream.green.gdk.isPolicyAsset
-import com.blockstream.green.managers.SessionManager
+import com.blockstream.common.utils.UserInput
 import com.blockstream.green.ui.wallet.AbstractAccountWalletViewModel
-import com.blockstream.green.utils.UserInput
 import com.blockstream.green.utils.getBitcoinOrLiquidUnit
 import com.blockstream.green.utils.getFiatCurrency
 import com.blockstream.green.utils.toAmountLook
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
+import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
-class RequestAmountLabelViewModel @AssistedInject constructor(
-    sessionManager: SessionManager,
-    walletRepository: WalletRepository,
-    countly: Countly,
-    @Assisted wallet: Wallet,
-    @Assisted val accountAsset: AccountAsset,
-    @Assisted("initialRequestAmount") val initialRequestAmount: String?,
-) : AbstractAccountWalletViewModel(sessionManager, walletRepository, countly, wallet, accountAsset.account) {
+@KoinViewModel
+class RequestAmountLabelViewModel constructor(
+    @InjectedParam wallet: GreenWallet,
+    @InjectedParam val accountAsset: AccountAsset,
+    @InjectedParam val initialRequestAmount: String?,
+) : AbstractAccountWalletViewModel(wallet, accountAsset.account) {
 
-    val isPolicyAsset = accountAsset.assetId.isPolicyAsset(account.network)
+    val isPolicyAsset = accountAsset.assetId.isPolicyAsset(accountValue.network)
 
     var requestAmount: MutableLiveData<String> =
         MutableLiveData(initialRequestAmount?.let { amount ->
@@ -71,7 +67,7 @@ class RequestAmountLabelViewModel @AssistedInject constructor(
                 .onEach {
                     updateExchange()
                 }
-                .launchIn(viewModelScope)
+                .launchIn(viewModelScope.coroutineScope)
         }
 
         isFiat.asFlow()
@@ -83,7 +79,7 @@ class RequestAmountLabelViewModel @AssistedInject constructor(
                 } else {
                     accountAsset.asset(session)?.ticker ?: ""
                 }
-            }.launchIn(viewModelScope)
+            }.launchIn(viewModelScope.coroutineScope)
     }
 
     private fun updateExchange() {
@@ -116,7 +112,7 @@ class RequestAmountLabelViewModel @AssistedInject constructor(
     }
 
     fun toggleCurrency() {
-        viewModelScope.launch {
+        viewModelScope.coroutineScope.launch {
 
             val isFiat = isFiat.value ?: false
 
@@ -149,30 +145,6 @@ class RequestAmountLabelViewModel @AssistedInject constructor(
             } catch (e: Exception) {
                 e.printStackTrace()
                 ""
-            }
-        }
-    }
-
-    @dagger.assisted.AssistedFactory
-    interface AssistedFactory {
-        fun create(
-            wallet: Wallet,
-            accountAsset: AccountAsset,
-            @Assisted("initialRequestAmount")
-            initialRequestAmount: String?
-        ): RequestAmountLabelViewModel
-    }
-
-    companion object {
-        fun provideFactory(
-            assistedFactory: AssistedFactory,
-            wallet: Wallet,
-            accountAsset: AccountAsset,
-            initialRequestAmount: String?
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet, accountAsset, initialRequestAmount) as T
             }
         }
     }

@@ -2,30 +2,29 @@ package com.blockstream.green.ui.recovery
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import com.blockstream.common.models.recovery.RecoveryWordsViewModel
+import com.blockstream.common.events.Events
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
-import com.blockstream.green.databinding.RecoverySetupWordsFragmentBinding
+import com.blockstream.green.databinding.RecoveryWordsFragmentBinding
 import com.blockstream.green.gdk.getNetworkIcon
-import com.blockstream.green.ui.AppViewModel
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.ui.wallet.WalletViewModel
+import com.blockstream.green.ui.AppFragment
+import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.utils.greenText
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-@AndroidEntryPoint
-class RecoveryWordsFragment : AbstractWalletFragment<RecoverySetupWordsFragmentBinding>(
-    layout = R.layout.recovery_setup_words_fragment,
+class RecoveryWordsFragment : AppFragment<RecoveryWordsFragmentBinding>(
+    layout = R.layout.recovery_words_fragment,
     menuRes = 0
 ) {
     private val args: RecoveryWordsFragmentArgs by navArgs()
 
-    override val walletOrNull by lazy { args.wallet }
-    private val networkOrNull by lazy { args.network }
-
-    override val screenName = "RecoveryWords"
+    private val networkOrNull by lazy { args.args.network }
 
     override val title: String
         get() = networkOrNull?.canonicalName ?: ""
@@ -33,67 +32,46 @@ class RecoveryWordsFragment : AbstractWalletFragment<RecoverySetupWordsFragmentB
     override val toolbarIcon: Int?
         get() = networkOrNull?.getNetworkIcon()
 
-    @Inject
-    lateinit var viewModelFactory: RecoveryWordsViewModel.AssistedFactory
-
-    private val viewModel: RecoveryWordsViewModel by viewModels {
-        RecoveryWordsViewModel.provideFactory(
-            viewModelFactory,
-            args.mnemonic.split(" "),
-            args.page
-        )
-    }
-
-    @Inject
-    lateinit var walletViewModelFactory: WalletViewModel.AssistedFactory
-    val walletViewModel: WalletViewModel by viewModels {
-        WalletViewModel.provideFactory(walletViewModelFactory, args.wallet!!)
+    private val viewModel: RecoveryWordsViewModel by viewModel {
+        parametersOf(args.args)
     }
 
     // If wallet is null, WalletFragment will give the viewModel to AppFragment, guard this behavior and return null
-    override fun getAppViewModel() : AppViewModel? = if(args.wallet == null) null else getWalletViewModel()
+    override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override fun getWalletViewModel(): AbstractWalletViewModel = if(args.wallet != null) walletViewModel else throw RuntimeException("Can't be happening")
+    override fun getAppViewModel(): AppViewModelAndroid? = null
 
-    // Recovery screens are reused in onboarding
-    // where we don't have a session yet.
-    override fun isSessionAndWalletRequired(): Boolean {
-        return args.wallet != null
-    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun isLoggedInRequired(): Boolean = isSessionAndWalletRequired()
-
-    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.vm = viewModel
 
         binding.title.text = greenText(R.string.id_write_down_your_recovery_phrase, R.string.id_recovery_phrase, R.string.id_correct_order)
 
         binding.buttonNext.setOnClickListener {
+            viewModel.postEvent(Events.Continue)
+        }
+    }
 
-            val nextPage = args.page + 1
-
-            if (viewModel.isLastPage) {
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        if (sideEffect is SideEffects.NavigateTo) {
+            if (sideEffect.destination is NavigateDestinations.RecoveryCheck) {
+                val recoveryArgs = (sideEffect.destination as NavigateDestinations.RecoveryCheck).args
                 navigate(
                     RecoveryWordsFragmentDirections.actionRecoveryWordsFragmentToRecoveryCheckFragment(
-                        wallet = args.wallet,
-                        assetId = args.assetId,
-                        onboardingOptions = args.onboardingOptions,
-                        mnemonic = args.mnemonic,
-                        network = args.network
+                        args = recoveryArgs,
                     )
                 )
-            } else {
+            } else if (sideEffect.destination is NavigateDestinations.RecoveryWords) {
+                val recoveryArgs = (sideEffect.destination as NavigateDestinations.RecoveryWords).args
                 navigate(
                     RecoveryWordsFragmentDirections.actionRecoveryWordsFragmentSelf(
-                        wallet = args.wallet,
-                        assetId = args.assetId,
-                        onboardingOptions = args.onboardingOptions,
-                        mnemonic = args.mnemonic,
-                        page = nextPage,
-                        network = args.network
+                        args = recoveryArgs
                     )
                 )
             }
+        } else {
+            super.handleSideEffect(sideEffect)
         }
     }
 }

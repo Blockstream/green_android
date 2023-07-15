@@ -1,15 +1,16 @@
 package com.blockstream.green.database
 
-import android.os.Parcelable
-import androidx.room.*
-import com.blockstream.green.extensions.isBlank
-import kotlinx.parcelize.Parcelize
-import mu.KLogging
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.Index
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.blockstream.common.data.DeviceIdentifier
 
 typealias WalletId = Long
 
 @Entity(tableName = "wallets", indices = [Index(value = ["order"]), Index(value = ["is_hardware"]), Index(value = ["wallet_hash_id"])])
-@Parcelize
 @TypeConverters(Converters::class)
 data class Wallet constructor(
     @PrimaryKey(autoGenerate = true)
@@ -52,14 +53,14 @@ data class Wallet constructor(
     var deviceIdentifiers: List<DeviceIdentifier>? = null,
 
     @ColumnInfo(name = "order")
-    val order: Int = 0,
+    var order: Long = 0,
 
     @Ignore
     var isEphemeral: Boolean = false,
 
     @Ignore
     var ephemeralId: Long = 0L
-) : Parcelable {
+) {
 
     // Make Room compile by providing a constructor without the @Ignore property
     constructor(
@@ -75,7 +76,7 @@ data class Wallet constructor(
         activeNetwork: String,
         activeAccount: Long,
         deviceIdentifiers: List<DeviceIdentifier>?,
-        order: Int,
+        order: Long,
     ) : this(
         id,
         walletHashId,
@@ -93,39 +94,4 @@ data class Wallet constructor(
         false,
         0L
     )
-
-    val isMainnet
-        get() = !isTestnet
-
-    val isWatchOnly
-        get() = watchOnlyUsername != null
-
-    val isWatchOnlySingleSig
-        get() = isWatchOnly && watchOnlyUsername.isBlank()
-
-    val isBip39Ephemeral
-        get() = isEphemeral && !isHardware
-
-    val ephemeralBip39Name
-        get() = "BIP39 #${ephemeralId}"
-
-    companion object : KLogging() {
-        private var ephemeralWalletIdCounter = -1L
-
-        fun createEphemeralWallet(ephemeralId: Long = 0, networkId: String, name: String? = null, isHardware: Boolean = false, isTestnet: Boolean = false): Wallet {
-            return Wallet(
-                id = ephemeralWalletIdCounter--,
-                walletHashId = networkId,
-                name = name ?: networkId.replaceFirstChar { n -> n.titlecase() },
-                isRecoveryPhraseConfirmed = true,
-                isHardware = isHardware,
-                isTestnet = isTestnet,
-                activeNetwork = networkId,
-                activeAccount = 0,
-            ).also {
-                it.isEphemeral = true
-                it.ephemeralId = ephemeralId
-            }
-        }
-    }
 }

@@ -2,29 +2,23 @@ package com.blockstream.green.ui.add
 
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.common.SATOSHI_UNIT
-import com.blockstream.common.gdk.device.DeviceResolver
+import com.blockstream.common.data.CredentialType
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.extensions.cleanup
+import com.blockstream.common.extensions.createLoginCredentials
+import com.blockstream.common.extensions.hasHistory
+import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.gdk.params.SubAccountParams
-import com.blockstream.green.data.Countly
-import com.blockstream.green.database.CredentialType
-import com.blockstream.green.database.LoginCredentials
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.gdk.hasHistory
-import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.utils.AppKeystore
-import com.blockstream.green.utils.nameCleanup
+import kotlinx.coroutines.launch
 
 open class AbstractAddAccountViewModel constructor(
-    val appKeystore: AppKeystore,
-    sessionManager: SessionManager,
-    walletRepository: WalletRepository,
-    countly: Countly,
-    wallet: Wallet,
-) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet) {
+    wallet: GreenWallet,
+) : AbstractWalletViewModel(wallet) {
 
     val accountCreated = MutableLiveData<Account>()
 
@@ -35,28 +29,29 @@ open class AbstractAddAccountViewModel constructor(
 
         doUserAction({
             if(accountType.isLightning()){
-                val isEmptyWallet = session.accounts.isEmpty()
+                val isEmptyWallet = session.accounts.value.isEmpty()
                 session.initLightningIfNeeded()
 
-                // Persist Lightning
-                session.lightningSdk.appGreenlightCredentials?.also {
-                    val encryptedData = appKeystore.encryptData(it.toJson().toByteArray())
+                if (!wallet.isEphemeral) {
+                    // Persist Lightning
+                    session.lightningSdk.appGreenlightCredentials?.also {
+                        val encryptedData = greenKeystore.encryptData(it.toJson().toByteArray())
 
-                    val loginCredentials = LoginCredentials(
-                        walletId = wallet.id,
-                        network = network.id,
-                        credentialType = CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS,
-                        encryptedData = encryptedData
-                    )
+                        val loginCredentials = createLoginCredentials(
+                            walletId = wallet.id,
+                            credentialType = CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS,
+                            network = network.id,
+                            encryptedData = encryptedData
+                        )
 
-                    walletRepository.insertOrReplaceLoginCredentials(loginCredentials)
+                        database.replaceLoginCredential(loginCredentials)
+                    }
                 }
 
                 // If wallet is new and LN is created, default to Satoshi
                 if (isEmptyWallet) {
                     session.getSettings()?.also {
                         session.changeGlobalSettings(it.copy(unit = SATOSHI_UNIT))
-                        session.updateSettings()
                     }
                 }
 
@@ -64,13 +59,13 @@ open class AbstractAddAccountViewModel constructor(
             }
 
             // Check if network needs initialization
-            if(!session.hasActiveNetwork(network) && !session.failedNetworksFlow.value.contains(network)){
+            if(!session.hasActiveNetwork(network) && !session.failedNetworks.value.contains(network)){
                 session.initNetworkIfNeeded(network) { }
             }
 
-            val accountsWithSameType = session.allAccounts.filter { it.type == accountType && it.network == network }.size
+            val accountsWithSameType = session.allAccounts.value.filter { it.type == accountType && it.network == network }.size
 
-            val name = (accountName.nameCleanup() ?: accountType.gdkType).let { name ->
+            val name = (accountName.cleanup() ?: accountType.gdkType).let { name ->
                 "$name ${(accountsWithSameType + 1).takeIf { it > 1 } ?: ""}".trim()
             }
 
@@ -85,7 +80,7 @@ open class AbstractAddAccountViewModel constructor(
             val noHistoryArchivedAccount = if (accountType == AccountType.TWO_OF_THREE) {
                 null
             } else {
-                session.allAccountsFlow.value.find {
+                session.allAccounts.value.find {
                     it.hidden && it.network == network && it.type == accountType && !it.hasHistory(
                         session
                     )
@@ -103,10 +98,16 @@ open class AbstractAddAccountViewModel constructor(
                 )
             }
         }, postAction = {
-            onProgress.value = it == null
+            onProgressAndroid.value = it == null
         }, onSuccess = {
             accountCreated.value = it
             countly.createAccount(session, it)
         })
+    }
+
+    fun enableLightningShortcut() {
+        applicationScope.launch(context = logException(countly)) {
+            _enableLightningShortcut()
+        }
     }
 }

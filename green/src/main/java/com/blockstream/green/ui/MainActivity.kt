@@ -10,7 +10,6 @@ import android.util.Base64
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.app.ActivityCompat
@@ -25,37 +24,33 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import androidx.transition.TransitionManager
+import com.blockstream.common.ScreenView
+import com.blockstream.common.data.CredentialType
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.database.Database
+import com.blockstream.common.database.LoginCredentials
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.PinData
-import com.blockstream.green.ApplicationScope
+import com.blockstream.common.managers.SessionManager
+import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.Countly
-import com.blockstream.green.data.ScreenView
-import com.blockstream.green.database.CredentialType
-import com.blockstream.green.database.LoginCredentials
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.databinding.MainActivityBinding
 import com.blockstream.green.extensions.AuthenticationCallback
-import com.blockstream.green.extensions.handleException
 import com.blockstream.green.extensions.navigate
 import com.blockstream.green.managers.NotificationManager
-import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.services.TaskService
 import com.blockstream.green.ui.dialogs.UrlWarningDialogFragment
 import com.blockstream.green.ui.settings.AppSettingsFragment
-import com.blockstream.green.utils.AppKeystore
-import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.fadeIn
 import com.blockstream.green.utils.fadeOut
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.views.GreenToolbar
 import com.google.android.material.snackbar.Snackbar
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -66,43 +61,32 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import mu.KLogging
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 
-@AndroidEntryPoint
 class MainActivity : AppActivity() {
-
     sealed class HttpUrlWarningEvent : AppEvent {
         data class UrlWarning(val urls: List<String>): HttpUrlWarningEvent()
     }
 
-    @Inject
-    lateinit var sessionManager: SessionManager
+    private val sessionManager: SessionManager by inject()
 
-    @Inject
-    lateinit var appKeystore: AppKeystore
+    private val database: Database by inject()
 
-    @Inject
-    lateinit var walletRepository: WalletRepository
+    private val gdk: Gdk by inject()
 
-    @Inject
-    lateinit var gdk: Gdk
+    private val countly: Countly by inject()
 
-    @Inject
-    lateinit var applicationScope: ApplicationScope
-
-    @Inject
-    lateinit var countly: Countly
-
-    @Inject
-    lateinit var notificationManager: NotificationManager
+    private val notificationManager: NotificationManager by inject()
 
     private var unlockPrompt: BiometricPrompt? = null
 
     private lateinit var binding: MainActivityBinding
-    val activityViewModel: MainActivityViewModel by viewModels()
+
+    val activityViewModel: MainActivityViewModel by viewModel()
 
     private lateinit var appBarConfiguration: AppBarConfiguration
 
@@ -189,7 +173,7 @@ class MainActivity : AppActivity() {
                 }
 
                 if (it.hasExtra(ADD_WALLET)) {
-                    lifecycleScope.launch(context = handleException()) {
+                    lifecycleScope.launch {
                         val json = Json.parseToJsonElement(
                             String(
                                 Base64.decode(
@@ -203,14 +187,13 @@ class MainActivity : AppActivity() {
                         val network = walletJson["network"]!!.jsonPrimitive.content
                         val name = walletJson["name"]?.jsonPrimitive?.content
 
-                        val wallet = Wallet(
-                            walletHashId = "",
+                        val wallet = GreenWallet.createWallet(
                             name = name ?: network.replaceFirstChar { n -> n.titlecase() },
-                            isTestnet = Network.isTestnet(network),
                             activeNetwork = network,
-                        )
-
-                        val walletId = walletRepository.insertWallet(wallet)
+                            isTestnet = Network.isTestnet(network)
+                        ).also {
+                            database.insertWallet(it)
+                        }
 
                         json.jsonObject["login_credentials"]?.jsonObject?.let { loginCredentialsJson ->
 
@@ -222,12 +205,15 @@ class MainActivity : AppActivity() {
                                 )
                             }
 
-                            walletRepository.insertOrReplaceLoginCredentials(
+                            database.replaceLoginCredential(
                                 LoginCredentials(
-                                    walletId = walletId,
+                                    wallet_id = wallet.id,
+                                    credential_type = CredentialType.PIN_PINDATA,
                                     network = network,
-                                    credentialType = CredentialType.PIN_PINDATA,
-                                    pinData = pinData
+                                    pin_data = pinData,
+                                    keystore = null,
+                                    encrypted_data = null,
+                                    counter = 0
                                 )
                             )
                         }
@@ -251,7 +237,7 @@ class MainActivity : AppActivity() {
         navController = navHostFragment.navController
 
         appBarConfiguration = AppBarConfiguration(
-            topLevelDestinationIds = setOf(R.id.walletOverviewFragment, R.id.loginFragment, R.id.introFragment, R.id.introSetupNewWalletFragment),
+            topLevelDestinationIds = setOf(R.id.walletOverviewFragment, R.id.loginFragment, R.id.homeFragment, R.id.introSetupNewWalletFragment),
             drawerLayout = binding.drawerLayout,
             fallbackOnNavigateUpListener = ::onSupportNavigateUp
         )
@@ -430,21 +416,21 @@ class MainActivity : AppActivity() {
         // Handle Uri (BIP-21 or lightning)
         intent?.data?.let {
 
-            sessionManager.pendingUri.postValue(ConsumableEvent(it.toString()))
+            sessionManager.pendingUri.value = ConsumableEvent(it.toString())
 
-            if(navController.currentDestination?.id == R.id.introFragment) {
+            if(navController.currentDestination?.id == R.id.homeFragment) {
                 Snackbar.make(
                     binding.root,
                     R.string.id_you_have_clicked_a_payment_uri,
                     Snackbar.LENGTH_LONG
                 ).setAction(R.string.id_cancel) {
-                    sessionManager.pendingUri.postValue(null)
+                    sessionManager.pendingUri.value = null
                 }.show()
             }
         }
 
         if(intent?.action == OPEN_WALLET){
-            intent.getParcelableExtra<Wallet>(WALLET)?.let { wallet ->
+            intent.getParcelableExtra<GreenWallet>(WALLET)?.let { wallet ->
                 NavGraphDirections.actionGlobalLoginFragment(
                     wallet = wallet,
                     deviceId = intent.getStringExtra(DEVICE_ID)

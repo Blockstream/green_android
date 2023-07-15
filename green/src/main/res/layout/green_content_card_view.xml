@@ -5,7 +5,7 @@
     tools:context="com.blockstream.green.views.GreenContentCardView">
 
     <data>
-        <import type="com.blockstream.green.extensions.ExtensionsKt"/>
+        <import type="com.blockstream.common.extensions.StringExtensionsKt"/>
         <variable
             name="title"
             type="String" />
@@ -57,7 +57,7 @@
 
         <TextView
             android:id="@+id/captionTextView"
-            isVisible="@{ExtensionsKt.isNotBlank(caption)}"
+            isVisible="@{StringExtensionsKt.isNotBlank(caption)}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"

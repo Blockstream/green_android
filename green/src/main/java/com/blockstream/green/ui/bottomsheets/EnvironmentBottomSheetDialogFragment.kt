@@ -19,20 +19,16 @@ import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import com.russhwolf.settings.Settings
-import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
-@AndroidEntryPoint
 class EnvironmentBottomSheetDialogFragment : AbstractBottomSheetDialogFragment<MenuBottomSheetBinding>() {
 
     override val screenName: String? = null
 
-    @Inject
-    lateinit var settings: Settings
+    private val settings: Settings by inject()
 
-    @Inject
-    lateinit var gdk: Gdk
+    private val gdk: Gdk by inject()
 
     override fun inflate(layoutInflater: LayoutInflater) = MenuBottomSheetBinding.inflate(layoutInflater)
 
@@ -46,7 +42,6 @@ class EnvironmentBottomSheetDialogFragment : AbstractBottomSheetDialogFragment<M
         super.onViewCreated(view, savedInstanceState)
 
         binding.title = getString(R.string.id_select_network)
-
 
         val customNetworkMenu = gdk.networks().customNetwork.takeIf { withCustomNetwork }?.let {
             MenuListItem(

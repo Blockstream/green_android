@@ -13,11 +13,9 @@ import com.blockstream.green.databinding.AppRateDialogBinding
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.utils.RiveListener
 import com.blockstream.green.utils.openBrowser
-import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
-@AndroidEntryPoint
 class AppRateDialogFragment : AbstractDialogFragment<AppRateDialogBinding>() {
 
     override fun inflate(layoutInflater: LayoutInflater): AppRateDialogBinding =
@@ -27,11 +25,9 @@ class AppRateDialogFragment : AbstractDialogFragment<AppRateDialogBinding>() {
 
     override val isFullWidth: Boolean = true
 
-    @Inject
-    lateinit var appReview: AppReview
+    private val appReview: AppReview by inject()
 
-    @Inject
-    lateinit var settingsManager: SettingsManager
+    private val settingsManager: SettingsManager by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

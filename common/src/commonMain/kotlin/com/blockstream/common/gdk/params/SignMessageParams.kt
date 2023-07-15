@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk.params
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -8,6 +8,6 @@ import kotlinx.serialization.Serializable
 data class SignMessageParams constructor(
     @SerialName("address") val address: String,
     @SerialName("message") var message: String,
-) : GdkJson<SignMessageParams>() {
+) : GreenJson<SignMessageParams>() {
     override fun kSerializer() = serializer()
 }

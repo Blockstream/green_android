@@ -14,19 +14,23 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.database.Database
+import com.blockstream.common.di.ApplicationScope
+import com.blockstream.common.extensions.logException
+import com.blockstream.common.gdk.GdkSession
+import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
-import com.blockstream.green.ApplicationScope
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
 import com.blockstream.green.data.Countly
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletId
-import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.extensions.logException
-import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.getNetworkColor
 import com.blockstream.green.gdk.getWallet
 import com.blockstream.green.ui.MainActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import mu.KLogging
 
@@ -36,16 +40,17 @@ class NotificationManager constructor(
     private val androidNotificationManager: NotificationManager,
     private val sessionManager: SessionManager,
     private val settingsManager: SettingsManager,
-    private val walletRepository: WalletRepository,
+    private val database: Database,
     private val countly: Countly
 ) : DefaultLifecycleObserver {
+    private var scope: CoroutineScope = CoroutineScope(SupervisorJob())
 
     private var isOnForeground: Boolean = false
 
     private var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == ACTION_LOGOUT) {
-                intent.extras?.getLong(WALLET_ID, -1)?.also { walletId ->
+                intent.extras?.getString(WALLET_ID)?.also { walletId ->
                     applicationScope.launch(context = logException(countly)) {
                         sessionManager.getWalletSessionOrNull(walletId)?.disconnectAsync()
                     }
@@ -60,9 +65,9 @@ class NotificationManager constructor(
 
         createNotificationChannels()
 
-        sessionManager.connectionChangeEvent.observeForever {
+        sessionManager.connectionChangeEvent.onEach {
             updateNotifications()
-        }
+        }.launchIn(scope)
 
         ContextCompat.registerReceiver(
             context,
@@ -98,7 +103,7 @@ class NotificationManager constructor(
 
             applicationScope.launch(context = logException(countly)) {
 
-                session.getWallet(walletRepository)?.also { wallet ->
+                session.getWallet(database, sessionManager)?.also { wallet ->
                     if (session.isConnected) {
                         val sessionTimeout =
                             if (isOnForeground) 0 else (session.getSettings(null)?.altimeout
@@ -137,7 +142,7 @@ class NotificationManager constructor(
     private fun createWalletNotification(
         context: Context,
         session: GdkSession,
-        wallet: Wallet,
+        wallet: GreenWallet,
         timeout: Long
     ): Notification {
         val intent = Intent(context, MainActivity::class.java).also {
@@ -199,12 +204,10 @@ class NotificationManager constructor(
             .build()
     }
 
-    // Make hardware wallet id positive
-    private fun notificationId(wallet: Wallet): Int = notificationId(wallet.id)
-    private fun notificationId(walletId: WalletId): Int = (10000 + walletId).toInt()
+    private fun notificationId(wallet: GreenWallet): Int = wallet.id.hashCode()
 
     // Intents are cached by the requestCode, in order for wallet to be updated we have to provide a unique requestCode
-    private fun requestCode(wallet: Wallet): Int = wallet.hashCode()
+    private fun requestCode(wallet: GreenWallet): Int = wallet.hashCode()
 
     companion object : KLogging() {
         const val WALLETS_CHANNEL_ID = "${BuildConfig.APPLICATION_ID}.WALLETS_CHANNEL_ID"

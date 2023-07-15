@@ -140,7 +140,7 @@ class AuthHandler constructor(
 
         return result?.let { result ->
             JsonDeserializer.decodeFromJsonElement<T>(result).let{
-                if(it is GdkJson<*> && it.keepJsonElement()) {
+                if(it is GreenJson<*> && it.keepJsonElement()) {
                     it.jsonElement = result
                 }
                 it

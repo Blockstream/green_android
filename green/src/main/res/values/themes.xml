@@ -118,6 +118,7 @@
     <style name="ThemeOverlay.Green.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog.Centered">
 <!--        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.Green.Title.Text</item>-->
 <!--        <item name="materialAlertDialogBodyTextStyle">@style/MaterialAlertDialog.Green.Body.Text</item>-->
+        <item name="materialAlertDialogTitleIconStyle">@style/MaterialAlertDialog.Green.Title.Icon</item>
     </style>
 
     <style name="ThemeOverlay.Green.MaterialAlertDialog.Red" parent="ThemeOverlay.Material3.MaterialAlertDialog.Centered">
@@ -125,9 +126,7 @@
         <item name="colorSecondary">@color/white</item>
         <item name="colorSurface">@color/red_dark</item>
         <item name="colorOnSurface">@color/white</item>
-
         <item name="materialAlertDialogBodyTextStyle">@style/MaterialAlertDialog.Green.Body.Text</item>-->
-
     </style>
 
 </resources>

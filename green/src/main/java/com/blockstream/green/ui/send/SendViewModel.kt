@@ -1,28 +1,43 @@
 package com.blockstream.green.ui.send;
 
 import android.graphics.Bitmap
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asFlow
+import com.blockstream.common.AddressInputType
+import com.blockstream.common.TransactionSegmentation
+import com.blockstream.common.TransactionType
+import com.blockstream.common.data.DenominatedValue
+import com.blockstream.common.data.Denomination
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.FeeBlockTarget
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.Assets
 import com.blockstream.common.gdk.data.CreateTransaction
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.params.AddressParams
 import com.blockstream.common.gdk.params.CreateTransactionParams
-import com.blockstream.green.data.*
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
+import com.blockstream.common.lightning.lnUrlPayDescription
+import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.ConsumableEvent
+import com.blockstream.common.utils.UserInput
 import com.blockstream.green.extensions.boolean
-import com.blockstream.green.extensions.isNotBlank
-import com.blockstream.green.gdk.*
-import com.blockstream.green.managers.SessionManager
+import com.blockstream.green.extensions.lnUrlPayBitmap
 import com.blockstream.green.ui.bottomsheets.DenominationListener
 import com.blockstream.green.ui.wallet.AbstractAssetWalletViewModel
-import com.blockstream.green.utils.*
-import com.blockstream.lightning.lnUrlPayDescription
-import com.blockstream.lightning.lnUrlPayImage
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import kotlinx.coroutines.flow.*
+import com.blockstream.green.utils.feeRateWithUnit
+import com.blockstream.green.utils.toAmountLook
+import com.rickclephas.kmm.viewmodel.coroutineScope
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filterNot
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.JsonElement
@@ -30,19 +45,19 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
 import mu.KLogging
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 import kotlin.math.absoluteValue
 
-class SendViewModel @AssistedInject constructor(
-    sessionManager: SessionManager,
-    walletRepository: WalletRepository,
-    countly: Countly,
-    @Assisted wallet: Wallet,
-    @Assisted accountAsset: AccountAsset,
-    @Assisted val isSweep: Boolean,
-    @Assisted("address") address: String?,
-    @Assisted addressType: AddressInputType?,
-    @Assisted val bumpTransaction: JsonElement?,
-) : AbstractAssetWalletViewModel(sessionManager, walletRepository, countly, wallet, accountAsset), DenominationListener {
+@KoinViewModel
+class SendViewModel constructor(
+    @InjectedParam wallet: GreenWallet,
+    @InjectedParam accountAsset: AccountAsset,
+    @InjectedParam val isSweep: Boolean,
+    @InjectedParam address: String?,
+    @InjectedParam addressType: AddressInputType?,
+    @InjectedParam val bumpTransaction: JsonElement?,
+) : AbstractAssetWalletViewModel(wallet, accountAsset), DenominationListener {
     override val filterSubAccountsWithBalance = true
 
     val isBump = bumpTransaction != null
@@ -109,23 +124,23 @@ class SendViewModel @AssistedInject constructor(
                     }
             }
 
-        }.launchIn(viewModelScope)
+        }.launchIn(viewModelScope.coroutineScope)
 
         _accountAssetLiveData.asFlow().distinctUntilChanged().onEach {
             setAccountAsset(0, it)
-        }.launchIn(viewModelScope)
+        }.launchIn(viewModelScope.coroutineScope)
 
         // Check transaction if we get a network event
         // we may have gotten an error "session is required"
         // TODO CHANGE THIS TO SUPPORT MULTI NETWORKS
         session
-            .networkEventsFlow(session.defaultNetwork).filterNotNull()
+            .networkEvents(session.defaultNetwork).filterNotNull()
             .onEach { event ->
                 if (event.isConnected) {
                     checkTransaction()
                 }
 
-            }.launchIn(viewModelScope)
+            }.launchIn(viewModelScope.coroutineScope)
 
         // Fee Slider
         feeSlider
@@ -139,7 +154,7 @@ class SendViewModel @AssistedInject constructor(
 
                 checkTransaction()
             }
-            .launchIn(viewModelScope)
+            .launchIn(viewModelScope.coroutineScope)
 
         recipients.value?.getOrNull(0)?.let {
             setupChangeObserve(it)
@@ -216,7 +231,7 @@ class SendViewModel @AssistedInject constructor(
             .onEach {
                 checkTransaction()
             }
-            .launchIn(viewModelScope)
+            .launchIn(viewModelScope.coroutineScope)
 
         // Account
         addressParamsLiveData.accountAsset
@@ -226,7 +241,7 @@ class SendViewModel @AssistedInject constructor(
             .onEach {
                 checkTransaction()
             }
-            .launchIn(viewModelScope)
+            .launchIn(viewModelScope.coroutineScope)
 
         // Amount
         addressParamsLiveData.amount
@@ -247,7 +262,7 @@ class SendViewModel @AssistedInject constructor(
 
                 updateExchange(addressParamsLiveData)
             }
-            .launchIn(viewModelScope)
+            .launchIn(viewModelScope.coroutineScope)
 
         // Send All
         addressParamsLiveData.isSendAll
@@ -261,7 +276,7 @@ class SendViewModel @AssistedInject constructor(
                     checkTransaction()
                 }
             }
-            .launchIn(viewModelScope)
+            .launchIn(viewModelScope.coroutineScope)
     }
 
     private fun updateExchange(addressParamsLiveData: AddressParamsLiveData) {
@@ -320,7 +335,7 @@ class SendViewModel @AssistedInject constructor(
         }
 
     private suspend fun createTransactionParams(): CreateTransactionParams {
-        if(account.isLightning){
+        if(accountValue.isLightning){
             return recipients.value!!.map {
                 it.toAddressParams(session = session, isGreedy = false)
             }.let { params ->
@@ -332,15 +347,15 @@ class SendViewModel @AssistedInject constructor(
         }
 
         val unspentOutputs = if(isSweep){
-            session.getUnspentOutputs(account.network, recipients.value?.get(0)?.address?.value?.trim() ?: "")
+            session.getUnspentOutputs(accountValue.network, recipients.value?.get(0)?.address?.value?.trim() ?: "")
         }else{
-            session.getUnspentOutputs(account, isBump)
+            session.getUnspentOutputs(accountValue, isBump)
         }
 
         return when{
             isBump -> {
                 CreateTransactionParams(
-                    subaccount = account.pointer,
+                    subaccount = accountValue.pointer,
                     feeRate = getFeeRate(),
                     utxos = unspentOutputs.unspentOutputsAsJsonElement,
                     previousTransaction = bumpTransaction,
@@ -349,7 +364,7 @@ class SendViewModel @AssistedInject constructor(
             }
             isSweep -> {
                 listOf(
-                    session.getReceiveAddress(account)
+                    session.getReceiveAddress(accountValue)
                 ).let { params ->
                     CreateTransactionParams(
                         feeRate = getFeeRate(),
@@ -372,7 +387,7 @@ class SendViewModel @AssistedInject constructor(
                     it.toAddressParams(session = session, isGreedy = it.isSendAll.boolean())
                 }.let { params ->
                     CreateTransactionParams(
-                        subaccount = account.pointer,
+                        subaccount = accountValue.pointer,
                         addressees = params.map { it.toJsonElement() },
                         addresseesAsParams = params,
                         feeRate = getFeeRate(),
@@ -397,7 +412,7 @@ class SendViewModel @AssistedInject constructor(
                 var balance: Assets? = null
 
                 if(finalCheckBeforeContinue && !isSweep){
-                    balance = session.getBalance(account)
+                    balance = session.getBalance(accountValue)
                 }
 
                 // Change UI based on the transaction
@@ -412,7 +427,7 @@ class SendViewModel @AssistedInject constructor(
 
                         tx.addressees.getOrNull(recipient.index)?.metadata.also {
                             recipient.description.postValue(it.lnUrlPayDescription() ?: "")
-                            recipient.image.postValue(it.lnUrlPayImage())
+                            recipient.image.postValue(it.lnUrlPayBitmap())
                         }
                         recipient.hasLockedAmount.postValue(hasLockedAmount)
 
@@ -471,7 +486,7 @@ class SendViewModel @AssistedInject constructor(
                 if(balance != null){
                     for (addressee in tx.addressees) {
                         addressee.assetId?.let { assetId ->
-                            if (!balance.containsKey(assetId)) {
+                            if (!balance.containsAsset(assetId)) {
                                 throw Exception("id_no_asset_in_this_account")
                             }
                         }
@@ -492,13 +507,13 @@ class SendViewModel @AssistedInject constructor(
             }
         }, postAction = {
             // Avoid UI glitches
-            onProgress.value = finalCheckBeforeContinue
+            onProgressAndroid.value = finalCheckBeforeContinue
         }, onSuccess = { pair ->
             transactionError.value = null
 
             if(finalCheckBeforeContinue){
                 session.pendingTransaction = pair
-                onEvent.postValue(ConsumableEvent(NavigateEvent.Navigate))
+                postSideEffect(SideEffects.Navigate())
             }
         }, onError = {
             it.printStackTrace()
@@ -540,7 +555,7 @@ class SendViewModel @AssistedInject constructor(
             it.address.value = address
             it.addressInputType = inputType
 
-            if(account.isLightning && address.isBlank()){
+            if(accountValue.isLightning && address.isBlank()){
                 it.amount.value = ""
             }
         }
@@ -584,37 +599,9 @@ class SendViewModel @AssistedInject constructor(
         }
     }
 
-    @dagger.assisted.AssistedFactory
-    interface AssistedFactory {
-        fun create(
-            wallet: Wallet,
-            accountAsset: AccountAsset,
-            isSweep: Boolean,
-            @Assisted("address")
-            address: String?,
-            addressType:AddressInputType?,
-            bumpTransaction: JsonElement?
-        ): SendViewModel
-    }
-
     companion object : KLogging() {
         const val SliderCustomIndex = 0
         const val SliderHighIndex = 3
-
-        fun provideFactory(
-            assistedFactory: AssistedFactory,
-            wallet: Wallet,
-            accountAsset: AccountAsset,
-            isSweep: Boolean,
-            address: String?,
-            addressType:AddressInputType?,
-            bumpTransaction: JsonElement?
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet, accountAsset, isSweep, address, addressType, bumpTransaction) as T
-            }
-        }
     }
 
     suspend fun getAmountToConvert(): String{

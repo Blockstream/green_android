@@ -111,7 +111,7 @@
                         isInvisible="@{closing}"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:enabled="@{confirmed &amp;&amp; !vm.onProgress}"
+                        android:enabled="@{confirmed &amp;&amp; !vm.onProgressAndroid}"
                         android:text="@string/id_accept" />
 
                     <TextView

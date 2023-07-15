@@ -42,7 +42,7 @@ fun navigate(navController: NavController, @IdRes resId: Int, args: Bundle?, isL
     val animate =
         !(currentDestinationId == R.id.walletOverviewFragment && resId == R.id.action_global_walletOverviewFragment)
                 && !(currentDestinationId == R.id.loginFragment && resId == R.id.action_global_loginFragment)
-                && !(currentDestinationId == R.id.introFragment && resId == R.id.action_global_introSetupNewWalletFragment)
+                && !(currentDestinationId == R.id.homeFragment && resId == R.id.action_global_introSetupNewWalletFragment)
 
     if (animate) {
         navOptionsBuilder.setEnterAnim(R.anim.nav_enter_anim)
@@ -52,7 +52,7 @@ fun navigate(navController: NavController, @IdRes resId: Int, args: Bundle?, isL
     }
 
     if (isLogout || resId == R.id.action_global_walletOverviewFragment) {
-        navController.backQueue.firstOrNull()?.let {
+        navController.currentBackStack.value.firstOrNull()?.let {
             navOptionsBuilder.setPopUpTo(it.destination.id, true)
         }
         navOptionsBuilder.setLaunchSingleTop(true) // this is only needed on lateral movements
@@ -66,7 +66,7 @@ fun navigate(navController: NavController, @IdRes resId: Int, args: Bundle?, isL
         navOptionsBuilder.setLaunchSingleTop(true)
     } else if (resId == R.id.action_global_introSetupNewWalletFragment) {
         // Allow only one Login screen
-        navOptionsBuilder.setPopUpTo(R.id.introFragment, true)
+        navOptionsBuilder.setPopUpTo(R.id.homeFragment, true)
         navOptionsBuilder.setLaunchSingleTop(true)
     } else if (resId == R.id.action_global_setupNewWalletFragment){
         // Allow a single onboarding path

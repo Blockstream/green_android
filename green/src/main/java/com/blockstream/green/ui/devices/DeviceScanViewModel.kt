@@ -4,40 +4,36 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import androidx.lifecycle.*
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.devices.ConnectionType
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.managers.SettingsManager
-import com.blockstream.green.data.Countly
-import com.blockstream.green.data.NavigateEvent
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
+import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceConnectionManager
 import com.blockstream.green.devices.DeviceManager
-import com.blockstream.green.managers.SessionManager
-import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.QATester
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import dagger.hilt.android.qualifiers.ApplicationContext
+import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
-class DeviceScanViewModel @AssistedInject constructor(
+@KoinViewModel
+class DeviceScanViewModel constructor(
     @SuppressLint("StaticFieldLeak")
-    @ApplicationContext val context: Context,
-    sessionManager: SessionManager,
-    walletRepository: WalletRepository,
+    val context: Context,
     deviceManager: DeviceManager,
     qaTester: QATester,
-    countly: Countly,
     gdk: Gdk,
     settingsManager: SettingsManager,
-    @Assisted wallet: Wallet
-) : AbstractDeviceViewModel(sessionManager, walletRepository, deviceManager, qaTester, countly, wallet) {
+    @InjectedParam wallet: GreenWallet
+) : AbstractDeviceViewModel(deviceManager, qaTester, wallet) {
     val wallet get() = walletOrNull!!
 
-    val hasBleConnectivity = wallet.deviceIdentifiers?.any { it.connectionType == Device.ConnectionType.BLUETOOTH } ?: false
+    val hasBleConnectivity = wallet.deviceIdentifiers?.any { it.connectionType == ConnectionType.BLUETOOTH } ?: false
     val canEnableBluetooth = MutableLiveData(Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)
 
     var requestUserActionEmitter: CompletableDeferred<Boolean>? = null
@@ -58,11 +54,11 @@ class DeviceScanViewModel @AssistedInject constructor(
         interaction = this, // this leaks, we need a fix
         qaTester = qaTester
     )
-    val session get() = sessionManager.getWalletSession(wallet)
+    // val session get() = sessionManager.getWalletSession(wallet)
 
     init {
         session.device.takeIf { session.isConnected }?.also { device ->
-            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(wallet to device)))
+            postSideEffect(SideEffects.Navigate(wallet to device))
         } ?: run {
             deviceManager.devicesStateFlow.onEach { devices ->
                 var foundDevice = devices.firstOrNull { device ->
@@ -86,7 +82,7 @@ class DeviceScanViewModel @AssistedInject constructor(
                         selectDevice(foundDevice)
                     }
                 }
-            }.launchIn(viewModelScope)
+            }.launchIn(viewModelScope.coroutineScope)
         }
     }
 
@@ -188,27 +184,8 @@ class DeviceScanViewModel @AssistedInject constructor(
             onError.value = ConsumableEvent(it)
         }, onSuccess = {
             proceedToLogin = true
-            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(it)))
+            postSideEffect(SideEffects.Navigate(it))
             countly.hardwareConnected(device)
         })
-    }
-
-    @dagger.assisted.AssistedFactory
-    interface AssistedFactory {
-        fun create(
-            wallet: Wallet
-        ): DeviceScanViewModel
-    }
-
-    companion object {
-        fun provideFactory(
-            assistedFactory: AssistedFactory,
-            wallet: Wallet
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet) as T
-            }
-        }
     }
 }

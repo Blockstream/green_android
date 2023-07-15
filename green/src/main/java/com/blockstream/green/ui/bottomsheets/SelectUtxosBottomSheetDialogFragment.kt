@@ -6,21 +6,19 @@ import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.green.databinding.SelectUtxosBottomSheetBinding
-import com.blockstream.green.extensions.logException
 import com.blockstream.green.ui.items.UtxoListItem
 import com.blockstream.green.ui.send.SendViewModel
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import mu.KLogging
 
 // WIP
-@AndroidEntryPoint
 class SelectUtxosBottomSheetDialogFragment : WalletBottomSheetDialogFragment<SelectUtxosBottomSheetBinding, SendViewModel>() {
     override val screenName = "SelectUTXO"
 
@@ -39,7 +37,7 @@ class SelectUtxosBottomSheetDialogFragment : WalletBottomSheetDialogFragment<Sel
             val accounts = if(account != null){
                 listOf(account)
             }else{
-                session.accounts
+                session.accounts.value
             }
 
             session.getUnspentOutputs(accounts).unspentOutputs.map {

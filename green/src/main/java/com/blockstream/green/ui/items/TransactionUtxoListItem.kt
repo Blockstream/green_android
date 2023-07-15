@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemTransactionOutputBinding
-import com.blockstream.green.gdk.GdkSession
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.green.looks.ITransactionLook
 import com.blockstream.green.utils.toPixels
 import kotlinx.coroutines.CoroutineScope

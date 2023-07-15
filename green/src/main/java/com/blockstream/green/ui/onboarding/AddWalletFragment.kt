@@ -3,69 +3,84 @@ package com.blockstream.green.ui.onboarding
 import android.os.Bundle
 import android.view.View
 import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.models.onboarding.AddWalletViewModel
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
-import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.AddWalletFragmentBinding
+import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.bottomsheets.EnvironmentBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.EnvironmentListener
-import dagger.hilt.android.AndroidEntryPoint
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-@AndroidEntryPoint
 class AddWalletFragment :
-    AbstractOnboardingFragment<AddWalletFragmentBinding>(R.layout.add_wallet_fragment, menuRes = 0), EnvironmentListener {
+    AppFragment<AddWalletFragmentBinding>(R.layout.add_wallet_fragment, menuRes = 0),
+    EnvironmentListener
+{
+    private var _pendingSideEffect: AddWalletViewModel.LocalSideEffects.SelectEnvironment? = null
 
-    override val screenName = "AddWallet"
-    private var isRestore: Boolean = false
+    val viewModel: AddWalletViewModel by viewModel()
+
+    override fun getGreenViewModel(): GreenViewModel = viewModel
+
+    override fun getAppViewModel() = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.buttonNewWallet.setOnClickListener {
-            if (settingsManager.getApplicationSettings().testnet){
-                askForNetworkEnviroment(false)
-            }else{
-                navigate(
-                    AddWalletFragmentDirections.actionAddWalletFragmentToRecoveryIntroFragment(onboardingOptions = OnboardingOptions(isRestoreFlow = false))
-                )
-            }
-
-            countly.newWallet()
+            viewModel.postEvent(AddWalletViewModel.LocalEvents.ClickNewWallet())
         }
 
         binding.buttonRestoreWallet.setOnClickListener {
-            if (settingsManager.getApplicationSettings().testnet){
-                askForNetworkEnviroment(true)
-            }else{
-                navigate(
-                    AddWalletFragmentDirections.actionAddWalletFragmentToEnterRecoveryPhraseFragment(OnboardingOptions(isRestoreFlow = true))
-                )
-            }
-
-            countly.restoreWallet()
+            viewModel.postEvent(AddWalletViewModel.LocalEvents.ClickRestoreWallet())
         }
 
         binding.buttonWatchOnly.setOnClickListener {
-            navigate(AddWalletFragmentDirections.actionAddWalletFragmentToChooseWatchOnlyFragment())
-            countly.watchOnlyWallet()
+            viewModel.postEvent(AddWalletViewModel.LocalEvents.ClickWatchOnly())
         }
     }
 
-    private fun askForNetworkEnviroment(isRestore: Boolean){
-        this.isRestore = isRestore
-        EnvironmentBottomSheetDialogFragment.show(withCustomNetwork = true, fragmentManager = childFragmentManager)
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+
+        (sideEffect as? AddWalletViewModel.LocalSideEffects.SelectEnvironment)?.also {
+            _pendingSideEffect = it
+            EnvironmentBottomSheetDialogFragment.show(withCustomNetwork = true, fragmentManager = childFragmentManager)
+        }
+
+        (sideEffect as? SideEffects.NavigateTo)?.also { to ->
+            (to.destination as? NavigateDestinations.NewWallet)?.also {
+                navigate(AddWalletFragmentDirections.actionAddWalletFragmentToRecoveryIntroFragment(
+                    setupArgs = it.args
+                ))
+            }
+
+            (to.destination as? NavigateDestinations.RestoreWallet)?.also {
+                navigate(AddWalletFragmentDirections.actionAddWalletFragmentToEnterRecoveryPhraseFragment(
+                    setupArgs = it.args
+                ))
+            }
+
+            (to.destination as? NavigateDestinations.NewWatchOnlyWallet)?.also {
+                navigate(AddWalletFragmentDirections.actionAddWalletFragmentToWatchOnlyCredentialsFragment())
+            }
+        }
     }
 
     override fun onEnvironmentSelected(isTestnet: Boolean?, customNetwork: Network?) {
-        if(isTestnet != null){
-            val onboardingOptions = OnboardingOptions(isRestoreFlow = isRestore, isTestnet = isTestnet)
-
-            navigate(
-                if(onboardingOptions.isRestoreFlow){
-                    AddWalletFragmentDirections.actionAddWalletFragmentToEnterRecoveryPhraseFragment(onboardingOptions = onboardingOptions, network = customNetwork)
-                }else{
-                    AddWalletFragmentDirections.actionAddWalletFragmentToRecoveryIntroFragment(onboardingOptions = onboardingOptions, network = customNetwork)
-                }
-            )
+        if (isTestnet != null) {
+            _pendingSideEffect?.also {
+                viewModel.postEvent(
+                    AddWalletViewModel.LocalEvents.SelectEnviroment(
+                        pending = it.pending,
+                        isTestnet = isTestnet,
+                        customNetwork = customNetwork
+                    )
+                )
+            }
         }
     }
 }

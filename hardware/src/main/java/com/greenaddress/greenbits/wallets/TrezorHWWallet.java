@@ -5,22 +5,19 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.blockstream.JadeHWWallet;
-import com.blockstream.common.gdk.device.DeviceBrand;
+import com.blockstream.common.extensions.GdkExtensionsKt;
 import com.blockstream.common.gdk.Gdk;
-import com.blockstream.common.gdk.device.HardwareWalletInteraction;
 import com.blockstream.common.gdk.data.Account;
 import com.blockstream.common.gdk.data.AccountType;
 import com.blockstream.common.gdk.data.Device;
 import com.blockstream.common.gdk.data.InputOutput;
 import com.blockstream.common.gdk.data.Network;
 import com.blockstream.common.gdk.device.BlindingFactorsResult;
+import com.blockstream.common.gdk.device.DeviceBrand;
+import com.blockstream.common.gdk.device.HardwareWalletInteraction;
 import com.blockstream.common.gdk.device.SignMessageResult;
 import com.blockstream.common.gdk.device.SignTransactionResult;
-import com.blockstream.gdk.ExtensionsKt;
-import com.blockstream.hardware.R;
 import com.blockstream.libwally.Wally;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Joiner;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Message;
@@ -363,7 +360,7 @@ public class TrezorHWWallet extends HWWallet {
         final boolean isPrevTx = txRequest.hasTxHash();
         if (isPrevTx) {
             final Object prevTx = findPrevTx(txRequest);
-            final byte[] txhash = ExtensionsKt.reverseBytes(Wally.tx_get_input_txhash(prevTx, index));
+            final byte[] txhash = GdkExtensionsKt.reverseBytes(Wally.tx_get_input_txhash(prevTx, index));
             return TrezorType.TxInputType.newBuilder()
                    .setPrevHash(ByteString.copyFrom(txhash))
                    .setPrevIndex(Wally.tx_get_input_index(prevTx, index))

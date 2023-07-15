@@ -7,14 +7,8 @@ import com.blockstream.jade.data.JadeNetworks
 import com.blockstream.jade.data.JadeState
 import com.blockstream.jade.data.VersionInfo
 import com.blockstream.jade.entities.JadeError
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.greenaddress.greenbits.wallets.JadeFirmwareManager
 import com.greenaddress.greenbits.wallets.JadeHWWalletJava
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-import mu.KLogging
 
 class JadeHWWallet constructor(
     val gdk: Gdk,
@@ -47,8 +41,7 @@ class JadeHWWallet constructor(
         // check firmware (and maybe OTA) any completely uninitialised device (ie no keys/pin set - no unlocking needed)
         jadeFirmwareManager.checkFirmware(
             jade = jadeApi,
-            onlyIfUninitialized = true,
-            onlyIfNotMinimum = true
+            checkIfUninitialized = true
         )
 
         // authenticate the user (see above)
@@ -57,8 +50,7 @@ class JadeHWWallet constructor(
         // check the firmware again (and maybe OTA) for devices that are set-up and are below minimum firmware version (and hence needed unlocking first)
         val fwValid = jadeFirmwareManager.checkFirmware(
             jade = jadeApi,
-            onlyIfUninitialized = false,
-            onlyIfNotMinimum = false
+            checkIfUninitialized = false
         )
 
         if(fwValid == true){

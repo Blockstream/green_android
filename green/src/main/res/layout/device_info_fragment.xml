@@ -85,7 +85,7 @@
 
         <Button
             android:id="@+id/buttonContinue"
-            isVisible="@{!vm.onProgress}"
+            isVisible="@{!vm.onProgressAndroid}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -97,7 +97,7 @@
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/rememberDevice"
-            isVisible="@{!vm.onProgress}"
+            isVisible="@{!vm.onProgressAndroid}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -113,7 +113,7 @@
             android:indeterminate="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            isVisible="@{vm.onProgress}"
+            isVisible="@{vm.onProgressAndroid}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -122,7 +122,7 @@
         <Button
             android:id="@+id/buttonTroubleshoot"
             style="@style/Widget.Green.Button.Text"
-            isVisible="@{vm.onProgress  &amp;&amp; vm.deviceIsConnected == false}"
+            isVisible="@{vm.onProgressAndroid  &amp;&amp; vm.deviceIsConnected == false}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -136,11 +136,11 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonAppSettings"
             style="@style/Widget.Green.Button.Text"
-            isGone="@{vm.onProgress}"
+            isGone="@{vm.onProgressAndroid}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="24dp"
-            android:enabled="@{!vm.onProgress}"
+            android:enabled="@{!vm.onProgressAndroid}"
             android:text="@string/id_app_settings"
             android:textColor="@color/color_on_surface_emphasis_low"
             android:textSize="12dp"
@@ -153,7 +153,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            isVisible="@{!vm.onProgress &amp;&amp; vm.jadeIsUninitialized}"
+            isVisible="@{!vm.onProgressAndroid &amp;&amp; vm.jadeIsUninitialized}"
             app:layout_constraintBottom_toTopOf="@+id/buttonContinue"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"

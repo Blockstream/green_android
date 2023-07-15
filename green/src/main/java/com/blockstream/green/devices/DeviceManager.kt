@@ -13,7 +13,7 @@ import android.os.ParcelUuid
 import android.os.SystemClock
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
-import com.blockstream.green.managers.SessionManager
+import com.blockstream.common.managers.SessionManager
 import com.blockstream.jade.JadeBleImpl
 import com.btchip.comm.LedgerDeviceBLE
 import com.polidea.rxandroidble3.RxBleClient

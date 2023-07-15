@@ -6,15 +6,18 @@ import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.getBip39WordList
+import com.blockstream.common.models.onboarding.EnterRecoveryPhraseViewModel
+import com.blockstream.common.events.Events
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
-import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.EnterRecoveryPhraseFragmentBinding
 import com.blockstream.green.extensions.clearClipboard
@@ -22,49 +25,98 @@ import com.blockstream.green.extensions.clearNavigationResult
 import com.blockstream.green.extensions.endIconCustomMode
 import com.blockstream.green.extensions.getNavigationResult
 import com.blockstream.green.gdk.getNetworkIcon
+import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.HelpBottomSheetDialogFragment
 import com.blockstream.green.ui.items.RecoveryPhraseWordListItem
 import com.blockstream.green.utils.getClipboard
-import com.blockstream.green.views.RecoveryPhraseKeyboardView
+import com.blockstream.green.utils.isProductionFlavor
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.mikepenz.itemanimators.AlphaInAnimator
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 
-@AndroidEntryPoint
-class EnterRecoveryPhraseFragment :
-    AbstractOnboardingFragment<EnterRecoveryPhraseFragmentBinding>(
-        R.layout.enter_recovery_phrase_fragment,
-        menuRes = R.menu.menu_help
-    ) {
+class EnterRecoveryPhraseFragment : AppFragment<EnterRecoveryPhraseFragmentBinding>(
+    R.layout.enter_recovery_phrase_fragment,
+    menuRes = R.menu.menu_help
+) {
 
     val args: EnterRecoveryPhraseFragmentArgs by navArgs()
 
-    override val screenName = "OnBoardEnterRecovery"
-    override val segmentation: HashMap<String, Any>? = null
-
     override val title: String?
-        get() = args.network?.canonicalName
+        get() = args.setupArgs.network?.canonicalName
 
     override val toolbarIcon: Int?
-        get() = args.network?.getNetworkIcon()
+        get() = args.setupArgs.network?.getNetworkIcon()
 
-    @Inject
-    lateinit var assistedFactory: EnterRecoveryPhraseViewModel.AssistedFactory
-
-    val viewModel: EnterRecoveryPhraseViewModel by viewModels{
-        EnterRecoveryPhraseViewModel.provideFactory(
-            assistedFactory = assistedFactory, recoveryPhrase = args.scannedInput
-        )
+    val viewModel: EnterRecoveryPhraseViewModel by viewModel {
+        parametersOf(args.setupArgs)
     }
 
+    override fun getGreenViewModel(): GreenViewModel = viewModel
+
+    override fun getAppViewModel() = null
+
     private var itemAdapter: FastItemAdapter<RecoveryPhraseWordListItem> = FastItemAdapter()
+
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+
+        (sideEffect as? SideEffects.NavigateTo)?.also {
+            (it.destination as? NavigateDestinations.SetPin)?.also {
+                navigate(
+                    EnterRecoveryPhraseFragmentDirections.actionEnterRecoveryPhraseFragmentToPinFragment(
+                        setupArgs = it.args,
+                    )
+                )
+            }
+
+            (it.destination as? NavigateDestinations.AddAccount)?.also {
+                navigate(
+                    EnterRecoveryPhraseFragmentDirections.actionGlobalReviewAddAccountFragment(
+                        setupArgs = it.args,
+                    )
+                )
+            }
+        }
+
+        (sideEffect as? EnterRecoveryPhraseViewModel.LocalSideEffects.RequestMnemonicPassword)?.also {
+            val dialogBinding = EditTextDialogBinding.inflate(LayoutInflater.from(context))
+            dialogBinding.textInputLayout.endIconCustomMode()
+
+            dialogBinding.hint = getString(R.string.id_password)
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                dialogBinding.editText.imeOptions = EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING or EditorInfo.IME_ACTION_GO
+            }else{
+                dialogBinding.editText.imeOptions = EditorInfo.IME_ACTION_GO
+            }
+            dialogBinding.editText.inputType = EditorInfo.TYPE_TEXT_VARIATION_PASSWORD
+
+            // Until this is fixed https://github.com/material-components/material-components-android/issues/503
+            dialogBinding.textInputLayout.endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
+
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.id_encryption_passphrase)
+                .setView(dialogBinding.root)
+                .setPositiveButton(android.R.string.ok) { _, _ ->
+                    viewModel.postEvent(EnterRecoveryPhraseViewModel.LocalEvents.MnemonicEncryptionPassword(dialogBinding.text ?: ""))
+                }
+                .setNegativeButton(android.R.string.cancel, null)
+                .show()
+
+            // set focus to the input field
+            dialogBinding.editText.requestFocus()
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -72,67 +124,21 @@ class EnterRecoveryPhraseFragment :
         getNavigationResult<String>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(viewLifecycleOwner) { result ->
             if (result != null) {
                 clearNavigationResult(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)
-                binding.recoveryPhraseKeyboardView.setRecoveryPhraseState(
-                    RecoveryPhraseKeyboardView.RecoveryPhraseState.fromString(result.trim())
-                )
+                viewModel.postEvent(EnterRecoveryPhraseViewModel.LocalEvents.SetRecoveryPhrase(result))
             }
         }
 
-        options = args.onboardingOptions
-
         binding.vm = viewModel
+        binding.recoveryPhraseKeyboardView.bridge(viewModel.recoveryPhrase, viewModel.activeWord)
 
         binding.buttonContinue.setOnClickListener {
-
-            if(viewModel.isEncryptionPasswordRequired){
-
-                val dialogBinding = EditTextDialogBinding.inflate(LayoutInflater.from(context))
-                dialogBinding.textInputLayout.endIconCustomMode()
-
-                dialogBinding.hint = getString(R.string.id_password)
-
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                    dialogBinding.editText.imeOptions = EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING or EditorInfo.IME_ACTION_GO
-                }else{
-                    dialogBinding.editText.imeOptions = EditorInfo.IME_ACTION_GO
-                }
-                dialogBinding.editText.inputType = EditorInfo.TYPE_TEXT_VARIATION_PASSWORD
-
-                // Until this is fixed https://github.com/material-components/material-components-android/issues/503
-                dialogBinding.textInputLayout.endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
-
-                MaterialAlertDialogBuilder(requireContext())
-                    .setTitle(R.string.id_encryption_passphrase)
-                    .setView(dialogBinding.root)
-                    .setPositiveButton(android.R.string.ok) { _, _ ->
-
-                        // A 27-word mnemonic is a multisig network
-                        options?.apply {
-                            navigate(
-                                options = this,
-                                mnemonic = viewModel.recoveryPhraseState.value!!.toMnemonic(),
-                                mnemonicPassword = dialogBinding.text ?: ""
-                            )
-                        }
-
-                    }
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .show()
-
-                // set focus to the input field
-                dialogBinding.editText.requestFocus()
-
-            }else{
-                navigate(options = options, mnemonic = viewModel.recoveryPhraseState.value!!.toMnemonic(), mnemonicPassword = "")
-            }
+            viewModel.postEvent(Events.Continue)
         }
 
         val fastAdapter = FastAdapter.with(itemAdapter)
 
         fastAdapter.onClickListener = { _, _, _, position ->
-
             binding.recoveryPhraseKeyboardView.toggleActiveWord(position)
-
             true
         }
 
@@ -144,22 +150,14 @@ class EnterRecoveryPhraseFragment :
 
         binding.recoveryPhraseKeyboardView.setWordList(wally.getBip39WordList())
 
-        binding.recoveryPhraseKeyboardView.setOnRecoveryPhraseKeyboardListener(object :
-            RecoveryPhraseKeyboardView.OnRecoveryPhraseKeyboardListener {
-            override fun onRecoveryPhraseStateUpdate(state: RecoveryPhraseKeyboardView.RecoveryPhraseState) {
-                viewModel.updateRecoveryPhrase(state)
-            }
-        })
-
         binding.buttonPaste.setOnClickListener {
-            getClipboard(requireContext())?.trim()?.apply {
-                if(isNotBlank()){
-                    binding.recoveryPhraseKeyboardView.setRecoveryPhraseState(
-                        RecoveryPhraseKeyboardView.RecoveryPhraseState.fromString(this)
-                    )
-                }
+            getClipboard(requireContext())?.also {
+                viewModel.postEvent(EnterRecoveryPhraseViewModel.LocalEvents.SetRecoveryPhrase(it))
             }
-            clearClipboard()
+            // Clear clipboard
+            if(isProductionFlavor) {
+                clearClipboard()
+            }
         }
 
         binding.buttonScan.setOnClickListener {
@@ -176,54 +174,45 @@ class EnterRecoveryPhraseFragment :
 
         binding.toggleRecoverySize.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if(isChecked) {
-                viewModel.setRecoveryPhraseSize(when (checkedId) {
+                viewModel.recoveryPhraseSize.value = when (checkedId) {
                     R.id.button12 -> 12
                     R.id.button24 -> 24
                     else -> 27
-                })
+                }
             }
         }
 
-        viewModel.recoveryPhraseSize.distinctUntilChanged().observe(viewLifecycleOwner){
+        viewModel.recoveryPhraseSize.onEach {
             binding.toggleRecoverySize.check(when(it){
                 0, 12 -> R.id.button12
                 24 -> R.id.button24
                 27 -> R.id.button27
                 else -> 0
             })
-        }
+        }.launchIn(lifecycleScope)
 
-        viewModel.recoveryPhraseState.value?.let {
-            binding.recoveryPhraseKeyboardView.setRecoveryPhraseState(it)
-        }
+        combine(viewModel.recoveryPhrase, viewModel.recoveryPhraseSize, viewModel.activeWord) { recoveryPhrase, _, activeWord ->
+            val list = mutableListOf<RecoveryPhraseWordListItem>()
 
-        viewModel.recoveryWords.observe(viewLifecycleOwner) {
-            FastAdapterDiffUtil.set(itemAdapter.itemAdapter, it, false)
-            binding.recycler.scrollToPosition(viewModel.recoveryPhraseState.value?.let { value -> if(value.activeIndex >= 0) value.activeIndex else value.phrase.size }?: 0)
-        }
-    }
+            recoveryPhrase.forEach { word ->
+                list += RecoveryPhraseWordListItem(list.size + 1, word, activeWord == list.size)
+            }
 
-    fun navigate(options: OnboardingOptions? , mnemonic: String, mnemonicPassword: String){
-        if(options != null){
-            navigate(
-                EnterRecoveryPhraseFragmentDirections.actionEnterRecoveryPhraseFragmentToSetPinFragment(
-                    restoreWallet = args.wallet,
-                    onboardingOptions = options,
-                    mnemonic = mnemonic,
-                    password = mnemonicPassword
-                )
-            )
-        } else if (args.wallet != null && args.network != null){
-            navigate(
-                EnterRecoveryPhraseFragmentDirections.actionGlobalReviewAddAccountFragment(
-                    wallet = args.wallet!!,
-                    assetId = args.assetId!!,
-                    network = args.network!!,
-                    accountType = AccountType.TWO_OF_THREE,
-                    mnemonic = mnemonic
-                )
-            )
-        }
+            while (list.size < viewModel.recoveryPhraseSize.value) {
+                list += RecoveryPhraseWordListItem(list.size + 1, "", list.isEmpty())
+            }
+
+            viewModel.recoveryPhraseSize.value = when(list.size){
+                in 0..12 -> 12
+                in 12..24 -> 24
+                else -> {
+                    27
+                }
+            }
+
+            FastAdapterDiffUtil.set(itemAdapter.itemAdapter, list, true)
+            binding.recycler.scrollToPosition(viewModel.activeWord.value.takeIf { it >= 0 } ?: viewModel.recoveryPhrase.value.size)
+        }.launchIn(lifecycleScope)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {

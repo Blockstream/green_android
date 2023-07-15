@@ -6,15 +6,13 @@ import android.view.View
 import androidx.fragment.app.FragmentManager
 import com.blockstream.green.R
 import com.blockstream.green.databinding.VerifyAddressBottomSheetBinding
-import com.blockstream.green.ui.receive.ReceiveViewModel
-import com.blockstream.green.utils.bounceDown
 import com.blockstream.green.extensions.dismissIn
 import com.blockstream.green.extensions.errorDialog
-import dagger.hilt.android.AndroidEntryPoint
+import com.blockstream.green.ui.receive.ReceiveViewModel
+import com.blockstream.green.utils.bounceDown
 import mu.KLogging
 
 
-@AndroidEntryPoint
 class VerifyAddressBottomSheetDialogFragment : WalletBottomSheetDialogFragment<VerifyAddressBottomSheetBinding, ReceiveViewModel>() {
 
     override val screenName = "VerifyAddress"

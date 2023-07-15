@@ -13,23 +13,27 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.FileProvider
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import breez_sdk.LnInvoice
+import com.blockstream.common.AddressType
+import com.blockstream.common.MediaType
 import com.blockstream.common.Urls
+import com.blockstream.common.data.DenominatedValue
+import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.lightning.amountSatoshi
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.UserInput
 import com.blockstream.green.R
-import com.blockstream.green.data.AddressType
-import com.blockstream.green.data.DenominatedValue
-import com.blockstream.green.data.GdkEvent
-import com.blockstream.green.data.MediaType
 import com.blockstream.green.databinding.AccountAssetLayoutBinding
 import com.blockstream.green.databinding.ReceiveFragmentBinding
 import com.blockstream.green.extensions.boolean
 import com.blockstream.green.extensions.clearNavigationResult
 import com.blockstream.green.extensions.dialog
 import com.blockstream.green.extensions.errorDialog
+import com.blockstream.green.extensions.expireInAsDate
 import com.blockstream.green.extensions.getNavigationResult
 import com.blockstream.green.extensions.hideKeyboard
 import com.blockstream.green.extensions.setOnClickListener
@@ -50,7 +54,6 @@ import com.blockstream.green.ui.items.MenuListItem
 import com.blockstream.green.ui.wallet.AbstractAssetWalletFragment
 import com.blockstream.green.utils.AmountTextWatcher
 import com.blockstream.green.utils.StringHolder
-import com.blockstream.green.utils.UserInput
 import com.blockstream.green.utils.copyToClipboard
 import com.blockstream.green.utils.formatFullWithTime
 import com.blockstream.green.utils.getClipboard
@@ -59,16 +62,13 @@ import com.blockstream.green.utils.pulse
 import com.blockstream.green.utils.rotate
 import com.blockstream.green.utils.toAmountLook
 import com.blockstream.green.views.GreenAlertView
-import com.blockstream.lightning.amountSatoshi
-import com.blockstream.lightning.expireInAsDate
 import com.mikepenz.fastadapter.GenericItem
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import java.io.File
 import java.io.FileOutputStream
-import javax.inject.Inject
 
-@AndroidEntryPoint
 class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
     layout = R.layout.receive_fragment,
     menuRes = R.menu.menu_receive
@@ -81,7 +81,7 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
     override val showBalance: Boolean = false
     override val showChooseAssetAccount: Boolean = true
     override val showEditIcon: Boolean by lazy {
-        !(session.isLightningOnly && session.accounts.size == 1)
+        !(session.isLightningShortcut && session.accounts.value.size == 1)
     }
     override val isAdjustResize: Boolean
         get() = true
@@ -92,16 +92,8 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
     override val subtitle: String?
         get() = if (isSessionNetworkInitialized) wallet.name else null
 
-    @Inject
-    lateinit var viewModelFactory: ReceiveViewModel.AssistedFactory
-    val viewModel: ReceiveViewModel by viewModels {
-        ReceiveViewModel.provideFactory(
-            viewModelFactory,
-            this,
-            arguments,
-            wallet = args.wallet,
-            initAccountAsset = args.accountAsset
-        )
+    val viewModel: ReceiveViewModel by viewModel {
+        parametersOf(args.wallet, args.accountAsset)
     }
 
     override fun getBannerAlertView(): GreenAlertView = binding.banner
@@ -115,6 +107,24 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
         }
     }
 
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+        if(sideEffect is SideEffects.Success){
+            (sideEffect.data as? LnInvoice)?.also { paidInvoice ->
+                lifecycleScope.launch {
+                    val amount = (paidInvoice.amountSatoshi() ?: 0).toAmountLook(
+                        session = session,
+                        withUnit = true,
+                        withGrouping = true
+                    )
+
+                    // Move it as a side effect in VM
+                    dialog(getString(R.string.id_funds_received), getString(R.string.id_you_have_just_received_s, amount), R.drawable.ic_lightning_fill)
+                }
+            }
+        }
+    }
+
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         super.onViewCreatedGuarded(view, savedInstanceState)
 
@@ -122,24 +132,6 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
             it?.let {
                 viewModel.accountAsset = it
                 clearNavigationResult(AbstractAddAccountFragment.SET_ACCOUNT)
-            }
-        }
-
-        viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
-            consumableEvent?.getContentIfNotHandledForType<GdkEvent.SuccessWithData>()?.let {
-                (it.data as? LnInvoice)?.also { paidInvoice ->
-
-                    lifecycleScope.launch {
-
-                        val amount = (paidInvoice.amountSatoshi() ?: 0).toAmountLook(
-                            session = session,
-                            withUnit = true,
-                            withGrouping = true
-                        )
-
-                        dialog(getString(R.string.id_funds_received), getString(R.string.id_you_have_just_received_s, amount), R.drawable.ic_lightning)
-                    }
-                }
             }
         }
 
@@ -194,7 +186,7 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
         }
 
         binding.buttonNewAddress.setOnClickListener {
-            if (viewModel.onProgress.value == false) {
+            if (viewModel.onProgressAndroid.value == false) {
                 viewModel.generateAddress()
                 binding.buttonNewAddress.rotate()
             } else {
@@ -234,14 +226,14 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
         binding.buttonVerify.setOnClickListener {
             VerifyAddressBottomSheetDialogFragment.show(address = viewModel.addressAsString , fragmentManager = childFragmentManager)
 
-            if (viewModel.onProgress.value == false) {
+            if (viewModel.onProgressAndroid.value == false) {
                 viewModel.validateAddressInDevice()
             }
         }
 
         viewModel.onError.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let { throwable ->
-                errorDialog(throwable = throwable, network = network, session = session, showReport = true)
+                errorDialog(throwable = throwable, errorReport = ErrorReport.create(throwable = throwable, network = network, session = session))
             }
         }
 
@@ -251,7 +243,7 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
             })
         }
 
-        viewModel.onProgress.observe(viewLifecycleOwner) {
+        viewModel.onProgressAndroid.observe(viewLifecycleOwner) {
             // On HWWallet Block going back until address is generated
             onBackCallback.isEnabled = session.isHardwareWallet && it
             invalidateMenu()
@@ -406,7 +398,7 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
 
     override fun onPrepareMenu(menu: Menu) {
         menu.findItem(R.id.add_description).isVisible = account.isLightning
-        menu.findItem(R.id.add_description).isEnabled = !viewModel.onProgress.boolean()
+        menu.findItem(R.id.add_description).isEnabled = !viewModel.onProgressAndroid.boolean()
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {

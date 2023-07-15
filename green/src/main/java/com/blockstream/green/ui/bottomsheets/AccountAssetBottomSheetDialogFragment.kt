@@ -5,9 +5,6 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.green.gdk.assetName
-import com.blockstream.green.gdk.assetTicker
-import com.blockstream.green.gdk.balance
 import com.blockstream.green.ui.items.AccountAssetListItem
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
@@ -15,10 +12,9 @@ import com.blockstream.green.utils.observeList
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.GenericFastItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.map
 
-@AndroidEntryPoint
+
 class AccountAssetBottomSheetDialogFragment : FilterBottomSheetDialogFragment(),
     FilterableDataProvider {
 
@@ -43,7 +39,7 @@ class AccountAssetBottomSheetDialogFragment : FilterBottomSheetDialogFragment(),
                 session = session,
                 showBalance = showBalance
             )
-        }.observeList(lifecycleScope, session.accountAssetFlow.map { list ->
+        }.observeList(lifecycleScope, session.accountAsset.map { list ->
             if(isRefundSwap) {
                 list.filter { it.account.isBitcoin && !it.account.isLightning}
             }else{

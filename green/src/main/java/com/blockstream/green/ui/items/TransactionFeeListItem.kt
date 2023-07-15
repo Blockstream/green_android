@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemTransactionFeeBinding
-import com.blockstream.green.gdk.GdkSession
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.green.looks.ConfirmTransactionLook
 import com.blockstream.green.looks.ITransactionLook
 import kotlinx.coroutines.CoroutineScope

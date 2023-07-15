@@ -2,22 +2,16 @@ package com.blockstream.green.ui.wallet
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.green.data.Countly
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.managers.SessionManager
 import mu.KLogging
 
 
 abstract class AbstractAssetWalletViewModel constructor(
-    sessionManager: SessionManager,
-    walletRepository: WalletRepository,
-    countly: Countly,
-    wallet: Wallet,
+    wallet: GreenWallet,
     initAccountAsset: AccountAsset,
-) : AbstractAccountWalletViewModel(sessionManager, walletRepository, countly, wallet, initAccountAsset.account) {
+) : AbstractAccountWalletViewModel(wallet, initAccountAsset.account) {
 
     protected var _accountAssetLiveData = MutableLiveData<AccountAsset>()
     val accountAssetLiveData: LiveData<AccountAsset>
@@ -31,7 +25,7 @@ abstract class AbstractAssetWalletViewModel constructor(
         }
 
     // Override this, as accountAsset may not be updated in time
-    override val account: Account
+    override val accountValue: Account
         get() = accountAsset.account
 
     protected open val filterSubAccountsWithBalance = false

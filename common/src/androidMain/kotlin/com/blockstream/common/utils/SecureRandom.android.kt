@@ -1,5 +1,7 @@
 package com.blockstream.common.utils
 
+import kotlin.random.asKotlinRandom
+
 private val secureRandom = java.security.SecureRandom()
 
 class AndroidSecureRandom : SecureRandom {
@@ -9,12 +11,20 @@ class AndroidSecureRandom : SecureRandom {
         }
     }
 
+    override fun unsecureRandomLong(): Long {
+        return secureRandom.nextLong()
+    }
+
     override fun unsecureRandomInt(): Int {
         return secureRandom.nextInt()
     }
 
     override fun unsecureRandomInt(until: Int): Int {
         return secureRandom.nextInt(until)
+    }
+
+    override fun unsecureRandomInt(from: Int, until: Int): Int {
+        return secureRandom.asKotlinRandom().nextInt(from, until)
     }
 }
 

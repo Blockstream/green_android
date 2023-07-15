@@ -60,7 +60,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
             android:layout_height="0dp"
-            isVisible="@{vm.accountsFlow.empty}"
+            isVisible="@{vm.zeroAccounts}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -78,7 +78,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.75">
+                app:layout_constraintVertical_bias="0.5">
 
                 <!-- Make it riveAutoPlay=false to avoid "Has No Surface"!" logging  -->
                 <app.rive.runtime.kotlin.RiveAnimationView

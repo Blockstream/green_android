@@ -7,14 +7,12 @@ import androidx.fragment.app.FragmentManager
 import com.blockstream.green.databinding.NoteBottomSheetBinding
 import com.blockstream.green.extensions.openKeyboard
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
 
 interface INote{
     fun saveNote(note: String)
 }
 
-@AndroidEntryPoint
 class NoteBottomSheetDialogFragment : WalletBottomSheetDialogFragment<NoteBottomSheetBinding, AbstractWalletViewModel>() {
     override val screenName = "TransactionNote"
 

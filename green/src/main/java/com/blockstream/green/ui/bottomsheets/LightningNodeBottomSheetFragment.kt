@@ -6,6 +6,11 @@ import android.view.View
 import android.widget.Button
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
+import com.blockstream.common.lightning.channelsBalanceSatoshi
+import com.blockstream.common.lightning.inboundLiquiditySatoshi
+import com.blockstream.common.lightning.maxPayableSatoshi
+import com.blockstream.common.lightning.maxReceivableSatoshi
+import com.blockstream.common.lightning.maxSinglePaymentAmountSatoshi
 import com.blockstream.green.R
 import com.blockstream.green.databinding.LightningNodeBottomSheetBinding
 import com.blockstream.green.databinding.ListItemActionBinding
@@ -17,26 +22,18 @@ import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.blockstream.green.utils.toAmountLookOrNa
-import com.blockstream.lightning.channelsBalanceSatoshi
-import com.blockstream.lightning.inboundLiquiditySatoshi
-import com.blockstream.lightning.maxPayableSatoshi
-import com.blockstream.lightning.maxReceivableSatoshi
-import com.blockstream.lightning.maxSinglePaymentAmountSatoshi
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 
-@AndroidEntryPoint
 class LightningNodeBottomSheetFragment :
     WalletBottomSheetDialogFragment<LightningNodeBottomSheetBinding, AbstractWalletViewModel>() {
     override val screenName = "LightningNodeState"
-
-
+    
     override fun inflate(layoutInflater: LayoutInflater) =
         LightningNodeBottomSheetBinding.inflate(layoutInflater)
 
@@ -44,6 +41,13 @@ class LightningNodeBottomSheetFragment :
         super.onViewCreated(view, savedInstanceState)
 
         val itemAdapter = FastItemAdapter<GenericItem>()
+
+        val showRecoveryPhrase = ActionListItem(
+            buttonOutline = StringHolder(R.string.id_show_recovery_phrase),
+        )
+        val closeChannel = ActionListItem(
+            buttonText = StringHolder(R.string.id_close_channel),
+        )
 
         session.lightningSdk.nodeInfoStateFlow.onEach {
             val list = mutableListOf<GenericItem>()
@@ -101,11 +105,11 @@ class LightningNodeBottomSheetFragment :
                 )
             }
 
+            list += showRecoveryPhrase
+
             if(isDevelopmentFlavor) {
                 if(it.channelsBalanceSatoshi() > 0){
-                    list += ActionListItem(
-                        button = StringHolder(R.string.id_close_channel),
-                    )
+                    list += closeChannel
                 }
             }
 
@@ -113,12 +117,20 @@ class LightningNodeBottomSheetFragment :
 
         }.launchIn(lifecycleScope)
 
-
         val fastAdapter = FastAdapter.with(itemAdapter)
 
-        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.button }) { view, _, _, _ ->
-            (parentFragment as? AccountOverviewFragment)?.viewModel?.closeChannel()
-            (view as? Button)?.isEnabled = false
+        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.buttonOutline }) { view, _, _, item ->
+            if (item == showRecoveryPhrase) {
+                (parentFragment as? AccountOverviewFragment)?.showLightningRecoveryPhrase()
+                dismiss()
+            }
+        }
+
+        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.buttonText }) { view, _, _, item ->
+            if (item == closeChannel) {
+                (parentFragment as? AccountOverviewFragment)?.viewModel?.closeChannel()
+                (view as? Button)?.isEnabled = false
+            }
         }
 
         binding.recycler.apply {

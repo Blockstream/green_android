@@ -7,7 +7,7 @@ import com.blockstream.common.BTC_UNIT
 import com.blockstream.common.MBTC_UNIT
 import com.blockstream.common.SATOSHI_UNIT
 import com.blockstream.common.UBTC_UNIT
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.gdk.params.Convert
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -33,7 +33,7 @@ data class Balance constructor(
     @SerialName("is_current") val isCurrent: Boolean? = null,
     var assetValue: String? = null,
     var assetInfo: Asset? = null
-): GdkJson<Balance>(), Parcelable {
+): GreenJson<Balance>(), Parcelable {
     override fun kSerializer() = serializer()
 
     val valueInMainUnit: String get() = assetValue ?: btc

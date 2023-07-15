@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk.params
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -11,7 +11,7 @@ data class TransactionParams(
     @SerialName("first") val offset: Int = 0,
     @SerialName("count") val limit: Int = TRANSACTIONS_PER_PAGE,
     @SerialName("num_confs") val confirmations: Int = 0,
-) : GdkJson<TransactionParams>() {
+) : GreenJson<TransactionParams>() {
 
     override fun kSerializer() = serializer()
 

@@ -6,11 +6,11 @@ plugins {
 
 android {
     namespace = "com.blockstream.hardware"
-    compileSdk = 34
+    compileSdk = libs.versions.androidCompileSdk.get().toInt()
     buildToolsVersion = libs.versions.buildTools.get()
 
     defaultConfig {
-        minSdk = 23
+        minSdk = libs.versions.androidMinSdk.get().toInt()
         consumerProguardFiles("consumer-rules.pro")
     }
     compileOptions {
@@ -25,7 +25,8 @@ kotlin {
 
 dependencies {
     /**  --- Modules ---------------------------------------------------------------------------- */
-    implementation(project(":crypto"))
+    implementation(project(":common"))
+    implementation(project(":gdk"))
     implementation(project(":jade"))
     /** ----------------------------------------------------------------------------------------- */
 

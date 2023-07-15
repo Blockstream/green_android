@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
-        <import type="com.blockstream.green.extensions.ExtensionsKt" />
+        <import type="com.blockstream.common.extensions.StringExtensionsKt" />
 
         <variable
             name="vm"
@@ -300,7 +299,7 @@
 
         <TextView
             android:id="@+id/errorTextView"
-            gdkError="@{ExtensionsKt.startsWith(vm.handledGdkErrors, vm.transactionError) ? null : vm.transactionError}"
+            gdkError="@{StringExtensionsKt.startsWith(vm.handledGdkErrors, vm.transactionError) ? null : vm.transactionError}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -320,14 +319,14 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
-            android:enabled="@{(vm.transactionError == null) &amp;&amp; !vm.onProgress}"
+            android:enabled="@{(vm.transactionError == null) &amp;&amp; !vm.onProgressAndroid}"
             android:text="@string/id_next"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
-            isVisible="@{vm.onProgress}"
+            isVisible="@{vm.onProgressAndroid}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:indeterminate="true"

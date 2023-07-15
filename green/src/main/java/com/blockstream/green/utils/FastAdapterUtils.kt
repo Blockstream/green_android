@@ -42,35 +42,35 @@ fun <Model, Item : GenericItem> ModelAdapter<Model, Item>.observeList(
     return this
 }
 
-fun <Model, Item : GenericItem> ModelAdapter<Model, Item>.observeMap(
-    lifecycleOwner: LifecycleOwner, liveData: LiveData<Map<*, *>>,
-    toModel: (Map.Entry<*, *>) -> Model,
-    observer: ((Map<Model, Item>) -> Unit)? = null,
+fun <Model, Item : GenericItem, T> ModelAdapter<Model, Item>.observeLiveData(
+    lifecycleOwner: LifecycleOwner, liveData: LiveData<T>,
+    toList: (T) -> List<Model>,
+    observer: ((T) -> Unit)? = null,
 ): ModelAdapter<Model, Item> {
     liveData.observe(lifecycleOwner) {
-        val list = it.map {
-            toModel(it)
-        }
-
-        FastAdapterDiffUtil.set(this, intercept(list), true)
-
-        observer?.invoke(it as Map<Model, Item>)
+        FastAdapterDiffUtil.set(this, intercept(toList(it)), true)
+        observer?.invoke(it)
     }
     return this
 }
 
-fun <Model, Item : GenericItem> ModelAdapter<Model, Item>.observeMap(
+fun <Model, Item : GenericItem, T> ModelAdapter<Model, Item>.observeFlow(
     scope: CoroutineScope,
-    flow: Flow<Map<*, *>>,
-    toModel: (Map.Entry<*, *>) -> Model,
-    observer: ((Map<Model, Item>) -> Unit)? = null,
+    flow: Flow<T>,
+    useDiffUtil: Boolean = true,
+    toList: (T) -> List<Model>,
+    observer: ((T) -> Unit)? = null,
 ): ModelAdapter<Model, Item> {
     flow.onEach {
-        val list = it.map {
-            toModel(it)
+        toList(it).also {
+            if(useDiffUtil) {
+                FastAdapterDiffUtil.set(this, intercept(it), true)
+            }else{
+                set(it)
+            }
         }
-        FastAdapterDiffUtil.set(this, intercept(list), true)
-        observer?.invoke(it as Map<Model, Item>)
+        observer?.invoke(it)
+
     }.launchIn(scope)
     return this
 }

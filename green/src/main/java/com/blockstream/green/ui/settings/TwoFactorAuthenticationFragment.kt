@@ -3,21 +3,19 @@ package com.blockstream.green.ui.settings
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.R
-import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.TwofactorAuthenticationFragmentBinding
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.ui.wallet.WalletViewModel
 import com.google.android.material.tabs.TabLayoutMediator
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-@AndroidEntryPoint
 class TwoFactorAuthenticationFragment : AbstractWalletFragment<TwofactorAuthenticationFragmentBinding>(
     R.layout.twofactor_authentication_fragment,
     0
@@ -30,10 +28,8 @@ class TwoFactorAuthenticationFragment : AbstractWalletFragment<TwofactorAuthenti
     override val subtitle: String
         get() = getString(R.string.id_multisig)
 
-    @Inject
-    lateinit var viewModelFactory: WalletViewModel.AssistedFactory
-    val viewModel: WalletViewModel by viewModels {
-        WalletViewModel.provideFactory(viewModelFactory, args.wallet)
+    val viewModel: WalletViewModel by viewModel {
+        parametersOf(args.wallet)
     }
 
     override fun getWalletViewModel(): AbstractWalletViewModel = viewModel
@@ -62,7 +58,7 @@ class TwoFactorAuthenticationFragment : AbstractWalletFragment<TwofactorAuthenti
 }
 
 class TwoFactorAuthenticationPagerAdapter(
-    val wallet: Wallet,
+    val wallet: GreenWallet,
     val fragment: Fragment,
     val networks: List<Network>
 ) : FragmentStateAdapter(fragment) {

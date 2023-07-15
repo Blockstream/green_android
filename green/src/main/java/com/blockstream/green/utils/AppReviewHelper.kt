@@ -21,12 +21,12 @@ object AppReviewHelper {
         countly: Countly
     ): Boolean {
         // Feature is not enabled
-        if(!settingsManager.rateGooglePlayEnabled){
+        if(!settingsManager.storeRateEnabled){
             return false
         }
 
         // Get value from Countly
-        val askEveryMonths = countly.getRemoteConfigValueAsLong("app_review") ?: 0
+        val askEveryMonths = countly.getRemoteConfigValueAsNumber("app_review") ?: 0
 
         // Feature is not enabled in Countly
         if(askEveryMonths == 0L){

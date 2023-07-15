@@ -2,8 +2,7 @@ package com.blockstream.gms
 
 import android.content.Context
 import com.blockstream.base.ZendeskSdk
-import com.blockstream.base.zendeskSecurityPolicy
-import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.data.ErrorReport
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
 import mu.KLogging
@@ -30,10 +29,7 @@ class ZendeskSdkImpl constructor(context: Context, clientId: String) : ZendeskSd
         subject: String?,
         email: String,
         message: String,
-        error: String,
-        throwable: Throwable?, // No need to pass
-        network: Network?,
-        hw: String?
+        errorReport: ErrorReport
     ) {
         val request = CreateRequest()
 
@@ -42,11 +38,9 @@ class ZendeskSdkImpl constructor(context: Context, clientId: String) : ZendeskSd
         request.description = message.takeIf { it.isNotBlank() } ?: "{No Message}"
         request.customFields = listOfNotNull(
             appVersion?.let { CustomField( 900009625166, it) }, // App Version
-            CustomField( 21409433258649, throwable?.message ?: error), // Logs
-            hw?.let { CustomField(900006375926L, it) }, // Hardware Wallet
-            network?.let {
-                CustomField(6167739898649L, it.zendeskSecurityPolicy())
-            }
+            CustomField( 21409433258649, errorReport.error), // Logs
+            errorReport.zendeskHardwareWallet?.let { CustomField(900006375926L, it) }, // Hardware Wallet
+            errorReport.zendeskSecurityPolicy?.let { CustomField(6167739898649L, it) } // Policy
         )
 
         AnonymousIdentity.Builder().apply {

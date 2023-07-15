@@ -3,9 +3,15 @@ package com.blockstream.common.data
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.putStringOrRemove
 import com.russhwolf.settings.Settings
 
+fun Settings.putStringOrRemove(key: String, value: String?) {
+    if (value == null) {
+        this.remove(key)
+    } else {
+        putString(key, value)
+    }
+}
 
 @Parcelize
 data class ApplicationSettings constructor(
@@ -167,11 +173,11 @@ enum class ScreenLockSetting constructor(val seconds: Int){
         }
 
         fun byPosition(position: Int): ScreenLockSetting{
-            return values()[position]
+            return entries[position]
         }
 
         fun getStringList(): List<String>{
-            return listOf("id_lock_immediately", "R.string.id_lock_after_1_minute")
+            return listOf("id_lock_immediately", "id_lock_after_1_minute")
         }
     }
 }

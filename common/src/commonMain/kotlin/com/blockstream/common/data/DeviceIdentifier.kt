@@ -1,0 +1,35 @@
+package com.blockstream.common.data
+
+import com.blockstream.common.devices.ConnectionType
+import com.blockstream.common.gdk.GreenJson
+import com.blockstream.common.gdk.device.DeviceBrand
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+
+@Serializable
+data class DeviceIdentifier constructor(
+    @SerialName("name") val name: String,
+    @SerialName("unique_identifier") val uniqueIdentifier: String,
+    @SerialName("brand") val brand: DeviceBrand,
+    @SerialName("connection") val connectionType: ConnectionType,
+): GreenJson<DeviceIdentifier>() {
+
+    override fun kSerializer() = serializer()
+
+    companion object{
+        fun fromString(jsonString: String): List<DeviceIdentifier>? = try{
+            json.decodeFromString(jsonString)
+        }catch(e: Exception){
+            e.printStackTrace()
+            null
+        }
+    }
+}
+
+fun List<DeviceIdentifier>.toJson(): String {
+    return Json.encodeToString(this)
+}
+
+fun String.toDeviceIdentifierList(): List<DeviceIdentifier>? = DeviceIdentifier.fromString(this)

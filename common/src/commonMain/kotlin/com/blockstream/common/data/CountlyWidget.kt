@@ -1,6 +1,6 @@
 package com.blockstream.common.data
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.serializers.HtmlEntitiesSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -17,7 +17,7 @@ data class CountlyWidget(
     @SerialName("msg") val msg: Messages,
     @SerialName("appearance") val appearance: Appearance,
     @SerialName("followUpType") val followUpType: FollowUpType? = null,
-) : GdkJson<CountlyWidget>() {
+) : GreenJson<CountlyWidget>() {
     override fun keepJsonElement() = true
 
     override fun kSerializer() = serializer()
@@ -54,7 +54,7 @@ data class Messages(
     @SerialName("followUpPassive") val followUpPassive: String = "",
     @Serializable(with = HtmlEntitiesSerializer::class)
     @SerialName("followUpDetractor") val followUpDetractor: String = "",
-) : GdkJson<Messages>() {
+) : GreenJson<Messages>() {
     override fun kSerializer() = serializer()
 }
 
@@ -66,7 +66,7 @@ data class Appearance(
     @SerialName("notLikely") val notLikely: String? = null,
     @Serializable(with = HtmlEntitiesSerializer::class)
     @SerialName("likely") val likely: String? = null,
-) : GdkJson<Appearance>() {
+) : GreenJson<Appearance>() {
     override fun kSerializer() = serializer()
 }
 
@@ -83,7 +83,7 @@ data class Question(
     @SerialName("notLikely") val notLikely: String? = null,
     @Serializable(with = HtmlEntitiesSerializer::class)
     @SerialName("likely") val likely: String? = null,
-) : GdkJson<Question>() {
+) : GreenJson<Question>() {
     override fun kSerializer() = serializer()
 }
 

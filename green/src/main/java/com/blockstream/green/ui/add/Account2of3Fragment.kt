@@ -2,11 +2,11 @@ package com.blockstream.green.ui.add
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.data.SetupArgs
 import com.blockstream.green.R
 import com.blockstream.green.databinding.Account2of3FragmentBinding
 import com.blockstream.green.gdk.getNetworkIcon
@@ -19,10 +19,9 @@ import com.blockstream.green.utils.StringHolder
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-@AndroidEntryPoint
 class Account2of3Fragment : AbstractWalletFragment<Account2of3FragmentBinding>(
     R.layout.account_2of3_fragment, 0
 ) {
@@ -40,10 +39,8 @@ class Account2of3Fragment : AbstractWalletFragment<Account2of3FragmentBinding>(
     val network: Network
         get() = args.network
 
-    @Inject
-    lateinit var viewModelFactory: WalletViewModel.AssistedFactory
-    val viewModel: WalletViewModel by viewModels {
-        WalletViewModel.provideFactory(viewModelFactory, args.wallet)
+    val viewModel: WalletViewModel by viewModel {
+        parametersOf(args.wallet)
     }
 
     enum class TwoOfThreeRecovery {
@@ -59,19 +56,25 @@ class Account2of3Fragment : AbstractWalletFragment<Account2of3FragmentBinding>(
                     TwoOfThreeRecovery.NEW_RECOVERY -> {
                         navigate(
                             Account2of3FragmentDirections.actionAccount2of3FragmentToRecoveryIntroFragment(
-                                wallet = args.wallet,
-                                assetId = args.assetId,
-                                network = network
+                                setupArgs = SetupArgs(
+                                    mnemonic = "",
+                                    greenWallet = args.wallet,
+                                    assetId = args.assetId,
+                                    network = network,
+                                    accountType = AccountType.TWO_OF_THREE
+                                )
                             )
                         )
                     }
                     TwoOfThreeRecovery.EXISTING_RECOVERY -> {
                         navigate(
                             Account2of3FragmentDirections.actionAccount2of3FragmentToEnterRecoveryPhraseFragment(
-                                wallet = args.wallet,
-                                assetId = args.assetId,
-                                network = network,
-                                isAddAccount = true
+                                setupArgs = SetupArgs(
+                                    greenWallet = args.wallet,
+                                    assetId = args.assetId,
+                                    network = args.network,
+                                    accountType = AccountType.TWO_OF_THREE
+                                ),
                             )
                         )
                     }

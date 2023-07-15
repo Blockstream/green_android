@@ -3,21 +3,16 @@ package com.blockstream.green.ui.settings
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
-import com.blockstream.green.data.GdkEvent
 import com.blockstream.green.databinding.ChangePinFragmentBinding
+import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.extensions.errorDialog
-import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.views.GreenPinViewListener
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-@AndroidEntryPoint
 class ChangePinFragment : AbstractWalletFragment<ChangePinFragmentBinding>(R.layout.change_pin_fragment, menuRes = 0) {
 
     val args : WalletSettingsFragmentArgs by navArgs()
@@ -25,10 +20,8 @@ class ChangePinFragment : AbstractWalletFragment<ChangePinFragmentBinding>(R.lay
 
     override val screenName = "WalletSettingsChangePIN"
 
-    @Inject
-    lateinit var viewModelFactory: WalletSettingsViewModel.AssistedFactory
-    val viewModel: WalletSettingsViewModel by viewModels {
-        WalletSettingsViewModel.provideFactory(viewModelFactory, args.wallet)
+    val viewModel: WalletSettingsViewModel by viewModel {
+        parametersOf(args.wallet)
     }
 
     override fun getWalletViewModel(): AbstractWalletViewModel = viewModel
@@ -58,13 +51,6 @@ class ChangePinFragment : AbstractWalletFragment<ChangePinFragmentBinding>(R.lay
         viewModel.onError.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let {
                 errorDialog(it)
-            }
-        }
-
-        viewModel.onEvent.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandledForType<GdkEvent.Success>()?.let {
-                snackbar(R.string.id_you_have_successfully_changed)
-                findNavController().popBackStack()
             }
         }
     }

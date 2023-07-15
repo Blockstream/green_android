@@ -5,9 +5,11 @@
 
     <data>
 
+        <import type="androidx.lifecycle.FlowLiveDataConversions" />
+        <import type="com.blockstream.common.data.DataState"/>
         <variable
             name="vm"
-            type="com.blockstream.green.ui.wallet.WalletsViewModel" />
+            type="com.blockstream.common.models.wallets.WalletsViewModel" />
     </data>
 
     <merge>
@@ -18,7 +20,7 @@
             android:orientation="vertical">
 
             <TextView
-                isVisible="@{!vm.softwareWalletsLiveData.empty}"
+                isVisible="@{!vm.softwareWallets.isEmpty()}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
@@ -39,7 +41,7 @@
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
             <TextView
-                isVisible="@{!vm.ephemeralWalletsLiveData.empty}"
+                isVisible="@{!vm.ephemeralWallets.isEmpty()}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
@@ -60,7 +62,7 @@
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
             <TextView
-                isVisible="@{!vm.hardwareWalletsLiveData.empty}"
+                isVisible="@{!vm.hardwareWallets.isEmpty()}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"

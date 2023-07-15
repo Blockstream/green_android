@@ -2,6 +2,8 @@ package com.blockstream.jade;
 
 import android.util.Log;
 
+import com.blockstream.common.interfaces.HttpRequestHandler;
+import com.blockstream.common.interfaces.HttpRequestProvider;
 import com.blockstream.jade.data.VersionInfo;
 import com.blockstream.jade.entities.Commitment;
 import com.blockstream.jade.entities.JadeError;
@@ -24,7 +26,6 @@ import java.util.Random;
 
 import io.reactivex.rxjava3.exceptions.UndeliverableException;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
-import kotlinx.coroutines.flow.MutableStateFlow;
 import kotlinx.coroutines.flow.StateFlow;
 
 /**
@@ -58,7 +59,7 @@ public abstract class JadeAPIJava {
 
     final JadeInterface jade;
     private final Random idgen;
-    private final HttpRequestProvider requestProvider;
+    private final com.blockstream.common.interfaces.HttpRequestProvider requestProvider;
 
     String efusemac;
     private boolean sync_error;

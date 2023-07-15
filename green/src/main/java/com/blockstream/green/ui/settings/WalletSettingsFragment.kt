@@ -1,18 +1,19 @@
 package com.blockstream.green.ui.settings
 
-import android.content.SharedPreferences
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.Urls
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.SettingsNotification
+import com.blockstream.common.data.SetupArgs
+import com.blockstream.common.navigation.LogoutReason
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
@@ -29,6 +30,7 @@ import com.blockstream.green.extensions.getNavigationResult
 import com.blockstream.green.extensions.showChoiceDialog
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.gdk.getNetworkIcon
+import com.blockstream.green.ui.dialogs.LightningShortcutDialogFragment
 import com.blockstream.green.ui.items.ActionListItem
 import com.blockstream.green.ui.items.PreferenceListItem
 import com.blockstream.green.ui.items.TitleListItem
@@ -48,11 +50,12 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
-import dagger.hilt.android.AndroidEntryPoint
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import java.security.InvalidAlgorithmParameterException
-import javax.inject.Inject
 
-@AndroidEntryPoint
+
 class WalletSettingsFragment :
     AbstractWalletFragment<WalletSettingsFragmentBinding>(R.layout.wallet_settings_fragment, 0) {
     val args: WalletSettingsFragmentArgs by navArgs()
@@ -93,16 +96,10 @@ class WalletSettingsFragment :
     val network: Network
         get() = networkOrNull!!
 
-    @Inject
-    lateinit var sharedPreferences: SharedPreferences
+    private val appKeystore: AppKeystore by inject()
 
-    @Inject
-    lateinit var appKeystore: AppKeystore
-
-    @Inject
-    lateinit var viewModelFactory: WalletSettingsViewModel.AssistedFactory
-    val viewModel: WalletSettingsViewModel by viewModels {
-        WalletSettingsViewModel.provideFactory(viewModelFactory, args.wallet)
+    val viewModel: WalletSettingsViewModel by viewModel {
+        parametersOf(args.wallet)
     }
 
     override val title: String?
@@ -197,7 +194,7 @@ class WalletSettingsFragment :
             { _: View?, _: IAdapter<GenericItem>, iItem: GenericItem, _: Int ->
                 when (iItem) {
                     logoutPreference -> {
-                        viewModel.logout(AbstractWalletViewModel.LogoutReason.USER_ACTION)
+                        viewModel.logout(LogoutReason.USER_ACTION)
                     }
                     archivedAccountsPreference -> {
                         navigate(
@@ -208,7 +205,7 @@ class WalletSettingsFragment :
                     }
                     supportIdPreference -> {
                         viewModel.supportId?.also {
-                            copyToClipboard("AccountID", it, requireContext())
+                            copyToClipboard("SupportId", it, requireContext())
                             snackbar(R.string.id_copied_to_clipboard)
                         }
                     }
@@ -245,7 +242,7 @@ class WalletSettingsFragment :
                     recoveryPreference -> {
                         navigate(
                             WalletSettingsFragmentDirections.actionWalletSettingsFragmentToRecoveryIntroFragment(
-                                wallet = wallet, isAuthenticateUser = true
+                                setupArgs = SetupArgs(mnemonic = "", greenWallet = wallet, isShowRecovery = true)
                             )
                         )
                     }
@@ -388,7 +385,7 @@ class WalletSettingsFragment :
     }
 
     private fun updateBiometricsSubtitle() {
-        val canUseBiometrics = appKeystore.canUseBiometrics(requireContext())
+        val canUseBiometrics = appKeystore.canUseBiometrics()
 
         biometricsPreference.subtitle = StringHolder(
             if (canUseBiometrics) {
@@ -449,12 +446,10 @@ class WalletSettingsFragment :
 
             if (!session.isWatchOnly) {
 
-                if (!session.isLightningOnly) {
-                    list += archivedAccountsPreference
-                }
+                list += archivedAccountsPreference
 
                 // No support for Liquid Singlesig yet
-                if (session.activeSessions.firstOrNull { (it.isMultisig || (it.isSinglesig && it.isBitcoin)) } != null && !session.isLightningOnly) {
+                if (session.activeSessions.firstOrNull { (it.isMultisig || (it.isSinglesig && it.isBitcoin)) } != null && !session.isLightningShortcut) {
                     // Disable it until is supported by GDK
                     list += watchOnlyPreference
                 }
@@ -487,7 +482,7 @@ class WalletSettingsFragment :
 
             list += versionPreference
 
-            if(hasMultisig) {
+            if(hasMultisig || session.hasLightning) {
                 list += supportIdPreference
             }
         }
@@ -498,8 +493,7 @@ class WalletSettingsFragment :
     }
 
     override fun getWalletViewModel(): AbstractWalletViewModel = viewModel
-
-
+    
     private fun notifyDataSetChanged() {
         binding.recycler.adapter?.notifyDataSetChanged()
     }
@@ -562,7 +556,7 @@ class WalletSettingsFragment :
         if (appKeystore.isBiometricsAuthenticationRequired()) {
             authenticateWithBiometrics(object : AuthenticationCallback(fragment = this) {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    enableBiometrics(onlyDeviceCredentials = false)
+                    enableBiometrics(onlyDeviceCredentials = true)
                 }
             }, onlyDeviceCredentials = onlyDeviceCredentials)
             return

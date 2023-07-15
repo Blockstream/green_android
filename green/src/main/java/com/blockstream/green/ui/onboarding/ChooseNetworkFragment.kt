@@ -2,12 +2,14 @@ package com.blockstream.green.ui.onboarding
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.R
-import com.blockstream.green.data.OnboardingOptions
+import com.blockstream.common.data.SetupArgs
 import com.blockstream.green.databinding.ChooseNetworkFragmentBinding
+import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.ui.items.NetworkListItem
 import com.blockstream.green.ui.items.TitleExpandableListItem
 import com.mikepenz.fastadapter.GenericItem
@@ -15,9 +17,7 @@ import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.fastadapter.expandable.getExpandableExtension
 import com.mikepenz.fastadapter.ui.utils.StringHolder
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class ChooseNetworkFragment :
     AbstractOnboardingFragment<ChooseNetworkFragmentBinding>(
         R.layout.choose_network_fragment,
@@ -28,17 +28,21 @@ class ChooseNetworkFragment :
 
     override val screenName = "OnBoardChooseNetwork"
 
+    val viewModel: AppViewModelAndroid by viewModels()
+
+    override fun getAppViewModel() = viewModel
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        options = args.onboardingOptions
+        setupArgs = args.setupArgs
 
         val fastItemAdapter = createNetworkAdapter()
 
         fastItemAdapter.onClickListener = { _, _, item: GenericItem, _ ->
             when (item) {
                 is NetworkListItem -> {
-                    options?.apply {
+                    setupArgs?.apply {
                         if(isRestoreFlow){
                             navigate(createCopyForNetwork(gdk = gdk, item.network, isSinglesig == true))
                         }else{
@@ -63,7 +67,7 @@ class ChooseNetworkFragment :
         fastItemAdapter.getExpandableExtension()
 
         fastItemAdapter.add(NetworkListItem(Network.GreenMainnet,"Bitcoin", getCaption(Network.GreenMainnet)))
-        if(args.onboardingOptions.isSinglesig == false) {
+        if(args.setupArgs.isSinglesig == false) {
             fastItemAdapter.add(
                 NetworkListItem(
                     Network.GreenLiquid,
@@ -83,7 +87,7 @@ class ChooseNetworkFragment :
                 )
             )
 
-            if(args.onboardingOptions.isSinglesig == false) {
+            if(args.setupArgs.isSinglesig == false) {
                 expandable.subItems.add(
                     NetworkListItem(
                         Network.GreenTestnetLiquid,
@@ -117,10 +121,10 @@ class ChooseNetworkFragment :
         }
     }
 
-    private fun navigate(options: OnboardingOptions) {
+    private fun navigate(setupArgs: SetupArgs) {
         navigate(
-            ChooseNetworkFragmentDirections.actionChooseNetworkFragmentToLoginWatchOnlyFragment(
-                options
+            ChooseNetworkFragmentDirections.actionChooseNetworkFragmentToWatchOnlyCredentialsFragment(
+                setupArgs
             )
         )
     }

@@ -4,13 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
-import androidx.navigation.fragment.findNavController
+import com.blockstream.common.events.Events
 import com.blockstream.green.databinding.PassphraseBottomSheetBinding
-import com.blockstream.green.extensions.setNavigationResult
-import dagger.hilt.android.AndroidEntryPoint
+import com.blockstream.green.ui.AppFragment
 import mu.KLogging
 
-@AndroidEntryPoint
+
 class PassphraseBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<PassphraseBottomSheetBinding>(){
     override val screenName = "Passphrase"
 
@@ -24,14 +23,12 @@ class PassphraseBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<Pas
         isCancelable = false
 
         binding.buttonContinue.setOnClickListener {
-            setNavigationResult(result = binding.passphrase?.trim(), key = PASSPHRASE_RESULT, destinationId = findNavController().currentDestination?.id)
+            (requireParentFragment() as? AppFragment<*>)?.getGreenViewModel()?.postEvent(Events.DeviceRequestResponse(binding.passphrase?.trim() ?: ""))
             dismiss()
         }
     }
 
     companion object : KLogging() {
-        const val PASSPHRASE_RESULT = "PASSPHRASE_RESULT"
-
         fun show(fragmentManager: FragmentManager){
             show(PassphraseBottomSheetDialogFragment(), fragmentManager)
         }

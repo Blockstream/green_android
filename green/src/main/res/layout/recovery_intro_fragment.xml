@@ -5,14 +5,9 @@
     tools:context=".ui.recovery.RecoveryIntroFragment">
 
     <data>
-
         <variable
-            name="securityChecked"
-            type="boolean" />
-
-        <variable
-            name="showRecoveryLength"
-            type="boolean" />
+            name="vm"
+            type="com.blockstream.common.models.recovery.RecoveryCheckViewModel" />
     </data>
 
 
@@ -154,7 +149,7 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/materialCardView3"
-            isVisible="@{showRecoveryLength}"
+            isVisible="@{vm.setupArgs.generateMnemonic}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"

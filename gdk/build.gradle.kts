@@ -5,11 +5,11 @@ plugins {
 
 android {
     namespace = "com.blockstream.gdk"
-    compileSdk = 34
+    compileSdk = libs.versions.androidCompileSdk.get().toInt()
     buildToolsVersion = libs.versions.buildTools.get()
 
     defaultConfig {
-        minSdk = 23
+        minSdk = libs.versions.androidMinSdk.get().toInt()
         consumerProguardFiles("consumer-rules.pro")
     }
     compileOptions {
@@ -24,7 +24,7 @@ kotlin {
 
 task("fetchAndroidBinaries") {
     doFirst{
-        val exists = File("./gdk/src/main/jniLibs").exists()
+        val exists = project.file("src/main/jniLibs").exists()
         if (!exists) {
             exec {
                 commandLine("./fetch_android_binaries.sh")

@@ -1,4 +1,6 @@
+
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
@@ -6,6 +8,20 @@ plugins {
     id("com.android.library")
     id("kotlinx-serialization")
     id("kotlin-parcelize")
+    alias(libs.plugins.google.devtools.ksp)
+    alias(libs.plugins.kmp.nativecoroutines)
+    alias(libs.plugins.app.cash.sqldelight)
+}
+
+apply(plugin = "kotlinx-atomicfu")
+
+sqldelight {
+    databases {
+        create("GreenDB") {
+            packageName.set("com.blockstream.common.database")
+        }
+    }
+    linkSqlite.set(true)
 }
 
 @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -14,7 +30,7 @@ kotlin {
     targetHierarchy.default()
 
     androidTarget {
-        compilations.all {
+        compilations.configureEach {
             kotlinOptions {
                 jvmTarget = JavaVersion.VERSION_17.majorVersion
             }
@@ -25,6 +41,7 @@ kotlin {
     listOf(
         iosArm64(),
         iosSimulatorArm64(),
+        iosX64(),
     ).forEach {
         it.binaries.framework {
             baseName = "common"
@@ -33,6 +50,7 @@ kotlin {
         }
 
         val platform = when (it.targetName) {
+            "iosX64" -> "ios_simulator_x86"
             "iosSimulatorArm64" -> "ios_simulator_arm64"
             "iosArm64" -> "ios_arm64"
             else -> error("Unsupported target $name")
@@ -53,10 +71,13 @@ kotlin {
                 optIn("kotlinx.ExperimentalStdlibApi")
                 optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
                 optIn("kotlinx.cinterop.ExperimentalForeignApi")
+                optIn("kotlin.io.encoding.ExperimentalEncodingApi")
+                optIn("kotlin.experimental.ExperimentalObjCName")
             }
         }
 
         val commonMain by getting {
+            kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
             dependencies {
                 /**  --- Kotlin & KotlinX ------------------------------------------------------------------- */
                 api(libs.kotlinx.coroutines.core)
@@ -65,40 +86,85 @@ kotlin {
                 api(libs.kotlinx.datetime)
                 /** ----------------------------------------------------------------------------------------- */
 
-                api("com.benasher44:uuid:0.7.1")
-                api("com.russhwolf:multiplatform-settings:1.0.0")
-                api("com.squareup.okio:okio:3.3.0") // Filesystem
-                api("co.touchlab:kermit:2.0.0-RC4") //Add latest version
-                api("com.arkivanov.essenty:parcelable:1.1.0") // parcelable
-                api("de.peilicke.sascha:kase64:1.0.6") // base64
-                api("com.mohamedrejeb.ksoup:ksoup-entites:0.1.2") // html entities
+                /**  --- Koin   ----------------------------------------------------------------------------- */
+                api(libs.koin.core)
+                api(libs.koin.annotations)
+                /** ----------------------------------------------------------------------------------------- */
+
+                /**  --- Breez ------------------------------------------------------------------------------ */
+                api(libs.breez.sdk.kmp)
+                /** ----------------------------------------------------------------------------------------- */
+
+                /**  --- Misc. ------------------------------------------------------------------------------ */
+                api(libs.sqldelight.coroutines.extensions)
+                api(libs.kmm.viewmodel)
+                api(libs.stately.concurrent.collections)
+                api(libs.uuid)
+                api(libs.multiplatform.settings)
+                api(libs.okio) // Filesystem
+                api(libs.kermit) //Add latest version
+                api(libs.parcelable) // parcelable
+                api(libs.state.keeper)
+                api(libs.kase64) // base64
+                api(libs.ksoup.entites) // html entities
+                /** ----------------------------------------------------------------------------------------- */
             }
         }
 
-        getByName("androidMain"){
+        val androidMain by getting {
             dependencies {
                 implementation(project(":gdk"))
+                implementation(libs.androidx.lifecycle.viewmodel.ktx)
+                implementation(libs.koin.android)
+                implementation(libs.sqldelight.android.driver)
             }
         }
 
-        getByName("iosMain"){
-            dependsOn(commonMain)
+        val iosMain by getting {
+            dependencies {
+                implementation(libs.stately.common) // until this is fixed https://github.com/touchlab/Stately/issues/93
+                implementation(libs.sqldelight.native.driver)
+            }
         }
 
-        getByName("commonTest"){
+        val iosArm64Main by getting {
+            kotlin.srcDir("build/generated/ksp/metadata/iosArm64Main/kotlin")
+        }
+
+        val iosSimulatorArm64Main by getting {
+            kotlin.srcDir("build/generated/ksp/metadata/iosSimulatorArm64Main/kotlin")
+        }
+
+        val iosX64Main by getting {
+            kotlin.srcDir("build/generated/ksp/metadata/iosX64Main/kotlin")
+        }
+
+        val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
+                implementation(libs.kotlinx.coroutines.test)
+                implementation(libs.koin.test)
+            }
+        }
+
+        val androidUnitTest by getting {
+            dependencies {
                 implementation(libs.junit)
+                implementation(libs.sqldelight.sqlite.driver)
+                implementation(libs.kotlinx.coroutines.test)
+                implementation(libs.turbine)
+                implementation(libs.koin.test)
+                implementation(libs.koin.test.junit4)
+                implementation(libs.mockk)
             }
         }
     }
 }
 
-// assembleXCFramework
-
 task("fetchIosBinaries") {
     doFirst{
-        val exists = File("./common/src/include/").exists() && File("./common/src/libs/").exists()
+
+        val exists = project.file("src/include").exists() && project.file("src/libs").exists()
         if (!exists) {
             exec {
                 commandLine("./fetch_ios_binaries.sh")
@@ -110,21 +176,43 @@ task("fetchIosBinaries") {
     outputs.upToDateWhen { false }
 }
 
-afterEvaluate {
-    tasks.forEach {
-        if(it.name.contains("cinterop")){
-            it.dependsOn("fetchIosBinaries")
-        }
+tasks.configureEach {
+    if(name.contains("cinterop")){
+        dependsOn("fetchIosBinaries")
+    }
+}
+
+// https://kotlinlang.org/docs/ksp-multiplatform.html
+// https://github.com/InsertKoinIO/hello-kmp/blob/annotations/shared/build.gradle.kts
+dependencies {
+//    androidTestImplementation("org.testng:testng:6.9.6")
+    add("kspCommonMainMetadata", libs.koin.ksp.compiler)
+//    add("kspCommonMainMetadata", libs.koin.ksp.compiler)
+//    add("kspAndroid", libs.koin.ksp.compiler)
+//    add("kspIosArm64", libs.koin.ksp.compiler)
+//    add("kspIosSimulatorArm64", libs.koin.ksp.compiler)
+}
+
+// WORKAROUND: ADD this dependsOn("kspCommonMainKotlinMetadata") instead of above dependencies
+tasks.withType<KotlinCompile<*>>().configureEach {
+    if (name != "kspCommonMainKotlinMetadata") {
+        dependsOn("kspCommonMainKotlinMetadata")
+    }
+}
+tasks.configureEach {
+    if(name.contains("SourcesJar", true)){
+        println("SourceJarTask====>${name}")
+        dependsOn("kspCommonMainKotlinMetadata")
     }
 }
 
 android {
     namespace = "com.blockstream.common"
-    compileSdk = 34
+    compileSdk = libs.versions.androidCompileSdk.get().toInt()
     buildToolsVersion = libs.versions.buildTools.get()
 
     defaultConfig {
-        minSdk = 23
+        minSdk = libs.versions.androidMinSdk.get().toInt()
     }
 
     compileOptions {

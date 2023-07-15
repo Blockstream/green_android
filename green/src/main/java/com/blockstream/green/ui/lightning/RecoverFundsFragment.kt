@@ -2,11 +2,12 @@ package com.blockstream.green.ui.lightning
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
-import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.AccountAssetLayoutBinding
 import com.blockstream.green.databinding.RecoverFundsFragmentBinding
 import com.blockstream.green.extensions.clearNavigationResult
@@ -18,11 +19,10 @@ import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
 import com.blockstream.green.ui.wallet.AbstractAccountWalletViewModel
 import com.blockstream.green.ui.wallet.AbstractAssetWalletFragment
 import com.blockstream.green.utils.getClipboard
-import dagger.hilt.android.AndroidEntryPoint
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import java.text.NumberFormat
-import javax.inject.Inject
 
-@AndroidEntryPoint
 class RecoverFundsFragment :
     AbstractAssetWalletFragment<RecoverFundsFragmentBinding>(
         R.layout.recover_funds_fragment,
@@ -56,17 +56,13 @@ class RecoverFundsFragment :
     override val isRefundSwap: Boolean
         get() = true
 
-    @Inject
-    lateinit var viewModelFactory: RecoverFundsViewModel.AssistedFactory
-
-    val viewModel: RecoverFundsViewModel by viewModels {
-        RecoverFundsViewModel.provideFactory(
-            viewModelFactory,
-            wallet = args.wallet,
-            initAccountAsset = AccountAsset.fromAccount(session.accounts.firstOrNull { it.isBitcoin && !it.isLightning }
-                ?: session.activeAccount),
-            onChainAddress = args.address,
-            satoshi = args.amount
+    val viewModel: RecoverFundsViewModel by viewModel {
+        parametersOf(
+            args.wallet,
+            AccountAsset.fromAccount(session.accounts.value.firstOrNull { it.isBitcoin && !it.isLightning }
+                ?: session.activeAccount.value!!),
+            args.address,
+            args.amount
         )
     }
 
@@ -76,6 +72,21 @@ class RecoverFundsFragment :
 
     override val accountAssetLayoutBinding: AccountAssetLayoutBinding
         get() = binding.accountAsset
+
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+        if(sideEffect is SideEffects.Success){
+            if(isRefund){
+                dialog(R.string.id_refund, R.string.id_refund_in_progress) {
+                    popBackStack()
+                }
+            }else{
+                dialog(R.string.id_close_channel, R.string.id_channel_closure_initiated_you) {
+                    popBackStack()
+                }
+            }
+        }
+    }
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         super.onViewCreatedGuarded(view, savedInstanceState)
@@ -91,23 +102,9 @@ class RecoverFundsFragment :
 
         binding.vm = viewModel
 
-        viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
-            consumableEvent?.getContentIfNotHandledForType<NavigateEvent.NavigateBack>()?.let {
-                if(isRefund){
-                    dialog(R.string.id_refund, R.string.id_refund_in_progress) {
-                        popBackStack()
-                    }
-                }else{
-                    dialog(R.string.id_close_channel, R.string.id_channel_closure_initiated_you) {
-                        popBackStack()
-                    }
-                }
-            }
-        }
-
         viewModel.onError.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let { throwable ->
-                errorDialog(throwable = throwable, network = session.lightning, session = session, showReport = true)
+                errorDialog(throwable = throwable, errorReport = ErrorReport.create(throwable = throwable, network = session.lightning, session = session))
             }
         }
 

@@ -3,13 +3,13 @@ package com.blockstream.green.ui.items
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import breez_sdk.NodeState
+import com.blockstream.common.gdk.GdkSession
+import com.blockstream.common.lightning.inboundLiquiditySatoshi
+import com.blockstream.common.lightning.onchainBalanceSatoshi
+import com.blockstream.common.utils.toAmountLook
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemLightningInfoBinding
 import com.blockstream.green.extensions.context
-import com.blockstream.green.gdk.GdkSession
-import com.blockstream.green.utils.toAmountLook
-import com.blockstream.lightning.inboundLiquiditySatoshi
-import com.blockstream.lightning.onchainBalanceSatoshi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,17 +31,19 @@ data class LightningInfoListItem constructor(
     override fun bindView(binding: ListItemLightningInfoBinding, payloads: List<Any>) {
 
         scope.launch {
-            binding.sweepText = if (nodeState.onchainBalanceSatoshi() > 0) {
-                binding.context().getString(
-                    R.string.id_you_can_sweep_s_of_your_funds,
-                    withContext(context = Dispatchers.IO) {
-                        nodeState.onchainBalanceSatoshi().toAmountLook(
-                            session = session
-                        )
-                    }
-                )
-            } else {
-                null
+            if(!session.isLightningShortcut) {
+                binding.sweepText = if (nodeState.onchainBalanceSatoshi() > 0) {
+                    binding.context().getString(
+                        R.string.id_you_can_sweep_s_of_your_funds,
+                        withContext(context = Dispatchers.IO) {
+                            nodeState.onchainBalanceSatoshi().toAmountLook(
+                                session = session
+                            )
+                        }
+                    )
+                } else {
+                    null
+                }
             }
 
             binding.capacityText = binding.context().getString(

@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.onboarding.SetPinFragment">
+    tools:context=".ui.onboarding.PinFragment">
 
     <data>
 
@@ -49,7 +49,7 @@
 
             <com.blockstream.green.views.GreenPinView
                 android:id="@+id/pinView"
-                isVisible="@{!vm.onProgress}"
+                isVisible="@{!vm.onProgressAndroid}"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginTop="24dp"
@@ -63,7 +63,7 @@
 
             <com.google.android.material.progressindicator.CircularProgressIndicator
                 android:id="@+id/progress"
-                isVisible="@{vm.onProgress}"
+                isVisible="@{vm.onProgressAndroid}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"

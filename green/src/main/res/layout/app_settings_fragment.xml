@@ -7,7 +7,9 @@
 
         <variable
             name="vm"
-            type="com.blockstream.green.ui.settings.AppSettingsViewModel" />
+            type="com.blockstream.common.models.settings.AppSettingsViewModel" />
+
+        <import type="com.blockstream.common.extensions.StringExtensionsKt" />
 
         <variable
             name="isDevelopment"
@@ -65,7 +67,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="8dp"
                 android:text="@string/id_these_settings_apply_for_every"
                 android:textAppearance="?attr/textAppearanceBodyLarge" />
 
@@ -73,7 +75,7 @@
                 android:id="@+id/switchEnhancedPrivacy"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:checked="@={vm.enableEnhancedPrivacy}"
+                android:checked="@={vm.enhancedPrivacyEnabled}"
                 app:icon="@drawable/ic_invisible_60"
                 app:captionText="@string/id_use_secure_display_and_screen"
                 app:titleText="@string/id_enhanced_privacy" />
@@ -84,7 +86,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/id_screen_lock"
-                isVisible="@{vm.enableEnhancedPrivacy}"
+                isVisible="@{vm.enhancedPrivacyEnabled}"
                 android:layout_marginBottom="4dp">
 
                 <AutoCompleteTextView
@@ -106,7 +108,7 @@
                 android:id="@+id/switchTor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:checked="@={vm.enableTorRouting}"
+                android:checked="@={vm.torEnabled}"
                 app:captionText="@string/id_private_but_less_stable"
                 app:icon="@drawable/ic_tor_60"
                 app:titleText="@string/id_connect_with_tor" />
@@ -120,26 +122,26 @@
                 android:id="@+id/switchProxy"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:checked="@={vm.enableProxy}"
+                android:checked="@={vm.proxyEnabled}"
                 app:icon="@drawable/ic_proxy_60"
                 app:titleText="@string/id_connect_through_a_proxy" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/proxyURLInputLayout"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
-                error="@{vm.proxyURLInvalid ? @string/id_host_ip : null}"
+                error="@{StringExtensionsKt.isBlank(vm.proxyUrl) ? @string/id_host_ip : null}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/settings_element_margin"
                 android:layout_marginBottom="4dp"
-                app:isVisible="@{vm.enableProxy}">
+                app:isVisible="@{vm.proxyEnabled}">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/proxy"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    android:text="@={vm.proxyURL}" />
+                    android:text="@={vm.proxyUrl}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -152,7 +154,7 @@
                 android:id="@+id/switchTestnet"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:checked="@={vm.enableTestnet}"
+                android:checked="@={vm.testnetEnabled}"
                 app:icon="@drawable/ic_bitcoin_testnet"
                 app:titleText="@string/id_enable_testnet" />
 
@@ -165,8 +167,8 @@
                 android:id="@+id/switchExperimentaFeatures"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:checked="@={vm.enableExperimentalFeatures}"
-                isVisible="@{vm.lightningEnabled || vm.enableExperimentalFeatures}"
+                android:checked="@={vm.experimentalFeaturesEnabled}"
+                isVisible="@{vm.experimentalFeaturesVisible}"
                 app:icon="@drawable/ic_fill_flask_24"
                 app:titleText="@string/id_enable_experimental_features"
                 app:captionText="@string/id_experimental_features_might" />
@@ -174,14 +176,14 @@
             <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                isVisible="@{vm.lightningEnabled}"
+                isVisible="@{vm.experimentalFeaturesVisible}"
                 android:layout_marginStart="@dimen/settings_element_margin" />
 
             <com.blockstream.green.views.GreenSwitch
                 android:id="@+id/switchAnalytics"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:checked="@={vm.enableAnalytics}"
+                android:checked="@={vm.analyticsEnabled}"
                 isVisible="@{vm.analyticsFeatureEnabled}"
                 app:icon="@drawable/ic_analytics"
                 app:titleText="@string/id_help_green_improve"
@@ -215,7 +217,7 @@
                 android:id="@+id/switchPersonalNode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:checked="@={vm.enableElectrumNode}"
+                android:checked="@={vm.electrumNodeEnabled}"
                 android:layout_marginBottom="4dp"
                 app:captionText="@string/id_choose_the_electrum_servers_you"
                 app:icon="@drawable/ic_electrum_60"
@@ -231,7 +233,7 @@
                 app:expandedHintEnabled="true"
                 app:placeholderText="@{bitcoinElectrumServerPlaceholder}"
                 android:hint="@string/id_bitcoin_electrum_server"
-                app:isVisible="@{vm.enableElectrumNode}">
+                app:isVisible="@{vm.electrumNodeEnabled}">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
@@ -251,7 +253,7 @@
                 android:layout_marginLeft="@dimen/settings_element_margin"
                 android:layout_marginBottom="4dp"
                 android:hint="@string/id_liquid_electrum_server"
-                app:isVisible="@{vm.enableElectrumNode}"
+                app:isVisible="@{vm.electrumNodeEnabled}"
                 tools:ignore="HardcodedText">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -273,7 +275,7 @@
                 app:expandedHintEnabled="true"
                 app:placeholderText="@{testnetElectrumServerPlaceholder}"
                 tools:ignore="HardcodedText"
-                app:isVisible="@{vm.enableElectrumNode &amp;&amp; vm.enableTestnet}">
+                app:isVisible="@{vm.electrumNodeEnabled &amp;&amp; vm.testnetEnabled}">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
@@ -294,7 +296,7 @@
                 tools:ignore="HardcodedText"
                 app:expandedHintEnabled="true"
                 app:placeholderText="@{testnetLiquidElectrumServerPlaceholder}"
-                app:isVisible="@{vm.enableElectrumNode &amp;&amp; vm.enableTestnet}">
+                app:isVisible="@{vm.electrumNodeEnabled &amp;&amp; vm.testnetEnabled}">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
@@ -308,7 +310,7 @@
                 android:id="@+id/switchSpv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:checked="@={vm.enableSPV}"
+                android:checked="@={vm.spvEnabled}"
                 android:layout_marginBottom="4dp"
                 app:captionText="@string/id_verify_your_bitcoin"
                 app:icon="@drawable/ic_spv_60"
@@ -319,7 +321,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
-                android:checked="@={vm.enableMultiServerValidation}"
+                android:checked="@={vm.multiServerValidationEnabled}"
                 isVisible="@{isDevelopment}"
                 app:captionText="@string/id_double_check_spv_with_other"
                 app:icon="@drawable/ic_multiserver_60"
@@ -335,7 +337,7 @@
                 android:hint="@string/id_bitcoin_electrum_server"
                 app:expandedHintEnabled="true"
                 app:placeholderText="@{bitcoinSpvElectrumServerPlaceholder}"
-                app:isVisible="@{vm.enableMultiServerValidation}">
+                app:isVisible="@{vm.multiServerValidationEnabled}">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
@@ -355,7 +357,7 @@
                 app:expandedHintEnabled="true"
                 app:placeholderText="@{liquidSpvElectrumServerPlaceholder}"
                 android:hint="@string/id_liquid_electrum_server"
-                app:isVisible="@{vm.enableMultiServerValidation}">
+                app:isVisible="@{vm.multiServerValidationEnabled}">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
@@ -375,7 +377,7 @@
                 android:hint="@string/id_testnet_electrum_server"
                 app:expandedHintEnabled="true"
                 app:placeholderText="@{testnetSpvElectrumServerPlaceholder}"
-                app:isVisible="@{vm.enableMultiServerValidation &amp;&amp; vm.enableTestnet}">
+                app:isVisible="@{vm.multiServerValidationEnabled &amp;&amp; vm.testnetEnabled}">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
@@ -396,7 +398,7 @@
                 app:expandedHintEnabled="true"
                 app:placeholderText="@{testnetLiquidSpvElectrumServerPlaceholder}"
                 tools:ignore="HardcodedText"
-                app:isVisible="@{vm.enableMultiServerValidation &amp;&amp; vm.enableTestnet}">
+                app:isVisible="@{vm.multiServerValidationEnabled &amp;&amp; vm.testnetEnabled}">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"

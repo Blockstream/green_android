@@ -2,7 +2,7 @@ package com.blockstream.common.gdk.data
 
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.serializers.DeviceSupportsAntiExfilProtocolSerializer
 import com.blockstream.common.serializers.DeviceSupportsLiquidSerializer
 import kotlinx.serialization.KSerializer
@@ -25,7 +25,7 @@ data class Device constructor(
 
     // Ignore it for now
     // @SerialName("device_type") val deviceType: String?, // is set by GDK (hardware)
-): GdkJson<Device>(), Parcelable {
+): GreenJson<Device>(), Parcelable {
     val isJade
         get() = name.lowercase() == "jade"
 

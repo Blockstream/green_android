@@ -2,22 +2,16 @@ package com.blockstream.green.ui.swap
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.gdk.data.SwapProposal
-import com.blockstream.green.data.Countly
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import mu.KLogging
 
 
 abstract class AbstractSwapWalletViewModel constructor(
-    sessionManager: SessionManager,
-    walletRepository: WalletRepository,
-    countly: Countly,
-    wallet: Wallet,
+    wallet: GreenWallet,
     proposal: SwapProposal?
-) : AbstractWalletViewModel(sessionManager, walletRepository, countly, wallet) {
+) : AbstractWalletViewModel(wallet) {
 
     open val proposal: SwapProposal?
         get() = _proposalLiveData.value

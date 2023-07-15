@@ -3,13 +3,13 @@ package com.blockstream.green.ui.settings
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
-import com.blockstream.common.gdk.data.Network
-import com.blockstream.green.R
 import com.blockstream.common.data.Countries.Countries
 import com.blockstream.common.data.Country
-import com.blockstream.green.data.GdkEvent
+import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.green.R
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.databinding.TwofactorSetupFragmentBinding
 import com.blockstream.green.extensions.errorDialog
@@ -31,14 +31,13 @@ import com.blockstream.green.utils.pulse
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.GenericFastItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 enum class TwoFactorSetupAction {
     SETUP, SETUP_EMAIL, RESET, CANCEL, DISPUTE, UNDO_DISPUTE
 }
 
-@AndroidEntryPoint
 class TwoFactorSetupFragment : AbstractWalletFragment<TwofactorSetupFragmentBinding>(R.layout.twofactor_setup_fragment, 0),
     FilterableDataProvider {
     val args: TwoFactorSetupFragmentArgs by navArgs()
@@ -69,7 +68,7 @@ class TwoFactorSetupFragment : AbstractWalletFragment<TwofactorSetupFragmentBind
         get() = if (isSessionAndWalletRequired() && isSessionNetworkInitialized) countly.twoFactorSegmentation(
             session = session,
             network = network,
-            twoFactorMethod = args.method
+            twoFactorMethod = args.method.gdkType
         ) else null
 
     override val isAdjustResize: Boolean = true
@@ -82,10 +81,9 @@ class TwoFactorSetupFragment : AbstractWalletFragment<TwofactorSetupFragmentBind
     override val toolbarIcon: Int
         get() = network.getNetworkIcon()
 
-    @Inject
-    lateinit var viewModelFactory: TwoFactorSetupViewModel.AssistedFactory
-    val viewModel: TwoFactorSetupViewModel by viewModels {
-        TwoFactorSetupViewModel.provideFactory(viewModelFactory, args.wallet, args.network, args.method, args.action)
+
+    val viewModel: TwoFactorSetupViewModel by viewModel {
+        parametersOf(args.wallet, args.network, args.method, args.action)
     }
 
     override val title: String
@@ -110,6 +108,17 @@ class TwoFactorSetupFragment : AbstractWalletFragment<TwofactorSetupFragmentBind
                 }
             }
         }
+
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+
+        if(sideEffect is SideEffects.Success){
+            // Hint TwoFactorAuthenticationFragment / WalletSettingsFragment to update TwoFactorConfig
+            setNavigationResult(result = true)
+            setNavigationResult(key = network.id, result = true)
+            popBackStack()
+        }
+    }
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         val action = args.action
@@ -230,15 +239,6 @@ class TwoFactorSetupFragment : AbstractWalletFragment<TwofactorSetupFragmentBind
                         popBackStack()
                     }
                 }
-            }
-        }
-
-        viewModel.onEvent.observe(viewLifecycleOwner) { event ->
-            event?.getContentIfNotHandledForType<GdkEvent.Success>()?.let {
-                // Hint TwoFactorAuthenticationFragment / WalletSettingsFragment to update TwoFactorConfig
-                setNavigationResult(result = true)
-                setNavigationResult(key = network.id, result = true)
-                popBackStack()
             }
         }
     }

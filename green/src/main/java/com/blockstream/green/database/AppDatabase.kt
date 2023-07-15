@@ -5,11 +5,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
-import com.blockstream.common.gdk.device.DeviceBrand
-import com.blockstream.base.Database.DATABASE_NAME
+import com.blockstream.common.data.EncryptedData
+import com.blockstream.common.data.CredentialType
+import com.blockstream.common.data.DeviceIdentifier
 import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
 import com.blockstream.common.gdk.data.PinData
-import com.blockstream.green.utils.EncryptedData
+import com.blockstream.common.gdk.device.DeviceBrand
 import com.blockstream.green.utils.isDevelopmentFlavor
 import kotlinx.serialization.encodeToString
 
@@ -37,7 +38,7 @@ abstract class AppDatabase : RoomDatabase() {
             val builder = Room.databaseBuilder(
                 context,
                 AppDatabase::class.java,
-                DATABASE_NAME
+                "green.db"
             )
 
             builder.addMigrations(MIGRATION_1_2).build()

@@ -6,28 +6,28 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
-import com.blockstream.base.AppReview
 import com.blockstream.common.Urls
+import com.blockstream.common.extensions.needs2faActivation
+import com.blockstream.common.gdk.AssetPair
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Transaction
-import com.blockstream.green.ApplicationScope
+import com.blockstream.common.lightning.isLoading
+import com.blockstream.common.lightning.onchainBalanceSatoshi
+import com.blockstream.common.data.SetupArgs
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
-import com.blockstream.green.data.GdkEvent
-import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.AccountOverviewFragmentBinding
 import com.blockstream.green.databinding.ListItemLightningInfoBinding
 import com.blockstream.green.extensions.dialog
 import com.blockstream.green.extensions.setNavigationResult
 import com.blockstream.green.extensions.showPopupMenu
 import com.blockstream.green.extensions.snackbar
-import com.blockstream.green.gdk.AssetPair
-import com.blockstream.green.gdk.needs2faActivation
 import com.blockstream.green.ui.bottomsheets.AssetDetailsBottomSheetFragment
 import com.blockstream.green.ui.bottomsheets.Call2ActionBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
@@ -35,14 +35,14 @@ import com.blockstream.green.ui.bottomsheets.ComingSoonBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.LightningNodeBottomSheetFragment
 import com.blockstream.green.ui.bottomsheets.RenameAccountBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.TwoFactorResetBottomSheetDialogFragment
+import com.blockstream.green.ui.dialogs.EnableLightningShortcut
+import com.blockstream.green.ui.dialogs.LightningShortcutDialogFragment
 import com.blockstream.green.ui.items.*
 import com.blockstream.green.ui.wallet.AbstractAccountWalletFragment
 import com.blockstream.green.utils.*
 import com.blockstream.green.views.AccordionListener
 import com.blockstream.green.views.EndlessRecyclerOnScrollListener
 import com.blockstream.green.views.NpaLinearLayoutManager
-import com.blockstream.lightning.isLoading
-import com.blockstream.lightning.onchainBalanceSatoshi
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericFastAdapter
@@ -53,38 +53,28 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 
-@AndroidEntryPoint
 class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFragmentBinding>(
     layout = R.layout.account_overview_fragment,
     menuRes = R.menu.account_overview
-), OverviewInterface {
-
+), OverviewInterface, EnableLightningShortcut {
     val args: AccountOverviewFragmentArgs by navArgs()
     override val walletOrNull by lazy { args.wallet }
 
     override val appFragment: AccountOverviewFragment
         get() = this
 
-    @Inject
-    lateinit var applicationScope: ApplicationScope
-
-    @Inject
-    lateinit var appReview: AppReview
-
-    @Inject
-    lateinit var viewModelFactory: AccountOverviewViewModel.AssistedFactory
-    val viewModel: AccountOverviewViewModel by viewModels {
-        AccountOverviewViewModel.provideFactory(viewModelFactory, args.wallet, args.account)
+    val viewModel: AccountOverviewViewModel by viewModel {
+        parametersOf(args.wallet, args.account)
     }
 
     override fun getAccountWalletViewModel() = viewModel
@@ -108,6 +98,29 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
     private val singlesigWarningThreshold
         get() =  if(network.isMainnet) 5_000_000 else 100_000 // 0.05 BTC or 0.001 tBTC
 
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+        if (sideEffect is SideEffects.NavigateToRoot) {
+            findNavController().popBackStack(R.id.walletOverviewFragment, false)
+        } else if (sideEffect is SideEffects.Navigate){
+            if(sideEffect.data is String){
+                if (sideEffect.data == WalletOverviewFragment.ACCOUNT_ARCHIVED) {
+                    setNavigationResult(
+                        result = true,
+                        key = WalletOverviewFragment.ACCOUNT_ARCHIVED,
+                        destinationId = R.id.walletOverviewFragment
+                    )
+                    findNavController().popBackStack(R.id.walletOverviewFragment, false)
+                } else if (sideEffect.data == LIGHTNING_CLOSE_CHANNEL) {
+                    dialog(
+                        getString(R.string.id_close_channel),
+                        "We are closing your channel. You can recover your funds in a bit."
+                    )
+                }
+            }
+        }
+    }
+
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         overviewSetup()
 
@@ -116,31 +129,10 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
         binding.bottomNav.sweepEnabled = session.defaultNetwork.isBitcoin && session.defaultNetwork.isMultisig
         binding.bottomNav.showSwap = false //account.isLiquid && account.isMultisig
 
-        viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
-            consumableEvent?.getContentIfNotHandledForType<NavigateEvent.NavigateWithData>()?.let {
-                if(it.data is String){
-                    if (it.data == WalletOverviewFragment.ACCOUNT_ARCHIVED) {
-                        setNavigationResult(
-                            result = true,
-                            key = WalletOverviewFragment.ACCOUNT_ARCHIVED,
-                            destinationId = R.id.walletOverviewFragment
-                        )
-                        findNavController().popBackStack(R.id.walletOverviewFragment, false)
-                    } else if (it.data == LIGHTNING_CLOSE_CHANNEL) {
-                        dialog(
-                            getString(R.string.id_close_channel),
-                            "We are closing your channel. You can recover your funds in a bit."
-                        )
-                    }
-                }
-            }
-            consumableEvent?.getContentIfNotHandledForType<NavigateEvent.NavigateBack>()?.let {
-                findNavController().popBackStack(R.id.walletOverviewFragment, false)
-            }
-            consumableEvent?.getContentIfNotHandledForType<GdkEvent.Success>()?.let {
-                snackbar(R.string.id_refund_initiated)
-            }
-        }
+        viewModel.lightningShortcut.onEach {
+            // Update menu for LN Shortcut
+            invalidateMenu()
+        }.launchIn(lifecycleScope)
 
         val fastAdapter = setupAdapters(binding.recycler)
 
@@ -182,7 +174,7 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
                                     navigate(
                                         AccountOverviewFragmentDirections.actionAccountOverviewFragmentToReceiveFragment(
                                             wallet = viewModel.wallet,
-                                            accountAsset = AccountAsset.fromAccount(viewModel.account)
+                                            accountAsset = AccountAsset.fromAccount(viewModel.accountValue)
                                         )
                                     )
                                 }
@@ -197,7 +189,7 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
                         AccountOverviewFragmentDirections.actionAccountOverviewFragmentToSendFragment(
                             wallet = wallet,
                             accountAsset = AccountAsset.fromAccount(account),
-                            network = viewModel.account.network
+                            network = viewModel.accountValue.network
                         )
                     )
                 }
@@ -222,13 +214,16 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
     override fun onPrepareMenu(menu: Menu) {
         // Prevent from archiving all your accounts
         menu.findItem(R.id.archive).isVisible = !session.isWatchOnly && viewModel.accounts.size > 1 && !account.isLightning
-        menu.findItem(R.id.help).isVisible = account.isAmp && viewModel.assets.isNotEmpty()
+        menu.findItem(R.id.help).isVisible = account.isAmp
         menu.findItem(R.id.enhance_security).isVisible = !session.isWatchOnly && account.needs2faActivation(session)
         menu.findItem(R.id.rename).isVisible = !session.isWatchOnly && !account.isLightning
         menu.findItem(R.id.node_info).isVisible = account.isLightning
-        menu.findItem(R.id.show_recovery_phrase).isVisible = account.isLightning
-        menu.findItem(R.id.remove).isVisible = account.isLightning
+        menu.findItem(R.id.remove).isVisible = account.isLightning && !wallet.isLightning
 
+        menu.findItem(R.id.lightning_shortcut).also {
+            it.isVisible = account.isLightning && !wallet.isLightning
+            it.title = getString(if(viewModel.lightningShortcut.value == true) R.string.id_remove_lightning_shortcut else R.string.id_add_lightning_shortcut)
+        }
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -259,14 +254,15 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
                 LightningNodeBottomSheetFragment.show(childFragmentManager)
                 true
             }
-            R.id.show_recovery_phrase-> {
-                navigate(
-                    AccountOverviewFragmentDirections.actionAccountOverviewFragmentToRecoveryIntroFragment(
-                        wallet = wallet,
-                        isAuthenticateUser = true,
-                        isLightning = true
+            R.id.lightning_shortcut -> {
+                if (viewModel.lightningShortcut.value == true) {
+                    viewModel.removeLightningShortcut()
+                } else {
+                    LightningShortcutDialogFragment.show(
+                        isAddAccount = false,
+                        fragmentManager = childFragmentManager
                     )
-                )
+                }
                 true
             }
             R.id.remove-> {
@@ -307,7 +303,7 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
         viewModel.accountLiveData.observe(viewLifecycleOwner) {
             AccountsListItem(
                 session = session,
-                accounts = listOf(viewModel.account),
+                accounts = listOf(viewModel.accountValue),
                 showArrow = false,
                 show2faActivation = false,
                 showCopy = account.isAmp,
@@ -371,11 +367,13 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
                 showBalance = true,
                 isLoading = (it.first.isEmpty() && it.second == -1L)
             )
-        }.observeMap(
+        }.observeLiveData(
             viewLifecycleOwner,
             viewModel.assetsLiveData as LiveData<Map<*, *>>,
-            toModel = {
-                AssetPair(it.key as String, it.value as Long)
+            toList = {
+                it.map {
+                    AssetPair(it.key as String, it.value as Long)
+                }
             })
 
         val lightningInboundAdapter: GenericFastItemAdapter = FastItemAdapter()
@@ -525,12 +523,12 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
         }
 
         // Notify when 1) account & balance are update and when 2) assets are updated
-        merge(session.accountsAndBalanceUpdatedFlow, session.networkAssetManager.assetsUpdateFlow).onEach {
+        merge(session.accountsAndBalanceUpdated, session.networkAssetManager.assetsUpdateFlow).onEach {
             fastAdapter.notifyAdapterDataSetChanged()
         }.launchIn(lifecycleScope)
 
         // Update transactions
-        session.blockFlow(network).onEach {
+        session.block(network).onEach {
             fastAdapter.notifyAdapterDataSetChanged()
         }.launchIn(lifecycleScope)
 
@@ -557,7 +555,7 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
                 is AssetListItem -> {
                     AssetDetailsBottomSheetFragment.show(
                         item.assetPair.first,
-                        account = viewModel.account,
+                        account = viewModel.accountValue,
                         childFragmentManager
                     )
                 }
@@ -612,6 +610,22 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
         }
 
         return fastAdapter
+    }
+
+    override fun enableLightningShortcut() {
+        viewModel.enableLightningShortcut()
+    }
+
+    override fun lightningShortcutDialogDismissed() {
+
+    }
+
+    fun showLightningRecoveryPhrase(){
+        navigate(
+            AccountOverviewFragmentDirections.actionAccountOverviewFragmentToRecoveryIntroFragment(
+                setupArgs = SetupArgs(mnemonic = "", isLightning = true, isShowRecovery = true, greenWallet = wallet),
+            )
+        )
     }
 
     override fun openProposal(link: String) {

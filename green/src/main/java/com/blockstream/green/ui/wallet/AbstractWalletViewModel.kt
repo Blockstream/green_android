@@ -2,19 +2,19 @@ package com.blockstream.green.ui.wallet
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import com.blockstream.common.data.CredentialType
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.WalletExtras
+import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.Settings
+import com.blockstream.common.events.Events
+import com.blockstream.common.navigation.LogoutReason
+import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.green.data.AppEvent
-import com.blockstream.green.data.Countly
-import com.blockstream.green.database.CredentialType
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.extensions.logException
-import com.blockstream.green.managers.SessionManager
-import com.blockstream.green.ui.AppViewModel
-import com.blockstream.green.utils.ConsumableEvent
+import com.blockstream.green.ui.AppViewModelAndroid
+import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
@@ -30,32 +30,21 @@ import kotlin.time.toDuration
 
 
 abstract class AbstractWalletViewModel constructor(
-    val sessionManager: SessionManager,
-    val walletRepository: WalletRepository,
-    countly: Countly,
-    wallet: Wallet
-) : AppViewModel(countly) {
+    wallet: GreenWallet
+) : AppViewModelAndroid(greenWalletOrNull = wallet) {
 
     public sealed class WalletEvent: AppEvent {
-        object RenameWallet : WalletEvent()
-        object DeleteWallet : WalletEvent()
         object RenameAccount : WalletEvent()
         object AckMessage : WalletEvent()
-
-        class Logout(val reason: LogoutReason) : WalletEvent()
     }
 
-    enum class LogoutReason {
-        USER_ACTION, DISCONNECTED, TIMEOUT, DEVICE_DISCONNECTED
-    }
+    // val session = sessionManager.getWalletSession(wallet)
 
-    val session = sessionManager.getWalletSession(wallet)
-
-    protected val _walletLiveData: MutableLiveData<Wallet> = MutableLiveData(wallet)
-    val walletLiveData: LiveData<Wallet> get()  = _walletLiveData
+    protected val _walletLiveData: MutableLiveData<GreenWallet> = MutableLiveData(wallet)
+    val walletLiveData: LiveData<GreenWallet> get()  = _walletLiveData
     val wallet get() = _walletLiveData.value!!
 
-    val accountsFlow: StateFlow<List<Account>> get() = session.accountsFlow
+    val accountsFlow: StateFlow<List<Account>> get() = session.accounts
     val accounts: List<Account> get() = accountsFlow.value
 
     // Logout events, can be expanded in the future
@@ -66,11 +55,9 @@ abstract class AbstractWalletViewModel constructor(
     init {
         // Listen to wallet updates from Database
         if(!wallet.isEphemeral) {
-            walletRepository
-                .getWalletFlow(wallet.id)
-                .onEach {
-                    _walletLiveData.value = wallet
-                }.launchIn(viewModelScope)
+            database.getWalletFlow(wallet.id).onEach {
+                _walletLiveData.value = it
+            }.launchIn(viewModelScope.coroutineScope)
         }
 
         // Only on Login Screen
@@ -78,7 +65,7 @@ abstract class AbstractWalletViewModel constructor(
 
             // TODO SUPPORT MULTIPLE NETWORKS
             session
-                .networkEventsFlow(session.defaultNetwork).filterNotNull()
+                .networkEvents(session.defaultNetwork).filterNotNull()
                 .onEach { event ->
                     // Cancel previous timer
                     reconnectTimerJob?.cancel()
@@ -92,10 +79,10 @@ abstract class AbstractWalletViewModel constructor(
                             onReconnectEvent.value = ConsumableEvent(it)
                             // Delay 1 sec
                             delay(1.toDuration(DurationUnit.SECONDS))
-                        }.launchIn(viewModelScope)
+                        }.launchIn(viewModelScope.coroutineScope)
                     }
                 }
-                .launchIn(viewModelScope)
+                .launchIn(viewModelScope.coroutineScope)
         }
     }
 
@@ -106,18 +93,10 @@ abstract class AbstractWalletViewModel constructor(
         wallet.activeAccount = account.pointer
 
         if(!wallet.isEphemeral) {
-            viewModelScope.launch(context = logException(countly)){
-                walletRepository.updateWallet(wallet)
+            viewModelScope.coroutineScope.launch(context = logException(countly)){
+                database.updateWallet(wallet)
             }
         }
-    }
-
-    fun deleteWallet() {
-        deleteWallet(wallet, sessionManager, walletRepository, countly)
-    }
-
-    fun renameWallet(name: String) {
-        renameWallet(name, wallet, walletRepository, countly)
     }
 
     open fun renameAccount(account: Account, name: String, callback: ((Account) -> Unit)? = null) {
@@ -140,7 +119,7 @@ abstract class AbstractWalletViewModel constructor(
 
             if(isHidden){
                 // Update active account from Session if it was archived
-                setActiveAccount(session.activeAccount)
+                setActiveAccount(session.activeAccount.value!!)
             }else{
                 // Make it active
                 setActiveAccount(account)
@@ -151,15 +130,14 @@ abstract class AbstractWalletViewModel constructor(
     fun removeAccount(account: Account, callback: (() -> Unit)? = null){
         if(account.isLightning) {
             doUserAction({
-                walletRepository.deleteLoginCredentials(wallet.id, CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS)
-
+                database.deleteLoginCredentials(wallet.id, CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS)
+                database.deleteLoginCredentials(wallet.id, CredentialType.LIGHTNING_MNEMONIC)
                 session.removeAccount(account)
-
             }, onSuccess = {
                 callback?.invoke()
 
                 // Update active account from Session if it was archived
-                setActiveAccount(session.activeAccount)
+                setActiveAccount(session.activeAccount.value!!)
             })
         }
     }
@@ -176,7 +154,18 @@ abstract class AbstractWalletViewModel constructor(
     open fun saveGlobalSettings(newSettings: Settings, onSuccess: (() -> Unit)? = null) {
         doUserAction({
             session.changeGlobalSettings(newSettings)
-            session.updateSettings()
+            if(!wallet.isEphemeral){
+                greenWallet.also {
+                    // Pass settings to Lightning Shortcut
+                    sessionManager.getWalletSessionOrNull(it.lightningShortcutWallet())?.also { lightningSession ->
+                        lightningSession.changeGlobalSettings(newSettings)
+                    }
+
+                    it.extras = WalletExtras(settings = newSettings.forWalletExtras())
+
+                    database.updateWallet(it)
+                }
+            }
         }, onSuccess = {
             onSuccess?.invoke()
         })
@@ -184,7 +173,7 @@ abstract class AbstractWalletViewModel constructor(
 
     fun logout(reason: LogoutReason) {
         session.disconnectAsync()
-        onEvent.postValue(ConsumableEvent(WalletEvent.Logout(reason)))
+        postEvent(Events.Logout(reason = reason))
     }
 
     companion object : KLogging()

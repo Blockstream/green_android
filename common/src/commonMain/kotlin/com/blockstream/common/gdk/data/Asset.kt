@@ -3,7 +3,7 @@ package com.blockstream.common.gdk.data
 
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -16,7 +16,7 @@ data class Asset constructor(
     @SerialName("precision") val precision: Int = 0,
     @SerialName("ticker") val ticker: String? = null,
     @SerialName("entity") val entity: Entity? = null,
-) : GdkJson<Asset>(), Parcelable {
+) : GreenJson<Asset>(), Parcelable {
 
     override fun kSerializer() = serializer()
 

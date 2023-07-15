@@ -1,6 +1,7 @@
 
 import com.adarshr.gradle.testlogger.theme.ThemeType
 import com.android.build.gradle.internal.api.*
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import org.codehaus.groovy.runtime.ProcessGroovyMethods
 import java.io.FileInputStream
 import java.util.*
@@ -10,9 +11,8 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("kotlin-parcelize")
     id("kotlinx-serialization")
-    id("com.google.dagger.hilt.android")
     alias(libs.plugins.google.devtools.ksp)
-    id("kotlin-kapt")
+    id("kotlin-kapt") // until @BindingAdapter supports KSP
     id("androidx.navigation.safeargs.kotlin")
     id("com.adarshr.test-logger") version "3.2.0"
 }
@@ -35,16 +35,25 @@ if (keystorePropertiesFile.exists()){
 
 android {
     namespace = "com.blockstream.green"
-    compileSdk = 34
+    compileSdk = libs.versions.androidCompileSdk.get().toInt()
     buildToolsVersion = libs.versions.buildTools.get()
 
     defaultConfig {
-        minSdk = 23
-        targetSdk = 34
+        minSdk = libs.versions.androidMinSdk.get().toInt()
+        targetSdk = libs.versions.androidTargetSdk.get().toInt()
         versionCode = 413
         versionName = "4.0.13"
+
         setProperty("archivesBaseName", "BlockstreamGreen-v$versionName")
         proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+
+        val breezApiKey = System.getenv("BREEZ_API_KEY") ?: gradleLocalProperties(rootDir).getProperty("breez.apikey", "")
+        val greenlightCertificate = System.getenv("GREENLIGHT_DEVICE_CERT") ?: gradleLocalProperties(rootDir).getProperty("greenlight.cert", "")
+        val greenlightKey = System.getenv("GREENLIGHT_DEVICE_KEY") ?: gradleLocalProperties(rootDir).getProperty("greenlight.key", "")
+
+        buildConfigField("String", "BREEZ_API_KEY", "\"${breezApiKey}\"")
+        buildConfigField("String", "GREENLIGHT_DEVICE_CERT", "\"${greenlightCertificate}\"")
+        buildConfigField("String", "GREENLIGHT_DEVICE_KEY", "\"${greenlightKey}\"")
 
         testApplicationId = "com.blockstream.green.test"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -107,6 +116,12 @@ android {
         }
     }
 
+    applicationVariants.forEach { variant ->
+        variant.sourceSets.forEach { sourceSet ->
+            sourceSet.kotlinDirectories += file("build/generated/ksp/${variant.name}/kotlin")
+        }
+    }
+
     buildFeatures {
         dataBinding = true
     }
@@ -157,14 +172,10 @@ kotlin {
     jvmToolchain(17)
 }
 
-// Configure kapt to correct error types by setting correctErrorTypes to true
-kapt {
-    correctErrorTypes = true
-}
-
 testlogger {
     theme = ThemeType.MOCHA
 }
+
 val developmentImplementation by configurations
 val productionGoogleImplementation by configurations
 val productionImplementation by configurations
@@ -174,7 +185,6 @@ dependencies {
     implementation(project(":base"))
     implementation(project(":hardware"))
     implementation(project(":jade"))
-    implementation(project(":crypto"))
 
     developmentImplementation(project(":gms"))
     productionGoogleImplementation(project(":gms"))
@@ -185,27 +195,27 @@ dependencies {
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
     testImplementation(libs.navigation.testing)
-    androidTestImplementation(libs.androidx.navigation.navigation.testing)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Room ------------------------------------------------------------------------------- */
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
-    testImplementation(libs.androidx.room.testing)
     /** ----------------------------------------------------------------------------------------- */
 
-    /**  --- Hilt Dependency Injection  --------------------------------------------------------- */
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
+    /**  --- Koin   ----------------------------------------------------------------------------- */
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.annotations)
+    ksp(libs.koin.ksp.compiler)
 
     // For instrumentation tests
-    androidTestImplementation(libs.hilt.android.testing)
-    kaptAndroidTest(libs.hilt.android.compiler)
+    androidTestImplementation(libs.koin.test)
+    androidTestImplementation(libs.koin.test.junit4)
 
     // For local unit tests
-    testImplementation(libs.google.hilt.android.testing)
-    kaptTest(libs.hilt.android.compiler)
+    testImplementation(libs.koin.test)
+    testImplementation(libs.koin.test.junit4)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- RxJava  ---------------------------------------------------------------------------- */
@@ -261,6 +271,7 @@ dependencies {
     testImplementation(libs.androidx.core.testing)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.mockk)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

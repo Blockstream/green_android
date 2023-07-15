@@ -3,7 +3,7 @@ package com.blockstream.common.gdk.data
 import com.arkivanov.essenty.parcelable.IgnoredOnParcel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.serializers.AccountTypeSerializer
 import com.blockstream.common.utils.hexToByteArray
 import kotlinx.serialization.SerialName
@@ -26,7 +26,7 @@ data class SubAccount(
     @SerialName("core_descriptors") val coreDescriptors: List<String>? = null,
     @SerialName("slip132_extended_pubkey") val extendedPubkey: String? = null,
     @SerialName("user_path") val derivationPath: List<Long>? = null,
-) : GdkJson<SubAccount>(), Parcelable {
+) : GreenJson<SubAccount>(), Parcelable {
     override fun kSerializer() = serializer()
 
     @IgnoredOnParcel

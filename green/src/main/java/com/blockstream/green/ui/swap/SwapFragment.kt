@@ -2,23 +2,23 @@ package com.blockstream.green.ui.swap
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
+import com.blockstream.common.TransactionSegmentation
+import com.blockstream.common.TransactionType
+import com.blockstream.common.extensions.getAssetName
+import com.blockstream.common.extensions.getAssetTicker
 import com.blockstream.common.gdk.data.CreateTransaction
 import com.blockstream.common.gdk.data.SwapProposal
 import com.blockstream.common.gdk.data.Utxo
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
-import com.blockstream.green.data.NavigateEvent
-import com.blockstream.green.data.TransactionSegmentation
-import com.blockstream.green.data.TransactionType
 import com.blockstream.green.databinding.SwapFragmentBinding
 import com.blockstream.green.extensions.bind
 import com.blockstream.green.extensions.endIconCustomMode
 import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.hideKeyboard
-import com.blockstream.green.gdk.getAssetName
-import com.blockstream.green.gdk.getAssetTicker
 import com.blockstream.green.ui.bottomsheets.FilterBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.FilterableDataProvider
 import com.blockstream.green.ui.items.AssetSmallListItem
@@ -29,10 +29,9 @@ import com.blockstream.green.utils.toAmountLook
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.GenericFastItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-@AndroidEntryPoint
 class SwapFragment : AbstractWalletFragment<SwapFragmentBinding>(
     layout = R.layout.swap_fragment,
     menuRes = 0
@@ -45,17 +44,39 @@ class SwapFragment : AbstractWalletFragment<SwapFragmentBinding>(
 
     override val screenName = "Swap"
 
-    @Inject
-    lateinit var viewModelFactory: SwapViewModel.AssistedFactory
-    val viewModel: SwapViewModel by viewModels {
-        SwapViewModel.provideFactory(
-            viewModelFactory,
-            args.wallet,
-            args.proposal
-         )
+    val viewModel: SwapViewModel by viewModel {
+        parametersOf(args.wallet, args.proposal)
     }
 
     override fun getWalletViewModel() = viewModel
+
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+
+        if (sideEffect is SideEffects.Navigate) {
+            (sideEffect.data as? SwapProposal)?.also {
+                navigate(
+                    SwapFragmentDirections.actionSwapFragmentToSwapProposalFragment(
+                        wallet = wallet,
+                        proposal = it
+                    )
+                )
+            }
+            (sideEffect.data as? CreateTransaction)?.also {
+                navigate(
+                    SwapFragmentDirections.actionSwapFragmentToSendConfirmFragment(
+                        wallet = wallet,
+                        account = viewModel.enabledAccounts.first(),
+                        transactionSegmentation = TransactionSegmentation(
+                            transactionType = TransactionType.SWAP,
+                            addressInputType = null,
+                            sendAll = false
+                        )
+                    )
+                )
+            }
+        }
+    }
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.vm = viewModel
@@ -154,32 +175,6 @@ class SwapFragment : AbstractWalletFragment<SwapFragmentBinding>(
         viewModel.onError.observe(viewLifecycleOwner){
             it?.getContentIfNotHandledOrReturnNull()?.let{ throwable ->
                 errorDialog(throwable)
-            }
-        }
-
-        viewModel.onEvent.observe(viewLifecycleOwner) { onEvent ->
-            onEvent.getContentIfNotHandledForType<NavigateEvent.NavigateWithData>()?.let {
-                (it.data as? SwapProposal)?.let {
-                    navigate(
-                        SwapFragmentDirections.actionSwapFragmentToSwapProposalFragment(
-                            wallet = wallet,
-                            proposal = it
-                        )
-                    )
-                }
-                (it.data as? CreateTransaction)?.let {
-                    navigate(
-                        SwapFragmentDirections.actionSwapFragmentToSendConfirmFragment(
-                            wallet = wallet,
-                            account = viewModel.enabledAccounts.first(),
-                            transactionSegmentation = TransactionSegmentation(
-                                transactionType = TransactionType.SWAP,
-                                addressInputType = null,
-                                sendAll = false
-                            )
-                        )
-                    )
-                }
             }
         }
     }

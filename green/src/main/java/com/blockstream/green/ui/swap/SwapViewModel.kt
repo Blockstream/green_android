@@ -1,9 +1,15 @@
 package com.blockstream.green.ui.swap;
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asFlow
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.data.EnrichedAsset
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.extensions.assetTicker
+import com.blockstream.common.extensions.isPolicyAsset
+import com.blockstream.common.extensions.logException
+import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
 import com.blockstream.common.gdk.TwoFactorResolver
 import com.blockstream.common.gdk.data.AccountType
@@ -18,18 +24,12 @@ import com.blockstream.common.gdk.params.CreateSwapParams
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.gdk.params.LiquidDexV0AssetParams
 import com.blockstream.common.gdk.params.LiquidDexV0Params
-import com.blockstream.green.data.Countly
-import com.blockstream.green.data.NavigateEvent
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.extensions.logException
+import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.UserInput
 import com.blockstream.green.extensions.toggle
-import com.blockstream.green.gdk.assetTicker
-import com.blockstream.green.gdk.isPolicyAsset
-import com.blockstream.green.managers.SessionManager
-import com.blockstream.green.utils.*
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
+import com.blockstream.green.utils.exchangeRate
+import com.blockstream.green.utils.toAmountLook
+import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -37,19 +37,17 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.*
-import mu.KLogging
+import kotlinx.serialization.json.decodeFromJsonElement
 import org.json.JSONArray
 import org.json.JSONObject
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
-
-class SwapViewModel @AssistedInject constructor(
-    sessionManager: SessionManager,
-    walletRepository: WalletRepository,
-    countly: Countly,
-    @Assisted wallet: Wallet,
-    @Assisted proposal: SwapProposal?,
-) : AbstractSwapWalletViewModel(sessionManager, walletRepository, countly, wallet, proposal) {
+@KoinViewModel
+class SwapViewModel constructor(
+    @InjectedParam wallet: GreenWallet,
+    @InjectedParam proposal: SwapProposal?,
+) : AbstractSwapWalletViewModel(wallet, proposal) {
 
     var utxos: List<Utxo> = listOf()
 
@@ -100,11 +98,11 @@ class SwapViewModel @AssistedInject constructor(
 
     val toAmount = MutableLiveData<String>()
 
-    val enabledAccounts = session.accounts.filter { it.isMultisig && it.isLiquid && it.type == AccountType.STANDARD }
+    val enabledAccounts = session.accounts.value.filter { it.isMultisig && it.isLiquid && it.type == AccountType.STANDARD }
 
     init {
         proposal ?: run {
-            viewModelScope.launch(context = logException(countly)) {
+            viewModelScope.coroutineScope.launch(context = logException(countly)) {
                 utxos = withContext(context = Dispatchers.IO) {
                     session.getUnspentOutputs(enabledAccounts).unspentOutputs.values.flatten()
                         .sortedWith(session::sortUtxos)
@@ -117,12 +115,12 @@ class SwapViewModel @AssistedInject constructor(
         utxoLiveData.asFlow().onEach {
             updateToAssets()
 
-        }.launchIn(viewModelScope)
+        }.launchIn(viewModelScope.coroutineScope)
 
-        session.enrichedAssetsFlow.onEach {
+        session.enrichedAssets.onEach {
             remoteAssets = it
             updateToAssets()
-        }.launchIn(viewModelScope)
+        }.launchIn(viewModelScope.coroutineScope)
 
         combine(utxoLiveData.asFlow(), toAssetIdLiveData.asFlow(), exchangeRateDirection.asFlow(), toAmount.asFlow()) { _, _, _, _ ->
             Unit
@@ -177,9 +175,9 @@ class SwapViewModel @AssistedInject constructor(
                 exchangeRate.postValue(null)
             })
 
-        }.launchIn(viewModelScope)
+        }.launchIn(viewModelScope.coroutineScope)
 
-        viewModelScope.launch {
+        viewModelScope.coroutineScope.launch {
             proposal?.let { parseProposal(it) }
         }
     }
@@ -230,7 +228,7 @@ class SwapViewModel @AssistedInject constructor(
 
     private fun updateToAssets() {
         toAssets =
-            (session.walletAssetsFlow.value.keys + remoteAssets.filterValues { !it.isAmp }.keys).filter { it != utxo?.assetId && it != BTC_POLICY_ASSET }
+            ((session.walletAssets.value.assets?.keys ?: emptySet()) + remoteAssets.filterValues { !it.isAmp }.keys).filter { it != utxo?.assetId && it != BTC_POLICY_ASSET }
                 .toList()
 
         if (toAssetId.isNullOrBlank() || toAssetId == utxo?.assetId) {
@@ -261,7 +259,7 @@ class SwapViewModel @AssistedInject constructor(
 
             result.liquiDexV0.toSwapProposal()
         }, onSuccess = {
-            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(proposal)))
+            postSideEffect(SideEffects.Navigate(proposal))
         })
     }
 
@@ -296,7 +294,7 @@ class SwapViewModel @AssistedInject constructor(
             )
 
             session.pendingTransaction = params to tx
-            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(tx)))
+            postSideEffect(SideEffects.Navigate(tx))
         })
     }
 
@@ -306,7 +304,7 @@ class SwapViewModel @AssistedInject constructor(
         tmp.put("sign_with", JSONArray(listOf("user", "green-backend").toTypedArray()) )
         val json = JsonDeserializer.parseToJsonElement(tmp.toString())
         val updatedTx = JsonDeserializer.decodeFromJsonElement<CreateTransaction>(json).let {
-            if (it is GdkJson<*> && it.keepJsonElement()) {
+            if (it is GreenJson<*> && it.keepJsonElement()) {
                 it.jsonElement = json
             }
             it
@@ -316,27 +314,5 @@ class SwapViewModel @AssistedInject constructor(
 
     fun switchExchangeRate(){
         exchangeRateDirection.toggle()
-    }
-
-    @dagger.assisted.AssistedFactory
-    interface AssistedFactory {
-        fun create(
-            wallet: Wallet,
-            proposal: SwapProposal?
-        ): SwapViewModel
-    }
-
-    companion object : KLogging() {
-
-        fun provideFactory(
-            assistedFactory: AssistedFactory,
-            wallet: Wallet,
-            proposal: SwapProposal?
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet, proposal) as T
-            }
-        }
     }
 }

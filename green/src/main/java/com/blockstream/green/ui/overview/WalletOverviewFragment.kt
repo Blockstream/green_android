@@ -5,22 +5,25 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.blockstream.base.AppReview
+import com.blockstream.common.Urls
+import com.blockstream.common.di.ApplicationScope
+import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Transaction
-import com.blockstream.green.ApplicationScope
+import com.blockstream.common.lightning.isLoading
+import com.blockstream.common.events.Events
+import com.blockstream.common.navigation.LogoutReason
 import com.blockstream.green.R
+import com.blockstream.green.databinding.ListItemLightningInfoBinding
 import com.blockstream.green.databinding.ListItemWalletBalanceBinding
 import com.blockstream.green.databinding.WalletOverviewFragmentBinding
 import com.blockstream.green.extensions.clearNavigationResult
 import com.blockstream.green.extensions.getNavigationResult
-import com.blockstream.green.extensions.logException
 import com.blockstream.green.extensions.showPopupMenu
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.ui.MainActivity
@@ -39,18 +42,18 @@ import com.blockstream.green.ui.items.AccountListItem
 import com.blockstream.green.ui.items.AccountsListItem
 import com.blockstream.green.ui.items.AlertListItem
 import com.blockstream.green.ui.items.AlertType
+import com.blockstream.green.ui.items.LightningInfoListItem
 import com.blockstream.green.ui.items.MenuListItem
 import com.blockstream.green.ui.items.TextListItem
 import com.blockstream.green.ui.items.TitleListItem
 import com.blockstream.green.ui.items.TransactionListItem
 import com.blockstream.green.ui.items.WalletBalanceListItem
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.AppReviewHelper
-import com.blockstream.green.utils.BannersHelper
 import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.getClipboard
 import com.blockstream.green.utils.observeList
+import com.blockstream.green.utils.openBrowser
 import com.blockstream.green.views.AccordionListener
 import com.blockstream.green.views.NpaLinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -62,19 +65,20 @@ import com.mikepenz.fastadapter.adapters.GenericFastItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import kotlin.properties.Delegates
 
 
-@AndroidEntryPoint
 class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBinding>(
     layout = R.layout.wallet_overview_fragment,
     menuRes = R.menu.wallet_overview
@@ -86,16 +90,10 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
     override val appFragment: WalletOverviewFragment
         get() = this
 
-    @Inject
-    lateinit var applicationScope: ApplicationScope
+    private val applicationScope: ApplicationScope by inject()
 
-    @Inject
-    lateinit var appReview: AppReview
-
-    @Inject
-    lateinit var viewModelFactory: WalletOverviewViewModel.AssistedFactory
-    val viewModel: WalletOverviewViewModel by viewModels {
-        WalletOverviewViewModel.provideFactory(viewModelFactory, args.wallet)
+    val viewModel: WalletOverviewViewModel by viewModel {
+        parametersOf(args.wallet)
     }
 
     var fastAdapter: FastAdapter<GenericItem>? = null
@@ -104,6 +102,8 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
     override val title: String
         get() = if (isSessionNetworkInitialized) viewModel.wallet.name else ""
 
+    override val subtitle: String?
+        get() = if(session.isLightningShortcut) getString(R.string.id_lightning_account) else null
 
     var showAccountInToolbar: Boolean by Delegates.observable(false) { _, oldValue, newValue ->
         if (oldValue != newValue) {
@@ -149,25 +149,25 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
         }
 
         // Handle pending URI (BIP-21 or lightning)
-        sessionManager.pendingUri.observe(viewLifecycleOwner) {
+        sessionManager.pendingUri.onEach {
             it?.getContentIfNotHandledOrReturnNull()?.let { uri ->
                 handleUserInput(uri, false)
             }
-        }
+        }.launchIn(lifecycleScope)
 
         binding.vm = viewModel
 
         binding.bottomNav.isWatchOnly = wallet.isWatchOnly
         binding.bottomNav.sweepEnabled = session.defaultNetwork.isBitcoin && session.defaultNetwork.isMultisig
 
-        viewModel.accountsFlow.onEach {
-            (if(it.isEmpty()) 0.2f else 1.0f).also { alpha ->
+        viewModel.zeroAccounts.onEach {
+            (if(it) 0.2f else 1.0f).also { alpha ->
                 binding.recycler.alpha = alpha
                 binding.bottomNav.root.alpha = alpha
             }
-            setToolbarVisibility(it.isNotEmpty())
+            setToolbarVisibility(!it)
 
-            if(it.isEmpty()){
+            if(it){
                 binding.rive.play()
             }else{
                 binding.rive.stop()
@@ -192,7 +192,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
         binding.bottomNav.buttonReceive.setOnClickListener {
             navigate(
                 WalletOverviewFragmentDirections.actionWalletOverviewFragmentToReceiveFragment(
-                    wallet = viewModel.wallet, accountAsset = AccountAsset.fromAccount(session.activeAccount)
+                    wallet = viewModel.wallet, accountAsset = AccountAsset.fromAccount(session.activeAccount.value!!)
                 )
             )
         }
@@ -216,7 +216,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                         WalletOverviewFragmentDirections.actionWalletOverviewFragmentToSendFragment(
                             wallet = wallet,
                             isSweep = true,
-                            accountAsset = AccountAsset.fromAccount(session.activeAccount)
+                            accountAsset = AccountAsset.fromAccount(session.activeAccount.value!!)
                         )
                     )
                 }
@@ -245,7 +245,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                 else -> {
                     navigate(
                         WalletOverviewFragmentDirections.actionWalletOverviewFragmentToSendFragment(
-                            wallet = wallet, accountAsset = AccountAsset.fromAccount(session.activeAccount)
+                            wallet = wallet, accountAsset = AccountAsset.fromAccount(session.activeAccount.value!!)
                         )
                     )
                 }
@@ -285,7 +285,8 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
 
     override fun onPrepareMenu(menu: Menu) {
         // Prevent from archiving all your acocunts
-        menu.findItem(R.id.create_account).isVisible = !session.isWatchOnly
+        menu.findItem(R.id.create_account).isVisible = !session.isWatchOnly && !wallet.isLightning
+        menu.findItem(R.id.settings).isVisible = !wallet.isLightning
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -307,7 +308,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                 countly.accountNew(session)
             }
             R.id.logout -> {
-                viewModel.logout(AbstractWalletViewModel.LogoutReason.USER_ACTION)
+                viewModel.logout(LogoutReason.USER_ACTION)
             }
         }
 
@@ -316,10 +317,6 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
 
     override fun onResume() {
         super.onResume()
-
-//        if(session.hasLightning){
-//            LightningService.start(requireContext())
-//        }
 
         requireActivity().window.navigationBarColor =
             ContextCompat.getColor(requireContext(), R.color.brand_surface_variant)
@@ -337,19 +334,21 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
 
         // Wallet Balance
         val walletBalanceListItem = WalletBalanceListItem(session = session, countly = countly).also {
-            totalBalanceAdapter.set(listOf(it))
+            if(!wallet.isLightning) {
+                totalBalanceAdapter.set(listOf(it))
+            }
         }
 
         val accountsAdapter: GenericFastItemAdapter = FastItemAdapter()
 
-        session.accountsFlow.onEach {
+        session.accounts.onEach {
             AccountsListItem(
                 session = session,
-                accounts = session.accounts,
-                showArrow = true,
+                accounts = session.accounts.value,
+                showArrow = !session.isLightningShortcut,
                 show2faActivation = true,
                 showCopy = false,
-                expandedAccount = session.activeAccountFlow,
+                expandedAccount = session.activeAccount,
                 listener = object : AccordionListener {
                     override fun expandListener(view: View, position: Int) {
                         viewModel.accounts.getOrNull(position)?.also {
@@ -376,6 +375,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                     }
 
                     override fun longClickListener(view: View, position: Int) {
+                        if(session.isLightningShortcut) return
                         val account = viewModel.accounts[position]
 
                         val menu = if(account.isLightning) R.menu.menu_account_remove else if (viewModel.accounts.size == 1) R.menu.menu_account else R.menu.menu_account_archive
@@ -440,7 +440,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                             }
                         }
                         is AlertType.Banner -> {
-                            BannersHelper.dismiss(this, alertListItem.alertType.banner)
+                            viewModel.postEvent(Events.BannerDismiss)
                         }
                         is AlertType.FailedNetworkLogin -> {
                             viewModel.tryFailedNetworks()
@@ -450,6 +450,18 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                 }
             }
         }.observeList(viewLifecycleOwner, viewModel.alertsLiveData)
+
+        val lightningInboundAdapter: GenericFastItemAdapter = FastItemAdapter()
+
+        if(session.isLightningShortcut){
+            session.lightningNodeInfoStateFlow.filter { !it.isLoading() }.onEach {
+                lightningInboundAdapter.set(
+                    listOf(
+                        LightningInfoListItem(session = session, nodeState = it)
+                    )
+                )
+            }.launchIn(lifecycleScope)
+        }
 
         val transactionsTitleAdapter = FastItemAdapter<GenericItem>()
 
@@ -478,6 +490,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
             totalBalanceAdapter,
             alertCardsAdapter,
             accountsAdapter,
+            lightningInboundAdapter,
             transactionsTitleAdapter,
             walletTransactionAdapter
         )
@@ -492,7 +505,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
 
 
         // Notify when 1) account & balance are update and when 2) assets are updated
-        merge(session.accountsAndBalanceUpdatedFlow, session.networkAssetManager.assetsUpdateFlow).onEach {
+        merge(session.accountsAndBalanceUpdated, session.networkAssetManager.assetsUpdateFlow).onEach {
             fastAdapter.notifyAdapterDataSetChanged()
         }.launchIn(lifecycleScope)
 
@@ -507,6 +520,10 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                     wallet = wallet
                 )
             )
+        }
+
+        fastAdapter.addClickListener<ListItemLightningInfoBinding, GenericItem>({ binding -> binding.buttonLearnMore }) { _, _, _, _ ->
+            openBrowser(Urls.HELP_RECEIVE_CAPACITY)
         }
 
         fastAdapter.addClickListener<ListItemWalletBalanceBinding, GenericItem>({ binding -> binding.eye }) { _, _, _, _ ->
@@ -568,7 +585,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                 }
                 is AlertListItem -> {
                     if (item.alertType is AlertType.Banner) {
-                        BannersHelper.handleClick(this, item.alertType.banner)
+                        viewModel.postEvent(Events.BannerAction)
                     }
                 }
             }

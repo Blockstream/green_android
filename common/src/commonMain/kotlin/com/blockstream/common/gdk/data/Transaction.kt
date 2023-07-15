@@ -5,7 +5,7 @@ import com.arkivanov.essenty.parcelable.IgnoredOnParcel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.BTC_POLICY_ASSET
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -36,7 +36,7 @@ data class Transaction(
     @SerialName("isLightningSwap") val isLightningSwap: Boolean = false,
     @SerialName("isInProgressSwap") val isInProgressSwap: Boolean = false,
     @SerialName("isRefundableSwap") val isRefundableSwap: Boolean = false
-) : GdkJson<Transaction>(), Parcelable {
+) : GreenJson<Transaction>(), Parcelable {
     val account
         get() = accountInjected!!
 

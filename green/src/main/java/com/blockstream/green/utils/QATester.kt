@@ -2,20 +2,22 @@ package com.blockstream.green.utils
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import com.blockstream.common.managers.AssetQATester
-import com.blockstream.common.gdk.data.Notification
 import com.blockstream.HardwareQATester
+import com.blockstream.common.gdk.data.Notification
+import com.blockstream.common.managers.AssetQATester
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
+import org.koin.core.annotation.Single
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 /*
  * Emulate different scenarios, useful for QA
  */
+@Single
 class QATester(val context: Context) : HardwareQATester, AssetQATester {
     val corruptedHardwareMessageSign = MutableLiveData(false)
     val corruptedHardwareTxSign = MutableLiveData(false)
@@ -41,6 +43,7 @@ class QATester(val context: Context) : HardwareQATester, AssetQATester {
         return assetsFetchDisabled.value ?: false
     }
 
+    @Deprecated("Do not use")
     fun getSessionNotificationInjectorFlow() : Flow<Notification> {
         // Disable it completely
         if(isProductionFlavor){

@@ -9,12 +9,10 @@ import androidx.navigation.fragment.findNavController
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.databinding.ArchiveAccountDialogBinding
 import com.blockstream.green.extensions.navigate
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import mu.KLogging
 
-@AndroidEntryPoint
 class ArchiveAccountDialogFragment : AbstractDialogFragment<ArchiveAccountDialogBinding>() {
 
     override fun inflate(layoutInflater: LayoutInflater): ArchiveAccountDialogBinding =
@@ -33,7 +31,7 @@ class ArchiveAccountDialogFragment : AbstractDialogFragment<ArchiveAccountDialog
         }
 
         walletFragment?.session
-            ?.allAccountsFlow
+            ?.allAccounts
             ?.onEach { accounts ->
                 binding.archivedAccounts = accounts.count { it.hidden }
             }?.launchIn(lifecycleScope)

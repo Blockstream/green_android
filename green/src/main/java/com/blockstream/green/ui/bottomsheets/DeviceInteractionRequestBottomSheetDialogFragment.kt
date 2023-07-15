@@ -3,46 +3,56 @@ package com.blockstream.green.ui.bottomsheets
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.FragmentManager
 import com.blockstream.common.gdk.data.Device
 import com.blockstream.green.databinding.DeviceInteractionRequestBottomSheetBinding
 import com.blockstream.green.extensions.dismissIn
 import com.blockstream.green.extensions.stringFromIdentifier
 import com.blockstream.green.utils.bounceDown
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CompletableDeferred
+import mu.KLogging
 
-@AndroidEntryPoint
-class DeviceInteractionRequestBottomSheetDialogFragment constructor(
-    val device: Device,
-    val completable: CompletableDeferred<Boolean>? = null,
-    val text: String?,
-    val delay: Long = 3000
-) : AbstractBottomSheetDialogFragment<DeviceInteractionRequestBottomSheetBinding>() {
+
+class DeviceInteractionRequestBottomSheetDialogFragment constructor() : AbstractBottomSheetDialogFragment<DeviceInteractionRequestBottomSheetBinding>() {
 
     override val screenName: String? = null
 
     override fun inflate(layoutInflater: LayoutInflater) = DeviceInteractionRequestBottomSheetBinding.inflate(layoutInflater)
 
+    private val device by lazy { requireArguments().getParcelable<Device>(DEVICE)}
+    private val message by lazy { requireArguments().getString(MESSAGE, null)}
+    private val delay by lazy { requireArguments().getLong(DELAY, 0)}
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.device = device
-        binding.text = if(text.isNullOrBlank()) null else requireContext().stringFromIdentifier(text) ?: text
+        binding.text = if(message.isNullOrBlank()) null else requireContext().stringFromIdentifier(message)
 
         binding.arrow.bounceDown()
-        
-        if(completable == null){
+
+        if(delay > 0){
             dismissIn(delay)
-        }else{
-            lifecycleScope.launchWhenResumed {
-                try {
-                    completable.await()
-                } catch (e: Exception) {
-                    e.printStackTrace()
+        }
+    }
+
+    companion object : KLogging() {
+        const val DEVICE = "DEVICE"
+        const val MESSAGE = "MESSAGE"
+        const val DELAY = "DELAY"
+
+        fun showSingle(device: Device, message: String?, delay: Long, fragmentManager: FragmentManager){
+
+            showSingle(DeviceInteractionRequestBottomSheetDialogFragment().also {
+                it.arguments = Bundle().apply {
+                    putParcelable(DEVICE, device)
+                    putString(MESSAGE, message)
+                    putLong(DELAY, delay)
                 }
-                dismiss()
-            }
+            }, fragmentManager)
+        }
+
+        fun closeAll(fragmentManager: FragmentManager){
+            closeAll(DeviceInteractionRequestBottomSheetDialogFragment::class.java, fragmentManager)
         }
     }
 }

@@ -6,14 +6,14 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import breez_sdk.SuccessActionProcessed
+import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.gdk.data.SendTransactionSuccess
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
-import com.blockstream.green.data.GdkEvent
-import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.ListItemTransactionNoteBinding
 import com.blockstream.green.databinding.ListItemTransactionOutputBinding
 import com.blockstream.green.databinding.SendConfirmFragmentBinding
@@ -42,10 +42,10 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.ncorti.slidetoact.SlideToActView
 import com.pandulapeter.beagle.Beagle
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-@AndroidEntryPoint
 class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBinding>(
     layout = R.layout.send_confirm_fragment,
     menuRes = R.menu.send_confirm
@@ -58,16 +58,14 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
     override val segmentation
         get() = if (isSessionAndWalletRequired() && isSessionNetworkInitialized) countly.accountSegmentation(
             session = session,
-            account = viewModel.account
+            account = viewModel.accountValue
         ) else null
 
-    @Inject
-    lateinit var beagle: Beagle
+    private val beagle: Beagle by inject()
 
-    @Inject
-    lateinit var viewModelFactory: SendConfirmViewModel.AssistedFactory
-    val viewModel: SendConfirmViewModel by viewModels {
-        SendConfirmViewModel.provideFactory(viewModelFactory, args.wallet, args.account, args.transactionSegmentation)
+
+    val viewModel: SendConfirmViewModel by viewModel {
+        parametersOf(args.wallet, args.account, args.transactionSegmentation)
     }
 
     override fun getBannerAlertView(): GreenAlertView = binding.banner
@@ -80,6 +78,52 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
     private val onBackCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
             // Prevent back
+        }
+    }
+
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+        if(sideEffect is SideEffects.Success){
+            (sideEffect.data as? String)?.also { signedTransaction ->
+                dialog("Signed Transaction", signedTransaction, isMessageSelectable = true)
+            }
+        } else if(sideEffect is SideEffects.Navigate){
+            (sideEffect.data as? SendTransactionSuccess)?.also { sendTransactionSuccess ->
+                val successAction = sendTransactionSuccess.successAction as? SuccessActionProcessed
+                if(successAction != null){
+                    val message = when(successAction){
+                        is SuccessActionProcessed.Aes -> {
+                            "${successAction.data.description}\n\n${successAction.data.plaintext}"
+                        }
+                        is SuccessActionProcessed.Message -> {
+                            successAction.data.message
+                        }
+                        is SuccessActionProcessed.Url -> {
+                            successAction.data.description
+                        }
+                    }
+
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(R.string.id_success)
+                        .setMessage(getString(R.string.id_message_from_recipient_s, message))
+                        .setPositiveButton(if(successAction is SuccessActionProcessed.Url) R.string.id_open else android.R.string.ok) { _, _ ->
+                            if(successAction is SuccessActionProcessed.Url){
+                                openBrowser(successAction.data.url)
+                            }
+                            navigateBack(sendTransactionSuccess.isSendAll)
+                        }.apply {
+                            if(successAction is SuccessActionProcessed.Url){
+                                setNegativeButton(android.R.string.cancel) { _, _ ->
+                                    navigateBack(sendTransactionSuccess.isSendAll)
+                                }
+                            }
+                        }
+                        .show()
+                }else{
+                    snackbar(R.string.id_transaction_sent)
+                    navigateBack(sendTransactionSuccess.isSendAll)
+                }
+            }
         }
     }
 
@@ -140,53 +184,6 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
             }
         }
 
-        viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
-            consumableEvent?.getContentIfNotHandledForType<NavigateEvent.NavigateWithData>()?.let {
-                (it.data as? SendTransactionSuccess)?.also { sendTransactionSuccess ->
-                    val successAction = sendTransactionSuccess.successAction as? SuccessActionProcessed
-                    if(successAction != null){
-                        val message = when(successAction){
-                            is SuccessActionProcessed.Aes -> {
-                                "${successAction.data.description}\n\n${successAction.data.plaintext}"
-                            }
-                            is SuccessActionProcessed.Message -> {
-                                successAction.data.message
-                            }
-                            is SuccessActionProcessed.Url -> {
-                                successAction.data.description
-                            }
-                        }
-
-                        MaterialAlertDialogBuilder(requireContext())
-                            .setTitle(R.string.id_success)
-                            .setMessage(getString(R.string.id_message_from_recipient_s, message))
-                            .setPositiveButton(if(successAction is SuccessActionProcessed.Url) R.string.id_open else android.R.string.ok) { _, _ ->
-                                if(successAction is SuccessActionProcessed.Url){
-                                    openBrowser(successAction.data.url)
-                                }
-                                navigateBack(sendTransactionSuccess.isSendAll)
-                            }.apply {
-                                if(successAction is SuccessActionProcessed.Url){
-                                    setNegativeButton(android.R.string.cancel) { _, _ ->
-                                        navigateBack(sendTransactionSuccess.isSendAll)
-                                    }
-                                }
-                            }
-                            .show()
-                    }else{
-                        snackbar(R.string.id_transaction_sent)
-                        navigateBack(sendTransactionSuccess.isSendAll)
-                    }
-                }
-            }
-
-            consumableEvent?.getContentIfNotHandledForType<GdkEvent.SuccessWithData>()?.let {
-                (it.data as? String)?.also { signedTransaction ->
-                    dialog("Signed Transaction", signedTransaction, isMessageSelectable = true)
-                }
-            }
-        }
-
         viewModel.onError.observe(viewLifecycleOwner){
             it?.getContentIfNotHandledOrReturnNull()?.let{ throwable ->
                 // Reset send slider
@@ -196,20 +193,20 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
                     // If the error is the Anti-Exfil validation violation we show that prominently.
                     // Otherwise show a toast of the error text.
                     throwable.message == "id_signature_validation_failed_if" -> {
-                        errorDialog(network = network, throwable = throwable)
+                        errorDialog(throwable = throwable, errorReport = ErrorReport.create(throwable = throwable, network = network, session = session))
                     }
                     throwable.message == "id_transaction_already_confirmed" -> {
                         snackbar(R.string.id_transaction_already_confirmed)
                         findNavController().popBackStack(R.id.walletOverviewFragment, false)
                     }
                     throwable.message != "id_action_canceled" -> {
-                        errorDialog(throwable = throwable, network = network, session = session, showReport = true)
+                        errorDialog(throwable = throwable, errorReport = ErrorReport.create(throwable = throwable, network = network, session = session))
                     }
                 }
             }
         }
 
-        viewModel.onProgress.observe(viewLifecycleOwner){
+        viewModel.onProgressAndroid.observe(viewLifecycleOwner){
             onBackCallback.isEnabled = it
             if(account.isLightning){
                 binding.outputs.alpha = if(it) 0.2f else 1.0f

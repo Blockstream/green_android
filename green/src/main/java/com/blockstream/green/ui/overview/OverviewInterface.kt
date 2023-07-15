@@ -3,15 +3,15 @@ package com.blockstream.green.ui.overview
 import android.content.Context
 import androidx.lifecycle.lifecycleScope
 import breez_sdk.InputType
+import com.blockstream.common.AddressInputType
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
-import com.blockstream.green.data.AddressInputType
-import com.blockstream.green.database.Wallet
 import com.blockstream.green.extensions.clearNavigationResult
 import com.blockstream.green.extensions.getNavigationResult
 import com.blockstream.green.extensions.snackbar
-import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +23,7 @@ interface OverviewInterface {
 
     fun openProposal(link: String)
     val session: GdkSession
-    val wallet: Wallet
+    val wallet: GreenWallet
     val appFragment: AppFragment<*>
 
     fun overviewSetup(){
@@ -72,12 +72,12 @@ interface OverviewInterface {
                     }
 
                     else -> {
-                        session.activeAccountOrNull?.also { activeAccount ->
+                        session.activeAccount.value?.also { activeAccount ->
                             var account = activeAccount
 
                             // Different network
                             if(account.network.isBitcoin != checkedInput.first.isBitcoin){
-                                session.allAccounts.find { it.isBitcoin == checkedInput.first.isBitcoin }?.also {
+                                session.allAccounts.value.find { it.isBitcoin == checkedInput.first.isBitcoin }?.also {
                                     account = it
                                 }
                             }

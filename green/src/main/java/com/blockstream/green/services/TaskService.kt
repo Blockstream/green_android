@@ -3,20 +3,16 @@ package com.blockstream.green.services
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import com.blockstream.common.managers.SessionManager
 import com.blockstream.green.managers.NotificationManager
-import com.blockstream.green.managers.SessionManager
-import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
-@AndroidEntryPoint
 class TaskService : Service() {
 
-    @Inject
-    lateinit var notificationManager: NotificationManager
+    private val notificationManager: NotificationManager by inject()
 
-    @Inject
-    lateinit var sessionManager: SessionManager
+    private val sessionManager: SessionManager by inject()
 
     override fun onBind(intent: Intent?): IBinder? {
         return null

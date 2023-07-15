@@ -1,9 +1,9 @@
 package com.blockstream.common.gdk
 
-import com.blockstream.common.gdk.data.Assets
 import com.blockstream.common.gdk.data.AuthHandlerStatus
 import com.blockstream.common.gdk.data.Balance
 import com.blockstream.common.gdk.data.FeeEstimation
+import com.blockstream.common.gdk.data.LiquidAssets
 import com.blockstream.common.gdk.data.LoginData
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.Networks
@@ -126,7 +126,7 @@ interface GdkBinding {
     fun refreshAssets(session: GASession, params: AssetsParams)
 
     @Throws(Exception::class)
-    fun getAssets(session: GASession, params: GetAssetsParams): Assets
+    fun getAssets(session: GASession, params: GetAssetsParams): LiquidAssets
 
     @Throws(Exception::class)
     fun getTransactions(session: GASession, details: TransactionParams): GAAuthHandler
@@ -192,7 +192,6 @@ interface GdkBinding {
     @Throws(Exception::class)
     fun getFeeEstimates(session: GASession): FeeEstimation
 
-
     @Throws(Exception::class)
     fun getSystemMessage(session: GASession): String?
 
@@ -251,13 +250,13 @@ interface GdkBinding {
     fun getUnspentOutputsForPrivateKey(session: GASession, details: UnspentOutputsPrivateKeyParams): GAAuthHandler
 
     @Throws(Exception::class)
-    fun createTransaction(session: GASession, params: GdkJson<*>): GAAuthHandler
+    fun createTransaction(session: GASession, params: GreenJson<*>): GAAuthHandler
 
     @Throws(Exception::class)
-    fun createSwapTransaction(session: GASession, params: GdkJson<*>): GAAuthHandler
+    fun createSwapTransaction(session: GASession, params: GreenJson<*>): GAAuthHandler
 
     @Throws(Exception::class)
-    fun completeSwapTransaction(session: GASession, params: GdkJson<*>): GAAuthHandler
+    fun completeSwapTransaction(session: GASession, params: GreenJson<*>): GAAuthHandler
 
     fun httpRequest(session: GASession, data: JsonElement): JsonElement
 
@@ -271,7 +270,10 @@ interface GdkBinding {
     fun getRandomBytes(size: Int): ByteArray
 }
 
-class Gdk constructor(private val settings: com.russhwolf.settings.Settings, private val gdkBinding: GdkBinding) : GdkBinding by gdkBinding{
+class Gdk constructor(
+    private val settings: com.russhwolf.settings.Settings,
+    private val gdkBinding: GdkBinding
+) : GdkBinding by gdkBinding {
 
     init {
         settings.getStringOrNull(KEY_CUSTOM_NETWORK)?.also {
@@ -310,7 +312,7 @@ class Gdk constructor(private val settings: com.russhwolf.settings.Settings, pri
                 put("id", Networks.CustomNetworkId)
                 put("network", Networks.CustomNetworkId)
                 put("wamp_url", "ws://$hostname/v2/ws") // for multisig
-                put("electrum_url", "$hostname") // for singlesig electrum
+                put("electrum_url", hostname) // for singlesig electrum
             }.also { jsonElement ->
                 val network = JsonConverter.JsonDeserializer.decodeFromJsonElement<Network>(jsonElement)
                 registerNetwork(network.id, jsonElement)

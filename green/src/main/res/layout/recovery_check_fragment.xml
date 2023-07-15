@@ -16,7 +16,7 @@
 
         <variable
             name="vm"
-            type="com.blockstream.green.ui.recovery.RecoveryCheckViewModel" />
+            type="com.blockstream.common.models.recovery.RecoveryCheckViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
-            android:max="@{vm.progressMax}"
+            android:max="100"
             android:progress="@{vm.progress}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -60,7 +60,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="@{String.format(@string/id_what_is_word_number_s, vm.pointer)}"
+            android:text="@{String.format(@string/id_what_is_word_number_s, vm.checkWordIndex)}"
             android:textAlignment="center"
             android:textAppearance="?attr/textAppearanceBodyLarge"
             android:textColor="@color/color_on_surface_emphasis_medium"
@@ -75,7 +75,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
-            android:text="@{vm.pointer + `.`}"
+            android:text="@{vm.checkWordIndex + `.`}"
             android:textAppearance="?attr/textAppearanceTitleSmall"
             android:textColor="@color/brand_green"
             app:layout_constraintBottom_toBottomOf="@+id/wordLeft"
@@ -100,7 +100,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:layout_marginBottom="2dp"
-            android:text="@{vm.pointer - 1 + `.`}"
+            android:text="@{vm.checkWordIndex - 1 + `.`}"
             android:textAppearance="?attr/textAppearanceTitleSmall"
             android:textColor="@color/brand_green"
             app:layout_constraintBottom_toBottomOf="@+id/wordLeft"
@@ -123,7 +123,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="@{vm.pointer + 1 + `.`}"
+            android:text="@{vm.checkWordIndex + 1 + `.`}"
             android:textAppearance="?attr/textAppearanceTitleSmall"
             android:textColor="@color/brand_green"
             app:layout_constraintBottom_toBottomOf="@+id/gappedLinearLayout2"

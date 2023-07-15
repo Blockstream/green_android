@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.findNavController
+import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.green.NavGraphDirections
@@ -12,10 +13,8 @@ import com.blockstream.green.R
 import com.blockstream.green.databinding.Call2ActionBottomSheetBinding
 import com.blockstream.green.extensions.navigate
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
 
-@AndroidEntryPoint
 class Call2ActionBottomSheetDialogFragment :
     WalletBottomSheetDialogFragment<Call2ActionBottomSheetBinding, AbstractWalletViewModel>() {
 
@@ -53,10 +52,7 @@ class Call2ActionBottomSheetDialogFragment :
                 }
             }else if(isIncreaseSecurity){
                 NavGraphDirections.actionGlobalReviewAddAccountFragment(
-                    wallet = wallet,
-                    assetId = account.network.policyAsset,
-                    network = account.network,
-                    accountType = AccountType.STANDARD
+                    SetupArgs(greenWallet = wallet, assetId = account.network.policyAsset, network = account.network, accountType = AccountType.STANDARD)
                 ).also {
                     navigate(findNavController(), it.actionId, it.arguments)
                 }

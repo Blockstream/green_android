@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk.data
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -19,7 +19,7 @@ data class CreateTransaction constructor(
     @SerialName("txhash") val txHash: String? = null,
     @SerialName("sign_with") var signWith: List<String> = listOf(), // user, green-backendm, all
     @SerialName("is_lightning") val isLightning: Boolean = false, // synthesized
-) : GdkJson<CreateTransaction>() {
+) : GreenJson<CreateTransaction>() {
     override fun keepJsonElement() = true
 
     fun isSweep(): Boolean = privateKey?.isNotBlank() ?: false

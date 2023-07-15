@@ -5,17 +5,19 @@ import android.os.Bundle
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
+import com.blockstream.common.AddressInputType
 import com.blockstream.common.Urls
+import com.blockstream.common.data.DenominatedValue
+import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.FeeBlockTarget
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.UserInput
 import com.blockstream.green.R
-import com.blockstream.green.data.AddressInputType
-import com.blockstream.green.data.DenominatedValue
-import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.AccountAssetLayoutBinding
 import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.ListItemTransactionRecipientBinding
@@ -28,7 +30,6 @@ import com.blockstream.green.extensions.hideKeyboard
 import com.blockstream.green.extensions.setOnClickListener
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.filters.NumberValueFilter
-import com.blockstream.green.gdk.isPolicyAsset
 import com.blockstream.green.looks.AssetLook
 import com.blockstream.green.ui.bottomsheets.AccountAssetBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
@@ -36,25 +37,23 @@ import com.blockstream.green.ui.bottomsheets.DenominationBottomSheetDialogFragme
 import com.blockstream.green.ui.bottomsheets.SelectUtxosBottomSheetDialogFragment
 import com.blockstream.green.ui.wallet.AbstractAssetWalletFragment
 import com.blockstream.green.utils.AmountTextWatcher
-import com.blockstream.green.utils.UserInput
 import com.blockstream.green.utils.getClipboard
 import com.blockstream.green.utils.openBrowser
 import com.blockstream.green.utils.underlineText
 import com.blockstream.green.views.GreenAlertView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import java.lang.ref.WeakReference
 import java.text.NumberFormat
 import java.util.Locale
-import javax.inject.Inject
 
-@AndroidEntryPoint
 class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
     layout = R.layout.send_fragment,
     menuRes = 0
@@ -78,11 +77,9 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
     override val showEditIcon: Boolean
         get() = !(isBump || isSweep)
 
-    @Inject
-    lateinit var viewModelFactory: SendViewModel.AssistedFactory
-    val viewModel: SendViewModel by viewModels {
-        SendViewModel.provideFactory(
-            viewModelFactory,
+
+    val viewModel: SendViewModel by viewModel {
+        parametersOf(
             args.wallet,
             args.accountAsset,
             isSweep,
@@ -105,9 +102,22 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
             }
         )
 
-
     override val accountAssetLayoutBinding: AccountAssetLayoutBinding?
         get() = bindings.getOrNull(0)?.get()?.accountAsset
+
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+        if(sideEffect is SideEffects.Navigate){
+            navigate(SendFragmentDirections.actionSendFragmentToSendConfirmFragment(
+                wallet = wallet,
+                account = account,
+                denomination = viewModel.getRecipientLiveData(0)?.denomination?.value,
+                transactionSegmentation = viewModel.createTransactionSegmentation()
+            ))
+            // Re-enable continue button
+            viewModel.onProgressAndroid.postValue(false)
+        }
+    }
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         // Clear previous references as we need to re-create everything
@@ -123,36 +133,15 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
         }
 
         // Handle pending URI (BIP-21 or lightning)
-        sessionManager.pendingUri.observe(viewLifecycleOwner) {
+        sessionManager.pendingUri.onEach {
             it?.getContentIfNotHandledOrReturnNull()?.let { uri ->
                 viewModel.setUri(uri)
                 snackbar(R.string.id_address_was_filled_by_a_payment)
             }
-        }
+        }.launchIn(lifecycleScope)
 
         binding.vm = viewModel
         binding.enableMultipleRecipients = false //isDevelopmentFlavor() && session.isTestnet
-
-        viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
-            consumableEvent?.getContentIfNotHandledForType<NavigateEvent.Navigate>()?.let {
-                navigate(SendFragmentDirections.actionSendFragmentToSendConfirmFragment(
-                    wallet = wallet,
-                    account = account,
-                    denomination = viewModel.getRecipientLiveData(0)?.denomination?.value,
-                    transactionSegmentation = viewModel.createTransactionSegmentation()
-                ))
-                // Re-enable continue button
-                viewModel.onProgress.postValue(false)
-            }
-
-            consumableEvent?.getContentIfNotHandledForType<NavigateEvent.NavigateBack>()?.let {
-                it.reason?.let {
-                    errorDialog(it){
-                        popBackStack()
-                    }
-                } ?: popBackStack()
-            }
-        }
 
         viewModel.onError.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let {
@@ -351,7 +340,7 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
                 val assetId = addressParamsLiveData.accountAsset.value!!.assetId
                 val account = addressParamsLiveData.accountAsset.value!!.account
 
-                val balance = session.accountAssets(account).firstNotNullOfOrNull { if (it.key == assetId) it.value else null }
+                val balance = session.accountAssets(account).value.balanceOrNull(assetId)
                 var look: AssetLook? = null
 
                 if (!assetId.isNullOrBlank()) {

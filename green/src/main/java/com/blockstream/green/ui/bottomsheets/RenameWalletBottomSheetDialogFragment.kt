@@ -4,30 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
-import com.blockstream.green.ApplicationScope
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.extensions.cleanup
+import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.common.events.Events
 import com.blockstream.green.databinding.RenameWalletBottomSheetBinding
-import com.blockstream.green.extensions.isNotBlank
 import com.blockstream.green.extensions.openKeyboard
-import com.blockstream.green.ui.intro.IntroFragment
-import com.blockstream.green.ui.login.LoginFragment
-import com.blockstream.green.utils.nameCleanup
-import dagger.hilt.android.AndroidEntryPoint
+import com.blockstream.green.ui.AppFragment
 import mu.KLogging
-import javax.inject.Inject
 
-@AndroidEntryPoint
 class RenameWalletBottomSheetDialogFragment :
     AbstractBottomSheetDialogFragment<RenameWalletBottomSheetBinding>() {
 
-    private lateinit var wallet: Wallet
-
-    @Inject
-    lateinit var walletRepository: WalletRepository
-
-    @Inject
-    lateinit var applicationScope: ApplicationScope
+    private lateinit var wallet: GreenWallet
 
     override val screenName = "RenameWallet"
 
@@ -38,7 +27,7 @@ class RenameWalletBottomSheetDialogFragment :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.getParcelable<Wallet>(WALLET)?.let {
+        arguments?.getParcelable<GreenWallet>(WALLET)?.let {
             wallet = it
         } ?: run {
             dismiss()
@@ -51,7 +40,7 @@ class RenameWalletBottomSheetDialogFragment :
         binding.name = wallet.name
 
         binding.buttonSave.setOnClickListener {
-            binding.name.nameCleanup().takeIf { it.isNotBlank() }?.also {
+            binding.name.cleanup().takeIf { it.isNotBlank() }?.also {
                 renameWallet(it)
                 dismiss()
             }
@@ -63,12 +52,13 @@ class RenameWalletBottomSheetDialogFragment :
     }
 
     private fun renameWallet(name: String){
-        requireParentFragment().let { fragment ->
-            if(fragment is IntroFragment){
-                fragment.viewModel.renameWallet(name, wallet)
-            }else if(fragment is LoginFragment){
-                fragment.viewModel.renameWallet(name)
-            }
+        (requireParentFragment() as? AppFragment<*>)?.getGreenViewModel()?.also {
+            it.postEvent(
+                Events.RenameWallet(
+                    wallet,
+                    name
+                )
+            )
         }
     }
 
@@ -81,7 +71,7 @@ class RenameWalletBottomSheetDialogFragment :
     companion object : KLogging() {
         private const val WALLET = "WALLET"
 
-        fun show(wallet: Wallet, fragmentManager: FragmentManager) {
+        fun show(wallet: GreenWallet, fragmentManager: FragmentManager) {
             show(RenameWalletBottomSheetDialogFragment().also {
                 it.arguments = Bundle().also { bundle ->
                     bundle.putParcelable(WALLET, wallet)

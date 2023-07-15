@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import com.blockstream.green.R
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class RecoveryPhraseKeyboardView @JvmOverloads constructor(
     context: Context,
@@ -17,13 +18,9 @@ class RecoveryPhraseKeyboardView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr), View.OnClickListener, View.OnLongClickListener {
 
-    interface OnRecoveryPhraseKeyboardListener {
-        fun onRecoveryPhraseStateUpdate(state: RecoveryPhraseState)
-    }
+    lateinit var recoveryPhrase: MutableStateFlow<List<String>>
+    lateinit var activeWord: MutableStateFlow<Int>
 
-    private var state = RecoveryPhraseState(mutableListOf(), -1)
-
-    private var listener: OnRecoveryPhraseKeyboardListener? = null
     private var wordList: List<String>? = null
     private val letterKeys = ArrayList<Button>()
     private val wordsKeys = ArrayList<Button>()
@@ -33,6 +30,11 @@ class RecoveryPhraseKeyboardView @JvmOverloads constructor(
         LayoutInflater.from(context).inflate(R.layout.recovery_phrase_keyboard_view, this, true)
         deleteButton = findViewById(R.id.delete)
         setButtonListeners(this)
+    }
+
+    fun bridge(recoveryPhrase: MutableStateFlow<List<String>>, activeWord: MutableStateFlow<Int>) {
+        this.recoveryPhrase = recoveryPhrase
+        this.activeWord = activeWord
         updateKeyboard(false)
     }
 
@@ -55,8 +57,21 @@ class RecoveryPhraseKeyboardView @JvmOverloads constructor(
     }
 
 
-    private fun setWord(word: CharSequence) {
-        state.setWord(word)
+    private fun setWord(word: String) {
+        if(hasActiveWord()){
+            recoveryPhrase.value = recoveryPhrase.value.toMutableList().let {
+                it[activeWord.value] = word
+                it
+            }
+        }else{
+            recoveryPhrase.value = recoveryPhrase.value.toMutableList().let {
+                it.add(word)
+                it
+            }
+        }
+
+        activeWord.value = -1
+
         updateKeyboard(false)
     }
 
@@ -64,7 +79,7 @@ class RecoveryPhraseKeyboardView @JvmOverloads constructor(
         val enabledKeys = hashSetOf<CharSequence>()
         val matchedWords = mutableListOf<String>()
 
-        val activeWord = state.activeWord() ?: ""
+        val activeWord = activeWord() ?: ""
         val activeWordLen = activeWord.length
 
         wordList?.let { wordList ->
@@ -83,7 +98,7 @@ class RecoveryPhraseKeyboardView @JvmOverloads constructor(
         }
 
         // Disable keys for words greater than 27
-        if(state.phrase.size >= 27 && state.activeIndex == -1) {
+        if(recoveryPhrase.value.size >= 27 && this.activeWord.value == -1) {
             for (key in letterKeys) {
                 key.isEnabled = false
             }
@@ -102,12 +117,6 @@ class RecoveryPhraseKeyboardView @JvmOverloads constructor(
                 wordButton.visibility = if (x == 0) INVISIBLE else GONE
             }
         }
-
-        listener?.onRecoveryPhraseStateUpdate(state)
-    }
-
-    fun setOnRecoveryPhraseKeyboardListener(listener: OnRecoveryPhraseKeyboardListener?) {
-        this.listener = listener
     }
 
     fun setWordList(wordList: List<String>?) {
@@ -118,14 +127,12 @@ class RecoveryPhraseKeyboardView @JvmOverloads constructor(
     override fun onClick(view: View) {
         when (view.id) {
             R.id.delete -> {
-                state.deleteCharacter()
-
+                deleteCharacter()
                 updateKeyboard(false)
             }
-            R.id.word1, R.id.word2, R.id.word3, R.id.word4 -> setWord((view as Button).text)
+            R.id.word1, R.id.word2, R.id.word3, R.id.word4 -> setWord((view as Button).text.toString())
             else -> {
-                state.setCharacter((view as Button).text)
-
+                setCharacter((view as Button).text.toString())
                 updateKeyboard(true)
             }
         }
@@ -135,129 +142,78 @@ class RecoveryPhraseKeyboardView @JvmOverloads constructor(
     }
 
     override fun onLongClick(v: View?): Boolean {
-        state.removeWord()
-
+        removeWord()
         updateKeyboard(false)
         return true
     }
 
-    fun setRecoveryPhraseState(recoveryPhraseState: RecoveryPhraseState) {
-        state = recoveryPhraseState
-        updateKeyboard(false)
-    }
-
     fun toggleActiveWord(position: Int) {
-
-        state.setActiveWord(if (state.activeIndex == position) -1 else position)
-
+        setActiveWord(if (activeWord.value == position) -1 else position)
         updateKeyboard(false)
     }
 
-    data class RecoveryPhraseState(
-        val phrase: MutableList<CharSequence>,
-        var activeIndex: Int
-    ) {
-        companion object {
-            fun empty() = RecoveryPhraseState(mutableListOf(), -1)
+    private fun hasActiveWord(): Boolean{
+        return activeWord.value >= 0 && activeWord.value < recoveryPhrase.value.size
+    }
 
-            fun fromString(mnemonic: String?): RecoveryPhraseState {
-
-                if(mnemonic == null) return empty()
-
-                // replace new line, and multiple spaces
-                val list = mnemonic
-                    .replace("\n", " ")
-                    .replace("\\s+", "")
-                    .split(" ")
-
-                // Its a basic check to prevent huge inputs
-                // TODO Validate words
-                return if (list.size <= 32){
-                    RecoveryPhraseState(list.toMutableList(), -1)
-                }else{
-                    empty()
-                }
-            }
-        }
-
-        init {
-            setActiveWord(activeIndex)
-        }
-
-        val isEditMode
-            get() = activeIndex != -1
-
-        fun setActiveWord(position: Int) {
-            activeIndex = if (position < phrase.size){
-                position
+    private fun deleteCharacter(){
+        if(hasActiveWord()){
+            val word = activeWord()
+            if(word.isNullOrBlank()){
+                removeWord()
             }else{
-                -1
-            }
-        }
-
-        fun setCharacter(char: CharSequence){
-            if(hasActiveWord()){
-                phrase[activeIndex] = phrase[activeIndex].toString() + char
-            }else{
-                phrase.add(char)
-                activeIndex = phrase.size - 1
-            }
-        }
-
-        fun deleteCharacter(){
-            if(hasActiveWord()){
-                val word = activeWord()
-                if(word.isNullOrBlank()){
-                    removeWord()
-                }else{
-                    phrase[activeIndex] = word.let{
+                recoveryPhrase.value = recoveryPhrase.value.toMutableList().let {
+                    it[activeWord.value] = word.let {
                         it.substring(0 until it.length - 1)
                     }
+                    it
                 }
-
-                // Case where you are on the last empty word, its better on that case to completely
-                // remove the word, that way we can imediatelly show the paste button
-                if(phrase.size == 1 && phrase[0].isEmpty()){
-                    deleteCharacter()
-                }
-
-            }else{
-                activeIndex = phrase.size - 1
-            }
-        }
-
-        fun hasActiveWord(): Boolean{
-            return activeIndex >= 0 && activeIndex < phrase.size
-        }
-
-        fun activeWord(): CharSequence? = if(hasActiveWord()) phrase[activeIndex] else null
-
-        fun setWord(word: CharSequence){
-
-            if(hasActiveWord()){
-                phrase[activeIndex] = word
-            }else{
-                phrase.add(word)
             }
 
-            activeIndex = -1
-        }
-
-        fun removeWord(){
-            if(hasActiveWord()){
-                phrase.removeAt(activeIndex)
-            }else{
-                phrase.removeLastOrNull()
+            // Case where you are on the last empty word, its better on that case to completely
+            // remove the word, that way we can immediately show the paste button
+            if(recoveryPhrase.value.size == 1 && recoveryPhrase.value[0].isEmpty()){
+                deleteCharacter()
             }
-            activeIndex = -1
-        }
 
-        fun toMnemonic(): String {
-            return phrase.joinToString(" ")
-        }
-
-        override fun toString(): String {
-            return toMnemonic()
+        }else{
+            activeWord.value = recoveryPhrase.value.size - 1
         }
     }
+
+    private fun removeWord(){
+        recoveryPhrase.value = recoveryPhrase.value.toMutableList().let {
+            if(hasActiveWord()){
+                it.removeAt(activeWord.value)
+            }else{
+                it.removeLastOrNull()
+            }
+            it
+        }
+
+        activeWord.value = -1
+    }
+
+    private fun setActiveWord(position: Int) {
+        activeWord.value = if (position < recoveryPhrase.value.size){
+            position
+        }else{
+            -1
+        }
+    }
+
+    private fun setCharacter(char: String) {
+        recoveryPhrase.value = recoveryPhrase.value.toMutableList().let {
+            if (hasActiveWord()) {
+                it[activeWord.value] = it[activeWord.value] + char
+
+            } else {
+                it.add(char)
+                activeWord.value = it.size - 1
+            }
+            it
+        }
+    }
+
+    private fun activeWord(): String? = if(hasActiveWord()) recoveryPhrase.value[activeWord.value] else null
 }

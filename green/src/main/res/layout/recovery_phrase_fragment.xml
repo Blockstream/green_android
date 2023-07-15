@@ -5,18 +5,11 @@
     tools:context=".ui.onboarding.EnterRecoveryPhraseFragment">
 
     <data>
-        <import type="com.blockstream.green.extensions.ExtensionsKt" />
         <variable
-            name="passphrase"
-            type="String" />
+            name="vm"
+            type="com.blockstream.common.models.recovery.RecoveryPhraseViewModel" />
 
-        <variable
-            name="isLightning"
-            type="Boolean" />
-
-        <variable
-            name="showQR"
-            type="Boolean" />
+        <import type="com.blockstream.common.extensions.StringExtensionsKt" />
     </data>
 
 
@@ -74,7 +67,7 @@
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="24dp"
-                    isVisible="@{isLightning}"
+                    isVisible="@{vm.isLightning}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/recycler"
@@ -98,7 +91,7 @@
 
                 <LinearLayout
                     android:id="@+id/bip39PasshraseWrap"
-                    isVisible="@{ExtensionsKt.isNotBlank(passphrase)}"
+                    isVisible="@{StringExtensionsKt.isNotBlank(vm.passphrase)}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
@@ -123,7 +116,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
                         android:drawablePadding="8dp"
-                        android:text="@{passphrase}"
+                        android:text="@{vm.passphrase}"
                         android:textAppearance="?attr/textAppearanceTitleSmall"
                         app:drawableStartCompat="@drawable/ic_bip39_passphrase_24"
                         app:drawableTint="@color/brand_green"
@@ -164,20 +157,20 @@
 
                     <ImageView
                         android:id="@+id/recoveryQR"
-                        isVisible="@{showQR}"
+                        isVisible="@{vm.showQR}"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
                         android:layout_margin="10dp"
                         android:adjustViewBounds="true"
                         android:scaleType="fitCenter"
-                        android:visibility="gone"
+                        tools:visibility="gone"
                         tools:src="@mipmap/ic_launcher" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/buttonShowQR"
                         style="@style/Widget.Green.Button.Text.Small"
-                        isVisible="@{!showQR}"
+                        isVisible="@{!vm.showQR}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -193,7 +186,7 @@
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="24dp"
-                    isVisible="@{ExtensionsKt.isNotBlank(passphrase) &amp;&amp; showQR}"
+                    isVisible="@{StringExtensionsKt.isNotBlank(vm.passphrase) &amp;&amp; vm.showQR}"
                     android:text="@string/id_the_qr_code_does_not_include"
                     android:textAlignment="center"
                     android:textAppearance="?attr/textAppearanceBodySmall"

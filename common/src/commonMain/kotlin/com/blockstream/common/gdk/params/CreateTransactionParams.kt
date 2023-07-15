@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk.params
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -18,7 +18,7 @@ data class CreateTransactionParams constructor(
     @SerialName("previous_transaction") val previousTransaction: JsonElement? = null, // bump
     @SerialName("memo") val memo: String? = null,
     @SerialName("utxos") val utxos: JsonElement? = null,
-) : GdkJson<CreateTransactionParams>() {
+) : GreenJson<CreateTransactionParams>() {
 
     override fun encodeDefaultsValues() = false
 

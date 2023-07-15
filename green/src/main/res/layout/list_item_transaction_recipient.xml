@@ -5,7 +5,7 @@
 
     <data>
 
-        <import type="com.blockstream.green.extensions.ExtensionsKt" />
+        <import type="com.blockstream.common.extensions.StringExtensionsKt" />
 
         <import type="android.view.View" />
 
@@ -126,7 +126,7 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                error="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; (`id_invalid_address`.equals(vm.transactionError) || `id_invalid_private_key`.equals(vm.transactionError) || `id_invoice_expired`.equals(vm.transactionError)) ? true : false}">
+                error="@{StringExtensionsKt.isNotBlank(liveData.address) &amp;&amp; (`id_invalid_address`.equals(vm.transactionError) || `id_invalid_private_key`.equals(vm.transactionError) || `id_invoice_expired`.equals(vm.transactionError)) ? true : false}">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -244,7 +244,7 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                error="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; (`id_invalid_amount`.equals(vm.transactionError) || `id_insufficient_funds`.equals(vm.transactionError) || vm.transactionError.startsWith(`id_amount_must_be_at_least_s`) || vm.transactionError.startsWith(`id_amount_must_be_at_most_s`)) ? true : false}">
+                error="@{StringExtensionsKt.isNotBlank(liveData.address) &amp;&amp; (`id_invalid_amount`.equals(vm.transactionError) || `id_insufficient_funds`.equals(vm.transactionError) || vm.transactionError.startsWith(`id_amount_must_be_at_least_s`) || vm.transactionError.startsWith(`id_amount_must_be_at_most_s`)) ? true : false}">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -261,7 +261,7 @@
                         android:layout_marginBottom="16dp"
                         android:layout_weight="1"
                         android:background="@android:color/transparent"
-                        android:enabled="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError) &amp;&amp; liveData.amountBip21 == false &amp;&amp; liveData.isSendAll == false &amp;&amp; vm.isBumpOrSweep == false &amp;&amp; !liveData.hasLockedAmount}"
+                        android:enabled="@{StringExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError) &amp;&amp; liveData.amountBip21 == false &amp;&amp; liveData.isSendAll == false &amp;&amp; vm.isBumpOrSweep == false &amp;&amp; !liveData.hasLockedAmount}"
                         android:fontFamily="@font/monospace"
                         android:inputType="numberDecimal"
                         android:singleLine="true"
@@ -278,7 +278,7 @@
                         android:fontFamily="@font/monospace"
                         android:textAppearance="?attr/textAppearanceBodyLarge"
                         android:textStyle="bold"
-                        android:enabled="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError)}"
+                        android:enabled="@{StringExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError)}"
                         android:textColor="@color/selector_image_button"
                         tools:text="BTC" />
 
@@ -289,7 +289,7 @@
                         android:layout_gravity="center_vertical"
                         android:adjustViewBounds="true"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:enabled="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError) &amp;&amp; liveData.amountBip21 == false  &amp;&amp; !vm.isBumpOrSweep &amp;&amp; canConvert &amp;&amp; !liveData.hasLockedAmount}"
+                        android:enabled="@{StringExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError) &amp;&amp; liveData.amountBip21 == false  &amp;&amp; !vm.isBumpOrSweep &amp;&amp; canConvert &amp;&amp; !liveData.hasLockedAmount}"
                         android:scaleType="centerInside"
                         android:paddingTop="12dp"
                         android:paddingEnd="6dp"
@@ -308,7 +308,7 @@
                         android:layout_gravity="center_vertical"
                         android:adjustViewBounds="true"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:enabled="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError) &amp;&amp; liveData.amountBip21 == false &amp;&amp; vm.isBumpOrSweep == false &amp;&amp; !liveData.hasLockedAmount}"
+                        android:enabled="@{StringExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError) &amp;&amp; liveData.amountBip21 == false &amp;&amp; vm.isBumpOrSweep == false &amp;&amp; !liveData.hasLockedAmount}"
                         android:paddingTop="12dp"
                         android:paddingEnd="12dp"
                         android:paddingBottom="12dp"
@@ -327,7 +327,7 @@
                         android:layout_gravity="center_vertical"
                         android:adjustViewBounds="true"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:enabled="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError) &amp;&amp; liveData.amountBip21 == false &amp;&amp; liveData.isSendAll == false &amp;&amp; vm.isBumpOrSweep == false &amp;&amp; !liveData.hasLockedAmount}"
+                        android:enabled="@{StringExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError) &amp;&amp; liveData.amountBip21 == false &amp;&amp; liveData.isSendAll == false &amp;&amp; vm.isBumpOrSweep == false &amp;&amp; !liveData.hasLockedAmount}"
                         android:paddingTop="12dp"
                         android:paddingEnd="12dp"
                         android:paddingBottom="12dp"
@@ -426,7 +426,7 @@
                         style="@style/Widget.Green.Button.Outlined.Tiny"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:enabled="@{ExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError) &amp;&amp; assetSatoshi != 0 &amp;&amp; liveData.amountBip21 == false}"
+                        android:enabled="@{StringExtensionsKt.isNotBlank(liveData.address) &amp;&amp; !`id_invalid_address`.equals(vm.transactionError) &amp;&amp; assetSatoshi != 0 &amp;&amp; liveData.amountBip21 == false}"
                         android:text="@string/id_send_all_funds" />
 
                 </com.google.android.material.button.MaterialButtonToggleGroup>
@@ -452,7 +452,7 @@
                 android:maxWidth="100dp"
                 android:maxHeight="100dp"
                 android:scaleType="fitCenter"
-                tools:src="@drawable/ic_lightning" />
+                tools:src="@drawable/ic_lightning_fill" />
 
             <TextView
                 isVisible="@{!liveData.description.empty}"

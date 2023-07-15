@@ -4,13 +4,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.blockstream.green.R
-import com.blockstream.green.data.Denomination
+import com.blockstream.common.data.Denomination
 import com.blockstream.green.databinding.ListItemAssetBinding
 import com.blockstream.green.extensions.bind
 import com.blockstream.green.extensions.context
-import com.blockstream.green.gdk.AssetPair
-import com.blockstream.green.gdk.GdkSession
-import com.blockstream.green.gdk.networkForAsset
+import com.blockstream.common.gdk.AssetPair
+import com.blockstream.common.gdk.GdkSession
+import com.blockstream.common.extensions.networkForAsset
 import com.blockstream.green.looks.AssetLook
 import com.blockstream.green.utils.toAmountLook
 import com.blockstream.green.utils.toPixels

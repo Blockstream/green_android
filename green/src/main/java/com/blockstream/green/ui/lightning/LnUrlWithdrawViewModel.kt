@@ -1,52 +1,39 @@
 package com.blockstream.green.ui.lightning
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
-import androidx.lifecycle.viewModelScope
 import breez_sdk.LnUrlCallbackStatus
 import breez_sdk.LnUrlWithdrawRequestData
+import com.blockstream.common.data.DenominatedValue
+import com.blockstream.common.data.Denomination
+import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.green.data.Countly
-import com.blockstream.green.data.DenominatedValue
-import com.blockstream.green.data.Denomination
-import com.blockstream.green.data.NavigateEvent
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
+import com.blockstream.common.lightning.maxReceivableSatoshi
+import com.blockstream.common.lightning.maxWithdrawableSatoshi
+import com.blockstream.common.lightning.minWithdrawableSatoshi
+import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.UserInput
 import com.blockstream.green.extensions.boolean
 import com.blockstream.green.extensions.string
-import com.blockstream.green.gdk.policyAsset
-import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.bottomsheets.DenominationListener
 import com.blockstream.green.ui.wallet.AbstractAccountWalletViewModel
-import com.blockstream.green.utils.ConsumableEvent
-import com.blockstream.green.utils.UserInput
 import com.blockstream.green.utils.toAmountLook
 import com.blockstream.green.utils.toAmountLookOrNa
-import com.blockstream.lightning.maxReceivableSatoshi
-import com.blockstream.lightning.maxWithdrawableSatoshi
-import com.blockstream.lightning.minWithdrawableSatoshi
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
+import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 import java.lang.Long.min
 
-
-class LnUrlWithdrawViewModel @AssistedInject constructor(
-    sessionManager: SessionManager,
-    walletRepository: WalletRepository,
-    countly: Countly,
-    @Assisted wallet: Wallet,
-    @Assisted val accountAsset: AccountAsset,
-    @Assisted val requestData: LnUrlWithdrawRequestData,
+@KoinViewModel
+class LnUrlWithdrawViewModel constructor(
+    @InjectedParam wallet: GreenWallet,
+    @InjectedParam val accountAsset: AccountAsset,
+    @InjectedParam val requestData: LnUrlWithdrawRequestData,
 ) : AbstractAccountWalletViewModel(
-    sessionManager,
-    walletRepository,
-    countly,
     wallet,
     accountAsset.account
 ), DenominationListener {
@@ -79,10 +66,10 @@ class LnUrlWithdrawViewModel @AssistedInject constructor(
 
         // Set amount if min/max is the same
         if(amountIsLocked.boolean()){
-            viewModelScope.launch {
+            viewModelScope.coroutineScope.launch {
                 amount.value = requestData.minWithdrawableSatoshi().toAmountLook(
                     session = session,
-                    assetId = account.network.policyAsset,
+                    assetId = accountValue.network.policyAsset,
                     denomination = denomination.value,
                     withUnit = false,
                     withGrouping = false
@@ -96,12 +83,12 @@ class LnUrlWithdrawViewModel @AssistedInject constructor(
                 updateExchange()
                 check()
             }
-            .launchIn(viewModelScope)
+            .launchIn(viewModelScope.coroutineScope)
 
         denomination.asFlow()
             .onEach {
-                amountCurrency.value = it.unit(session, account.network.policyAsset)
-            }.launchIn(viewModelScope)
+                amountCurrency.value = it.unit(session, accountValue.network.policyAsset)
+            }.launchIn(viewModelScope.coroutineScope)
 
         combine(session.lightningNodeInfoStateFlow, denomination.asFlow()) { nodeState, _ ->
             nodeState
@@ -125,7 +112,7 @@ class LnUrlWithdrawViewModel @AssistedInject constructor(
 
             }
 
-        }.launchIn(viewModelScope)
+        }.launchIn(viewModelScope.coroutineScope)
     }
 
     private fun updateExchange() {
@@ -156,7 +143,7 @@ class LnUrlWithdrawViewModel @AssistedInject constructor(
 
         val min = minSatoshi.value ?: 0
         val max = maxSatoshi.value ?: 0
-        val balance = session.accountAssets(account = account).policyAsset()
+        val balance = session.accountAssets(account = accountValue).value.policyAsset
 
         error.value = if (satoshi <= 0L) {
             "id_invalid_amount"
@@ -179,43 +166,12 @@ class LnUrlWithdrawViewModel @AssistedInject constructor(
                 }
             }
         }, onSuccess = {
-            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateBack()))
+            postSideEffect(SideEffects.Success())
         })
     }
 
     override fun setDenomination(denominatedValue: DenominatedValue) {
         amount.value = denominatedValue.asInput(session) ?: ""
         denomination.value = denominatedValue.denomination
-    }
-
-    @dagger.assisted.AssistedFactory
-    interface AssistedFactory {
-        fun create(
-            wallet: Wallet,
-            accountAsset: AccountAsset,
-            requestData: LnUrlWithdrawRequestData
-        ): LnUrlWithdrawViewModel
-    }
-
-    companion object {
-
-        fun provideFactory(
-            assistedFactory: AssistedFactory,
-            wallet: Wallet,
-            accountAsset: AccountAsset,
-            requestData: LnUrlWithdrawRequestData
-        ): ViewModelProvider.Factory =
-            object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(
-                    modelClass: Class<T>,
-                ): T {
-                    return assistedFactory.create(
-                        wallet,
-                        accountAsset,
-                        requestData
-                    ) as T
-                }
-            }
     }
 }

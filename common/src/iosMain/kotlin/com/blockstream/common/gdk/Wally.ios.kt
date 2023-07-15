@@ -52,7 +52,6 @@ class IOSWally : Wally {
     }
 
     override fun bip39GetWord(index: Int): String {
-        Logger.d { "Wally bip39GetWord: $index" }
         return memScoped {
             val word = allocPointerTo<ByteVar>()
 

@@ -17,10 +17,9 @@ import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.GenericFastItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.itemanimators.AlphaCrossFadeAnimator
-import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
 
-@AndroidEntryPoint
+
 open class FilterBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<FilterBottomSheetBinding>(){
 
     override val screenName = "Filter"

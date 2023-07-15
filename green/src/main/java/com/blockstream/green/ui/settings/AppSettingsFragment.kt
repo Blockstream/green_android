@@ -6,8 +6,18 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
 import androidx.activity.OnBackPressedCallback
-import androidx.fragment.app.viewModels
 import com.blockstream.common.data.ScreenLockSetting
+import com.blockstream.common.models.settings.AppSettingsViewModel
+import com.blockstream.common.models.settings.AppSettingsViewModelAbstract.Companion.DEFAULT_BITCOIN_ELECTRUM_URL
+import com.blockstream.common.models.settings.AppSettingsViewModelAbstract.Companion.DEFAULT_LIQUID_ELECTRUM_URL
+import com.blockstream.common.models.settings.AppSettingsViewModelAbstract.Companion.DEFAULT_MULTI_SPV_BITCOIN_URL
+import com.blockstream.common.models.settings.AppSettingsViewModelAbstract.Companion.DEFAULT_MULTI_SPV_LIQUID_URL
+import com.blockstream.common.models.settings.AppSettingsViewModelAbstract.Companion.DEFAULT_MULTI_SPV_TESTNET_LIQUID_URL
+import com.blockstream.common.models.settings.AppSettingsViewModelAbstract.Companion.DEFAULT_MULTI_SPV_TESTNET_URL
+import com.blockstream.common.models.settings.AppSettingsViewModelAbstract.Companion.DEFAULT_TESTNET_ELECTRUM_URL
+import com.blockstream.common.models.settings.AppSettingsViewModelAbstract.Companion.DEFAULT_TESTNET_LIQUID_ELECTRUM_URL
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.green.R
 import com.blockstream.green.databinding.AppSettingsFragmentBinding
 import com.blockstream.green.databinding.EditTextDialogBinding
@@ -19,16 +29,15 @@ import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.ConsentBottomSheetDialogFragment
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.jsonPrimitive
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-@AndroidEntryPoint
 class AppSettingsFragment : AppFragment<AppSettingsFragmentBinding>(R.layout.app_settings_fragment, R.menu.app_settings) {
-    override val screenName = "AppSettings"
+    private val viewModel: AppSettingsViewModel by viewModel()
 
-    private val viewModel: AppSettingsViewModel by viewModels()
+    override fun getGreenViewModel(): GreenViewModel = viewModel
+
+    override fun getAppViewModel() = null
 
     private val onBackCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
@@ -48,6 +57,13 @@ class AppSettingsFragment : AppFragment<AppSettingsFragmentBinding>(R.layout.app
         }
     }
 
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+        if (sideEffect is AppSettingsViewModel.LocalSideEffects.AnalyticsMoreInfo) {
+            ConsentBottomSheetDialogFragment.show(childFragmentManager, hideButtons = true)
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -55,7 +71,7 @@ class AppSettingsFragment : AppFragment<AppSettingsFragmentBinding>(R.layout.app
             viewLifecycleOwner
         ) { result ->
             result?.also { scannedCode ->
-                checkInvitationCode(scannedCode)
+                viewModel.postEvent(AppSettingsViewModel.LocalEvents.InvitationCode(scannedCode))
             }
         }
 
@@ -66,26 +82,25 @@ class AppSettingsFragment : AppFragment<AppSettingsFragmentBinding>(R.layout.app
         }
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, screenLockSettings)
         binding.screenLockSetting.setAdapter(adapter)
-        binding.screenLockSetting.setText(screenLockSettings[ScreenLockSetting.bySeconds(viewModel.screenLockSetting.value ?: 0).ordinal], false)
-
+        binding.screenLockSetting.setText(screenLockSettings[viewModel.screenLockInSeconds.value.ordinal], false)
         binding.screenLockSetting.setOnItemClickListener { _, _, position, _ ->
             ScreenLockSetting.byPosition(position).let {
-                viewModel.screenLockSetting.value = it.seconds
+                viewModel.screenLockInSeconds.value = it
             }
         }
 
-        binding.bitcoinElectrumServerPlaceholder = AppSettingsViewModel.DEFAULT_BITCOIN_ELECTRUM_URL
-        binding.liquidElectrumServerPlaceholder = AppSettingsViewModel.DEFAULT_LIQUID_ELECTRUM_URL
-        binding.testnetElectrumServerPlaceholder = AppSettingsViewModel.DEFAULT_TESTNET_ELECTRUM_URL
-        binding.testnetLiquidElectrumServerPlaceholder = AppSettingsViewModel.DEFAULT_TESTNET_LIQUID_ELECTRUM_URL
+        binding.bitcoinElectrumServerPlaceholder = DEFAULT_BITCOIN_ELECTRUM_URL
+        binding.liquidElectrumServerPlaceholder = DEFAULT_LIQUID_ELECTRUM_URL
+        binding.testnetElectrumServerPlaceholder = DEFAULT_TESTNET_ELECTRUM_URL
+        binding.testnetLiquidElectrumServerPlaceholder = DEFAULT_TESTNET_LIQUID_ELECTRUM_URL
 
-        binding.bitcoinSpvElectrumServerPlaceholder = AppSettingsViewModel.DEFAULT_MULTI_SPV_BITCOIN_URL
-        binding.liquidSpvElectrumServerPlaceholder = AppSettingsViewModel.DEFAULT_MULTI_SPV_LIQUID_URL
-        binding.testnetSpvElectrumServerPlaceholder = AppSettingsViewModel.DEFAULT_MULTI_SPV_TESTNET_URL
-        binding.testnetLiquidSpvElectrumServerPlaceholder = AppSettingsViewModel.DEFAULT_MULTI_SPV_TESTNET_LIQUID_URL
+        binding.bitcoinSpvElectrumServerPlaceholder = DEFAULT_MULTI_SPV_BITCOIN_URL
+        binding.liquidSpvElectrumServerPlaceholder = DEFAULT_MULTI_SPV_LIQUID_URL
+        binding.testnetSpvElectrumServerPlaceholder = DEFAULT_MULTI_SPV_TESTNET_URL
+        binding.testnetLiquidSpvElectrumServerPlaceholder = DEFAULT_MULTI_SPV_TESTNET_LIQUID_URL
 
         binding.buttonAnalyticsMoreInfo.setOnClickListener {
-            ConsentBottomSheetDialogFragment.show(childFragmentManager, hideButtons = true)
+            viewModel.postEvent(AppSettingsViewModel.LocalEvents.AnalyticsMoreInfo)
         }
 
         binding.personalBitcoinElectrumServerInputLayout.endIconCustomMode()
@@ -99,8 +114,7 @@ class AppSettingsFragment : AppFragment<AppSettingsFragmentBinding>(R.layout.app
         binding.spvTestnetLiquidElectrumServerInputLayout.endIconCustomMode()
 
         binding.buttonSave.setOnClickListener {
-            viewModel.saveSettings()
-            popBackStack()
+            viewModel.postEvent(AppSettingsViewModel.LocalEvents.Save)
         }
 
         binding.buttonCancel.setOnClickListener {
@@ -125,7 +139,7 @@ class AppSettingsFragment : AppFragment<AppSettingsFragmentBinding>(R.layout.app
                     .setTitle(R.string.id_enable_experimental_features)
                     .setView(dialogBinding.root)
                     .setPositiveButton(android.R.string.ok) { _, _ ->
-                        checkInvitationCode(dialogBinding.text.toString())
+                        viewModel.postEvent(AppSettingsViewModel.LocalEvents.InvitationCode(dialogBinding.text.toString()))
                     }
                     .setNeutralButton(R.string.id_qr_code) { _, _ ->
                         CameraBottomSheetDialogFragment.showSingle(
@@ -138,24 +152,6 @@ class AppSettingsFragment : AppFragment<AppSettingsFragmentBinding>(R.layout.app
                 true
             }
             else -> super.onMenuItemSelected(menuItem)
-        }
-    }
-
-    private fun checkInvitationCode(userCode: String){
-        try {
-            countly.getRemoteConfigValueAsJsonArray("feature_lightning_codes")
-                ?.mapNotNull { jsonElement ->
-                    jsonElement.jsonPrimitive.contentOrNull?.takeIf { it.isNotBlank() }
-                }?.any { code ->
-                    code == userCode
-                }?.also {
-                    if (it) {
-                        settingsManager.lightningCodeOverride = true
-                        binding.invalidateAll()
-                    }
-                }
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 

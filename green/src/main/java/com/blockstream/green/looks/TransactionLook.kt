@@ -1,17 +1,17 @@
 package com.blockstream.green.looks
 
 import androidx.core.view.isVisible
+import com.blockstream.common.data.Denomination
+import com.blockstream.common.extensions.getConfirmations
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.gdk.data.UtxoView
 import com.blockstream.common.gdk.params.Convert
-import com.blockstream.gdk.createdAt
 import com.blockstream.green.R
-import com.blockstream.green.data.Denomination
 import com.blockstream.green.databinding.TransactionAssetLayoutBinding
 import com.blockstream.green.databinding.TransactionUtxoLayoutBinding
-import com.blockstream.green.gdk.GdkSession
+import com.blockstream.green.extensions.createdAt
 import com.blockstream.green.gdk.getAssetIcon
-import com.blockstream.green.gdk.getConfirmations
 import com.blockstream.green.gdk.getDirectionColor
 import com.blockstream.green.utils.feeRateWithUnit
 import com.blockstream.green.utils.formatAuto

@@ -5,7 +5,7 @@
 
     <data>
 
-        <import type="com.blockstream.green.extensions.ExtensionsKt" />
+        <import type="com.blockstream.common.extensions.StringExtensionsKt" />
 
         <variable
             name="vm"
@@ -55,11 +55,11 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout"
-                error="@{!ExtensionsKt.isBlank(vm.xpub) &amp;&amp; !vm.isXpubValid ? @string/id_invalid_xpub : null}"
+                error="@{!StringExtensionsKt.isBlank(vm.xpub) &amp;&amp; !vm.isXpubValid ? @string/id_invalid_xpub : null}"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="@integer/material_motion_duration_long_1"
-                android:enabled="@{!vm.onProgress}"
+                android:enabled="@{!vm.onProgressAndroid}"
                 app:errorEnabled="true"
                 android:hint="@string/id_xpub"
                 android:orientation="horizontal"
@@ -98,7 +98,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="24dp"
-            android:enabled="@{!ExtensionsKt.isBlank(vm.xpub) &amp;&amp; vm.isXpubValid}"
+            android:enabled="@{!StringExtensionsKt.isBlank(vm.xpub) &amp;&amp; vm.isXpubValid}"
             android:text="@string/id_continue"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

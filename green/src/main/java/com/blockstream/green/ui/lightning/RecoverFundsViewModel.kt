@@ -1,26 +1,17 @@
 package com.blockstream.green.ui.lightning
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import breez_sdk.RecommendedFees
+import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.green.data.Countly
-import com.blockstream.green.data.NavigateEvent
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.extensions.boolean
 import com.blockstream.green.extensions.string
-import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.wallet.AbstractAssetWalletViewModel
-import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.feeRateWithUnit
 import com.blockstream.green.utils.toAmountLook
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
+import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
@@ -28,21 +19,17 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 import kotlin.math.absoluteValue
 
-
-class RecoverFundsViewModel @AssistedInject constructor(
-    sessionManager: SessionManager,
-    walletRepository: WalletRepository,
-    countly: Countly,
-    @Assisted wallet: Wallet,
-    @Assisted initAccountAsset: AccountAsset,
-    @Assisted val onChainAddress: String?,
-    @Assisted val satoshi: Long?
+@KoinViewModel
+class RecoverFundsViewModel constructor(
+    @InjectedParam wallet: GreenWallet,
+    @InjectedParam initAccountAsset: AccountAsset,
+    @InjectedParam val onChainAddress: String?,
+    @InjectedParam val satoshi: Long?
 ) : AbstractAssetWalletViewModel(
-    sessionManager,
-    walletRepository,
-    countly,
     wallet,
     initAccountAsset
 ) {
@@ -57,13 +44,13 @@ class RecoverFundsViewModel @AssistedInject constructor(
     val feeAmountRate = MutableLiveData("") // fee rate
 
     val hasBitcoinAccount =
-        MutableLiveData(session.accounts.any { it.isBitcoin && !it.isLightning })
+        MutableLiveData(session.accounts.value.any { it.isBitcoin && !it.isLightning })
     val showManualAddress = MutableLiveData(!hasBitcoinAccount.boolean())
 
     val isRefund = MutableLiveData(onChainAddress != null)
 
     init {
-        lifecycleScope.launch {
+        viewModelScope.coroutineScope.launch {
             recommendedFees.value = withContext(context = Dispatchers.IO) {
                 session.lightningSdk.recommendedFees()
             }
@@ -84,7 +71,7 @@ class RecoverFundsViewModel @AssistedInject constructor(
             } else {
                 showManualAddress.value = true
             }
-        }.launchIn(viewModelScope)
+        }.launchIn(viewModelScope.coroutineScope)
 
         combine(
             accountAddress.asFlow(),
@@ -95,7 +82,7 @@ class RecoverFundsViewModel @AssistedInject constructor(
             if (!it.second) {
                 address.value = it.first
             }
-        }.launchIn(viewModelScope)
+        }.launchIn(viewModelScope.coroutineScope)
 
         combine(
             feeSlider.asFlow(),
@@ -104,7 +91,7 @@ class RecoverFundsViewModel @AssistedInject constructor(
             feeSlider to recommendedFees
         }.onEach {
             feeAmountRate.value = ((getFee()?.toLong() ?: 0) * 1000).feeRateWithUnit()
-        }.launchIn(viewModelScope)
+        }.launchIn(viewModelScope.coroutineScope)
     }
 
     private fun getFee(): ULong? {
@@ -135,40 +122,7 @@ class RecoverFundsViewModel @AssistedInject constructor(
             }
 
         }, onSuccess = {
-            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateBack()))
+            postSideEffect(SideEffects.Success())
         })
-    }
-
-    @dagger.assisted.AssistedFactory
-    interface AssistedFactory {
-        fun create(
-            wallet: Wallet,
-            initAccountAsset: AccountAsset,
-            onChainAddress: String?,
-            satoshi: Long?,
-        ): RecoverFundsViewModel
-    }
-
-    companion object {
-        fun provideFactory(
-            assistedFactory: AssistedFactory,
-            wallet: Wallet,
-            initAccountAsset: AccountAsset,
-            onChainAddress: String?,
-            satoshi: Long?,
-        ): ViewModelProvider.Factory =
-            object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(
-                    modelClass: Class<T>
-                ): T {
-                    return assistedFactory.create(
-                        wallet,
-                        initAccountAsset,
-                        onChainAddress,
-                        satoshi
-                    ) as T
-                }
-            }
     }
 }

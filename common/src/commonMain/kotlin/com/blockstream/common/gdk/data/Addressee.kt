@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk.data
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -15,6 +15,6 @@ data class Addressee constructor(
     @SerialName("max_amount") val maxAmount: Long? = null,
     @SerialName("domain") val domain: String? = null,
     @SerialName("metadata") val metadata: List<List<String>>? = null,
-) : GdkJson<Addressee>() {
+) : GreenJson<Addressee>() {
     override fun kSerializer() = serializer()
 }

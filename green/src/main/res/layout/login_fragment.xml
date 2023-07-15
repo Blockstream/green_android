@@ -6,10 +6,14 @@
     <data>
         <import type="com.blockstream.green.devices.Device" />
         <import type="com.blockstream.common.gdk.device.DeviceState" />
-        <import type="com.blockstream.green.extensions.ExtensionsKt"/>
+        <import type="com.blockstream.common.extensions.StringExtensionsKt"/>
         <variable
             name="vm"
-            type="com.blockstream.green.ui.login.LoginViewModel" />
+            type="com.blockstream.common.models.login.LoginViewModel" />
+
+        <variable
+            name="password"
+            type="String" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,7 +23,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/wrapRestoreWallet"
-            isVisible="@{vm.loginCredentialsInitialized &amp;&amp; !vm.wallet.watchOnly &amp;&amp; !vm.wallet.isHardware &amp;&amp; vm.pinCredentials == null &amp;&amp; vm.passwordCredentials == null &amp;&amp; !vm.onProgress}"
+            isVisible="@{!vm.isLightningShortcut() &amp;&amp; vm.pinCredentials.isEmpty() &amp;&amp; !vm.greenWallet.watchOnly &amp;&amp; !vm.greenWallet.isHardware &amp;&amp; vm.passwordCredentials.isEmpty() &amp;&amp; !vm.onProgress}"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="24dp"
@@ -27,7 +31,6 @@
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="24dp"
             android:orientation="vertical"
-            tools:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -82,14 +85,13 @@
 
         <LinearLayout
             android:id="@+id/wrapPassword"
-            isVisible="@{vm.passwordCredentials != null &amp;&amp; !vm.onProgress}"
+            isVisible="@{!vm.isLightningShortcut() &amp;&amp; !vm.passwordCredentials.isEmpty()  &amp;&amp; !vm.onProgress}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="48dp"
             android:layout_marginEnd="48dp"
             android:gravity="center"
             android:orientation="vertical"
-            tools:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline">
@@ -109,7 +111,7 @@
                     android:imeOptions="flagNoPersonalizedLearning|actionGo"
                     android:importantForAccessibility="no"
                     android:inputType="numberPassword"
-                    android:text="@={vm.password}" />
+                    android:text="@={password}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -118,7 +120,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:enabled="@{!vm.password.empty}"
+                android:enabled="@{!password.empty}"
                 android:text="@string/id_log_in" />
 
         </LinearLayout>
@@ -129,7 +131,7 @@
             isVisible="@{vm.onProgress}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{(vm.torEvent == null || vm.torEvent.progress == 100) ? @string/id_logging_in : @string/id_connecting_through_tor}"
+            android:text="@{(vm.tor.progress == 100) ? @string/id_logging_in : @string/id_connecting_through_tor}"
             android:textAppearance="?attr/textAppearanceTitleLarge"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -139,7 +141,7 @@
 
         <ImageView
             android:id="@+id/tor"
-            isVisible="@{vm.onProgress &amp;&amp; vm.applicationSettingsLiveData.tor}"
+            isVisible="@{vm.onProgress &amp;&amp; vm.applicationSettings.tor}"
             android:layout_width="38dp"
             android:layout_height="38dp"
             android:layout_marginTop="8dp"
@@ -151,19 +153,18 @@
 
         <TextView
             android:id="@+id/textView18"
-            isVisible="@{vm.onProgress &amp;&amp; ExtensionsKt.isNotBlank(vm.applicationSettingsLiveData.proxyUrl)}"
+            isVisible="@{vm.onProgress &amp;&amp; StringExtensionsKt.isNotBlank(vm.applicationSettings.proxyUrl)}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:layout_marginBottom="24dp"
-            android:text="@{vm.applicationSettingsLiveData.proxyUrl}"
+            android:text="@{vm.applicationSettings.proxyUrl}"
+            android:textAlignment="center"
             android:textAppearance="?attr/textAppearanceBodySmall"
             android:textColor="@color/color_on_surface_emphasis_low"
-            android:textAlignment="center"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tor"
             tools:text="Proxy" />
 
         <Button
@@ -177,11 +178,11 @@
             app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            tools:visibility="gone"/>
+            />
 
         <TextView
             android:id="@+id/mainTitleTextView"
-            isVisible="@{(vm.pinCredentials != null || vm.passwordCredentials != null) &amp;&amp; !vm.onProgress }"
+            isVisible="@{!vm.isLightningShortcut() &amp;&amp; (!vm.pinCredentials.isEmpty() || !vm.passwordCredentials.isEmpty() ) &amp;&amp; !vm.onProgress }"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
@@ -197,7 +198,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonEmergencyRecoveryPhrase"
             style="@style/Widget.Green.Button.Outlined.Tiny"
-            isVisible="@{vm.isEmergencyRecoveryPhrase &amp;&amp; !vm.onProgress }"
+            isVisible="@{!vm.isLightningShortcut() &amp;&amp; vm.isEmergencyRecoveryPhrase &amp;&amp; !vm.onProgress }"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
@@ -216,7 +217,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/passphraseButton"
             style="@style/Widget.Green.Button.Text.Small"
-            isVisible="@{(vm.pinCredentials != null || vm.passwordCredentials != null) &amp;&amp; ExtensionsKt.isNotBlank(vm.bip39Passphrase)  &amp;&amp; !vm.onProgress }"
+            isVisible="@{!vm.isLightningShortcut() &amp;&amp; (!vm.pinCredentials.isEmpty() || !vm.passwordCredentials.isEmpty()) &amp;&amp; StringExtensionsKt.isNotBlank(vm.bip39Passphrase)  &amp;&amp; !vm.onProgress }"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
@@ -232,7 +233,7 @@
 
         <com.blockstream.green.views.GreenPinView
             android:id="@+id/pinView"
-            isVisible="@{vm.pinCredentials != null &amp;&amp; !vm.onProgress}"
+            isVisible="@{!vm.isLightningShortcut() &amp;&amp; !vm.pinCredentials.isEmpty() &amp;&amp; !vm.onProgress}"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
@@ -248,15 +249,28 @@
             android:layout_height="128dp"
             android:src="@drawable/ic_eye"
             android:alpha="0.25"
-            isVisible="@{vm.wallet.isWatchOnly &amp;&amp; !vm.onProgress}"
+            isVisible="@{vm.greenWallet.isWatchOnly &amp;&amp; !vm.onProgress}"
             app:layout_constraintBottom_toTopOf="@+id/gappedLinearLayout4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageView
+            android:id="@+id/iconLightningShortcut"
+            isVisible="@{vm.isLightningShortcut() &amp;&amp; !vm.onProgress}"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:alpha="0.75"
+            android:src="@drawable/ic_lightning_fill"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/lightning" />
+
         <com.blockstream.green.views.GappedLinearLayout
             android:id="@+id/gappedLinearLayout4"
-            isVisible="@{vm.wallet.isWatchOnly &amp;&amp; !vm.onProgress}"
+            isVisible="@{vm.greenWallet.isWatchOnly &amp;&amp; !vm.onProgress}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -268,7 +282,7 @@
             app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            tools:visibility="gone">
+            >
 
             <TextView
                 android:layout_width="match_parent"
@@ -279,7 +293,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 style="?attr/textInputFilledStyle"
-                isVisible="@{!vm.wallet.watchOnlyUsername.blank}"
+                isVisible="@{!vm.greenWallet.watchOnlyUsername.blank}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/id_username">
@@ -292,13 +306,13 @@
                     android:enabled="false"
                     android:imeOptions="actionNext"
                     android:inputType="textNoSuggestions|textVisiblePassword"
-                    android:text="@{vm.wallet.watchOnlyUsername}" />
+                    android:text="@{vm.greenWallet.watchOnlyUsername}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 style="?attr/textInputFilledStyle"
-                isGone="@{vm.watchOnlyCredentials != null &amp;&amp; vm.initialAction == false || vm.wallet.watchOnlyUsername.blank}"
+                isGone="@{!vm.showWatchOnlyPassword || vm.greenWallet.watchOnlyUsername.blank}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -328,11 +342,11 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonLoginWithBiometrics"
             style="@style/Widget.Green.Button.Text"
-            isVisible="@{vm.biometricsCredentials != null &amp;&amp; !vm.onProgress}"
+            isVisible="@{!vm.isLightningShortcut() &amp;&amp; !vm.biometricsCredentials.isEmpty() &amp;&amp; !vm.onProgress}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:text="@string/id_login_with_biometrics"
+            android:text="@string/id_biometrics"
             android:textColor="@color/color_on_surface_emphasis_low"
             android:textSize="12dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -354,9 +368,9 @@
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/progress"
-            indeterminate="@{vm.torEvent.progress == 100 ? true : false}"
+            indeterminate="@{vm.tor.progress == 100 ? true : false}"
             isInvisible="@{!vm.onProgress}"
-            progress="@{vm.torEvent.progress}"
+            progress="@{vm.tor.progress}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="32dp"
@@ -380,18 +394,18 @@
             app:layout_constraintTop_toTopOf="@+id/progress" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linearLayoutCompat3"
+            isVisible="@{!vm.onProgress &amp;&amp; vm.device != null}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="48dp"
             android:layout_marginEnd="24dp"
             android:orientation="vertical"
-            isVisible="@{!vm.onProgress &amp;&amp; vm.device != null}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/deviceLogo"
-            tools:text="Blockstream Jade"
-            tools:visibility="gone">
+            tools:text="Blockstream Jade">
 
             <TextView
                 android:layout_width="match_parent"

@@ -2,7 +2,6 @@ package com.blockstream.green.ui.add
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,10 +25,9 @@ import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-@AndroidEntryPoint
 class ChooseAccountTypeFragment : AbstractAddAccountFragment<ChooseAccountTypeFragmentBinding>(
     R.layout.choose_account_type_fragment, 0
 ), EnrichedAssetsListener {
@@ -44,10 +42,8 @@ class ChooseAccountTypeFragment : AbstractAddAccountFragment<ChooseAccountTypeFr
     override val assetId: String?
         get() = args.assetId
 
-    @Inject
-    lateinit var viewModelFactory: ChooseAccountTypeViewModel.AssistedFactory
-    val viewModel: ChooseAccountTypeViewModel by viewModels {
-        ChooseAccountTypeViewModel.provideFactory(viewModelFactory, args.wallet, args.assetId)
+    val viewModel: ChooseAccountTypeViewModel by viewModel {
+        parametersOf(args.wallet, args.assetId)
     }
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
@@ -136,7 +132,7 @@ class ChooseAccountTypeFragment : AbstractAddAccountFragment<ChooseAccountTypeFr
             FastAdapterDiffUtil.set(adapter = fastAdapter.itemAdapter, items = it, detectMoves = true)
         }
 
-        viewModel.onProgress.observe(viewLifecycleOwner) {
+        viewModel.onProgressAndroid.observe(viewLifecycleOwner) {
             binding.mainContainer.alpha = if(it) 0.15f else 1.0f
         }
     }

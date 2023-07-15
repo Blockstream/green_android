@@ -6,11 +6,11 @@ import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.blockstream.green.R
-import com.blockstream.green.data.DenominatedValue
-import com.blockstream.green.data.Denomination
-import com.blockstream.green.databinding.RecyclerBottomSheetBinding
+import com.blockstream.common.data.DenominatedValue
+import com.blockstream.common.data.Denomination
 import com.blockstream.common.managers.SettingsManager
+import com.blockstream.green.R
+import com.blockstream.green.databinding.RecyclerBottomSheetBinding
 import com.blockstream.green.ui.items.AbstractBindingItem
 import com.blockstream.green.ui.items.DenominationListItem
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
@@ -19,17 +19,14 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
-import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
-@AndroidEntryPoint
 class DenominationBottomSheetDialogFragment :
     WalletBottomSheetDialogFragment<RecyclerBottomSheetBinding, AbstractWalletViewModel>() {
     override val screenName = "Denomination"
 
-    @Inject
-    lateinit var settingsManager: SettingsManager
+    private val settingsManager: SettingsManager by inject()
 
     private val denominatedValue by lazy { requireArguments().getParcelable<DenominatedValue>(DENOMINATED_VALUE) ?: DenominatedValue.createDefault(session) }
 

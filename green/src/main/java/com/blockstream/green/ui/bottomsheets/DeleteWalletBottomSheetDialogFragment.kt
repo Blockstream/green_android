@@ -4,25 +4,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
-import com.blockstream.green.database.Wallet
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.events.Events
 import com.blockstream.green.databinding.DeleteWalletBottomSheetBinding
-import com.blockstream.green.ui.intro.IntroFragment
-import com.blockstream.green.ui.login.LoginFragment
-import dagger.hilt.android.AndroidEntryPoint
+import com.blockstream.green.ui.AppFragment
 import mu.KLogging
 
-@AndroidEntryPoint
 class DeleteWalletBottomSheetDialogFragment : AbstractBottomSheetDialogFragment<DeleteWalletBottomSheetBinding>() {
 
     override val screenName = "DeleteWallet"
 
-    private lateinit var wallet: Wallet
+    private lateinit var wallet: GreenWallet
 
     override fun inflate(layoutInflater: LayoutInflater) = DeleteWalletBottomSheetBinding.inflate(layoutInflater)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        arguments?.getParcelable<Wallet>(WALLET)?.let {
+        arguments?.getParcelable<GreenWallet>(WALLET)?.let {
             wallet = it
         } ?: run {
             dismiss()
@@ -49,19 +47,15 @@ class DeleteWalletBottomSheetDialogFragment : AbstractBottomSheetDialogFragment<
     }
 
     private fun deleteWallet(){
-        requireParentFragment().let { fragment ->
-            if(fragment is IntroFragment){
-                fragment.viewModel.deleteWallet(wallet)
-            }else if(fragment is LoginFragment){
-                fragment.viewModel.deleteWallet()
-            }
+        (requireParentFragment() as? AppFragment<*>)?.getGreenViewModel()?.also {
+            it.postEvent(Events.DeleteWallet(wallet))
         }
     }
 
     companion object : KLogging() {
         private const val WALLET = "WALLET"
 
-        fun show(wallet: Wallet, fragmentManager: FragmentManager) {
+        fun show(wallet: GreenWallet, fragmentManager: FragmentManager) {
             show(DeleteWalletBottomSheetDialogFragment().also {
                 it.arguments = Bundle().also { bundle ->
                     bundle.putParcelable(WALLET, wallet)

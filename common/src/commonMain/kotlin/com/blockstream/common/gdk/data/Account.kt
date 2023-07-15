@@ -3,6 +3,7 @@ package com.blockstream.common.gdk.data
 import com.arkivanov.essenty.parcelable.IgnoredOnParcel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.serializers.AccountTypeSerializer
 import com.blockstream.common.utils.hexToByteArray
 import kotlinx.serialization.SerialName
@@ -180,5 +181,9 @@ data class Account constructor(
         } else {
             weight.compareTo(other.weight)
         }
+    }
+
+    fun isFunded(session: GdkSession): Boolean{
+        return (session.accountAssets(this).value.assets?.values?.sum() ?: 0) > 0
     }
 }

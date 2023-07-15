@@ -8,33 +8,32 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.OnBackPressedCallback
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.Urls
+import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.DeviceBrand
 import com.blockstream.common.gdk.device.DeviceState
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
-import com.blockstream.green.data.NavigateEvent
-import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.DeviceInfoFragmentBinding
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.extensions.navigate
 import com.blockstream.green.extensions.snackbar
-import com.blockstream.green.ui.AppViewModel
+import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.ui.MainActivity
 import com.blockstream.green.ui.bottomsheets.EnvironmentListener
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.utils.openBrowser
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.greenaddress.greenbits.wallets.JadeFirmwareManager
-import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
-import javax.inject.Inject
-
-@AndroidEntryPoint
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class DeviceInfoFragment : AbstractDeviceFragment<DeviceInfoFragmentBinding>(
     layout = R.layout.device_info_fragment,
@@ -47,24 +46,54 @@ class DeviceInfoFragment : AbstractDeviceFragment<DeviceInfoFragmentBinding>(
 
     override val screenName = "DeviceInfo"
 
-    @Inject
-    lateinit var viewModelFactory: DeviceInfoViewModel.AssistedFactory
-
-    override val viewModel: DeviceInfoViewModel by viewModels {
-        DeviceInfoViewModel.provideFactory(viewModelFactory, device)
+    override val viewModel: DeviceInfoViewModel by viewModel {
+        parametersOf(device)
     }
 
-    @Inject
-    lateinit var deviceManager: DeviceManager
+    private val deviceManager: DeviceManager by inject()
 
     override val title: String?
         get() = deviceOrNull?.deviceBrand?.name
 
-    override fun getAppViewModel(): AppViewModel? = if(deviceOrNull == null) null else viewModel
+    override fun getAppViewModel(): AppViewModelAndroid? = if(deviceOrNull == null) null else viewModel
 
     private val onBackCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
 
+        }
+    }
+
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+        if (sideEffect is SideEffects.Navigate){
+            (sideEffect.data as? GreenWallet)?.also {
+                NavGraphDirections.actionGlobalLoginFragment(it, deviceId = device.id)
+                    .let { navDirections ->
+                        navigate(
+                            findNavController(),
+                            navDirections.actionId,
+                            navDirections.arguments,
+                            isLogout = true
+                        )
+                    }
+            }
+
+            if(sideEffect.data == DeviceInfoViewModel.REQUIRE_REBONDING){
+                MaterialAlertDialogBuilder(
+                    requireContext(),
+                    R.style.ThemeOverlay_Green_MaterialAlertDialog
+                )
+                    .setTitle(R.string.id_warning)
+                    .setMessage(R.string.id_the_new_firmware_requires_you)
+                    .setPositiveButton(android.R.string.ok) { _: DialogInterface, _: Int ->
+                        startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
+                    }
+                    .setNegativeButton(R.string.id_cancel, null)
+                    .setOnDismissListener {
+                        popBackStack()
+                    }
+                    .show()
+            }
         }
     }
 
@@ -90,39 +119,6 @@ class DeviceInfoFragment : AbstractDeviceFragment<DeviceInfoFragmentBinding>(
                 snackbar("Device is disconnected")
                 findNavController().popBackStack()
             }
-        }
-
-        viewModel.onEvent.observe(viewLifecycleOwner) { onEvent ->
-
-            onEvent.getContentIfNotHandledForType<NavigateEvent.NavigateWithData>()?.let {
-                if (it.data is Wallet) {
-                    NavGraphDirections.actionGlobalLoginFragment(it.data, deviceId = device.id)
-                        .let { navDirections ->
-                            navigate(
-                                findNavController(),
-                                navDirections.actionId,
-                                navDirections.arguments,
-                                isLogout = true
-                            )
-                        }
-                } else if (it.data == DeviceInfoViewModel.REQUIRE_REBONDING) {
-                    MaterialAlertDialogBuilder(
-                        requireContext(),
-                        R.style.ThemeOverlay_Green_MaterialAlertDialog
-                    )
-                        .setTitle(R.string.id_warning)
-                        .setMessage(R.string.id_the_new_firmware_requires_you)
-                        .setPositiveButton(android.R.string.ok) { _: DialogInterface, _: Int ->
-                            startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
-                        }
-                        .setNegativeButton(R.string.id_cancel, null)
-                        .setOnDismissListener {
-                            popBackStack()
-                        }
-                        .show()
-                }
-            }
-
         }
 
         binding.buttonTroubleshoot.setOnClickListener {

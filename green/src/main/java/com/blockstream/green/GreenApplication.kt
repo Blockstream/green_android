@@ -11,80 +11,43 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.blockstream.base.ZendeskSdk
-import com.blockstream.common.managers.AssetManager
 import com.blockstream.common.managers.LifecycleManager
-import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.data.Countly
-import com.blockstream.green.database.WalletRepository
+import com.blockstream.green.di.startKoin
 import com.blockstream.green.lifecycle.ActivityLifecycle
-import com.blockstream.green.managers.NotificationManager
-import com.blockstream.green.managers.SessionManager
-import com.blockstream.green.settings.Migrator
+import com.blockstream.green.settings.AndroidMigrator
 import com.blockstream.green.ui.MainActivity
 import com.blockstream.green.ui.QATesterActivity
-import com.blockstream.green.utils.QATester
 import com.blockstream.green.utils.isDevelopmentFlavor
-import com.pandulapeter.beagle.Beagle
-import dagger.hilt.android.HiltAndroidApp
-import kotlinx.coroutines.launch
 import mu.KLogging
+import org.koin.android.ext.android.get
+import org.koin.android.ext.android.inject
 import org.slf4j.impl.HandroidLoggerAdapter
-import javax.inject.Inject
 
-typealias ApplicationScope = kotlinx.coroutines.CoroutineScope
-
-@HiltAndroidApp
 class GreenApplication : Application() {
-    @Inject
-    lateinit var migrator: Migrator
+    private val androidMigrator: AndroidMigrator by inject()
 
-    @Inject
-    lateinit var sessionManager: SessionManager
+    private val activityLifecycle: ActivityLifecycle by inject()
 
-    @Inject
-    lateinit var walletRepository: WalletRepository
+    private val countly: Countly by inject()
 
-    @Inject
-    lateinit var assetManager: AssetManager
-
-    @Inject
-    lateinit var settingsManager: SettingsManager
-
-    @Inject
-    lateinit var qaTester: QATester
-
-    @Inject
-    lateinit var beagle: Beagle
-
-    @Inject
-    lateinit var applicationScope: ApplicationScope
-
-    @Inject
-    lateinit var notificationManager: NotificationManager
-
-    @Inject
-    lateinit var activityLifecycle: ActivityLifecycle
-
-    @Inject
-    lateinit var countly: Countly
-
-    @Inject
-    lateinit var zendeskSdk: ZendeskSdk
-
-    @Inject
-    lateinit var lifecycleManager: LifecycleManager
+    private val zendeskSdk: ZendeskSdk by inject()
 
     override fun onCreate() {
         super.onCreate()
 
+        startKoin(this)
+
+        val lifecycleManager: LifecycleManager = get()
+
         // Listen to foreground / background events
         ProcessLifecycleOwner.get().lifecycle.addObserver(object: DefaultLifecycleObserver{
             override fun onResume(owner: LifecycleOwner) {
-                lifecycleManager.setOnForeground(true)
+                lifecycleManager.updateState(true)
             }
 
             override fun onPause(owner: LifecycleOwner) {
-                lifecycleManager.setOnForeground(false)
+                lifecycleManager.updateState(false)
             }
         })
 
@@ -96,9 +59,7 @@ class GreenApplication : Application() {
 
         countly.applicationOnCreate()
 
-        applicationScope.launch {
-            migrator.migrate()
-        }
+        androidMigrator.migrate()
 
         if (isDevelopmentFlavor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             initShortcuts()

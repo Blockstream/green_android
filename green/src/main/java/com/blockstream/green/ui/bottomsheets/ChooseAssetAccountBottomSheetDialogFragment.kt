@@ -7,11 +7,11 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.common.BTC_POLICY_ASSET
-import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.data.EnrichedAsset
+import com.blockstream.common.extensions.getAssetName
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.green.databinding.FilterBottomSheetBinding
 import com.blockstream.green.extensions.makeItConstant
-import com.blockstream.green.gdk.getAssetName
 import com.blockstream.green.ui.items.AssetAccountsListItem
 import com.blockstream.green.ui.wallet.AbstractAssetWalletViewModel
 import com.mikepenz.fastadapter.FastAdapter
@@ -20,14 +20,13 @@ import com.mikepenz.fastadapter.ISelectionListener
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.fastadapter.select.getSelectExtension
 import com.mikepenz.itemanimators.AlphaCrossFadeAnimator
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-@AndroidEntryPoint
+
 class ChooseAssetAccountBottomSheetDialogFragment :
     WalletBottomSheetDialogFragment<FilterBottomSheetBinding, AbstractAssetWalletViewModel>() {
 
@@ -77,7 +76,7 @@ class ChooseAssetAccountBottomSheetDialogFragment :
         return (setOfNotNull(
             EnrichedAsset.createOrNull(session.bitcoin?.policyAsset),
             EnrichedAsset.createOrNull(session.liquid?.policyAsset)
-        ) + (session.enrichedAssets.values.takeIf { session.liquid != null } ?: emptyList()))
+        ) + (session.enrichedAssets.value.values.takeIf { session.liquid != null } ?: emptyList()))
             .sortedWith(session::sortAssets) + listOfNotNull(session.liquid?.let {
             EnrichedAsset( // Any Liquid Asset
                 assetId = it.policyAsset,
@@ -115,7 +114,7 @@ class ChooseAssetAccountBottomSheetDialogFragment :
             }
         }
 
-        session.enrichedAssetsFlow.onEach {
+        session.enrichedAssets.onEach {
             lifecycleScope.launch(context = Dispatchers.IO) {
                 createEnrichedAssets().toList().also {
                     withContext(context = Dispatchers.Main) {

@@ -5,16 +5,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.NetworkEvent
 import com.blockstream.common.gdk.data.Notification
-import com.blockstream.green.ApplicationScope
+import com.blockstream.common.managers.SessionManager
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.data.Countly
 import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.QaTesterActivityBinding
-import com.blockstream.green.managers.SessionManager
-import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.ui.bottomsheets.FilterBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.FilterableDataProvider
 import com.blockstream.green.ui.items.NetworkListItem
@@ -26,35 +26,27 @@ import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.GenericFastItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import mu.KLogging
+import org.koin.android.ext.android.inject
 import java.io.File
-import javax.inject.Inject
 import kotlin.system.exitProcess
 
-@AndroidEntryPoint
 class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
 
     private lateinit var binding: QaTesterActivityBinding
 
-    @Inject
-    lateinit var qaTester: QATester
+    private val qaTester: QATester by inject()
 
-    @Inject
-    lateinit var sessionManager: SessionManager
+    private val sessionManager: SessionManager by inject()
 
-    @Inject
-    lateinit var gdk: Gdk
+    private val gdk: Gdk by inject()
 
-    @Inject
-    lateinit var applicationScope: ApplicationScope
+    private val applicationScope: ApplicationScope by inject()
 
-    @Inject
-    lateinit var countly: Countly
+    private val countly: Countly by inject()
 
-    @Inject
-    lateinit var settingsManager: SettingsManager
+    private val settingsManager: SettingsManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

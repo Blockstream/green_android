@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk.params
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -10,7 +10,7 @@ data class AddressParams constructor(
     @SerialName("is_greedy") var isGreedy: Boolean,
     @SerialName("asset_id") var assetId: String? = null,
     @SerialName("satoshi") var satoshi: Long,
-) : GdkJson<AddressParams>() {
+) : GreenJson<AddressParams>() {
     override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()

@@ -3,19 +3,17 @@ package com.greenaddress.greenbits.wallets;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.blockstream.JadeHWWallet;
+import com.blockstream.common.extensions.GdkExtensionsKt;
 import com.blockstream.common.gdk.Gdk;
-import com.blockstream.common.gdk.device.HardwareWalletInteraction;
 import com.blockstream.common.gdk.data.Account;
 import com.blockstream.common.gdk.data.AccountType;
 import com.blockstream.common.gdk.data.Device;
 import com.blockstream.common.gdk.data.InputOutput;
 import com.blockstream.common.gdk.data.Network;
 import com.blockstream.common.gdk.device.BlindingFactorsResult;
+import com.blockstream.common.gdk.device.HardwareWalletInteraction;
 import com.blockstream.common.gdk.device.SignMessageResult;
 import com.blockstream.common.gdk.device.SignTransactionResult;
-import com.blockstream.gdk.ExtensionsKt;
-import com.blockstream.hardware.R;
 import com.blockstream.libwally.Wally;
 import com.btchip.BTChipConstants;
 import com.btchip.BTChipDongle;
@@ -26,7 +24,6 @@ import com.btchip.comm.android.BTChipTransportAndroidHID;
 import com.btchip.utils.BufferUtils;
 import com.btchip.utils.KeyUtils;
 import com.btchip.utils.VarintUtils;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Joiner;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -45,7 +42,6 @@ import java.util.concurrent.Executors;
 import kotlinx.coroutines.CompletableDeferred;
 import kotlinx.coroutines.CompletableDeferredKt;
 import kotlinx.coroutines.flow.StateFlow;
-import kotlinx.serialization.json.JsonElement;
 
 
 public class BTChipHWWallet extends HWWallet {
@@ -189,7 +185,7 @@ public class BTChipHWWallet extends HWWallet {
                 if (output.getBlindingKey() != null) {
                     final byte[] abf = mDongle.getBlindingFactor(i, BTChipConstants.BTCHIP_BLINDING_FACTOR_ASSET);
                     final byte[] vbf = mDongle.getBlindingFactor(i, BTChipConstants.BTCHIP_BLINDING_FACTOR_AMOUNT);
-                    rslt.append(Wally.hex_from_bytes(ExtensionsKt.reverseBytes(abf)), Wally.hex_from_bytes(ExtensionsKt.reverseBytes(vbf)));
+                    rslt.append(Wally.hex_from_bytes(GdkExtensionsKt.reverseBytes(abf)), Wally.hex_from_bytes(GdkExtensionsKt.reverseBytes(vbf)));
                 } else {
                     // Empty string placeholders
                     rslt.append("", "");

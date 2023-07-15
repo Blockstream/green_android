@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
+import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.gdk.TwoFactorResolver
 import com.blockstream.common.gdk.data.AuthHandlerStatus
 import com.blockstream.green.R
@@ -105,7 +106,7 @@ class DialogTwoFactorResolver(
                                             it.openNewTicket(
                                                 settingsManager = it.settingsManager,
                                                 subject = "Android: I am not receiving my 2FA code",
-                                                isMultisig = true
+                                                errorReport = ErrorReport.createForMultisig()
                                             )
                                         }
                                     }

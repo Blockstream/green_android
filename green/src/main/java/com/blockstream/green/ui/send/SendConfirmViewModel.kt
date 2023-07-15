@@ -1,34 +1,25 @@
 package com.blockstream.green.ui.send;
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import com.blockstream.common.TransactionSegmentation
+import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.gdk.TwoFactorResolver
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.SendTransactionSuccess
-import com.blockstream.green.data.Countly
-import com.blockstream.green.data.GdkEvent
-import com.blockstream.green.data.NavigateEvent
-import com.blockstream.green.data.TransactionSegmentation
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.managers.SessionManager
+import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.green.ui.bottomsheets.INote
 import com.blockstream.green.ui.wallet.AbstractAccountWalletViewModel
-import com.blockstream.green.utils.ConsumableEvent
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import mu.KLogging
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
 
-class SendConfirmViewModel @AssistedInject constructor(
-    sessionManager: SessionManager,
-    walletRepository: WalletRepository,
-    countly: Countly,
-    @Assisted wallet: Wallet,
-    @Assisted account: Account,
-    @Assisted val transactionSegmentation: TransactionSegmentation
-) : AbstractAccountWalletViewModel(sessionManager, walletRepository, countly, wallet, account), INote {
+@KoinViewModel
+class SendConfirmViewModel constructor(
+    @InjectedParam wallet: GreenWallet,
+    @InjectedParam account: Account,
+    @InjectedParam val transactionSegmentation: TransactionSegmentation
+) : AbstractAccountWalletViewModel(wallet, account), INote {
 
     val transactionNoteLiveData = MutableLiveData(session.pendingTransaction?.second?.memo ?: "")
     val transactionNote get() = (transactionNoteLiveData.value ?: "").trim()
@@ -85,7 +76,7 @@ class SendConfirmViewModel @AssistedInject constructor(
                 SendTransactionSuccess(signedTransaction = signedTransaction.transaction ?: "")
             }
         }, postAction = {
-            onProgress.value = it == null
+            onProgressAndroid.value = it == null
         }, onSuccess = {
             deviceAddressValidationEvent.value = ConsumableEvent(true)
 
@@ -93,42 +84,19 @@ class SendConfirmViewModel @AssistedInject constructor(
                 session.pendingTransaction = null // clear pending transaction
                 countly.endSendTransaction(
                     session = session,
-                    account = account,
+                    account = accountValue,
                     transactionSegmentation = transactionSegmentation,
                     withMemo = transactionNote.isNotBlank()
                 )
-                onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(it)))
+                postSideEffect(SideEffects.Navigate(it))
             }else{
-                onProgress.value = false
-                onEvent.postValue(ConsumableEvent(GdkEvent.SuccessWithData(it)))
+                onProgressAndroid.value = false
+                postSideEffect(SideEffects.Success(it))
             }
         }, onError = {
             onError.postValue(ConsumableEvent(it))
             deviceAddressValidationEvent.value = ConsumableEvent(false)
-            countly.failedTransaction(session = session, account = account, transactionSegmentation = transactionSegmentation, error = it)
+            countly.failedTransaction(session = session, account = accountValue, transactionSegmentation = transactionSegmentation, error = it)
         })
-    }
-
-    @dagger.assisted.AssistedFactory
-    interface AssistedFactory {
-        fun create(
-            wallet: Wallet,
-            account: Account,
-            transactionSegmentation: TransactionSegmentation
-        ): SendConfirmViewModel
-    }
-
-    companion object : KLogging() {
-        fun provideFactory(
-            assistedFactory: AssistedFactory,
-            wallet: Wallet,
-            account: Account,
-            transactionSegmentation: TransactionSegmentation
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet, account, transactionSegmentation) as T
-            }
-        }
     }
 }

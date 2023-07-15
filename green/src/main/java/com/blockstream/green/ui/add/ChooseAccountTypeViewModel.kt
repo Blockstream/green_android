@@ -1,32 +1,28 @@
 package com.blockstream.green.ui.add
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asFlow
 import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.extensions.hasHistory
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.data.Countly
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.gdk.hasHistory
-import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.items.AccountTypeListItem
 import com.blockstream.green.utils.AppKeystore
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
+import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
-class ChooseAccountTypeViewModel @AssistedInject constructor(
-    appKeystore: AppKeystore,
-    sessionManager: SessionManager,
-    walletRepository: WalletRepository,
-    settingsManager: SettingsManager,
-    countly: Countly,
-    @Assisted wallet: Wallet,
-    @Assisted initAssetId: String?
-) : AbstractAddAccountViewModel(appKeystore, sessionManager, walletRepository, countly, wallet) {
+@KoinViewModel
+class ChooseAccountTypeViewModel constructor(
+    @InjectedParam wallet: GreenWallet,
+    @InjectedParam initAssetId: String?
+) : AbstractAddAccountViewModel(wallet) {
 
     private var _assetIdLiveData = MutableLiveData<String>()
     val assetIdLiveData: LiveData<String>
@@ -60,7 +56,7 @@ class ChooseAccountTypeViewModel @AssistedInject constructor(
         assetIdLiveData.asFlow().onEach {
             val list = mutableListOf<AccountType>()
 
-            val isAmp = session.enrichedAssets[assetId]?.isAmp ?: false
+            val isAmp = session.enrichedAssets.value[assetId]?.isAmp ?: false
             val isBitcoin = assetId == BTC_POLICY_ASSET
 
             if(isAmp){
@@ -95,7 +91,7 @@ class ChooseAccountTypeViewModel @AssistedInject constructor(
             }.map {
                 AccountTypeListItem(it)
             }
-        }.launchIn(viewModelScope)
+        }.launchIn(viewModelScope.coroutineScope)
 
         combine(
             allAccountTypes.asFlow(),
@@ -113,31 +109,10 @@ class ChooseAccountTypeViewModel @AssistedInject constructor(
                 _accountTypesLiveData.value = it
             }
 
-        }.launchIn(viewModelScope)
+        }.launchIn(viewModelScope.coroutineScope)
     }
 
     fun isAccountAlreadyArchived(network: Network, accountType: AccountType): Boolean {
-        return session.allAccountsFlow.value.find { it.hidden && it.network == network && it.type == accountType && it.hasHistory(session)} != null
-    }
-
-    @dagger.assisted.AssistedFactory
-    interface AssistedFactory {
-        fun create(
-            wallet: Wallet,
-            initAssetId: String?,
-        ): ChooseAccountTypeViewModel
-    }
-
-    companion object {
-        fun provideFactory(
-            assistedFactory: AssistedFactory,
-            wallet: Wallet,
-            initAssetId: String?
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet, initAssetId) as T
-            }
-        }
+        return session.allAccounts.value.find { it.hidden && it.network == network && it.type == accountType && it.hasHistory(session)} != null
     }
 }

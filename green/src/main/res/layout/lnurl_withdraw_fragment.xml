@@ -5,7 +5,7 @@
 
     <data>
 
-        <import type="com.blockstream.green.extensions.ExtensionsKt" />
+        <import type="com.blockstream.common.extensions.StringExtensionsKt" />
 
         <variable
             name="vm"
@@ -214,7 +214,7 @@
                         android:layout_gravity="center_vertical|end"
                         android:layout_margin="16dp"
                         android:background="@android:color/transparent"
-                        android:enabled="@{!vm.onProgress}"
+                        android:enabled="@{!vm.onProgressAndroid}"
                         android:fontFamily="@font/monospace"
                         android:singleLine="true"
                         android:text="@{vm.description}"
@@ -232,12 +232,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:enabled="@{!vm.onProgress &amp;&amp; vm.error == null}"
+            android:enabled="@{!vm.onProgressAndroid &amp;&amp; vm.error == null}"
             android:text="@string/id_redeem" />
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/progress"
-            isVisible="@{vm.onProgress}"
+            isVisible="@{vm.onProgressAndroid}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"

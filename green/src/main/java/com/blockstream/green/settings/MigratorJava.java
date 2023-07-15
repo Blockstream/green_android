@@ -22,10 +22,10 @@ public class MigratorJava {
             // in that case it stay how it was
 
             final SharedPreferences preferences = context.getSharedPreferences(getCurrentNetwork(context), MODE_PRIVATE);
-            final boolean isEnabled = preferences.getBoolean(Migrator.SPV_ENABLED, false);
-            final boolean haveTrustedPeers = !"".equals(preferences.getString(Migrator.TRUSTED_ADDRESS, "").trim());
+            final boolean isEnabled = preferences.getBoolean(AndroidMigrator.SPV_ENABLED, false);
+            final boolean haveTrustedPeers = !"".equals(preferences.getString(AndroidMigrator.TRUSTED_ADDRESS, "").trim());
             if (haveTrustedPeers && isEnabled) {
-                preferences.edit().putBoolean(Migrator.SPV_ENABLED, true).apply();
+                preferences.edit().putBoolean(AndroidMigrator.SPV_ENABLED, true).apply();
             }
             // mainnet PIN migration
             copyPreferences(context.getSharedPreferences("pin", MODE_PRIVATE), context.getSharedPreferences("mainnet_pin", MODE_PRIVATE));
@@ -61,7 +61,7 @@ public class MigratorJava {
     }
 
     public static String getCurrentNetwork(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getString(Migrator.NETWORK_ID_ACTIVE, "mainnet");
+        return PreferenceManager.getDefaultSharedPreferences(context).getString(AndroidMigrator.NETWORK_ID_ACTIVE, "mainnet");
     }
 
 }

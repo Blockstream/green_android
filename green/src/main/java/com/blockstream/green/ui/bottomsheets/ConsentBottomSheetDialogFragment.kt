@@ -11,17 +11,14 @@ import com.blockstream.green.databinding.ConsentBottomSheetBinding
 import com.blockstream.green.utils.openBrowser
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
-@AndroidEntryPoint
 class ConsentBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<ConsentBottomSheetBinding>(){
 
     override val screenName = "Consent"
 
-    @Inject
-    lateinit var settingsManager: SettingsManager
+    private val settingsManager: SettingsManager by inject()
 
     override fun inflate(layoutInflater: LayoutInflater): ConsentBottomSheetBinding = ConsentBottomSheetBinding.inflate(layoutInflater)
 

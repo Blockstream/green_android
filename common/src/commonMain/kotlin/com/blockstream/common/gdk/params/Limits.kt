@@ -5,10 +5,9 @@ import com.blockstream.common.BTC_UNIT
 import com.blockstream.common.MBTC_UNIT
 import com.blockstream.common.SATOSHI_UNIT
 import com.blockstream.common.UBTC_UNIT
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.*
 
 @Serializable
 data class Limits(
@@ -20,7 +19,7 @@ data class Limits(
     @SerialName("bits") val bits: String? = null,
     @SerialName("sats") val sats: String? = null,
     @SerialName("fiat") val fiat: String? = null,
-) : GdkJson<Limits>() {
+) : GreenJson<Limits>() {
     override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()

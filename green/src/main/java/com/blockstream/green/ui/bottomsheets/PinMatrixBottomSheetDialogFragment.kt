@@ -5,13 +5,11 @@ import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
-import androidx.navigation.fragment.findNavController
+import com.blockstream.common.events.Events
 import com.blockstream.green.databinding.PinMatrixBottomSheetBinding
-import com.blockstream.green.extensions.setNavigationResult
-import dagger.hilt.android.AndroidEntryPoint
+import com.blockstream.green.ui.AppFragment
 import mu.KLogging
 
-@AndroidEntryPoint
 class PinMatrixBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<PinMatrixBottomSheetBinding>(){
     override val screenName = "PinMatrix"
 
@@ -62,12 +60,12 @@ class PinMatrixBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<PinM
         }
 
         binding.buttonCancel.setOnClickListener {
-            setNavigationResult(result = "", key = PIN_RESULT, destinationId = findNavController().currentDestination?.id)
+            (requireParentFragment() as? AppFragment<*>)?.getGreenViewModel()?.postEvent(Events.DeviceRequestResponse(null))
             dismiss()
         }
 
         binding.buttonContinue.setOnClickListener {
-            setNavigationResult(result = pin.toString(), key = PIN_RESULT, destinationId = findNavController().currentDestination?.id)
+            (requireParentFragment() as? AppFragment<*>)?.getGreenViewModel()?.postEvent(Events.DeviceRequestResponse(pin.toString()))
             dismiss()
         }
     }
@@ -77,8 +75,6 @@ class PinMatrixBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<PinM
     }
 
     companion object : KLogging() {
-        const val PIN_RESULT = "PIN_RESULT"
-
         fun show(fragmentManager: FragmentManager) {
             show(PinMatrixBottomSheetDialogFragment(), fragmentManager)
         }

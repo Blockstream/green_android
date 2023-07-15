@@ -7,12 +7,10 @@ import androidx.fragment.app.FragmentManager
 import com.blockstream.green.R
 import com.blockstream.green.databinding.JadeFirmwareUpgradeBottomSheetBinding
 import com.blockstream.green.extensions.dismissIn
-import com.blockstream.green.extensions.padHex
+import com.blockstream.common.extensions.padHex
 import com.blockstream.green.ui.devices.AbstractDeviceFragment
 import com.blockstream.green.ui.devices.AbstractDeviceViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class JadeFirmwareUpdateBottomSheetDialogFragment : AbstractBottomSheetDialogFragment<JadeFirmwareUpgradeBottomSheetBinding>() {
 
     override val screenName: String? = null

@@ -7,6 +7,7 @@ import com.blockstream.common.gdk.params.GetAssetsParams
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -26,9 +27,10 @@ data class AssetStatus(
  * App Cache: cached data from apk
  */
 class NetworkAssetManager constructor(
-    private val coroutineScope: CoroutineScope,
-    val qaTester: AssetQATester,
+    val qaTester: AssetQATester?,
 ) {
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
     private val metadata = mutableMapOf<String, Asset?>()
     private val icons = mutableMapOf<String, ByteArray?>()
 
@@ -90,13 +92,13 @@ class NetworkAssetManager constructor(
     fun updateAssetsIfNeeded(provider: AssetsProvider) {
         if (_status.cacheStatus != CacheStatus.Latest) {
 
-            coroutineScope.launch(context = Dispatchers.IO) {
+            scope.launch {
 
                 try {
                     _statusStateFlow.value = _status.apply { onProgress = true }
 
                     // Allow forceUpdate to override QATester settings
-                    if (!qaTester.isAssetFetchDisabled()) {
+                    if (qaTester?.isAssetFetchDisabled() == false) {
                         // Try to update the registry
                         provider.refreshAssets(
                             AssetsParams(

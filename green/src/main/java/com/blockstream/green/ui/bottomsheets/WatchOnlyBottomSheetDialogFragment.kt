@@ -12,14 +12,12 @@ import com.blockstream.green.R
 import com.blockstream.green.databinding.WatchOnlyBottomSheetBinding
 import com.blockstream.green.ui.settings.WalletSettingsViewModel
 import com.blockstream.green.extensions.errorDialog
-import com.blockstream.green.extensions.logException
-import dagger.hilt.android.AndroidEntryPoint
+import com.blockstream.common.extensions.logException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mu.KLogging
 
-@AndroidEntryPoint
 class WatchOnlyBottomSheetDialogFragment :
     WalletBottomSheetDialogFragment<WatchOnlyBottomSheetBinding, WalletSettingsViewModel>() {
     override val screenName = "WatchOnlyCredentials"

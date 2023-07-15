@@ -3,6 +3,7 @@ package com.blockstream.jade
 import android.content.Context
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
+import com.blockstream.common.interfaces.HttpRequestProvider
 import com.blockstream.jade.data.JadeJson
 import com.blockstream.jade.data.VersionInfo
 import com.fasterxml.jackson.databind.JsonNode

@@ -22,10 +22,9 @@ import androidx.core.text.color
 import androidx.core.text.toSpanned
 import androidx.core.text.underline
 import androidx.fragment.app.Fragment
-import com.blockstream.base.zendeskSecurityPolicy
 import com.blockstream.common.Urls
 import com.blockstream.common.data.ApplicationSettings
-import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
@@ -38,14 +37,13 @@ import com.mohamedrejeb.ksoup.entities.KsoupEntities
 fun Fragment.openNewTicket(
     settingsManager: SettingsManager,
     subject: String? = null,
-    isMultisig: Boolean = false,
-    network: Network? = null,
+    errorReport: ErrorReport? = null,
     isJade: Boolean = false,
 ) {
     val product = if (isJade) "blockstream_jade" else "green"
     val hw = if (isJade) "jade" else ""
 
-    val policy: String = network?.zendeskSecurityPolicy() ?: if(isMultisig) "multisig_shield__green_" else ""
+    val policy: String = errorReport?.zendeskSecurityPolicy ?: ""
 
     openBrowser(
         settingsManager.getApplicationSettings(),
@@ -182,7 +180,6 @@ fun Fragment.toPixels(size: Int) =
     TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size.toFloat(), resources.displayMetrics)
         .toInt()
 
-fun String?.nameCleanup(): String? = if (isNullOrBlank()) null else trim().replace("\n", "")
 
 val isDebug by lazy { BuildConfig.DEBUG }
 val isDevelopmentFlavor by lazy { BuildConfig.FLAVOR == "development" || BuildConfig.APPLICATION_ID.contains(".dev") }

@@ -4,12 +4,14 @@ import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import androidx.lifecycle.LifecycleObserver
+import com.blockstream.common.managers.SessionManager
 import com.blockstream.green.managers.NotificationManager
-import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.MainActivity
 import mu.KLogging
+import org.koin.core.annotation.Single
 
 
+@Single
 class ActivityLifecycle(
     private val sessionManager: SessionManager,
     private val notificationManager: NotificationManager

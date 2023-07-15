@@ -1,36 +1,36 @@
 package com.blockstream.green.ui.overview
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
+import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
 import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.Assets
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.SwapProposal
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.gdk.device.DeviceResolver
-import com.blockstream.green.data.Countly
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.gdk.WalletBalances
-import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.items.AlertType
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import kotlinx.coroutines.*
+import com.rickclephas.kmm.viewmodel.coroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.withContext
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
-class WalletOverviewViewModel @AssistedInject constructor(
-    sessionManager: SessionManager,
-    walletRepository: WalletRepository,
-    countly: Countly,
-    @Assisted initWallet: Wallet
-) : AbstractWalletViewModel(sessionManager, walletRepository, countly, initWallet) {
+@KoinViewModel
+class WalletOverviewViewModel constructor(
+    @InjectedParam initWallet: GreenWallet
+) : AbstractWalletViewModel(initWallet) {
     val isWatchOnly: LiveData<Boolean> = MutableLiveData(wallet.isWatchOnly)
 
     private val _systemMessageLiveData: MutableLiveData<AlertType?> = MutableLiveData()
@@ -43,7 +43,7 @@ class WalletOverviewViewModel @AssistedInject constructor(
                 value = listOfNotNull(
                     _twoFactorStateLiveData.value,
                     _systemMessageLiveData.value,
-                    if (wallet.isEphemeral && !wallet.isHardware) AlertType.EphemeralBip39 else null,
+                    if (wallet.isBip39Ephemeral) AlertType.EphemeralBip39 else null,
                     banner.value?.let { banner -> AlertType.Banner(banner) },
                     if (session.isTestnet) AlertType.TestnetWarning else null,
                     if (_failedNetworkLoginsLiveData.value.isNullOrEmpty()) null else AlertType.FailedNetworkLogin
@@ -52,7 +52,7 @@ class WalletOverviewViewModel @AssistedInject constructor(
             addSource(_failedNetworkLoginsLiveData, combine)
             addSource(_twoFactorStateLiveData, combine)
             addSource(_systemMessageLiveData, combine)
-            addSource(banner, combine)
+            addSource(banner.asLiveData(), combine)
         }
     }
     val alertsLiveData: LiveData<List<AlertType>> get() = _alertsLiveData
@@ -60,30 +60,33 @@ class WalletOverviewViewModel @AssistedInject constructor(
     private val _archivedAccountsLiveData: MutableLiveData<Int> = MutableLiveData(0)
     val archivedAccountsLiveData: LiveData<Int> get() = _archivedAccountsLiveData
 
-    val walletTotalBalanceFlow: StateFlow<Long> get() = session.walletTotalBalanceFlow
+    val walletTotalBalanceFlow: StateFlow<Long> get() = session.walletTotalBalance
 
-    val walletAssetsFlow: StateFlow<WalletBalances> get() = session.walletAssetsFlow
+    val walletAssetsFlow: StateFlow<Assets> get() = session.walletAssets
 
-    val walletTransactionsFlow: StateFlow<List<Transaction>> get() = session.walletTransactionsFlow
+    val walletTransactionsFlow: StateFlow<List<Transaction>> get() = session.walletTransactions
+
+    val zeroAccounts: StateFlow<Boolean>
+        get() = session.zeroAccounts
 
     init {
         session
-            .allAccountsFlow
+            .allAccounts
             .onEach { accounts ->
                 _archivedAccountsLiveData.value = accounts.count { it.hidden }
-            }.launchIn(viewModelScope)
+            }.launchIn(viewModelScope.coroutineScope)
 
-        session.systemMessageFlow.onEach {
+        session.systemMessage.onEach {
             if(it.isEmpty()){
                 _systemMessageLiveData.value = null
             }else{
                 _systemMessageLiveData.value = AlertType.SystemMessage(it.first().first, it.first().second)
             }
-        }.launchIn(viewModelScope)
+        }.launchIn(viewModelScope.coroutineScope)
 
         // Support only for Bitcoin
         session.bitcoinMultisig?.let { network ->
-            session.twoFactorResetFlow(network).onEach {
+            session.twoFactorReset(network).onEach {
                 _twoFactorStateLiveData.postValue(
                     if (it != null && it.isActive == true) {
                         if (it.isDisputed == true) {
@@ -95,12 +98,12 @@ class WalletOverviewViewModel @AssistedInject constructor(
                         null
                     }
                 )
-            }.launchIn(viewModelScope)
+            }.launchIn(viewModelScope.coroutineScope)
         }
 
-        session.failedNetworksFlow.onEach {
+        session.failedNetworks.onEach {
             _failedNetworkLoginsLiveData.value = it
-        }.launchIn(viewModelScope)
+        }.launchIn(viewModelScope.coroutineScope)
     }
 
     fun refresh(){
@@ -155,24 +158,5 @@ class WalletOverviewViewModel @AssistedInject constructor(
                 this
             )
         })
-    }
-
-    @dagger.assisted.AssistedFactory
-    interface AssistedFactory {
-        fun create(
-            wallet: Wallet
-        ): WalletOverviewViewModel
-    }
-
-    companion object {
-        fun provideFactory(
-            assistedFactory: AssistedFactory,
-            wallet: Wallet
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet) as T
-            }
-        }
     }
 }

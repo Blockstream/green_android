@@ -6,15 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.blockstream.common.Urls
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
-import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.DeviceListFragmentBinding
 import com.blockstream.green.databinding.HwConnectStepBinding
 import com.blockstream.green.databinding.JadeConnectStepBinding
@@ -26,16 +26,16 @@ import com.blockstream.green.utils.openBrowser
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import mu.KLogging
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 
-@AndroidEntryPoint
 class DeviceListFragment : AbstractDeviceFragment<DeviceListFragmentBinding>(
     layout = R.layout.device_list_fragment,
     menuRes = 0
@@ -44,23 +44,27 @@ class DeviceListFragment : AbstractDeviceFragment<DeviceListFragmentBinding>(
 
     override val screenName = "DeviceList"
 
-    @Inject
-    lateinit var viewModelFactory: DeviceListViewModel.AssistedFactory
-
-    override val viewModel: DeviceListViewModel by viewModels {
-        DeviceListViewModel.provideFactory(
-            viewModelFactory,
-            args.isJade
-        )
+    override val viewModel: DeviceListViewModel by viewModel {
+        parametersOf(args.isJade)
     }
 
-    @Inject
-    lateinit var deviceManager: DeviceManager
+    override fun getAppViewModel() = viewModel
+
+    private val deviceManager: DeviceManager by inject()
 
     private var changeStepJob: Job? = null
 
     override val title: String
         get() = if (args.isJade) "Blockstream Jade" else ""
+
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+        if (sideEffect is SideEffects.Navigate){
+            (sideEffect.data as? Device)?.also {
+                selectDevice(it)
+            }
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -115,12 +119,6 @@ class DeviceListFragment : AbstractDeviceFragment<DeviceListFragmentBinding>(
 
         binding.buttonTroubleshoot.setOnClickListener {
             openBrowser(Urls.JADE_TROUBLESHOOT)
-        }
-
-        viewModel.onEvent.observe(viewLifecycleOwner) { event ->
-            event.getContentIfNotHandledForType<NavigateEvent.NavigateWithData>()?.let { navigate ->
-                selectDevice(navigate.data as Device)
-            }
         }
 
         binding.swipeRefreshLayout.setOnRefreshListener {

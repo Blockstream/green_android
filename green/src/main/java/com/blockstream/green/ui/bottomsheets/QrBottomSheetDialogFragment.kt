@@ -7,10 +7,8 @@ import android.view.View
 import androidx.fragment.app.FragmentManager
 import com.blockstream.green.databinding.QrBottomSheetBinding
 import com.blockstream.green.utils.createQrBitmap
-import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
 
-@AndroidEntryPoint
 class QrBottomSheetDialogFragment : AbstractBottomSheetDialogFragment<QrBottomSheetBinding>() {
     override val screenName: String = ""
     override fun inflate(layoutInflater: LayoutInflater) =

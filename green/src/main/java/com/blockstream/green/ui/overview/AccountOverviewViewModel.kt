@@ -1,37 +1,34 @@
 package com.blockstream.green.ui.overview
 
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.blockstream.common.data.CredentialType
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.extensions.lightningMnemonic
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.Transaction
-import com.blockstream.green.data.Countly
-import com.blockstream.green.data.NavigateEvent
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.gdk.Assets
-import com.blockstream.green.gdk.GdkSession
-import com.blockstream.green.gdk.policyAsset
-import com.blockstream.green.managers.SessionManager
+import com.blockstream.common.lightning.fromSwapInfo
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.ui.items.AlertType
 import com.blockstream.green.ui.wallet.AbstractAccountWalletViewModel
-import com.blockstream.green.utils.ConsumableEvent
-import com.blockstream.lightning.fromSwapInfo
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
+import com.rickclephas.kmm.viewmodel.coroutineScope
+import com.rickclephas.kmm.viewmodel.stateIn
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
-
-class AccountOverviewViewModel @AssistedInject constructor(
-    sessionManager: SessionManager,
-    walletRepository: WalletRepository,
-    countly: Countly,
-    @Assisted initWallet: Wallet,
-    @Assisted account: Account,
-) : AbstractAccountWalletViewModel(sessionManager, walletRepository, countly, initWallet, account) {
+@KoinViewModel
+class AccountOverviewViewModel constructor(
+    @InjectedParam initWallet: GreenWallet,
+    @InjectedParam account: Account,
+) : AbstractAccountWalletViewModel(initWallet, account) {
     val isWatchOnly: LiveData<Boolean> = MutableLiveData(wallet.isWatchOnly)
 
     private val _twoFactorStateLiveData: MutableLiveData<List<AlertType>> = MutableLiveData()
@@ -45,39 +42,46 @@ class AccountOverviewViewModel @AssistedInject constructor(
     val transactionsPagerLiveData: LiveData<Boolean?> get() = _transactionsPagerLiveData
     val transactionsPager: Boolean? get() = _transactionsPagerLiveData.value
 
-    private val _assetsLiveData: MutableLiveData<Assets> =
-        MutableLiveData(GdkSession.AssetsLoading)
-    val assetsLiveData: LiveData<Assets> get() = _assetsLiveData
-    val assets: Assets get() = _assetsLiveData.value!!
+    private val _assetsLiveData: MutableLiveData<Map<String, Long>> = MutableLiveData(mapOf())
+    val assetsLiveData: LiveData<Map<String, Long>> get() = _assetsLiveData
+    val assets: Map<String, Long> get() = _assetsLiveData.value!!
 
-    val policyAsset: Long get() = session.accountAssets(account).policyAsset()
+    val policyAsset: Long get() = session.accountAssets(accountValue).value.policyAsset
 
     private val _swapInfoStateFlow
-        get() = if(account.isLightning) session.lightningSdk.swapInfoStateFlow else flowOf(listOf())
+        get() = if(accountValue.isLightning) session.lightningSdk.swapInfoStateFlow else flowOf(listOf())
+
+    val lightningShortcut = if(wallet.isEphemeral) {
+        emptyFlow<Boolean?>()
+    } else {
+        database.getLoginCredentialsFlow(wallet.id).map {
+            it.lightningMnemonic != null
+        }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     init {
         session
-            .accountAssetsFlow(account)
+            .accountAssets(account)
             .map {
-                it.takeIf { account.isLiquid && it.size > 1 } ?: emptyMap()
+                it.assets?.takeIf { account.isLiquid && it.size > 1 } ?: mapOf()
             }
             .onEach { assets ->
                 _assetsLiveData.value = assets
-            }.launchIn(viewModelScope)
+            }.launchIn(viewModelScope.coroutineScope)
 
-        combine(session.accountTransactionsFlow(account), _swapInfoStateFlow) { transactions, swaps ->
+        combine(session.accountTransactions(account), _swapInfoStateFlow) { transactions, swaps ->
             swaps.map {
                 Transaction.fromSwapInfo(account, it.first, it.second)
             } + transactions
         }.onEach {
             _transactionsLiveData.value = it
-        }.launchIn(viewModelScope)
+        }.launchIn(viewModelScope.coroutineScope)
 
-        session.accountTransactionsPagerFlow(account).onEach {
+        session.accountTransactionsPager(account).onEach {
             _transactionsPagerLiveData.value = it
-        }.launchIn(viewModelScope)
+        }.launchIn(viewModelScope.coroutineScope)
 
-        session.twoFactorResetFlow(network).onEach {
+        session.twoFactorReset(network).onEach {
             _twoFactorStateLiveData.postValue(
                 listOfNotNull(
                     if (it != null && it.isActive == true) {
@@ -91,60 +95,57 @@ class AccountOverviewViewModel @AssistedInject constructor(
                     }
                 )
             )
-        }.launchIn(viewModelScope)
+        }.launchIn(viewModelScope.coroutineScope)
 
         session.getTransactions(account = account, isReset = true, isLoadMore = false)
     }
 
     fun refresh() {
-        session.getTransactions(account = account, isReset = false, isLoadMore = false)
-        session.updateAccountsAndBalances(refresh = true, updateBalancesForAccounts = listOf(account))
+        session.getTransactions(account = accountValue, isReset = false, isLoadMore = false)
+        session.updateAccountsAndBalances(refresh = true, updateBalancesForAccounts = listOf(accountValue))
         session.updateLiquidAssets()
     }
 
     fun loadMoreTransactions() {
         logger.info { "loadMoreTransactions" }
-        session.getTransactions(account = account, isReset = false, isLoadMore = true)
+        session.getTransactions(account = accountValue, isReset = false, isLoadMore = true)
     }
 
     fun archiveAccount() {
-        super.updateAccountVisibility(account, true){
-            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(WalletOverviewFragment.ACCOUNT_ARCHIVED)))
+        super.updateAccountVisibility(accountValue, true){
+            postSideEffect(SideEffects.Navigate(WalletOverviewFragment.ACCOUNT_ARCHIVED))
         }
     }
 
     fun removeAccount() {
-        super.removeAccount(account){
-            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateBack()))
+        super.removeAccount(accountValue){
+            postSideEffect(SideEffects.NavigateToRoot)
         }
+    }
+
+    fun removeLightningShortcut() {
+        doUserAction({
+            database.deleteLoginCredentials(wallet.id, CredentialType.LIGHTNING_MNEMONIC)
+        }, onSuccess = {
+
+        })
+    }
+
+    fun enableLightningShortcut() {
+        doAsync({
+            _enableLightningShortcut()
+        }, onSuccess = {
+
+        })
     }
 
     fun closeChannel(){
         doUserAction({
             session.lightningSdk.closeLspChannels()
         }, onSuccess = {
-            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(AccountOverviewFragment.LIGHTNING_CLOSE_CHANNEL)))
+            postSideEffect(SideEffects.Navigate(AccountOverviewFragment.LIGHTNING_CLOSE_CHANNEL))
         })
     }
 
-    @dagger.assisted.AssistedFactory
-    interface AssistedFactory {
-        fun create(
-            wallet: Wallet,
-            account: Account,
-        ): AccountOverviewViewModel
-    }
 
-    companion object {
-        fun provideFactory(
-            assistedFactory: AssistedFactory,
-            wallet: Wallet,
-            account: Account,
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet, account) as T
-            }
-        }
-    }
 }

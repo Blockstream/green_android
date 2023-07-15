@@ -4,7 +4,7 @@ import com.arkivanov.essenty.parcelable.IgnoredOnParcel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.BTC_POLICY_ASSET
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -24,7 +24,7 @@ data class Network(
     @SerialName("server_type") val serverType: String? = null,
     @SerialName("csv_buckets") val csvBuckets: List<Int> = listOf(),
     @SerialName("lightning") val isLightning: Boolean = false, // synthetic
-) : GdkJson<Network>(), Parcelable {
+) : GreenJson<Network>(), Parcelable {
 
     val isElectrum
         get() = "electrum" == serverType

@@ -9,10 +9,8 @@ import com.blockstream.green.ui.send.SendConfirmFragment
 import com.blockstream.green.ui.send.SendConfirmViewModel
 import com.blockstream.green.utils.bounceDown
 import com.mikepenz.fastadapter.FastAdapter
-import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
 
-@AndroidEntryPoint
 class VerifyTransactionBottomSheetDialogFragment: WalletBottomSheetDialogFragment<TransactionVerifyAddressBottomSheetBinding, SendConfirmViewModel>() {
 
     override val screenName = "VerifyTransaction"

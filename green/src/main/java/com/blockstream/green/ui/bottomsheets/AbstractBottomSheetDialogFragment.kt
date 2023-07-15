@@ -7,22 +7,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.databinding.ViewDataBinding
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
+import com.blockstream.common.ScreenView
 import com.blockstream.green.data.Countly
-import com.blockstream.green.data.ScreenView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import mu.KLogging
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
 abstract class AbstractBottomSheetDialogFragment<T : ViewDataBinding>: BottomSheetDialogFragment(),
     ScreenView {
-    @Inject
-    lateinit var countly: Countly
+    protected val countly: Countly by inject()
 
-    internal val disposables = CompositeDisposable()
+    private val disposables = CompositeDisposable()
 
     protected lateinit var binding: T
 
@@ -86,6 +86,13 @@ abstract class AbstractBottomSheetDialogFragment<T : ViewDataBinding>: BottomShe
                 show(instance, fragmentManager)
             } else {
                 logger.info { "There is already an open instance of ${instance.javaClass.simpleName}" }
+            }
+        }
+
+        fun closeAll(javaClass: Class<*>, fragmentManager: FragmentManager){
+            val tag = javaClass.simpleName
+            (fragmentManager.findFragmentByTag(tag) as? DialogFragment)?.also {
+                it.dismiss()
             }
         }
     }

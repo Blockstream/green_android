@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk.data
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 data class PreviousAddresses(
     @SerialName("last_pointer") val lastPointer: Int? = null,
     @SerialName("list") val addresses: List<Address> = listOf(),
-): GdkJson<PreviousAddresses>(){
+): GreenJson<PreviousAddresses>(){
 
     override fun kSerializer() = serializer()
 }

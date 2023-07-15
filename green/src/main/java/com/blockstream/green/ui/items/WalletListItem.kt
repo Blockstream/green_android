@@ -2,30 +2,23 @@ package com.blockstream.green.ui.items
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.view.isVisible
+import com.blockstream.common.views.wallet.WalletListLook
 import com.blockstream.green.R
-import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.ListItemWalletBinding
-import com.blockstream.green.devices.Device
-import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.iconResource
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
-data class WalletListItem constructor(val wallet: Wallet, val session: GdkSession) : AbstractBindingItem<ListItemWalletBinding>() {
+data class WalletListItem constructor(val look: WalletListLook) : AbstractBindingItem<ListItemWalletBinding>() {
     override val type: Int
         get() = R.id.fastadapter_wallet_item_id
 
     init {
-        identifier = wallet.id
+        identifier = look.greenWallet.id.hashCode().toLong()
     }
 
     override fun bindView(binding: ListItemWalletBinding, payloads: List<Any>) {
-        binding.wallet = wallet
-        binding.session = session
-        binding.connectionIcon.isVisible = session.isConnected
-        binding.device = session.device as? Device
-
-        binding.icon.setImageResource(wallet.iconResource())
+        binding.view = look
+        binding.icon.setImageResource(look.greenWallet.iconResource())
     }
 
     override fun createBinding(

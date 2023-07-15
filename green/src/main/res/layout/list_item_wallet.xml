@@ -5,19 +5,10 @@
 
     <data>
 
-        <import type="com.blockstream.green.gdk.ExtensionsKt" />
-
         <variable
-            name="wallet"
-            type="com.blockstream.green.database.Wallet" />
+            name="view"
+            type="com.blockstream.common.views.wallet.WalletListLook" />
 
-        <variable
-            name="session"
-            type="com.blockstream.green.gdk.GdkSession" />
-
-        <variable
-            name="device"
-            type="com.blockstream.green.devices.Device" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -27,104 +18,163 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="4dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="52dp">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/icon"
-                android:layout_width="wrap_content"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp">
+
+                <ImageView
+                    android:id="@+id/icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:src="@drawable/ic_eye" />
+
+                <ImageView
+                    android:id="@+id/innerIcon"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_regular_flask_24"
+                    android:translationX="4dp"
+                    android:translationY="4dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/icon"
+                    app:layout_constraintEnd_toEndOf="@+id/icon"
+                    app:tint="@color/surface_light" />
+
+                <ImageView
+                    android:id="@+id/connectionIcon"
+                    isVisible="@{view.connected}"
+                    android:layout_width="5dp"
+                    android:layout_height="5dp"
+                    android:alpha="0.75"
+                    android:src="@drawable/indicator_dot_filled"
+                    app:layout_constraintBottom_toBottomOf="@+id/icon"
+                    app:layout_constraintEnd_toStartOf="@+id/icon"
+                    app:layout_constraintHorizontal_bias="0.75"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/icon" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/arrow"
+                    app:layout_constraintStart_toEndOf="@+id/icon"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@{view.title}"
+                        android:textAppearance="?attr/textAppearanceLabelMedium"
+                        tools:text="My Bitcoin Wallet" />
+
+                    <TextView
+                        android:id="@+id/subtitle"
+                        isVisible="@{view.subtitle != null}"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:includeFontPadding="false"
+                        android:singleLine="true"
+                        android:text="@{view.subtitle}"
+                        android:textAppearance="?attr/textAppearanceBodySmall"
+                        android:textColor="@color/color_on_surface_emphasis_medium"
+                        android:textSize="10dp"
+                        app:layout_constraintEnd_toEndOf="@+id/title"
+                        app:layout_constraintStart_toStartOf="@+id/title"
+                        app:layout_constraintTop_toBottomOf="@+id/title"
+                        tools:text="Jade"
+                        tools:visibility="visible" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <ImageView
+                    android:id="@+id/arrow"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="16dp"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_caret_right"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/color_on_surface_emphasis_low" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:src="@drawable/ic_eye" />
+                isVisible="@{view.hasLightningShortcut}"/>
 
-            <ImageView
-                android:id="@+id/innerIcon"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:src="@drawable/ic_regular_flask_24"
-                android:translationX="4dp"
-                android:translationY="4dp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/icon"
-                app:layout_constraintEnd_toEndOf="@+id/icon"
-                app:tint="@color/surface_light" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/lightningShortcut"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginStart="32dp"
+                isVisible="@{view.hasLightningShortcut}">
 
-            <ImageView
-                android:id="@+id/connectionIcon"
-                android:layout_width="5dp"
-                android:layout_height="5dp"
-                android:alpha="0.75"
-                android:src="@drawable/indicator_dot_filled"
-                app:layout_constraintBottom_toBottomOf="@+id/icon"
-                app:layout_constraintEnd_toStartOf="@+id/icon"
-                app:layout_constraintHorizontal_bias="0.75"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/icon" />
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/endIcon"
-                app:layout_constraintStart_toEndOf="@+id/icon"
-                app:layout_constraintTop_toTopOf="parent">
+                <ImageView
+                    android:id="@+id/lnIcon"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="16dp"
+                    android:src="@drawable/ic_lightning"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/title"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@{wallet.name}"
+                    android:text="@string/id_lightning_account"
+                    android:layout_marginStart="8dp"
                     android:textAppearance="?attr/textAppearanceLabelMedium"
-                    tools:text="My Bitcoin Wallet" />
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/lnArrow"
+                    app:layout_constraintStart_toEndOf="@+id/lnIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/subtitle"
-                    isVisible="@{wallet.isEphemeral}"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:includeFontPadding="false"
-                    android:singleLine="true"
-                    android:text="@{device != null ? device.name : wallet.ephemeralBip39Name}"
-                    android:textAppearance="?attr/textAppearanceBodySmall"
-                    android:textColor="@color/color_on_surface_emphasis_medium"
-                    android:textSize="10dp"
-                    app:layout_constraintEnd_toEndOf="@+id/title"
-                    app:layout_constraintStart_toStartOf="@+id/title"
-                    app:layout_constraintTop_toBottomOf="@+id/title"
-                    tools:text="Jade"
-                    tools:visibility="visible" />
+                <ImageView
+                    android:id="@+id/lnConnectionIcon"
+                    isVisible="@{view.lightningShortcutConnected}"
+                    android:layout_width="5dp"
+                    android:layout_height="5dp"
+                    android:alpha="0.75"
+                    android:src="@drawable/indicator_dot_filled"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/lnIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
+                <ImageView
+                    android:id="@+id/lnArrow"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="16dp"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_caret_right"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/color_on_surface_emphasis_low" />
 
-            <ImageView
-                android:id="@+id/endIcon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/arrow"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:src="@drawable/ic_jade" />
 
-            <ImageView
-                android:id="@+id/arrow"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginEnd="16dp"
-                android:padding="4dp"
-                android:src="@drawable/ic_caret_right"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/color_on_surface_emphasis_low" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+
     </com.google.android.material.card.MaterialCardView>
 </layout>

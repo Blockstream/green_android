@@ -4,10 +4,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemAssetSmallBinding
-import com.blockstream.green.gdk.GdkSession
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.green.gdk.getAssetIcon
-import com.blockstream.green.gdk.getAssetName
-import com.blockstream.green.gdk.getAssetTicker
+import com.blockstream.common.extensions.getAssetName
+import com.blockstream.common.extensions.getAssetTicker
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
 

@@ -2,20 +2,17 @@ package com.blockstream.green.ui.lightning
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import breez_sdk.InputType
+import com.blockstream.common.data.ErrorReport
 import com.blockstream.green.R
-import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.LnurlAuthFragmentBinding
 import com.blockstream.green.extensions.errorDialog
-import com.blockstream.green.extensions.snackbar
-import com.blockstream.green.ui.AppViewModel
+import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-@AndroidEntryPoint
 class LnUrlAuthFragment :
     AbstractWalletFragment<LnurlAuthFragmentBinding>(R.layout.lnurl_auth_fragment, menuRes = 0) {
     override val screenName = "LNURLAuth"
@@ -37,19 +34,16 @@ class LnUrlAuthFragment :
     override val toolbarIcon: Int
         get() = R.drawable.ic_lightning
 
-    @Inject
-    lateinit var viewModelFactory: LnUrlAuthViewModel.AssistedFactory
 
-    val viewModel: LnUrlAuthViewModel by viewModels {
-        LnUrlAuthViewModel.provideFactory(
-            viewModelFactory,
-            wallet = args.wallet,
-            accountAsset = args.accountAsset,
-            requestData = requestData
+    val viewModel: LnUrlAuthViewModel by viewModel {
+        parametersOf(
+            args.wallet,
+            args.accountAsset,
+            requestData
         )
     }
 
-    override fun getAppViewModel(): AppViewModel? {
+    override fun getAppViewModel(): AppViewModelAndroid? {
         return if (requestDataOrNull != null) viewModel else null
     }
 
@@ -63,16 +57,9 @@ class LnUrlAuthFragment :
 
         binding.vm = viewModel
 
-        viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
-            consumableEvent?.getContentIfNotHandledForType<NavigateEvent.NavigateBack>()?.let {
-                snackbar(R.string.id_authentication_successful)
-                popBackStack()
-            }
-        }
-
         viewModel.onError.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let { throwable ->
-                errorDialog(throwable = throwable, network = session.lightning, session = session, showReport = true) {
+                errorDialog(throwable = throwable, errorReport = ErrorReport.create(throwable = throwable, network = session.lightning, session = session)) {
                     popBackStack()
                 }
             }

@@ -23,9 +23,9 @@ import androidx.core.view.updatePadding
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.MutableLiveData
 import androidx.viewbinding.ViewBinding
+import com.blockstream.common.extensions.isPolicyAsset
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.green.R
-import com.blockstream.green.gdk.GdkSession
-import com.blockstream.green.gdk.isPolicyAsset
 import com.blockstream.green.utils.dp
 import com.blockstream.green.utils.getClipboard
 import com.blockstream.green.utils.toPixels
@@ -131,15 +131,6 @@ fun CharSequence?.isEmailValid(): Boolean {
 fun MutableLiveData<String>.string() : String = value ?: ""
 fun MutableLiveData<Boolean>.boolean() : Boolean = value ?: false
 fun MutableLiveData<Boolean>.toggle() : Boolean = (value?.let { !it } ?: false).also { this.value = it }
-
-// Helper fn for Data Binding as the original fn is InlineOnly
-fun String?.isBlank() = isNullOrBlank()
-fun String?.isNotBlank() = !isNullOrBlank()
-
-fun String?.padHex() = this?.replace("........".toRegex(), "$0 ")
-
-fun List<String>?.startsWith(other: String?): Boolean = if(this == null) false else
-    other.takeIf { it.isNotBlank() }?.let { o -> any { it.startsWith(o) } } ?: false
 
 fun String.fromHtml(): Spanned {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

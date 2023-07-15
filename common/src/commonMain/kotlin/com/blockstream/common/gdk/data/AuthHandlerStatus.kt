@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk.data
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -20,7 +20,7 @@ data class AuthHandlerStatus constructor(
 
     // Wait for a fix #535
     @SerialName("auth_data") val authData: JsonElement? = null,
-) : GdkJson<AuthHandlerStatus>() {
+) : GreenJson<AuthHandlerStatus>() {
     override fun keepJsonElement() = true
 
     override fun kSerializer() = serializer()

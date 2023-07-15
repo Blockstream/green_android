@@ -57,7 +57,7 @@
             android:layout_height="18dp"
             android:layout_marginEnd="-8dp"
             android:layout_marginBottom="-8dp"
-            android:src="@{account.network.multisig ? @drawable/ic_multisig : account.network.lightning ? @drawable/ic_lightning : @drawable/ic_singlesig}"
+            android:src="@{account.network.multisig ? @drawable/ic_multisig : account.network.lightning ? @drawable/ic_lightning_fill : @drawable/ic_singlesig}"
             app:layout_constraintBottom_toBottomOf="@+id/icon"
             app:layout_constraintDimensionRatio="w,1:1"
             app:layout_constraintEnd_toEndOf="@+id/icon"

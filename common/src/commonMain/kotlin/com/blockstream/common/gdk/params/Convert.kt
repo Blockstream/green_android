@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk.params
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.gdk.data.Asset
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -22,7 +22,7 @@ data class Convert constructor(
     // Fallback to avoid blocking convert_amount call
     @SerialName("fiat_currency") val fiatCurrency: String? = "USD",
     @SerialName("fiat_rate") val fiatRate: String? = "0",
-) : GdkJson<Convert>() {
+) : GreenJson<Convert>() {
 
     override fun encodeDefaultsValues() = false
 

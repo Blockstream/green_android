@@ -6,19 +6,12 @@ import android.view.View
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.databinding.SystemMessageBottomSheetBinding
-import com.blockstream.common.managers.SettingsManager
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.extensions.dismissIn
 import com.blockstream.green.extensions.errorDialog
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 
-@AndroidEntryPoint
 class SystemMessageBottomSheetDialogFragment :
     WalletBottomSheetDialogFragment<SystemMessageBottomSheetBinding, AbstractWalletViewModel>() {
-
-    @Inject
-    lateinit var settingsManager: SettingsManager
 
     override val screenName = "SystemMessage"
 

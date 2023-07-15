@@ -3,42 +3,34 @@ package com.blockstream.green.ui.devices
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.*
+import com.blockstream.common.data.DeviceIdentifier
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.Gdk
-import com.blockstream.common.managers.SettingsManager
-import com.blockstream.green.data.Countly
-import com.blockstream.green.data.NavigateEvent
-import com.blockstream.green.database.DeviceIdentifier
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceConnectionManager
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.devices.HardwareConnectInteraction
 import com.blockstream.green.extensions.boolean
-import com.blockstream.green.extensions.logException
 import com.blockstream.green.gdk.getWallet
-import com.blockstream.green.managers.SessionManager
-import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.QATester
 import com.greenaddress.greenbits.wallets.JadeFirmwareManager
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import dagger.hilt.android.qualifiers.ApplicationContext
+import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.launch
 import mu.KLogging
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
-class DeviceInfoViewModel @AssistedInject constructor(
+@KoinViewModel
+class DeviceInfoViewModel constructor(
     @SuppressLint("StaticFieldLeak")
-    @ApplicationContext val context: Context,
-    sessionManager: SessionManager,
-    walletRepository: WalletRepository,
+    val context: Context,
     deviceManager: DeviceManager,
     qaTester: QATester,
     val gdk: Gdk,
-    val settingsManager: SettingsManager,
-    countly: Countly,
-    @Assisted override val device: Device,
-) : AbstractDeviceViewModel(sessionManager, walletRepository, deviceManager, qaTester, countly, null), HardwareConnectInteraction {
+    @InjectedParam override val device: Device,
+) : AbstractDeviceViewModel(deviceManager, qaTester, null), HardwareConnectInteraction {
 
     // Don't use onProgress for this screen as is not turned off for animation reasons
     val navigationLock = MutableLiveData(false)
@@ -61,7 +53,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
     )
 
     init {
-        viewModelScope.launch(context = logException(countly)) {
+        viewModelScope.coroutineScope.launch(context = logException(countly)) {
             rememberDevice.postValue(settingsManager.rememberDeviceWallet())
         }
 
@@ -71,7 +63,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
     }
 
     private fun unlockDevice(context: Context) {
-        onProgress.value = true
+        onProgressAndroid.value = true
         navigationLock.value = true
         deviceConnectionManager.connectDevice(context, device)
         countly.hardwareConnect(device)
@@ -98,7 +90,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
 
             if(previousSession != null){
                 // Session already setup
-                previousSession.getWallet(walletRepository)?.also {
+                previousSession.getWallet(database, sessionManager)?.also {
                     return@doUserAction it
                 }
             }
@@ -112,9 +104,9 @@ class DeviceInfoViewModel @AssistedInject constructor(
             // Disable Jade wallet fingerprint, keep the device name // getWalletName(session, network, device)
             val walletName = device.name
 
-            val wallet: Wallet
+            var wallet: GreenWallet
             if (isEphemeral) {
-                wallet = Wallet.createEphemeralWallet(
+                wallet = GreenWallet.createEphemeralWallet(
                     networkId = network.id,
                     name = walletName,
                     isHardware = true,
@@ -125,32 +117,43 @@ class DeviceInfoViewModel @AssistedInject constructor(
 
                 sessionManager.upgradeOnBoardingSessionToWallet(wallet)
             } else {
+
+                var isNewWallet = false
+
                 // Persist wallet and device identifier
-                wallet = walletRepository.getWalletWithHashId(
-                    walletHashId = walletHashId,
+                wallet = database.getWalletWithXpubHashId(
+                    xPubHashId = walletHashId,
                     isTestnet = network.isTestnet,
                     isHardware = true
-                ) ?: Wallet(
-                    walletHashId = walletHashId,
-                    name = walletName,
-                    activeNetwork = network.id,
-                    activeAccount = 0,
-                    isRecoveryPhraseConfirmed = true,
-                    isHardware = true,
-                    isTestnet = network.isTestnet
-                )
-
-                wallet.deviceIdentifiers = ((wallet.deviceIdentifiers ?: listOf()) + listOf(
-                    DeviceIdentifier(
-                        name = device.name,
-                        uniqueIdentifier = device.uniqueIdentifier,
-                        brand = device.deviceBrand,
-                        connectionType = device.type
+                ) ?: run {
+                    isNewWallet = true
+                    GreenWallet.createWallet(
+                        xPubHashId = walletHashId,
+                        name = walletName,
+                        activeNetwork = network.id,
+                        activeAccount = 0,
+                        isHardware = true,
+                        isTestnet = network.isTestnet,
                     )
-                )).toSet().toList() // Make it unique
+                }
 
-                // Get ID from Room
-                wallet.id = walletRepository.insertOrReplaceWallet(wallet)
+                val combinedLoginCredentials = (wallet.wallet.device_identifiers ?: listOf()) +
+                        listOf(
+                            DeviceIdentifier(
+                                name = device.name,
+                                uniqueIdentifier = device.uniqueIdentifier,
+                                brand = device.deviceBrand,
+                                connectionType = device.type
+                            )
+                        ).toSet().toList() // Make it unique
+
+                wallet.deviceIdentifiers = combinedLoginCredentials
+
+                if(isNewWallet){
+                    database.insertWallet(wallet)
+                }else{
+                    database.updateWallet(wallet)
+                }
 
                 session = sessionManager.getWalletSession(wallet)
 
@@ -160,15 +163,15 @@ class DeviceInfoViewModel @AssistedInject constructor(
             wallet
         }, postAction = {
             navigationLock.value = false
-            onProgress.value = it == null
-        }, onSuccess = { wallet: Wallet ->
+            onProgressAndroid.value = it == null
+        }, onSuccess = { wallet: GreenWallet ->
             proceedToLogin = true
-            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(wallet)))
+            postSideEffect(SideEffects.Navigate(wallet))
         })
     }
 
     override fun onDeviceReady(device: Device, isJadeUninitialized: Boolean?) {
-        onProgress.postValue(false)
+        onProgressAndroid.postValue(false)
         navigationLock.postValue(false)
         deviceIsConnected.postValue(true)
         countly.hardwareConnected(device)
@@ -177,28 +180,11 @@ class DeviceInfoViewModel @AssistedInject constructor(
 
     override fun onDeviceFailed(device: Device) {
         super.onDeviceFailed(device)
-        onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateBack()))
+        postSideEffect(SideEffects.NavigateBack())
         navigationLock.postValue(false)
-    }
-
-    @dagger.assisted.AssistedFactory
-    interface AssistedFactory {
-        fun create(
-            device: Device
-        ): DeviceInfoViewModel
     }
 
     companion object : KLogging() {
         const val REQUIRE_REBONDING = "REQUIRE_REBONDING"
-
-        fun provideFactory(
-            assistedFactory: AssistedFactory,
-            device: Device
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(device) as T
-            }
-        }
     }
 }

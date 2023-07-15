@@ -1,10 +1,10 @@
 package com.blockstream.common.gdk
 
 import co.touchlab.kermit.Logger
-import com.blockstream.common.gdk.data.Assets
 import com.blockstream.common.gdk.data.AuthHandlerStatus
 import com.blockstream.common.gdk.data.Balance
 import com.blockstream.common.gdk.data.FeeEstimation
+import com.blockstream.common.gdk.data.LiquidAssets
 import com.blockstream.common.gdk.data.LoginData
 import com.blockstream.common.gdk.data.Networks
 import com.blockstream.common.gdk.data.Pricing
@@ -77,6 +77,7 @@ import gdk.GA_get_receive_address
 import gdk.GA_get_settings
 import gdk.GA_get_subaccount
 import gdk.GA_get_subaccounts
+import gdk.GA_get_system_message
 import gdk.GA_get_thread_error_details
 import gdk.GA_get_transactions
 import gdk.GA_get_twofactor_config
@@ -138,7 +139,7 @@ inline fun JsonElement.toGaJson(memScope: MemScope): CPointer<cnames.structs.GA_
     return gaJson.value
 }
 
-inline fun <T : GdkJson<*>> T.toGaJson(memScope: MemScope): CPointer<cnames.structs.GA_json>? {
+inline fun <T : GreenJson<*>> T.toGaJson(memScope: MemScope): CPointer<cnames.structs.GA_json>? {
     val gaJson = memScope.allocPointerTo<cnames.structs.GA_json>()
     GA_convert_string_to_json(this.toJson(), gaJson.ptr)
     memScope.defer {
@@ -502,7 +503,7 @@ class IOSGdkBinding constructor(config: InitConfig) : GdkBinding {
     }
 
     @Throws(Exception::class)
-    override fun getAssets(session: GASession, params: GetAssetsParams): Assets {
+    override fun getAssets(session: GASession, params: GetAssetsParams): LiquidAssets {
         return memScoped {
             gaJson().let { gaJson ->
                 GA_get_assets(
@@ -750,7 +751,7 @@ class IOSGdkBinding constructor(config: InitConfig) : GdkBinding {
     override fun getSystemMessage(session: GASession): String? {
         return memScoped {
             gdkStringOrNull {
-                GA_get_watch_only_username(session = session.asGASession(), it.ptr).okOrThrow()
+                GA_get_system_message(session = session.asGASession(), message_text = it.ptr).okOrThrow()
             }
         }
     }
@@ -999,7 +1000,7 @@ class IOSGdkBinding constructor(config: InitConfig) : GdkBinding {
     }
 
     @Throws(Exception::class)
-    override fun createTransaction(session: GASession, params: GdkJson<*>): GAAuthHandler {
+    override fun createTransaction(session: GASession, params: GreenJson<*>): GAAuthHandler {
         return memScoped {
             gaAuthHandler().let { gaAuthHandler ->
                 GA_create_transaction(
@@ -1012,7 +1013,7 @@ class IOSGdkBinding constructor(config: InitConfig) : GdkBinding {
     }
 
     @Throws(Exception::class)
-    override fun createSwapTransaction(session: GASession, params: GdkJson<*>): GAAuthHandler {
+    override fun createSwapTransaction(session: GASession, params: GreenJson<*>): GAAuthHandler {
         return memScoped {
             gaAuthHandler().let { gaAuthHandler ->
                 GA_create_swap_transaction(
@@ -1025,7 +1026,7 @@ class IOSGdkBinding constructor(config: InitConfig) : GdkBinding {
     }
 
     @Throws(Exception::class)
-    override fun completeSwapTransaction(session: GASession, params: GdkJson<*>): GAAuthHandler {
+    override fun completeSwapTransaction(session: GASession, params: GreenJson<*>): GAAuthHandler {
         return memScoped {
             gaAuthHandler().let { gaAuthHandler ->
                 GA_complete_swap_transaction(

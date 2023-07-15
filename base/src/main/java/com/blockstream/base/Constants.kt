@@ -1,8 +1,5 @@
 package com.blockstream.base
 
-object Database {
-    const val DATABASE_NAME = "green.db"
-}
 
 object Preferences {
     const val MIGRATED_V2_V3 = "pref_migrated_v2_v3"

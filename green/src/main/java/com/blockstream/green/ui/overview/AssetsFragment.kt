@@ -3,25 +3,22 @@ package com.blockstream.green.ui.overview
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
+import com.blockstream.common.gdk.AssetPair
 import com.blockstream.green.R
 import com.blockstream.green.databinding.BaseRecyclerViewBinding
-import com.blockstream.green.gdk.AssetPair
 import com.blockstream.green.ui.bottomsheets.AssetDetailsBottomSheetFragment
 import com.blockstream.green.ui.items.AssetListItem
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.ui.wallet.WalletViewModel
-import com.blockstream.green.utils.observeMap
+import com.blockstream.green.utils.observeFlow
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-@AndroidEntryPoint
 class AssetsFragment :
     AbstractWalletFragment<BaseRecyclerViewBinding>(R.layout.base_recycler_view, 0) {
     val args: AssetsFragmentArgs by navArgs()
@@ -32,10 +29,8 @@ class AssetsFragment :
     override val subtitle: String?
         get() = if (isSessionNetworkInitialized) wallet.name else null
 
-    @Inject
-    lateinit var viewModelFactory: WalletViewModel.AssistedFactory
-    val viewModel: WalletViewModel by viewModels {
-        WalletViewModel.provideFactory(viewModelFactory, args.wallet)
+    val viewModel: WalletViewModel by viewModel {
+        parametersOf(args.wallet)
     }
 
     override fun getWalletViewModel() = viewModel
@@ -52,11 +47,13 @@ class AssetsFragment :
                 showBalance = true,
                 isLoading = (it.first.isEmpty() && it.second == -1L)
             )
-        }.observeMap(
+        }.observeFlow(
             lifecycleScope,
-            session.walletAssetsFlow as Flow<Map<*, *>>,
-            toModel = {
-                AssetPair(it.key as String, (it.value as Long))
+            session.walletAssets,
+            toList = {
+                it.assets.map {
+                    AssetPair(it.key, it.value)
+                }
             })
 
         val fastAdapter = FastAdapter.with(listOf(assetsAdapter))

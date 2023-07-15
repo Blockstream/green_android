@@ -2,10 +2,10 @@ package com.blockstream.green.looks
 
 import com.blockstream.common.gdk.data.Balance
 import com.blockstream.common.gdk.params.Convert
-import com.blockstream.green.data.Denomination
-import com.blockstream.green.gdk.GdkSession
-import com.blockstream.green.gdk.getAssetName
-import com.blockstream.green.gdk.isPolicyAsset
+import com.blockstream.common.data.Denomination
+import com.blockstream.common.gdk.GdkSession
+import com.blockstream.common.extensions.getAssetName
+import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.green.utils.toAmountLookOrNa
 import kotlinx.coroutines.runBlocking
 

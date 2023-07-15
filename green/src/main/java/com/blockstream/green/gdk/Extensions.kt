@@ -4,31 +4,22 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.WalletIcon
+import com.blockstream.common.database.Database
+import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.GA_ERROR
 import com.blockstream.common.gdk.GA_NOT_AUTHORIZED
 import com.blockstream.common.gdk.GA_RECONNECT
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Device
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.gdk.data.Transaction
-import com.blockstream.gdk.toBitmap
-import com.blockstream.gdk.toBitmapDrawable
+import com.blockstream.common.managers.SessionManager
 import com.blockstream.green.R
-import com.blockstream.green.data.Denomination
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.utils.getBitcoinOrLiquidUnit
-
-fun Transaction.getConfirmationsMax(session: GdkSession): Int {
-    if(isLoadingTransaction) return 0
-    return getConfirmations(session.blockHeight(network)).coerceAtMost((if (network.isLiquid) 3 else 7)).toInt()
-}
-
-fun Transaction.getConfirmations(session: GdkSession): Long {
-    if(isLoadingTransaction) return -1
-    return getConfirmations(session.blockHeight(network))
-}
+import com.blockstream.green.extensions.toBitmap
+import com.blockstream.green.extensions.toBitmapDrawable
 
 // Should we cache BitmapDrawable/Bitmap
 fun GdkSession.getAssetDrawableOrNull(context: Context, assetId: String): Drawable? {
@@ -39,18 +30,13 @@ fun GdkSession.getAssetDrawableOrNull(context: Context, assetId: String): Drawab
     return null
 }
 
-suspend fun GdkSession.getWallet(walletRepository: WalletRepository): Wallet? {
-    return (ephemeralWallet ?: (sessionManager.getWalletIdFromSession(this)?.let { walletId -> walletRepository.getWallet(walletId) }))
+suspend fun GdkSession.getWallet(database: Database, sessionManager: SessionManager): GreenWallet? {
+    return (ephemeralWallet ?: (sessionManager.getWalletIdFromSession(this)?.let { walletId -> database.getWallet(walletId) }))
 }
 
 fun GdkSession.getAssetDrawableOrDefault(context: Context, assetId: String): Drawable {
     return getAssetDrawableOrNull(context, assetId) ?: context.getDrawable(R.drawable.ic_unknown)!!
 }
-
-// By default policy asset is first
-fun Assets.policyAsset() = entries.firstOrNull()?.value ?: 0
-
-fun Assets.policyAssetOrNull() = entries.firstOrNull()?.value
 
 fun AccountType?.titleRes(): Int = when (this) {
     AccountType.STANDARD -> R.string.id_2fa_protected
@@ -63,17 +49,6 @@ fun AccountType?.titleRes(): Int = when (this) {
     AccountType.LIGHTNING -> R.string.id_lightning
     else -> R.string.id_unknown
 }
-fun AccountType?.title(): String = when (this) {
-    AccountType.STANDARD -> "2FA Protected"
-    AccountType.AMP_ACCOUNT -> "AMP"
-    AccountType.TWO_OF_THREE -> "2of3 with 2FA"
-    AccountType.BIP44_LEGACY -> "Legacy"
-    AccountType.BIP49_SEGWIT_WRAPPED -> "Legacy SegWit"
-    AccountType.BIP84_SEGWIT -> "Standard"
-    AccountType.BIP86_TAPROOT -> "Taproot"
-    AccountType.LIGHTNING -> "Lightning"
-    else -> "Unknown"
-}
 
 fun AccountType?.policyRes(): Int = when (this) {
     AccountType.STANDARD -> R.string.id_2of2
@@ -85,15 +60,6 @@ fun AccountType?.policyRes(): Int = when (this) {
     AccountType.BIP86_TAPROOT -> R.string.id_taproot
     AccountType.LIGHTNING -> R.string.id_fastest
     else -> R.string.id_unknown
-}
-
-
-fun AccountType.withPolicy(context: Context): String = policyRes().let {
-    when{
-        this.isMutlisig() -> "${context.getString(R.string.id_multisig)} / ${context.getString(it)}"
-        this.isLightning() -> "${context.getString(R.string.id_lightning)}"
-        else -> "${context.getString(R.string.id_singlesig)} / ${context.getString(it)}"
-    }
 }
 
 fun AccountType.policyType(context: Context): String = context.getString(policyRes())
@@ -111,15 +77,6 @@ fun Account.typeWithPolicyAndNumber(context: Context): String = type.withPolicy(
     }
 }
 
-fun Account.needs2faActivation(session: GdkSession): Boolean {
-    return try {
-        isMultisig && !isAmp && (!session.isWatchOnly && !session.getTwoFactorConfig(network = network, useCache = true).anyEnabled)
-    }catch (e: Exception){
-        e.printStackTrace()
-        false
-    }
-}
-
 fun AccountType?.descriptionRes(): Int = when (this) {
     AccountType.STANDARD -> R.string.id_quick_setup_2fa_account_ideal
     AccountType.AMP_ACCOUNT -> R.string.id_account_for_special_assets
@@ -132,36 +89,20 @@ fun AccountType?.descriptionRes(): Int = when (this) {
     else -> R.string.id_unknown
 }
 
+fun AccountType.withPolicy(context: Context): String = policyRes().let {
+    when{
+        this.isMutlisig() -> "${context.getString(R.string.id_multisig)} / ${context.getString(it)}"
+        this.isLightning() -> "${context.getString(R.string.id_lightning)}"
+        else -> "${context.getString(R.string.id_singlesig)} / ${context.getString(it)}"
+    }
+}
+
 fun Network.getNetworkIcon(): Int{
     return id.getNetworkIcon()
 }
 
 fun Long?.getDirectionColor(context: Context): Int = ContextCompat.getColor(context, if ((this ?: 0) < 0) R.color.white else R.color.brand_green)
 
-fun String?.isPolicyAsset(network: Network?): Boolean = (this == null || this == network?.policyAsset)
-fun String?.isPolicyAsset(session: GdkSession): Boolean = (isPolicyAsset(session.bitcoin) || isPolicyAsset(session.liquid))
-
-// If no Bitcoin network is available, fallback to Liquid
-fun String?.networkForAsset(session: GdkSession): Network = (if(this == null || this == BTC_POLICY_ASSET) (session.activeBitcoin ?: session.activeLiquid) else session.activeLiquid ) ?: session.defaultNetwork
-
-fun String?.assetTicker(
-    session: GdkSession,
-    denomination: Denomination? = null
-) = assetTickerOrNull(session = session, denomination = denomination) ?: ""
-
-fun String?.assetTickerOrNull(
-    session: GdkSession,
-    denomination: Denomination? = null
-): String? {
-    return if (this.isPolicyAsset(session)) {
-        getBitcoinOrLiquidUnit(session = session, assetId = this, denomination = denomination)
-    } else {
-        this?.let { session.getAsset(it)?.ticker }
-    }
-}
-
-fun String?.assetIsAmp(session: GdkSession) = session.enrichedAssets[this]?.isAmp ?: false
-fun String?.assetWeight(session: GdkSession) = session.enrichedAssets[this]?.weight ?: 0
 
 fun String.getNetworkIcon(): Int{
     if (Network.isBitcoinMainnet(this)) return R.drawable.ic_bitcoin
@@ -183,24 +124,12 @@ fun String.getNetworkColor(): Int = when {
     else -> R.color.bitcoin_testnet
 }
 
-fun String.getNetworkColor(context: Context): Int = ContextCompat.getColor(context, getNetworkColor())
-
 fun Account.getAccountColor(context: Context): Int = when {
     isAmp && isLiquidMainnet -> R.color.amp
     isAmp && isLiquidTestnet -> R.color.amp_testnet
     else -> networkId.getNetworkColor()
 }.let {
     ContextCompat.getColor(context, it)
-}
-
-fun Account.isFunded(session: GdkSession): Boolean{
-    return session.accountAssets(this).values.sum() > 0
-}
-
-fun Account.hasHistory(session: GdkSession): Boolean {
-    return bip44Discovered == true || isFunded(session) || session.accountTransactions(this).let {
-        it.isNotEmpty() && it.firstOrNull()?.isLoadingTransaction == false
-    }
 }
 
 fun String?.getAssetIcon(context: Context, session: GdkSession, isLightning: Boolean = false): Drawable {
@@ -235,38 +164,6 @@ fun String?.getAssetIcon(context: Context, session: GdkSession, isLightning: Boo
     }
 }
 
-fun String.getAssetNameOrNull(session: GdkSession): String? {
-    return if(this.isPolicyAsset(session)) {
-        if(this == BTC_POLICY_ASSET){
-            "Bitcoin"
-        }else{
-            "Liquid Bitcoin"
-        }.let {
-            if(session.isTestnet) "Testnet $it" else it
-        }
-    }else{
-        session.liquid?.let { session.getAsset(this)?.name }
-    }
-}
-
-fun String.getAssetName(session: GdkSession): String {
-    return getAssetNameOrNull(session) ?: this
-}
-
-fun String.getAssetTicker(session: GdkSession): String? {
-    return if(this.isPolicyAsset(session)) {
-        if(this == BTC_POLICY_ASSET){
-            "BTC"
-        }else{
-            "L-BTC"
-        }.let {
-            if(session.isTestnet) "TEST-$it" else it
-        }
-    }else{
-        session.liquid?.let { session.getAsset(this)?.ticker }
-    }
-}
-
 fun Device.getIcon(): Int{
     return when {
         isTrezor -> R.drawable.trezor_device
@@ -283,14 +180,12 @@ fun com.blockstream.green.devices.Device.getIcon(): Int{
     }
 }
 
-fun Wallet.iconResource() = when {
-    isWatchOnly -> R.drawable.ic_regular_eye_24
-    isTestnet -> R.drawable.ic_regular_flask_24
-    isBip39Ephemeral -> R.drawable.ic_regular_wallet_passphrase_24
-    isHardware -> R.drawable.ic_regular_hww_24 // session.device!!.getIcon()
-    isLightning -> R.drawable.ic_lightning
-    // isHardware && session.device != null -> R.drawable.ic_regular_hww_24 // session.device!!.getIcon()
-    // session.gdkSessions.size == 1 -> if (session.mainAssetNetwork.isElectrum) R.drawable.ic_singlesig else R.drawable.ic_multisig
+fun GreenWallet.iconResource() = when(icon) {
+    WalletIcon.WATCH_ONLY -> R.drawable.ic_regular_eye_24
+    WalletIcon.TESTNET -> R.drawable.ic_regular_flask_24
+    WalletIcon.BIP39 -> R.drawable.ic_regular_wallet_passphrase_24
+    WalletIcon.HARDWARE -> R.drawable.ic_regular_hww_24 // session.device!!.getIcon()
+    WalletIcon.LIGHTNING -> R.drawable.ic_lightning
     else -> R.drawable.ic_regular_wallet_24
 }
 

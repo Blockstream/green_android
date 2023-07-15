@@ -17,6 +17,16 @@ private fun byteToInt(bytes: ByteArray): Int {
     return result
 }
 
+private fun byteToLong(bytes: ByteArray): Long {
+    var result = 0L
+    var shift = 0
+    for (byte in bytes) {
+        result = result or (byte.toLong() shl shift)
+        shift += 8
+    }
+    return result
+}
+
 class IOSSecureRandom : SecureRandom {
     override fun randomBytes(len: Int): ByteArray {
         return ByteArray(len).also {
@@ -33,12 +43,20 @@ class IOSSecureRandom : SecureRandom {
         }
     }
 
+    override fun unsecureRandomLong(): Long {
+        return byteToLong(randomBytes(Long.SIZE_BYTES))
+    }
+
     override fun unsecureRandomInt(): Int {
         return byteToInt(randomBytes(Int.SIZE_BYTES))
     }
 
     override fun unsecureRandomInt(until: Int): Int {
-        return (0..until).random()
+        return (0..<until).random()
+    }
+
+    override fun unsecureRandomInt(from: Int, until: Int): Int {
+        return (from..<until).random()
     }
 }
 

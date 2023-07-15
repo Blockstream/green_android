@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk.params
 
-import com.blockstream.common.gdk.GdkJson
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 data class ReconnectHintParams constructor(
     @SerialName("hint") val hint: String? = null,
     @SerialName("tor_hint") val torHint: String? = null,
-) : GdkJson<ReconnectHintParams>() {
+) : GreenJson<ReconnectHintParams>() {
 
     override fun kSerializer() = serializer()
 

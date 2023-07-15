@@ -1,0 +1,20 @@
+package com.blockstream.gms.di
+
+import com.blockstream.base.AppReview
+import com.blockstream.base.ZendeskSdk
+import org.koin.core.annotation.ComponentScan
+import org.koin.core.annotation.Module
+import org.koin.dsl.module
+
+@Module
+@ComponentScan("com.blockstream.green")
+class GmsModule
+
+val gmsModule = module {
+    single {
+        AppReview()
+    }
+    single {
+        ZendeskSdk()
+    }
+}
