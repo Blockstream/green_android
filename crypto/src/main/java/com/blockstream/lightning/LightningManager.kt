@@ -1,6 +1,5 @@
 package com.blockstream.lightning
 
-import com.blockstream.common.lightning.AppGreenlightCredentials
 import mu.KLogging
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
@@ -14,15 +13,13 @@ class LightningManager {
     private val isKeepAliveEnabled = AtomicBoolean(false)
 
     fun getLightningBridge(
-        file: File,
-        appGreenlightCredentials: AppGreenlightCredentials? = null
+        file: File
     ): LightningBridge {
         return (bridges.getOrPut(file) {
             logger.info { "Creating a new LightningBridge" }
 
             LightningBridge(
-                workingDir = file,
-                appGreenlightCredentials = appGreenlightCredentials
+                workingDir = file
             ).also {
                 references[it] = AtomicInteger(0)
             }

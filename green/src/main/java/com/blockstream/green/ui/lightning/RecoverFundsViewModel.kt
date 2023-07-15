@@ -102,7 +102,7 @@ class RecoverFundsViewModel @AssistedInject constructor(
         }.launchIn(viewModelScope)
     }
 
-    private fun getFee(): UInt? {
+    private fun getFee(): ULong? {
         return recommendedFees.value?.let {
             when (feeSlider.value?.toInt()) {
                 1 -> it.hourFee
@@ -119,7 +119,7 @@ class RecoverFundsViewModel @AssistedInject constructor(
                 session.lightningSdk.refund(
                     swapAddress = onChainAddress,
                     toAddress = address.string(),
-                    satPerVbyte = getFee()
+                    satPerVbyte = getFee()?.toUInt()
                 )
             } else {
                 // Close channel
@@ -127,7 +127,7 @@ class RecoverFundsViewModel @AssistedInject constructor(
                 // Sweep
                 session.lightningSdk.sweep(
                     toAddress = address.string(),
-                    satPerVbyte = getFee()
+                    satPerVbyte = getFee()?.toUInt()
                 )
             }
 

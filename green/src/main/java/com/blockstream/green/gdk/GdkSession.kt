@@ -788,7 +788,11 @@ class GdkSession constructor(
     fun initLightningIfNeeded() {
         if (lightning != null) {
             if (!hasLightning) {
-                connectToGreenlight(mnemonic = deriveLightningMnemonic(), create = true)
+                connectToGreenlight(mnemonic = deriveLightningMnemonic(), isRestore = false)
+
+                if(!hasLightning){
+                    throw Exception("Something went wrong while initiating your Lightning account")
+                }
 
                 // update GreenSessions accounts (use cache)
                 updateAccounts()
@@ -797,9 +801,6 @@ class GdkSession constructor(
                 updateAccountsAndBalances(updateBalancesForNetwork = lightning)
                 updateWalletTransactions(updateForNetwork = lightning)
             }
-
-            // In case user remove and re-adds lightning account
-            hasLightning = true
         }
     }
 
@@ -1245,14 +1246,14 @@ class GdkSession constructor(
                 )
 
                 // Init SDK
-                lightningSdkOrNull = initLightningSdk(lightningLoginData, appGreenlightCredentials)
+                lightningSdkOrNull = initLightningSdk(lightningLoginData)
 
                 if (appGreenlightCredentials != null || (isRestore && settingsManager.isLightningEnabled(countly) && settingsManager.appSettings.experimentalFeatures)) {
                     // Make it async to speed up login process
                     val job = scope.async {
                         try {
                             // Connect SDK
-                            connectToGreenlight(mnemonic = lightningMnemonic)
+                            connectToGreenlight(mnemonic = lightningMnemonic, isRestore = isRestore)
 
                             if(isRestore) {
                                 hasLightning = lightningSdk.isConnected
@@ -1296,7 +1297,7 @@ class GdkSession constructor(
         }
     }
 
-    private fun initLightningSdk(loginData: LoginData, appGreenlightCredentials: AppGreenlightCredentials? = null): LightningBridge {
+    private fun initLightningSdk(loginData: LoginData): LightningBridge {
         val breezSdkWorkingDir = File(gdk.dataDir, "breezSdk")
 
         val workingDir = File(
@@ -1305,19 +1306,14 @@ class GdkSession constructor(
         )
 
         return sessionManager.lightningManager.getLightningBridge(
-            workingDir,
-            appGreenlightCredentials
+            workingDir
         )
     }
 
-    private fun connectToGreenlight(mnemonic: String, create: Boolean = false){
+    private fun connectToGreenlight(mnemonic: String, isRestore: Boolean = false){
         countly.loginLightningStart()
-        if(create){
-            lightningSdk.connectToGreenlight(mnemonic)
-            hasLightning = true
-        }else{
-            lightningSdk.connectToGreenlightIfExists(mnemonic)
-        }
+
+        hasLightning = lightningSdk.connectToGreenlight(mnemonic, isRestore)
 
         countly.loginLightningStop()
 

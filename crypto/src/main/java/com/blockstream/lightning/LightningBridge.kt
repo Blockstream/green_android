@@ -3,9 +3,11 @@ package com.blockstream.lightning
 import android.util.Base64
 import breez_sdk.BlockingBreezServices
 import breez_sdk.BreezEvent
+import breez_sdk.Config
 import breez_sdk.EnvironmentType
 import breez_sdk.EventListener
 import breez_sdk.GreenlightCredentials
+import breez_sdk.GreenlightNodeConfig
 import breez_sdk.InputType
 import breez_sdk.LnInvoice
 import breez_sdk.LnUrlAuthRequestData
@@ -15,18 +17,17 @@ import breez_sdk.LnUrlPayResult
 import breez_sdk.LnUrlWithdrawRequestData
 import breez_sdk.LspInformation
 import breez_sdk.Network
+import breez_sdk.NodeConfig
 import breez_sdk.NodeState
 import breez_sdk.Payment
 import breez_sdk.PaymentTypeFilter
 import breez_sdk.RecommendedFees
 import breez_sdk.SwapInfo
+import breez_sdk.connect
 import breez_sdk.defaultConfig
-import breez_sdk.initServices
 import breez_sdk.mnemonicToSeed
 import breez_sdk.parseInput
 import breez_sdk.parseInvoice
-import breez_sdk.recoverNode
-import breez_sdk.registerNode
 import com.blockstream.common.lightning.AppGreenlightCredentials
 import com.blockstream.crypto.BuildConfig
 import kotlinx.coroutines.channels.BufferOverflow
@@ -39,8 +40,7 @@ import mu.KLogging
 import java.io.File
 
 class LightningBridge constructor(
-    val workingDir: File,
-    var appGreenlightCredentials: AppGreenlightCredentials? = null
+    val workingDir: File
 ) : EventListener {
 
     private var breezSdkOrNull: BlockingBreezServices? = null
@@ -49,6 +49,8 @@ class LightningBridge constructor(
     private val network
         get() = Network.BITCOIN
 
+    // Emulate GreenlightCredentials
+    var appGreenlightCredentials: AppGreenlightCredentials? = null
 
     private val _nodeInfoStateFlow = MutableStateFlow<NodeState>(
         NodeState(
@@ -84,15 +86,19 @@ class LightningBridge constructor(
     val swapInfoStateFlow
         get() = _swapInfoStateFlow.asStateFlow()
 
-    val config by lazy {
-        defaultConfig(EnvironmentType.PRODUCTION).also {
-            it.apiKey = BuildConfig.BREEZ_API_KEY.let { base64 ->
-                try{
-                    String(Base64.decode(base64, Base64.DEFAULT))
-                }catch (e: Exception){
-                    ""
-                }
+    private fun createConfig(partnerCredentials: GreenlightCredentials?): Config {
+
+        val apiKey = BuildConfig.BREEZ_API_KEY.let { base64 ->
+            try{
+                String(Base64.decode(base64, Base64.DEFAULT))
+            }catch (e: Exception){
+                ""
             }
+        }
+
+        val nodeConfig = NodeConfig.Greenlight(config = GreenlightNodeConfig(partnerCredentials = partnerCredentials, inviteCode = null))
+
+        return defaultConfig(EnvironmentType.PRODUCTION, apiKey, nodeConfig).also {
             it.workingDir = workingDir.absolutePath
         }
     }
@@ -110,80 +116,51 @@ class LightningBridge constructor(
         }
     }
 
-    fun connectToGreenlightIfExists(mnemonic: String): Boolean {
-        return if (checkIfGreenlightNodeExists(mnemonic)) {
-            connectToGreenlight(mnemonic)
-            true
-        } else {
-            false
-        }
-    }
-
-    fun connectToGreenlight(mnemonic: String) {
-        start(mnemonic, getAppLightningCredentials(mnemonic).toGreenlightCredentials())
-    }
-
-    private fun checkIfGreenlightNodeExists(mnemonic: String): Boolean {
-        if (appGreenlightCredentials == null) {
-            try {
-                appGreenlightCredentials = AppGreenlightCredentials.fromGreenlightCredentials(
-                    recoverNode(
-                        network = network,
-                        mnemonicToSeed(mnemonic)
-                    )
-                )
-            } catch (e: Exception) {
-                // e.printStackTrace()
-            }
-        }
-
-        return appGreenlightCredentials != null
-    }
-
-    private fun getAppLightningCredentials(mnemonic: String): AppGreenlightCredentials {
-        if (!checkIfGreenlightNodeExists(mnemonic)) {
-            appGreenlightCredentials = AppGreenlightCredentials.fromGreenlightCredentials(
-                registerNode(
-                    network = network,
-                    seed = mnemonicToSeed(mnemonic),
-                    registerCredentials = run {
-                        if(BuildConfig.GREENLIGHT_DEVICE_CERT.isNotBlank() && BuildConfig.GREENLIGHT_DEVICE_KEY.isNotBlank()){
-                            GreenlightCredentials(
-                                deviceKey = Base64.decode(BuildConfig.GREENLIGHT_DEVICE_KEY, Base64.DEFAULT).toUByteArray().toTypedArray().toList(),
-                                deviceCert = Base64.decode(BuildConfig.GREENLIGHT_DEVICE_CERT, Base64.DEFAULT).toUByteArray().toTypedArray().toList(),
-                            )
-                        }else{
-                            null
-                        }
-                    },
-                    inviteCode = null
-                )
+    private val greenlightCredentials by lazy {
+        if (BuildConfig.GREENLIGHT_DEVICE_CERT.isNotBlank() && BuildConfig.GREENLIGHT_DEVICE_KEY.isNotBlank()) {
+            GreenlightCredentials(
+                deviceKey = Base64.decode(BuildConfig.GREENLIGHT_DEVICE_KEY, Base64.DEFAULT)
+                    .toUByteArray().toTypedArray().toList(),
+                deviceCert = Base64.decode(BuildConfig.GREENLIGHT_DEVICE_CERT, Base64.DEFAULT)
+                    .toUByteArray().toTypedArray().toList(),
             )
-        }
-
-        return appGreenlightCredentials!!
+        } else null
     }
 
-    private fun start(mnemonic: String, greenlightCredentials: GreenlightCredentials) {
+    fun connectToGreenlight(mnemonic: String, isRestore: Boolean): Boolean {
+        val partnerCredentials = if (isRestore) null else greenlightCredentials
+        return start(mnemonic, partnerCredentials)
+    }
+
+    private fun start(mnemonic: String, partnerCredentials: GreenlightCredentials?): Boolean {
         if (breezSdkOrNull != null) {
-            return
+            return true
         }
 
-        breezSdkOrNull = initServices(
-            config = config,
-            seed = mnemonicToSeed(mnemonic),
-            creds = greenlightCredentials,
-            listener = this
-        ).also {
-            // Set breezSdkOrNull only after start returns successfully
-            it.start()
+        try{
+            breezSdkOrNull = connect(
+                config = createConfig(partnerCredentials),
+                seed = mnemonicToSeed(mnemonic),
+                listener = this
+            )
+
+            appGreenlightCredentials = greenlightCredentials?.let {
+                AppGreenlightCredentials.fromGreenlightCredentials(
+                    it
+                )
+            }
+
+            isConnected = true
+
+            updateNodeInfo()
+
+            updateLspInformation()
+
+            return true
+        }catch (e: Exception){
+            e.printStackTrace()
         }
-
-        isConnected = true
-
-        updateNodeInfo()
-
-        updateLspInformation()
+        return false
     }
 
     private fun updateLspInformation() {
@@ -307,7 +284,7 @@ class LightningBridge constructor(
             breezSdk.refund(
                 swapAddress = swapAddress,
                 toAddress = toAddress,
-                satPerVbyte = satPerVbyte ?: breezSdk.recommendedFees().economyFee
+                satPerVbyte = satPerVbyte ?: breezSdk.recommendedFees().economyFee.toUInt()
             )
         } catch (e: Exception) {
             e.printStackTrace()
@@ -321,7 +298,7 @@ class LightningBridge constructor(
         return try {
             breezSdk.sweep(
                 toAddress = toAddress,
-                feeRateSatsPerByte = satPerVbyte?.toULong() ?: breezSdk.recommendedFees().economyFee.toULong()
+                feeRateSatsPerVbyte = satPerVbyte?.toULong() ?: breezSdk.recommendedFees().economyFee.toULong()
             )
         } catch (e: Exception) {
             e.printStackTrace()
@@ -393,12 +370,11 @@ class LightningBridge constructor(
 
     fun stop() {
         try {
-            breezSdkOrNull?.stop()
+            breezSdkOrNull?.disconnect()
             breezSdkOrNull = null
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
         breezSdkOrNull?.close()
     }
 
