@@ -433,11 +433,10 @@ extension BleJade {
             throw HWError.Abort("Failed to fetch firmware index")
         }
         #if DEBUG
-        //let images = [channels.beta?.delta, channels.beta?.full, channels.stable?.delta, channels.stable?.full]
+        let images = [channels.beta?.delta, channels.beta?.full, channels.stable?.delta, channels.stable?.full]
         #else
-        //let images = [channels.stable?.delta, channels.stable?.full]
-        #endif
         let images = [channels.stable?.delta, channels.stable?.full]
+        #endif
         for image in images {
             if let fmw = image?.filter({ $0.upgradable(verInfo.jadeVersion) }).first {
                 return fmw

@@ -310,7 +310,6 @@
 		34C67E7A2924F59700A50F89 /* AccountSelectSubCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C67E792924F59700A50F89 /* AccountSelectSubCellModel.swift */; };
 		34C7AD08272143E700F437B5 /* DialogOTAViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */; };
 		34C8585629F9012C004A3F83 /* LTFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34C8585529F9012C004A3F83 /* LTFlow.storyboard */; };
-		34C8E76F29BF7DF100C84066 /* ConnectionFailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E76E29BF7DF100C84066 /* ConnectionFailViewController.swift */; };
 		34C8E77629BF868500C84066 /* JadeDeviceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77429BF868500C84066 /* JadeDeviceCell.swift */; };
 		34C8E77729BF868500C84066 /* JadeDeviceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34C8E77529BF868500C84066 /* JadeDeviceCell.xib */; };
 		34C8E78029C069F400C84066 /* PinCreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77F29C069F400C84066 /* PinCreateViewController.swift */; };
@@ -937,7 +936,6 @@
 		34C67E792924F59700A50F89 /* AccountSelectSubCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSelectSubCellModel.swift; sourceTree = "<group>"; };
 		34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogOTAViewController.swift; sourceTree = "<group>"; };
 		34C8585529F9012C004A3F83 /* LTFlow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LTFlow.storyboard; sourceTree = "<group>"; };
-		34C8E76E29BF7DF100C84066 /* ConnectionFailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionFailViewController.swift; sourceTree = "<group>"; };
 		34C8E77429BF868500C84066 /* JadeDeviceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeDeviceCell.swift; sourceTree = "<group>"; };
 		34C8E77529BF868500C84066 /* JadeDeviceCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = JadeDeviceCell.xib; sourceTree = "<group>"; };
 		34C8E77F29C069F400C84066 /* PinCreateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinCreateViewController.swift; sourceTree = "<group>"; };
@@ -2639,7 +2637,6 @@
 			isa = PBXGroup;
 			children = (
 				34C8E78129C0746E00C84066 /* ConnectViewController.swift */,
-				34C8E76E29BF7DF100C84066 /* ConnectionFailViewController.swift */,
 			);
 			path = Connect;
 			sourceTree = "<group>";
@@ -3447,7 +3444,6 @@
 				344562EB25D297CF00A5EC18 /* BLEManager.swift in Sources */,
 				340A5F5628E33F51003D56B1 /* DialogSafeNavigationViewController.swift in Sources */,
 				3497937025F8B18C0029ECB1 /* Loader.swift in Sources */,
-				34C8E77129BF85AC00C84066 /* ListDevicesViewController.swift in Sources */,
 				34CF91D92A31BE8200498B08 /* RecoveryTransactionsViewController.swift in Sources */,
 				34D761362A38501F00DE57F5 /* DenominationExchangeViewController.swift in Sources */,
 				349C75052791BCA60046DA59 /* ChangeCell.swift in Sources */,
@@ -3462,7 +3458,6 @@
 				09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */,
 				81B1EB2A28E3703200F409A3 /* AssetAmountView.swift in Sources */,
 				346300E2274D4FBF00B28521 /* DialogShareTxOptionViewController.swift in Sources */,
-				34C8E76F29BF7DF100C84066 /* ConnectionFailViewController.swift in Sources */,
 				817417372236E85500A28E36 /* ScreenLockWindow.swift in Sources */,
 				81772B332992BC9800F05BF2 /* RecipientCellModel.swift in Sources */,
 				34B8DA0D2938FC0B001DA9B9 /* AccountCreateFooterView.swift in Sources */,

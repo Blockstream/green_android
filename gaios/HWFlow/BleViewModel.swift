@@ -115,16 +115,20 @@ class BleViewModel {
         }
     }
 
-    func login(account: Account) async throws {
+    func login(account: Account) async throws -> Account? {
         switch type {
         case .Jade:
-            _ = try await jade?.login(account: account)
+            return try await jade?.login(account: account)
         case .Ledger:
-            _ = try await ledger?.login(account: account)
+            return try await ledger?.login(account: account)
         }
     }
 
     func validateAddress(account: WalletItem, address: Address) async throws -> Bool {
+        if !isConnected() {
+            try await connect()
+            _ = try await authenticating()
+        }
         switch type {
         case .Jade:
             return try await jade?.validateAddress(account: account, addr: address) ?? false
@@ -146,10 +150,15 @@ class BleViewModel {
         guard let jade = jade else { throw HWError.Abort("No peripheral found") }
         return try await jade.checkFirmware()
     }
-
-    func updateFirmware(firmware: Firmware) async throws -> Bool {
+    
+    func fetchFirmware(firmware: Firmware) async throws -> Data {
         guard let jade = jade else { throw HWError.Abort("No peripheral found") }
-        return try await jade.updateFirmware(firmware: firmware)
+        return try await jade.fetchFirmware(firmware: firmware)
+    }
+
+    func updateFirmware(firmware: Firmware, binary: Data) async throws -> Bool {
+        guard let jade = jade else { throw HWError.Abort("No peripheral found") }
+        return try await jade.updateFirmware(firmware: firmware, binary: binary)
     }
     
     func ping() async throws {

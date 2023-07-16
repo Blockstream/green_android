@@ -38,15 +38,18 @@ class ConnectViewController: HWFlowBaseViewController {
         setContent()
         setStyle()
         loadNavigationBtns()
-        scanCancellable = scanViewModel?.objectWillChange.sink(receiveValue: { [weak self] in
-            DispatchQueue.main.async {
-                if self?.selectedItem != nil { return }
-                if let item = self?.scanViewModel?.peripherals.filter({ $0.identifier == self?.account.uuid || $0.name == self?.account.name }).first {
-                    self?.selectedItem = item
-                    self?.onScannedDevice(item)
-                }
-            }
-        })
+    }
+    
+    @MainActor
+    func setContent() {
+        if account.isJade {
+            image.image = UIImage(named: "il_jade_unlock")
+        } else {
+            image.image = UIImage(named: "il_ledger")
+        }
+        retryButton.isHidden = true
+        retryButton.setTitle("Retry".localized, for: .normal)
+        retryButton.setStyle(.primary)
     }
     
     func onScannedDevice(_ item: ScanListItem) {
@@ -62,8 +65,12 @@ class ConnectViewController: HWFlowBaseViewController {
                 try? await bleViewModel?.connect()
                 if pairingState != .unknown {
                     try? await bleViewModel?.disconnect()
-                    try await Task.sleep(nanoseconds:  3 * 1_000_000_000)
-                    try await bleViewModel?.connect()
+                    try await Task.sleep(nanoseconds:  5 * 1_000_000_000)
+                    await MainActor.run {
+                        selectedItem = nil
+                        scanViewModel?.startScan(deviceType: .Jade)
+                    }
+                    return
                 }
                 try await bleViewModel?.ping()
                 print("pinged")
@@ -95,7 +102,7 @@ class ConnectViewController: HWFlowBaseViewController {
                     }
                 }
                 progress("id_logging_in".localized)
-                try await bleViewModel?.login(account: account)
+                self.account = try await bleViewModel?.login(account: account)
                 onLogin(item)
             } catch {
                 try? await bleViewModel?.disconnect()
@@ -143,17 +150,35 @@ class ConnectViewController: HWFlowBaseViewController {
     @IBAction func retryBtnTapped(_ sender: Any) {
         Task {
             await scanViewModel?.stopScan()
+            setContent()
+            selectedItem = nil
             scanViewModel?.startScan(deviceType: .Jade)
         }
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        selectedItem = nil
+        scanCancellable = scanViewModel?.objectWillChange.sink(receiveValue: { [weak self] in
+            DispatchQueue.main.async {
+                if self?.selectedItem != nil { return }
+                if let item = self?.scanViewModel?.peripherals.filter({ $0.identifier == self?.account.uuid || $0.name == self?.account.name }).first {
+                    self?.selectedItem = item
+                    self?.onScannedDevice(item)
+                }
+            }
+        })
+    }
 
     override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         activeToken = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main, using: applicationDidBecomeActive)
         resignToken = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main, using: applicationWillResignActive)
         scanViewModel?.startScan(deviceType: account.isJade ? .Jade : .Ledger)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         if let token = activeToken {
             NotificationCenter.default.removeObserver(token)
         }
@@ -164,17 +189,6 @@ class ConnectViewController: HWFlowBaseViewController {
             await scanViewModel?.stopScan()
             scanCancellable?.cancel()
         }
-    }
-
-    func setContent() {
-        if account.isJade {
-            image.image = UIImage(named: "il_jade_unlock")
-        } else {
-            image.image = UIImage(named: "il_ledger")
-        }
-        retryButton.isHidden = true
-        retryButton.setTitle("Retry".localized, for: .normal)
-        retryButton.setStyle(.primary)
     }
 
     func applicationDidBecomeActive(_ notification: Notification) {
@@ -238,12 +252,17 @@ class ConnectViewController: HWFlowBaseViewController {
 extension ConnectViewController: UpdateFirmwareViewControllerDelegate {
     @MainActor
     func didUpdate(version: String, firmware: Firmware) {
-        startLoader(message: "id_updating_firmware".localized)
         Task {
             do {
-                let res = try await bleViewModel?.updateFirmware(firmware: firmware)
+                startLoader(message: "id_updating_firmware".localized)
+                let binary = try await bleViewModel?.fetchFirmware(firmware: firmware)
+                let hash = bleViewModel?.jade?.bleJade.sha256(binary ?? Data())
+                let text = progressLoaderMessage(title: "id_updating_firmware".localized,
+                                                 subtitle: "Hash: \( hash?.hex ?? "")")
+                startLoader(message: text)
+                let res = try await bleViewModel?.updateFirmware(firmware: firmware, binary: binary ?? Data())
+                self.stopLoader()
                 await MainActor.run {
-                    self.stopLoader()
                     if let res = res, res {
                         DropAlert().success(message: "id_firmware_update_completed".localized)
                         scanViewModel?.startScan(deviceType: .Jade)
@@ -261,28 +280,10 @@ extension ConnectViewController: UpdateFirmwareViewControllerDelegate {
     func didSkip() {
         Task {
             progress("id_logging_in".localized)
-            try await bleViewModel?.login(account: account)
+            self.account = try await bleViewModel?.login(account: account)
             if let item = selectedItem {
                 onLogin(item)
             }
         }
-    }
-
-    @MainActor
-    func progressLoaderMessage(title: String, subtitle: String) -> NSMutableAttributedString {
-        let titleAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: UIColor.white
-        ]
-        let hashAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: UIColor.customGrayLight(),
-            .font: UIFont.systemFont(ofSize: 16)
-        ]
-        let hint = "\n\n" + subtitle
-        let attributedTitleString = NSMutableAttributedString(string: title)
-        attributedTitleString.setAttributes(titleAttributes, for: title)
-        let attributedHintString = NSMutableAttributedString(string: hint)
-        attributedHintString.setAttributes(hashAttributes, for: hint)
-        attributedTitleString.append(attributedHintString)
-        return attributedTitleString
     }
 }

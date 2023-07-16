@@ -240,30 +240,43 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         }
     }
 
+    @MainActor
     func showHWCheckDialog() {
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogJadeCheckViewController") as? DialogJadeCheckViewController {
-            dialogJadeCheckViewController = vc
+        dialogJadeCheckViewController = storyboard.instantiateViewController(withIdentifier: "DialogJadeCheckViewController") as? DialogJadeCheckViewController
+        if let vc = dialogJadeCheckViewController {
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
     }
 
+    @MainActor
+    func hideHWCheckDialog() {
+        dialogJadeCheckViewController?.dismiss()
+    }
+    
     func createSubaccount(policy: PolicyCellType, asset: String, params: CreateSubaccountParams?) {
-        if AccountsRepository.shared.current?.isHW ?? false {
-            showHWCheckDialog()
-        }
+        let isHW = AccountsRepository.shared.current?.isHW ?? false
         Task {
+            if isHW {
+                showHWCheckDialog()
+            }
             do {
-                if let wallet = try await viewModel.create(policy: policy, asset: asset, params: params) {
+                let wallet = try await viewModel.create(policy: policy, asset: asset, params: params)
+                await MainActor.run {
                     DropAlert().success(message: "id_new_account_created".localized)
-                    self.navigationController?.popToViewController(ofClass: WalletViewController.self, animated: true)
-                    self.delegate?.didCreatedWallet(wallet)
+                    navigationController?.popToViewController(ofClass: WalletViewController.self, animated: true)
+                    if let wallet = wallet {
+                        delegate?.didCreatedWallet(wallet)
+                    }
                 }
             } catch {
                 self.showError(error)
             }
             self.stopLoader()
+            if isHW {
+                hideHWCheckDialog()
+            }
         }
     }
 }

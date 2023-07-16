@@ -9,6 +9,7 @@ class BleJadeManager {
     var pinServerSession: SessionManager?
     var walletManager: WalletManager?
     var version: JadeVersionInfo?
+    var hash: String?
 
     init(bleJade: BleJade) {
         self.bleJade = bleJade
@@ -48,7 +49,7 @@ class BleJadeManager {
         }
     }
     
-    func login(account: Account) async throws {
+    func login(account: Account) async throws -> Account {
         let version = try await bleJade.version()
         let device: HWDevice = .defaultJade(fmwVersion: version.jadeVersion)
         let masterXpub = try await bleJade.xpubs(network: account.gdkNetwork.chain, path: [])
@@ -59,6 +60,7 @@ class BleJadeManager {
         walletManager = WalletsRepository.shared.getOrAdd(for: account)
         walletManager?.hwDevice = BLEDevice(peripheral: bleJade.peripheral, device: device, interface: bleJade)
         try await walletManager?.login(device: device, masterXpub: masterXpub)
+        return account
     }
     
     func defaultNetwork() async throws -> NetworkSecurityCase {
@@ -95,16 +97,17 @@ class BleJadeManager {
         return (version, fmw)
     }
 
-    func updateFirmware(firmware: Firmware) async throws -> Bool {
+    func fetchFirmware(firmware: Firmware) async throws -> Data {
         let version = try await bleJade.version()
         let binary = try await bleJade.getBinary(version, firmware)
+        //hash = bleJade.sha256(binary).hex
+        return binary
+    }
+    
+    func updateFirmware(firmware: Firmware, binary: Data) async throws -> Bool {
+        let version = try await bleJade.version()
         let updated = try await bleJade.updateFirmware(version: version, firmware: firmware, binary: binary)
         return updated
-    }
-
-    func hash(_ binary: Data) -> String {
-        let hash = bleJade.sha256(binary)
-        return "\(hash.map { String(format: "%02hhx", $0) }.joined())"
     }
 
     func validateAddress(account: WalletItem, addr: Address) async throws -> Bool {

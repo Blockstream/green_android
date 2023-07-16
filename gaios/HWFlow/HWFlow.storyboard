@@ -679,57 +679,6 @@
             </objects>
             <point key="canvasLocation" x="1616" y="680"/>
         </scene>
-        <!--Connection Fail View Controller-->
-        <scene sceneID="Z0j-ov-SaE">
-            <objects>
-                <viewController storyboardIdentifier="ConnectionFailViewController" id="23X-0a-bbe" customClass="ConnectionFailViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="XWh-1d-rNc">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalCompressionResistancePriority="749" image="il_connection_fail" translatesAutoresizingMaskIntoConstraints="NO" id="8lu-YR-tK3">
-                                <rect key="frame" x="36" y="48" width="248" height="245"/>
-                            </imageView>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="7z3-2u-Ygz">
-                                <rect key="frame" x="25" y="293" width="270" height="61"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UQU-gf-AOx">
-                                        <rect key="frame" x="0.0" y="0.0" width="270" height="20.5"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_hint" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZSd-bX-rpL">
-                                        <rect key="frame" x="0.0" y="40.5" width="270" height="20.5"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
-                            </stackView>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="p9j-Sy-QW9"/>
-                        <color key="backgroundColor" name="gBlackBg"/>
-                        <constraints>
-                            <constraint firstItem="7z3-2u-Ygz" firstAttribute="top" secondItem="8lu-YR-tK3" secondAttribute="bottom" id="78W-mf-zgF"/>
-                            <constraint firstItem="7z3-2u-Ygz" firstAttribute="centerY" secondItem="p9j-Sy-QW9" secondAttribute="centerY" multiplier="1.1" id="TOa-Fq-da7"/>
-                            <constraint firstItem="8lu-YR-tK3" firstAttribute="leading" secondItem="p9j-Sy-QW9" secondAttribute="leading" constant="36" id="UG5-B6-L8R"/>
-                            <constraint firstItem="p9j-Sy-QW9" firstAttribute="trailing" secondItem="7z3-2u-Ygz" secondAttribute="trailing" constant="25" id="VZ2-Z6-PMp"/>
-                            <constraint firstItem="8lu-YR-tK3" firstAttribute="top" secondItem="XWh-1d-rNc" secondAttribute="top" constant="48" id="bKZ-CY-4y1"/>
-                            <constraint firstItem="7z3-2u-Ygz" firstAttribute="leading" secondItem="p9j-Sy-QW9" secondAttribute="leading" constant="25" id="kmm-ei-sk6"/>
-                            <constraint firstItem="p9j-Sy-QW9" firstAttribute="trailing" secondItem="8lu-YR-tK3" secondAttribute="trailing" constant="36" id="m43-l6-xC9"/>
-                        </constraints>
-                    </view>
-                    <connections>
-                        <outlet property="btnRetry" destination="DfU-5Q-yTk" id="Z56-jy-h0w"/>
-                        <outlet property="lblHint" destination="ZSd-bX-rpL" id="YyZ-hx-VMh"/>
-                        <outlet property="lblTitle" destination="UQU-gf-AOx" id="21Q-Xp-4hN"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="wtA-yS-i3X" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="3072" y="680"/>
-        </scene>
         <!--Scan View Controller-->
         <scene sceneID="iSu-2x-VGA">
             <objects>
@@ -1063,7 +1012,6 @@
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
-                                    <action selector="btnRetry:" destination="23X-0a-bbe" eventType="touchUpInside" id="MFd-mz-Cmu"/>
                                     <action selector="retryBtnTapped:" destination="z5l-07-Xjx" eventType="touchUpInside" id="AXn-nf-HLG"/>
                                 </connections>
                             </button>
@@ -1384,7 +1332,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="il_connection_fail" width="300.66665649414062" height="262.33334350585938"/>
         <image name="il_jade_setup_1" width="258.33334350585938" height="184.33332824707031"/>
         <image name="il_jade_unlock" width="295.66665649414062" height="238"/>
         <image name="il_jade_welcome_1" width="300.33334350585938" height="222"/>

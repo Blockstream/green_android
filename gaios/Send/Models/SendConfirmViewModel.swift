@@ -20,6 +20,13 @@ class SendConfirmViewModel {
     }
     
     func send() async throws {
+        if wm?.hwDevice != nil {
+            let bleDevice = BleViewModel.shared
+            if !bleDevice.isConnected() {
+                try await bleDevice.connect()
+                _ = try await bleDevice.authenticating()
+            }
+        }
         let liquid = tx.subaccountItem?.gdkNetwork.liquid
         if liquid ?? false {
             tx = try await session.blindTransaction(tx: tx)

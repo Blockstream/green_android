@@ -107,8 +107,7 @@ class PinCreateViewController: HWFlowBaseViewController {
                 try await bleViewModel?.connect()
                 try await bleViewModel?.initialize(testnet: testnet)
                 if let account = try await bleViewModel?.defaultAccount() {
-                    try await bleViewModel?.login(account: account)
-                    self.account = account
+                    self.account = try await bleViewModel?.login(account: account)
                 }
                 // check firmware
                 let res = try? await bleViewModel?.checkFirmware()
@@ -167,14 +166,17 @@ class PinCreateViewController: HWFlowBaseViewController {
 extension PinCreateViewController: UpdateFirmwareViewControllerDelegate {
     @MainActor
     func didUpdate(version: String, firmware: Firmware) {
-
         AnalyticsManager.shared.otaStartJade(account: AccountsRepository.shared.current, firmware: firmware)
-        startLoader(message: "id_updating_firmware".localized)
         Task {
             do {
-                let res = try await bleViewModel?.updateFirmware(firmware: firmware)
+                startLoader(message: "id_updating_firmware".localized)
+                let binary = try await bleViewModel?.fetchFirmware(firmware: firmware)
+                let hash = bleViewModel?.jade?.bleJade.sha256(binary ?? Data())
+                let text = progressLoaderMessage(title: "id_updating_firmware".localized,
+                                                 subtitle: "Hash: \( hash?.hex ?? "")")
+                let res = try await bleViewModel?.updateFirmware(firmware: firmware, binary: binary ?? Data())
+                self.stopLoader()
                 await MainActor.run {
-                    self.stopLoader()
                     btnContinue.isHidden = false
                     if let res = res, res {
                         AnalyticsManager.shared.otaCompleteJade(account: AccountsRepository.shared.current, firmware: firmware)
@@ -191,37 +193,5 @@ extension PinCreateViewController: UpdateFirmwareViewControllerDelegate {
 
     func didSkip() {
         self.next()
-    }
-
-    func progressLoaderMessage(title: String, subtitle: String) -> NSMutableAttributedString {
-        let titleAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: UIColor.white
-        ]
-        let hashAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: UIColor.customGrayLight(),
-            .font: UIFont.systemFont(ofSize: 16)
-        ]
-        let hint = "\n\n" + subtitle
-        let attributedTitleString = NSMutableAttributedString(string: title)
-        attributedTitleString.setAttributes(titleAttributes, for: title)
-        let attributedHintString = NSMutableAttributedString(string: hint)
-        attributedHintString.setAttributes(hashAttributes, for: hint)
-        attributedTitleString.append(attributedHintString)
-        return attributedTitleString
-    }
-    @MainActor
-    func jadeFirmwareUpgrade() {
-        /*_ = BLEViewModel.shared.checkFirmware(Jade.shared.peripheral)
-            .subscribe(onNext: { (version, lastFirmware) in
-                guard let version = version, let lastFirmware = lastFirmware else { return }
-                let storyboard = UIStoryboard(name: "HWFlow", bundle: nil)
-                if let vc = storyboard.instantiateViewController(withIdentifier: "UpdateFirmwareViewController") as? UpdateFirmwareViewController {
-                    vc.firmware = lastFirmware
-                    vc.version = version
-                    vc.delegate = self
-                    vc.modalPresentationStyle = .overFullScreen
-                    self.present(vc, animated: false, completion: nil)
-                }
-            }, onError: { _ in self.next()})*/
     }
 }

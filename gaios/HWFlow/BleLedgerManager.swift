@@ -61,7 +61,7 @@ class BleLedgerManager {
         return true
     }
     
-    func login(account: Account) async throws {
+    func login(account: Account) async throws -> Account {
         let device: HWDevice = .defaultLedger()
         let masterXpub = try await bleLedger.xpubs(network: account.gdkNetwork.chain, path: [])
         let walletId = SessionManager(account.gdkNetwork).walletIdentifier(masterXpub: masterXpub)
@@ -71,6 +71,7 @@ class BleLedgerManager {
         walletManager = WalletsRepository.shared.getOrAdd(for: account)
         walletManager?.hwDevice = BLEDevice(peripheral: bleLedger.peripheral, device: device, interface: bleLedger)
         try await walletManager?.login(device: device, masterXpub: masterXpub)
+        return account
     }
 
     func normalizeAccount(_ account: Account) -> Account {

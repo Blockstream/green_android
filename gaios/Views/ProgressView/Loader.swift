@@ -103,6 +103,23 @@ extension UIViewController {
         }
     }
 
+    func progressLoaderMessage(title: String, subtitle: String) -> NSMutableAttributedString {
+        let titleAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.white
+        ]
+        let hashAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.customGrayLight(),
+            .font: UIFont.systemFont(ofSize: 16)
+        ]
+        let hint = "\n\n" + subtitle
+        let attributedTitleString = NSMutableAttributedString(string: title)
+        attributedTitleString.setAttributes(titleAttributes, for: title)
+        let attributedHintString = NSMutableAttributedString(string: hint)
+        attributedHintString.setAttributes(hashAttributes, for: hint)
+        attributedTitleString.append(attributedHintString)
+        return attributedTitleString
+    }
+
     @MainActor
     @objc func stopLoader() {
         UIApplication.shared.windows.forEach { window in
