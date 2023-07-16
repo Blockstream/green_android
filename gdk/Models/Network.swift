@@ -3,7 +3,7 @@ import Foundation
 import greenaddress
 
 public struct GdkNetwork: Codable, Equatable, Comparable {
-
+    
     enum CodingKeys: String, CodingKey {
         case name
         case network
@@ -17,7 +17,7 @@ public struct GdkNetwork: Codable, Equatable, Comparable {
         case csvBuckets = "csv_buckets"
         case bip21Prefix = "bip21_prefix"
     }
-
+    
     public let name: String
     public let network: String
     public let liquid: Bool
@@ -29,32 +29,36 @@ public struct GdkNetwork: Codable, Equatable, Comparable {
     public var serverType: String?
     public var csvBuckets: [Int]?
     public var bip21Prefix: String?
-
+    
     /// Get the asset used to pay transaction fees
     public func getFeeAsset() -> String {
         return self.liquid ? self.policyAsset ?? "" : "btc"
     }
-
+    
     public var electrum: Bool {
         "electrum" == serverType
     }
-
-
+    
+    
     public var lightning: Bool {
         "breez" == serverType
     }
-
+    
     public var singlesig: Bool {
         electrum
     }
-
+    
     public var multisig: Bool {
         !electrum && !lightning
     }
-
+    
     public var chain: String {
         network.replacingOccurrences(of: "electrum-", with: "")
             .replacingOccurrences(of: "lightning-", with: "")
+    }
+    
+    public var defaultFee: UInt64 {
+        liquid ? 100 : 1000
     }
 
     public static func < (lhs: GdkNetwork, rhs: GdkNetwork) -> Bool {

@@ -181,7 +181,7 @@ public struct Transaction: Comparable {
     }
 
     public var isSweep: Bool {
-        get { return get("is_sweep") ?? false }
+        get { privateKey != nil }
     }
 
     public var memo: String {
@@ -191,6 +191,11 @@ public struct Transaction: Comparable {
 
     public var isLiquid: Bool {
         amounts["btc"] == nil
+    }
+
+    public var sessionSubaccount: UInt32 {
+        get { get("subaccount") as UInt32? ?? 0 }
+        set { details["subaccount"] = newValue }
     }
 
     public var amounts: [String: Int64] {

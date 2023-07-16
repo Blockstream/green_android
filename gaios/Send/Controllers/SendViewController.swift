@@ -404,7 +404,7 @@ extension SendViewController: AddressEditCellDelegate {
             try? await viewModel.validateInput()
             self.refreshAmountCell()
             self.reloadSections([.address], animated: false)
-            if self.viewModel.satoshi != nil {
+            if self.viewModel.satoshi != nil || self.viewModel.inputType == .sweep {
                 self.validateTransaction()
             }
         }

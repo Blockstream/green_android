@@ -93,6 +93,10 @@ class SendViewModel {
         self.transactionPriority = inputType == .bumpFee ? .Custom : .Medium
         self.remoteAlert = RemoteAlertManager.shared.alerts(screen: .send, networks: wm?.activeNetworks ?? []).first
         self.input = input
+        if inputType == .bumpFee {
+            feeRate = transaction?.feeRate
+            fee = transaction?.fee
+        }
     }
     
     func validateTransaction() async throws -> Task<Transaction?, Error>? {
@@ -121,6 +125,7 @@ class SendViewModel {
                 tx.feeRate = feeRate ?? feeEstimates[transactionPriority.rawValue]
                 tx.sendAll = sendAll
             case .sweep:
+                tx.sessionSubaccount = account.pointer
                 tx.privateKey = input
                 tx.feeRate = feeRate ?? feeEstimates[transactionPriority.rawValue]
             case .bumpFee:

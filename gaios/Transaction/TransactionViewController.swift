@@ -232,21 +232,15 @@ class TransactionViewController: UIViewController {
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
 
-    func getFeeRate() async -> UInt64 {
-        var fee: UInt64 = self.transaction.feeRate
-        if let estimates = try? await wallet.session?.getFeeEstimates(), estimates.count > 2 {
-            fee = estimates[3]
-        }
-        return fee
-    }
-
     func increaseFeeTapped() {
         if self.cantBumpFees { return }
         guard let session = wallet.session else { return }
         Task {
             let unspentOutputs = try? await session.getUnspentOutputs(subaccount: self.wallet?.pointer ?? 0, numConfs: 1)
+            let feeRates = try? await session.getFeeEstimates()
+            let feeRate = feeRates?.first ?? session.gdkNetwork.defaultFee
             let details = ["previous_transaction": self.transaction.details,
-                           "fee_rate": await self.getFeeRate() + 10,
+                           "fee_rate": self.transaction.feeRate + feeRate,
                            "subaccount": self.wallet.pointer,
                            "utxos": unspentOutputs]
             let tx = try? await session.createTransaction(tx: Transaction(details))
