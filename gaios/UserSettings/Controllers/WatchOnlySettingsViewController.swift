@@ -42,8 +42,8 @@ class WatchOnlySettingsViewController: UIViewController {
     }
 
     func showQR(_ item: QRDialogInfo) {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogShowQRViewController") as? DialogShowQRViewController {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogQRViewController") as? DialogQRViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.qrDialogInfo = item
             present(vc, animated: false, completion: nil)
