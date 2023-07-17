@@ -247,6 +247,7 @@ class LoginViewController: UIViewController {
             currentAccount.attempts = account.attempts
             currentAccount.xpubHashId = account.xpubHashId
         }
+        AnalyticsManager.shared.loginWalletStart()
         let wm = WalletsRepository.shared.getOrAdd(for: currentAccount)
         self.session = wm.prominentSession
         firstly {
@@ -264,9 +265,9 @@ class LoginViewController: UIViewController {
             if withPIN != nil {
                 self.account.attempts = 0
             }
-            AnalyticsManager.shared.loginWallet(loginType: (withPIN != nil ? .pin : .biometrics),
-                                                ephemeralBip39: currentAccount.isEphemeral,
-                                                account: currentAccount)
+            AnalyticsManager.shared.loginWalletEnd(account: currentAccount,
+                                                   loginType: withPIN != nil ? .pin : .biometrics)
+            AnalyticsManager.shared.activeWalletStart()
             _ = AccountNavigator.goLogged(account: currentAccount, nv: self.navigationController)
             self.stopLoader()
         }.catch { error in

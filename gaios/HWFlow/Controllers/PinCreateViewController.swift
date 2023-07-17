@@ -129,7 +129,7 @@ class PinCreateViewController: HWFlowBaseViewController {
         guard let wm = wm else { return }
         wm.account.hidden = !remember
         AccountsRepository.shared.upsert(wm.account)
-        AnalyticsManager.shared.loginWallet(loginType: .hardware, ephemeralBip39: false, account: wm.account)
+        AnalyticsManager.shared.loginWalletEnd(account: wm.account, loginType: .pin)
         AccountNavigator.goLogged(account: wm.account, nv: navigationController)
     }
 
@@ -139,6 +139,7 @@ class PinCreateViewController: HWFlowBaseViewController {
         let bleError = BLEManager.shared.toBleError(err, network: nil)
         let txt = BLEManager.shared.toErrorString(bleError)
         showAlert(title: "id_error".localized, message: txt)
+        AnalyticsManager.shared.failedWalletLogin(account: wm!.account, error: err, prettyError: txt)
     }
 }
 

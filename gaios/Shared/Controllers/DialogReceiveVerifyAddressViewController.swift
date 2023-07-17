@@ -16,7 +16,7 @@ class DialogReceiveVerifyAddressViewController: UIViewController {
 
     var isLedger = false
     var address = ""
-    var accountType: AccountType?
+    var walletItem: WalletItem?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,8 +32,8 @@ class DialogReceiveVerifyAddressViewController: UIViewController {
         }
         lblAddress.text = address
 
-        if let accountType = accountType {
-            AnalyticsManager.shared.recordView(.verifyAddress, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletType: accountType))
+        if let walletItem = walletItem {
+            AnalyticsManager.shared.recordView(.verifyAddress, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletItem: walletItem))
         }
     }
 

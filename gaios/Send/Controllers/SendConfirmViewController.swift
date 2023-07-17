@@ -39,7 +39,7 @@ class SendConfirmViewController: KeyboardViewController {
 
         tableView.register(UINib(nibName: "AlertCardCell", bundle: nil), forCellReuseIdentifier: "AlertCardCell")
 
-        AnalyticsManager.shared.recordView(.sendConfirm, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletType: viewModel.account.type))
+        AnalyticsManager.shared.recordView(.sendConfirm, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletItem: viewModel.account))
     }
 
     func setContent() {
@@ -112,12 +112,12 @@ class SendConfirmViewController: KeyboardViewController {
             self.viewModel.isLightning ? self.dismiss(animated: true) : self.stopAnimating()
         }.done { _ in
             self.executeOnDone()
-        }.catch { [weak self] error in
+        }.catch { error in
             if account?.isHW ?? false {
-                self?.dismissHWSummary()
+                self.dismissHWSummary()
             }
-            self?.sliderView.isUserInteractionEnabled = true
-            self?.sliderView.reset()
+            self.sliderView.isUserInteractionEnabled = true
+            self.sliderView.reset()
             let prettyError: String = {
                 switch error {
                 case BreezSDK.SdkError.Error(let message):
@@ -141,17 +141,23 @@ class SendConfirmViewController: KeyboardViewController {
             }()
             switch error {
             case BreezSDK.SdkError.Error:
-                self?.showBreezError( prettyError )
+                self.showBreezError( prettyError )
             default:
-                self?.showError(NSLocalizedString(prettyError, comment: ""))
+                self.showError(NSLocalizedString(prettyError, comment: ""))
             }
-            AnalyticsManager.shared.failedTransaction(account: AccountsRepository.shared.current, error: error, prettyError: prettyError)
+            let isSendAll = self.viewModel.tx.sendAll
+            let withMemo = !self.viewModel.tx.memo.isEmpty
+            let transSgmt = AnalyticsManager.TransactionSegmentation(transactionType: self.inputType,
+                                                                     addressInputType: self.addressInputType,
+                                                                     sendAll: isSendAll)
+            AnalyticsManager.shared.failedTransaction(account: AccountsRepository.shared.current,
+                                                      walletItem: self.viewModel.account,
+                                                      transactionSgmt: transSgmt, withMemo: withMemo, error: error, prettyError: prettyError)
             AnalyticsManager.shared.recordException(prettyError)
         }
     }
 
     func showBreezError(_ message: String) {
-
         let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
         if let vc = ltFlow.instantiateViewController(withIdentifier: "LTErrorViewController") as? LTErrorViewController {
             vc.delegate = self
@@ -164,7 +170,6 @@ class SendConfirmViewController: KeyboardViewController {
     func executeOnDone() {
         let isSendAll = viewModel.tx.sendAll
         let withMemo = !viewModel.tx.memo.isEmpty
-
         let transSgmt = AnalyticsManager.TransactionSegmentation(transactionType: inputType,
                                                      addressInputType: addressInputType,
                                                      sendAll: isSendAll)
@@ -181,7 +186,7 @@ class SendConfirmViewController: KeyboardViewController {
                 .shared
                 .request(isSendAll: isSendAll,
                          account: AccountsRepository.shared.current,
-                         walletType: self?.viewModel.account.type)
+                         walletItem: self?.viewModel.account)
         }
     }
 

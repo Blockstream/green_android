@@ -280,9 +280,8 @@ class WalletViewModel {
         let walletFunded: Bool = accountsFunded > 0
         let accounts: Int = subaccounts.count
         let accountsTypes: String = Array(Set(subaccounts.map { $0.type.rawValue })).sorted().joined(separator: ",")
-
-        AnalyticsManager.shared.activeWallet(account: AccountsRepository.shared.current,
-                                             walletData: AnalyticsManager.WalletData(walletFunded: walletFunded,
+        AnalyticsManager.shared.activeWalletEnd(account: AccountsRepository.shared.current,
+                                                walletData: AnalyticsManager.WalletData(walletFunded: walletFunded,
                                                                                      accountsFunded: accountsFunded,
                                                                                      accounts: accounts,
                                                                                      accountsTypes: accountsTypes))

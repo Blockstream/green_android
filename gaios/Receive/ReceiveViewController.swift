@@ -48,7 +48,7 @@ class ReceiveViewController: KeyboardViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.view
         btnOptions.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.moreOptionsBtn
         
-        AnalyticsManager.shared.recordView(.receive, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletType: viewModel.account.type))
+        AnalyticsManager.shared.recordView(.receive, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletItem: viewModel.account))
 
         reload()
         newAddress()
@@ -228,7 +228,7 @@ class ReceiveViewController: KeyboardViewController {
                                                        media: AnalyticsManager.ReceiveAddressMedia.text,
                                                        method: AnalyticsManager.ReceiveAddressMethod.copy)
         AnalyticsManager.shared.receiveAddress(account: AccountsRepository.shared.current,
-                                               walletType: viewModel.account.type,
+                                               walletItem: viewModel.account,
                                                data: data)
         UIPasteboard.general.string = text
         DropAlert().info(message: "id_address_copied_to_clipboard".localized, delay: 1.0)
@@ -375,12 +375,12 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     @IBAction func btnVerify(_ sender: Any) {
-        AnalyticsManager.shared.verifyAddressJade(account: AccountsRepository.shared.current, walletType: viewModel.account.type)
+        AnalyticsManager.shared.verifyAddressJade(account: AccountsRepository.shared.current, walletItem: viewModel.account)
         validate()
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogReceiveVerifyAddressViewController") as? DialogReceiveVerifyAddressViewController {
             vc.address = viewModel.address?.address ?? ""
-            vc.accountType = viewModel.account.type
+            vc.walletItem = viewModel.account
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -500,7 +500,7 @@ extension ReceiveViewController: DialogListViewControllerDelegate {
                                                                media: AnalyticsManager.ReceiveAddressMedia.text,
                                                                method: AnalyticsManager.ReceiveAddressMethod.share)
                 AnalyticsManager.shared.receiveAddress(account: AccountsRepository.shared.current,
-                                                       walletType: viewModel.account.type,
+                                                       walletItem: viewModel.account,
                                                        data: data)
             case .qr:
                 let uri = viewModel.text
@@ -511,7 +511,7 @@ extension ReceiveViewController: DialogListViewControllerDelegate {
                                                                media: AnalyticsManager.ReceiveAddressMedia.image,
                                                                method: AnalyticsManager.ReceiveAddressMethod.share)
                 AnalyticsManager.shared.receiveAddress(account: AccountsRepository.shared.current,
-                                                       walletType: viewModel.account.type,
+                                                       walletItem: viewModel.account,
                                                        data: data)
             }
         default:

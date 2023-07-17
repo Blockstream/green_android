@@ -258,7 +258,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
     }
 
     func resetTwoFactor(email: String) {
-        //AnalyticsManager.shared.recordView(.walletSettings2FAReset, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsRepository.shared.current, walletType: wallet?.type, twoFactorType: nil))
+        //AnalyticsManager.shared.recordView(.walletSettings2FAReset, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsRepository.shared.current, walletItem: wallet?.type, twoFactorType: nil))
         self.startLoader()
         firstly { Guarantee() }
             .then { self.viewModel.resetTwoFactor(session: self.session, email: email) }
@@ -385,7 +385,7 @@ extension TwoFactorAuthenticationViewController: UITableViewDataSource, UITableV
                 }
             }
 
-            //AnalyticsManager.shared.recordView(.walletSettings2FASetup, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsRepository.shared.current, walletType: wallet?.type, twoFactorType: selectedFactor.type))
+            //AnalyticsManager.shared.recordView(.walletSettings2FASetup, sgmt: AnalyticsManager.shared.twoFacSgmt(AccountsRepository.shared.current, walletItem: wallet?.type, twoFactorType: selectedFactor.type))
         } else if tableView == tableViewCsvTime {
             let selected = csvTypes[indexPath.row]
             if let newCsv = selected.value(for: session.gdkNetwork),

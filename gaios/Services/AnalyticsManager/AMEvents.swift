@@ -42,22 +42,34 @@ enum AnalyticsEventName: String {
 
 extension AnalyticsManager {
 
-    func activeWallet(account: Account?, walletData: WalletData) {
-        if var s = sessSgmt(account) {
-            s[AnalyticsManager.strWalletFunded] = walletData.walletFunded ? "true" : "false"
-            s[AnalyticsManager.strAccountsFunded] = "\(walletData.accountsFunded)"
-            s[AnalyticsManager.strAccounts] = "\(walletData.accounts)"
-            s[AnalyticsManager.strAccountsTypes] = walletData.accountsTypes
-
-            recordEvent(.walletActive, sgmt: s)
-        }
+    func activeWalletStart() {
+        startTrace(.walletActive)
+        cancelEvent(.walletActive)
+        startEvent(.walletActive)
     }
 
-    func loginWallet(loginType: AnalyticsManager.LoginType, ephemeralBip39: Bool, account: Account?) {
+    func activeWalletEnd(account: Account?, walletData: WalletData) {
+        endTrace(.walletActive)
+        var s = sessSgmt(account)
+        s?[AnalyticsManager.strWalletFunded] = walletData.walletFunded ? "true" : "false"
+        s?[AnalyticsManager.strAccountsFunded] = "\(walletData.accountsFunded)"
+        s?[AnalyticsManager.strAccounts] = "\(walletData.accounts)"
+        s?[AnalyticsManager.strAccountsTypes] = walletData.accountsTypes
+        endEvent(.walletActive, sgmt: s ?? [:])
+    }
+
+    func loginWalletStart() {
+        startTrace(.walletLogin)
+        cancelEvent(.walletLogin)
+        startEvent(.walletLogin)
+    }
+    
+    func loginWalletEnd(account: Account, loginType: AnalyticsManager.LoginType) {
+        endTrace(.walletLogin)
         if var s = sessSgmt(account) {
             s[AnalyticsManager.strMethod] = loginType.rawValue
-            s[AnalyticsManager.strEphemeralBip39] = "\(ephemeralBip39)"
-            recordEvent(.walletLogin, sgmt: s)
+            s[AnalyticsManager.strEphemeralBip39] = "\(account.isEphemeral)"
+            endEvent(.walletLogin, sgmt: s)
         }
     }
 
@@ -70,15 +82,15 @@ extension AnalyticsManager {
         recordEvent(.deleteWallet)
     }
 
-    func renameAccount(account: Account?, walletType: AccountType?) {
-        if let s = subAccSeg(account, walletType: walletType) {
+    func renameAccount(account: Account?, walletItem: WalletItem?) {
+        if let s = subAccSeg(account, walletItem: walletItem) {
             recordEvent(.renameAccount, sgmt: s)
         }
     }
 
     func sendTransaction(account: Account?, walletItem: WalletItem?, transactionSgmt: AnalyticsManager.TransactionSegmentation, withMemo: Bool) {
 
-        if var s = subAccSeg(account, walletType: walletItem?.type) {
+        if var s = subAccSeg(account, walletItem: walletItem) {
 
             switch transactionSgmt.transactionType {
             case .transaction:
@@ -115,14 +127,14 @@ extension AnalyticsManager {
         }
     }
 
-    func createAccount(account: Account?, walletType: AccountType?) {
-        if let s = subAccSeg(account, walletType: walletType) {
+    func createAccount(account: Account?, walletItem: WalletItem?) {
+        if let s = subAccSeg(account, walletItem: walletItem) {
             recordEvent(.createAccount, sgmt: s)
         }
     }
 
-    func receiveAddress(account: Account?, walletType: AccountType?, data: ReceiveAddressData) {
-        if var s = subAccSeg(account, walletType: walletType) {
+    func receiveAddress(account: Account?, walletItem: WalletItem?, data: ReceiveAddressData) {
+        if var s = subAccSeg(account, walletItem: walletItem) {
             s[AnalyticsManager.strType] = data.type.rawValue
             s[AnalyticsManager.strMedia] = data.media.rawValue
             s[AnalyticsManager.strMethod] = data.method.rawValue
@@ -147,9 +159,23 @@ extension AnalyticsManager {
             recordEvent(.failedWalletLogin, sgmt: s)
         }
     }
-
-    func failedTransaction(account: Account?, error: Error, prettyError: String?) {
-        if var s = sessSgmt(account) {
+    func failedTransaction(account: Account?, walletItem: WalletItem?, transactionSgmt: AnalyticsManager.TransactionSegmentation, withMemo: Bool, error: Error, prettyError: String?) {
+        if var s = subAccSeg(account, walletItem: walletItem) {
+            switch transactionSgmt.transactionType {
+            case .transaction:
+                s[AnalyticsManager.strTransactionType] = AnalyticsManager.TransactionType.send.rawValue
+            case .sweep:
+                s[AnalyticsManager.strTransactionType] = AnalyticsManager.TransactionType.sweep.rawValue
+            case .bumpFee:
+                s[AnalyticsManager.strTransactionType] = AnalyticsManager.TransactionType.bump.rawValue
+            case .bolt11:
+                break
+            case .lnurl:
+                break
+            }
+            s[AnalyticsManager.strAddressInput] = transactionSgmt.addressInputType.rawValue
+            // s[AnalyticsManager.strSendAll] = transactionSgmt.sendAll ? "true" : "false"
+            s[AnalyticsManager.strWithMemo] = withMemo ? "true" : "false"
             if let prettyError = prettyError {
                 s[AnalyticsManager.strError] = prettyError
             } else {
@@ -166,8 +192,8 @@ extension AnalyticsManager {
         }
     }
 
-    func appReview(account: Account?, walletType: AccountType?) {
-        if let s = subAccSeg(account, walletType: walletType) {
+    func appReview(account: Account?, walletItem: WalletItem?) {
+        if let s = subAccSeg(account, walletItem: walletItem) {
             recordEvent(.appReview, sgmt: s)
         }
     }
@@ -208,8 +234,8 @@ extension AnalyticsManager {
         }
     }
 
-    func selectAccount(account: Account?, walletType: AccountType?) {
-        if let s = subAccSeg(account, walletType: walletType) {
+    func selectAccount(account: Account?, walletItem: WalletItem?) {
+        if let s = subAccSeg(account, walletItem: walletItem) {
             recordEvent(.accountSelect, sgmt: s)
         }
     }
@@ -238,8 +264,8 @@ extension AnalyticsManager {
         }
     }
 
-    func verifyAddressJade(account: Account?, walletType: AccountType?) {
-        if let s = subAccSeg(account, walletType: walletType) {
+    func verifyAddressJade(account: Account?, walletItem: WalletItem?) {
+        if let s = subAccSeg(account, walletItem: walletItem) {
             recordEvent(.jadeVerifyAddress, sgmt: s)
         }
     }

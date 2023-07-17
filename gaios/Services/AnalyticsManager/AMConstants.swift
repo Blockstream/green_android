@@ -1,6 +1,7 @@
 extension AnalyticsManager {
 
-    static let strNetwork = "networks"
+    static let strNetworks = "wallet_networks"
+    static let strNetwork = "account_network"
     static let strSecurity = "security"
     static let strAccountType = "account_type"
     static let str2fa = "2fa"
@@ -93,9 +94,12 @@ extension AnalyticsManager {
 
     enum SecTypeDescriptor: String {
         /// security: singlesig / multisig / lightning / single-multi / single-light / multi-light / single-multi-light
+        case single
         case singlesig
+        case multi
         case multisig
-        case singleMulti = "single-multi"
+        case light
+        case lightning
     }
 
     enum QrScanScreen: String {

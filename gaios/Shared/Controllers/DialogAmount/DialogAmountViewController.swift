@@ -77,7 +77,7 @@ class DialogAmountViewController: KeyboardViewController {
         let tapToClose = UITapGestureRecognizer(target: self, action: #selector(didTap))
             tappableBg.addGestureRecognizer(tapToClose)
 
-        AnalyticsManager.shared.recordView(.requestAmount, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletType: wallet?.type))
+        AnalyticsManager.shared.recordView(.requestAmount, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletItem: wallet))
     }
 
     deinit {

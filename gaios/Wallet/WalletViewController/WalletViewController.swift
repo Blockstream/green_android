@@ -865,7 +865,7 @@ extension WalletViewController: DialogListViewControllerDelegate {
 extension WalletViewController: SecuritySelectViewControllerDelegate {
     func didCreatedWallet(_ wallet: WalletItem) {
 
-        AnalyticsManager.shared.createAccount(account: AccountsRepository.shared.current, walletType: wallet.type)
+        AnalyticsManager.shared.createAccount(account: AccountsRepository.shared.current, walletItem: wallet)
         viewModel.onCreateAccount(wallet)
     }
 }

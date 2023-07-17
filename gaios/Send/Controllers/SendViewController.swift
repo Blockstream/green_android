@@ -32,7 +32,7 @@ class SendViewController: KeyboardViewController {
         reloadSections([.accountAsset, .address, .amount, .fee], animated: false)
         view.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.view
         btnNext.accessibilityIdentifier = AccessibilityIdentifiers.SendScreen.nextBtn
-        AnalyticsManager.shared.recordView(.send, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletType: viewModel.account.type))
+        AnalyticsManager.shared.recordView(.send, sgmt: AnalyticsManager.shared.subAccSeg(AccountsRepository.shared.current, walletItem: viewModel.account))
 
         if viewModel.transaction != nil {
             viewModel.reload()

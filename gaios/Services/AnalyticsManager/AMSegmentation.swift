@@ -29,8 +29,8 @@ extension AnalyticsManager {
     func ntwSgmtUnified() -> Sgmt? {
         if let analyticsNtw = analyticsNtw, let analyticsSec = analyticsSec {
             var s = Sgmt()
-            s[AnalyticsManager.strNetwork] = analyticsNtw.rawValue
-            s[AnalyticsManager.strSecurity] = analyticsSec.rawValue
+            s[AnalyticsManager.strNetworks] = analyticsNtw.rawValue
+            s[AnalyticsManager.strSecurity] = analyticsSec.map { $0.rawValue }.joined(separator: "-")
             return s
         }
         return nil
@@ -65,18 +65,32 @@ extension AnalyticsManager {
         return nil
     }
 
-    func subAccSeg(_ account: Account?, walletType: AccountType?) -> Sgmt? {
-        if var s = sessSgmt(account), let walletType = walletType {
-            s[AnalyticsManager.strAccountType] = walletType.rawValue
+    func accountNetworkLabel(_ gdkNetwork: GdkNetwork) -> String {
+        let server: String? = {
+            if gdkNetwork.lightning { return "greenlight" }
+            if gdkNetwork.multisig { return "legacy" }
+            if gdkNetwork.singlesig { return "electrum" }
+            return nil
+        }()
+        let liquid = gdkNetwork.liquid ? "liquid" : nil
+        let mainnet = gdkNetwork.liquid && gdkNetwork.mainnet ? nil : gdkNetwork.mainnet ? "mainnet" : "testnet"
+        return [server, liquid, mainnet].compactMap { $0 }.joined(separator: "-")
+    }
+
+    func subAccSeg(_ account: Account?, walletItem: WalletItem?) -> Sgmt? {
+        if var s = sessSgmt(account), let walletItem = walletItem {
+            s[AnalyticsManager.strAccountType] = walletItem.type.rawValue
+            s[AnalyticsManager.strNetwork] = accountNetworkLabel(walletItem.gdkNetwork)
             return s
         }
         return nil
     }
 
-    func twoFacSgmt(_ account: Account?, walletType: AccountType?, twoFactorType: TwoFactorType?) -> Sgmt? {
-        if var s = subAccSeg(account, walletType: walletType) {
-            if let twoFactorType = twoFactorType {
+    func twoFacSgmt(_ account: Account?, walletItem: WalletItem?, twoFactorType: TwoFactorType?) -> Sgmt? {
+        if var s = subAccSeg(account, walletItem: walletItem) {
+            if let twoFactorType = twoFactorType, let walletItem = walletItem {
                 s[AnalyticsManager.str2fa] = twoFactorType.rawValue
+                s[AnalyticsManager.strNetwork] = accountNetworkLabel(walletItem.gdkNetwork)
             }
             return s
         }

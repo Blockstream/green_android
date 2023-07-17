@@ -40,7 +40,7 @@ class StoreReviewHelper {
 }
 
 extension StoreReviewHelper {
-    func request(isSendAll: Bool, account: Account?, walletType: AccountType?) {
+    func request(isSendAll: Bool, account: Account?, walletItem: WalletItem?) {
 
         appReview = AnalyticsManager.shared.getRemoteConfigValue(key: Constants.countlyRemoteConfigAppReview) as? Int
 
@@ -50,7 +50,7 @@ extension StoreReviewHelper {
 
         if !isReviewDateValid() { return }
 
-        AnalyticsManager.shared.appReview(account: account, walletType: walletType)
+        AnalyticsManager.shared.appReview(account: account, walletItem: walletItem)
         requestReview()
     }
 }

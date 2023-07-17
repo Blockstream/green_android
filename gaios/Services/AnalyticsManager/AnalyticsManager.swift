@@ -115,11 +115,15 @@ class AnalyticsManager {
     }
 
     weak var delegate: AnalyticsManagerDelegate?
+    
+    var activeNetworks: [NetworkSecurityCase]? {
+        let wm = WalletManager.current
+        return wm?.activeNetworks
+            .filter { net in !(wm?.subaccounts.filter { !$0.hidden && $0.networkType == net }.isEmpty ?? false) }
+    }
 
     var analyticsNtw: AnalyticsManager.NtwTypeDescriptor? {
-        if let account = AccountsRepository.shared.current {
-            let activeNetworks: [NetworkSecurityCase] = WalletsRepository.shared.get(for: account.id)?.activeNetworks ?? []
-
+        if let activeNetworks = activeNetworks {
             let bitcoinNtws = activeNetworks.filter { $0 == .bitcoinSS || $0 == .bitcoinMS }
             let liquidNtws = activeNetworks.filter { $0 == .liquidSS || $0 == .liquidMS }
             let testnetNtws = activeNetworks.filter { $0 == .testnetSS || $0 == .testnetMS }
@@ -135,15 +139,22 @@ class AnalyticsManager {
         return nil
     }
 
-    var analyticsSec: SecTypeDescriptor? {
-        if let account = AccountsRepository.shared.current {
-            let activeNetworks: [NetworkSecurityCase] = WalletsRepository.shared.get(for: account.id)?.activeNetworks ?? []
-
-            let ssNtws = activeNetworks.filter { [.bitcoinSS, .liquidSS, .testnetSS, .testnetLiquidSS].contains($0) }
-            let msNtws = activeNetworks.filter { [.bitcoinMS, .liquidMS, .testnetMS, .testnetLiquidMS].contains($0) }
-            if ssNtws.count > 0 && msNtws.count > 0 { return .singleMulti }
-            if ssNtws.count > 0 { return .singlesig }
-            if msNtws.count > 0 { return .multisig }
+    var analyticsSec: [SecTypeDescriptor]? {
+        if let activeNetworks = activeNetworks {
+            let hasSinglesig = activeNetworks.filter { [.bitcoinSS, .liquidSS, .testnetSS, .testnetLiquidSS].contains($0) }.count > 0
+            let hasMultisig = activeNetworks.filter { [.bitcoinMS, .liquidMS, .testnetMS, .testnetLiquidMS].contains($0) }.count > 0
+            let hasLightning = activeNetworks.filter { [.lightning, .testnetLightning].contains($0) }.count > 0
+            var security = [SecTypeDescriptor]()
+            if hasSinglesig {
+                security += [hasMultisig || hasLightning ? .single : .singlesig]
+            }
+            if hasMultisig {
+                security += [hasSinglesig || hasLightning ? .multi : .multisig]
+            }
+            if hasLightning {
+                security += [hasSinglesig || hasMultisig ? .light : .lightning]
+            }
+            return security
         }
         return nil
     }
@@ -354,6 +365,21 @@ class AnalyticsManager {
     func endEvent(_ key: AnalyticsEventName, sgmt: [String: String]) {
         guard consent == .authorized else { return }
         Countly.sharedInstance().endEvent(key.rawValue, segmentation: sgmt, count: 1, sum: 0.0)
+    }
+
+    func startTrace(_ key: AnalyticsEventName) {
+        guard consent == .authorized else { return }
+        Countly.sharedInstance().startCustomTrace(key.rawValue)
+    }
+
+    func endTrace(_ key: AnalyticsEventName) {
+        guard consent == .authorized else { return }
+        Countly.sharedInstance().endCustomTrace(key.rawValue, metrics: [:])
+    }
+
+    func cancelTrace(_ key: AnalyticsEventName) {
+        guard consent == .authorized else { return }
+        Countly.sharedInstance().cancelCustomTrace(key.rawValue)
     }
 
     func recordView(_ name: AnalyticsViewName) {
