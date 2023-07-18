@@ -147,7 +147,7 @@ class PinCreateViewController: HWFlowBaseViewController {
         account?.hidden = !remember
         if let account = account {
             AccountsRepository.shared.upsert(account)
-            AnalyticsManager.shared.loginWallet(loginType: .hardware, ephemeralBip39: false, account: account)
+            AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .hardware)
             _ = AccountNavigator.goLogged(account: account, nv: navigationController)
         }
     }
@@ -155,10 +155,10 @@ class PinCreateViewController: HWFlowBaseViewController {
     @MainActor
     override func onError(_ err: Error) {
         btnContinue.isHidden = false
-        AnalyticsManager.shared.failedWalletLogin(account: wm!.account, error: err, prettyError: txt)
         let bleError = bleViewModel?.toBleError(err, network: nil)
         let txt = bleViewModel?.toErrorString(bleError!)
         showAlert(title: "id_error".localized, message: txt ?? "")
+        AnalyticsManager.shared.failedWalletLogin(account: account, error: err, prettyError: txt)
         Task { try? await bleViewModel?.disconnect() }
     }
 }
@@ -174,7 +174,10 @@ extension PinCreateViewController: UpdateFirmwareViewControllerDelegate {
                 let hash = bleViewModel?.jade?.bleJade.sha256(binary ?? Data())
                 let text = progressLoaderMessage(title: "id_updating_firmware".localized,
                                                  subtitle: "Hash: \( hash?.hex ?? "")")
+                startLoader(message: text)
                 let res = try await bleViewModel?.updateFirmware(firmware: firmware, binary: binary ?? Data())
+                try await bleViewModel?.disconnect()
+                try await Task.sleep(nanoseconds:  5 * 1_000_000_000)
                 self.stopLoader()
                 await MainActor.run {
                     btnContinue.isHidden = false

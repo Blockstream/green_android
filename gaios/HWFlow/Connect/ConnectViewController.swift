@@ -1,4 +1,5 @@
 import UIKit
+import CoreBluetooth
 import AsyncBluetooth
 import Combine
 import gdk
@@ -11,20 +12,22 @@ enum PairingState: Int {
 }
 
 class ConnectViewController: HWFlowBaseViewController {
-
+    
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var loaderPlaceholder: UIView!
     @IBOutlet weak var image: UIImageView!
     @IBOutlet weak var retryButton: UIButton!
-
+    
     var account: Account!
     var bleViewModel: BleViewModel?
     var scanViewModel: ScanViewModel?
-
+    
     private var activeToken, resignToken: NSObjectProtocol?
     private var pairingState: PairingState = .unknown
     private var selectedItem: ScanListItem?
     private var scanCancellable: AnyCancellable?
+    private var cancellables = Set<AnyCancellable>()
+    
     
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
@@ -168,13 +171,25 @@ class ConnectViewController: HWFlowBaseViewController {
                 }
             }
         })
+        scanViewModel?.centralManager.eventPublisher
+            .sink {
+                switch $0 {
+                case .didUpdateState(let state):
+                    DispatchQueue.main.async {
+                        self.bluetoothState(state)
+                    }
+                default:
+                    break
+                }
+            }
+            .store(in: &cancellables)
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         activeToken = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main, using: applicationDidBecomeActive)
         resignToken = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main, using: applicationWillResignActive)
-        scanViewModel?.startScan(deviceType: account.isJade ? .Jade : .Ledger)
+        startScan()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -188,6 +203,23 @@ class ConnectViewController: HWFlowBaseViewController {
         Task {
             await scanViewModel?.stopScan()
             scanCancellable?.cancel()
+            cancellables.forEach { $0.cancel() }
+        }
+    }
+
+    @MainActor
+    func startScan() {
+        bluetoothState(scanViewModel?.centralManager.bluetoothState)
+    }
+
+    @MainActor
+    func bluetoothState(_ state: CBManagerState?) {
+        if state == .poweredOff {
+            self.progress("id_enable_bluetooth".localized)
+        } else {
+            self.progress("id_looking_for_device".localized)
+            self.selectedItem = nil
+            self.scanViewModel?.startScan(deviceType: self.account.isJade ? .Jade : .Ledger)
         }
     }
 
@@ -261,10 +293,13 @@ extension ConnectViewController: UpdateFirmwareViewControllerDelegate {
                                                  subtitle: "Hash: \( hash?.hex ?? "")")
                 startLoader(message: text)
                 let res = try await bleViewModel?.updateFirmware(firmware: firmware, binary: binary ?? Data())
+                try await bleViewModel?.disconnect()
+                try await Task.sleep(nanoseconds:  5 * 1_000_000_000)
                 self.stopLoader()
                 await MainActor.run {
                     if let res = res, res {
                         DropAlert().success(message: "id_firmware_update_completed".localized)
+                        selectedItem = nil
                         scanViewModel?.startScan(deviceType: .Jade)
                     } else {
                         DropAlert().error(message: "id_operation_failure".localized)

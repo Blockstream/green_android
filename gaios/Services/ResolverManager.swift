@@ -10,7 +10,7 @@ class ResolverManager {
     let resolver: GDKResolver
     let session: SessionManager?
     
-    init(_ factor: TwoFactorCall, chain: String, connected: @escaping() -> Bool = { true }, hwDevice: HWProtocol?, session: SessionManager? = nil) {
+    init(_ factor: TwoFactorCall?, chain: String, connected: @escaping() -> Bool = { true }, hwDevice: HWProtocol?, session: SessionManager? = nil) {
         self.session = session
         resolver = GDKResolver(factor,
                                popupDelegate: PopupResolver(),
@@ -19,7 +19,6 @@ class ResolverManager {
                                chain: chain,
                                connected: connected
         )
-        
     }
 
     func run() async throws -> [String: Any]? {

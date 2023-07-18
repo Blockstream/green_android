@@ -10,14 +10,14 @@ enum DeviceType: Int {
 }
 
 class ScanViewModel: ObservableObject {
-    private let centralManager: CentralManager
     
     @Published private(set) var isScanning = false
     @Published private(set) var peripherals: [ScanListItem] = []
     @Published private(set) var error: String?
     @Published private(set) var isConnected = false
+
+    let centralManager: CentralManager
     private static var cachedPeripherals = [ScanListItem]()
-    private var timer: Timer?
     
     init(centralManager: CentralManager = CentralManager.shared) {
         self.centralManager = centralManager
@@ -26,20 +26,18 @@ class ScanViewModel: ObservableObject {
     func startScan(deviceType: DeviceType) {
         self.error = nil
         self.isScanning = true
-        self.timer?.invalidate()
         peripherals = ScanViewModel.cachedPeripherals
-        self.timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { _ in
-            Task {
-                do {
-                    try await self.scan(deviceType: deviceType)
-                } catch {
-                    DispatchQueue.main.async {
-                        self.error = error.localizedDescription
-                        self.isScanning = false
-                    }
+        Task {
+            do {
+                try await self.scan(deviceType: deviceType)
+            } catch {
+                DispatchQueue.main.async {
+                    self.error = error.localizedDescription
+                    self.isScanning = false
                 }
             }
-        }}
+        }
+    }
     
     func scan(deviceType: DeviceType) async throws {
         if self.isScanning == false { return }
@@ -66,7 +64,6 @@ class ScanViewModel: ObservableObject {
     }
     
     func stopScan() async {
-        timer?.invalidate()
         isScanning = false
         if centralManager.isScanning {
             await centralManager.stopScan()

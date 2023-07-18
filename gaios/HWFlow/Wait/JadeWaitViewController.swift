@@ -1,4 +1,5 @@
 import UIKit
+import CoreBluetooth
 import RiveRuntime
 import AsyncBluetooth
 import Combine
@@ -21,6 +22,7 @@ class JadeWaitViewController: HWFlowBaseViewController {
 
     private var activeToken, resignToken: NSObjectProtocol?
     private var selectedItem: ScanListItem?
+    private var cancellables = Set<AnyCancellable>()
 
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
@@ -64,7 +66,32 @@ class JadeWaitViewController: HWFlowBaseViewController {
             self.animateView.alpha = 1.0
         }
         start()
-        scanModel?.startScan(deviceType: .Jade)
+        startScan()
+        scanModel?.centralManager.eventPublisher
+            .sink {
+                switch $0 {
+                case .didUpdateState(let state):
+                    self.bluetoothState(state)
+                default:
+                    break
+                }
+            }
+            .store(in: &cancellables)
+    }
+
+    @MainActor
+    func startScan() {
+        bluetoothState(scanModel?.centralManager.bluetoothState)
+    }
+
+    @MainActor
+    func bluetoothState(_ state: CBManagerState?) {
+        if state == .poweredOff {
+            self.showError("id_enable_bluetooth".localized)
+        } else {
+            self.selectedItem = nil
+            self.scanModel?.startScan(deviceType: .Jade)
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -78,6 +105,7 @@ class JadeWaitViewController: HWFlowBaseViewController {
         stop()
         timer?.invalidate()
         Task { await scanModel?.stopScan() }
+        cancellables.forEach { $0.cancel() }
     }
 
     @objc func fireTimer() {

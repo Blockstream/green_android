@@ -1,4 +1,5 @@
 import UIKit
+import CoreBluetooth
 import AsyncBluetooth
 import Combine
 
@@ -7,7 +8,7 @@ class ScanViewController: HWFlowBaseViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var btnTroubleshoot: UIButton!
     private var scanCancellable: AnyCancellable?
-    private var cancellableBag = Set<AnyCancellable>()
+    private var cancellables = Set<AnyCancellable>()
     var deviceType = DeviceType.Jade
 
     var viewModel: ScanViewModel!
@@ -37,12 +38,39 @@ class ScanViewController: HWFlowBaseViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
-        viewModel.startScan(deviceType: deviceType)
+        super.viewDidAppear(animated)
+        startScan()
+        viewModel?.centralManager.eventPublisher
+            .sink {
+                switch $0 {
+                case .didUpdateState(let state):
+                    self.bluetoothState(state)
+                default:
+                    break
+                }
+            }
+            .store(in: &cancellables)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         Task { await viewModel.stopScan() }
         scanCancellable?.cancel()
+        cancellables.forEach { $0.cancel() }
+    }
+
+    @MainActor
+    func startScan() {
+        bluetoothState(viewModel?.centralManager.bluetoothState)
+    }
+
+    @MainActor
+    func bluetoothState(_ state: CBManagerState?) {
+        if state == .poweredOff {
+            self.showError("id_enable_bluetooth".localized)
+        } else {
+            self.viewModel?.startScan(deviceType: self.deviceType)
+        }
     }
 
     func setContent() {
