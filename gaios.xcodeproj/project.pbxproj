@@ -473,7 +473,6 @@
 		81961ABB29E4B9C600E9B94D /* Balance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81961ABA29E4B9C600E9B94D /* Balance.swift */; };
 		81961AC029E4C40700E9B94D /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81961ABF29E4C40700E9B94D /* Utils.swift */; };
 		81961ACE29E4E41600E9B94D /* RiveRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 81961ACD29E4E41600E9B94D /* RiveRuntime */; };
-		81961AD129E4E44200E9B94D /* Countly in Frameworks */ = {isa = PBXBuildFile; productRef = 81961AD029E4E44200E9B94D /* Countly */; };
 		81961AEC29E4EC2F00E9B94D /* hw.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81961AD729E4EC2E00E9B94D /* hw.framework */; };
 		81961AED29E4EC2F00E9B94D /* hw.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 81961AD729E4EC2E00E9B94D /* hw.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		81961AF729E4EC6A00E9B94D /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 81961AF629E4EC6A00E9B94D /* RxSwift */; };
@@ -530,6 +529,7 @@
 		81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81ACC4B0227337F3004B1E92 /* Wallet.storyboard */; };
 		81B1EB2A28E3703200F409A3 /* AssetAmountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B1EB2928E3703200F409A3 /* AssetAmountView.swift */; };
 		81B1EB2C28E4466000F409A3 /* AssetAmountView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81B1EB2B28E4465E00F409A3 /* AssetAmountView.xib */; };
+		81B2350F2A6A8BCD00B8FF5D /* Countly in Frameworks */ = {isa = PBXBuildFile; productRef = 81B2350E2A6A8BCD00B8FF5D /* Countly */; };
 		81BAD32D289BD66900FF0F54 /* AccountNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BAD32C289BD66900FF0F54 /* AccountNavigator.swift */; };
 		81BB2C7E2215B86A0015F086 /* SystemMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */; };
 		81BF5D4928C885AF006225C6 /* WalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF5D4828C885AF006225C6 /* WalletManager.swift */; };
@@ -1213,12 +1213,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				81A8F8EB29E500AB0052B214 /* RxSwift in Frameworks */,
-				81961AD129E4E44200E9B94D /* Countly in Frameworks */,
 				81961B3C29E4F4A200E9B94D /* greenaddress.framework in Frameworks */,
 				81961A6129E46B5600E9B94D /* gdk.framework in Frameworks */,
 				81961ACE29E4E41600E9B94D /* RiveRuntime in Frameworks */,
 				81A8F8ED29E500B20052B214 /* PromiseKit in Frameworks */,
 				81A8F8EF29E500CA0052B214 /* RxBluetoothKit in Frameworks */,
+				81B2350F2A6A8BCD00B8FF5D /* Countly in Frameworks */,
 				81A8F8FB29E5069F0052B214 /* lightning.framework in Frameworks */,
 				81961AEC29E4EC2F00E9B94D /* hw.framework in Frameworks */,
 			);
@@ -2984,10 +2984,10 @@
 			name = gaios;
 			packageProductDependencies = (
 				81961ACD29E4E41600E9B94D /* RiveRuntime */,
-				81961AD029E4E44200E9B94D /* Countly */,
 				81A8F8EA29E500AB0052B214 /* RxSwift */,
 				81A8F8EC29E500B20052B214 /* PromiseKit */,
 				81A8F8EE29E500CA0052B214 /* RxBluetoothKit */,
+				81B2350E2A6A8BCD00B8FF5D /* Countly */,
 			);
 			productName = gaios;
 			productReference = 676FCF1C1F9D0CF800354E93 /* gaios.app */;
@@ -3193,8 +3193,8 @@
 				81961A9229E4AB5200E9B94D /* XCRemoteSwiftPackageReference "RxBluetoothKit" */,
 				81961A9529E4ABC100E9B94D /* XCRemoteSwiftPackageReference "SwiftCBOR" */,
 				81961ACC29E4E41600E9B94D /* XCRemoteSwiftPackageReference "rive-ios" */,
-				81961ACF29E4E44200E9B94D /* XCRemoteSwiftPackageReference "countly-sdk-ios" */,
 				81664BEB2A31219500A0131D /* XCRemoteSwiftPackageReference "breez-sdk-swift" */,
+				81B2350D2A6A8BCD00B8FF5D /* XCRemoteSwiftPackageReference "countly-sdk-ios" */,
 			);
 			productRefGroup = 676FCF1D1F9D0CF800354E93 /* Products */;
 			projectDirPath = "";
@@ -5061,12 +5061,12 @@
 				version = 3.1.10;
 			};
 		};
-		81961ACF29E4E44200E9B94D /* XCRemoteSwiftPackageReference "countly-sdk-ios" */ = {
+		81B2350D2A6A8BCD00B8FF5D /* XCRemoteSwiftPackageReference "countly-sdk-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/angelix/countly-sdk-ios";
 			requirement = {
 				kind = revision;
-				revision = f8485fe7f38c8fbd656d95c3eb431f5e854c2202;
+				revision = 1892410d13fceccd7cf91f803f06f110efc215b3;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -5096,11 +5096,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 81961ACC29E4E41600E9B94D /* XCRemoteSwiftPackageReference "rive-ios" */;
 			productName = RiveRuntime;
-		};
-		81961AD029E4E44200E9B94D /* Countly */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 81961ACF29E4E44200E9B94D /* XCRemoteSwiftPackageReference "countly-sdk-ios" */;
-			productName = Countly;
 		};
 		81961AF629E4EC6A00E9B94D /* RxSwift */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -5141,6 +5136,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 81961A9229E4AB5200E9B94D /* XCRemoteSwiftPackageReference "RxBluetoothKit" */;
 			productName = RxBluetoothKit;
+		};
+		81B2350E2A6A8BCD00B8FF5D /* Countly */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 81B2350D2A6A8BCD00B8FF5D /* XCRemoteSwiftPackageReference "countly-sdk-ios" */;
+			productName = Countly;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
