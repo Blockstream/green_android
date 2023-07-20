@@ -88,7 +88,14 @@ extension AnalyticsManager {
         }
     }
 
-    func sendTransaction(account: Account?, walletItem: WalletItem?, transactionSgmt: AnalyticsManager.TransactionSegmentation, withMemo: Bool) {
+    func startSendTransaction() {
+        startTrace(.sendTransaction)
+        cancelEvent(.sendTransaction)
+        startEvent(.sendTransaction)
+    }
+
+    func endSendTransaction(account: Account?, walletItem: WalletItem?, transactionSgmt: AnalyticsManager.TransactionSegmentation, withMemo: Bool) {
+        endTrace(.sendTransaction)
 
         if var s = subAccSeg(account, walletItem: walletItem) {
 
@@ -109,8 +116,9 @@ extension AnalyticsManager {
             // s[AnalyticsManager.strSendAll] = transactionSgmt.sendAll ? "true" : "false"
             s[AnalyticsManager.strWithMemo] = withMemo ? "true" : "false"
 
-            recordEvent(.sendTransaction, sgmt: s)
+            endEvent(.sendTransaction, sgmt: s)
         }
+
     }
 
     func createWallet(account: Account?) {

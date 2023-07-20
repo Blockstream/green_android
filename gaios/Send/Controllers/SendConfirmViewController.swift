@@ -88,6 +88,7 @@ class SendConfirmViewController: KeyboardViewController {
     func send() {
         let account = WalletManager.current?.account
         let bgq = DispatchQueue.global(qos: .background)
+        AnalyticsManager.shared.startSendTransaction()
         firstly {
             sliderView.isUserInteractionEnabled = false
             if account?.isHW ?? false {
@@ -173,7 +174,7 @@ class SendConfirmViewController: KeyboardViewController {
         let transSgmt = AnalyticsManager.TransactionSegmentation(transactionType: inputType,
                                                      addressInputType: addressInputType,
                                                      sendAll: isSendAll)
-        AnalyticsManager.shared.sendTransaction(account: AccountsRepository.shared.current,
+        AnalyticsManager.shared.endSendTransaction(account: AccountsRepository.shared.current,
                                walletItem: viewModel.account,
                                transactionSgmt: transSgmt, withMemo: withMemo)
 
