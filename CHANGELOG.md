@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Improve QR code readability 
 - Update performance metrics
+- Update greenlight library
 
 ## [4.0.9] - 2023-06-29
 
