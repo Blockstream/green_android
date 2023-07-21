@@ -20,24 +20,19 @@ class LightningSessionManager: SessionManager {
         return Promise().asVoid()
     }
 
-    private func initLightningSdk(_ params: Credentials, appGreenlightCredentials: AppGreenlightCredentials? = nil) -> LightningBridge {
+    private func initLightningBridge(_ params: Credentials) -> LightningBridge {
         let walletHashId = walletIdentifier(credentials: params)?.walletHashId
         let workingDir = "\(GdkInit.defaults().breezSdkDir)/\(walletHashId ?? "")/0"
         return LightningBridge(testnet: !gdkNetwork.mainnet,
-                               credentials: appGreenlightCredentials,
                                workingDir: URL(fileURLWithPath: workingDir),
                                eventListener: self)
     }
 
-    private func connectToGreenlight(credentials: Credentials, create: Bool) {
+    private func connectToGreenlight(credentials: Credentials, isRestore: Bool = false) -> Bool {
         guard let mnemonic = getLightningMnemonic(credentials: credentials) else {
             fatalError("Unsupported feature")
         }
-        if create {
-            lightBridge?.connectToGreenlight(mnemonic: mnemonic)
-        } else {
-             _ = lightBridge?.connectToGreenlightIfExists(mnemonic: mnemonic)
-        }
+        return lightBridge?.connectToGreenlight(mnemonic: mnemonic, isRestore: isRestore) ?? false
     }
 
     override func loginUser(_ params: Credentials) -> Promise<LoginUserResult> {
@@ -45,18 +40,22 @@ class LightningSessionManager: SessionManager {
         return Guarantee()
             .then(on: bgq) {
                 return Promise { seal in
-                    seal.fulfill( self.loginUser_(params) )
+                    seal.fulfill( try self.loginUser_(params) )
                 }
             }
     }
 
-    private func loginUser_(_ params: Credentials) -> LoginUserResult {
+    private func loginUser_(_ params: Credentials) throws -> LoginUserResult {
         let walletId = walletIdentifier(credentials: params)
         let walletHashId = walletId!.walletHashId
         let greenlightCredentials = LightningRepository.shared.get(for: walletHashId)
-        lightBridge = initLightningSdk(params, appGreenlightCredentials: greenlightCredentials)
-        connectToGreenlight(credentials: params, create: greenlightCredentials == nil)
-        if let greenlightCredentials = lightBridge?.credentials {
+        lightBridge = initLightningBridge(params)
+        if !connectToGreenlight(credentials: params, isRestore: greenlightCredentials == nil) {
+            if !connectToGreenlight(credentials: params) {
+                throw LoginError.connectionFailed()
+            }
+        }
+        if let greenlightCredentials = lightBridge?.appGreenlightCredentials {
             LightningRepository.shared.upsert(for: walletHashId, credentials: greenlightCredentials)
         }
         logged = true
@@ -241,8 +240,10 @@ class LightningSessionManager: SessionManager {
             .compactMap { $0["btc"] != 0 }
     }
 
-    func createInvoice(satoshi: UInt64, description: String) throws -> LnInvoice? {
-        try lightBridge?.createInvoice(satoshi: satoshi, description: description)
+    func createInvoice(satoshi: UInt64, description: String) throws -> LnInvoice {
+        let invoice = try lightBridge?.createInvoice(satoshi: satoshi, description: description)
+        if let invoice = invoice { return invoice }
+        throw GaError.GenericError("Invalid invoice")
     }
 
     override func parseTxInput(_ input: String, satoshi: Int64?, assetId: String?) -> Promise<ValidateAddresseesResult> {
@@ -337,6 +338,8 @@ extension LightningSessionManager: LightningEventListener {
                 self.post(event: .PaymentFailed)
                 DropAlert().error(message: "Payment Failure".localized)
             }
+        default:
+            break
         }
     }    
 }

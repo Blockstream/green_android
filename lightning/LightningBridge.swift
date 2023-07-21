@@ -16,26 +16,32 @@ class LogStreamListener: LogStream {
 public class LightningBridge {
 
     let testnet: Bool
-    public var credentials: AppGreenlightCredentials?
+    public var appGreenlightCredentials: AppGreenlightCredentials?
     var breezSdk: BlockingBreezServices?
     var eventListener: LightningEventListener
     var workingDir: URL
     private var network: Network { testnet ? .testnet : .bitcoin }
     private var environment: EnvironmentType { testnet ? .staging : .production }
 
-    static public let BREEZ_API_KEY = Bundle.main.infoDictionary?["BREEZ_API_KEY"] as? String
+    static public var BREEZ_API_KEY: String? {
+        let content = Bundle.main.infoDictionary?["BREEZ_API_KEY"] as? String
+        print("BREEZ_API_KEY: \(content)")
+        return content
+    }
     static public var GREENLIGHT_DEVICE_CERT: Data? {
         let path = Bundle.main.path(forResource: "green", ofType: "crt") ?? ""
-        var content = try? String(contentsOf: URL(fileURLWithPath: path), encoding: .utf8)
+        let content = try? String(contentsOf: URL(fileURLWithPath: path), encoding: .utf8)
         if let content = content?.filter({ !$0.isWhitespace }) {
+            print("GREENLIGHT_DEVICE_CERT: \(content)")
             return Data(base64Encoded: content)
         }
         return nil
     }
     static public var GREENLIGHT_DEVICE_KEY: Data? {
         let path = Bundle.main.path(forResource: "green", ofType: "pem") ?? ""
-        var content = try? String(contentsOf: URL(fileURLWithPath: path), encoding: .utf8)
+        let content = try? String(contentsOf: URL(fileURLWithPath: path), encoding: .utf8)
         if let content = content?.filter({ !$0.isWhitespace }) {
+            print("GREENLIGHT_DEVICE_KEY: \(content)")
             return Data(base64Encoded: content)
         }
         return nil
@@ -49,11 +55,9 @@ public class LightningBridge {
     }
 
     public init(testnet: Bool,
-                credentials: AppGreenlightCredentials?,
                 workingDir: URL,
                 eventListener: LightningEventListener) {
         self.testnet = testnet
-        self.credentials = credentials
         self.eventListener = eventListener
         self.workingDir = workingDir
     }
@@ -62,71 +66,44 @@ public class LightningBridge {
         try? setLogStream(logStream: LogStreamListener())
     }
 
-    public func connectToGreenlight(mnemonic: String) {
-        if let credentials = getAppLightningCredentials(mnemonic: mnemonic)?.greenlightCredentials {
-            start(mnemonic: mnemonic, greenlightCredentials: credentials)            
-        }
+    public func connectToGreenlight(mnemonic: String, isRestore: Bool) -> Bool {
+        let partnerCredentials = isRestore ? nil : LightningBridge.CREDENTIALS
+        return start(mnemonic: mnemonic, partnerCredentials: partnerCredentials)
+    }
+    
+    private func createConfig(_ partnerCredentials: GreenlightCredentials?) -> Config {
+        let greenlightConfig = GreenlightNodeConfig(partnerCredentials: partnerCredentials, inviteCode: nil)
+        let nodeConfig = NodeConfig.greenlight(config: greenlightConfig)
+        var config = defaultConfig(envType: environment,
+                      apiKey: LightningBridge.BREEZ_API_KEY ?? "",
+                      nodeConfig: nodeConfig)
+        config.workingDir = workingDir.path
+        try? FileManager.default.createDirectory(atPath: workingDir.path, withIntermediateDirectories: true)
+        return config
     }
 
-    public func connectToGreenlightIfExists(mnemonic: String) -> Bool {
-        if checkIfGreenlightNodeExists(mnemonic: mnemonic) {
-            connectToGreenlight(mnemonic: mnemonic)
+    private func start(mnemonic: String, partnerCredentials: GreenlightCredentials?) -> Bool {
+        if breezSdk != nil {
             return true
-        } else {
+        }
+        breezSdk = try? connect(config: createConfig(partnerCredentials),
+                seed: mnemonicToSeed(phrase: mnemonic),
+                listener: self)
+        if breezSdk == nil {
             return false
         }
-    }
-
-    private func checkIfGreenlightNodeExists(mnemonic: String) -> Bool {
-        if credentials == nil {
-            do {
-                credentials = AppGreenlightCredentials(
-                    gc: try recoverNode(
-                        network: network,
-                        seed: try mnemonicToSeed(phrase: mnemonic)
-                    )
-                )
-            } catch { print(error) }
+        
+        if let credentials = LightningBridge.CREDENTIALS {
+            appGreenlightCredentials = AppGreenlightCredentials(gc: credentials)
         }
-        return credentials != nil
-    }
-
-    private func getAppLightningCredentials(mnemonic: String) -> AppGreenlightCredentials? {
-        if !checkIfGreenlightNodeExists(mnemonic: mnemonic) {
-            do {
-                credentials = AppGreenlightCredentials(
-                    gc: try registerNode(
-                        network: network,
-                        seed: try mnemonicToSeed(phrase: mnemonic),
-                        registerCredentials: LightningBridge.CREDENTIALS,
-                        inviteCode: nil
-                    )
-                )
-            } catch { print(error) }
-        }
-        return credentials
-    }
-
-    private func start(mnemonic: String, greenlightCredentials: GreenlightCredentials) {
-        if breezSdk != nil {
-            fatalError("Service already started")
-        }
-        var config = defaultConfig(envType: environment)
-        config.apiKey = LightningBridge.BREEZ_API_KEY
-        config.workingDir = workingDir.path
-        let seed = try? mnemonicToSeed(phrase: mnemonic)
-        try? FileManager.default.createDirectory(atPath: workingDir.path, withIntermediateDirectories: true)
-        breezSdk = try? initServices(
-            config: config,
-            seed: seed ?? [],
-            creds: greenlightCredentials,
-            listener: self
-        )
-        try? breezSdk?.start()
+        _ = updateNodeInfo()
+        _ = updateLspInformation()
+        return true
     }
     
     public func stop(){
-        try? breezSdk?.stop()
+        try? breezSdk?.disconnect()
+        breezSdk = nil
     }
 
     public func updateLspInformation() -> LspInformation? {
@@ -172,7 +149,7 @@ public class LightningBridge {
     }
     
     public func refund(swapAddress: String, toAddress: String, satPerVbyte: UInt32?) -> String? {
-        let refund = try? breezSdk?.refund(swapAddress: swapAddress, toAddress: toAddress, satPerVbyte: satPerVbyte ?? recommendedFees()?.economyFee ?? 0)
+        let refund = try? breezSdk?.refund(swapAddress: swapAddress, toAddress: toAddress, satPerVbyte: satPerVbyte ?? UInt32(recommendedFees()?.economyFee ?? 0))
         print("refund \(refund)")
         return refund
     }
