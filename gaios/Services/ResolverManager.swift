@@ -8,8 +8,10 @@ import hw
 class ResolverManager {
     
     let resolver: GDKResolver
+    let session: SessionManager?
     
-    init(_ factor: TwoFactorCall, chain: String, connected: @escaping() -> Bool = { true }) {
+    init(_ factor: TwoFactorCall, chain: String, connected: @escaping() -> Bool = { true }, session: SessionManager?) {
+        self.session = session
         resolver = GDKResolver(factor,
                                popupDelegate: PopupResolver(),
                                hwDelegate: HWResolver(),
@@ -20,7 +22,19 @@ class ResolverManager {
 
     func run() -> Promise<[String: Any]> {
         return resolver.resolve()
-            .get { _ in
+            .recover { err in
+                switch err {
+                case TwoFactorCallError.cancel(let txt), TwoFactorCallError.failure(let txt):
+                    if txt == "Authentication Required" {
+                        self.session?.reconnect()
+                            .done { print("reconnected") }
+                            .catch { _ in print ("reconnection failure") }
+                    }
+                default:
+                    break
+                }
+                return Promise<[String: Any]>(error: err)
+            }.get { _ in
                 DispatchQueue.main.async {
                     UIApplication.topViewController()?.stopAnimating()
                 }
