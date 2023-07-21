@@ -70,7 +70,7 @@ public class LightningBridge {
         let partnerCredentials = isRestore ? nil : LightningBridge.CREDENTIALS
         return start(mnemonic: mnemonic, partnerCredentials: partnerCredentials)
     }
-    
+
     private func createConfig(_ partnerCredentials: GreenlightCredentials?) -> Config {
         let greenlightConfig = GreenlightNodeConfig(partnerCredentials: partnerCredentials, inviteCode: nil)
         let nodeConfig = NodeConfig.greenlight(config: greenlightConfig)

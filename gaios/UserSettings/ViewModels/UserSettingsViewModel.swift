@@ -6,15 +6,15 @@ import gdk
 class UserSettingsViewModel {
 
     // load wallet manager for current logged session
-    var wm: WalletManager { WalletManager.current! }
+    var wm: WalletManager? { WalletManager.current }
 
     // load wallet manager for current logged session
-    var session: SessionManager? { wm.prominentSession }
+    var session: SessionManager? { wm?.prominentSession }
     var settings: Settings? { session?.settings }
-    var isWatchonly: Bool { wm.account.isWatchonly }
+    var isWatchonly: Bool { wm?.account.isWatchonly ?? false }
     var isSinglesig: Bool { session?.gdkNetwork.electrum ?? true }
-    var isHW: Bool { wm.account.isHW }
-    var multiSigSession: SessionManager? { wm.activeSessions.values.filter { !$0.gdkNetwork.electrum }.first }
+    var isHW: Bool { wm?.account.isHW ?? false }
+    var multiSigSession: SessionManager? { wm?.activeSessions.values.filter { !$0.gdkNetwork.electrum }.first }
 
     // reload all contents
     var reloadTableView: (() -> Void)?
@@ -63,8 +63,8 @@ class UserSettingsViewModel {
             type: .ChangePin)
         let bioTitle = AuthenticationTypeHandler.supportsBiometricAuthentication() ? NSLocalizedString(AuthenticationTypeHandler.biometryType == .faceID ? "id_face_id" : "id_touch_id", comment: "") : NSLocalizedString("id_touchface_id_not_available", comment: "")
         var bioSwitch: Bool?
-        if AuthenticationTypeHandler.supportsBiometricAuthentication() {
-            bioSwitch = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: wm.account.keychain)
+        if AuthenticationTypeHandler.supportsBiometricAuthentication(), let keychain = wm?.account.keychain {
+            bioSwitch = AuthenticationTypeHandler.findAuth(method: .AuthKeyBiometric, forNetwork: keychain)
         }
         let loginWithBiometrics = UserSettingsItem(
             title: bioTitle,
@@ -90,7 +90,7 @@ class UserSettingsViewModel {
             type: .AutoLogout)
         if isHW {
             return [twoFactorAuth, pgpKey, autolock]
-        } else if wm.hasMultisig {
+        } else if wm?.hasMultisig ?? false {
             return [changePin, loginWithBiometrics, twoFactorAuth, pgpKey, autolock]
         } else {
             return [changePin, loginWithBiometrics, autolock]
@@ -100,7 +100,6 @@ class UserSettingsViewModel {
     func getGeneral() -> [UserSettingsItem] {
         guard let settings = settings, let session = session else { return [] }
         let network: NetworkSecurityCase = session.gdkNetwork.mainnet ? .bitcoinSS : .testnetSS
-        
         let unifiedDenominationExchange = UserSettingsItem(
             title: USItem.UnifiedDenominationExchange.string,
             subtitle: "",
@@ -131,7 +130,7 @@ class UserSettingsViewModel {
             type: .BackUpRecoveryPhrase)
         if isHW {
             return []
-        } else if wm.hasMultisig {
+        } else if wm?.hasMultisig ?? false {
             return [recovery]
         } else {
             return [recovery]
@@ -140,7 +139,7 @@ class UserSettingsViewModel {
 
     func getLogout() -> [UserSettingsItem] {
         let logout = UserSettingsItem(
-            title: wm.account.name.localizedCapitalized,
+            title: wm?.account.name.localizedCapitalized ?? "",
             subtitle: "id_log_out".localized,
             section: .Logout,
             type: .Logout)

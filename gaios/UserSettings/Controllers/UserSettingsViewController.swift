@@ -17,7 +17,7 @@ class UserSettingsViewController: UIViewController {
     var multiSigSession = { WalletManager.current?.activeSessions.values.filter { !$0.gdkNetwork.electrum }.first }()
     var headerH: CGFloat = 54.0
     var viewModel = UserSettingsViewModel()
-    var account: Account { get { viewModel.wm.account } }
+    var account: Account? { get { viewModel.wm?.account } }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -133,11 +133,11 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
                 navigationController?.pushViewController(vc, animated: true)
             }
         case .ChangePin:
-            viewModel.wm.prominentSession?.getCredentials(password: "").done { credentials in
+            viewModel.wm?.prominentSession?.getCredentials(password: "").done { credentials in
                     let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
                     if let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
                         vc.pinFlow = .settings
-                        vc.viewModel = SetPinViewModel(credentials: credentials, testnet: self.viewModel.wm.testnet)
+                        vc.viewModel = SetPinViewModel(credentials: credentials, testnet: self.viewModel.wm?.testnet ?? false)
                         self.navigationController?.pushViewController(vc, animated: true)
                 }
             }
@@ -268,8 +268,9 @@ extension UserSettingsViewController {
 
 extension UserSettingsViewController {
     private func enableBioAuth() {
+        guard let account = account else { return }
         // An auth key pin should be set before updating bio auth
-        if !AuthenticationTypeHandler.findAuth(method: .AuthKeyPIN, forNetwork: self.account.keychain) {
+        if !AuthenticationTypeHandler.findAuth(method: .AuthKeyPIN, forNetwork: account.keychain) {
             onAuthError(message: NSLocalizedString("id_please_enable_pin", comment: ""))
             return
         }
@@ -281,7 +282,7 @@ extension UserSettingsViewController {
         }.then {
             session.getCredentials(password: "")
         }.then(on: bgq) {
-            self.account.addBiometrics(session: session, credentials: $0)
+            account.addBiometrics(session: session, credentials: $0)
         }.ensure {
             self.stopAnimating()
         }.done {
@@ -301,7 +302,7 @@ extension UserSettingsViewController {
 
     private func disableBioAuth() {
         onAuthRemoval { [weak self] in
-            self?.account.removeBioKeychainData()
+            self?.account?.removeBioKeychainData()
             self?.viewModel.load()
         }
     }
@@ -330,7 +331,7 @@ extension UserSettingsViewController {
             self.navigationController?.popViewController(animated: true)
         })
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_reset", comment: ""), style: .destructive) { _ in
-            self.account.removeBioKeychainData()
+            self.account?.removeBioKeychainData()
             self.navigationController?.popViewController(animated: true)
         })
         DispatchQueue.main.async {
