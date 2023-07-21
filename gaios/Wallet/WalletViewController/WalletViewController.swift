@@ -142,9 +142,11 @@ class WalletViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        let riveView = RiveModel.animationWallet.createRiveView()
-        animateView.addSubview(riveView)
-        riveView.frame = CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height)
+        if viewModel.subaccounts.count == 0 {
+            let riveView = RiveModel.animationWallet.createRiveView()
+            animateView.addSubview(riveView)
+            riveView.frame = CGRect(x: 0.0, y: 0.0, width: animateView.frame.width, height: animateView.frame.height)
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
