@@ -121,7 +121,10 @@ class SendConfirmViewController: KeyboardViewController {
             self.sliderView.reset()
             let prettyError: String = {
                 switch error {
-                case BreezSDK.SdkError.Error(let message):
+                case BreezSDK.SdkError.Generic(let message),
+                    BreezSDK.SdkError.LspConnectFailed(let message),
+                    BreezSDK.SdkError.PersistenceFailure(let message),
+                    BreezSDK.SdkError.ReceivePaymentFailed(let message):
                     return message.localized
                 case HWError.Abort(let desc),
                     HWError.Declined(let desc):
@@ -141,8 +144,11 @@ class SendConfirmViewController: KeyboardViewController {
                 }
             }()
             switch error {
-            case BreezSDK.SdkError.Error:
-                self.showBreezError( prettyError )
+            case BreezSDK.SdkError.Generic(let msg),
+                BreezSDK.SdkError.LspConnectFailed(let msg),
+                BreezSDK.SdkError.PersistenceFailure(let msg),
+                BreezSDK.SdkError.ReceivePaymentFailed(let msg):
+                self.showBreezError( msg )
             default:
                 self.showError(NSLocalizedString(prettyError, comment: ""))
             }

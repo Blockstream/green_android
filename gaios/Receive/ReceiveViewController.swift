@@ -188,7 +188,10 @@ class ReceiveViewController: KeyboardViewController {
             .done { self.reload() }
             .catch {
                 switch $0 {
-                case BreezSDK.SdkError.Error(let msg):
+                case BreezSDK.SdkError.Generic(let msg),
+                    BreezSDK.SdkError.LspConnectFailed(let msg),
+                    BreezSDK.SdkError.PersistenceFailure(let msg),
+                    BreezSDK.SdkError.ReceivePaymentFailed(let msg):
                     self.showError(msg)
                 default:
                     self.showError($0)

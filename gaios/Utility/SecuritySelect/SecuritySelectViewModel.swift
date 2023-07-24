@@ -90,7 +90,7 @@ class SecuritySelectViewModel {
             return Guarantee()
                 .then(on: bgq) { session.connect() }
                 .then(on: bgq) { prominentSession.getCredentials(password: "")}
-                .then(on: bgq) { session.loginUser($0) }
+                .then(on: bgq) { session.register(credentials: $0) }
                 .then(on: bgq) { _ in self.wm.subaccounts() }
                 .then(on: bgq) { _ in session.subaccount(0) }
         } else if let session = getSession(for: network) {
@@ -130,7 +130,7 @@ class SecuritySelectViewModel {
     func registerSession(session: SessionManager, credentials: Credentials? = nil, hw: HWDevice? = nil) -> Promise<Void> {
         return Promise()
             .then(on: bgq) { session.register(credentials: credentials, hw: hw) }
-            .then(on: bgq) { _ in session.loginUser(credentials: credentials, hw: hw) }
+            .then(on: bgq) { _ in session.loginUser(credentials: credentials, hw: hw, restore: false) }
             .then(on: bgq) { _ in session.subaccounts(true) }
             .then(on: bgq) { self.isUsedDefaultAccount(for: session, account: $0.first) }
             .then(on: bgq) { !$0 ? session.updateSubaccount(subaccount: 0, hidden: true).asVoid() : Promise().asVoid() }

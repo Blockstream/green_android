@@ -63,8 +63,11 @@ class LTAuthViewController: UIViewController {
             }
             .catch {
                 switch $0 {
-                case BreezSDK.SdkError.Error(let message):
-                    DropAlert().error(message: message.localized)
+                case BreezSDK.SdkError.Generic(let msg),
+                    BreezSDK.SdkError.LspConnectFailed(let msg),
+                    BreezSDK.SdkError.PersistenceFailure(let msg),
+                    BreezSDK.SdkError.ReceivePaymentFailed(let msg):
+                    DropAlert().error(message: msg.localized)
                 default:
                     DropAlert().error(message: "id_operation_failure".localized)
                 }

@@ -12,6 +12,7 @@ class LightningSessionManager: SessionManager {
     var nodeState: NodeState?
     var lspInfo: LspInformation?
     var accountId: String?
+    var isRestoredNode: Bool?
     
     var chainNetwork: NetworkSecurityCase { gdkNetwork.mainnet ? .bitcoinSS : .testnetSS }
 
@@ -35,25 +36,42 @@ class LightningSessionManager: SessionManager {
         return lightBridge?.connectToGreenlight(mnemonic: mnemonic, isRestore: isRestore) ?? false
     }
 
-    override func loginUser(_ params: Credentials) -> Promise<LoginUserResult> {
+    override func loginUser(_ params: Credentials, restore: Bool) -> Promise<LoginUserResult> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee()
             .then(on: bgq) {
                 return Promise { seal in
-                    seal.fulfill( try self.loginUser_(params) )
+                    seal.fulfill( try self.loginUser_(params, restore: restore) )
                 }
             }
     }
 
-    private func loginUser_(_ params: Credentials) throws -> LoginUserResult {
+    override func register(credentials: Credentials? = nil, hw: HWDevice? = nil) -> Promise<Void> {
+        let bgq = DispatchQueue.global(qos: .background)
+        return Guarantee()
+            .then(on: bgq) {
+                return Promise { seal in
+                    seal.fulfill( try self.loginUser_(credentials!, restore: false) )
+                }
+            }.asVoid()
+    }
+
+    
+    private func loginUser_(_ params: Credentials, restore: Bool) throws -> LoginUserResult {
         let walletId = walletIdentifier(credentials: params)
         let walletHashId = walletId!.walletHashId
+        let res = LoginUserResult(xpubHashId: walletId?.xpubHashId ?? "", walletHashId: walletId?.walletHashId ?? "")
         let greenlightCredentials = LightningRepository.shared.get(for: walletHashId)
+        isRestoredNode = false
         lightBridge = initLightningBridge(params)
-        if !connectToGreenlight(credentials: params, isRestore: greenlightCredentials == nil) {
+        if connectToGreenlight(credentials: params, isRestore: restore) {
+            isRestoredNode = restore
+        } else if !restore {
             if !connectToGreenlight(credentials: params) {
                 throw LoginError.connectionFailed()
             }
+        } else {
+            return res
         }
         if let greenlightCredentials = lightBridge?.appGreenlightCredentials {
             LightningRepository.shared.upsert(for: walletHashId, credentials: greenlightCredentials)
@@ -61,7 +79,7 @@ class LightningSessionManager: SessionManager {
         logged = true
         nodeState = lightBridge?.updateNodeInfo()
         lspInfo = lightBridge?.updateLspInformation()
-        return LoginUserResult(xpubHashId: walletId?.xpubHashId ?? "", walletHashId: walletId?.walletHashId ?? "")
+        return res
     }
 
     deinit {

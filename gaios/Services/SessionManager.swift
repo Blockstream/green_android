@@ -230,25 +230,25 @@ class SessionManager {
             .asVoid()
     }
 
-    func loginUser(_ params: Credentials) -> Promise<LoginUserResult> {
+    func loginUser(_ params: Credentials, restore: Bool) -> Promise<LoginUserResult> {
         return connect()
             .then(on: bgq) { self.wrapper(fun: self.session?.loginUserSW, params: params) }
             .compactMap(on: bgq) { $0 }
             .then { res in self.onLogin(res).compactMap { res } }
     }
 
-    func loginUser(_ params: HWDevice) -> Promise<LoginUserResult> {
+    func loginUser(_ params: HWDevice, restore: Bool) -> Promise<LoginUserResult> {
         return connect()
             .then(on: bgq) { self.wrapper(fun: self.session?.loginUserHW, params: params) }
             .compactMap(on: bgq) { $0 }
             .then(on: bgq) { res in self.onLogin(res).compactMap { res } }
     }
 
-    func loginUser(credentials: Credentials? = nil, hw: HWDevice? = nil) -> Promise<LoginUserResult> {
+    func loginUser(credentials: Credentials? = nil, hw: HWDevice? = nil, restore: Bool) -> Promise<LoginUserResult> {
         if let credentials = credentials {
-            return loginUser(credentials)
+            return loginUser(credentials, restore: restore)
         } else if let hw = hw {
-            return loginUser(hw)
+            return loginUser(hw, restore: restore)
         } else {
             return Promise<LoginUserResult>() { seal in seal.reject(GaError.GenericError("No login method specified")) }
         }

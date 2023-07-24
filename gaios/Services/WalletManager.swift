@@ -133,7 +133,7 @@ class WalletManager {
             .then { btcSession.connect() }
             .then { btcSession.register(credentials: credentials) }
             .compactMap { btcSession.walletIdentifier(credentials: credentials) }
-            .then { _ in btcSession.loginUser(credentials) }
+            .then { _ in btcSession.loginUser(credentials, restore: false) }
             .map { self.account.xpubHashId = $0.xpubHashId }
             .then { _ in btcSession.updateSubaccount(subaccount: 0, hidden: true) }
             .map { AccountsRepository.shared.current = self.account }
@@ -144,7 +144,7 @@ class WalletManager {
 
     func loginWatchonly(credentials: Credentials) -> Promise<Void> {
         guard let session = prominentSession else { fatalError() }
-        return session.loginUser(credentials: credentials)
+        return session.loginUser(credentials: credentials, restore: false)
             .map { self.account.xpubHashId = $0.xpubHashId }
             .then { self.subaccounts() }.asVoid()
             .compactMap { self.loadRegistry() }
@@ -193,8 +193,9 @@ class WalletManager {
                 guard let session = self.sessions[network] else { return seal.fulfill(()) }
                 let walletHashId = walletId(session)!.walletHashId
                 let removeDatadir = !existDatadir(session) && session.gdkNetwork.network != self.prominentNetwork.network
+                let restore = fullRestore || !existDatadir(session)
                 do {
-                    let res = try session.loginUser(credentials: credentials, hw: device).wait()
+                    let res = try session.loginUser(credentials: credentials, hw: device, restore: restore).wait()
                     self.account.xpubHashId = res.xpubHashId
                     if session.gdkNetwork.network == self.prominentNetwork.network {
                         self.account.walletHashId = res.walletHashId
@@ -202,9 +203,16 @@ class WalletManager {
                     if session.logged && (fullRestore || !existDatadir(session)) {
                         let isFunded = try session.discovery().wait()
                         if !isFunded && removeDatadir {
-                            session.disconnect()
-                            session.removeDatadir(walletHashId: walletHashId)
-                            LightningRepository.shared.remove(for: walletHashId)
+                            if let lightningSession = session as? LightningSessionManager {
+                                if !(lightningSession.isRestoredNode ?? false) {
+                                    lightningSession.disconnect()
+                                    lightningSession.removeDatadir(walletHashId: walletHashId)
+                                    LightningRepository.shared.remove(for: walletHashId)
+                                }
+                            } else {
+                                session.disconnect()
+                                session.removeDatadir(walletHashId: walletHashId)
+                            }
                         }
                     }
                 } catch {
