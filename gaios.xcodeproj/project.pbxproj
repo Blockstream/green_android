@@ -5019,7 +5019,7 @@
 			repositoryURL = "https://github.com/breez/breez-sdk-swift";
 			requirement = {
 				kind = revision;
-				revision = 1e265c7192d94d7992252290925b7bad3c5bf817;
+				revision = 55c0a99777802b3f0910cb45c04a3d2b7e6cc4d1;
 			};
 		};
 		81961A7729E4819E00E9B94D /* XCRemoteSwiftPackageReference "PromiseKit" */ = {
