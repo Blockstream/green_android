@@ -166,6 +166,9 @@ class WalletManager {
         guard let prominentSession = sessions[prominentNetwork.rawValue] else { fatalError() }
         let fullRestore = account.xpubHashId == nil || !existDatadir(prominentSession)
         let doLogin: ((_ session: SessionManager) -> Bool) = {
+            if $0.gdkNetwork.lightning && device != nil {
+                return false
+            }
             if $0.gdkNetwork.liquid && device?.supportsLiquid ?? 1 == 0 {
                 // disable liquid if is unsupported on hw
                 return false
@@ -216,7 +219,14 @@ class WalletManager {
                         }
                     }
                 } catch {
-                    self.failureSessions[session.gdkNetwork.network] = error
+                    switch error {
+                    case TwoFactorCallError.failure(let txt):
+                        if txt != "id_login_failed" {
+                            self.failureSessions[session.gdkNetwork.network] = error
+                        }
+                    default:
+                        self.failureSessions[session.gdkNetwork.network] = error
+                    }
                 }
                 seal.fulfill(())
             }
