@@ -155,11 +155,34 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
         case .Version:
             break
         case .SupportID:
-            multiSigSession?.subaccount(0).done { wallet in
-                UIPasteboard.general.string = wallet.receivingId
-                DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 1.0)
-                UINotificationFeedbackGenerator().notificationOccurred(.success)
-            }.catch { _ in }
+
+            var multiSigSessions = { WalletManager.current?.activeSessions.values.filter { !$0.gdkNetwork.electrum } }()
+            var msMainSession = multiSigSessions?.filter{ $0.gdkNetwork.liquid == false }.first
+            var msLiquidSession = multiSigSessions?.filter{ $0.gdkNetwork.liquid == true }.first
+            guard let uuid = UserDefaults.standard.string(forKey: AppStorage.analyticsUUID) else { return }
+
+            var str = ""
+            str += "id:\(uuid)"
+
+            var promises: [Promise<WalletItem>] = []
+            if let msMainSession = msMainSession { promises.append(msMainSession.subaccount(0)) }
+            if let msLiquidSession = msLiquidSession { promises.append(msLiquidSession.subaccount(0)) }
+            
+            when(fulfilled: promises)
+                .done{ list in
+                    if let item = list.filter({$0.gdkNetwork.liquid == false}).first {
+                        str += ",bitcoin:\(item.receivingId)"
+                    }
+                    if let item = list.filter({$0.gdkNetwork.liquid == true}).first {
+                        str += ",liquidnetwork:\(item.receivingId)"
+                    }
+                    UIPasteboard.general.string = str
+                    DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 1.0)
+                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                }
+                .catch { error in
+                  print(error)
+                }
         case .ArchievedAccounts:
             openArchivedAccounts()
         case .WatchOnly:

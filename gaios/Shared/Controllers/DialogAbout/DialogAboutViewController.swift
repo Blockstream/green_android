@@ -55,6 +55,10 @@ class DialogAboutViewController: KeyboardViewController {
         obs = tableView.observe(\UITableView.contentSize, options: .new) { [weak self] table, _ in
             self?.tableViewHeight.constant = table.contentSize.height
         }
+
+        lblTitle.isUserInteractionEnabled = true
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
+        lblTitle.addGestureRecognizer(longPressRecognizer)
     }
 
     deinit {
@@ -133,6 +137,23 @@ class DialogAboutViewController: KeyboardViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
             present(vc, animated: false, completion: nil)
+        }
+    }
+
+    func handleDebugID() {
+        var msg = "ID not available"
+        if let uuid = UserDefaults.standard.string(forKey: AppStorage.analyticsUUID) {
+            UIPasteboard.general.string = uuid
+            msg = NSLocalizedString("UUID copied to clipboard", comment: "")
+        }
+        DropAlert().info(message: msg, delay: 1.0)
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+    }
+
+    @objc func longPressed(sender: UILongPressGestureRecognizer) {
+
+        if sender.state == UIGestureRecognizer.State.began {
+            handleDebugID()
         }
     }
 
