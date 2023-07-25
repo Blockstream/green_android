@@ -25,15 +25,18 @@ public class LightningBridge {
 
     static public var BREEZ_API_KEY: String? {
         let content = Bundle.main.infoDictionary?["BREEZ_API_KEY"] as? String
-        print("BREEZ_API_KEY: \(content)")
+        // print("BREEZ_API_KEY: \(content)")
+        if content == nil { print("BREEZ_API_KEY: UNDEFINED") }
         return content
     }
     static public var GREENLIGHT_DEVICE_CERT: Data? {
         let path = Bundle.main.path(forResource: "green", ofType: "crt") ?? ""
         let content = try? String(contentsOf: URL(fileURLWithPath: path), encoding: .utf8)
         if let content = content?.filter({ !$0.isWhitespace }) {
-            print("GREENLIGHT_DEVICE_CERT: \(content)")
+            // print("GREENLIGHT_DEVICE_CERT: \(content)")
             return Data(base64Encoded: content)
+        } else {
+            print("GREENLIGHT_DEVICE_CERT: UNDEFINED")
         }
         return nil
     }
@@ -41,8 +44,10 @@ public class LightningBridge {
         let path = Bundle.main.path(forResource: "green", ofType: "pem") ?? ""
         let content = try? String(contentsOf: URL(fileURLWithPath: path), encoding: .utf8)
         if let content = content?.filter({ !$0.isWhitespace }) {
-            print("GREENLIGHT_DEVICE_KEY: \(content)")
+            // print("GREENLIGHT_DEVICE_KEY: \(content)")
             return Data(base64Encoded: content)
+        } else {
+            print("GREENLIGHT_DEVICE_KEY: UNDEFINED")
         }
         return nil
     }
