@@ -58,8 +58,8 @@ fun AccountType?.titleRes(): Int = when (this) {
     AccountType.AMP_ACCOUNT -> R.string.id_amp
     AccountType.TWO_OF_THREE -> R.string.id_2of3_with_2fa
     AccountType.BIP44_LEGACY -> R.string.id_legacy
-    AccountType.BIP49_SEGWIT_WRAPPED -> R.string.id_standard
-    AccountType.BIP84_SEGWIT -> R.string.id_native_segwit
+    AccountType.BIP49_SEGWIT_WRAPPED -> R.string.id_legacy_segwit
+    AccountType.BIP84_SEGWIT -> R.string.id_standard
     AccountType.BIP86_TAPROOT -> R.string.id_taproot
     AccountType.LIGHTNING -> R.string.id_instant
     else -> R.string.id_unknown
@@ -69,8 +69,8 @@ fun AccountType?.title(): String = when (this) {
     AccountType.AMP_ACCOUNT -> "AMP"
     AccountType.TWO_OF_THREE -> "2of3 with 2FA"
     AccountType.BIP44_LEGACY -> "Legacy"
-    AccountType.BIP49_SEGWIT_WRAPPED -> "Standard"
-    AccountType.BIP84_SEGWIT -> "Native SegWit"
+    AccountType.BIP49_SEGWIT_WRAPPED -> "Legacy SegWit"
+    AccountType.BIP84_SEGWIT -> "Standard"
     AccountType.BIP86_TAPROOT -> "Taproot"
     AccountType.LIGHTNING -> "Instant"
     else -> "Unknown"

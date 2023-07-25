@@ -19,8 +19,8 @@ enum class AccountType(val gdkType: String) {
 
     override fun toString(): String = when(this){
         BIP44_LEGACY -> "Legacy"
-        BIP49_SEGWIT_WRAPPED -> "Standard"
-        BIP84_SEGWIT -> "Native SegWit"
+        BIP49_SEGWIT_WRAPPED -> "Legacy SegWit"
+        BIP84_SEGWIT -> "Standard"
         BIP86_TAPROOT -> "Taproot"
         LIGHTNING -> "Lightning"
 

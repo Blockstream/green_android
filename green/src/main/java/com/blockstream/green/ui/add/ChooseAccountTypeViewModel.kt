@@ -68,10 +68,7 @@ class ChooseAccountTypeViewModel @AssistedInject constructor(
             }else {
                 // Check if singlesig networks are available in this session
                 if ((isBitcoin && session.bitcoinSinglesig != null) || (!isBitcoin && session.liquidSinglesig != null)) {
-                    list += AccountType.BIP49_SEGWIT_WRAPPED
-
-                    list += AccountType.BIP84_SEGWIT
-
+                    list += listOf(AccountType.BIP84_SEGWIT, AccountType.BIP49_SEGWIT_WRAPPED)
                     if (isBitcoin && !session.isHardwareWallet && !session.hasLightning && settingsManager.getApplicationSettings().experimentalFeatures && !session.isTestnet && settingsManager.isLightningEnabled(countly)) {
                         list += AccountType.LIGHTNING
                     }
@@ -94,7 +91,7 @@ class ChooseAccountTypeViewModel @AssistedInject constructor(
             }
 
             filteredAccountTypes.value = list.filter {
-                it == AccountType.BIP49_SEGWIT_WRAPPED || it == AccountType.STANDARD || it == AccountType.LIGHTNING || (it == AccountType.AMP_ACCOUNT && isAmp)
+                it == AccountType.BIP84_SEGWIT || it == AccountType.STANDARD || it == AccountType.LIGHTNING || (it == AccountType.AMP_ACCOUNT && isAmp)
             }.map {
                 AccountTypeListItem(it)
             }
