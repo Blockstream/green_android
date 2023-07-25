@@ -192,7 +192,7 @@ fun Transaction.Companion.fromSwapInfo(account: Account, swapInfo: SwapInfo, isR
         spvVerified = "",
         txHash = swapInfo.paymentHash.toString(),
         type = Transaction.Type.MIXED.gdkType,
-        satoshi = mapOf(BTC_POLICY_ASSET to swapInfo.confirmedSats.toLong()),
+        satoshi = mapOf(BTC_POLICY_ASSET to (swapInfo.unconfirmedSats.toLong() + swapInfo.confirmedSats.toLong())),
         isLightningSwap = true,
         isInProgressSwap = swapInfo.confirmedSats.toLong() > 0 && !isRefundableSwap,
         isRefundableSwap = isRefundableSwap

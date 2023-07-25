@@ -648,7 +648,7 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonOnChainToggle"
                     style="@style/Widget.Green.Button.Text.Tiny"
-                    isVisible="@{vm.accountLiveData.lightning &amp;&amp; false}"
+                    isVisible="@{vm.accountLiveData.lightning}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"

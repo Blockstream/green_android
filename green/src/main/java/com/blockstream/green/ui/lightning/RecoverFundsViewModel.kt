@@ -76,8 +76,13 @@ class RecoverFundsViewModel @AssistedInject constructor(
 
         // Cache account address so that switching between manual address, account address is the same
         accountAssetLiveData.asFlow().onEach {
-            accountAddress.value = withContext(context = Dispatchers.IO) {
-                session.getReceiveAddress(it.account).address
+            // If the only available account is LN, show directly the manual address
+            if (!it.account.isLightning) {
+                accountAddress.value = withContext(context = Dispatchers.IO) {
+                    session.getReceiveAddress(it.account).address
+                }
+            } else {
+                showManualAddress.value = true
             }
         }.launchIn(viewModelScope)
 

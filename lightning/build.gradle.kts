@@ -21,7 +21,6 @@ android {
 
 dependencies {
     /**  --- Breez SDK -------------------------------------------------------------------------- */
-     api("breez_sdk:bindings-android:0.1.3")
-    // api("technology.breez:sdk-kotlin-multiplatform:0.0.1")
+     api("breez_sdk:bindings-android:0.1.4")
     /** ----------------------------------------------------------------------------------------- */
 }

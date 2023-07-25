@@ -234,14 +234,15 @@ class LightningBridge constructor(
             return null
         }
 
+        // Update swap transactions
+        updateSwapInfo()
+
         return breezSdk.listPayments(
             filter = PaymentTypeFilter.ALL,
             fromTimestamp = null,
             toTimestamp = null
         ).onEach {
             logger.info { it }
-        }.also {
-            updateSwapInfo()
         }
     }
 

@@ -278,15 +278,20 @@ class ReceiveViewModel @AssistedInject constructor(
     }
 
     private fun updateAddressUri() {
-        if(account.isLightning){
-            addressUri.value = addressLiveData.value?.address?.takeIf { it.isNotBlank() }?.let {
+        if (account.isLightning) {
+            if (showOnchainAddress.boolean()) {
+                addressUri.value = addressLiveData.value?.address?.takeIf { it.isNotBlank() }
                 isAddressUri.value = false
-                Uri.Builder().also {
-                    it.scheme(account.network.bip21Prefix)
-                    it.opaquePart(addressLiveData.value?.address?.uppercase()) // bech32 is case insensitive
-                }.toString()
+            } else {
+                addressUri.value = addressLiveData.value?.address?.takeIf { it.isNotBlank() }?.let {
+                    isAddressUri.value = false
+                    Uri.Builder().also {
+                        it.scheme(account.network.bip21Prefix)
+                        it.opaquePart(addressLiveData.value?.address?.uppercase()) // bech32 is case insensitive
+                    }.toString()
+                }
             }
-        }else if (requestAmount.value != null) {
+        } else if (requestAmount.value != null) {
             isAddressUri.value = true
 
             // Use 2 different builders, we are restricted by spec
