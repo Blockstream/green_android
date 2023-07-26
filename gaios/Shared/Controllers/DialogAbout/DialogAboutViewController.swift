@@ -56,9 +56,17 @@ class DialogAboutViewController: KeyboardViewController {
             self?.tableViewHeight.constant = table.contentSize.height
         }
 
-        lblTitle.isUserInteractionEnabled = true
-        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
-        lblTitle.addGestureRecognizer(longPressRecognizer)
+        let tap = UITapGestureRecognizer(target: self, action: #selector(multiTap))
+        tap.numberOfTapsRequired = 5
+
+        cardView.subviews.forEach{
+            $0.subviews.forEach { view in
+                if let logo = view as? UIImageView {
+                    logo.isUserInteractionEnabled = true
+                    logo.addGestureRecognizer(tap)
+                }
+            }
+        }
     }
 
     deinit {
@@ -150,11 +158,8 @@ class DialogAboutViewController: KeyboardViewController {
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
 
-    @objc func longPressed(sender: UILongPressGestureRecognizer) {
-
-        if sender.state == UIGestureRecognizer.State.began {
-            handleDebugID()
-        }
+    @objc func multiTap() {
+        handleDebugID()
     }
 
     @IBAction func didTap(_ sender: UIButton) {
