@@ -86,6 +86,14 @@
 
             </com.journeyapps.barcodescanner.DecoratedBarcodeView>
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonGallery"
+                style="@style/Widget.Green.Button.Text.Tiny"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:text="@string/id_scan_from_image" />
+
         </com.google.android.material.card.MaterialCardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

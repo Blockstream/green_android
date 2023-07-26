@@ -1,28 +1,42 @@
 package com.blockstream.green.ui.bottomsheets
 
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.blockstream.green.R
 import com.blockstream.green.databinding.CameraBottomSheetBinding
+import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.makeItConstant
 import com.blockstream.green.extensions.setNavigationResult
 import com.blockstream.green.ui.onboarding.AbstractOnboardingFragment
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.utils.isDevelopmentOrDebug
+import com.google.zxing.MultiFormatReader
+import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.ResultPoint
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.CaptureManager
+import com.journeyapps.barcodescanner.MixedDecoder
 import com.sparrowwallet.hummingbird.ResultType
 import com.sparrowwallet.hummingbird.URDecoder
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import mu.KLogging
 
 
@@ -41,6 +55,12 @@ class CameraBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<CameraB
     private val isDecodeContinuous by lazy { arguments?.getBoolean(DECODE_CONTINUOUS, false) == true }
 
     private val urDecoder by lazy { URDecoder() }
+
+    private var openGallery = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.also {
+            handleImage(it)
+        }
+    }
 
     private val callback: BarcodeCallback = object : BarcodeCallback {
         override fun barcodeResult(result: BarcodeResult) {
@@ -80,6 +100,10 @@ class CameraBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<CameraB
 
         binding.buttonClose.setOnClickListener {
             dismiss()
+        }
+
+        binding.buttonGallery.setOnClickListener {
+            openGallery.launch("image/*")
         }
 
         binding.viewFinder.maskColor = DEFAULT_MASK_COLOR
@@ -153,6 +177,39 @@ class CameraBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<CameraB
 
         isTorchOn = state
         binding.flash.setImageResource(if (state) R.drawable.ic_baseline_flash_on_24 else R.drawable.ic_baseline_flash_off_24)
+    }
+
+    private fun handleImage(uri: Uri) {
+        lifecycleScope.launch(context = Dispatchers.IO) {
+            try {
+                val image = if (Build.VERSION.SDK_INT < 28) {
+                    MediaStore.Images.Media.getBitmap(requireContext().contentResolver, uri)
+                } else {
+                    val source = ImageDecoder.createSource(requireContext().contentResolver, uri)
+                    ImageDecoder.decodeBitmap(source).copy(Bitmap.Config.RGBA_F16, true)
+                }
+
+                val intArray = IntArray(image.width * image.height)
+                image.getPixels(intArray, 0, image.width, 0, 0, image.width, image.height)
+
+                val source = RGBLuminanceSource(image.width, image.height, intArray)
+                val reader = MixedDecoder(MultiFormatReader())
+                var result = reader.decode(source)
+                if (result == null) {
+                    result = reader.decode(source)
+                }
+
+                withContext(context = Dispatchers.Main) {
+                    if (result != null) {
+                        callback.barcodeResult(BarcodeResult(result, null))
+                    } else {
+                        errorDialog(getString(R.string.id_couldnt_recognized_qr_code))
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     private fun setResultAndDismiss(result: String){

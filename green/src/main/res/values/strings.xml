@@ -1373,4 +1373,5 @@
   <string name="id_send_error_report">Send error report</string>
   <string name="id_report">Report</string>
   <string name="id_check_your_device">Check your device</string>
+  <string name="id_scan_from_image">Scan from Image</string>
 </resources>
