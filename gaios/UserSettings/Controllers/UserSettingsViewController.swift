@@ -156,9 +156,9 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
             break
         case .SupportID:
 
-            var multiSigSessions = { WalletManager.current?.activeSessions.values.filter { !$0.gdkNetwork.electrum } }()
-            var msMainSession = multiSigSessions?.filter{ $0.gdkNetwork.liquid == false }.first
-            var msLiquidSession = multiSigSessions?.filter{ $0.gdkNetwork.liquid == true }.first
+            let multiSigSessions = { WalletManager.current?.activeSessions.values.filter { !$0.gdkNetwork.electrum } }()
+            let msMainSession = multiSigSessions?.filter{ $0.gdkNetwork.liquid == false }.first
+            let msLiquidSession = multiSigSessions?.filter{ $0.gdkNetwork.liquid == true }.first
             guard let uuid = UserDefaults.standard.string(forKey: AppStorage.analyticsUUID) else { return }
 
             var str = ""
@@ -170,10 +170,10 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
             
             when(fulfilled: promises)
                 .done{ list in
-                    if let item = list.filter({$0.gdkNetwork.liquid == false}).first {
+                    if let item = list.filter({$0.gdkNetwork.liquid == false}).first, item.receivingId != "" {
                         str += ",bitcoin:\(item.receivingId)"
                     }
-                    if let item = list.filter({$0.gdkNetwork.liquid == true}).first {
+                    if let item = list.filter({$0.gdkNetwork.liquid == true}).first, item.receivingId != ""  {
                         str += ",liquidnetwork:\(item.receivingId)"
                     }
                     UIPasteboard.general.string = str
