@@ -103,7 +103,7 @@ class SendViewModel {
         let tx = Transaction(self.transaction?.details ?? [:], subaccount: account.hashValue)
         validateTask?.cancel()
         validateTask = Task {
-            let tx = await validate(tx: tx)
+            let tx = try? await validate(tx: tx)
             if let tx = tx {
                 self.transaction = tx
                 reload()
@@ -113,7 +113,7 @@ class SendViewModel {
         return validateTask
     }
     
-    func validate(tx: Transaction) async -> Transaction? {
+    func validate(tx: Transaction) async throws -> Transaction? {
         var tx = tx
         if Task.isCancelled { return nil }
         if let subaccount = tx.subaccountItem,
@@ -121,9 +121,8 @@ class SendViewModel {
             switch inputType {
             case .transaction:
                 let asset = assetId == "btc" ? nil : assetId
-                tx.addressees = [Addressee.from(address: input ?? "", satoshi: satoshi ?? 0, assetId: asset)]
+                tx.addressees = [Addressee.from(address: input ?? "", satoshi: satoshi ?? 0, assetId: asset, isGreedy: sendAll)]
                 tx.feeRate = feeRate ?? feeEstimates[transactionPriority.rawValue]
-                tx.sendAll = sendAll
             case .sweep:
                 tx.sessionSubaccount = account.pointer
                 tx.privateKey = input
@@ -139,9 +138,15 @@ class SendViewModel {
                 }
             }
             if Task.isCancelled { return nil }
-            if tx.isSweep && tx.addressees.isEmpty {
-                let address = try? await session.getReceiveAddress(subaccount: subaccount.pointer)
-                tx.addressees = [Addressee.from(address: address?.address ?? "", satoshi: nil, assetId: nil)]
+            if tx.isSweep {
+                if tx.addressees.isEmpty {
+                    let address = try await session.getReceiveAddress(subaccount: subaccount.pointer)
+                    tx.addresseesFromGetAddress([address])
+                }
+                if tx.utxos?.isEmpty ?? true {
+                    let unspent = try? await session.getUnspentOutputsForPrivateKey(UnspentOutputsForPrivateKeyParams(privateKey: tx.privateKey ?? "", password: nil))
+                    tx.utxos = unspent ?? [:]
+                }
             } else if !subaccount.gdkNetwork.lightning && tx.utxos == nil {
                 let unspent = try? await session.getUnspentOutputs(subaccount: subaccount.pointer, numConfs: 0)
                 tx.utxos = unspent ?? [:]
@@ -177,7 +182,7 @@ class SendViewModel {
     func reload() {
         guard let tx = self.transaction else { return }
         inputError = tx.error
-        sendAll = tx.sendAll
+        sendAll = tx.addressees.first?.isGreedy ?? false
         fee = tx.fee == 0 ? nil : tx.fee
         feeRate = tx.feeRate == 0 ? nil : tx.feeRate
         if let addressee = tx.addressees.first {
@@ -191,7 +196,7 @@ class SendViewModel {
                 satoshi = addrSatoshi
             }
         }
-        if tx.sendAll {
+        if sendAll {
             let assetId = assetId ?? feeAsset
             let value = tx.amounts.filter({$0.key == assetId}).first?.value ?? 0
             satoshi = value

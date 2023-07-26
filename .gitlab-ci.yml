@@ -40,7 +40,7 @@ build_dev_release:
     paths:
       - dev
   variables:
-    GDK_COMMIT: 9c0b7ae753987cfdd488a06090a4ca9668a035f5
+    GDK_COMMIT: latest
     COUNTLY_APP_KEY: $COUNTLY_APP_KEY_DEV
     COUNTLY_APP_HOST: $COUNTLY_APP_HOST
     GREENLIGHT_DEVICE_KEY: $GREENLIGHT_DEVICE_KEY
@@ -73,7 +73,7 @@ build_prod_release:
     paths:
       - prod
   variables:
-    GDK_COMMIT: 9c0b7ae753987cfdd488a06090a4ca9668a035f5
+    GDK_COMMIT: latest
     COUNTLY_APP_KEY: $COUNTLY_APP_KEY_PROD
     COUNTLY_APP_HOST: $COUNTLY_APP_HOST
     GREENLIGHT_DEVICE_KEY: $GREENLIGHT_DEVICE_KEY

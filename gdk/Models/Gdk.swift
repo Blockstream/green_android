@@ -171,6 +171,21 @@ public struct CreateSubaccountParams: Codable {
     }
 }
 
+public struct UnspentOutputsForPrivateKeyParams: Codable {
+    enum CodingKeys: String, CodingKey {
+        case privateKey = "private_key"
+        case password
+    }
+
+    public let privateKey: String
+    public let password: String?
+
+    public init(privateKey: String, password: String?) {
+        self.privateKey = privateKey
+        self.password = password
+    }
+}
+
 public struct GdkInit: Codable {
     enum CodingKeys: String, CodingKey {
         case datadir

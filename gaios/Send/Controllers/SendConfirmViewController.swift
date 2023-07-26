@@ -148,7 +148,7 @@ class SendConfirmViewController: KeyboardViewController {
             }
         }()
         self.showBreezError(prettyError.localized)
-        let isSendAll = self.viewModel.tx.sendAll
+        let isSendAll = self.viewModel.tx.addressees.first?.isGreedy ?? false
         let withMemo = !self.viewModel.tx.memo.isEmpty
         let transSgmt = AnalyticsManager.TransactionSegmentation(transactionType: self.inputType,
                                                                  addressInputType: self.addressInputType,
@@ -172,7 +172,7 @@ class SendConfirmViewController: KeyboardViewController {
     
     @MainActor
     func executeOnDone() {
-        let isSendAll = viewModel.tx.sendAll
+        let isSendAll = viewModel.tx.addressees.first?.isGreedy ?? false
         let withMemo = !viewModel.tx.memo.isEmpty
         let transSgmt = AnalyticsManager.TransactionSegmentation(transactionType: inputType,
                                                      addressInputType: addressInputType,

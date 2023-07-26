@@ -73,7 +73,7 @@ public extension HWTransaction {
 public struct HWSignTxParams {
     enum CodingKeys: String, CodingKey {
         case transaction
-        case signingInputs = "signing_inputs"
+        case signingInputs = "transaction_inputs"
         case txOutputs = "transaction_outputs"
         case signingTxs = "signing_transactions"
         case useAeProtocol = "use_ae_protocol"
@@ -85,7 +85,7 @@ public struct HWSignTxParams {
     let useAeProtocol: Bool
     init(_ details: [String: Any]) {
         transaction = details["transaction"] as? HWTransaction
-        signingInputs = details["signing_inputs"] as? [InputOutput] ?? []
+        signingInputs = details["transaction_inputs"] as? [InputOutput] ?? []
         txOutputs = details["transaction_outputs"] as? [InputOutput] ?? []
         signingTxs = details["signing_transactions"] as? [String: String] ?? [:]
         useAeProtocol = details["use_ae_protocol"] as? Bool ?? false

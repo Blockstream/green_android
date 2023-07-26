@@ -18,6 +18,7 @@ public struct Addressee: Codable {
     enum CodingKeys: String, CodingKey {
         case address
         case satoshi
+        case isGreedy = "is_greedy"
         case assetId = "asset_id"
         case hasLockedAmount = "has_locked_amount"
         case minAmount = "min_amount"
@@ -28,6 +29,7 @@ public struct Addressee: Codable {
     }
     public var address: String
     public var satoshi: Int64?
+    public var isGreedy: Bool?
     public var assetId: String?
     public let hasLockedAmount: Bool?
     public let minAmount: UInt64?
@@ -36,9 +38,10 @@ public struct Addressee: Codable {
     public let metadata: [[String]]?
     public let type: TxType?
 
-    public static func from(address: String, satoshi: Int64?, assetId: String?) -> Addressee {
+    public static func from(address: String, satoshi: Int64?, assetId: String?, isGreedy: Bool = false) -> Addressee {
         return Addressee(address: address,
                          satoshi: satoshi,
+                         isGreedy: isGreedy,
                          assetId: assetId,
                          hasLockedAmount: nil,
                          minAmount: nil,
@@ -132,10 +135,6 @@ public struct Transaction: Comparable {
         set { details["addressees"] = newValue.map { $0.toDict() }}
     }
 
-    public var addresseesReadOnly: Bool {
-        get { return get("addressees_read_only") ?? false }
-    }
-
     public var transaction: String? {
         get { return get("transaction") }
     }
@@ -201,11 +200,6 @@ public struct Transaction: Comparable {
     public var amounts: [String: Int64] {
         get { get("satoshi") as [String: Int64]? ?? [:] }
         set { details["satoshi"] = newValue }
-    }
-
-    public var sendAll: Bool {
-        get { return get("send_all") ?? false }
-        set { details["send_all"] = newValue }
     }
 
     public var size: UInt64 {

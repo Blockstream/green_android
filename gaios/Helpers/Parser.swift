@@ -29,10 +29,10 @@ struct CreateTransaction {
             if let satoshi = addressee.satoshi {
                 addressee.satoshi = abs(satoshi)
             }
+            if sendAll ?? false {
+                addressee.isGreedy = sendAll
+            }
             tx.addressees = [addressee]
-        }
-        if let sendAll = sendAll {
-            tx.sendAll = sendAll
         }
         if let privateKey = privateKey {
             tx.privateKey = privateKey

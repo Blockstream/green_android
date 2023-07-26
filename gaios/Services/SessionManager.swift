@@ -364,7 +364,14 @@ class SessionManager {
     func changeSettings(settings: Settings) async throws -> Settings? {
         return try await wrapperAsync(fun: self.session?.changeSettings, params: settings)
     }
-    
+
+    func getUnspentOutputsForPrivateKey(_ params: UnspentOutputsForPrivateKeyParams) async throws -> [String: Any]? {
+        let utxos = try self.session?.getUnspentOutputsForPrivateKey(details: params.toDict()!)
+        let res = try await resolve(utxos)
+        let result = res?["result"] as? [String: Any]
+        return result?["unspent_outputs"] as? [String: Any]
+    }
+
     func getUnspentOutputs(subaccount: UInt32, numConfs: Int) async throws -> [String: Any] {
         let utxos = try self.session?.getUnspentOutputs(details: ["subaccount": subaccount, "num_confs": numConfs])
         let res = try await resolve(utxos)

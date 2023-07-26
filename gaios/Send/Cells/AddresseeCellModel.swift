@@ -6,14 +6,14 @@ struct AddresseeCellModel {
 
     var tx: Transaction
     var index: Int
-    var isSendAll: Bool { tx.sendAll }
+    var isSendAll: Bool { addreessee.isGreedy ?? false }
     var addreessee: Addressee { tx.addressees[index] }
     var assetId: String { addreessee.assetId ?? tx.subaccountItem?.gdkNetwork.getFeeAsset() ?? AssetInfo.btcId }
     var showFiat: Bool { [AssetInfo.btcId, AssetInfo.lbtcId, AssetInfo.ltestId].contains(assetId) }
 
     var satoshi: Int64 {
         var value = addreessee.satoshi
-        if tx.sendAll {
+        if isSendAll{
             value = tx.amounts.filter({$0.key == assetId}).first?.value ?? 0
         }
         return value ?? 0
