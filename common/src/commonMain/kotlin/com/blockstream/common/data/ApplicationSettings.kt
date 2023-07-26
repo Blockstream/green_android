@@ -3,7 +3,7 @@ package com.blockstream.common.data
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.putString
+import com.blockstream.common.putStringOrRemove
 import com.russhwolf.settings.Settings
 
 
@@ -132,7 +132,7 @@ data class ApplicationSettings constructor(
                 it.putBoolean(ENHANCED_PRIVACY, appSettings.enhancedPrivacy)
                 it.putInt(SCREEN_LOCK_IN_SECONDS, appSettings.screenLockInSeconds)
                 it.putBoolean(TESTNET, appSettings.testnet)
-                it.putString(PROXY_URL, appSettings.proxyUrl)
+                it.putStringOrRemove(PROXY_URL, appSettings.proxyUrl)
                 it.putBoolean(TOR, appSettings.tor)
                 it.putBoolean(ELECTRUM_NODE, appSettings.electrumNode)
                 it.putBoolean(SPV, appSettings.spv)
@@ -141,15 +141,15 @@ data class ApplicationSettings constructor(
                 it.putBoolean(EXPERIMENTAL_FEATURES, appSettings.experimentalFeatures)
                 it.putBoolean(HIDE_AMOUNTS, appSettings.hideAmounts)
 
-                it.putString(PERSONAL_BITCOIN_ELECTRUM_SERVER, appSettings.personalBitcoinElectrumServer)
-                it.putString(PERSONAL_LIQUID_ELECTRUM_SERVER, appSettings.personalLiquidElectrumServer)
-                it.putString(PERSONAL_TESTNET_ELECTRUM_SERVER, appSettings.personalTestnetElectrumServer)
-                it.putString(PERSONAL_TESTNET_LIQUID_ELECTRUM_SERVER, appSettings.personalTestnetLiquidElectrumServer)
+                it.putStringOrRemove(PERSONAL_BITCOIN_ELECTRUM_SERVER, appSettings.personalBitcoinElectrumServer)
+                it.putStringOrRemove(PERSONAL_LIQUID_ELECTRUM_SERVER, appSettings.personalLiquidElectrumServer)
+                it.putStringOrRemove(PERSONAL_TESTNET_ELECTRUM_SERVER, appSettings.personalTestnetElectrumServer)
+                it.putStringOrRemove(PERSONAL_TESTNET_LIQUID_ELECTRUM_SERVER, appSettings.personalTestnetLiquidElectrumServer)
 
-                it.putString(SPV_BITCOIN_ELECTRUM_SERVER, appSettings.spvBitcoinElectrumServer)
-                it.putString(SPV_LIQUID_ELECTRUM_SERVER, appSettings.spvLiquidElectrumServer)
-                it.putString(SPV_TESTNET_ELECTRUM_SERVER, appSettings.spvTestnetElectrumServer)
-                it.putString(SPV_TESTNET_LIQUID_ELECTRUM_SERVER, appSettings.spvTestnetLiquidElectrumServer)
+                it.putStringOrRemove(SPV_BITCOIN_ELECTRUM_SERVER, appSettings.spvBitcoinElectrumServer)
+                it.putStringOrRemove(SPV_LIQUID_ELECTRUM_SERVER, appSettings.spvLiquidElectrumServer)
+                it.putStringOrRemove(SPV_TESTNET_ELECTRUM_SERVER, appSettings.spvTestnetElectrumServer)
+                it.putStringOrRemove(SPV_TESTNET_LIQUID_ELECTRUM_SERVER, appSettings.spvTestnetLiquidElectrumServer)
             }
         }
     }

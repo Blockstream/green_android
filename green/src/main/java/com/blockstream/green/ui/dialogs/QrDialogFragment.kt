@@ -44,7 +44,6 @@ class QrDialogFragment : AbstractDialogFragment<QrDialogBinding>() {
                     bundle.putParcelable(QR, bitmap)
                 }
             }, fragmentManager)
-
         }
     }
 }

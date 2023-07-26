@@ -83,6 +83,7 @@ import com.blockstream.common.managers.AssetManager
 import com.blockstream.common.managers.AssetsProvider
 import com.blockstream.common.managers.NetworkAssetManager
 import com.blockstream.common.managers.SettingsManager
+import com.blockstream.common.server
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
@@ -92,6 +93,7 @@ import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.utils.toAmountLook
 import com.blockstream.jade.HttpRequestHandler
 import com.blockstream.jade.HttpRequestProvider
+import com.blockstream.jade.HttpRequestUrlValidator
 import com.blockstream.lightning.LightningBridge
 import com.blockstream.lightning.expireIn
 import com.blockstream.lightning.fromInvoice
@@ -102,9 +104,26 @@ import com.blockstream.lightning.isExpired
 import com.blockstream.lightning.maxSendableSatoshi
 import com.blockstream.lightning.minSendableSatoshi
 import com.blockstream.lightning.sendableSatoshi
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.JsonElement
@@ -115,6 +134,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
+import kotlinx.serialization.json.putJsonObject
 import mu.KLogging
 import java.io.File
 import java.lang.Long.max
@@ -141,6 +161,8 @@ class GdkSession constructor(
 
     private val scope = createScope(Dispatchers.Default)
     private val parentJob = SupervisorJob()
+
+    var httpRequestUrlValidator: HttpRequestUrlValidator? = null
 
     val isTestnet: Boolean // = false
         get() = defaultNetwork.isTestnet
@@ -386,6 +408,8 @@ class GdkSession constructor(
     private var lightningSdkOrNull: LightningBridge? = null
     val lightningSdk
         get() = lightningSdkOrNull!!
+
+    private val _tempAllowedServers = mutableListOf<String>()
 
     init {
         _accountsAndBalanceUpdatedSharedFlow.onEach {
@@ -650,6 +674,8 @@ class GdkSession constructor(
         _accountTransactionsStateFlow = mutableMapOf()
         _accountTransactionsPagerSharedFlow = mutableMapOf()
 
+        _tempAllowedServers.clear()
+
         val gaSessionToBeDestroyed = gdkSessions.values.toList()
 
         // Create a new gaSession
@@ -716,9 +742,8 @@ class GdkSession constructor(
         }
     }
 
-    override fun getHttpRequest(): HttpRequestHandler {
-        return this
-    }
+    override val httpRequest: HttpRequestHandler
+        get() = this
 
     override fun prepareHttpRequest() {
         logger.info { "Prepare HTTP Request Provider" }
@@ -727,19 +752,6 @@ class GdkSession constructor(
         networks.bitcoinElectrum.also {
             runBlocking {
                 connect(network = it, initNetworks = listOf(it))
-            }
-        }
-    }
-    override fun httpRequest(data: JsonElement): JsonElement {
-        if(!isNetworkInitialized){
-            prepareHttpRequest()
-        }
-
-        return gdk.httpRequest(gdkSession(defaultNetwork), data).also {
-            if(data.jsonObject["urls"]?.jsonArray?.map {
-                it.jsonPrimitive.content
-            }?.find { it.contains("/set_pin") } != null){
-                countly.jadeInitialize()
             }
         }
     }
@@ -783,6 +795,52 @@ class GdkSession constructor(
 
         // Call httpRequest passing the assembled json parameters
         return httpRequest(details)
+    }
+
+    override fun httpRequest(data: JsonElement): JsonElement {
+
+
+        if(!isNetworkInitialized){
+            prepareHttpRequest()
+        }
+
+        val urls = data.jsonObject["urls"]?.jsonArray?.map {
+            it.jsonPrimitive.content
+        } ?: listOf()
+
+        httpRequestUrlValidator?.also { urlValidator ->
+            val isUrlSafe = urls.all { url ->
+                BlockstreamPinOracleUrls.any { blockstreamUrl ->
+                    url.startsWith(blockstreamUrl)
+                }
+            }
+
+            val servers = urls.map {
+                it.server()
+            }
+
+            if(!isUrlSafe && !(settingsManager.isAllowCustomPinServer(urls) || _tempAllowedServers.containsAll(servers))){
+                if (urlValidator.unsafeUrlWarning(urls)) {
+                    _tempAllowedServers.addAll(servers)
+                } else {
+                    return buildJsonObject {
+                        putJsonObject("body") {
+                            putJsonObject("error") {
+                                put("code", -237)
+                                put("message", "id_action_canceled")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        return gdk.httpRequest(gdkSession(defaultNetwork), data).also {
+            if(urls.find { it.contains("/set_pin") } != null){
+                countly.jadeInitialize()
+            }
+        }
     }
 
     fun initLightningIfNeeded() {
@@ -2432,6 +2490,13 @@ class GdkSession constructor(
 
         const val LIQUID_ASSETS_KEY = "liquid_assets"
         const val LIQUID_ASSETS_TESTNET_KEY = "liquid_assets_testnet"
+
+        val BlockstreamPinOracleUrls = listOf(
+            "https://jadepin.blockstream.com",
+            "http://mrrxtq6tjpbnbm7vh5jt6mpjctn7ggyfy5wegvbeff3x7jrznqawlmid.onion", // onion jadepin
+            "https://jadefw.blockstream.com",
+            "http://vgza7wu4h7osixmrx6e4op5r72okqpagr3w6oupgsvmim4cz3wzdgrad.onion" // onion jadefw
+        )
 
         private val AssetLoading = "" to -1L
         val AssetsLoading: Assets = mapOf(AssetLoading)

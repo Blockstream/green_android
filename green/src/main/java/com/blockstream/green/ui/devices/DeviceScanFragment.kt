@@ -29,7 +29,7 @@ class DeviceScanFragment : AbstractDeviceFragment<DeviceScanFragmentBinding>(
     menuRes = 0
 ) {
     sealed class DeviceScanFragmentEvent : AppEvent {
-        object RequestWalletIsDifferent: DeviceScanFragmentEvent()
+        data object RequestWalletIsDifferent: DeviceScanFragmentEvent()
     }
 
     private val args: DeviceScanFragmentArgs by navArgs()

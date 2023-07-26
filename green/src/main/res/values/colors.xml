@@ -67,6 +67,7 @@
     <color name="white">#ffffffff</color>
 
     <color name="red">#EA5262</color>
+    <color name="red_dark">#9A0000</color>
 
     <color name="error">#b74747</color>
     <color name="error_20">#3B080F</color>

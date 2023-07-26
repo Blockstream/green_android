@@ -120,4 +120,14 @@
 <!--        <item name="materialAlertDialogBodyTextStyle">@style/MaterialAlertDialog.Green.Body.Text</item>-->
     </style>
 
+    <style name="ThemeOverlay.Green.MaterialAlertDialog.Red" parent="ThemeOverlay.Material3.MaterialAlertDialog.Centered">
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorSecondary">@color/white</item>
+        <item name="colorSurface">@color/red_dark</item>
+        <item name="colorOnSurface">@color/white</item>
+
+        <item name="materialAlertDialogBodyTextStyle">@style/MaterialAlertDialog.Green.Body.Text</item>-->
+
+    </style>
+
 </resources>

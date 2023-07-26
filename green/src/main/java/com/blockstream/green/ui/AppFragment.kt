@@ -20,6 +20,7 @@ import androidx.navigation.fragment.findNavController
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.Wally
 import com.blockstream.common.gdk.data.Device
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.BannerView
 import com.blockstream.green.data.Countly
@@ -28,7 +29,6 @@ import com.blockstream.green.extensions.clearNavigationResult
 import com.blockstream.green.extensions.getNavigationResult
 import com.blockstream.green.extensions.isBlank
 import com.blockstream.green.managers.SessionManager
-import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.ui.bottomsheets.DeviceInteractionRequestBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.PassphraseBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.PinMatrixBottomSheetDialogFragment
@@ -61,8 +61,8 @@ abstract class AppFragment<T : ViewDataBinding>(
 ) : Fragment(), MenuProvider, ScreenView, BannerView {
 
     sealed class DeviceRequestEvent : AppEvent {
-        object RequestPinMatrix: DeviceRequestEvent()
-        object RequestPassphrase: DeviceRequestEvent()
+        data object RequestPinMatrix: DeviceRequestEvent()
+        data object RequestPassphrase: DeviceRequestEvent()
     }
 
     open val isAdjustResize = false

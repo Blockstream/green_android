@@ -3,6 +3,7 @@ package com.blockstream.common.managers
 import com.benasher44.uuid.uuid4
 import com.blockstream.common.CountlyInteface
 import com.blockstream.common.data.ApplicationSettings
+import com.blockstream.common.server
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.get
 import com.russhwolf.settings.set
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import saschpe.kase64.base64UrlEncoded
 import kotlin.random.Random
 import kotlin.random.nextLong
 
@@ -48,6 +50,19 @@ class SettingsManager constructor(
     fun rememberDeviceWallet() = settings[KEY_REMEMBER_DEVICE_WALLET, true]
     fun setRememberDeviceWallet(rememberDeviceWallet: Boolean) = settings.set(
         KEY_REMEMBER_DEVICE_WALLET, rememberDeviceWallet)
+
+    private fun keyForCustomPinServer(urls: List<String>): String {
+        return urls.joinToString("_") {
+            it.server()
+        }.base64UrlEncoded.let {
+            "${KEY_ALLOW_CUSTOM_PIN_SERVER}_$it"
+        }
+    }
+    fun isAllowCustomPinServer(url: List<String>) = settings[keyForCustomPinServer(url), false]
+
+    fun setAllowCustomPinServer(url: List<String>){
+        settings[keyForCustomPinServer(url)] = true
+    }
 
     fun isAskedAboutAnalyticsConsent() = settings[KEY_ASKED_ANALYTICS_CONSENT, 0] == 1
 
@@ -101,5 +116,6 @@ class SettingsManager constructor(
         const val KEY_COUNTLY_DEVICE_ID = "countly_device_id"
         const val KEY_COUNTLY_OFFSET = "countly_offset"
         const val KEY_REMEMBER_DEVICE_WALLET = "remember_device_wallet"
+        const val KEY_ALLOW_CUSTOM_PIN_SERVER = "allow_custom_pin_server"
     }
 }

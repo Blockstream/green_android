@@ -108,6 +108,18 @@
         <item name="android:height">60dp</item>
     </style>
 
+    <style name="Widget.Green.Button.White.Alt" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/white</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.Green.SmallComponent</item>
+        <item name="android:textColor">@color/md_theme_dark_surface</item>
+        <item name="strokeColor">@color/button_white</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="Widget.Green.Button.White.Alt.Big" parent="Widget.Green.Button.White.Alt">
+        <item name="android:height">60dp</item>
+    </style>
+
     <style name="Widget.Green.Button.Text" parent="Widget.Material3.Button.TextButton">
         <item name="shapeAppearance">@style/ShapeAppearance.Green.SmallComponent</item>
     </style>
@@ -221,10 +233,9 @@
 <!--        <item name="android:textColor">@color/color_on_surface_emphasis_high</item>-->
 <!--    </style>-->
 
-<!--    <style name="MaterialAlertDialog.Green.Body.Text" parent="MaterialAlertDialog.Material3.Body.Text">-->
-<!--        <item name="android:textColor">@color/color_on_surface_emphasis_high</item>-->
-<!--        <item name="android:textSize">14dp</item>-->
-<!--    </style>-->
+    <style name="MaterialAlertDialog.Green.Body.Text" parent="MaterialAlertDialog.Material3.Body.Text">
+        <item name="android:textColor">@color/color_on_surface_emphasis_high</item>
+    </style>
 
     <style name="RecoveryPhraseKeyboardButton" parent="Widget.Material3.Button">
         <item name="android:padding">0dp</item>

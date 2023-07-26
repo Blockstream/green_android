@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="connectionAttemptHost"
+            type="String" />
+
+        <variable
+            name="showAdvanced"
+            type="Boolean" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/red_dark"
+        android:clipToPadding="false"
+        android:orientation="vertical"
+        android:paddingStart="24dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="24dp"
+        android:paddingBottom="24dp">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/titleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/id_warning"
+            android:textAlignment="center"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:textColor="@color/color_on_surface_emphasis_high"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/buttonClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:src="@drawable/ic_close"
+            app:layout_constraintBottom_toBottomOf="@+id/titleTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/titleTextView" />
+
+        <ImageView
+            android:id="@+id/imageView7"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/titleTextView"
+            app:layout_constraintEnd_toStartOf="@+id/titleTextView"
+            app:layout_constraintTop_toTopOf="@+id/titleTextView"
+            app:srcCompat="@drawable/ic_warning_diamond" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="42dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/titleTextView">
+
+            <com.google.android.material.textview.MaterialTextView
+                isVisible="@{!showAdvanced}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/id_connection_blocked"
+                android:textAlignment="center"
+                android:textAppearance="?attr/textAppearanceTitleLarge"
+                android:textColor="@color/color_on_surface_emphasis_high" />
+
+            <com.google.android.material.textview.MaterialTextView
+                isVisible="@{showAdvanced}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{connectionAttemptHost}"
+                android:textAlignment="center"
+                android:textAppearance="?attr/textAppearanceTitleSmall"
+                android:textColor="@color/color_on_surface_emphasis_high"
+                tools:text="@string/id_connection_attempt_to_s" />
+
+            <com.google.android.material.textview.MaterialTextView
+                isVisible="@{showAdvanced}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/id_this_is_not_the_default_blind_pin_oracle"
+                android:textAlignment="center"
+                android:textAppearance="?attr/textAppearanceTitleSmall"
+                android:textColor="@color/color_on_surface_emphasis_high" />
+
+            <TextView
+                isVisible="@{!showAdvanced}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/id_jade_is_trying_to_connect_to_a_non_default"
+                android:textAlignment="center"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="@color/color_on_surface_emphasis_medium" />
+
+            <TextView
+                isVisible="@{showAdvanced}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/id_if_you_did_not_change_your_oracle_settings"
+                android:textAlignment="center"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="@color/color_on_surface_emphasis_medium" />
+
+            <Button
+                android:id="@+id/buttonContactSupport"
+                style="@style/Widget.Green.Button.White.Alt.Big"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/id_contact_support" />
+
+            <Button
+                android:id="@+id/buttonAdvanced"
+                style="@style/Widget.Green.Button.White.Big"
+                isVisible="@{!showAdvanced}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/id_advanced" />
+
+
+            <Button
+                android:id="@+id/buttonAllow"
+                style="@style/Widget.Green.Button.White.Big"
+                isVisible="@{showAdvanced}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/id_allow_non_default_connection" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/remember"
+                isVisible="@{showAdvanced}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/id_dont_ask_me_again_for_this_oracle" />
+
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

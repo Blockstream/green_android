@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.*
 import com.blockstream.common.gdk.Gdk
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.DeviceIdentifier
@@ -17,7 +18,6 @@ import com.blockstream.green.extensions.boolean
 import com.blockstream.green.extensions.logException
 import com.blockstream.green.gdk.getWallet
 import com.blockstream.green.managers.SessionManager
-import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.QATester
 import com.greenaddress.greenbits.wallets.JadeFirmwareManager

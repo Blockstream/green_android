@@ -9,10 +9,10 @@ import com.blockstream.common.gdk.data.DeviceSupportsLiquid
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.DeviceBrand
 import com.blockstream.common.gdk.device.GdkHardwareWallet
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.R
 import com.blockstream.green.data.Countly
 import com.blockstream.green.extensions.logException
-import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.blockstream.jade.HttpRequestProvider
 import com.blockstream.jade.JadeAPI
@@ -37,7 +37,6 @@ import com.satoshilabs.trezor.Trezor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -500,7 +499,7 @@ class DeviceConnectionManager constructor(
     }
 
     fun onDestroy() {
-        scope.cancel()
+//        scope.cancel()
     }
 
     companion object : KLogging() {

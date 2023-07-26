@@ -1,7 +1,7 @@
-package com.blockstream.jade;
+package com.blockstream.jade
 
 // Provides an HttpRequestHandler every time is required
 // A provider pattern is usefull when support for multi-session are enabled.
-public interface HttpRequestProvider{
-    HttpRequestHandler getHttpRequest();
+interface HttpRequestProvider {
+    val httpRequest: HttpRequestHandler
 }

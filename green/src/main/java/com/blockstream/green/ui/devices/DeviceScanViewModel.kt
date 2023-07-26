@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import androidx.lifecycle.*
 import com.blockstream.common.gdk.Gdk
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
@@ -13,7 +14,6 @@ import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceConnectionManager
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.managers.SessionManager
-import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.QATester
 import dagger.assisted.Assisted
@@ -55,7 +55,7 @@ class DeviceScanViewModel @AssistedInject constructor(
         gdk = gdk,
         settingsManager = settingsManager,
         httpRequestProvider = sessionManager.httpRequestProvider,
-        interaction = this,
+        interaction = this, // this leaks, we need a fix
         qaTester = qaTester
     )
     val session get() = sessionManager.getWalletSession(wallet)

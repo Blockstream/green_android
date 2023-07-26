@@ -20,7 +20,6 @@ import com.blockstream.green.extensions.logException
 import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.QATester
-import com.blockstream.jade.HttpRequestProvider
 import com.blockstream.lightning.LightningManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -49,7 +48,7 @@ class SessionManager constructor(
     private val wally: Wally,
     qaTester: QATester,
 ) {
-    val httpRequestProvider : HttpRequestProvider by lazy {
+    val httpRequestProvider : GdkSession by lazy {
         createSession()
     }
 

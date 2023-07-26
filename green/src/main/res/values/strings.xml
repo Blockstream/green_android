@@ -1378,4 +1378,12 @@
   <string name="id_youve_entered_an_invalid_pin">You\'ve entered an invalid PIN too many times.</string>
   <string name="id_message_from_recipient_s">Message from recipient: %s</string>
   <string name="id_enter_your_code">Enter your code</string>
+  <string name="id_jade_is_trying_to_connect_to_a_non_default">Jade is trying to connect to a non-default blind PIN oracle. Contact support immediately for further information.</string>
+  <string name="id_if_you_did_not_change_your_oracle_settings">If you did not change your oracle settings on Jade, do not proceed and contact Blockstream support.</string>
+  <string name="id_connection_blocked">Connection Blocked</string>
+  <string name="id_this_is_not_the_default_blind_pin_oracle">This is not the default blind PIN oracle</string>
+  <string name="id_contact_support">Contact Support</string>
+  <string name="id_allow_non_default_connection">Allow Non-Default Connection</string>
+  <string name="id_connection_attempt_to_s">Connection attempt to: %s</string>
+  <string name="id_dont_ask_me_again_for_this_oracle">Don\'t ask me again for this oracle</string>
 </resources>

@@ -3,8 +3,8 @@ package com.blockstream.green.ui.devices
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.HwWalletLogin
 import com.blockstream.JadeHWWallet
-import com.blockstream.common.gdk.device.DeviceBrand
 import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.device.DeviceBrand
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.NavigateEvent
@@ -172,7 +172,7 @@ abstract class AbstractDeviceViewModel constructor(
 
     override fun onCleared() {
         super.onCleared()
-        deviceConnectionManagerOrNull?.onDestroy()
+        // deviceConnectionManagerOrNull?.onDestroy()
 
         if(!proceedToLogin) {
 

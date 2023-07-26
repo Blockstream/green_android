@@ -22,17 +22,37 @@ import androidx.core.text.color
 import androidx.core.text.toSpanned
 import androidx.core.text.underline
 import androidx.fragment.app.Fragment
+import com.blockstream.common.Urls
+import com.blockstream.common.data.ApplicationSettings
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
-import com.blockstream.common.data.ApplicationSettings
 import com.blockstream.green.ui.AppFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.google.zxing.qrcode.encoder.Encoder
-import java.security.SecureRandom
-import kotlin.random.Random
+import com.mohamedrejeb.ksoup.entities.KsoupEntities
+import java.net.URI
 
-val SecureRandom by lazy { Random(SecureRandom().nextInt()) }
+fun Fragment.openNewTicket(
+    settingsManager: SettingsManager,
+    subject: String? = null,
+    isGreen: Boolean = false,
+    isJade: Boolean = false,
+) {
+    val product = if (isGreen) "green" else if (isJade) "blockstream_jade" else ""
+    val hw = if (isJade) "jade" else ""
+
+    openBrowser(
+        settingsManager.getApplicationSettings(),
+        String.format(
+            Urls.JADE_NON_DEFAULT_PIN_SERVER,
+            "android",
+            subject?.let { KsoupEntities.encodeHtml(it) } ?: "",
+            product,
+            hw,
+            BuildConfig.VERSION_NAME))
+}
 
 fun AppFragment<*>.openBrowser(url: String) {
     openBrowser(settingsManager.getApplicationSettings(), url)

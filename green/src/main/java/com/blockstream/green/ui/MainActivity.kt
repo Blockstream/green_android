@@ -32,6 +32,7 @@ import com.blockstream.green.ApplicationScope
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
+import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.ScreenView
 import com.blockstream.green.database.CredentialType
@@ -45,6 +46,7 @@ import com.blockstream.green.extensions.navigate
 import com.blockstream.green.managers.NotificationManager
 import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.services.TaskService
+import com.blockstream.green.ui.dialogs.UrlWarningDialogFragment
 import com.blockstream.green.ui.settings.AppSettingsFragment
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
@@ -72,6 +74,10 @@ import kotlin.time.toDuration
 @AndroidEntryPoint
 class MainActivity : AppActivity() {
 
+    sealed class HttpUrlWarningEvent : AppEvent {
+        data class UrlWarning(val urls: List<String>): HttpUrlWarningEvent()
+    }
+
     @Inject
     lateinit var sessionManager: SessionManager
 
@@ -96,7 +102,7 @@ class MainActivity : AppActivity() {
     private var unlockPrompt: BiometricPrompt? = null
 
     private lateinit var binding: MainActivityBinding
-    private val activityViewModel: MainActivityViewModel by viewModels()
+    val activityViewModel: MainActivityViewModel by viewModels()
 
     private lateinit var appBarConfiguration: AppBarConfiguration
 
@@ -128,6 +134,14 @@ class MainActivity : AppActivity() {
         requestNotificationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()){
             // don't do anything
             notificationManager.notificationPermissionGiven()
+        }
+
+        activityViewModel.onEvent.observe(this) { onEvent ->
+            onEvent.getContentIfNotHandledForType<HttpUrlWarningEvent>()?.let {
+                if(it is HttpUrlWarningEvent.UrlWarning){
+                    UrlWarningDialogFragment.show(it.urls, supportFragmentManager)
+                }
+            }
         }
 
         if(isDevelopmentFlavor) {
