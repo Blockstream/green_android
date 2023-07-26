@@ -3,6 +3,7 @@ import UIKit
 enum MoreOptPrefs: Int, CaseIterable {
     case requestAmount = 0
     case sweep = 1
+    case addressAuth = 2
 
     var name: String {
         switch self {
@@ -10,6 +11,8 @@ enum MoreOptPrefs: Int, CaseIterable {
             return "id_request_amount".localized
         case .sweep:
             return "id_sweep_from_paper_wallet".localized
+        case .addressAuth:
+            return "Authenticate Address"
         }
     }
 
@@ -19,19 +22,19 @@ enum MoreOptPrefs: Int, CaseIterable {
             return UIImage(named: "ic_dialog_arrow_down_square")!.maskWithColor(color: .white)
         case .sweep:
             return UIImage(named: "ic_dialog_sweep_wallet")!.maskWithColor(color: .white)
+        case .addressAuth:
+            return UIImage(named: "ic_address_auth")!.maskWithColor(color: .white)
         }
     }
 
-    static func getItems(hideSweep: Bool) -> [DialogListCellModel] {
-        var items: [DialogListCellModel] = []
+    static func getPrefs(hideSweep: Bool) -> [MoreOptPrefs] {
+        let prefs: [MoreOptPrefs] = hideSweep ? [ .requestAmount, .addressAuth ] : [ .requestAmount, .sweep, .addressAuth ]
+        return prefs
+    }
 
-        MoreOptPrefs.allCases.forEach {
-            if $0 == .sweep && hideSweep { } else {
-                items.append(DialogListCellModel(type: .list,
-                                                 icon: $0.icon,
-                                                 title: $0.name))
-            }
-        }
-        return items
+    static func getItems(hideSweep: Bool) -> [DialogListCellModel] {
+        return MoreOptPrefs.getPrefs(hideSweep: hideSweep).map { DialogListCellModel(type: .list,
+                                                                icon: $0.icon,
+                                                                title: $0.name) }
     }
 }

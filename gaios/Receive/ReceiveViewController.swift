@@ -281,6 +281,15 @@ class ReceiveViewController: KeyboardViewController {
         }
     }
 
+    func optAddressAuth() {
+        let storyboard = UIStoryboard(name: "AddressAuth", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AddressAuthViewController") as? AddressAuthViewController {
+            // add required model info
+            vc.viewModel = AddressAuthViewModel()
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
     func onChangeReceiver() async {
         AnalyticsManager.shared.changeAsset(account: AccountsRepository.shared.current)
         let previousViewController = navigationController?.viewControllers.last { $0 != navigationController?.topViewController }
@@ -473,14 +482,17 @@ extension ReceiveViewController: DialogListViewControllerDelegate {
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch type {
         case .moreOptPrefs:
+            let hideSweep = viewModel.account.gdkNetwork.liquid || viewModel.account.gdkNetwork.electrum
 
-            switch MoreOptPrefs(rawValue: index) {
-            case .requestAmount:
-                optRequestAmount()
-            case .sweep:
-                optSweep()
-            default:
-                break
+            if let item = MoreOptPrefs.getPrefs(hideSweep: hideSweep)[safe: index] {
+                switch item {
+                case .requestAmount:
+                    optRequestAmount()
+                case .sweep:
+                    optSweep()
+                case .addressAuth:
+                    optAddressAuth()
+                }
             }
         case .sharePrefs:
 
