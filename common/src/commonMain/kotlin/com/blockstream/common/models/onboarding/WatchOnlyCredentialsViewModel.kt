@@ -160,7 +160,7 @@ class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs): WatchOnlyCredentialsV
         watchOnlyDescriptor.value = watchOnlyDescriptor.value.trimMargin()
             .let { it + (if (it.isNotBlank()) ",\n" else "") + value.joinToString(",\n") }
 
-        if (watchOnlyDescriptor.value.startsWith("sh(")) {
+        if (watchOnlyDescriptor.value.contains("(")) {
             isOutputDescriptors.value = true
         }
     }

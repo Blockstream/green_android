@@ -14,6 +14,7 @@ import com.blockstream.common.gdk.data.TwoFactorConfig
 import com.blockstream.common.gdk.data.TwoFactorMethodConfig
 import com.blockstream.common.gdk.params.AssetsParams
 import com.blockstream.common.gdk.params.BalanceParams
+import com.blockstream.common.gdk.params.BcurDecodeParams
 import com.blockstream.common.gdk.params.ConnectionParams
 import com.blockstream.common.gdk.params.Convert
 import com.blockstream.common.gdk.params.CredentialsParams
@@ -43,6 +44,7 @@ import gdk.GA_auth_handler_call
 import gdk.GA_auth_handler_get_status
 import gdk.GA_auth_handler_request_code
 import gdk.GA_auth_handler_resolve_code
+import gdk.GA_bcur_decode
 import gdk.GA_blind_transaction
 import gdk.GA_broadcast_transaction
 import gdk.GA_change_settings
@@ -721,6 +723,19 @@ class IOSGdkBinding constructor(config: InitConfig) : GdkBinding {
                 GA_twofactor_change_limits(
                     session = session.asGASession(),
                     limit_details = limits.toGaJson(this),
+                    call = gaAuthHandler.ptr
+                ).okOrThrow(gaAuthHandler)
+            }
+        }
+    }
+
+    @Throws(Exception::class)
+    override fun bcurDecode(session: GASession, params: BcurDecodeParams): GAAuthHandler {
+        return memScoped {
+            gaAuthHandler().let { gaAuthHandler ->
+                GA_bcur_decode(
+                    session = session.asGASession(),
+                    details = params.toGaJson(this),
                     call = gaAuthHandler.ptr
                 ).okOrThrow(gaAuthHandler)
             }

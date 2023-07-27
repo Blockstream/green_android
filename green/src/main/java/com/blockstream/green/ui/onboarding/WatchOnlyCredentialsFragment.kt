@@ -8,12 +8,13 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
+import com.blockstream.common.data.ScanResult
+import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.onboarding.WatchOnlyCredentialsViewModel
-import com.blockstream.common.events.Events
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.databinding.WatchOnlyCredentialsFragmentBinding
@@ -79,10 +80,10 @@ class WatchOnlyCredentialsFragment : AppFragment<WatchOnlyCredentialsFragmentBin
 
         binding.vm = viewModel
 
-        getNavigationResult<String>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(viewLifecycleOwner) { result ->
+        getNavigationResult<ScanResult>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(viewLifecycleOwner) { result ->
             result?.let {
                 clearNavigationResult(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)
-                viewModel.postEvent(WatchOnlyCredentialsViewModel.LocalEvents.AppendWatchOnlyDescriptor(it))
+                viewModel.postEvent(WatchOnlyCredentialsViewModel.LocalEvents.AppendWatchOnlyDescriptor(it.result))
             }
         }
 
@@ -91,7 +92,7 @@ class WatchOnlyCredentialsFragment : AppFragment<WatchOnlyCredentialsFragmentBin
         }
 
         binding.buttonScan.setOnClickListener {
-            CameraBottomSheetDialogFragment.showSingle(screenName = screenName, fragmentManager = childFragmentManager)
+            CameraBottomSheetDialogFragment.showSingle(screenName = screenName, decodeContinuous = true, fragmentManager = childFragmentManager)
         }
 
         binding.buttonLogin.setOnClickListener {

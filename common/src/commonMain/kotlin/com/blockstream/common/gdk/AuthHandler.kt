@@ -21,6 +21,10 @@ interface HardwareWalletResolver {
     fun requestDataFromDevice(network: Network, requiredData: DeviceRequiredData): CompletableDeferred<String>
 }
 
+interface BcurResolver {
+    fun requestData(): CompletableDeferred<String>
+}
+
 class AuthHandler constructor(
     private var gaAuthHandler: GAAuthHandler,
     private val network: Network,
@@ -45,7 +49,8 @@ class AuthHandler constructor(
 
     fun resolve(
         twoFactorResolver: TwoFactorResolver? = null,
-        hardwareWalletResolver: HardwareWalletResolver? = null
+        hardwareWalletResolver: HardwareWalletResolver? = null,
+        bcurResolver: BcurResolver? = null
     ): AuthHandler {
         try {
             while (!isCompleted) {
@@ -76,6 +81,11 @@ class AuthHandler constructor(
                     }
                     RESOLVE_CODE -> {
                         if (authHandlerStatus.requiredData == null) {
+                            bcurResolver?.also {
+                                resolveCode(runBlocking {
+                                    it.requestData().await()
+                                })
+                            } ?:
                             twoFactorResolver?.also {
                                 try {
                                     resolveCode(runBlocking {
@@ -84,7 +94,8 @@ class AuthHandler constructor(
                                 } catch (e: Exception) {
                                     throw Exception("id_action_canceled")
                                 }
-                            } ?: run {
+                            } ?:
+                            run {
                                 throw RuntimeException("TwoFactorCodeResolver was not provided")
                             }
                         } else {
@@ -132,10 +143,11 @@ class AuthHandler constructor(
 
     inline fun <reified T> result(
         twoFactorResolver: TwoFactorResolver? = null,
-        hardwareWalletResolver: HardwareWalletResolver? = null
+        hardwareWalletResolver: HardwareWalletResolver? = null,
+        bcurResolver: BcurResolver? = null
     ): T {
         if (!isCompleted) {
-            resolve(twoFactorResolver, hardwareWalletResolverOrDefault(hardwareWalletResolver))
+            resolve(twoFactorResolver, hardwareWalletResolverOrDefault(hardwareWalletResolver), bcurResolver)
         }
 
         return result?.let { result ->

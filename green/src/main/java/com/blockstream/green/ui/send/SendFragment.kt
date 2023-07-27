@@ -12,6 +12,7 @@ import androidx.navigation.fragment.navArgs
 import com.blockstream.common.AddressInputType
 import com.blockstream.common.Urls
 import com.blockstream.common.data.DenominatedValue
+import com.blockstream.common.data.ScanResult
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.FeeBlockTarget
 import com.blockstream.common.sideeffects.SideEffect
@@ -125,12 +126,12 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
         // Clear previous references as we need to re-create everything
         bindings.clear()
 
-        getNavigationResult<String>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(
+        getNavigationResult<ScanResult>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(
             viewLifecycleOwner
         ) {
             it?.let { result ->
                 clearNavigationResult(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)
-                viewModel.setAddress(viewModel.activeRecipient, result, AddressInputType.SCAN)
+                viewModel.setAddress(viewModel.activeRecipient, result.result, AddressInputType.SCAN)
             }
         }
 

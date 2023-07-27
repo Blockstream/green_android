@@ -16,6 +16,11 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.blockstream.common.data.ScanResult
+import com.blockstream.common.extensions.logException
+import com.blockstream.common.gdk.BcurResolver
+import com.blockstream.common.gdk.params.BcurDecodeParams
+import com.blockstream.common.managers.SessionManager
 import com.blockstream.green.R
 import com.blockstream.green.databinding.CameraBottomSheetBinding
 import com.blockstream.green.extensions.errorDialog
@@ -33,59 +38,80 @@ import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.CaptureManager
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import com.journeyapps.barcodescanner.MixedDecoder
-import com.sparrowwallet.hummingbird.ResultType
-import com.sparrowwallet.hummingbird.URDecoder
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mu.KLogging
+import org.koin.android.ext.android.inject
 
 
-class CameraBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<CameraBottomSheetBinding>(){
+class CameraBottomSheetDialogFragment : AbstractBottomSheetDialogFragment<CameraBottomSheetBinding>() {
+
+    val sessionManager: SessionManager by inject()
+
+    val session by lazy {
+        sessionManager.getOnBoardingSession()
+    }
 
     override val screenName = "Scan"
 
-    override fun inflate(layoutInflater: LayoutInflater) = CameraBottomSheetBinding.inflate(layoutInflater)
+    override fun inflate(layoutInflater: LayoutInflater) =
+        CameraBottomSheetBinding.inflate(layoutInflater)
 
     private lateinit var capture: CaptureManager
     private var isTorchOn: Boolean = false
     override val expanded: Boolean
         get() = true
 
-    private val isDecodeContinuous by lazy { arguments?.getBoolean(DECODE_CONTINUOUS, false) == true }
-
-    private val urDecoder by lazy { URDecoder() }
+    private val isDecodeContinuous by lazy {
+        arguments?.getBoolean(DECODE_CONTINUOUS, false) == true
+    }
 
     private var openGallery = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        uri?.also {
-            handleImage(it)
+            uri?.also {
+                handleImage(it)
+            }
         }
-    }
+
+    var bcurPartEmitter: CompletableDeferred<String>? = null
 
     private val callback: BarcodeCallback = object : BarcodeCallback {
         override fun barcodeResult(result: BarcodeResult) {
 
-            if(isDecodeContinuous){
-                if(urDecoder.result == null){
-                    urDecoder.receivePart(result.text)
+            if (isDecodeContinuous && result.text.startsWith(prefix = "ur:", ignoreCase = true)) {
 
-                    if(isDevelopmentOrDebug) {
-                        logger.info { result.text }
-                        logger.info { "Progress: ${(100 * urDecoder.estimatedPercentComplete).toInt()}" }
-                    }
+                if (bcurPartEmitter == null) {
+                    lifecycleScope.launch(context = logException(countly)) {
+                        try {
+                            val bcurDecodedData = withContext(context = Dispatchers.IO) {
+                                session.bcurDecode(
+                                    BcurDecodeParams(part = result.text),
+                                    object : BcurResolver {
+                                        override fun requestData(): CompletableDeferred<String> {
+                                            return CompletableDeferred<String>().also {
+                                                bcurPartEmitter = it
+                                            }
+                                        }
+                                    })
+                            }
 
-                    binding.progress = (100 * urDecoder.estimatedPercentComplete).toInt()
-
-                    // Result complete
-                    if(urDecoder.result != null){
-                        val urResult = urDecoder.result
-                        if (urResult.type == ResultType.SUCCESS) {
-                            setResultAndDismiss(urResult.ur.toString())
+                            setResultAndDismiss(
+                                ScanResult.from(bcurDecodedData)
+                            )
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            bcurPartEmitter = null
+                            errorDialog(e)
                         }
                     }
+                } else {
+                    if (bcurPartEmitter?.isCompleted == false) {
+                        bcurPartEmitter?.complete(result.text)
+                    }
                 }
-            }else{
-                setResultAndDismiss(result.text)
+            } else {
+                setResultAndDismiss(ScanResult(result.text))
             }
         }
 
@@ -134,9 +160,9 @@ class CameraBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<CameraB
             isContinuousFocusEnabled = true
         }
 
-        if(isDecodeContinuous){
+        if (isDecodeContinuous) {
             binding.decoratedBarcode.decodeContinuous(callback)
-        }else{
+        } else {
             binding.decoratedBarcode.decodeSingle(callback)
         }
 
@@ -214,16 +240,21 @@ class CameraBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<CameraB
         }
     }
 
-    private fun setResultAndDismiss(result: String){
-        if(isDevelopmentOrDebug){
+    private fun setResultAndDismiss(result: ScanResult) {
+        if (isDevelopmentOrDebug) {
             logger.info { "QR (DevelopmentOrDebug): $result" }
         }
 
-        val session = (requireParentFragment() as? AbstractWalletFragment<*>)?.getWalletViewModel()?.session
+        val session =
+            (requireParentFragment() as? AbstractWalletFragment<*>)?.getWalletViewModel()?.session
         val setupArgs = (requireParentFragment() as? AbstractOnboardingFragment<*>)?.setupArgs
         countly.qrScan(session = session, setupArgs = setupArgs, arguments?.getString(SCREEN_NAME))
 
-        setNavigationResult(result = result, key = CAMERA_SCAN_RESULT, destinationId = findNavController().currentDestination?.id)
+        setNavigationResult(
+            result = result,
+            key = CAMERA_SCAN_RESULT,
+            destinationId = findNavController().currentDestination?.id
+        )
         dismiss()
     }
 
@@ -238,7 +269,11 @@ class CameraBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<CameraB
         private const val DEFAULT_FRAME_CORNER_SIZE_DP = 50f
         private const val DEFAULT_FRAME_SIZE = 0.65f
 
-        fun showSingle(screenName: String?, decodeContinuous: Boolean = false, fragmentManager: FragmentManager){
+        fun showSingle(
+            screenName: String?,
+            decodeContinuous: Boolean = false,
+            fragmentManager: FragmentManager
+        ) {
             showSingle(CameraBottomSheetDialogFragment().also {
                 it.arguments = Bundle().apply {
                     putBoolean(DECODE_CONTINUOUS, decodeContinuous)

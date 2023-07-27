@@ -5,6 +5,7 @@ import androidx.lifecycle.lifecycleScope
 import breez_sdk.InputType
 import com.blockstream.common.AddressInputType
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.ScanResult
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.green.NavGraphDirections
@@ -27,12 +28,12 @@ interface OverviewInterface {
     val appFragment: AppFragment<*>
 
     fun overviewSetup(){
-        appFragment.getNavigationResult<String>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(
+        appFragment.getNavigationResult<ScanResult>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(
             appFragment.viewLifecycleOwner
         ) {
             it?.let { result ->
                 appFragment.clearNavigationResult(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)
-                handleUserInput(result, true)
+                handleUserInput(result.result, true)
             }
         }
     }

@@ -6,7 +6,9 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
 import androidx.activity.OnBackPressedCallback
+import com.blockstream.common.data.ScanResult
 import com.blockstream.common.data.ScreenLockSetting
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.settings.AppSettingsViewModel
 import com.blockstream.common.models.settings.AppSettingsViewModelAbstract.Companion.DEFAULT_BITCOIN_ELECTRUM_URL
 import com.blockstream.common.models.settings.AppSettingsViewModelAbstract.Companion.DEFAULT_LIQUID_ELECTRUM_URL
@@ -16,7 +18,6 @@ import com.blockstream.common.models.settings.AppSettingsViewModelAbstract.Compa
 import com.blockstream.common.models.settings.AppSettingsViewModelAbstract.Companion.DEFAULT_MULTI_SPV_TESTNET_URL
 import com.blockstream.common.models.settings.AppSettingsViewModelAbstract.Companion.DEFAULT_TESTNET_ELECTRUM_URL
 import com.blockstream.common.models.settings.AppSettingsViewModelAbstract.Companion.DEFAULT_TESTNET_LIQUID_ELECTRUM_URL
-import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.green.R
 import com.blockstream.green.databinding.AppSettingsFragmentBinding
@@ -67,11 +68,11 @@ class AppSettingsFragment : AppFragment<AppSettingsFragmentBinding>(R.layout.app
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        getNavigationResult<String>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(
+        getNavigationResult<ScanResult>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(
             viewLifecycleOwner
         ) { result ->
             result?.also { scannedCode ->
-                viewModel.postEvent(AppSettingsViewModel.LocalEvents.InvitationCode(scannedCode))
+                viewModel.postEvent(AppSettingsViewModel.LocalEvents.InvitationCode(scannedCode.result))
             }
         }
 

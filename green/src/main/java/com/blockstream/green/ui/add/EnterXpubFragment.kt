@@ -3,6 +3,7 @@ package com.blockstream.green.ui.add
 import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.navArgs
+import com.blockstream.common.data.ScanResult
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.green.R
 import com.blockstream.green.databinding.EnterXpubFragmentBinding
@@ -46,10 +47,10 @@ class EnterXpubFragment : AbstractWalletFragment<EnterXpubFragmentBinding>(
         binding.vm = viewModel
         binding.textInputLayout.endIconCustomMode()
 
-        getNavigationResult<String>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(viewLifecycleOwner) { result ->
+        getNavigationResult<ScanResult>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(viewLifecycleOwner) { result ->
             result?.let {
                 clearNavigationResult(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)
-                viewModel.xpub.postValue(it)
+                viewModel.xpub.postValue(it.result)
             }
         }
 

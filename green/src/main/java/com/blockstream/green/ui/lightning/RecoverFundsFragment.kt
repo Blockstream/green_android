@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.data.ErrorReport
+import com.blockstream.common.data.ScanResult
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
@@ -92,12 +93,12 @@ class RecoverFundsFragment :
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         super.onViewCreatedGuarded(view, savedInstanceState)
 
-        getNavigationResult<String>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(
+        getNavigationResult<ScanResult>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(
             viewLifecycleOwner
         ) { result ->
             if (result != null) {
                 clearNavigationResult(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)
-                viewModel.address.value = result
+                viewModel.address.value = result.result
             }
         }
 

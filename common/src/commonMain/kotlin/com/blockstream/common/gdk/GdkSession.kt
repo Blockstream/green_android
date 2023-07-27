@@ -29,6 +29,7 @@ import com.blockstream.common.gdk.data.Addressee
 import com.blockstream.common.gdk.data.Asset
 import com.blockstream.common.gdk.data.Assets
 import com.blockstream.common.gdk.data.Balance
+import com.blockstream.common.gdk.data.BcurDecodedData
 import com.blockstream.common.gdk.data.Block
 import com.blockstream.common.gdk.data.CreateSwapTransaction
 import com.blockstream.common.gdk.data.CreateTransaction
@@ -59,6 +60,7 @@ import com.blockstream.common.gdk.device.GdkHardwareWallet
 import com.blockstream.common.gdk.device.HardwareWalletInteraction
 import com.blockstream.common.gdk.params.AssetsParams
 import com.blockstream.common.gdk.params.BalanceParams
+import com.blockstream.common.gdk.params.BcurDecodeParams
 import com.blockstream.common.gdk.params.CompleteSwapParams
 import com.blockstream.common.gdk.params.ConnectionParams
 import com.blockstream.common.gdk.params.Convert
@@ -2519,6 +2521,16 @@ class GdkSession constructor(
         network,
         gdk.validate(gdkSession(network), params)
     ).result<ValidateAddressees>()
+
+    fun bcurDecode(params: BcurDecodeParams, bcurResolver: BcurResolver): BcurDecodedData {
+        val network = defaultNetworkOrNull ?: networks.bitcoinElectrum
+
+        runBlocking {
+            connect(network = network, initNetworks = listOf(network))
+        }
+
+        return authHandler(network, gdk.bcurDecode(gdkSession(network), params)).result<BcurDecodedData>(bcurResolver = bcurResolver)
+    }
 
     fun parseInput(input: String): Pair<Network, InputType?>? {
         return (lightning?.let { lightning ->

@@ -10,10 +10,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.blockstream.common.gdk.getBip39WordList
-import com.blockstream.common.models.onboarding.EnterRecoveryPhraseViewModel
+import com.blockstream.common.data.ScanResult
 import com.blockstream.common.events.Events
+import com.blockstream.common.gdk.getBip39WordList
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.onboarding.EnterRecoveryPhraseViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
@@ -121,10 +122,10 @@ class EnterRecoveryPhraseFragment : AppFragment<EnterRecoveryPhraseFragmentBindi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        getNavigationResult<String>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(viewLifecycleOwner) { result ->
+        getNavigationResult<ScanResult>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(viewLifecycleOwner) { result ->
             if (result != null) {
                 clearNavigationResult(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)
-                viewModel.postEvent(EnterRecoveryPhraseViewModel.LocalEvents.SetRecoveryPhrase(result))
+                viewModel.postEvent(EnterRecoveryPhraseViewModel.LocalEvents.SetRecoveryPhrase(result.result))
             }
         }
 
