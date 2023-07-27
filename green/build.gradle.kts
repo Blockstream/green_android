@@ -41,8 +41,8 @@ android {
     defaultConfig {
         minSdk = 23
         targetSdk = 33
-        versionCode = 410
-        versionName = "4.0.10"
+        versionCode = 411
+        versionName = "4.0.11"
         setProperty("archivesBaseName", "BlockstreamGreen-v$versionName")
         proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 
@@ -271,18 +271,18 @@ fun appendGdkCommitHash(project: Project, enableGitSubmodule: Boolean): String{
     val gdkCommitFile = project.file("gdk/gdk_commit")
     var hash: String? = null
 
-    if (gdkCommit != null) {
+    if (!gdkCommit.isNullOrBlank()) {
         hash = gdkCommit
     } else if (gdkCommitFile.exists()){
         val content = gdkCommitFile.readText().trim()
-        hash = content.substring(0, Math.min(8, content.length))
+        hash = content.substring(0, 8.coerceAtMost(content.length))
     } else if (enableGitSubmodule) {
         val cmd = "git --git-dir=gdk/gdk/.git rev-parse --short HEAD"
         val proc = ProcessGroovyMethods.execute(cmd)
         hash = ProcessGroovyMethods.getText(proc).trim()
     }
 
-    return hash?.let { "-gdk:${it}" } ?: ""
+    return hash?.takeIf { it.isNotBlank() }?.let { "-gdk:${it}" } ?: ""
 }
 
 task("verifyDependencies", GradleBuild::class) {

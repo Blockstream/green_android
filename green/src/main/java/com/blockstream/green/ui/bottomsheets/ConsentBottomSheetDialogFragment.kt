@@ -6,13 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.Urls
-import com.blockstream.green.R
-import com.blockstream.green.databinding.ConsentBottomSheetBinding
-import com.blockstream.green.extensions.copyToClipboard
-import com.blockstream.green.extensions.showPopupMenu
-import com.blockstream.green.extensions.toast
 import com.blockstream.common.managers.SettingsManager
-import com.blockstream.green.utils.isDevelopmentFlavor
+import com.blockstream.green.databinding.ConsentBottomSheetBinding
 import com.blockstream.green.utils.openBrowser
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -38,7 +33,6 @@ class ConsentBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<Consen
 
         binding.detailsAreVisible = false
         binding.hideButtons = hideButtons
-        binding.isDevelopment = isDevelopmentFlavor
 
         // Make it swipe-dismissible
         isCancelable = hideButtons || settingsManager.isAskedAboutAnalyticsConsent()
@@ -66,29 +60,6 @@ class ConsentBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<Consen
                 settingsManager.getApplicationSettings().copy(analytics = true)
             )
             dismiss()
-        }
-
-        binding.buttonMenu.setOnClickListener {
-            showPopupMenu(view, R.menu.menu_consent) { item ->
-                when (item.itemId) {
-                    R.id.copy_device_id -> {
-                        countly.deviceId.let { deviceId ->
-                            copyToClipboard("DeviceID", deviceId, binding.buttonMenu)
-                            toast("DeviceID copied to Clipboard $deviceId")
-                        }
-                    }
-                    R.id.zero_offset -> {
-                        settingsManager.zeroCountlyOffset()
-                        countly.updateOffset()
-                        toast("Countly offset reset to zero")
-                    }
-                    R.id.reset_device_id -> {
-                        countly.resetDeviceId()
-                        toast("DeviceID reset. New DeviceId ${countly.deviceId}")
-                    }
-                }
-                true
-            }
         }
     }
 

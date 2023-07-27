@@ -13,10 +13,6 @@
             name="hideButtons"
             type="Boolean" />
 
-        <variable
-            name="isDevelopment"
-            type="Boolean" />
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -24,20 +20,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true">
-
-        <ImageButton
-            android:id="@+id/buttonMenu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:background="@android:color/transparent"
-            android:padding="8dp"
-            android:src="@drawable/ic_baseline_more_vert_24"
-            isVisible="@{isDevelopment}"
-            app:layout_constraintBottom_toBottomOf="@+id/title"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/title"
-            app:tint="@color/color_on_surface_emphasis_very_low" />
 
         <TextView
             android:id="@+id/title"

@@ -3,6 +3,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.11] - 2023-07-27
+
+### Changed
+- Bump GDK to version 0.0.65
+- Bump Breez to version 0.1.4
+- Set Native SegWit as default standard account
+
+### Added
+- Add lightning onchain deposits
+
+### Fixed
+- Prompt for Jade FW update
+
 ## [4.0.10] - 2023-07-05
 
 ### Fixed
