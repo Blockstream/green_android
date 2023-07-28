@@ -3,7 +3,7 @@ package com.blockstream.green.data
 interface AppEvent
 
 sealed class GdkEvent: AppEvent{
-    object Success : GdkEvent()
+    data object Success : GdkEvent()
 
     data class SuccessWithData(val data: Any? = null): GdkEvent()
 }

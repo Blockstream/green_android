@@ -40,5 +40,5 @@
     <item name="fastadapter_app_review_item_id" type="id" />
     <item name="fastadapter_wallet_balance_item_id" type="id" />
     <item name="fastadapter_account_warning_item_id" type="id" />
-    <item name="fastadapter_lightning_inbound_item_id" type="id" />
+    <item name="fastadapter_lightning_info_item_id" type="id" />
 </resources>

@@ -4,6 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="com.blockstream.common.gdk.data.Transaction" />
+
+        <variable
+            name="tx"
+            type="com.blockstream.common.gdk.data.Transaction" />
 
         <variable
             name="date"
@@ -72,7 +77,7 @@
 
                 <com.google.android.material.progressindicator.CircularProgressIndicator
                     android:id="@+id/progress"
-                    indeterminate="@{confirmations == 0 || (confirmations >= confirmationsRequired &amp;&amp; spvInProgress)}"
+                    indeterminate="@{confirmations == 0 || (confirmations >= confirmationsRequired &amp;&amp; spvInProgress) || tx.pendingCloseChannel}"
                     isInvisible="@{spvFailed}"
                     progress="@{Math.min(confirmations, confirmationsRequired)}"
                     android:layout_width="wrap_content"
@@ -89,7 +94,7 @@
 
                 <ImageView
                     android:id="@+id/tick"
-                    isVisible="@{confirmations >= confirmationsRequired &amp;&amp; spvEnabled == false}"
+                    isVisible="@{confirmations >= confirmationsRequired &amp;&amp; spvEnabled == false &amp;&amp; !tx.pendingCloseChannel}"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_progress_check"

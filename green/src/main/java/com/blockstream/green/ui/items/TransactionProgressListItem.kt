@@ -26,6 +26,7 @@ data class TransactionProgressListItem constructor(
     }
 
     override fun bindView(binding: ListItemTransactionProgressBinding, payloads: List<Any>) {
+        binding.tx = transaction
         binding.date = transaction.createdAt().formatMediumWithTime()
         binding.confirmations = confirmations
         binding.confirmationsRequired = confirmationsRequired
@@ -42,7 +43,7 @@ data class TransactionProgressListItem constructor(
                 confirmations == 0 -> {
                     R.string.id_unconfirmed
                 }
-                confirmations < confirmationsRequired -> {
+                confirmations < confirmationsRequired || transaction.isPendingCloseChannel -> {
                     R.string.id_pending_confirmation
                 }
                 spv.inProgressOrUnconfirmed() -> {

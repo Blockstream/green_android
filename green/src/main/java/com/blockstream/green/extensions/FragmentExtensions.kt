@@ -168,26 +168,19 @@ fun Fragment.errorDialog(error: String, showReport: Boolean = false, listener: (
         .show()
 }
 
-fun Fragment.dialog(title: Int, message: Int, icon: Int? = null, listener: (() -> Unit)? = null) {
-    requireContext().dialog(title, message, icon, listener)
+fun Fragment.dialog(title: Int, message: Int, icon: Int? = null, isMessageSelectable: Boolean = false, listener: (() -> Unit)? = null) {
+    requireContext().dialog(title, message, icon, isMessageSelectable, listener)
 }
 
-fun Context.dialog(title: Int, message: Int, icon: Int? = null, listener: (() -> Unit)? = null) {
-    dialog(getString(title), getString(message), icon, listener)
+fun Context.dialog(title: Int, message: Int, icon: Int? = null, isMessageSelectable: Boolean = false, listener: (() -> Unit)? = null) {
+    dialog(getString(title), getString(message), icon, isMessageSelectable, listener)
 }
 
-fun Fragment.dialog(title: String, message: String, icon: Int? = null, isMessageSelectable: Boolean = false) {
-    dialog(title, message, icon = icon, listener = null).also {
-        if(isMessageSelectable){
-            it.window?.decorView?.findViewById<TextView>(android.R.id.message)?.setTextIsSelectable(true)
-        }
-    }
-}
-fun Fragment.dialog(title: String, message: String, icon: Int? = null, listener: (() -> Unit)? = null): AlertDialog {
-    return requireContext().dialog(title, message, icon, listener)
+fun Fragment.dialog(title: String, message: String, icon: Int? = null, isMessageSelectable: Boolean = false, listener: (() -> Unit)? = null): AlertDialog {
+    return requireContext().dialog(title, message, icon, isMessageSelectable, listener)
 }
 
-fun Context.dialog(title: String, message: String, icon: Int? = null, listener: (() -> Unit)? = null): AlertDialog {
+fun Context.dialog(title: String, message: String, icon: Int? = null, isMessageSelectable: Boolean? = null, listener: (() -> Unit)? = null): AlertDialog {
     return MaterialAlertDialogBuilder(this)
         .setTitle(title)
         .setMessage(message)
@@ -200,7 +193,11 @@ fun Context.dialog(title: String, message: String, icon: Int? = null, listener: 
                 this.setIcon(it)
             }
         }
-        .show()
+        .show().also {
+            if(isMessageSelectable == true){
+                it.window?.decorView?.findViewById<TextView>(android.R.id.message)?.setTextIsSelectable(true)
+            }
+        }
 }
 
 fun Fragment.toast(resId: Int, duration: Int = Toast.LENGTH_SHORT) {

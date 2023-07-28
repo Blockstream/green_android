@@ -3,19 +3,19 @@ package com.blockstream.green.ui.bottomsheets
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.Button
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.blockstream.green.R
 import com.blockstream.green.databinding.LightningNodeBottomSheetBinding
 import com.blockstream.green.databinding.ListItemActionBinding
-import com.blockstream.green.gdk.policyAsset
-import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.items.ActionListItem
 import com.blockstream.green.ui.items.OverlineTextListItem
-import com.blockstream.green.ui.overview.AccountOverviewFragmentDirections
+import com.blockstream.green.ui.overview.AccountOverviewFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.isDevelopmentFlavor
+import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.blockstream.green.utils.toAmountLookOrNa
 import com.blockstream.lightning.channelsBalanceSatoshi
 import com.blockstream.lightning.inboundLiquiditySatoshi
@@ -94,8 +94,15 @@ class LightningNodeBottomSheetFragment :
                 ))
             )
 
+            if(isDevelopmentOrDebug){
+                list += OverlineTextListItem(
+                    StringHolder("Connected Peers"),
+                    StringHolder(it.connectedPeers.joinToString(", "))
+                )
+            }
+
             if(isDevelopmentFlavor) {
-                if (session.accountAssets(account).policyAsset() > 0) {
+                if(it.channelsBalanceSatoshi() > 0){
                     list += ActionListItem(
                         button = StringHolder(R.string.id_close_channel),
                     )
@@ -109,16 +116,9 @@ class LightningNodeBottomSheetFragment :
 
         val fastAdapter = FastAdapter.with(itemAdapter)
 
-        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.button }) { _, _, _, _ ->
-            (parentFragment as? AppFragment<*>)?.navigate(
-                AccountOverviewFragmentDirections.actionAccountOverviewFragmentToRecoverFundsFragment(
-                    wallet = wallet,
-                    address = null,
-                    amount = session.accountAssets(account).policyAsset()
-                )
-            )
-
-            dismiss()
+        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.button }) { view, _, _, _ ->
+            (parentFragment as? AccountOverviewFragment)?.viewModel?.closeChannel()
+            (view as? Button)?.isEnabled = false
         }
 
         binding.recycler.apply {

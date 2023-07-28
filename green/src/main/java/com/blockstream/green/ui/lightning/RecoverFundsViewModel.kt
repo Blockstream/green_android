@@ -127,8 +127,6 @@ class RecoverFundsViewModel @AssistedInject constructor(
                     satPerVbyte = getFee()?.toUInt()
                 )
             } else {
-                // Close channel
-                session.lightningSdk.closeLspChannels()
                 // Sweep
                 session.lightningSdk.sweep(
                     toAddress = address.string(),

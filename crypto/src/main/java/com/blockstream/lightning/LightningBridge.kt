@@ -367,6 +367,7 @@ class LightningBridge constructor(
 
     fun closeLspChannels(){
         breezSdkOrNull?.closeLspChannels()
+        updateNodeInfo()
     }
 
     fun stop() {

@@ -32,7 +32,7 @@ data class Transaction(
     @SerialName("message") val message: String? = null,
     @SerialName("plaintext") val plaintext: Pair<String,String>? = null,
     @SerialName("url") val url: Pair<String,String>? = null,
-    @SerialName("isCloseChannel") val isCloseChannel: Boolean = false,
+    @SerialName("isPendingCloseChannel") val isPendingCloseChannel: Boolean = false,
     @SerialName("isLightningSwap") val isLightningSwap: Boolean = false,
     @SerialName("isInProgressSwap") val isInProgressSwap: Boolean = false,
     @SerialName("isRefundableSwap") val isRefundableSwap: Boolean = false

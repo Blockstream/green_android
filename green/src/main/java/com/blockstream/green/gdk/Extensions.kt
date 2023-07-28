@@ -61,7 +61,7 @@ fun AccountType?.titleRes(): Int = when (this) {
     AccountType.BIP49_SEGWIT_WRAPPED -> R.string.id_legacy_segwit
     AccountType.BIP84_SEGWIT -> R.string.id_standard
     AccountType.BIP86_TAPROOT -> R.string.id_taproot
-    AccountType.LIGHTNING -> R.string.id_instant
+    AccountType.LIGHTNING -> R.string.id_lightning
     else -> R.string.id_unknown
 }
 fun AccountType?.title(): String = when (this) {
@@ -72,7 +72,7 @@ fun AccountType?.title(): String = when (this) {
     AccountType.BIP49_SEGWIT_WRAPPED -> "Legacy SegWit"
     AccountType.BIP84_SEGWIT -> "Standard"
     AccountType.BIP86_TAPROOT -> "Taproot"
-    AccountType.LIGHTNING -> "Instant"
+    AccountType.LIGHTNING -> "Lightning"
     else -> "Unknown"
 }
 
@@ -84,9 +84,10 @@ fun AccountType?.policyRes(): Int = when (this) {
     AccountType.BIP49_SEGWIT_WRAPPED -> R.string.id_legacy_segwit
     AccountType.BIP84_SEGWIT -> R.string.id_native_segwit
     AccountType.BIP86_TAPROOT -> R.string.id_taproot
-    AccountType.LIGHTNING -> R.string.id_instant
+    AccountType.LIGHTNING -> R.string.id_fastest
     else -> R.string.id_unknown
 }
+
 
 fun AccountType.withPolicy(context: Context): String = policyRes().let {
     when{
@@ -94,7 +95,14 @@ fun AccountType.withPolicy(context: Context): String = policyRes().let {
         this.isLightning() -> "${context.getString(R.string.id_lightning)}"
         else -> "${context.getString(R.string.id_singlesig)} / ${context.getString(it)}"
     }
+}
 
+fun AccountType.policyType(context: Context): String = context.getString(policyRes())
+
+fun AccountType.securityType(context: Context): String = when {
+    this.isMutlisig() -> "${context.getString(R.string.id_multisig)}"
+    this.isLightning() -> "${context.getString(R.string.id_lightning)}"
+    else -> "${context.getString(R.string.id_singlesig)}"
 }
 
 fun Account.typeWithPolicyAndNumber(context: Context): String = type.withPolicy(context).let { type ->
@@ -310,4 +318,4 @@ fun String.isNotAuthorized() =
 
 fun String.isConnectionError() = this.contains("failed to connect")
 
-fun List<String>.startsWith(other: String?) = startsWith(other)
+fun List<String>?.startsWith(other: String?) = this?.startsWith(other) ?: false

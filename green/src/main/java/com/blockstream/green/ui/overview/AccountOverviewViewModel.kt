@@ -119,6 +119,14 @@ class AccountOverviewViewModel @AssistedInject constructor(
         }
     }
 
+    fun closeChannel(){
+        doUserAction({
+            session.lightningSdk.closeLspChannels()
+        }, onSuccess = {
+            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(AccountOverviewFragment.LIGHTNING_CLOSE_CHANNEL)))
+        })
+    }
+
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
         fun create(

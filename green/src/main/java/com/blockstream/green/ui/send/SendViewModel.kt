@@ -77,7 +77,7 @@ class SendViewModel @AssistedInject constructor(
     private var checkedTransaction: CreateTransaction? = null
     val transactionError: MutableLiveData<String?> = MutableLiveData("") // empty string as an initial error to disable next button
 
-    val handledGdkErrors: List<String> = listOfNotNull(
+    val handledGdkErrors: List<String> = listOf(
         "id_invalid_private_key",
         "id_invalid_address",
         "id_invalid_amount",

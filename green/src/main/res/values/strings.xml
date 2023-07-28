@@ -1374,4 +1374,6 @@
   <string name="id_report">Report</string>
   <string name="id_check_your_device">Check your device</string>
   <string name="id_scan_from_image">Scan from Image</string>
+  <string name="id_you_can_sweep_s_of_your_funds">You can sweep %s of your funds to your onchain account.</string>
+  <string name="id_fastest">Fastest</string>
 </resources>

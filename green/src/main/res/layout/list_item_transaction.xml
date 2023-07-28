@@ -63,8 +63,8 @@
 
             <com.google.android.material.progressindicator.LinearProgressIndicator
                 android:id="@+id/progress"
-                indeterminate="@{confirmations == 0}"
-                isVisible="@{confirmations &lt; confirmationsRequired}"
+                indeterminate="@{confirmations == 0 || tx.pendingCloseChannel}"
+                isVisible="@{confirmations &lt; confirmationsRequired || tx.pendingCloseChannel}"
                 progress="@{Math.min(confirmations, confirmationsRequired)}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

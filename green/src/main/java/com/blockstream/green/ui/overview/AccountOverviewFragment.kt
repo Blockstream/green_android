@@ -21,7 +21,8 @@ import com.blockstream.green.R
 import com.blockstream.green.data.GdkEvent
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.AccountOverviewFragmentBinding
-import com.blockstream.green.databinding.ListItemLightningInboundBinding
+import com.blockstream.green.databinding.ListItemLightningInfoBinding
+import com.blockstream.green.extensions.dialog
 import com.blockstream.green.extensions.setNavigationResult
 import com.blockstream.green.extensions.showPopupMenu
 import com.blockstream.green.extensions.snackbar
@@ -41,6 +42,7 @@ import com.blockstream.green.views.AccordionListener
 import com.blockstream.green.views.EndlessRecyclerOnScrollListener
 import com.blockstream.green.views.NpaLinearLayoutManager
 import com.blockstream.lightning.isLoading
+import com.blockstream.lightning.onchainBalanceSatoshi
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericFastAdapter
@@ -116,13 +118,20 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
 
         viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
             consumableEvent?.getContentIfNotHandledForType<NavigateEvent.NavigateWithData>()?.let {
-                if(it.data is String && it.data == WalletOverviewFragment.ACCOUNT_ARCHIVED) {
-                    setNavigationResult(
-                        result = true,
-                        key = WalletOverviewFragment.ACCOUNT_ARCHIVED,
-                        destinationId = R.id.walletOverviewFragment
-                    )
-                    findNavController().popBackStack(R.id.walletOverviewFragment, false)
+                if(it.data is String){
+                    if (it.data == WalletOverviewFragment.ACCOUNT_ARCHIVED) {
+                        setNavigationResult(
+                            result = true,
+                            key = WalletOverviewFragment.ACCOUNT_ARCHIVED,
+                            destinationId = R.id.walletOverviewFragment
+                        )
+                        findNavController().popBackStack(R.id.walletOverviewFragment, false)
+                    } else if (it.data == LIGHTNING_CLOSE_CHANNEL) {
+                        dialog(
+                            getString(R.string.id_close_channel),
+                            "We are closing your channel. You can recover your funds in a bit."
+                        )
+                    }
                 }
             }
             consumableEvent?.getContentIfNotHandledForType<NavigateEvent.NavigateBack>()?.let {
@@ -384,7 +393,7 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
             session.lightningNodeInfoStateFlow.filter { !it.isLoading() }.onEach {
                 lightningInboundAdapter.set(
                     listOf(
-                        LightningInboundListItem(session = session, nodeState = it)
+                        LightningInfoListItem(session = session, nodeState = it)
                     )
                 )
             }.launchIn(lifecycleScope)
@@ -534,11 +543,21 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
             fastAdapter.notifyAdapterDataSetChanged()
         }.launchIn(lifecycleScope)
 
-        fastAdapter.addClickListener<ListItemLightningInboundBinding, GenericItem>({ binding -> binding.buttonIncreaseInbound }) { _, _, _, _ ->
+        fastAdapter.addClickListener<ListItemLightningInfoBinding, GenericItem>({ binding -> binding.buttonIncreaseInbound }) { _, _, _, _ ->
             ComingSoonBottomSheetDialogFragment.show(childFragmentManager)
         }
 
-        fastAdapter.addClickListener<ListItemLightningInboundBinding, GenericItem>({ binding -> binding.buttonLearnMore }) { _, _, _, _ ->
+        fastAdapter.addClickListener<ListItemLightningInfoBinding, GenericItem>({ binding -> binding.buttonSweep }) { _, _, _, _ ->
+            navigate(
+                AccountOverviewFragmentDirections.actionAccountOverviewFragmentToRecoverFundsFragment(
+                    wallet = wallet,
+                    address = null,
+                    amount = session.lightningSdk.nodeInfoStateFlow.value.onchainBalanceSatoshi()
+                )
+            )
+        }
+
+        fastAdapter.addClickListener<ListItemLightningInfoBinding, GenericItem>({ binding -> binding.buttonLearnMore }) { _, _, _, _ ->
             openBrowser(Urls.HELP_RECEIVE_CAPACITY)
         }
 
@@ -606,5 +625,9 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
 
     override fun openProposal(link: String) {
         //
+    }
+
+    companion object {
+        const val LIGHTNING_CLOSE_CHANNEL = "LIGHTNING_CLOSE_CHANNEL"
     }
 }

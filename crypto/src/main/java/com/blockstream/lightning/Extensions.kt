@@ -103,6 +103,7 @@ fun List<List<String>>?.lnUrlPayImage(): Bitmap? {
 
 fun NodeState.isLoading() = this.id.isBlank()
 fun NodeState.channelsBalanceSatoshi() = this.channelsBalanceMsat.toLong() / 1000
+fun NodeState.onchainBalanceSatoshi() = this.onchainBalanceMsat.toLong() / 1000
 fun NodeState.maxReceivableSatoshi() = this.maxReceivableMsat.toLong() / 1000
 fun NodeState.inboundLiquiditySatoshi() = this.inboundLiquidityMsats.toLong() / 1000
 fun NodeState.maxSinglePaymentAmountSatoshi() = this.maxSinglePaymentAmountMsat.toLong() / 1000
@@ -151,7 +152,7 @@ fun Output.Companion.fromLnUrlPay(requestData: LnUrlPayRequestData, input: Strin
 
 fun Transaction.Companion.fromPayment(payment: Payment): Transaction {
     return Transaction(
-        blockHeight = if(payment.pending && payment.paymentType != PaymentType.CLOSED_CHANNEL) 0 else payment.paymentTime,
+        blockHeight = payment.paymentTime,
         canCPFP = false,
         canRBF = false,
         createdAtTs = payment.paymentTime * 1_000_000,
@@ -168,7 +169,7 @@ fun Transaction.Companion.fromPayment(payment: Payment): Transaction {
         message = ((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Message)?.data?.message,
         plaintext = ((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Aes)?.data?.let { it.description to it.plaintext },
         url = ((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Url)?.data?.let { it.description to it.url},
-        isCloseChannel = payment.paymentType == PaymentType.CLOSED_CHANNEL
+        isPendingCloseChannel = payment.paymentType == PaymentType.CLOSED_CHANNEL && payment.pending
     )
 }
 
