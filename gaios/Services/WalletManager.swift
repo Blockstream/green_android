@@ -162,7 +162,7 @@ class WalletManager {
         AccountsRepository.shared.current = self.account
         try await btcSession.updateSubaccount(subaccount: 0, hidden: true)
         _ = try await self.subaccounts()
-        Task { try? await self.loadRegistry() }
+        try? await self.loadRegistry()
     }
     
     func loginWatchonly(credentials: Credentials) async throws {
@@ -171,7 +171,7 @@ class WalletManager {
         self.account.xpubHashId = loginData.xpubHashId
         AccountsRepository.shared.current = self.account
         _ = try await self.subaccounts()
-        Task { try? await self.loadRegistry() }
+        try? await self.loadRegistry()
 }
 
     func login(credentials: Credentials? = nil, device: HWDevice? = nil, masterXpub: String? = nil) async throws {
@@ -263,7 +263,7 @@ class WalletManager {
         }
         _ = try await self.subaccounts()
         print("--- subaccounts end")
-        Task { try? await self.loadRegistry() }
+        try? await self.loadRegistry()
         AccountsRepository.shared.current = self.account
     }
 
@@ -284,14 +284,12 @@ class WalletManager {
     func loadRegistry() async throws {
         let liquidNetworks: [NetworkSecurityCase] = testnet ? [.testnetLiquidSS, .testnetLiquidMS ] : [.liquidSS, .liquidMS ]
         let liquidSessions = sessions.filter { liquidNetworks.map { $0.rawValue }.contains($0.key) }
-        if let session = liquidSessions.filter({ $0.value.logged }).first?.value {
-            try await registry.load(session: session)
-        } else if let session = liquidSessions.filter({ $0.value.connected }).first?.value {
-            try await registry.load(session: session)
-        } else {
-            let liquidNetworks: [NetworkSecurityCase] = testnet ? [.testnetLiquidSS, .testnetLiquidMS ] : [.liquidSS, .liquidMS ]
-            let session = SessionManager(liquidNetworks.first!.gdkNetwork)
-            try await registry.load(session: session)
+        var session = liquidSessions.filter({ $0.value.logged }).first?.value
+        session = session ?? liquidSessions.filter({ $0.value.connected }).first?.value
+        session = session ?? SessionManager(liquidNetworks.first!.gdkNetwork)
+        if let session = session {
+            try await registry.cache(session: session)
+            Task { try await registry.refresh(session: session) }
         }
     }
 
