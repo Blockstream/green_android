@@ -11,6 +11,8 @@ class SendConfirmViewModel {
     var session: SessionManager { account.session! }
     var remoteAlert: RemoteAlert?
     var isLightning: Bool { account.gdkNetwork.lightning }
+    var isHW: Bool { wm?.account.isHW ?? false }
+    var isLedger: Bool { wm?.account.isLedger ?? false }
 
     init(account: WalletItem, tx: Transaction) {
         self.account = account

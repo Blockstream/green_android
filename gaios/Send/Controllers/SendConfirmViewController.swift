@@ -23,6 +23,9 @@ class SendConfirmViewController: KeyboardViewController {
 
     private var connected = true
     private var updateToken: NSObjectProtocol?
+    private var dialogSendHWSummaryViewController: DialogSendHWSummaryViewController?
+    private var ltConfirmingViewController: LTConfirmingViewController?
+
     var inputType: TxType = .transaction // for analytics
     var addressInputType: AnalyticsManager.AddressInputType = .paste // for analytics
 
@@ -74,8 +77,16 @@ class SendConfirmViewController: KeyboardViewController {
         }
     }
 
-    func dismissHWSummary() {
-        presentedViewController?.dismiss(animated: false, completion: nil)
+    func presentHWSummary() {
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogSendHWSummaryViewController") as? DialogSendHWSummaryViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.transaction = viewModel.tx
+            vc.isLedger = viewModel.isLedger
+            vc.account = viewModel.account
+            present(vc, animated: false, completion: nil)
+            dialogSendHWSummaryViewController = vc
+        }
     }
 
     func presentLightning() {
@@ -83,27 +94,36 @@ class SendConfirmViewController: KeyboardViewController {
         if let vc = ltFlow.instantiateViewController(withIdentifier: "LTConfirmingViewController") as? LTConfirmingViewController {
             vc.modalPresentationStyle = .overFullScreen
             self.present(vc, animated: false, completion: nil)
+            ltConfirmingViewController = vc
+        }
+    }
+
+    @MainActor
+    func presentProgress() {
+        if viewModel.isHW {
+            presentHWSummary()
+        } else if viewModel.isLightning {
+            presentLightning()
+        } else {
+            startAnimating()
+        }
+    }
+
+    @MainActor
+    func dismissProgress() {
+        if viewModel.isHW {
+            dialogSendHWSummaryViewController?.dismiss()
+        } else if viewModel.isLightning {
+            ltConfirmingViewController?.dismiss()
+        } else {
+            stopAnimating()
         }
     }
 
     func send() {
-        let account = WalletManager.current?.account
         AnalyticsManager.shared.startSendTransaction()
         sliderView.isUserInteractionEnabled = false
-        if account?.isHW ?? false {
-            let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "DialogSendHWSummaryViewController") as? DialogSendHWSummaryViewController {
-                vc.modalPresentationStyle = .overFullScreen
-                vc.transaction = viewModel.tx
-                vc.isLedger = account?.isLedger ?? false
-                vc.account = viewModel.account
-                present(vc, animated: false, completion: nil)
-            }
-        } else if viewModel.isLightning {
-            self.presentLightning()
-        } else {
-            viewModel.isLightning ? self.presentLightning() :  self.startAnimating()
-        }
+        presentProgress()
         Task {
             do {
                 try await self.viewModel.send()
@@ -116,11 +136,7 @@ class SendConfirmViewController: KeyboardViewController {
 
     @MainActor
     func failure(_ error: Error) {
-        let account = WalletManager.current?.account
-        if account?.isHW ?? false {
-            self.dismissHWSummary()
-        }
-        self.viewModel.isLightning ? self.dismiss(animated: true) : self.stopAnimating()
+        dismissProgress()
         self.sliderView.isUserInteractionEnabled = true
         self.sliderView.reset()
         let prettyError: String = {
@@ -147,7 +163,11 @@ class SendConfirmViewController: KeyboardViewController {
                 return error.localizedDescription
             }
         }()
-        self.showBreezError(prettyError.localized)
+        if self.viewModel.isLightning {
+            self.showBreezError(prettyError.localized)
+        } else {
+            self.showError(prettyError.localized)
+        }
         let isSendAll = self.viewModel.tx.addressees.first?.isGreedy ?? false
         let withMemo = !self.viewModel.tx.memo.isEmpty
         let transSgmt = AnalyticsManager.TransactionSegmentation(transactionType: self.inputType,
@@ -175,27 +195,19 @@ class SendConfirmViewController: KeyboardViewController {
         let isSendAll = viewModel.tx.addressees.first?.isGreedy ?? false
         let withMemo = !viewModel.tx.memo.isEmpty
         let transSgmt = AnalyticsManager.TransactionSegmentation(transactionType: inputType,
-                                                     addressInputType: addressInputType,
-                                                     sendAll: isSendAll)
+                                                                 addressInputType: addressInputType,
+                                                                 sendAll: isSendAll)
         AnalyticsManager.shared.endSendTransaction(account: AccountsRepository.shared.current,
-                               walletItem: viewModel.account,
-                               transactionSgmt: transSgmt, withMemo: withMemo)
-        if viewModel.wm?.account.isHW ?? false {
-            self.dismissHWSummary()
-        } else if viewModel.isLightning {
-            self.dismiss(animated: true)
-        } else {
-            self.startAnimating(message: NSLocalizedString("id_transaction_sent", comment: ""))
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) { [weak self] in
-                self?.stopAnimating()
-                self?.navigationController?.popToRootViewController(animated: true)
-                StoreReviewHelper
-                    .shared
-                    .request(isSendAll: isSendAll,
-                             account: AccountsRepository.shared.current,
-                             walletItem: self?.viewModel.account)
-            }
-        }
+                                                   walletItem: viewModel.account,
+                                                   transactionSgmt: transSgmt, withMemo: withMemo)
+        StoreReviewHelper
+            .shared
+            .request(isSendAll: isSendAll,
+                     account: AccountsRepository.shared.current,
+                     walletItem: viewModel.account)
+        dismissProgress()
+        DropAlert().success(message: "id_transaction_sent".localized)
+        navigationController?.popToRootViewController(animated: true)
     }
 
     func updateConnection(_ notification: Notification) {
