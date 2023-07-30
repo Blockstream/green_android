@@ -13,7 +13,7 @@ struct PolicyCellModel {
 
     static func from(policy: PolicyCellType) -> PolicyCellModel {
         switch policy {
-        case .Standard:
+        case .LegacySegwit:
             return PolicyCellModel(hint: "Simple, portable, standard account, secured by your key, the recovery phrase.", policy: policy)
         case .Lightning:
             return PolicyCellModel(hint: "Fast transactions on the Lightning Network, powered by Greenlight.", policy: policy)

@@ -35,13 +35,13 @@ public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable {
             case .legacy:
                 return "Legacy"
             case .segwitWrapped:
-                return "Standard"
+                return "Legacy SegWit"
             case .segWit:
-                return "SegWit"
+                return "Standard"
             case .taproot:
                 return "Taproot"
             case .lightning:
-                return "Instant"
+                return "Lightning"
             }
         }
     }

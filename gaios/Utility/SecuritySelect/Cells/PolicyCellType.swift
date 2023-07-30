@@ -2,27 +2,26 @@ import Foundation
 import gdk
 
 enum PolicyCellType: String, CaseIterable {
-    case Standard
+    case NativeSegwit
+    case LegacySegwit
     case Lightning
     case TwoFAProtected
     case TwoOfThreeWith2FA
-    case NativeSegwit
     //case Taproot
     case Amp
 
     var accountType: AccountType {
         switch self {
-        case .Standard:
-             // singlesig legacy segwit
-            return .segwitWrapped
+        case .NativeSegwit:
+            return .segWit
         case .Lightning:
             return .lightning
         case .TwoFAProtected:
             return .standard
         case .TwoOfThreeWith2FA:
             return .twoOfThree
-        case .NativeSegwit:
-            return .segWit
+        case .LegacySegwit:
+            return .segwitWrapped
         case .Amp:
             return .amp
         }
@@ -30,16 +29,16 @@ enum PolicyCellType: String, CaseIterable {
 
     func getNetwork(testnet: Bool, liquid: Bool) -> NetworkSecurityCase? {
         let btc: [PolicyCellType: NetworkSecurityCase] =
-        [.Standard: .bitcoinSS, .Lightning: .lightning, .TwoFAProtected: .bitcoinMS,
+        [.LegacySegwit: .bitcoinSS, .Lightning: .lightning, .TwoFAProtected: .bitcoinMS,
          .TwoOfThreeWith2FA: .bitcoinMS, .NativeSegwit: .bitcoinSS, .Amp: .bitcoinMS]
         let test: [PolicyCellType: NetworkSecurityCase] =
-        [.Standard: .testnetSS, .Lightning: .testnetLightning, .TwoFAProtected: .testnetMS,
+        [.LegacySegwit: .testnetSS, .Lightning: .testnetLightning, .TwoFAProtected: .testnetMS,
          .TwoOfThreeWith2FA: .testnetMS, .NativeSegwit: .testnetSS, .Amp: .testnetMS]
         let lbtc: [PolicyCellType: NetworkSecurityCase] =
-        [.Standard: .liquidSS, .TwoFAProtected: .liquidMS,
+        [.LegacySegwit: .liquidSS, .TwoFAProtected: .liquidMS,
          .TwoOfThreeWith2FA: .liquidMS, .NativeSegwit: .liquidSS, .Amp: .liquidMS]
         let ltest: [PolicyCellType: NetworkSecurityCase] =
-        [.Standard: .testnetLiquidSS, .TwoFAProtected: .testnetLiquidMS,
+        [.LegacySegwit: .testnetLiquidSS, .TwoFAProtected: .testnetLiquidMS,
          .TwoOfThreeWith2FA: .testnetLiquidMS, .NativeSegwit: .testnetLiquidSS, .Amp: .testnetLiquidMS]
         if liquid && testnet { return ltest[self] }
         if liquid && !testnet { return lbtc[self] }

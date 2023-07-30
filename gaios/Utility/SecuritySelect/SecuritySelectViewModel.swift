@@ -25,6 +25,25 @@ class SecuritySelectViewModel {
 
     var showAll = false
 
+    func listBitcoin(extended: Bool) -> [PolicyCellType] {
+        var list: [PolicyCellType] = [.NativeSegwit, .LegacySegwit, .Lightning, .TwoFAProtected, .TwoOfThreeWith2FA]
+        if !extended {
+            list = [.NativeSegwit, .Lightning, .TwoFAProtected]
+        }
+        if !AppSettings.shared.experimental {
+            list.removeAll(where: { $0 == .Lightning })
+        }
+        return list
+    }
+
+    func listLiquid(extended: Bool) -> [PolicyCellType] {
+        var list:  [PolicyCellType] = [.NativeSegwit, .LegacySegwit, .TwoFAProtected, .Amp]
+        if !extended {
+            list = [.NativeSegwit, .TwoFAProtected]
+        }
+        return list
+    }
+    
     func isAdvancedEnable() -> Bool {
         let asset = WalletManager.current?.registry.info(for: asset)
         if asset?.amp ?? false {
@@ -45,20 +64,9 @@ class SecuritySelectViewModel {
         if asset?.amp ?? false { // amp liquid asset
             return [.Amp]
         } else if AssetInfo.btcId == assetId { // btc
-            var list: [PolicyCellType] = [.Standard, .NativeSegwit, .Lightning, .TwoFAProtected, .TwoOfThreeWith2FA]
-            if !extended {
-                list = [.Standard, .Lightning, .TwoFAProtected]
-            }
-            if !AppSettings.shared.experimental {
-                list.removeAll(where: { $0 == .Lightning })
-            }
-            return list
+            return listBitcoin(extended: extended)
         } else { // liquid
-            var list: [PolicyCellType] = [.Standard, .NativeSegwit, .TwoFAProtected, .Amp]
-            if !extended {
-                list = [.Standard, .TwoFAProtected]
-            }
-            return list
+            return listLiquid(extended: extended)
         }
     }
 
