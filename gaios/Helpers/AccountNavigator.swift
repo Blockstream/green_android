@@ -17,7 +17,7 @@ class AccountNavigator {
 
         // switch on selected active session
         if WalletsRepository.shared.get(for: account.id)?.activeSessions.isEmpty == false {
-            return goLogged(account: account, nv: nv)
+            return goLogged(nv: nv)
         } else if account.isHW {
             vcConnect?.account = account
             vcConnect?.bleViewModel = BleViewModel.shared
@@ -33,8 +33,7 @@ class AccountNavigator {
         return nv
     }
 
-    static func goLogged(account: Account, nv: UINavigationController?) -> UINavigationController {
-        AccountsRepository.shared.current = account
+    static func goLogged(nv: UINavigationController?) -> UINavigationController {
         nv?.popToRootViewController(animated: false)
         nv?.dismiss(animated: false, completion: nil)
         let nv = nv ?? UINavigationController()

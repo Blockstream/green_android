@@ -254,6 +254,10 @@ class LoginViewController: UIViewController {
                 let pinData = try self.account.auth(usingAuth)
                 let pin = withPIN ?? pinData.plaintextBiometric ?? ""
                 _ = try await wm.loginWithPin(pin: pin, pinData: pinData, bip39passphrase: bip39passphrase)
+                if withPIN != nil {
+                    currentAccount.attempts = 0
+                }
+                AccountsRepository.shared.current = currentAccount
                 success(withPIN: withPIN != nil, account: currentAccount)
             } catch {
                 failure(error: error, enableFailingCounter: true)
@@ -264,13 +268,10 @@ class LoginViewController: UIViewController {
     @MainActor
     func success(withPIN: Bool, account: Account) {
         self.startLoader(message: NSLocalizedString("id_loading_wallet", comment: ""))
-        if withPIN {
-            self.account.attempts = 0
-        }
         AnalyticsManager.shared.loginWalletEnd(account: account,
                                                loginType: withPIN ? .pin : .biometrics)
         AnalyticsManager.shared.activeWalletStart()
-        _ = AccountNavigator.goLogged(account: account, nv: self.navigationController)
+        _ = AccountNavigator.goLogged(nv: self.navigationController)
         self.stopLoader()
     }
     

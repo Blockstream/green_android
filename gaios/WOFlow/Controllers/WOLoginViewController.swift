@@ -165,7 +165,7 @@ class WOLoginViewController: KeyboardViewController {
     @MainActor
     func success() {
         stopLoader()
-        AccountNavigator.goLogged(account: self.account, nv: self.navigationController)
+        AccountNavigator.goLogged(nv: self.navigationController)
     }
     
     @MainActor

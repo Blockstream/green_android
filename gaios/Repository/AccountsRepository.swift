@@ -63,9 +63,9 @@ class AccountsRepository {
         accounts.filter({ $0.id == id }).first
     }
 
-    func find(xpubHashId: String) -> Account? {
-        ephAccounts.filter({ $0.xpubHashId == xpubHashId }).first ??
-        accounts.filter({ $0.xpubHashId == xpubHashId }).first
+    func find(xpubHashId: String) -> [Account]? {
+        ephAccounts.filter({ $0.xpubHashId == xpubHashId }) +
+        accounts.filter({ $0.xpubHashId == xpubHashId })
     }
 
     func upsert(_ account: Account) {

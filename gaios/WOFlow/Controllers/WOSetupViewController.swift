@@ -179,7 +179,7 @@ class WOSetupViewController: KeyboardViewController {
     @MainActor
     func success(account: Account) {
         stopLoader()
-        AccountNavigator.goLogged(account: account, nv: self.navigationController)
+        AccountNavigator.goLogged(nv: self.navigationController)
     }
     
     @MainActor

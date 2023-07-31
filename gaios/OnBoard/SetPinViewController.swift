@@ -207,6 +207,9 @@ class SetPinViewController: UIViewController {
             self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""), isRive: true)
             do {
                 try await self.viewModel.setup(pin: pin)
+                await MainActor.run {
+                    navigationController?.popToRootViewController(animated: true)
+                }
             } catch {
                 self.failure(error)
             }
@@ -216,22 +219,20 @@ class SetPinViewController: UIViewController {
             self.startLoader(message: NSLocalizedString("id_restoring_your_wallet", comment: ""), isRive: true)
             do {
                 try await self.viewModel.restore(pin: pin)
+                AccountNavigator.goLogged(nv: self.navigationController)
             } catch {
                 self.failure(error)
             }
             self.stopLoader()
-            AccountNavigator.goLogged(account: AccountsRepository.shared.current!,
-                                      nv: self.navigationController)
         case .create:
             self.startLoader(message: NSLocalizedString("id_finishing_up", comment: ""), isRive: true)
             do {
                 try await self.viewModel.create(pin: pin)
+                AccountNavigator.goLogged(nv: self.navigationController)
             } catch {
                 self.failure(error)
             }
             self.stopLoader()
-            AccountNavigator.goLogged(account: AccountsRepository.shared.current!,
-                                      nv: self.navigationController)
         }
     }
 

@@ -23,28 +23,44 @@ class SetPinViewModel {
     func restore(pin: String) async throws {
         let name = AccountsRepository.shared.getUniqueAccountName(testnet: testnet)
         let mainNetwork: NetworkSecurityCase = testnet ? .testnetSS : .bitcoinSS
-        let account = restoredAccount ?? Account(name: name, network: mainNetwork)
-        let wm = WalletsRepository.shared.getOrAdd(for: account)
-        try await wm.prominentSession?.connect()
-        let xpub = try await self.getXpubHashId(session: wm.prominentSession!)
-        // Avoid to restore an different wallet if restoredAccount is defined
-        if let restoredAccount = self.restoredAccount,
-           let xpubHashId = restoredAccount.xpubHashId, xpubHashId != xpub {
-            throw LoginError.walletMismatch()
-        }
-        // Avoid to restore an existing wallets
-        if let prevAccount = AccountsRepository.shared.find(xpubHashId: xpub ?? ""), self.restoredAccount == nil &&
-            prevAccount.gdkNetwork.mainnet == account.gdkNetwork.mainnet && !prevAccount.isHW && !prevAccount.isWatchonly {
-            throw LoginError.walletsJustRestored()
-        }
+        let defaultAccount = restoredAccount ?? Account(name: name, network: mainNetwork)
+        let wm = WalletsRepository.shared.getOrAdd(for: defaultAccount)
+        try await checkWalletMismatch(wm: wm)
+        try await checkWalletsJustRestored(wm: wm)
         try await wm.login(credentials: self.credentials)
         if let network = wm.activeNetworks.first(where: { $0.multisig }) {
             wm.account.networkType = network
             wm.prominentNetwork = network
         }
         wm.account.attempts = 0
-        AnalyticsManager.shared.restoreWallet(account: account)
+        try await checkWalletMismatch(wm: wm)
+        try await checkWalletsJustRestored(wm: wm)
+        AccountsRepository.shared.current = wm.account
+        AnalyticsManager.shared.restoreWallet(account: wm.account)
         try await wm.account.addPin(session: wm.prominentSession!, pin: pin, mnemonic: self.credentials.mnemonic!)
+    }
+    
+    func checkWalletMismatch(wm: WalletManager) async throws {
+        // Avoid to restore an different wallet if restoredAccount is defined
+        if let restoredAccount = restoredAccount {
+            let xpub = try await getXpubHashId(session: wm.prominentSession!)
+            if let xpubHashId = restoredAccount.xpubHashId, xpubHashId != xpub {
+                throw LoginError.walletMismatch()
+            }
+        }
+    }
+    
+    func checkWalletsJustRestored(wm: WalletManager) async throws {
+        // Avoid to restore an existing wallets
+        if restoredAccount == nil {
+            let xpub = try await getXpubHashId(session: wm.prominentSession!)
+            let prevAccounts = AccountsRepository.shared.find(xpubHashId: xpub ?? "")?
+                .filter { $0.networkType == wm.account.networkType &&
+                !$0.isHW && !$0.isWatchonly } ?? []
+            if !prevAccounts.isEmpty {
+                throw LoginError.walletsJustRestored()
+            }
+        }
     }
 
     func create(pin: String) async throws {

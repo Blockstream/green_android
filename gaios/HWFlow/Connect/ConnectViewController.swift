@@ -121,7 +121,7 @@ class ConnectViewController: HWFlowBaseViewController {
         account.uuid = item.identifier
         AccountsRepository.shared.upsert(account)
         AnalyticsManager.shared.hwwConnected(account: account)
-        _ = AccountNavigator.goLogged(account: account, nv: navigationController)
+        _ = AccountNavigator.goLogged(nv: navigationController)
     }
 
     @MainActor
