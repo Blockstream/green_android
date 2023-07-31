@@ -134,6 +134,52 @@ public struct ValidateAddresseesParams: Codable {
     }
 }
 
+public struct SignMessageParams: Codable {
+    enum CodingKeys: String, CodingKey {
+        case address
+        case message
+    }
+    public let address: String
+    public let message: String
+    public init(address: String, message: String) {
+        self.address = address
+        self.message = message
+    }
+}
+
+public struct SignMessageResult: Codable {
+    enum CodingKeys: String, CodingKey {
+        case signature
+    }
+    public let signature: String
+    public init(signature: String) {
+        self.signature = signature
+    }
+}
+
+public struct GetPreviousAddressesParams: Codable {
+    enum CodingKeys: String, CodingKey {
+        case subaccount
+        case lastPointer = "last_pointer"
+    }
+    public let subaccount: Int
+    public let lastPointer: Int?
+    public init(subaccount: Int, lastPointer: Int?) {
+        self.subaccount = subaccount
+        self.lastPointer = lastPointer
+    }
+}
+
+public struct GetPreviousAddressesResult: Codable {
+    enum CodingKeys: String, CodingKey {
+        case list
+    }
+    public let list: [Address]
+    public init(list: [Address]) {
+        self.list = list
+    }
+}
+
 public struct ValidateAddresseesResult: Codable {
     enum CodingKeys: String, CodingKey {
         case isValid = "is_valid"

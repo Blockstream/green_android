@@ -14,7 +14,7 @@ class AddressAuthViewController: KeyboardViewController {
     @IBOutlet weak var searchField: UITextField!
     @IBOutlet weak var tableView: UITableView!
     
-    var viewModel: AddressAuthViewModel?
+    var viewModel: AddressAuthViewModel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,6 +27,7 @@ class AddressAuthViewController: KeyboardViewController {
         setStyle()
         navigationItem.rightBarButtonItems = []
         loadNavigationBtns()
+        reload()
     }
     
     deinit {
@@ -46,21 +47,6 @@ class AddressAuthViewController: KeyboardViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-    }
-    
-    
-    @MainActor
-    func reloadSections(_ sections: [AddressAuthSection], animated: Bool) {
-        if animated {
-            tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
-        } else {
-            UIView.performWithoutAnimation {
-                tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
-            }
-        }
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-            self.tableView.refreshControl?.endRefreshing()
-        }
     }
     
     func setContent() {
@@ -100,22 +86,25 @@ class AddressAuthViewController: KeyboardViewController {
     
     func reload() {
         Task {
-            //            if isReloading { return }
-            //            isReloading = true
-            //            await viewModel.loadSubaccounts()
-            reloadSections([.list], animated: true)
-            //            try? await viewModel.loadBalances()
-            //            reloadSections([.account, .balance, .card], animated: true)
-            //            await viewModel.reloadAlertCards()
-            //            reloadSections([.card], animated: true)
-            //            try? await viewModel.loadTransactions(max: 10)
-            //            reloadSections([.transaction], animated: true)
-            //            isReloading = false
+            do {
+                startAnimating()
+                try await viewModel.load()
+                await MainActor.run {
+                    stopAnimating()
+                    tableView.reloadData()
+                }
+            } catch {
+                stopAnimating()
+                showError(error)
+            }
         }
     }
 
     func onCopy(_ row: Int) {
-        print( viewModel?.listCellModelsFilter[row].tx ?? "Err")
+        if let addr = viewModel?.listCellModelsFilter[safe: row]?.address {
+            UIPasteboard.general.string = addr
+            DropAlert().info(message: "id_copied_to_clipboard".localized)
+        }
     }
 
     func onSign(_ row: Int) {
@@ -123,7 +112,7 @@ class AddressAuthViewController: KeyboardViewController {
         let storyboard = UIStoryboard(name: "AddressAuth", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogSignViewController") as? DialogSignViewController {
             vc.modalPresentationStyle = .overFullScreen
-            vc.address = model.address
+            vc.viewModel = DialogSignViewModel(wallet: viewModel.wallet, address: model.address)
             present(vc, animated: false, completion: nil)
         }
     }

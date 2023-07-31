@@ -427,6 +427,14 @@ class SessionManager {
         return res?["per_exchange"] as? [String: [String]] ?? [:]
     }
 
+    func getPreviousAddresses(_ params: GetPreviousAddressesParams) async throws -> GetPreviousAddressesResult? {
+        return try await wrapperAsync(fun: self.session?.getPreviousAddresses, params: params)
+    }
+
+    func signMessage(_ params: SignMessageParams) async throws -> SignMessageResult? {
+        return try await wrapperAsync(fun: self.session?.signMessage, params: params)
+    }
+
     func validBip21Uri(uri: String) -> Bool {
         if let prefix = gdkNetwork.bip21Prefix {
             return uri.starts(with: prefix)

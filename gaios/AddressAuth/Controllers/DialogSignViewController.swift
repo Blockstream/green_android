@@ -20,7 +20,7 @@ class DialogSignViewController: KeyboardViewController {
     @IBOutlet weak var stackBottom: NSLayoutConstraint!
     @IBOutlet weak var signView: UIView!
     
-    var address: String?
+    var viewModel: DialogSignViewModel!
 
     lazy var blurredView: UIView = {
         let containerView = UIView()
@@ -42,7 +42,7 @@ class DialogSignViewController: KeyboardViewController {
         setContent()
         setStyle()
 
-        lblAddress.text = address
+        lblAddress.text = viewModel.address
         signView.isHidden = true
 
         view.addSubview(blurredView)
@@ -95,7 +95,7 @@ class DialogSignViewController: KeyboardViewController {
         btnPaste.setTitle("id_paste".localized, for: .normal)
         btnSign.setTitle("Sign message", for: .normal)
         btnCopy.setTitle("Copy Signature", for: .normal)
-        lblSign.text = "IGHavGa+f5nntlp0M186vbb7NnoYu6uw9AZmQGVNPAq4kaY="
+        lblSign.text = ""
     }
 
     func setStyle() {
@@ -144,7 +144,6 @@ class DialogSignViewController: KeyboardViewController {
     }
 
     @objc func didSwipe(gesture: UIGestureRecognizer) {
-
         if let swipeGesture = gesture as? UISwipeGestureRecognizer {
             switch swipeGesture.direction {
             case .down:
@@ -154,7 +153,6 @@ class DialogSignViewController: KeyboardViewController {
             }
         }
     }
-
 
     @IBAction func btnPaste(_ sender: Any) {
         if let txt = UIPasteboard.general.string {
@@ -167,10 +165,22 @@ class DialogSignViewController: KeyboardViewController {
     @IBAction func btnSign(_ sender: Any) {
         signView.isHidden = false
         messageTextView.endEditing(true)
+        lblSign.text = ""
+        let message = messageTextView.text
+        Task {
+            do {
+                let signature = try await viewModel.sign(message: message ?? "")
+                await MainActor.run {
+                    lblSign.text = signature
+                }
+            } catch {
+                showError(error)
+            }
+        }
     }
     
     @IBAction func btnCopy(_ sender: Any) {
-        if let sign = messageTextView.text {
+        if let sign = lblSign.text {
             UIPasteboard.general.string = sign
             DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 2.0)
         }

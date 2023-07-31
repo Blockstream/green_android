@@ -8,14 +8,16 @@ class AddressAuthViewModel {
     var listCellModelsFilter: [AddressAuthCellModel] = []
     private var listCellModels: [AddressAuthCellModel] = []
     
-    init() {
-        loadMock()
+    var wallet: WalletItem
+    
+    init(wallet: WalletItem) {
+        self.wallet = wallet
     }
 
-    func loadMock() {
-        for n in 1...10 {
-            listCellModels.append(AddressAuthCellModel(address: "3FZbgi29cpjq2GjdwV8eyHuJJnkLtktZc5", tx: n))
-        }
+    func load() async throws {
+        let params = GetPreviousAddressesParams(subaccount: Int(wallet.pointer), lastPointer: nil)
+        let res = try await wallet.session?.getPreviousAddresses(params)
+        listCellModels = res?.list.compactMap { AddressAuthCellModel(address: $0.address ?? "", tx: $0.txCount  ?? 0) } ?? []
         listCellModelsFilter = listCellModels
     }
 

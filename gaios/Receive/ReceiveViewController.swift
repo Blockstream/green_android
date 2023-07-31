@@ -285,7 +285,7 @@ class ReceiveViewController: KeyboardViewController {
         let storyboard = UIStoryboard(name: "AddressAuth", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AddressAuthViewController") as? AddressAuthViewController {
             // add required model info
-            vc.viewModel = AddressAuthViewModel()
+            vc.viewModel = AddressAuthViewModel(wallet: viewModel.account)
             navigationController?.pushViewController(vc, animated: true)
         }
     }
