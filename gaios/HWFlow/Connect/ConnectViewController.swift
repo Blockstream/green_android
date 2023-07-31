@@ -53,6 +53,8 @@ class ConnectViewController: HWFlowBaseViewController {
         retryButton.isHidden = true
         retryButton.setTitle("Retry".localized, for: .normal)
         retryButton.setStyle(.primary)
+        lblTitle.text = "id_looking_for_device".localized
+        
     }
     
     func onScannedDevice(_ item: ScanListItem) {
@@ -188,6 +190,7 @@ class ConnectViewController: HWFlowBaseViewController {
         super.viewDidAppear(animated)
         activeToken = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main, using: applicationDidBecomeActive)
         resignToken = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main, using: applicationWillResignActive)
+        startScan()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -236,7 +239,6 @@ class ConnectViewController: HWFlowBaseViewController {
     func setStyle() {
         lblTitle.font = UIFont.systemFont(ofSize: 26.0, weight: .bold)
         lblTitle.textColor = .white
-        lblTitle.text = ""
     }
 
     @MainActor

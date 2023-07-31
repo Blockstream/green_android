@@ -26,7 +26,7 @@ class ScanViewModel: ObservableObject {
     func startScan(deviceType: DeviceType) {
         self.error = nil
         self.isScanning = true
-        peripherals = ScanViewModel.cachedPeripherals
+        peripherals = ScanViewModel.cachedPeripherals.filter { $0.type == deviceType }
         Task {
             do {
                 try await self.scan(deviceType: deviceType)
