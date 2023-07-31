@@ -18,10 +18,10 @@
                     <rect key="frame" x="0.0" y="0.0" width="393" height="82"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cFv-oz-jnj">
-                            <rect key="frame" x="25.000000000000007" y="0.0" width="126.66666666666669" height="82"/>
+                            <rect key="frame" x="25.000000000000007" y="0.0" width="122.66666666666669" height="82"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_address" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9WC-gy-J9W">
-                                    <rect key="frame" x="0.0" y="0.0" width="126.66666666666667" height="82"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="122.66666666666667" height="82"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
@@ -36,10 +36,10 @@
                             </constraints>
                         </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gE1-yh-0Wx">
-                            <rect key="frame" x="151.66666666666666" y="0.0" width="126.33333333333334" height="82"/>
+                            <rect key="frame" x="147.66666666666666" y="0.0" width="122.33333333333334" height="82"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_tx" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fb7-IA-Pom">
-                                    <rect key="frame" x="0.0" y="0.0" width="126.33333333333333" height="82"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="122.33333333333333" height="82"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
@@ -54,10 +54,10 @@
                             </constraints>
                         </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vb8-8v-zEq">
-                            <rect key="frame" x="278" y="0.0" width="90" height="82"/>
+                            <rect key="frame" x="270" y="0.0" width="98" height="82"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_actions" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HtN-9g-NXX">
-                                    <rect key="frame" x="0.0" y="0.0" width="90" height="82"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="98" height="82"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
@@ -66,7 +66,7 @@
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
                                 <constraint firstItem="HtN-9g-NXX" firstAttribute="top" secondItem="vb8-8v-zEq" secondAttribute="top" id="DJp-wM-0tU"/>
-                                <constraint firstAttribute="width" constant="90" id="YMT-K8-7gm"/>
+                                <constraint firstAttribute="width" constant="98" id="YMT-K8-7gm"/>
                                 <constraint firstAttribute="bottom" secondItem="HtN-9g-NXX" secondAttribute="bottom" id="ZL2-dC-344"/>
                                 <constraint firstAttribute="trailing" secondItem="HtN-9g-NXX" secondAttribute="trailing" id="dlM-AZ-qgG"/>
                                 <constraint firstItem="HtN-9g-NXX" firstAttribute="leading" secondItem="vb8-8v-zEq" secondAttribute="leading" id="jgF-zQ-Ba1"/>

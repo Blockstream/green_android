@@ -136,7 +136,7 @@
                                                                 </constraints>
                                                             </view>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XkV-Dy-LvJ">
-                                                                <rect key="frame" x="0.0" y="65.666666666666629" width="393" height="330.66666666666663"/>
+                                                                <rect key="frame" x="0.0" y="65.666666666666629" width="393" height="330.66666666666669"/>
                                                                 <subviews>
                                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OWJ-mQ-4SZ">
                                                                         <rect key="frame" x="0.0" y="0.0" width="393" height="330.66666666666669"/>
@@ -198,7 +198,7 @@
                                                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kQl-dZ-sZh">
                                                                                                 <rect key="frame" x="0.0" y="60.000000000000007" width="345" height="93.666666666666686"/>
                                                                                                 <subviews>
-                                                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lblSign" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="46E-vl-MGy">
+                                                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lblSign" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="46E-vl-MGy">
                                                                                                         <rect key="frame" x="0.0" y="10.000000000000002" width="345" height="27.666666666666671"/>
                                                                                                         <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="12"/>
                                                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
