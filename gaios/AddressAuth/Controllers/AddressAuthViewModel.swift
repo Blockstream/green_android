@@ -17,7 +17,9 @@ class AddressAuthViewModel {
     func load() async throws {
         let params = GetPreviousAddressesParams(subaccount: Int(wallet.pointer), lastPointer: nil)
         let res = try await wallet.session?.getPreviousAddresses(params)
-        listCellModels = res?.list.compactMap { AddressAuthCellModel(address: $0.address ?? "", tx: $0.txCount  ?? 0) } ?? []
+        listCellModels = res?.list.compactMap { AddressAuthCellModel(address: $0.address ?? "",
+                                                                     tx: $0.txCount  ?? 0,
+                                                                     canSign: canSign()) } ?? []
         listCellModelsFilter = listCellModels
     }
 
@@ -32,5 +34,9 @@ class AddressAuthViewModel {
                 listCellModelsFilter.append($0)
             }
         }
+    }
+
+    func canSign() -> Bool {
+        return wallet.gdkNetwork.electrum == true
     }
 }

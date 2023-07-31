@@ -7,7 +7,8 @@ class AddressAuthCell: UITableViewCell {
     @IBOutlet weak var lblTx: UILabel!
     @IBOutlet weak var btnCopy: UIButton!
     @IBOutlet weak var btnSign: UIButton!
-
+    
+    var model: AddressAuthCellModel!
     var onCopy: (() -> Void)?
     var onSign: (() -> Void)?
     
@@ -29,12 +30,14 @@ class AddressAuthCell: UITableViewCell {
                    onCopy: (() -> Void)?,
                    onSign: (() -> Void)?
     ){
+        self.model = model
         self.onCopy = onCopy
         self.onSign = onSign
         lblAddress.text = model.address
         lblTx.text = "\(model.tx)"
         lblAddress.setStyle(.txtSmaller)
         lblTx.setStyle(.fieldBigger)
+        btnSign.isEnabled = model.canSign
     }
 
     @IBAction func btnCopy(_ sender: Any) {

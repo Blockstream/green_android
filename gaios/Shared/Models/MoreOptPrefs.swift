@@ -1,4 +1,5 @@
 import UIKit
+import gdk
 
 enum MoreOptPrefs: Int, CaseIterable {
     case requestAmount = 0
@@ -12,7 +13,7 @@ enum MoreOptPrefs: Int, CaseIterable {
         case .sweep:
             return "id_sweep_from_paper_wallet".localized
         case .addressAuth:
-            return "Authenticate Address"
+            return "List of Addresses"
         }
     }
 
@@ -23,17 +24,29 @@ enum MoreOptPrefs: Int, CaseIterable {
         case .sweep:
             return UIImage(named: "ic_dialog_sweep_wallet")!.maskWithColor(color: .white)
         case .addressAuth:
-            return UIImage(named: "ic_address_auth")!.maskWithColor(color: .white)
+            return UIImage(named: "ic_address_auth_list")!.maskWithColor(color: .white)
         }
     }
 
-    static func getPrefs(hideSweep: Bool) -> [MoreOptPrefs] {
-        let prefs: [MoreOptPrefs] = hideSweep ? [ .requestAmount, .addressAuth ] : [ .requestAmount, .sweep, .addressAuth ]
+    static func getPrefs(account: WalletItem) -> [MoreOptPrefs] {
+
+        let hideSweep = account.gdkNetwork.liquid || account.gdkNetwork.electrum  || account.gdkNetwork.lightning
+        let hideSign = account.gdkNetwork.liquid || account.gdkNetwork.lightning
+        
+        var prefs: [MoreOptPrefs] = [ .requestAmount ]
+
+        if hideSweep == false {
+            prefs.append(.sweep)
+        }
+        if hideSign == false {
+            prefs.append(.addressAuth)
+        }
         return prefs
     }
 
-    static func getItems(hideSweep: Bool) -> [DialogListCellModel] {
-        return MoreOptPrefs.getPrefs(hideSweep: hideSweep).map { DialogListCellModel(type: .list,
+    static func getItems(account: WalletItem) -> [DialogListCellModel] {
+
+        return MoreOptPrefs.getPrefs(account: account).map { DialogListCellModel(type: .list,
                                                                 icon: $0.icon,
                                                                 title: $0.name) }
     }

@@ -369,10 +369,10 @@ class ReceiveViewController: KeyboardViewController {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
-            let hideSweep = viewModel.account.gdkNetwork.liquid || viewModel.account.gdkNetwork.electrum
+            
             vc.viewModel = DialogListViewModel(title: "id_more_options".localized,
                                                type: .moreOptPrefs,
-                                               items: MoreOptPrefs.getItems(hideSweep: hideSweep))
+                                               items: MoreOptPrefs.getItems(account: viewModel.account))
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -482,9 +482,8 @@ extension ReceiveViewController: DialogListViewControllerDelegate {
     func didSelectIndex(_ index: Int, with type: DialogType) {
         switch type {
         case .moreOptPrefs:
-            let hideSweep = viewModel.account.gdkNetwork.liquid || viewModel.account.gdkNetwork.electrum
 
-            if let item = MoreOptPrefs.getPrefs(hideSweep: hideSweep)[safe: index] {
+            if let item = MoreOptPrefs.getPrefs(account: viewModel.account)[safe: index] {
                 switch item {
                 case .requestAmount:
                     optRequestAmount()
