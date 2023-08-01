@@ -64,7 +64,7 @@
                                         <rect key="frame" x="225" y="0.0" width="98" height="57"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="mu2-WE-gdl">
-                                                <rect key="frame" x="10" y="12.666666666666668" width="76" height="32"/>
+                                                <rect key="frame" x="11" y="12.666666666666668" width="76" height="32"/>
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="57V-QI-nUM">
                                                         <rect key="frame" x="0.0" y="0.0" width="32" height="32"/>
@@ -99,9 +99,9 @@
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstItem="mu2-WE-gdl" firstAttribute="leading" secondItem="OWc-3X-ibT" secondAttribute="leading" constant="10" id="Cxr-w3-Je9"/>
                                             <constraint firstItem="mu2-WE-gdl" firstAttribute="centerY" secondItem="OWc-3X-ibT" secondAttribute="centerY" id="bgK-zK-sAE"/>
-                                            <constraint firstAttribute="trailing" secondItem="mu2-WE-gdl" secondAttribute="trailing" constant="12" id="uni-BZ-ObX"/>
+                                            <constraint firstItem="mu2-WE-gdl" firstAttribute="centerX" secondItem="OWc-3X-ibT" secondAttribute="centerX" id="hqm-w5-slF"/>
+                                            <constraint firstAttribute="width" constant="98" id="mnT-Mu-QfR"/>
                                         </constraints>
                                     </view>
                                 </subviews>

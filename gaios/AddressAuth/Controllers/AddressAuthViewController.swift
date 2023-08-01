@@ -64,7 +64,7 @@ class AddressAuthViewController: KeyboardViewController {
         settingsBtn.tintColor = UIColor.gGreenMatrix()
         settingsBtn.setTitle("Export".localized, for: .normal)
         settingsBtn.addTarget(self, action: #selector(exportBtnTapped), for: .touchUpInside)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
+        //navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
     }
     
     func setStyle() {
