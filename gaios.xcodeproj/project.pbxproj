@@ -356,6 +356,8 @@
 		34EDF6BC28BF6EDC00145AD4 /* AlertCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EDF6BA28BF6EDC00145AD4 /* AlertCardCell.swift */; };
 		34EDF6BD28BF6EDC00145AD4 /* AlertCardCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34EDF6BB28BF6EDC00145AD4 /* AlertCardCell.xib */; };
 		34F164EF29E84B3800FE5B64 /* DialogDeleteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F164EE29E84B3800FE5B64 /* DialogDeleteViewController.swift */; };
+		34F51A7F2A78F0E9000BE5D0 /* AddressAuthLoaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F51A7D2A78F0E9000BE5D0 /* AddressAuthLoaderCell.swift */; };
+		34F51A802A78F0E9000BE5D0 /* AddressAuthLoaderCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34F51A7E2A78F0E9000BE5D0 /* AddressAuthLoaderCell.xib */; };
 		34F8E7C32823E66C00555F5B /* AMViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F8E7C22823E66C00555F5B /* AMViews.swift */; };
 		34F9809C2913A5EC00C12D48 /* WalletAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F9809A2913A5EC00C12D48 /* WalletAssetCell.swift */; };
 		34F9809D2913A5EC00C12D48 /* WalletAssetCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34F9809B2913A5EC00C12D48 /* WalletAssetCell.xib */; };
@@ -992,6 +994,8 @@
 		34EDF6BA28BF6EDC00145AD4 /* AlertCardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertCardCell.swift; sourceTree = "<group>"; };
 		34EDF6BB28BF6EDC00145AD4 /* AlertCardCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AlertCardCell.xib; sourceTree = "<group>"; };
 		34F164EE29E84B3800FE5B64 /* DialogDeleteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogDeleteViewController.swift; sourceTree = "<group>"; };
+		34F51A7D2A78F0E9000BE5D0 /* AddressAuthLoaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressAuthLoaderCell.swift; sourceTree = "<group>"; };
+		34F51A7E2A78F0E9000BE5D0 /* AddressAuthLoaderCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddressAuthLoaderCell.xib; sourceTree = "<group>"; };
 		34F8E7C22823E66C00555F5B /* AMViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMViews.swift; sourceTree = "<group>"; };
 		34F9809A2913A5EC00C12D48 /* WalletAssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletAssetCell.swift; sourceTree = "<group>"; };
 		34F9809B2913A5EC00C12D48 /* WalletAssetCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletAssetCell.xib; sourceTree = "<group>"; };
@@ -1363,6 +1367,8 @@
 				3415CB0F2A67C92C00B66882 /* AddressAuthCellModel.swift */,
 				3415CB0B2A67BFE500B66882 /* AddressAuthCell.swift */,
 				3415CB0C2A67BFE500B66882 /* AddressAuthCell.xib */,
+				34F51A7D2A78F0E9000BE5D0 /* AddressAuthLoaderCell.swift */,
+				34F51A7E2A78F0E9000BE5D0 /* AddressAuthLoaderCell.xib */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -3304,6 +3310,7 @@
 				3487657429D43B2A0059D05F /* Illustration Account Archived.riv in Resources */,
 				34B170ED292E872A00A829B2 /* DiscloseCell.xib in Resources */,
 				34F980AF29151C6600C12D48 /* TransactionCell.xib in Resources */,
+				34F51A802A78F0E9000BE5D0 /* AddressAuthLoaderCell.xib in Resources */,
 				34B826C42608827F00579C0B /* Recovery.storyboard in Resources */,
 				3415CB042A67BD0100B66882 /* AddressAuth.storyboard in Resources */,
 				34237FD2276B68A900618502 /* Send.storyboard in Resources */,
@@ -3759,6 +3766,7 @@
 				34EB670528213A8A0036D615 /* AMConstants.swift in Sources */,
 				34237FD5276B693100618502 /* SendViewController.swift in Sources */,
 				3420470A291A6BD800EDE945 /* MultiLabelView.swift in Sources */,
+				34F51A7F2A78F0E9000BE5D0 /* AddressAuthLoaderCell.swift in Sources */,
 				34B170E9292E865900A829B2 /* AddingCellModel.swift in Sources */,
 				34019C1A28D1FC5100E64BEE /* Localizable.swift in Sources */,
 				34019C2928D35F3F00E64BEE /* DrawerBarItem.swift in Sources */,

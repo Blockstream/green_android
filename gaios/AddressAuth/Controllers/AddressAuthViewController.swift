@@ -6,6 +6,7 @@ import BreezSDK
 
 enum AddressAuthSection: Int, CaseIterable {
     case list
+    case loader
 }
 
 class AddressAuthViewController: KeyboardViewController {
@@ -15,11 +16,12 @@ class AddressAuthViewController: KeyboardViewController {
     @IBOutlet weak var tableView: UITableView!
     
     var viewModel: AddressAuthViewModel!
-    
+    var isSearchActive = false
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        ["AddressAuthCell"].forEach {
+        ["AddressAuthCell", "AddressAuthLoaderCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
         searchField.delegate = self
@@ -27,7 +29,7 @@ class AddressAuthViewController: KeyboardViewController {
         setStyle()
         navigationItem.rightBarButtonItems = []
         loadNavigationBtns()
-        reload()
+        fetchData(reset: true)
     }
     
     deinit {
@@ -75,23 +77,28 @@ class AddressAuthViewController: KeyboardViewController {
         viewModel?.search(searchField.text ?? "")
         tableView.reloadData()
     }
+
     @objc func exportBtnTapped() {
         // SafeNavigationManager.shared.navigate( ExternalUrls.jadeTroubleshoot )
     }
     
     // tableview refresh gesture
     @objc func callPullToRefresh(_ sender: UIRefreshControl? = nil) {
-        reload()
+        searchField.text = ""
+        viewModel?.search(searchField.text ?? "")
+        fetchData(reset: true)
     }
     
-    func reload() {
+    func fetchData(reset: Bool) {
         Task {
             do {
-                startAnimating()
-                try await viewModel.load()
+                if viewModel?.listCellModelsFilter.count == 0 { startAnimating() }
+                try await viewModel.fetchData(reset: reset)
                 await MainActor.run {
                     stopAnimating()
-                    tableView.reloadData()
+                    tableView.reloadData { [weak self] in
+                        self?.tableView.refreshControl?.endRefreshing()
+                    }
                 }
             } catch {
                 stopAnimating()
@@ -136,7 +143,8 @@ extension AddressAuthViewController: UITableViewDelegate, UITableViewDataSource 
         case .list:
             return viewModel?.listCellModelsFilter.count ?? 0
         default:
-            return 0
+            if isSearchActive { return 0 }
+            return viewModel.isReady() ? 0 : 1
         }
     }
 
@@ -153,6 +161,12 @@ extension AddressAuthViewController: UITableViewDelegate, UITableViewDataSource 
                     onSign: { [weak self] in
                         self?.onSign(indexPath.row)
                     })
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .loader:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: AddressAuthLoaderCell.identifier, for: indexPath) as? AddressAuthLoaderCell {
+                cell.configure()
                 cell.selectionStyle = .none
                 return cell
             }
@@ -208,11 +222,26 @@ extension AddressAuthViewController: UITableViewDelegate, UITableViewDataSource 
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {}
+
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let section = AddressAuthSection(rawValue: indexPath.section) else { return }
+        if section == .loader, isSearchActive == false {
+            fetchData(reset: false)
+        }
+    }
 }
 
 extension AddressAuthViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.view.endEditing(true)
         return false
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        isSearchActive = true
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        isSearchActive = false
     }
 }

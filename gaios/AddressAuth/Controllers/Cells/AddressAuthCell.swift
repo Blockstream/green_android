@@ -37,7 +37,7 @@ class AddressAuthCell: UITableViewCell {
         lblTx.text = "\(model.tx)"
         lblAddress.setStyle(.txtSmaller)
         lblTx.setStyle(.fieldBigger)
-        btnSign.isHidden = model.canSign
+        btnSign.isHidden = !model.canSign
     }
 
     @IBAction func btnCopy(_ sender: Any) {

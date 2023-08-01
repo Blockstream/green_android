@@ -7,19 +7,37 @@ class AddressAuthViewModel {
 
     var listCellModelsFilter: [AddressAuthCellModel] = []
     private var listCellModels: [AddressAuthCellModel] = []
-    
+
+    var lastPointer: Int?
+    var isLoading = false
+
     var wallet: WalletItem
     
     init(wallet: WalletItem) {
         self.wallet = wallet
     }
 
-    func load() async throws {
-        let params = GetPreviousAddressesParams(subaccount: Int(wallet.pointer), lastPointer: nil)
+    func isReady() -> Bool {
+        return lastPointer == nil && listCellModels.count > 0
+    }
+
+    func fetchData(reset: Bool) async throws {
+        if isLoading { return }
+        if isReady() { return }
+        if reset {
+            listCellModelsFilter = []
+            listCellModels = []
+            lastPointer = nil
+        }
+        isLoading = true
+        let params = GetPreviousAddressesParams(subaccount: Int(wallet.pointer), lastPointer: lastPointer)
         let res = try await wallet.session?.getPreviousAddresses(params)
-        listCellModels = res?.list.compactMap { AddressAuthCellModel(address: $0.address ?? "",
+        isLoading = false
+        lastPointer = res?.lastPointer
+        let newModels = res?.list.compactMap { AddressAuthCellModel(address: $0.address ?? "",
                                                                      tx: $0.txCount  ?? 0,
                                                                      canSign: canSign()) } ?? []
+        listCellModels += newModels
         listCellModelsFilter = listCellModels
     }
 

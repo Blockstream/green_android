@@ -173,10 +173,13 @@ public struct GetPreviousAddressesParams: Codable {
 public struct GetPreviousAddressesResult: Codable {
     enum CodingKeys: String, CodingKey {
         case list
+        case lastPointer = "last_pointer"
     }
     public let list: [Address]
-    public init(list: [Address]) {
+    public let lastPointer: Int?
+    public init(list: [Address], lastPointer: Int?) {
         self.list = list
+        self.lastPointer = lastPointer
     }
 }
 
