@@ -184,6 +184,7 @@ extension PinCreateViewController: UpdateFirmwareViewControllerDelegate {
                     if let res = res, res {
                         AnalyticsManager.shared.otaCompleteJade(account: AccountsRepository.shared.current, firmware: firmware)
                         DropAlert().success(message: "id_firmware_update_completed".localized)
+                        connectViewController()
                     } else {
                         DropAlert().error(message: "id_operation_failure".localized)
                     }
@@ -191,6 +192,16 @@ extension PinCreateViewController: UpdateFirmwareViewControllerDelegate {
             } catch {
                 onError(error)
             }
+        }
+    }
+
+    func connectViewController() {
+        let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
+        if let vc = hwFlow.instantiateViewController(withIdentifier: "ConnectViewController") as? ConnectViewController {
+            vc.account = account
+            vc.bleViewModel = bleViewModel
+            vc.scanViewModel = ScanViewModel()
+            self.navigationController?.pushViewController(vc, animated: true)
         }
     }
 
