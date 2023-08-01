@@ -93,7 +93,8 @@ class BleLedgerManager {
                        isJade: device.isJade,
                        isLedger: device.isLedger,
                        isSingleSig: network.gdkNetwork.electrum,
-                       uuid: bleLedger.peripheral.identifier)
+                       uuid: bleLedger.peripheral.identifier,
+                       hidden: false)
     }
 
     func validateAddress(account: WalletItem, addr: Address) async throws -> Bool {

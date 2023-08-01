@@ -88,7 +88,8 @@ class BleJadeManager {
                        isJade: device.isJade,
                        isLedger: device.isLedger,
                        isSingleSig: network.gdkNetwork.electrum,
-                       uuid: bleJade.peripheral.identifier)
+                       uuid: bleJade.peripheral.identifier,
+                       hidden: false)
     }
 
     func checkFirmware() async throws -> (JadeVersionInfo?, Firmware?) {

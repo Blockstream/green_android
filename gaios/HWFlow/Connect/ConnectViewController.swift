@@ -165,7 +165,7 @@ class ConnectViewController: HWFlowBaseViewController {
         scanCancellable = scanViewModel?.objectWillChange.sink(receiveValue: { [weak self] in
             DispatchQueue.main.async {
                 if self?.selectedItem != nil { return }
-                if let item = self?.scanViewModel?.peripherals.filter({ $0.identifier == self?.account.uuid || $0.name == self?.account.name }).first {
+                 if let item = self?.scanViewModel?.peripherals.filter({ $0.identifier == self?.account.uuid || $0.name == self?.account.name }).first {
                     self?.selectedItem = item
                     self?.onScannedDevice(item)
                 }

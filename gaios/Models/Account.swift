@@ -41,7 +41,7 @@ struct Account: Codable, Equatable {
     var askEphemeral: Bool?
     var ephemeralId: Int?
 
-    init(id: String? = nil, name: String, network: NetworkSecurityCase, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool? = nil, isEphemeral: Bool = false, askEphemeral: Bool = false, xpubHashId: String? = nil, uuid: UUID? = nil) {
+    init(id: String? = nil, name: String, network: NetworkSecurityCase, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool? = nil, isEphemeral: Bool = false, askEphemeral: Bool = false, xpubHashId: String? = nil, uuid: UUID? = nil, hidden: Bool = false) {
         // Software / Hardware wallet account
         self.id = id ?? UUID().uuidString
         self.name = name
@@ -56,6 +56,7 @@ struct Account: Codable, Equatable {
         self.askEphemeral = askEphemeral
         self.xpubHashId = xpubHashId
         self.uuid = uuid
+        self.hidden = hidden
         if isEphemeral {
             let ephAccounts = AccountsRepository.shared.ephAccounts
             if ephAccounts.count == 0 {
