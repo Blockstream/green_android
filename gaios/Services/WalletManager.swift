@@ -264,7 +264,7 @@ class WalletManager {
         _ = try await self.subaccounts()
         print("--- subaccounts end")
         try? await self.loadRegistry()
-        AccountsRepository.shared.current = self.account
+        //AccountsRepository.shared.current = self.account
     }
 
     func loadSystemMessages() async throws -> [SystemMessage] {

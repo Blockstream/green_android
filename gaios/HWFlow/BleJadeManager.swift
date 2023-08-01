@@ -60,6 +60,7 @@ class BleJadeManager {
         walletManager = WalletsRepository.shared.getOrAdd(for: account)
         walletManager?.hwDevice = BLEDevice(peripheral: bleJade.peripheral, device: device, interface: bleJade)
         try await walletManager?.login(device: device, masterXpub: masterXpub)
+        AccountsRepository.shared.current = walletManager?.account
         return account
     }
     

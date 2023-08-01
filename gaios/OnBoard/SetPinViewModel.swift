@@ -57,7 +57,7 @@ class SetPinViewModel {
             let prevAccounts = AccountsRepository.shared.find(xpubHashId: xpub ?? "")?
                 .filter { $0.networkType == wm.account.networkType &&
                 !$0.isHW && !$0.isWatchonly } ?? []
-            if !prevAccounts.isEmpty {
+            if let prevAccount = prevAccounts.first, prevAccount.id != wm.account.id  {
                 throw LoginError.walletsJustRestored()
             }
         }
