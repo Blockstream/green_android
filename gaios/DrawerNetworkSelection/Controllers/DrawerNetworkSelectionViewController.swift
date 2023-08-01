@@ -80,7 +80,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
         case 1:
             return ephAccounts.count
         case 2:
-            return AccountsRepository.shared.hwAccounts.count
+            return AccountsRepository.shared.hwVisibleAccounts.count
         default:
             return 0
         }
@@ -110,7 +110,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
                 return cell
             }
         case 2:
-            let account = AccountsRepository.shared.hwAccounts[indexPath.row]
+            let account = AccountsRepository.shared.hwVisibleAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 let selected = { () -> Bool in
                     return WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
@@ -133,7 +133,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
         if section == 1 && ephAccounts.isEmpty {
             return 0.1
         }
-        if section == 2 && AccountsRepository.shared.hwAccounts.isEmpty {
+        if section == 2 && AccountsRepository.shared.hwVisibleAccounts.isEmpty {
             return 0.1
         }
         return headerH
@@ -156,7 +156,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
             }
             return headerView(NSLocalizedString("id_ephemeral_wallets", comment: ""))
         case 2:
-            if AccountsRepository.shared.hwAccounts.isEmpty {
+            if AccountsRepository.shared.hwVisibleAccounts.isEmpty {
                 return nil
             }
             return headerView(NSLocalizedString("id_hardware_wallets", comment: ""))
@@ -174,7 +174,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
             let account = ephAccounts[indexPath.row]
             self.delegate?.didSelectAccount(account: account)
         case 2:
-            let account = AccountsRepository.shared.hwAccounts[indexPath.row]
+            let account = AccountsRepository.shared.hwVisibleAccounts[indexPath.row]
             self.delegate?.didSelectAccount(account: account)
         default:
             break

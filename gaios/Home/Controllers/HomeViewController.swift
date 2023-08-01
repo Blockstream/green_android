@@ -138,7 +138,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         case HomeSection.ephWallet.rawValue:
             return ephAccounts.count
         case HomeSection.hwWallet.rawValue:
-            return AccountsRepository.shared.hwAccounts.count
+            return AccountsRepository.shared.hwVisibleAccounts.count
         default:
             return 0
         }
@@ -184,7 +184,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 return cell
             }
         case HomeSection.hwWallet.rawValue:
-            let account = AccountsRepository.shared.hwAccounts[indexPath.row]
+            let account = AccountsRepository.shared.hwVisibleAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletListCell") as? WalletListCell {
                 let selected = { () -> Bool in
                     return WalletsRepository.shared.get(for: account.id)?.activeSessions.count ?? 0 > 0
@@ -226,7 +226,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         if section == HomeSection.swWallet.rawValue && AccountsRepository.shared.swAccounts.isEmpty {
             return 0.1
         }
-        if section == HomeSection.hwWallet.rawValue && AccountsRepository.shared.hwAccounts.isEmpty {
+        if section == HomeSection.hwWallet.rawValue && AccountsRepository.shared.hwVisibleAccounts.isEmpty {
             return 0.1
         }
         if section == HomeSection.remoteAlerts.rawValue {
@@ -254,7 +254,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             }
             return headerView(NSLocalizedString("id_ephemeral_wallets", comment: ""))
         case HomeSection.hwWallet.rawValue:
-            if AccountsRepository.shared.hwAccounts.isEmpty {
+            if AccountsRepository.shared.hwVisibleAccounts.isEmpty {
                 return nil
             }
             return headerView(NSLocalizedString("id_hardware_wallets", comment: ""))
@@ -274,7 +274,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             let account = ephAccounts[indexPath.row]
             AccountNavigator.goLogin(account: account, nv: navigationController)
         case HomeSection.hwWallet.rawValue:
-            let account = AccountsRepository.shared.hwAccounts[indexPath.row]
+            let account = AccountsRepository.shared.hwVisibleAccounts[indexPath.row]
             AccountNavigator.goLogin(account: account, nv: navigationController)
         default:
             break
