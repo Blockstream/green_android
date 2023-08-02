@@ -24,8 +24,11 @@ class RecoveryTransactionsViewController: UIViewController {
 
         setContent()
         setStyle()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         update()
-        item3.isHidden = true /// for future usage
     }
 
     func setContent() {
@@ -66,9 +69,9 @@ class RecoveryTransactionsViewController: UIViewController {
 
     func emailIsSet(_ flag: Bool) {
         [item1, item2].forEach{
-            $0?.alpha = flag ? 1.0 : 0.5
-            $0?.isUserInteractionEnabled = flag
+            $0?.isHidden = !flag
         }
+        item3.isHidden = flag
     }
 
     func enableRecoveryTransactions(_ enable: Bool) {
@@ -106,7 +109,12 @@ class RecoveryTransactionsViewController: UIViewController {
     }
 
     @IBAction func btnSetEmail(_ sender: Any) {
-
+        let storyboard = UIStoryboard(name: "AuthenticatorFactors", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SetEmailViewController") as? SetEmailViewController {
+            vc.session = viewModel.session
+            vc.isSetRecovery = true
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
     @IBAction func btnMoreInfo(_ sender: Any) {
