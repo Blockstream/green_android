@@ -31,7 +31,7 @@ enum MoreOptPrefs: Int, CaseIterable {
     static func getPrefs(account: WalletItem) -> [MoreOptPrefs] {
 
         let hideSweep = account.gdkNetwork.liquid || account.gdkNetwork.electrum  || account.gdkNetwork.lightning
-        let hideSign = account.gdkNetwork.liquid || account.gdkNetwork.lightning
+        let hideSign = account.gdkNetwork.lightning
         
         var prefs: [MoreOptPrefs] = [ .requestAmount ]
 

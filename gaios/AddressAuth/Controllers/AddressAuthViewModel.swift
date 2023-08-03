@@ -55,6 +55,6 @@ class AddressAuthViewModel {
     }
 
     func canSign() -> Bool {
-        return wallet.gdkNetwork.electrum == true
+        return wallet.gdkNetwork.electrum == true && wallet.gdkNetwork.liquid == false
     }
 }
