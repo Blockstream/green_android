@@ -27,8 +27,10 @@ class PairingSuccessViewController: HWFlowBaseViewController {
             loadNavigationBtns()
         }
         // if account just exist
-        if let account = AccountsRepository.shared.accounts.filter({ $0.isHW && $0.uuid == bleViewModel?.peripheralID }).first {
+        if let account = AccountsRepository.shared.accounts.filter({
+            $0.isHW && ($0.uuid == bleViewModel?.peripheralID) || ($0.name == bleViewModel?.peripheral?.name) }).first {
             rememberSwitch.isOn = !(account.hidden ?? false)
+            rememberView.isHidden = true
         }
         AnalyticsManager.shared.hwwConnect(account: AccountsRepository.shared.current)
     }
