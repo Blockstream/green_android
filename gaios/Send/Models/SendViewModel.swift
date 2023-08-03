@@ -193,13 +193,13 @@ class SendViewModel {
                 assetId = addrAssetId
             }
             if let addrSatoshi = addressee.satoshi, satoshi == nil, addrSatoshi != 0 {
-                satoshi = addrSatoshi
+                satoshi = abs(addrSatoshi)
             }
         }
         if sendAll {
             let assetId = assetId ?? feeAsset
             let value = tx.amounts.filter({$0.key == assetId}).first?.value ?? 0
-            satoshi = value
+            satoshi = abs(value)
         }
         switch inputType {
         case .transaction, .lnurl:
