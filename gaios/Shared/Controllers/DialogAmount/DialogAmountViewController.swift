@@ -128,18 +128,12 @@ class DialogAmountViewController: KeyboardViewController {
                 let settings = session.settings else {
             return
         }
-        if selectedType == TransactionBaseType.BTC {
-            let string = settings.denomination.string(for: session.gdkNetwork)
+        if selectedType == TransactionBaseType.BTC, let wallet = wallet {
+            let string = settings.denomination.string(for: wallet.gdkNetwork)
             lblDenom.text = string
-//            btnFiat.setTitle(string, for: UIControl.State.normal)
-//            btnFiat.backgroundColor = UIColor.customMatrixGreen()
-//            btnFiat.setTitleColor(UIColor.white, for: UIControl.State.normal)
         } else {
             let isMainnet = AccountsRepository.shared.current?.gdkNetwork.mainnet ?? true
             lblDenom.text = isMainnet ? settings.getCurrency() : "FIAT"
-//            btnFiat.setTitle(isMainnet ? settings.getCurrency() : "FIAT", for: UIControl.State.normal)
-//            btnFiat.backgroundColor = UIColor.clear
-//            btnFiat.setTitleColor(UIColor.white, for: UIControl.State.normal)
         }
     }
 
