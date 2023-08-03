@@ -64,9 +64,11 @@ class ConnectViewController: HWFlowBaseViewController {
                 await scanViewModel?.stopScan()
                 bleViewModel?.type = item.type
                 bleViewModel?.peripheralID = item.identifier
+                // connection
                 progress("id_connecting".localized)
                 try await bleViewModel?.connect()
                 if pairingState != .unknown && account.isJade {
+                    // pairing roundtrip for jade
                     try? await bleViewModel?.disconnect()
                     try await Task.sleep(nanoseconds:  5 * 1_000_000_000)
                     await MainActor.run {
@@ -75,15 +77,19 @@ class ConnectViewController: HWFlowBaseViewController {
                     }
                     return
                 }
+                // ping if still connected and responding
                 try await bleViewModel?.ping()
                 print("pinged")
+                // check version, only for jade
                 let version = try await bleViewModel?.versionJade()
-                if account.isLedger {
-                    progress("id_connect_your_ledger_to_use_it".localized)
-                } else if version?.jadeHasPin ?? false {
-                    progress("id_unlock_jade_to_continue".localized)
+                if account.isJade {
+                    if version?.jadeHasPin ?? false {
+                        progress("id_unlock_jade_to_continue".localized)
+                    } else {
+                        progress("id_follow_the_instructions_on_jade".localized)
+                    }
                 } else {
-                    progress("id_follow_the_instructions_on_jade".localized)
+                    progress("id_connect_your_ledger_to_use_it".localized)
                 }
                 for i in 0..<3 {
                     if let res = try await bleViewModel?.authenticating(), res == true {
