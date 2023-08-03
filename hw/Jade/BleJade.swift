@@ -184,7 +184,7 @@ public class BleJade: BleJadeCommands, HWProtocol {
     // Helper to get the change paths for auto-validation
     func getChangeData(outputs: [InputOutput]) -> [TxChangeOutput?] {
         return outputs.map { (out: InputOutput) -> TxChangeOutput? in
-            if out.isChange == false {
+            if out.isChange ?? false == false {
                 return nil
             }
             var csvBlock: UInt32 = 0
