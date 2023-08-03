@@ -173,6 +173,6 @@ class ReceiveViewModel {
             }
         }
         let list = AssetAmountList.from(assetIds: assets.map { $0.assetId })
-        return AssetExpandableSelectViewModel(assets: list, enableAnyAsset: isLiquid, onlyFunded: false)
+        return AssetExpandableSelectViewModel(assets: list, enableAnyAsset: true /* isLiquid */, onlyFunded: false)
     }
 }
