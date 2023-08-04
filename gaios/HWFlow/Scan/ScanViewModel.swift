@@ -10,23 +10,20 @@ enum DeviceType: Int {
 }
 
 class ScanViewModel: ObservableObject {
-    
+
     @Published private(set) var isScanning = false
     @Published private(set) var peripherals: [ScanListItem] = []
     @Published private(set) var error: String?
     @Published private(set) var isConnected = false
-
     let centralManager: CentralManager
-    private static var cachedPeripherals = [ScanListItem]()
-    
+
     init(centralManager: CentralManager = CentralManager.shared) {
         self.centralManager = centralManager
     }
-    
+
     func startScan(deviceType: DeviceType) {
         self.error = nil
         self.isScanning = true
-        peripherals = ScanViewModel.cachedPeripherals.filter { $0.type == deviceType }
         Task {
             do {
                 try await self.scan(deviceType: deviceType)
@@ -38,16 +35,20 @@ class ScanViewModel: ObservableObject {
             }
         }
     }
-    
+
     func scan(deviceType: DeviceType) async throws {
         if self.isScanning == false { return }
         try await self.centralManager.waitUntilReady()
-        let service = deviceType == .Jade ? BleJade.SERVICE_UUID : BleLedger.SERVICE_UUID
-        let scanDataStream = try await centralManager.scanForPeripherals(withServices: [CBUUID(string: service.uuidString)])
+        let uuid = deviceType == .Jade ? BleJade.SERVICE_UUID : BleLedger.SERVICE_UUID
+        let service = CBUUID(string: uuid.uuidString)
+        let connectedPeripherals = centralManager.retrieveConnectedPeripherals(withServices: [service])
+        connectedPeripherals.forEach { addPeripheral($0, for: deviceType) }
+        let scanDataStream = try await centralManager.scanForPeripherals(withServices: [service])
         for await scanData in scanDataStream {
             addPeripheral(scanData.peripheral, for: deviceType)
         }
     }
+
     func addPeripheral(_ peripheral: Peripheral, for deviceType: DeviceType) {
         let identifier = peripheral.identifier
         let name = peripheral.name ?? ""
@@ -56,25 +57,23 @@ class ScanViewModel: ObservableObject {
             DispatchQueue.main.async {
                 if self.peripherals.contains(where: { $0.identifier == identifier || $0.name == name }) {
                     self.peripherals.removeAll(where: { $0.identifier == identifier || $0.name == name })
-                    ScanViewModel.cachedPeripherals.removeAll(where: { $0.identifier == identifier || $0.name == name })
                 }
                 self.peripherals.append(peripheral)
-                ScanViewModel.cachedPeripherals.append(peripheral)
             }
         }
     }
-    
+
     func stopScan() async {
         isScanning = false
         if centralManager.isScanning {
             await centralManager.stopScan()
         }
     }
-    
+
     func peripheral(_ peripheralID: UUID) -> Peripheral? {
         centralManager.retrievePeripherals(withIdentifiers: [peripheralID]).first
     }
-    
+
     func connect(_ peripheralID: UUID) {
         guard let peripheral = self.peripheral(peripheralID) else {
             self.error = "Unknown peripheral. Did you forget to scan?"
@@ -97,7 +96,7 @@ class ScanViewModel: ObservableObject {
             }
         }
     }
-    
+
     func cancel(_ peripheralID: UUID) {
         guard let peripheral = self.peripheral(peripheralID) else {
             self.error = "Unknown peripheral. Did you forget to scan?"

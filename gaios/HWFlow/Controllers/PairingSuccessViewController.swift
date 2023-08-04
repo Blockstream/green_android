@@ -152,6 +152,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
                 if let vc = hwFlow.instantiateViewController(withIdentifier: "PinCreateViewController") as? PinCreateViewController {
                     vc.testnet = testnet
                     vc.bleViewModel = bleViewModel
+                    vc.scanViewModel = scanViewModel
                     vc.remember = rememberSwitch.isOn
                     self.navigationController?.pushViewController(vc, animated: true)
                 }

@@ -16,6 +16,7 @@ class PinCreateViewController: HWFlowBaseViewController {
     var remember = false
     var testnet = false
     var bleViewModel: BleViewModel?
+    var scanViewModel: ScanViewModel?
     var account: Account?
 
     let loadingIndicator: ProgressView = {
@@ -201,7 +202,7 @@ extension PinCreateViewController: UpdateFirmwareViewControllerDelegate {
         if let vc = hwFlow.instantiateViewController(withIdentifier: "ConnectViewController") as? ConnectViewController {
             vc.account = account
             vc.bleViewModel = bleViewModel
-            vc.scanViewModel = ScanViewModel()
+            vc.scanViewModel = scanViewModel
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }
