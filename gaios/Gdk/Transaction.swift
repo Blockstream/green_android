@@ -12,15 +12,6 @@ extension Transaction {
         subaccountItem?.gdkNetwork.getFeeAsset() ?? ""
     }
 
-    mutating func addresseesFromGetAddress(_ addresses: [Address]) {
-        let btc = subaccountItem?.gdkNetwork.getFeeAsset()
-        var addressees = addresses.map { $0.toDict() }
-        for i in addresses.enumerated() {
-            addressees[i.offset]?["id_asset"] = btc
-        }
-        details["addressees"] = addresses
-    }
-
     func amountsWithFees() -> [String: Int64] {
         if type == .redeposit {
             return [feeAsset: -1 * Int64(fee)]

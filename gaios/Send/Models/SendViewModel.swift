@@ -140,8 +140,13 @@ class SendViewModel {
             if Task.isCancelled { return nil }
             if tx.isSweep {
                 if tx.addressees.isEmpty {
-                    let address = try await session.getReceiveAddress(subaccount: subaccount.pointer)
-                    tx.addresseesFromGetAddress([address])
+                    var address = try await session.getReceiveAddress(subaccount: subaccount.pointer)
+                    address.isGreedy = true
+                    address.satoshi = 0
+                    var addressee = address.toDict()
+                    var btc = tx.subaccountItem?.gdkNetwork.getFeeAsset()
+                    addressee?["id_asset"] = btc
+                    tx.details["addressees"] = [addressee]
                 }
                 if tx.utxos?.isEmpty ?? true {
                     let unspent = try? await session.getUnspentOutputsForPrivateKey(UnspentOutputsForPrivateKeyParams(privateKey: tx.privateKey ?? "", password: nil))

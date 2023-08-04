@@ -15,6 +15,9 @@ public struct Address: Codable {
         case addressType = "address_type"
         case script = "script"
         case subtype = "subtype"
+        case txCount = "tx_count"
+        case satoshi = "satoshi"
+        case isGreedy = "is_greedy"
     }
 
     public let address: String?
@@ -26,8 +29,12 @@ public struct Address: Codable {
     public let scriptType: Int?
     public let addressType: String?
     public let script: String?
+    public let txCount: Int?
+    // Used only as AddressParams Sweep
+    public var satoshi: Int32?
+    public var isGreedy: Bool?
 
-    public init(address: String? = nil, pointer: Int? = nil, branch: Int? = nil, subtype: UInt32? = nil, userPath: [UInt32]? = nil, subaccount: UInt32? = nil, scriptType: Int? = nil, addressType: String? = nil, script: String? = nil) {
+    public init(address: String? = nil, pointer: Int? = nil, branch: Int? = nil, subtype: UInt32? = nil, userPath: [UInt32]? = nil, subaccount: UInt32? = nil, scriptType: Int? = nil, addressType: String? = nil, script: String? = nil, txCount: Int? = 0, satoshi: Int32? = 0, isGreedy: Bool? = nil) {
         self.address = address
         self.pointer = pointer
         self.branch = branch
@@ -37,6 +44,9 @@ public struct Address: Codable {
         self.scriptType = scriptType
         self.addressType = addressType
         self.script = script
+        self.txCount = txCount
+        self.satoshi = satoshi
+        self.isGreedy = isGreedy
     }
 
     public static func from(invoice: LnInvoice) -> Address {
