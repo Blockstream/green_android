@@ -62,7 +62,6 @@ class Parser {
         "id_invalid_amount",
         "id_no_amount_specified",
         "id_insufficient_funds",
-        "id_invalid_payment_request_assetid",
         "id_invalid_asset_id" ]
     
     init(selectedAccount: WalletItem, input: String, discoverable: Bool) {
