@@ -19,6 +19,37 @@ enum BLEManagerError: Error {
     case swErr(txt: String)
     case genericErr(txt: String)
     case firmwareErr(txt: String)
+
+    var localizedDescription: String {
+        switch self {
+        case .powerOff(let txt):
+            return txt
+        case .notReady(let txt):
+            return txt
+        case .scanErr(let txt):
+            return txt
+        case .bleErr(let txt):
+            return txt
+        case .timeoutErr(let txt):
+            return txt
+        case .dashboardErr(let txt):
+            return txt
+        case .outdatedAppErr(let txt):
+            return txt
+        case .wrongAppErr(let txt):
+            return txt
+        case .authErr(let txt):
+            return txt
+        case .swErr(let txt):
+            return txt
+        case .genericErr(let txt):
+            return txt
+        case .firmwareErr(let txt):
+            return txt
+        case .unauthorized(let txt):
+            return txt
+        }
+    }
 }
 
 enum DeviceError: Error {
@@ -64,6 +95,9 @@ class BleViewModel {
     }
 
     func connect() async throws {
+        if centralManager.bluetoothState == .poweredOff {
+            throw BLEManagerError.powerOff(txt: "id_enable_bluetooth_from_system".localized)
+        }
         switch type {
         case .Jade:
             try await jade?.connect()
@@ -115,11 +149,21 @@ class BleViewModel {
     }
 
     func login(account: Account) async throws -> Account? {
-        switch type {
-        case .Jade:
-            return try await jade?.login(account: account)
-        case .Ledger:
-            return try await ledger?.login(account: account)
+        var res: Account? = account
+        AnalyticsManager.shared.loginWalletStart()
+        do {
+            switch type {
+            case .Jade:
+                res = try await jade?.login(account: account)
+            case .Ledger:
+                res = try await ledger?.login(account: account)
+            }
+            AnalyticsManager.shared.loginWalletEnd(account: account, loginType: .hardware)
+            return res
+        } catch {
+            let text = toBleError(error, network: nil).localizedDescription
+            AnalyticsManager.shared.failedWalletLogin(account: account, error: error, prettyError: text)
+            throw error
         }
     }
 
@@ -170,70 +214,41 @@ class BleViewModel {
     }    
 
     func toBleError(_ err: Error, network: String?) -> BLEManagerError {
-        print(err)
-        switch err {
-        case is BluetoothError, is GaError:
-            return BLEManagerError.bleErr(txt: NSLocalizedString("id_communication_timed_out_make", comment: ""))
-        case DeviceError.dashboard:
-            return BLEManagerError.dashboardErr(txt: String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.networkLabel(network ?? "mainnet")))
-        case DeviceError.notlegacy_app:
-            return BLEManagerError.dashboardErr(txt: "Install legacy companion app")
-        case DeviceError.outdated_app:
-            return BLEManagerError.outdatedAppErr(txt: "Outdated Ledger app: update the bitcoin app via Ledger Manager")
-        case DeviceError.wrong_app:
-            return BLEManagerError.wrongAppErr(txt: String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.networkLabel(network ?? "mainnet")))
-        case is AuthenticationTypeHandler.AuthError:
-            let authErr = err as? AuthenticationTypeHandler.AuthError
-            AnalyticsManager.shared.failedWalletLogin(account: AccountsRepository.shared.current, error: err, prettyError: authErr?.localizedDescription ?? "")
-            return BLEManagerError.authErr(txt: authErr?.localizedDescription ?? "")
-        case is BleLedger.LedgerError, is BleLedgerConnection.LedgerError:
-            return BLEManagerError.swErr(txt: NSLocalizedString("id_invalid_status_check_that_your", comment: ""))
-        case is HWError:
+        if let err = err as? BLEManagerError {
+            return err
+        }
+        if let err = err as? DeviceError {
+            switch err {
+            case DeviceError.dashboard:
+                return BLEManagerError.dashboardErr(txt: String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.networkLabel(network ?? "mainnet")))
+            case DeviceError.notlegacy_app:
+                return BLEManagerError.dashboardErr(txt: "Install legacy companion app")
+            case DeviceError.outdated_app:
+                return BLEManagerError.outdatedAppErr(txt: "Outdated Ledger app: update the bitcoin app via Ledger Manager")
+            case DeviceError.wrong_app:
+                return BLEManagerError.wrongAppErr(txt: String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.networkLabel(network ?? "mainnet")))
+            }
+        }
+        if let err = err as? HWError {
             switch err {
             case HWError.Abort(let desc),
                 HWError.URLError(let desc),
                 HWError.Declined(let desc):
                 return BLEManagerError.genericErr(txt: desc)
             default:
-                AnalyticsManager.shared.failedWalletLogin(account: AccountsRepository.shared.current, error: err, prettyError: "id_login_failed")
-                return BLEManagerError.authErr(txt: NSLocalizedString("id_login_failed", comment: ""))
+                return BLEManagerError.authErr(txt: "id_login_failed")
             }
-        case LoginError.failed, LoginError.connectionFailed, LoginError.walletsJustRestored, LoginError.walletNotFound:
-            return BLEManagerError.genericErr(txt: NSLocalizedString("id_login_failed", comment: ""))
-        default:
+        }
+        if let err = err as? BleLedger {
+            return BLEManagerError.swErr(txt: "id_invalid_status_check_that_your")
+        }
+        if let err = err as? AuthenticationTypeHandler.AuthError {
             return BLEManagerError.genericErr(txt: err.localizedDescription)
         }
-    }
-
-    func toErrorString(_ error: BLEManagerError) -> String {
-        switch error {
-        case .powerOff(let txt):
-            return txt
-        case .notReady(let txt):
-            return txt
-        case .scanErr(let txt):
-            return txt
-        case .bleErr(let txt):
-            return txt
-        case .timeoutErr(let txt):
-            return txt
-        case .dashboardErr(let txt):
-            return txt
-        case .outdatedAppErr(let txt):
-            return txt
-        case .wrongAppErr(let txt):
-            return txt
-        case .authErr(let txt):
-            return txt
-        case .swErr(let txt):
-            return txt
-        case .genericErr(let txt):
-            return txt
-        case .firmwareErr(txt: let txt):
-            return txt
-        case .unauthorized(txt: let txt):
-            return txt
+        if let err = err as? LoginError {
+            return BLEManagerError.genericErr(txt: "id_login_failed")
         }
+        return BLEManagerError.genericErr(txt: err.localizedDescription)
     }
 
     func networkLabel(_ network: String) -> String {

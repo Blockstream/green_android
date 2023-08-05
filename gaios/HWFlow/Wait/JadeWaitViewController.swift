@@ -15,7 +15,7 @@ class JadeWaitViewController: HWFlowBaseViewController {
     @IBOutlet weak var animateView: UIView!
 
     let viewModel = JadeWaitViewModel()
-    var scanModel: ScanViewModel?
+    var scanViewModel: ScanViewModel?
     private var scanCancellable: AnyCancellable?
     var timer: Timer?
     var idx = 0
@@ -38,23 +38,6 @@ class JadeWaitViewController: HWFlowBaseViewController {
         loadNavigationBtns()
         update()
         animateView.alpha = 0.0
-
-        scanCancellable = scanModel?.objectWillChange.sink(receiveValue: { [weak self] in
-            DispatchQueue.main.async {
-                if self?.selectedItem != nil { return }
-                if let peripheral = self?.scanModel?.peripherals.filter({ $0.jade }).first {
-                    self?.selectedItem = peripheral
-                    Task { await self?.scanModel?.stopScan() }
-                    self?.scanCancellable?.cancel()
-                    self?.next()
-                }
-            }
-        })
-    }
-
-    deinit {
-        print("Deinit")
-        scanCancellable?.cancel()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -67,30 +50,69 @@ class JadeWaitViewController: HWFlowBaseViewController {
         }
         start()
         startScan()
-        scanModel?.centralManager.eventPublisher
-            .sink {
+        scanViewModel?.centralManager.eventPublisher
+            .sink { [weak self] in
                 switch $0 {
                 case .didUpdateState(let state):
-                    self.bluetoothState(state)
+                    DispatchQueue.main.async {
+                        self?.onCentralManagerUpdateState(state)
+                    }
                 default:
                     break
                 }
+            }.store(in: &cancellables)
+        scanCancellable = scanViewModel?.objectWillChange.sink(receiveValue: { [weak self] in
+            DispatchQueue.main.async {
+                self?.onUpdateScanViewModel()
             }
-            .store(in: &cancellables)
+        })
+    }
+
+    @MainActor
+    func onUpdateScanViewModel() {
+        if selectedItem != nil { return }
+        if let peripheral = scanViewModel?.peripherals.filter({ $0.jade }).first {
+            selectedItem = peripheral
+            stopScan()
+            next()
+        }
+    }
+
+    @MainActor
+    func onCentralManagerUpdateState(_ state: CBManagerState) {
+        switch state {
+        case .poweredOn:
+            lblLoading.text = "id_looking_for_device".localized
+            startScan()
+        case .poweredOff:
+            lblLoading.text = "id_enable_bluetooth".localized
+            stopScan()
+        default:
+            break
+        }
     }
 
     @MainActor
     func startScan() {
-        bluetoothState(scanModel?.centralManager.bluetoothState)
+        Task {
+            selectedItem = nil
+            do {
+                try await scanViewModel?.scan(deviceType: .Jade)
+            } catch {
+                switch error {
+                case BluetoothError.bluetoothUnavailable:
+                    lblLoading.text = "id_enable_bluetooth".localized
+                default:
+                    lblLoading.text = error.localizedDescription
+                }
+            }
+        }
     }
-
+    
     @MainActor
-    func bluetoothState(_ state: CBManagerState?) {
-        if state == .poweredOff {
-            self.showError("id_enable_bluetooth".localized)
-        } else {
-            self.selectedItem = nil
-            self.scanModel?.startScan(deviceType: .Jade)
+    func stopScan() {
+        Task {
+            await scanViewModel?.stopScan()
         }
     }
 
@@ -104,7 +126,8 @@ class JadeWaitViewController: HWFlowBaseViewController {
         }
         stop()
         timer?.invalidate()
-        Task { await scanModel?.stopScan() }
+        stopScan()
+        scanCancellable?.cancel()
         cancellables.forEach { $0.cancel() }
     }
 
@@ -117,7 +140,6 @@ class JadeWaitViewController: HWFlowBaseViewController {
     }
 
     func refresh() {
-
         UIView.animate(withDuration: 0.25, animations: {
             [self.lblStepNumber, self.lblStepTitle, self.lblStepHint, self.animateView].forEach {
                 $0?.alpha = 0.0
@@ -195,7 +217,7 @@ class JadeWaitViewController: HWFlowBaseViewController {
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
         if let vc = hwFlow.instantiateViewController(withIdentifier: "ScanViewController") as? ScanViewController {
             vc.deviceType = .Jade
-            vc.viewModel = scanModel
+            vc.scanViewModel = scanViewModel
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }

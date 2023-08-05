@@ -9,10 +9,11 @@ class LedgerWaitViewController: HWFlowBaseViewController {
     @IBOutlet weak var lblHint: UILabel!
     @IBOutlet weak var loaderPlaceholder: UIView!
     
-    var scanModel: ScanViewModel?
+    var scanViewModel: ScanViewModel?
     private var scanCancellable: AnyCancellable?
     private var activeToken, resignToken: NSObjectProtocol?
     private var selectedItem: ScanListItem?
+    private var cancellables = Set<AnyCancellable>()
 
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
@@ -25,18 +26,6 @@ class LedgerWaitViewController: HWFlowBaseViewController {
 
         setContent()
         setStyle()
-        
-        scanCancellable = scanModel?.objectWillChange.sink(receiveValue: { [weak self] in
-            DispatchQueue.main.async {
-                if self?.selectedItem != nil { return }
-                if let peripheral = self?.scanModel?.peripherals.first {
-                    self?.selectedItem = peripheral
-                    Task { await self?.scanModel?.stopScan() }
-                    self?.scanCancellable?.cancel()
-                    self?.next()
-                }
-            }
-        })
     }
 
     deinit {
@@ -47,9 +36,25 @@ class LedgerWaitViewController: HWFlowBaseViewController {
         activeToken = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main, using: applicationDidBecomeActive)
         resignToken = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main, using: applicationWillResignActive)
         start()
-        scanModel?.startScan(deviceType: .Ledger)
+        startScan()
+        scanViewModel?.centralManager.eventPublisher
+            .sink { [weak self] in
+                switch $0 {
+                case .didUpdateState(let state):
+                    DispatchQueue.main.async {
+                        self?.onCentralManagerUpdateState(state)
+                    }
+                default:
+                    break
+                }
+            }.store(in: &cancellables)
+        scanCancellable = scanViewModel?.objectWillChange.sink(receiveValue: { [weak self] in
+            DispatchQueue.main.async {
+                self?.onUpdateScanViewModel()
+            }
+        })
     }
-
+    
     override func viewWillDisappear(_ animated: Bool) {
         if let token = activeToken {
             NotificationCenter.default.removeObserver(token)
@@ -57,8 +62,56 @@ class LedgerWaitViewController: HWFlowBaseViewController {
         if let token = resignToken {
             NotificationCenter.default.removeObserver(token)
         }
-        stop()
-        Task { await scanModel?.stopScan() }
+        stopScan()
+        scanCancellable?.cancel()
+        cancellables.forEach { $0.cancel() }
+    }
+
+    @MainActor
+    func onUpdateScanViewModel() {
+        if selectedItem != nil { return }
+        if let peripheral = scanViewModel?.peripherals.filter({ $0.ledger }).first {
+            selectedItem = peripheral
+            stopScan()
+            next()
+        }
+    }
+
+    @MainActor
+    func onCentralManagerUpdateState(_ state: CBManagerState) {
+        switch state {
+        case .poweredOn:
+            startScan()
+        case .poweredOff:
+            showAlert(title: "id_error".localized, message: "id_enable_bluetooth".localized)
+            stopScan()
+        default:
+            break
+        }
+    }
+
+    @MainActor
+    func startScan() {
+        Task {
+            selectedItem = nil
+            do {
+                try await scanViewModel?.scan(deviceType: .Ledger)
+            } catch {
+                switch error {
+                case BluetoothError.bluetoothUnavailable:
+                    showAlert(title: "id_error".localized, message: "id_enable_bluetooth".localized)
+                default:
+                    showAlert(title: "id_error".localized, message: error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    @MainActor
+    func stopScan() {
+        Task {
+            await scanViewModel?.stopScan()
+        }
     }
 
     func setContent() {
@@ -106,7 +159,7 @@ class LedgerWaitViewController: HWFlowBaseViewController {
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
         if let vc = hwFlow.instantiateViewController(withIdentifier: "ScanViewController") as? ScanViewController {
             vc.deviceType = .Ledger
-            vc.viewModel = scanModel
+            vc.scanViewModel = scanViewModel
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }

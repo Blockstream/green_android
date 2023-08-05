@@ -11,7 +11,7 @@ class ScanViewController: HWFlowBaseViewController {
     private var cancellables = Set<AnyCancellable>()
     var deviceType = DeviceType.Jade
 
-    var viewModel: ScanViewModel!
+    var scanViewModel: ScanViewModel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,13 +22,6 @@ class ScanViewController: HWFlowBaseViewController {
         if deviceType == .Jade {
             loadNavigationBtns()
         }
-        
-        // Add this
-        scanCancellable = viewModel.objectWillChange.sink(receiveValue: { [weak self] in
-            DispatchQueue.main.async {
-                self?.tableView.reloadData()
-            }
-        })
         setContent()
         setStyle()
     }
@@ -40,11 +33,18 @@ class ScanViewController: HWFlowBaseViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         startScan()
-        viewModel?.centralManager.eventPublisher
+        scanCancellable = scanViewModel.objectWillChange.sink(receiveValue: { [weak self] in
+            DispatchQueue.main.async {
+                self?.tableView.reloadData()
+            }
+        })
+        scanViewModel?.centralManager.eventPublisher
             .sink {
                 switch $0 {
                 case .didUpdateState(let state):
-                    self.bluetoothState(state)
+                    DispatchQueue.main.async {
+                        self.onCentralManagerUpdateState(state)
+                    }
                 default:
                     break
                 }
@@ -54,22 +54,46 @@ class ScanViewController: HWFlowBaseViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        Task { await viewModel.stopScan() }
+        stopScan()
         scanCancellable?.cancel()
         cancellables.forEach { $0.cancel() }
     }
 
     @MainActor
-    func startScan() {
-        bluetoothState(viewModel?.centralManager.bluetoothState)
+    func onCentralManagerUpdateState(_ state: CBManagerState) {
+        switch state {
+        case .poweredOn:
+            startScan()
+        case .poweredOff:
+            showAlert(title: "id_error".localized, message: "id_enable_bluetooth".localized)
+            scanViewModel?.reset()
+            stopScan()
+        default:
+            break
+        }
     }
 
     @MainActor
-    func bluetoothState(_ state: CBManagerState?) {
-        if state == .poweredOff {
-            self.showError("id_enable_bluetooth".localized)
-        } else {
-            self.viewModel?.startScan(deviceType: self.deviceType)
+    func startScan() {
+        Task {
+            do {
+                scanViewModel?.reset()
+                try await scanViewModel?.scan(deviceType: deviceType)
+            } catch {
+                switch error {
+                case BluetoothError.bluetoothUnavailable:
+                    self.showAlert(title: "id_error".localized, message: "id_enable_bluetooth".localized)
+                default:
+                    self.showAlert(title: "id_error".localized, message: error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    @MainActor
+    func stopScan() {
+        Task {
+            await scanViewModel?.stopScan()
         }
     }
 
@@ -87,7 +111,7 @@ class ScanViewController: HWFlowBaseViewController {
         let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
         if let vc = hwFlow.instantiateViewController(withIdentifier: "PairingSuccessViewController") as? PairingSuccessViewController {
             vc.bleViewModel = BleViewModel.shared
-            vc.scanViewModel = viewModel
+            vc.scanViewModel = scanViewModel
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -120,11 +144,11 @@ extension ScanViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.peripherals.count
+        return scanViewModel.peripherals.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let peripheral = viewModel.peripherals[indexPath.row]
+        let peripheral = scanViewModel.peripherals[indexPath.row]
         if peripheral.jade {
             if let cell = tableView.dequeueReusableCell(withIdentifier: JadeDeviceCell.identifier, for: indexPath) as? JadeDeviceCell {
                 cell.configure(text: peripheral.name)
@@ -162,10 +186,9 @@ extension ScanViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let peripheral = viewModel.peripherals[indexPath.row]
-
+        let peripheral = scanViewModel.peripherals[indexPath.row]
+        stopScan()
         Task {
-            await viewModel.stopScan()
             BleViewModel.shared.type = peripheral.type
             BleViewModel.shared.peripheralID = peripheral.identifier
             try? await BleViewModel.shared.connect()

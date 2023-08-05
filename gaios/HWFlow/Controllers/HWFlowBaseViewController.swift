@@ -30,8 +30,7 @@ class HWFlowBaseViewController: UIViewController {
     @MainActor
     func onError(_ err: Error) {
         stopLoader()
-        let bleError = BleViewModel.shared.toBleError(err, network: nil)
-        let txt = BleViewModel.shared.toErrorString(bleError)
-        DropAlert().error(message: txt)
+        let txt = BleViewModel.shared.toBleError(err, network: nil).localizedDescription
+        DropAlert().error(message: txt.localized)
     }
 }

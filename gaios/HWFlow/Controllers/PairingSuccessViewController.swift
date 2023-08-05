@@ -76,20 +76,28 @@ class PairingSuccessViewController: HWFlowBaseViewController {
     @IBAction func btnContinue(_ sender: Any) {
         startLoader(message: "id_logging_in".localized)
         Task {
+            if let scanViewModel = scanViewModel {
+                await scanViewModel.stopScan()
+            }
+            guard let bleViewModel = bleViewModel else {
+                fatalError()
+            }
             do {
-                await scanViewModel?.stopScan()
-                try await bleViewModel?.connect()
-                if bleViewModel?.type == .Jade {
-                    try? await bleViewModel?.disconnect()
+                if !bleViewModel.isConnected() {
+                    throw BLEManagerError.genericErr(txt: "id_your_device_was_disconnected")
+                }
+                try await bleViewModel.connect()
+                if bleViewModel.type == .Jade {
+                    try? await bleViewModel.disconnect()
                     try await Task.sleep(nanoseconds:  3 * 1_000_000_000)
-                    try await bleViewModel?.connect()
-                    let version = try await bleViewModel?.versionJade()
+                    try await bleViewModel.connect()
+                    let version = try await bleViewModel.versionJade()
                     onJadeConnected(jadeHasPin: version?.jadeHasPin ?? true)
                 } else {
                     onLogin()
                 }
             } catch {
-                try? await bleViewModel?.disconnect()
+                try? await bleViewModel.disconnect()
                 onError(error)
             }
         }

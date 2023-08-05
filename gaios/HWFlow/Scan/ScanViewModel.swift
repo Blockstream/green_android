@@ -11,7 +11,6 @@ enum DeviceType: Int {
 
 class ScanViewModel: ObservableObject {
 
-    @Published private(set) var isScanning = false
     @Published private(set) var peripherals: [ScanListItem] = []
     @Published private(set) var error: String?
     @Published private(set) var isConnected = false
@@ -21,23 +20,11 @@ class ScanViewModel: ObservableObject {
         self.centralManager = centralManager
     }
 
-    func startScan(deviceType: DeviceType) {
-        self.error = nil
-        self.isScanning = true
-        Task {
-            do {
-                try await self.scan(deviceType: deviceType)
-            } catch {
-                DispatchQueue.main.async {
-                    self.error = error.localizedDescription
-                    self.isScanning = false
-                }
-            }
-        }
-    }
-
     func scan(deviceType: DeviceType) async throws {
-        if self.isScanning == false { return }
+        if centralManager.isScanning {
+            return
+        }
+        reset()
         try await self.centralManager.waitUntilReady()
         let uuid = deviceType == .Jade ? BleJade.SERVICE_UUID : BleLedger.SERVICE_UUID
         let service = CBUUID(string: uuid.uuidString)
@@ -45,7 +32,9 @@ class ScanViewModel: ObservableObject {
         connectedPeripherals.forEach { addPeripheral($0, for: deviceType) }
         let scanDataStream = try await centralManager.scanForPeripherals(withServices: [service])
         for await scanData in scanDataStream {
-            addPeripheral(scanData.peripheral, for: deviceType)
+            DispatchQueue.main.async {
+                self.addPeripheral(scanData.peripheral, for: deviceType)
+            }
         }
     }
 
@@ -54,17 +43,20 @@ class ScanViewModel: ObservableObject {
         let name = peripheral.name ?? ""
         let peripheral = ScanListItem(identifier: identifier, name: name, type: deviceType)
         if peripheral.type == deviceType {
-            DispatchQueue.main.async {
-                if self.peripherals.contains(where: { $0.identifier == identifier || $0.name == name }) {
-                    self.peripherals.removeAll(where: { $0.identifier == identifier || $0.name == name })
-                }
-                self.peripherals.append(peripheral)
+            if peripherals.contains(where: { $0.identifier == identifier || $0.name == name }) {
+                peripherals.removeAll(where: { $0.identifier == identifier || $0.name == name })
             }
+            peripherals.append(peripheral)
+        }
+    }
+    
+    func reset() {
+        DispatchQueue.main.async {
+            self.peripherals.removeAll()
         }
     }
 
     func stopScan() async {
-        isScanning = false
         if centralManager.isScanning {
             await centralManager.stopScan()
         }
@@ -72,40 +64,5 @@ class ScanViewModel: ObservableObject {
 
     func peripheral(_ peripheralID: UUID) -> Peripheral? {
         centralManager.retrievePeripherals(withIdentifiers: [peripheralID]).first
-    }
-
-    func connect(_ peripheralID: UUID) {
-        guard let peripheral = self.peripheral(peripheralID) else {
-            self.error = "Unknown peripheral. Did you forget to scan?"
-            return
-        }
-        Task {
-            do {
-                if self.centralManager.isScanning {
-                    await self.centralManager.stopScan()
-                }
-                try await self.centralManager.connect(peripheral)
-                DispatchQueue.main.async {
-                    self.isConnected = true
-                }
-                
-            } catch {
-                DispatchQueue.main.async {
-                    self.error = error.localizedDescription
-                }
-            }
-        }
-    }
-
-    func cancel(_ peripheralID: UUID) {
-        guard let peripheral = self.peripheral(peripheralID) else {
-            self.error = "Unknown peripheral. Did you forget to scan?"
-            return
-        }
-        Task {
-            do {
-                try await self.centralManager.connect(peripheral)
-            } catch {}
-        }
     }
 }

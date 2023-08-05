@@ -156,10 +156,8 @@ class PinCreateViewController: HWFlowBaseViewController {
     @MainActor
     override func onError(_ err: Error) {
         btnContinue.isHidden = false
-        let bleError = bleViewModel?.toBleError(err, network: nil)
-        let txt = bleViewModel?.toErrorString(bleError!)
-        showAlert(title: "id_error".localized, message: txt ?? "")
-        AnalyticsManager.shared.failedWalletLogin(account: account, error: err, prettyError: txt)
+        let txt = bleViewModel?.toBleError(err, network: nil).localizedDescription
+        showError(txt?.localized ?? "")
         Task { try? await bleViewModel?.disconnect() }
     }
 }

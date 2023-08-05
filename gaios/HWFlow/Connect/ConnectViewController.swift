@@ -71,10 +71,7 @@ class ConnectViewController: HWFlowBaseViewController {
                     // pairing roundtrip for jade
                     try? await bleViewModel?.disconnect()
                     try await Task.sleep(nanoseconds:  5 * 1_000_000_000)
-                    await MainActor.run {
-                        selectedItem = nil
-                        scanViewModel?.startScan(deviceType: .Jade)
-                    }
+                    startScan()
                     return
                 }
                 // ping if still connected and responding
@@ -161,14 +158,12 @@ class ConnectViewController: HWFlowBaseViewController {
         Task {
             await scanViewModel?.stopScan()
             setContent()
-            selectedItem = nil
-            scanViewModel?.startScan(deviceType: .Jade)
+            startScan()
         }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        selectedItem = nil
         scanCancellable = scanViewModel?.objectWillChange.sink(receiveValue: { [weak self] in
             DispatchQueue.main.async {
                 if self?.selectedItem != nil { return }
@@ -182,21 +177,32 @@ class ConnectViewController: HWFlowBaseViewController {
             .sink {
                 switch $0 {
                 case .didUpdateState(let state):
-                    DispatchQueue.main.async {
-                        self.bluetoothState(state)
+                    switch state {
+                    case .poweredOn:
+                        DispatchQueue.main.async {
+                            self.progress("id_looking_for_device".localized)
+                            self.startScan()
+                        }
+                    case .poweredOff:
+                        DispatchQueue.main.async {
+                            self.progress("id_enable_bluetooth".localized)
+                            self.stopScan()
+                        }
+                    default:
+                        break
                     }
                 default:
                     break
                 }
             }
             .store(in: &cancellables)
+        startScan()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         activeToken = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main, using: applicationDidBecomeActive)
         resignToken = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main, using: applicationWillResignActive)
-        startScan()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -207,26 +213,33 @@ class ConnectViewController: HWFlowBaseViewController {
         if let token = resignToken {
             NotificationCenter.default.removeObserver(token)
         }
-        Task {
-            await scanViewModel?.stopScan()
-            scanCancellable?.cancel()
-            cancellables.forEach { $0.cancel() }
-        }
+        stopScan()
     }
 
     @MainActor
     func startScan() {
-        bluetoothState(scanViewModel?.centralManager.bluetoothState)
+        Task {
+            selectedItem = nil
+            do {
+                try await scanViewModel?.scan(deviceType: self.account.isJade ? .Jade : .Ledger)
+                self.progress("id_looking_for_device".localized)
+            } catch {
+                switch error {
+                case BluetoothError.bluetoothUnavailable:
+                    progress("id_enable_bluetooth".localized)
+                default:
+                    progress(error.localizedDescription)
+                }
+            }
+        }
     }
-
+    
     @MainActor
-    func bluetoothState(_ state: CBManagerState?) {
-        if state == .poweredOff {
-            self.progress("id_enable_bluetooth".localized)
-        } else {
-            self.progress("id_looking_for_device".localized)
-            self.selectedItem = nil
-            self.scanViewModel?.startScan(deviceType: self.account.isJade ? .Jade : .Ledger)
+    func stopScan() {
+        Task {
+            await scanViewModel?.stopScan()
+            scanCancellable?.cancel()
+            cancellables.forEach { $0.cancel() }
         }
     }
 
@@ -279,11 +292,10 @@ class ConnectViewController: HWFlowBaseViewController {
     override func onError(_ err: Error) {
         stop()
         retryButton.isHidden = false
-        let bleError = bleViewModel?.toBleError(err, network: nil)
-        let txt = bleViewModel?.toErrorString(bleError ?? BLEManagerError.notReady(txt: "id_operation_failure".localized))
-        lblTitle.text = txt
+        let txt = bleViewModel?.toBleError(err, network: nil).localizedDescription ?? "id_operation_failure"
+        lblTitle.text = txt.localized
         image.image = UIImage(named: "il_connection_fail")
-        print ("error: \(bleError)")
+        print ("error: \(txt)")
     }
 }
 
@@ -302,17 +314,17 @@ extension ConnectViewController: UpdateFirmwareViewControllerDelegate {
                 let res = try await bleViewModel?.updateFirmware(firmware: firmware, binary: binary ?? Data())
                 try await bleViewModel?.disconnect()
                 try await Task.sleep(nanoseconds:  5 * 1_000_000_000)
-                self.stopLoader()
                 await MainActor.run {
+                    self.stopLoader()
                     if let res = res, res {
                         DropAlert().success(message: "id_firmware_update_completed".localized)
-                        selectedItem = nil
-                        scanViewModel?.startScan(deviceType: .Jade)
+                        startScan()
                     } else {
                         DropAlert().error(message: "id_operation_failure".localized)
                     }
                 }
             } catch {
+                self.stopLoader()
                 onError(error)
             }
         }
