@@ -145,7 +145,8 @@ class SessionManager {
         let rm = ResolverManager(twoFactorCall,
                                  chain: self.gdkNetwork.chain,
                                  connected: { self.connected && self.logged && !self.paused },
-                                 hwDevice: hw?.interface)
+                                 hwDevice: hw?.interface,
+                                 session: self)
         return try await rm.run()
     }
     

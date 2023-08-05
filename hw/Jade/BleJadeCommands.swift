@@ -77,6 +77,12 @@ public class BleJadeCommands: BleJadeConnection {
         return res
     }
 
+    public func signSimpleMessage(_ params: JadeSignMessage) async throws -> String {
+        let res: JadeResponse<String> = try await exchange(JadeRequest<JadeSignMessage>(method: "sign_message", params: params))
+        guard let res = res.result else { throw HWError.Abort("Invalid response") }
+        return res
+    }
+
     public func getSignature(_ params: JadeGetSignature) async throws -> String {
         let res: JadeResponse<String> = try await exchange(JadeRequest<JadeGetSignature>(method: "get_signature", params: params))
         guard let res = res.result else { throw HWError.Abort("Invalid response") }

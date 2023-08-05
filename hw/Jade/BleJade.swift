@@ -86,12 +86,15 @@ public class BleJade: BleJadeCommands, HWProtocol {
         } else {
             // Standard EC signature, simple case
             let msg = JadeSignMessage(message: params.message, path: pathstr, aeHostCommitment: nil)
-            let cmd = try await signMessage(msg)
-            result = HWSignMessageResult(signature: cmd.hex, signerCommitment: nil)
+            let cmd = try await signSimpleMessage(msg)
+            result = HWSignMessageResult(signature: cmd, signerCommitment: nil)
         }
         // Convert the signature from Base64 into DER hex for GDK
         guard var sigDecoded = Data(base64Encoded: result?.signature ?? "") else {
             throw HWError.Abort("Invalid signature")
+        }
+        if params.recoverable ?? false {
+            return HWSignMessageResult(signature: sigDecoded.hex, signerCommitment: result?.signerCommitment)
         }
         // Need to truncate lead byte if recoverable signature
         if sigDecoded.count == Wally.WALLY_EC_SIGNATURE_RECOVERABLE_LEN {

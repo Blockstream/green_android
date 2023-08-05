@@ -229,12 +229,14 @@ public struct HWSignMessageParams: Codable {
         case aeHostEntropy = "ae_host_entropy"
         case aeHostCommitment = "ae_host_commitment"
         case useAeProtocol = "use_ae_protocol"
+        case recoverable = "recoverable"
     }
     let path: [Int]
     let message: String
     let aeHostEntropy: String?
     let aeHostCommitment: String?
     let useAeProtocol: Bool?
+    let recoverable: Bool?
 }
 
 public struct HWSignMessageResult: Codable {
