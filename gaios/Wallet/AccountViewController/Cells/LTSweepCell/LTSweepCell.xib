@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="100" id="pGB-rW-fFd" customClass="LTSweepCell" customModule="gaios" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="357" height="100"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="pGB-rW-fFd" id="9l0-tz-b6q">
+                <rect key="frame" x="0.0" y="0.0" width="357" height="100"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="c2h-So-LeU">
+                        <rect key="frame" x="25" y="5" width="307" height="85"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lbl_inbound" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pYa-gX-u6y">
+                                <rect key="frame" x="15" y="16" width="277" height="14.333333333333336"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="12"/>
+                                <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="plB-26-Svx">
+                                <rect key="frame" x="15" y="30.333333333333339" width="83" height="49.666666666666657"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="btn_more_info"/>
+                                <connections>
+                                    <action selector="btnMoreInfo:" destination="pGB-rW-fFd" eventType="touchUpInside" id="sPw-Eg-cJU"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" red="0.96470588239999999" green="0.96470588239999999" blue="0.96470588239999999" alpha="0.20069391989999999" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="pYa-gX-u6y" firstAttribute="top" secondItem="c2h-So-LeU" secondAttribute="top" constant="16" id="CFk-Gb-W8K"/>
+                            <constraint firstItem="plB-26-Svx" firstAttribute="top" secondItem="pYa-gX-u6y" secondAttribute="bottom" id="MWR-e3-2FC"/>
+                            <constraint firstAttribute="trailing" secondItem="pYa-gX-u6y" secondAttribute="trailing" constant="15" id="eFQ-40-jB2"/>
+                            <constraint firstAttribute="bottom" secondItem="plB-26-Svx" secondAttribute="bottom" constant="5" id="oiD-tY-1ZE"/>
+                            <constraint firstItem="pYa-gX-u6y" firstAttribute="leading" secondItem="c2h-So-LeU" secondAttribute="leading" constant="15" id="rWo-7A-fbg"/>
+                            <constraint firstItem="plB-26-Svx" firstAttribute="leading" secondItem="pYa-gX-u6y" secondAttribute="leading" id="zRG-1Z-rAi"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                <constraints>
+                    <constraint firstAttribute="bottom" secondItem="c2h-So-LeU" secondAttribute="bottom" constant="10" id="9g6-EM-asB"/>
+                    <constraint firstItem="c2h-So-LeU" firstAttribute="top" secondItem="9l0-tz-b6q" secondAttribute="top" constant="5" id="AnZ-o6-87f"/>
+                    <constraint firstAttribute="trailing" secondItem="c2h-So-LeU" secondAttribute="trailing" constant="25" id="C9D-H7-EBH"/>
+                    <constraint firstItem="c2h-So-LeU" firstAttribute="leading" secondItem="9l0-tz-b6q" secondAttribute="leading" constant="25" id="MGh-YG-PIJ"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="rN6-Fh-lCM"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <connections>
+                <outlet property="bg" destination="c2h-So-LeU" id="l7B-P3-fzU"/>
+                <outlet property="btnMoreInfo" destination="plB-26-Svx" id="3fR-I7-Itw"/>
+                <outlet property="lbl" destination="pYa-gX-u6y" id="5v7-4P-efy"/>
+            </connections>
+            <point key="canvasLocation" x="158.01526717557252" y="7.042253521126761"/>
+        </tableViewCell>
+    </objects>
+</document>

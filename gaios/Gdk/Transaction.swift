@@ -41,7 +41,7 @@ extension Transaction {
 
     func isUnconfirmed(block: UInt32) -> Bool {
         if isLightning {
-            return isInProgressSwap ?? (blockHeight == 0)
+            return isPendingCloseChannel ?? false || blockHeight <= 0
         } else if blockHeight == 0 {
             return true
         } else {
@@ -51,7 +51,7 @@ extension Transaction {
 
     func isPending(block: UInt32) -> Bool {
         if isLightning {
-            return isInProgressSwap ?? (blockHeight == 0)
+            return isPendingCloseChannel ?? false || (blockHeight <= 0)
         } else if blockHeight == 0 {
             return true
         } else if isLiquid && block < blockHeight + 1 && block >= blockHeight {
@@ -66,7 +66,7 @@ extension Transaction {
     static func fromPayment(_ payment: Payment, subaccount: Int) -> Transaction {
         var tx = Transaction([:])
         tx.subaccount = subaccount
-        tx.blockHeight = payment.pending ? 0 : UInt32(payment.paymentTime)
+        tx.blockHeight = UInt32(payment.paymentTime)
         tx.canRBF = false
         tx.memo = payment.description ?? ""
         tx.fee = payment.feeMsat / 1000
@@ -75,6 +75,8 @@ extension Transaction {
         tx.hash = payment.id
         tx.type = payment.paymentType == .received ? .incoming : .outgoing
         tx.amounts = ["btc": payment.amountSatoshi]
+        tx.isLightningSwap = false
+        tx.isPendingCloseChannel = payment.paymentType == PaymentType.closedChannel && payment.pending
         switch payment.details {
         case .ln(let data):
             switch data.lnurlSuccessAction {
@@ -96,7 +98,7 @@ extension Transaction {
     static func fromSwapInfo(_ swapInfo: SwapInfo, subaccount: Int, isRefundableSwap: Bool) -> Transaction {
         var tx = Transaction([:])
         tx.subaccount = subaccount
-        tx.blockHeight = isRefundableSwap ? UInt32.max : 0
+        tx.blockHeight = 0
         tx.canRBF = false
         tx.memo = ""
         tx.fee = 0
@@ -107,6 +109,7 @@ extension Transaction {
         tx.inputs = [["address": swapInfo.bitcoinAddress]]
         tx.outputs = []
         tx.amounts = ["btc": Int64(swapInfo.confirmedSats + swapInfo.unconfirmedSats)]
+        tx.isLightningSwap = true
         tx.isInProgressSwap = swapInfo.confirmedSats > 0 && !isRefundableSwap
         tx.isRefundableSwap = isRefundableSwap
         return tx

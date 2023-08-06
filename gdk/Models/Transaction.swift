@@ -264,6 +264,16 @@ public struct Transaction: Comparable {
         set { details["url"] = newValue }
     }
 
+    public var isPendingCloseChannel: Bool? {
+        get { return get("isPendingCloseChannel") }
+        set { details["isPendingCloseChannel"] = newValue }
+    }
+
+    public var isLightningSwap: Bool? {
+        get { return get("isLightningSwap") }
+        set { details["isLightningSwap"] = newValue }
+    }
+
     public var isInProgressSwap: Bool? {
         get { return get("isInProgressSwap") }
         set { details["isInProgressSwap"] = newValue }

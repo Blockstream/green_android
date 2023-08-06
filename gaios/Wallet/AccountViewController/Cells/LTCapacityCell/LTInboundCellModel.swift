@@ -12,8 +12,8 @@ class LTInboundCellModel {
         "Your receive capacity is \(amount) \(denom) at the moment."
     }
 
-    init(subaccount: WalletItem) {
-        self.amount = subaccount.lightningSession?.nodeState?.inboundLiquiditySatoshi ?? 0
-        self.denom = "sats"
+    init(amount: UInt64, denom: String = "sats") {
+        self.amount = amount
+        self.denom = denom
     }
 }

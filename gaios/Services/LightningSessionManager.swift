@@ -274,11 +274,11 @@ class LightningSessionManager: SessionManager {
             return Transactions(list: [])
         }
         var txs = lb.getTransactions().compactMap { Transaction.fromPayment($0, subaccount: subaccount) }
-        if let swapList = lb.swapList() {
-            txs += swapList.map { Transaction.fromSwapInfo($0, subaccount: subaccount, isRefundableSwap: false) }
+        if let swapList = lb.listRefundables() {
+            txs += swapList.map { Transaction.fromSwapInfo($0, subaccount: subaccount, isRefundableSwap: true) }
         }
         if let swapProgress = lb.swapProgress() {
-            txs += [ Transaction.fromSwapInfo(swapProgress, subaccount: subaccount, isRefundableSwap: true) ]
+            txs += [ Transaction.fromSwapInfo(swapProgress, subaccount: subaccount, isRefundableSwap: false) ]
         }
         return Transactions(list: txs.sorted().reversed())
     }
@@ -288,6 +288,10 @@ class LightningSessionManager: SessionManager {
                           passphrase: credentials.bip39Passphrase,
                           isTestnet: !gdkNetwork.mainnet,
                           index: 0)
+    }
+    
+    func closeChannels() throws {
+        try lightBridge?.closeLspChannels()
     }
 }
 

@@ -38,6 +38,7 @@ extension LnUrlPayRequestData {
 
 extension NodeState {
     public var channelsBalanceSatoshi: UInt64 { channelsBalanceMsat / 1000 }
+    public var onchainBalanceSatoshi: UInt64 { onchainBalanceMsat / 1000 }
     public var maxReceivableSatoshi: UInt64 { maxReceivableMsat / 1000 }
     public var inboundLiquiditySatoshi: UInt64 { inboundLiquidityMsats / 1000 }
     public var maxPaybleSatoshi: UInt64 { maxPayableMsat / 1000 }

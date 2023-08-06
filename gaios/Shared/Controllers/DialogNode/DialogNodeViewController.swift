@@ -1,15 +1,9 @@
 import Foundation
 import UIKit
-
 import gdk
 
-enum NodeCellType: CaseIterable {
-    case id
-    case channelsBalance
-    case inboundLiquidity
-    case maxPayble
-    case maxSinglePaymentAmount
-    case maxReceivable
+protocol DialogNodeViewControllerProtocol {
+    func onCloseChannels()
 }
 
 class DialogNodeViewController: KeyboardViewController {
@@ -24,8 +18,9 @@ class DialogNodeViewController: KeyboardViewController {
     @IBOutlet weak var tableViewHeight: NSLayoutConstraint!
 
     var viewModel: DialogNodeViewModel!
-    private var nodeCellTypes = NodeCellType.allCases
-    var obs: NSKeyValueObservation?
+    var delegate: DialogNodeViewControllerProtocol?
+    private var nodeCellTypes: [NodeCellType] { viewModel.cells }
+    private var obs: NSKeyValueObservation?
 
     private var hideBalance: Bool {
         return UserDefaults.standard.bool(forKey: AppStorage.hideBalance)
@@ -172,6 +167,10 @@ extension DialogNodeViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.configureAmount("Max Single Payment Amount".localized, viewModel.maxSinglePaymentAmount, hideBalance)
             case .maxReceivable:
                 cell.configureAmount("Max Receivable Amount".localized, viewModel.maxReceivable, hideBalance)
+            case .connectedPeers:
+                cell.configureAmount("Connected Peers".localized, viewModel.connectedPeers, false)
+            case .closeChannels:
+                cell.configureAmount("Close Channels".localized, viewModel.closeChannels, false)
             }
             return cell
         }
@@ -179,5 +178,13 @@ extension DialogNodeViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let cellType = nodeCellTypes[indexPath.row]
+        switch cellType {
+        case .closeChannels:
+            delegate?.onCloseChannels()
+            dismiss()
+        default:
+            break
+        }
     }
 }

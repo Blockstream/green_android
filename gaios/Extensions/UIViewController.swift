@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 import gdk
 import greenaddress
+import BreezSDK
 
 extension UIViewController {
 
@@ -46,6 +47,12 @@ extension UIViewController {
             return txt
         case TwoFactorCallError.failure(let txt):
             return txt
+        case BreezSDK.SdkError.Generic(let msg),
+            BreezSDK.SdkError.LspConnectFailed(let msg),
+            BreezSDK.SdkError.PersistenceFailure(let msg),
+            BreezSDK.SdkError.ReceivePaymentFailed(let msg),
+            BreezSDK.SdkError.InitFailed(let msg):
+            return msg
         default:
             return err.localizedDescription
         }

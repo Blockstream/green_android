@@ -526,6 +526,9 @@
 		81A5919D2915772E001D1A65 /* MultisigSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A5919C2915772E001D1A65 /* MultisigSettings.swift */; };
 		81A591A129157B1E001D1A65 /* MultisigSettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A591A029157B1E001D1A65 /* MultisigSettingsCell.swift */; };
 		81A591A329157B32001D1A65 /* MultisigSettingsCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A591A229157B32001D1A65 /* MultisigSettingsCellModel.swift */; };
+		81A773012A80FD0200C9FC5C /* LTSweepCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81A773002A80FD0200C9FC5C /* LTSweepCell.xib */; };
+		81A773032A80FD1100C9FC5C /* LTSweepCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A773022A80FD1100C9FC5C /* LTSweepCell.swift */; };
+		81A773052A81029200C9FC5C /* LTRecoverFundsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A773042A81029100C9FC5C /* LTRecoverFundsViewController.swift */; };
 		81A8F8DF29E4F6170052B214 /* greenaddress.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81961B2729E4F4A000E9B94D /* greenaddress.framework */; };
 		81A8F8E429E4F71C0052B214 /* GDKSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81961A6D29E47E5D00E9B94D /* GDKSession.swift */; };
 		81A8F8FB29E5069F0052B214 /* lightning.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81A8F8F529E5069E0052B214 /* lightning.framework */; };
@@ -1181,6 +1184,9 @@
 		81A5919C2915772E001D1A65 /* MultisigSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigSettings.swift; sourceTree = "<group>"; };
 		81A591A029157B1E001D1A65 /* MultisigSettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigSettingsCell.swift; sourceTree = "<group>"; };
 		81A591A229157B32001D1A65 /* MultisigSettingsCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigSettingsCellModel.swift; sourceTree = "<group>"; };
+		81A773002A80FD0200C9FC5C /* LTSweepCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LTSweepCell.xib; sourceTree = "<group>"; };
+		81A773022A80FD1100C9FC5C /* LTSweepCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTSweepCell.swift; sourceTree = "<group>"; };
+		81A773042A81029100C9FC5C /* LTRecoverFundsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTRecoverFundsViewController.swift; sourceTree = "<group>"; };
 		81A8F8F529E5069E0052B214 /* lightning.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = lightning.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		81A8F90329E5078E0052B214 /* breez_sdk_bindings.swiftmodule */ = {isa = PBXFileReference; lastKnownFileType = file; name = breez_sdk_bindings.swiftmodule; path = lightning/breez/breez_sdk_bindings.swiftmodule; sourceTree = "<group>"; };
 		81A8F91B29E510210052B214 /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
@@ -2227,6 +2233,7 @@
 		34B170E1292E85D900A829B2 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				81A772FF2A80FCDA00C9FC5C /* LTSweepCell */,
 				344915DB2A090C7300D35818 /* LTCapacityCell */,
 				34B170EB292E86A500A829B2 /* DiscloseCell */,
 				34B170EA292E869600A829B2 /* AddingCell */,
@@ -2356,6 +2363,7 @@
 				345402F62A20A6A7002CB598 /* LTAuthViewController.swift */,
 				3407F5CC2A49BBC3005EF8E1 /* LTConfirmingViewController.swift */,
 				3407F5D52A4AD034005EF8E1 /* LTErrorViewController.swift */,
+				81A773042A81029100C9FC5C /* LTRecoverFundsViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -2985,6 +2993,15 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		81A772FF2A80FCDA00C9FC5C /* LTSweepCell */ = {
+			isa = PBXGroup;
+			children = (
+				81A773002A80FD0200C9FC5C /* LTSweepCell.xib */,
+				81A773022A80FD1100C9FC5C /* LTSweepCell.swift */,
+			);
+			path = LTSweepCell;
+			sourceTree = "<group>";
+		};
 		81A8F8F629E5069F0052B214 /* lightning */ = {
 			isa = PBXGroup;
 			children = (
@@ -3333,6 +3350,7 @@
 				34B8DA0B2938FBC2001DA9B9 /* AccountCreateFooterView.xib in Resources */,
 				342F980C29351415005876A8 /* DialogEnable2faCell.xib in Resources */,
 				345FC45C29ED480E009FCF43 /* WOFlow.storyboard in Resources */,
+				81A773012A80FD0200C9FC5C /* LTSweepCell.xib in Resources */,
 				3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */,
 				3487657F29D43B2A0059D05F /* Jade 03 - Faster + BG + Side Scroll.riv in Resources */,
 				344915EA2A0CE24700D35818 /* ReceiveAssetCell.xib in Resources */,
@@ -3611,6 +3629,7 @@
 				34C67E722924D1B000A50F89 /* AssetExpandableView.swift in Sources */,
 				8183778A224E6D4700DC0FB1 /* PgpViewController.swift in Sources */,
 				816282B1260BB201003E5FA6 /* OnBoardParams.swift in Sources */,
+				81A773052A81029200C9FC5C /* LTRecoverFundsViewController.swift in Sources */,
 				3463EBC626AFF25F00F3F2D9 /* UserSettings.swift in Sources */,
 				345FC45F29ED4998009FCF43 /* WOSelectViewController.swift in Sources */,
 				3434766C26822B2F00D7AD43 /* AccessibilityIdentifiers.swift in Sources */,
@@ -3694,6 +3713,7 @@
 				81D671EB26C8007600682508 /* SessionManager.swift in Sources */,
 				6D97046E2344146300839598 /* ModalAnimator.swift in Sources */,
 				81D932132A77968500356D06 /* DialogSignViewModel.swift in Sources */,
+				81A773032A80FD1100C9FC5C /* LTSweepCell.swift in Sources */,
 				34D535E429A773AF00D3B5C5 /* SharePrefs.swift in Sources */,
 				FF29CA7622374F1A0035F95A /* UIButton.swift in Sources */,
 				3488FC6B290AE28000122628 /* BalanceCell.swift in Sources */,

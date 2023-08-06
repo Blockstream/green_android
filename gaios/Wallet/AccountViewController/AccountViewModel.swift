@@ -31,7 +31,19 @@ class AccountViewModel {
     }
 
     var inboundCellModels: [LTInboundCellModel] {
-        account.type.lightning ? [LTInboundCellModel(subaccount: account)] : []
+        if isLightning {
+            let amount = wm.lightningSession?.nodeState?.inboundLiquiditySatoshi ?? 0
+            return [LTInboundCellModel(amount: amount)]
+        }
+        return []
+    }
+
+    var sweepCellModels: [LTSweepCellModel] {
+        let amount = wm.lightningSession?.nodeState?.onchainBalanceSatoshi
+        if isLightning, let amount = amount, amount > 0 {
+            return [LTSweepCellModel(amount: amount)]
+        }
+        return []
     }
 
     var addingCellModels: [AddingCellModel] {
@@ -79,7 +91,6 @@ class AccountViewModel {
         self.cachedBalance = cachedBalance
     }
 
-    
     func getTransactions(restart: Bool = true, max: Int? = nil) async throws {
         if fetchingTxs {
             return
@@ -153,5 +164,18 @@ class AccountViewModel {
         try await session.renameSubaccount(subaccount: account.pointer, newName: name)
         account = try await wm.subaccount(account: account)
         accountCellModels = [AccountCellModel(account: account, satoshi: satoshi)]
+    }
+
+    func ltRecoverFundsViewModel() -> LTRecoverFundsViewModel {
+        LTRecoverFundsViewModel(wallet: account,
+                                address: nil,
+                                amount: wm.lightningSession?.nodeState?.onchainBalanceSatoshi)
+    }
+    
+    func ltRecoverFundsViewModel(tx: Transaction) -> LTRecoverFundsViewModel {
+        let amount = tx.amounts["btc"].map {UInt64($0)}
+        return LTRecoverFundsViewModel(wallet: account,
+                                address: tx.addressees.first?.address,
+                                amount: amount)
     }
 }

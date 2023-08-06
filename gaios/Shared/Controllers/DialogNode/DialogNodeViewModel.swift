@@ -1,9 +1,31 @@
 import Foundation
 import gdk
 
+enum NodeCellType: CaseIterable {
+    case id
+    case channelsBalance
+    case inboundLiquidity
+    case maxPayble
+    case maxSinglePaymentAmount
+    case maxReceivable
+    case connectedPeers
+    case closeChannels
+}
+
 class DialogNodeViewModel {
 
     var lightningSession: LightningSessionManager
+    
+    
+
+    var cells: [NodeCellType] {
+        var list = NodeCellType.allCases
+        if lightningSession.nodeState?.channelsBalanceSatoshi ?? 0 == 0 {
+            list.removeAll { $0 == NodeCellType.closeChannels }
+        }
+        return list
+    }
+
 
     var id: String {
         return lightningSession.nodeState?.id ?? ""
@@ -27,6 +49,14 @@ class DialogNodeViewModel {
 
     var maxReceivable: String {
         return asStr(satoshi: lightningSession.nodeState?.maxReceivableSatoshi)
+    }
+
+    var connectedPeers: String {
+        return lightningSession.nodeState?.connectedPeers.joined(separator: ", ") ?? ""
+    }
+
+    var closeChannels: String {
+        return "Tap to close channels"
     }
 
     init(lightningSession: LightningSessionManager) {

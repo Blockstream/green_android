@@ -163,7 +163,7 @@ public class LightningBridge {
         try? breezSdk?.inProgressSwap()
     }
 
-    public func swapList() -> [SwapInfo]? {
+    public func listRefundables() -> [SwapInfo]? {
         try? breezSdk?.listRefundables()
     }
 
@@ -205,6 +205,17 @@ public class LightningBridge {
 
     public func fetchLspInfo(id: String) -> LspInformation? {
         return try? breezSdk?.fetchLspInfo(lspId: id)
+    }
+
+    public func closeLspChannels() throws {
+        try breezSdk?.closeLspChannels()
+        _ = updateNodeInfo()
+    }
+
+    public func sweep(toAddress: String, satPerVbyte: UInt?) throws  {
+        let feeRateSatsPerVbyte = satPerVbyte.map {UInt64($0)} ?? recommendedFees()?.economyFee ?? 0
+        try breezSdk?.sweep(toAddress: toAddress, feeRateSatsPerVbyte: feeRateSatsPerVbyte)
+        _ = updateNodeInfo()
     }
 }
 

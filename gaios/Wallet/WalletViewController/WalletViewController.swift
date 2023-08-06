@@ -644,17 +644,42 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
             tableView.beginUpdates()
             tableView.endUpdates()
         case .transaction:
-            let transaction = viewModel.txCellModels[indexPath.row].tx
-            let storyboard = UIStoryboard(name: "Transaction", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController {
-                vc.transaction = transaction
-                vc.wallet = transaction.subaccountItem
-                navigationController?.pushViewController(vc, animated: true)
+            let tx = viewModel.txCellModels[indexPath.row].tx
+            if tx.isLightningSwap ?? false {
+                if tx.isRefundableSwap ?? false {
+                    presentLTRecoverFundsViewController(tx)
+                } else {
+                    DropAlert().warning(message: "Swap in progress")
+                }
+            } else {
+                pushTransactionViewController(tx)
             }
             tableView.deselectRow(at: indexPath, animated: false)
             tableView.selectRow(at: IndexPath(row: sIdx, section: WalletSection.account.rawValue), animated: false, scrollPosition: .none)
         default:
             break
+        }
+    }
+
+    func pushTransactionViewController(_ tx: Transaction) {
+        let storyboard = UIStoryboard(name: "Transaction", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController {
+            vc.transaction = tx
+            vc.wallet = tx.subaccountItem
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
+    func presentLTRecoverFundsViewController(_ tx: Transaction) {
+        let amount = tx.amounts["btc"].map {UInt64($0)}
+        let model = LTRecoverFundsViewModel(wallet: tx.subaccountItem,
+                                            address: tx.addressees.first?.address,
+                                            amount: amount)
+        let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
+        if let vc = ltFlow.instantiateViewController(withIdentifier: "LTRecoverFundsViewController") as? LTRecoverFundsViewController {
+            vc.viewModel = model
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
         }
     }
 }

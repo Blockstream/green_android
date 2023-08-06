@@ -8,6 +8,7 @@ enum AccountSection: Int, CaseIterable {
     case account
     case adding
     case disclose
+    case sweep
     case inbound
     case assets
     case transaction
@@ -95,6 +96,10 @@ class AccountViewController: UIViewController {
             isReloading = true
             try? await viewModel.getBalance()
             reloadSections([.disclose, .adding, .account, .assets], animated: true)
+            if viewModel.isLightning {
+                _ = viewModel.account.lightningSession?.lightBridge?.updateNodeInfo()
+                reloadSections([.sweep, .inbound], animated: true)
+            }
             try? await viewModel.getTransactions()
             print (viewModel.txCellModels.count)
             reloadSections([.transaction], animated: true)
@@ -121,7 +126,7 @@ class AccountViewController: UIViewController {
 
     func register() {
         ["AccountCell", "WalletAssetCell", "TransactionCell",
-         "AddingCell", "DiscloseCell", "LTInboundCell"].forEach {
+         "AddingCell", "DiscloseCell", "LTInboundCell", "LTSweepCell"].forEach {
             tableView.register(UINib(nibName: $0, bundle: nil), forCellReuseIdentifier: $0)
         }
     }
@@ -299,10 +304,10 @@ class AccountViewController: UIViewController {
 
     func presentNodeInfo() {
         guard let lightningSession = viewModel.account.lightningSession else { return }
-
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogNodeViewController") as? DialogNodeViewController {
             vc.viewModel = DialogNodeViewModel(lightningSession: lightningSession)
+            vc.delegate = self
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -324,6 +329,36 @@ class AccountViewController: UIViewController {
 
     func onInboundInfo() {
         SafeNavigationManager.shared.navigate( ExternalUrls.helpReceiveCapacity )
+    }
+
+    func presentLTRecoverFundsViewController(_ model: LTRecoverFundsViewModel) {
+        let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
+        if let vc = ltFlow.instantiateViewController(withIdentifier: "LTRecoverFundsViewController") as? LTRecoverFundsViewController {
+            vc.viewModel = model
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    func presentDialogDetailViewController(_ model: WalletAssetCellModel) {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogDetailViewController") as? DialogDetailViewController {
+            vc.asset = model.asset
+            vc.tag = model.asset?.assetId ?? ""
+            vc.satoshi = model.satoshi
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    func pushTransactionViewController(_ tx: Transaction) {
+        let storyboard = UIStoryboard(name: "Transaction", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController {
+            vc.transaction = tx
+            vc.wallet = tx.subaccountItem
+            vc.delegate = self
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
     @IBAction func btnSend(_ sender: Any) {
@@ -376,6 +411,8 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
             return viewModel.addingCellModels.count
         case .disclose:
             return viewModel.discloseCellModels.count
+        case .sweep:
+            return viewModel.sweepCellModels.count
         case .inbound:
             return viewModel.inboundCellModels.count
         case .assets:
@@ -419,6 +456,16 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
         case .disclose:
             if let cell = tableView.dequeueReusableCell(withIdentifier: DiscloseCell.identifier, for: indexPath) as? DiscloseCell {
                 cell.configure(model: viewModel.discloseCellModels[indexPath.row])
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .sweep:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: LTSweepCell.identifier, for: indexPath) as? LTSweepCell {
+                cell.configure(model: viewModel.sweepCellModels[indexPath.row], onInfo: { [weak self] in
+                    if let self = self {
+                        self.presentLTRecoverFundsViewController(self.viewModel.ltRecoverFundsViewModel())
+                    }
+                })
                 cell.selectionStyle = .none
                 return cell
             }
@@ -521,24 +568,20 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
         case .inbound:
             break
         case .assets:
-            let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "DialogDetailViewController") as? DialogDetailViewController {
-                if let model = viewModel?.assetCellModels[indexPath.row] {
-                    vc.asset = model.asset
-                    vc.tag = model.asset?.assetId ?? ""
-                    vc.satoshi = model.satoshi
-                }
-                vc.modalPresentationStyle = .overFullScreen
-                present(vc, animated: false, completion: nil)
+            if let assetModel = viewModel?.assetCellModels[indexPath.row] {
+                presentDialogDetailViewController(assetModel)
             }
         case .transaction:
-            let transaction = viewModel?.txCellModels[indexPath.row].tx
-            let storyboard = UIStoryboard(name: "Transaction", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController, let account = transaction?.subaccountItem {
-                vc.transaction = transaction
-                vc.wallet = account
-                vc.delegate = self
-                navigationController?.pushViewController(vc, animated: true)
+            if let tx = viewModel?.txCellModels[indexPath.row].tx {
+                if tx.isLightningSwap ?? false {
+                    if tx.isRefundableSwap ?? false {
+                        presentLTRecoverFundsViewController(viewModel.ltRecoverFundsViewModel(tx: tx))
+                    } else {
+                        DropAlert().warning(message: "Swap in progress")
+                    }
+                } else {
+                    pushTransactionViewController(tx)
+                }
             }
         default:
             break
@@ -791,5 +834,33 @@ extension AccountViewController: DialogScanViewControllerDelegate {
     }
 
     func didStop() {
+    }
+}
+extension AccountViewController: DialogNodeViewControllerProtocol {
+    func onCloseChannels() {
+        startAnimating()
+        let session = WalletManager.current?.lightningSession
+        Task {
+            do {
+                try session?.lightBridge?.closeLspChannels()
+                stopAnimating()
+                presentAlertClosedChannels()
+            } catch {
+                stopAnimating()
+                showError(error)
+            }
+        }
+    }
+    
+    @MainActor
+    func presentAlertClosedChannels() {
+        let alert = UIAlertController(title: "Close Channel",
+                                      message: "We are closing your channel. You can recover your funds in a bit",
+                                      preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: "id_ok".localized,
+                                      style: .cancel) { _ in
+            self.reload()
+        })
+        self.present(alert, animated: true, completion: nil)
     }
 }
