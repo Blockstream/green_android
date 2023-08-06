@@ -35,10 +35,6 @@ class LightningSessionManager: SessionManager {
         return lightBridge?.connectToGreenlight(mnemonic: mnemonic, isRestore: isRestore) ?? false
     }
 
-    override func register(credentials: Credentials? = nil, hw: HWDevice? = nil) async throws {
-        _ = try await self.loginUser(credentials!, restore: false)
-    }
-
     override func loginUser(credentials: Credentials? = nil, hw: HWDevice? = nil, restore: Bool) async throws -> LoginUserResult {
         guard let params = credentials else { throw LoginError.connectionFailed() }
         let walletId = walletIdentifier(credentials: params)
@@ -63,6 +59,10 @@ class LightningSessionManager: SessionManager {
         nodeState = lightBridge?.updateNodeInfo()
         lspInfo = lightBridge?.updateLspInformation()
         return res
+    }
+
+    override func register(credentials: Credentials? = nil, hw: HWDevice? = nil) async throws {
+        _ = try await loginUser(credentials: credentials!, restore: false)
     }
 
     deinit {
