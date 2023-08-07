@@ -24,6 +24,7 @@ class ReceiveViewModel {
     var address: Address?
     var invoice: LnInvoice?
     var swap: SwapInfo?
+    var inputDenomination: gdk.DenominationType?
 
     var wm: WalletManager { WalletManager.current! }
 
@@ -93,6 +94,7 @@ class ReceiveViewModel {
         amountCell.channelFeePercent =  lspInfo?.channelFeePercent
         amountCell.channelMinFee =  lspInfo?.channelMinimumFeeSatoshi
         amountCell.inboundLiquidity =  nodeState?.inboundLiquiditySatoshi
+        amountCell.inputDenomination = inputDenomination
         return amountCell
     }
 
@@ -174,5 +176,22 @@ class ReceiveViewModel {
         }
         let list = AssetAmountList.from(assetIds: assets.map { $0.assetId })
         return AssetExpandableSelectViewModel(assets: list, enableAnyAsset: true /* isLiquid */, onlyFunded: false)
+    }
+
+    func dialogInputDenominationViewModel(inputDenomination: DenominationType?) -> DialogInputDenominationViewModel? {
+        guard let session =  account.session else { return nil }
+
+        let list: [DenominationType] = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats]
+        var selected = DenominationType.Sats // todo: settings.denomination
+        if let inputDenomination = inputDenomination { selected = inputDenomination }
+        let network: NetworkSecurityCase = session.gdkNetwork.mainnet ? .bitcoinSS : .testnetSS
+        return DialogInputDenominationViewModel(denomination: selected,
+                                           denominations: list,
+                                           network: network,
+                                            isFiat: isFiat)
+    }
+
+    func getBalance() -> Balance? {
+        return Balance.fromSatoshi(satoshi ?? 0.0, assetId: asset)
     }
 }

@@ -140,3 +140,36 @@ extension Balance {
         return "\(amount) \(currency)"
     }
 }
+
+extension Balance {
+
+    func toInputDenom(inputDenomination: gdk.DenominationType?) -> (String, String) {
+        if let inputDenomination = inputDenomination {
+            let res = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any]
+            let value = res![inputDenomination.rawValue] as? String
+            let network: NetworkSecurityCase = {
+                switch assetId {
+                case Balance.lbtc: return .liquidSS
+                case Balance.ltest: return .testnetLiquidSS
+                default: return Balance.session?.gdkNetwork.mainnet ?? true ? .bitcoinSS : .testnetSS
+                }
+            }()
+            return (value?.localeFormattedString(Int(inputDenomination.digits)) ?? "n/a", inputDenomination.string(for: network.gdkNetwork))
+        } else {
+            return toDenom()
+        }
+    }
+
+    func toInputDenominationValue(_ denomination: gdk.DenominationType?) -> (String, String) {
+        if let denomination = denomination {
+            if !Balance.isBtc(assetId) {
+                return toAssetValue()
+            } else {
+                return toInputDenom(inputDenomination: denomination)
+            }
+        } else {
+            return toValue()
+        }
+    }
+}
+

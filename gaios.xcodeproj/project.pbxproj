@@ -316,6 +316,10 @@
 		34C67E772924F57F00A50F89 /* AccountSelectSubCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C67E752924F57F00A50F89 /* AccountSelectSubCell.swift */; };
 		34C67E782924F57F00A50F89 /* AccountSelectSubCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34C67E762924F57F00A50F89 /* AccountSelectSubCell.xib */; };
 		34C67E7A2924F59700A50F89 /* AccountSelectSubCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C67E792924F59700A50F89 /* AccountSelectSubCellModel.swift */; };
+		34C680E82A72778200369639 /* DialogInputDenominationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C680E72A72778200369639 /* DialogInputDenominationViewController.swift */; };
+		34C680EA2A72779900369639 /* DialogInputDenominationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C680E92A72779900369639 /* DialogInputDenominationViewModel.swift */; };
+		34C680EE2A72784900369639 /* DialogInputDenominationCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34C680ED2A72784900369639 /* DialogInputDenominationCell.xib */; };
+		34C680F02A72786500369639 /* DialogInputDenominationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C680EF2A72786500369639 /* DialogInputDenominationCell.swift */; };
 		34C7AD08272143E700F437B5 /* DialogOTAViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */; };
 		34C8585629F9012C004A3F83 /* LTFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34C8585529F9012C004A3F83 /* LTFlow.storyboard */; };
 		34C8E77629BF868500C84066 /* JadeDeviceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C8E77429BF868500C84066 /* JadeDeviceCell.swift */; };
@@ -333,6 +337,8 @@
 		34CF91D92A31BE8200498B08 /* RecoveryTransactionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CF91D82A31BE8200498B08 /* RecoveryTransactionsViewController.swift */; };
 		34D330442863485E009CDBB3 /* DialogWatchOnlySetUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D330432863485E009CDBB3 /* DialogWatchOnlySetUp.swift */; };
 		34D369C125FA3ED0001B32A3 /* MnemonicViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */; };
+		34D51B692A77939D00C0AF12 /* DialogInputDenominationFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34D51B682A77939D00C0AF12 /* DialogInputDenominationFooter.xib */; };
+		34D51B6B2A7794AA00C0AF12 /* DialogInputDenominationFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D51B6A2A7794AA00C0AF12 /* DialogInputDenominationFooter.swift */; };
 		34D535E429A773AF00D3B5C5 /* SharePrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D535E329A773AF00D3B5C5 /* SharePrefs.swift */; };
 		34D535E629A77D4B00D3B5C5 /* MoreOptPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D535E529A77D4B00D3B5C5 /* MoreOptPrefs.swift */; };
 		34D66CED29CA10EF00BBBC5C /* PopoverMenuHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D66CEC29CA10EF00BBBC5C /* PopoverMenuHomeViewController.swift */; };
@@ -953,6 +959,10 @@
 		34C67E752924F57F00A50F89 /* AccountSelectSubCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSelectSubCell.swift; sourceTree = "<group>"; };
 		34C67E762924F57F00A50F89 /* AccountSelectSubCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountSelectSubCell.xib; sourceTree = "<group>"; };
 		34C67E792924F59700A50F89 /* AccountSelectSubCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSelectSubCellModel.swift; sourceTree = "<group>"; };
+		34C680E72A72778200369639 /* DialogInputDenominationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogInputDenominationViewController.swift; sourceTree = "<group>"; };
+		34C680E92A72779900369639 /* DialogInputDenominationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogInputDenominationViewModel.swift; sourceTree = "<group>"; };
+		34C680ED2A72784900369639 /* DialogInputDenominationCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = DialogInputDenominationCell.xib; path = gaios/Shared/Controllers/DialogInputDenomination/DialogInputDenominationCell.xib; sourceTree = SOURCE_ROOT; };
+		34C680EF2A72786500369639 /* DialogInputDenominationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogInputDenominationCell.swift; sourceTree = "<group>"; };
 		34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogOTAViewController.swift; sourceTree = "<group>"; };
 		34C8585529F9012C004A3F83 /* LTFlow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LTFlow.storyboard; sourceTree = "<group>"; };
 		34C8E77429BF868500C84066 /* JadeDeviceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeDeviceCell.swift; sourceTree = "<group>"; };
@@ -970,6 +980,8 @@
 		34CF91D82A31BE8200498B08 /* RecoveryTransactionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryTransactionsViewController.swift; sourceTree = "<group>"; };
 		34D330432863485E009CDBB3 /* DialogWatchOnlySetUp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWatchOnlySetUp.swift; sourceTree = "<group>"; };
 		34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicViewController.swift; sourceTree = "<group>"; };
+		34D51B682A77939D00C0AF12 /* DialogInputDenominationFooter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DialogInputDenominationFooter.xib; sourceTree = "<group>"; };
+		34D51B6A2A7794AA00C0AF12 /* DialogInputDenominationFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogInputDenominationFooter.swift; sourceTree = "<group>"; };
 		34D535E329A773AF00D3B5C5 /* SharePrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePrefs.swift; sourceTree = "<group>"; };
 		34D535E529A77D4B00D3B5C5 /* MoreOptPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreOptPrefs.swift; sourceTree = "<group>"; };
 		34D66CEC29CA10EF00BBBC5C /* PopoverMenuHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverMenuHomeViewController.swift; sourceTree = "<group>"; };
@@ -2306,6 +2318,26 @@
 			path = DialogQR;
 			sourceTree = "<group>";
 		};
+		34C680E52A72773E00369639 /* DialogInputDenomination */ = {
+			isa = PBXGroup;
+			children = (
+				34D51B672A77937F00C0AF12 /* Views */,
+				34C680E62A72775800369639 /* Cells */,
+				34C680E72A72778200369639 /* DialogInputDenominationViewController.swift */,
+				34C680E92A72779900369639 /* DialogInputDenominationViewModel.swift */,
+			);
+			path = DialogInputDenomination;
+			sourceTree = "<group>";
+		};
+		34C680E62A72775800369639 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				34C680EF2A72786500369639 /* DialogInputDenominationCell.swift */,
+				34C680ED2A72784900369639 /* DialogInputDenominationCell.xib */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
 		34C8585229F900AE004A3F83 /* LTFlow */ = {
 			isa = PBXGroup;
 			children = (
@@ -2334,6 +2366,15 @@
 				34C978A7268DC14D0061264D /* Extensions.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		34D51B672A77937F00C0AF12 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				34D51B6A2A7794AA00C0AF12 /* DialogInputDenominationFooter.swift */,
+				34D51B682A77939D00C0AF12 /* DialogInputDenominationFooter.xib */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		34D761322A384E9000DE57F5 /* DenominationExchangeFlow */ = {
@@ -2388,6 +2429,7 @@
 				340A5F5528E33F51003D56B1 /* DialogSafeNavigationViewController.swift */,
 				81E8C358291FDAF000B2196B /* DialogTableViewController.swift */,
 				816C3DFD298D0AF9003D29F1 /* DialogJadeCheckViewController.swift */,
+				34C680E52A72773E00369639 /* DialogInputDenomination */,
 				34BF09DC2A658B9C00523E4C /* DialogQR */,
 				3407F5D22A4ABC4E005EF8E1 /* DialogFeedback */,
 				345402E02A1E42BF002CB598 /* Dialogdenomination */,
@@ -3279,6 +3321,7 @@
 				345E1A8A261EEB7000A1D934 /* DrawerNetworkSelection.storyboard in Resources */,
 				34C8E77729BF868500C84066 /* JadeDeviceCell.xib in Resources */,
 				81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */,
+				34D51B692A77939D00C0AF12 /* DialogInputDenominationFooter.xib in Resources */,
 				34BBCEF62971516F0057DF4A /* AccountAssetCell.xib in Resources */,
 				3487657C29D43B2A0059D05F /* Jade 04 - Faster + BG + Refresh.riv in Resources */,
 				3499655829E569D60092B5BD /* Jade 01 - Adjusted.riv in Resources */,
@@ -3355,6 +3398,7 @@
 				81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */,
 				3415CB0E2A67BFE500B66882 /* AddressAuthCell.xib in Resources */,
 				34C8585629F9012C004A3F83 /* LTFlow.storyboard in Resources */,
+				34C680EE2A72784900369639 /* DialogInputDenominationCell.xib in Resources */,
 				8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */,
 				6D8099D823021CEF0069A69F /* PopoverMenu.storyboard in Resources */,
 				3478E88A2A2DD0190080B50E /* Illustration Rocket.riv in Resources */,
@@ -3468,6 +3512,7 @@
 				34BF09DE2A658BB800523E4C /* DialogQRViewController.swift in Sources */,
 				3498079D291CE42100F8DB95 /* AssetSelectCellModel.swift in Sources */,
 				81A5919D2915772E001D1A65 /* MultisigSettings.swift in Sources */,
+				34C680EA2A72779900369639 /* DialogInputDenominationViewModel.swift in Sources */,
 				81BF5D4928C885AF006225C6 /* WalletManager.swift in Sources */,
 				6D0983C623FC848C00289ACA /* HelpCell.swift in Sources */,
 				3497936C25F8B18C0029ECB1 /* StrokeColorAnimation.swift in Sources */,
@@ -3533,6 +3578,7 @@
 				81772B332992BC9800F05BF2 /* RecipientCellModel.swift in Sources */,
 				34B8DA0D2938FC0B001DA9B9 /* AccountCreateFooterView.swift in Sources */,
 				3415862129EE80AC005002D9 /* WOSetupViewController.swift in Sources */,
+				34C680F02A72786500369639 /* DialogInputDenominationCell.swift in Sources */,
 				819F1AEA2A0E4D0600ECF999 /* AccountType.swift in Sources */,
 				812DBDC42977EE7F002992D6 /* TwoFactorSettingsViewModel.swift in Sources */,
 				092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */,
@@ -3541,6 +3587,7 @@
 				34477D3B277216640021698B /* FeeEditCell.swift in Sources */,
 				34C8E78029C069F400C84066 /* PinCreateViewController.swift in Sources */,
 				34A75B6B292B6BA8007995D7 /* OnBoardInfoCell.swift in Sources */,
+				34C680E82A72778200369639 /* DialogInputDenominationViewController.swift in Sources */,
 				34C8E78229C0746E00C84066 /* ConnectViewController.swift in Sources */,
 				340F07F02620A6BB0065A986 /* DialogRecoveryHelpViewController.swift in Sources */,
 				3448B5CD29D48B32008D5746 /* TransactionDetailNoteCell.swift in Sources */,
@@ -3608,6 +3655,7 @@
 				34F9809C2913A5EC00C12D48 /* WalletAssetCell.swift in Sources */,
 				3420471A291B9AA700EDE945 /* PolicyCellModel.swift in Sources */,
 				3403BDAC2630282600118C64 /* Learn2faViewController.swift in Sources */,
+				34D51B6B2A7794AA00C0AF12 /* DialogInputDenominationFooter.swift in Sources */,
 				8189230429F67F5500551824 /* WOViewModel.swift in Sources */,
 				818BA7152A2F913C00DFB03A /* CentralManager.swift in Sources */,
 				34F980AA2914286300C12D48 /* AccountViewModel.swift in Sources */,

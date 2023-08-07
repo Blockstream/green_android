@@ -6,6 +6,7 @@ protocol AmountEditCellDelegate {
     func sendAll(enabled: Bool)
     func amountDidChange(text: String, isFiat: Bool)
     func onFocus()
+    func onInputDenomination()
 }
 
 struct AmountEditCellModel {
@@ -17,6 +18,7 @@ struct AmountEditCellModel {
     var sendAll: Bool = false
     var isFiat: Bool = false
     var isLightning: Bool = false
+    var inputDenomination: gdk.DenominationType?
 
     var balanceText: String? {
         Balance.fromSatoshi(balance ?? 0, assetId: assetId)?.toText()
@@ -31,7 +33,7 @@ struct AmountEditCellModel {
         return nil
     }
     var ticker: String {
-        Balance.fromSatoshi(0, assetId: assetId)?.toValue().1 ?? ""
+        Balance.fromSatoshi(0, assetId: assetId)?.toInputDenominationValue(inputDenomination).1 ?? ""
     }
     
     var currency: String {
@@ -90,16 +92,17 @@ class AmountEditCell: UITableViewCell {
     }
 
     @IBAction func convertTap(_ sender: Any) {
-        let newState = !(cellModel?.isFiat ?? false)
-        cellModel?.isFiat = newState
-        balance(isFiat: newState)
-        ticker(isFiat: newState)
-        if newState {
-            amountTextField.text = Balance.fromDenomination(amountTextField.text ?? "", assetId: cellModel?.assetId ?? AssetInfo.btcId)?.toFiat().0
-        } else {
-            amountTextField.text = Balance.fromFiat(amountTextField.text ?? "")?.toDenom().0
-        }
-        triggerTextChange()
+        delegate?.onInputDenomination()
+//        let newState = !(cellModel?.isFiat ?? false)
+//        cellModel?.isFiat = newState
+//        balance(isFiat: newState)
+//        ticker(isFiat: newState)
+//        if newState {
+//            amountTextField.text = Balance.fromDenomination(amountTextField.text ?? "", assetId: cellModel?.assetId ?? AssetInfo.btcId)?.toFiat().0
+//        } else {
+//            amountTextField.text = Balance.fromFiat(amountTextField.text ?? "")?.toDenom().0
+//        }
+//        triggerTextChange()
     }
 
     @IBAction func pasteTap(_ sender: Any) {
@@ -112,6 +115,10 @@ class AmountEditCell: UITableViewCell {
     @IBAction func cancelTap(_ sender: Any) {
         amountTextField.text = ""
         triggerTextChange()
+    }
+
+    @IBAction func btnInputDenomination(_ sender: Any) {
+        delegate?.onInputDenomination()
     }
 
     func configure(cellModel: AmountEditCellModel, delegate: AmountEditCellDelegate) {
@@ -140,7 +147,9 @@ class AmountEditCell: UITableViewCell {
     }
 
     func ticker(isFiat: Bool) {
-        denominationLabel.text = isFiat ? cellModel?.currency : cellModel?.ticker
+        let txt = isFiat ? cellModel?.currency : cellModel?.ticker
+        denominationLabel.attributedText = NSAttributedString(string: txt ?? "", attributes:
+            [.underlineStyle: NSUnderlineStyle.single.rawValue])
     }
 
     func sendAll(enabled: Bool) {

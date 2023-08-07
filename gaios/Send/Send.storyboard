@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -430,6 +430,14 @@
                                                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                             <nil key="highlightedColor"/>
                                                                         </label>
+                                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UpZ-O2-tFH">
+                                                                            <rect key="frame" x="222.33333333333334" y="11.666666666666664" width="50.666666666666657" height="37"/>
+                                                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                                            <connections>
+                                                                                <action selector="btnInputDenomination:" destination="cm0-dg-kgw" eventType="touchUpInside" id="f4c-Kc-Zxa"/>
+                                                                            </connections>
+                                                                        </button>
                                                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="BI6-ih-DxE">
                                                                             <rect key="frame" x="283" y="15" width="30" height="30"/>
                                                                             <subviews>
@@ -479,7 +487,11 @@
                                                                     <constraints>
                                                                         <constraint firstItem="BI6-ih-DxE" firstAttribute="centerY" secondItem="GLI-9E-J2s" secondAttribute="centerY" id="JVw-nc-Rj5"/>
                                                                         <constraint firstItem="BI6-ih-DxE" firstAttribute="leading" secondItem="Mls-M5-jjV" secondAttribute="trailing" constant="10" id="NKA-7P-rbO"/>
+                                                                        <constraint firstItem="UpZ-O2-tFH" firstAttribute="trailing" secondItem="Mls-M5-jjV" secondAttribute="trailing" id="NNd-hb-6Ht"/>
+                                                                        <constraint firstItem="UpZ-O2-tFH" firstAttribute="leading" secondItem="Mls-M5-jjV" secondAttribute="leading" id="O1L-us-8oV"/>
+                                                                        <constraint firstItem="UpZ-O2-tFH" firstAttribute="bottom" secondItem="Mls-M5-jjV" secondAttribute="bottom" constant="10" id="PG0-D1-glU"/>
                                                                         <constraint firstItem="Mls-M5-jjV" firstAttribute="leading" secondItem="GLI-9E-J2s" secondAttribute="trailing" constant="10" id="Qw8-f4-bGU"/>
+                                                                        <constraint firstItem="UpZ-O2-tFH" firstAttribute="top" secondItem="Mls-M5-jjV" secondAttribute="top" constant="-10" id="ZeM-d3-d1P"/>
                                                                         <constraint firstAttribute="height" constant="60" id="bbk-9A-UmL"/>
                                                                         <constraint firstItem="ShT-Ex-eKW" firstAttribute="centerY" secondItem="cPT-Z6-G3g" secondAttribute="centerY" id="ds2-tb-LYC"/>
                                                                         <constraint firstItem="ShT-Ex-eKW" firstAttribute="leading" secondItem="BI6-ih-DxE" secondAttribute="trailing" constant="5" id="gJA-TA-nek"/>

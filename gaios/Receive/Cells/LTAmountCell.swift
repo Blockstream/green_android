@@ -11,6 +11,7 @@ protocol LTAmountCellDelegate: AnyObject {
     func textFieldDidChange(_ satoshi: Int64?, isFiat: Bool)
     func textFieldEnabled()
     func onFeeInfo()
+    func onInputDenomination()
 }
 
 class LTAmountCell: UITableViewCell {
@@ -58,7 +59,7 @@ class LTAmountCell: UITableViewCell {
         self.model = model
         self.enabled = enabled
         textField.text = model.amountText
-        lblAsset.text = model.denomText
+        lblAsset.attributedText = model.denomText
         textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         if enabled {
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
@@ -87,7 +88,7 @@ class LTAmountCell: UITableViewCell {
             lblAmount.text = "≈\(model?.fiat ?? "") \(model?.currency ?? "")"
         }
         lblLimit.text = "Max Limit: \(model?.maxLimitAmount ?? "") \(model?.denom ?? "")"
-        lblAsset.text = model?.denomText
+        lblAsset.attributedText = model?.denomText
         lblAmount.isHidden = lblAmount.text == "≈ "
         updateState()
     }
@@ -120,19 +121,20 @@ class LTAmountCell: UITableViewCell {
     }
 
     @IBAction func onSwitch(_ sender: Any) {
-        model?.isFiat.toggle()
-        if let value = textField.text {
-            if model?.isFiat ?? false {
-                if let balance = Balance.fromDenomination(value, assetId: AssetInfo.btcId) {
-                    textField.text = balance.toFiat().0
-                }
-            } else {
-                if let balance = Balance.fromFiat(value) {
-                    textField.text = (balance.toUnlocaleDenom().0)
-                }
-            }
-        }
-        textFieldDidChange(textField)
+        delegate?.onInputDenomination()
+//        model?.isFiat.toggle()
+//        if let value = textField.text {
+//            if model?.isFiat ?? false {
+//                if let balance = Balance.fromDenomination(value, assetId: AssetInfo.btcId) {
+//                    textField.text = balance.toFiat().0
+//                }
+//            } else {
+//                if let balance = Balance.fromFiat(value) {
+//                    textField.text = (balance.toUnlocaleDenom().0)
+//                }
+//            }
+//        }
+//        textFieldDidChange(textField)
     }
 
     @IBAction func btnPaste(_ sender: Any) {
@@ -183,5 +185,9 @@ class LTAmountCell: UITableViewCell {
 
     @IBAction func btnFeeInfo(_ sender: Any) {
         delegate?.onFeeInfo()
+    }
+
+    @IBAction func btnInputDenomination(_ sender: Any) {
+        delegate?.onInputDenomination()
     }
 }

@@ -349,6 +349,19 @@ class ReceiveViewController: KeyboardViewController {
         SafeNavigationManager.shared.navigate( ExternalUrls.helpReceiveFees )
     }
 
+    func showDialogInputDenominations() {
+        guard let model = viewModel.dialogInputDenominationViewModel(inputDenomination: viewModel.inputDenomination) else { return }
+
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogInputDenominationViewController") as? DialogInputDenominationViewController, let balance = viewModel.getBalance() {
+            vc.viewModel = model
+            vc.delegate = self
+            vc.balance = balance
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
     @IBAction func btnShare(_ sender: Any) {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
@@ -695,6 +708,11 @@ extension ReceiveViewController: LTSuccessViewControllerDelegate {
 }
 
 extension ReceiveViewController: LTAmountCellDelegate {
+
+    func onInputDenomination() {
+        showDialogInputDenominations()
+    }
+
     func onFeeInfo() {
         showLightningFeeInfo()
     }
@@ -709,5 +727,19 @@ extension ReceiveViewController: LTAmountCellDelegate {
         viewModel.isFiat = isFiat
         tableView.beginUpdates()
         tableView.endUpdates()
+    }
+}
+
+extension ReceiveViewController: DialogInputDenominationViewControllerDelagate {
+
+    func didSelectFiat() {
+        viewModel.isFiat = true
+        tableView.reloadData()
+    }
+
+    func didSelectInput(denomination: gdk.DenominationType) {
+        viewModel.isFiat = false
+        viewModel?.inputDenomination = denomination
+        tableView.reloadData()
     }
 }

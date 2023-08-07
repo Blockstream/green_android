@@ -22,7 +22,20 @@ struct LTAmountCellModel {
     }
     var isFiat: Bool = false
     var amountText: String? { isFiat ? fiat : amount }
-    var denomText: String? { isFiat ? (currency == nil ? defaultCurrency : currency) : denom }
+    var denomText: NSAttributedString {
+        var txt: String?
+        if isFiat {
+            txt = currency == nil ? defaultCurrency : currency
+        } else {
+            if let inputDenomination = inputDenomination {
+                txt = inputDenomination.rawValue
+            } else {
+                txt = denom
+            }
+        }
+        return NSAttributedString(string: txt ?? "", attributes:
+            [.underlineStyle: NSUnderlineStyle.single.rawValue])
+    }
     var fiat: String? = nil
     var currency: String? = nil
     var maxLimitAmount: String? = nil
@@ -47,4 +60,5 @@ struct LTAmountCellModel {
         }
         return currency
     }
+    var inputDenomination: gdk.DenominationType?
 }

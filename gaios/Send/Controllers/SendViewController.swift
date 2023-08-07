@@ -149,6 +149,19 @@ class SendViewController: KeyboardViewController {
         }
     }
 
+    func showDialogInputDenominations() {
+        guard let model = viewModel.dialogInputDenominationViewModel(inputDenomination: viewModel.inputDenomination) else { return }
+
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogInputDenominationViewController") as? DialogInputDenominationViewController, let balance = viewModel.getBalance() {
+            vc.viewModel = model
+            vc.delegate = self
+            vc.balance = balance
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+    
     @IBAction func btnNext(_ sender: Any) {
         onTransactionReady()
     }
@@ -412,6 +425,10 @@ extension SendViewController: AddressEditCellDelegate {
 }
 
 extension SendViewController: AmountEditCellDelegate {
+    func onInputDenomination() {
+        showDialogInputDenominations()
+    }
+    
     func sendAll(enabled: Bool) {
         viewModel.sendAll = enabled
         viewModel.amount = nil
@@ -429,5 +446,21 @@ extension SendViewController: AmountEditCellDelegate {
         if !viewModel.account.type.lightning {
             tableView.scrollToRow(at: IndexPath(row: 0, section: SendSection.fee.rawValue), at: .bottom, animated: true)
         }
+    }
+}
+
+extension SendViewController: DialogInputDenominationViewControllerDelagate {
+
+    func didSelectFiat() {
+        viewModel.isFiat = true
+        reloadSections([.amount], animated: false)
+        validateTransaction()
+    }
+
+    func didSelectInput(denomination: gdk.DenominationType) {
+        viewModel.isFiat = false
+        viewModel?.inputDenomination = denomination
+        reloadSections([.amount], animated: false)
+        validateTransaction()
     }
 }

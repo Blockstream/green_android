@@ -12,7 +12,8 @@ class SendViewModel {
     var inputType: TxType
     var remoteAlert: RemoteAlert?
     var validateTask: Task<Transaction?, Error>?
-    
+    var inputDenomination: gdk.DenominationType?
+
     var account: WalletItem {
         didSet {
             transaction = nil
@@ -235,7 +236,7 @@ class SendViewModel {
     
     var amountCellModel: AmountEditCellModel {
         let balance = account.satoshi?[assetId ?? feeAsset]
-        return AmountEditCellModel(text: amount, error: amountError, balance: balance, assetId: assetId ?? AssetInfo.btcId, editable: editable, sendAll: sendAll, isFiat: isFiat, isLightning: account.type.lightning)
+        return AmountEditCellModel(text: amount, error: amountError, balance: balance, assetId: assetId ?? AssetInfo.btcId, editable: editable, sendAll: sendAll, isFiat: isFiat, isLightning: account.type.lightning, inputDenomination: inputDenomination)
     }
     
     var addressEditCellModel: AddressEditCellModel {
@@ -256,5 +257,22 @@ class SendViewModel {
         inputType = parser.txType
         inputError = parser.createTx?.error
         self.reload()
+    }
+
+    func dialogInputDenominationViewModel(inputDenomination: DenominationType?) -> DialogInputDenominationViewModel? {
+        guard let settings = session.settings else { return nil }
+
+        let list: [DenominationType] = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats]
+        var selected = settings.denomination
+        if let inputDenomination = inputDenomination { selected = inputDenomination }
+        let network: NetworkSecurityCase = session.gdkNetwork.mainnet ? .bitcoinSS : .testnetSS
+        return DialogInputDenominationViewModel(denomination: selected,
+                                           denominations: list,
+                                           network: network,
+                                            isFiat: isFiat)
+    }
+
+    func getBalance() -> Balance? {
+        return Balance.fromSatoshi(satoshi ?? 0.0, assetId: assetId ?? feeAsset)
     }
 }

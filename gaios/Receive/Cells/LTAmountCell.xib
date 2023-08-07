@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -37,6 +37,13 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c6E-GO-feE">
+                                <rect key="frame" x="177.33333333333334" y="11.666666666666664" width="50.666666666666657" height="37"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <connections>
+                                    <action selector="btnInputDenomination:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="xuR-Dl-fd6"/>
+                                </connections>
+                            </button>
                             <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ajN-Pc-A8c">
                                 <rect key="frame" x="238" y="15" width="90" height="30"/>
                                 <subviews>
@@ -99,11 +106,15 @@
                         <constraints>
                             <constraint firstItem="zxa-IN-Nbu" firstAttribute="centerY" secondItem="zeF-Sx-49A" secondAttribute="centerY" id="2bN-NU-Yul"/>
                             <constraint firstItem="ajN-Pc-A8c" firstAttribute="centerY" secondItem="zeF-Sx-49A" secondAttribute="centerY" id="9Yg-GU-DFR"/>
+                            <constraint firstItem="c6E-GO-feE" firstAttribute="trailing" secondItem="zxa-IN-Nbu" secondAttribute="trailing" id="Bd4-mf-Iy8"/>
+                            <constraint firstItem="c6E-GO-feE" firstAttribute="top" secondItem="zxa-IN-Nbu" secondAttribute="top" constant="-10" id="COp-It-Shc"/>
                             <constraint firstItem="zxa-IN-Nbu" firstAttribute="leading" secondItem="zeF-Sx-49A" secondAttribute="trailing" constant="10" id="Dat-tf-oP3"/>
                             <constraint firstItem="zeF-Sx-49A" firstAttribute="centerY" secondItem="Lct-1Z-cm5" secondAttribute="centerY" id="L79-LP-OTg"/>
                             <constraint firstAttribute="trailing" secondItem="ajN-Pc-A8c" secondAttribute="trailing" constant="10" id="L9O-PQ-IHW"/>
                             <constraint firstItem="zeF-Sx-49A" firstAttribute="leading" secondItem="Lct-1Z-cm5" secondAttribute="leading" constant="10" id="M53-yN-Jds"/>
                             <constraint firstItem="ajN-Pc-A8c" firstAttribute="leading" secondItem="zxa-IN-Nbu" secondAttribute="trailing" constant="10" id="O6X-H1-3T2"/>
+                            <constraint firstItem="c6E-GO-feE" firstAttribute="bottom" secondItem="zxa-IN-Nbu" secondAttribute="bottom" constant="10" id="YEV-fV-zoF"/>
+                            <constraint firstItem="c6E-GO-feE" firstAttribute="leading" secondItem="zxa-IN-Nbu" secondAttribute="leading" id="hNz-fp-Jex"/>
                             <constraint firstAttribute="height" constant="60" id="mLm-Cl-Hu9"/>
                         </constraints>
                     </view>
