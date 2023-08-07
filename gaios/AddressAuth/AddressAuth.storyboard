@@ -55,7 +55,7 @@
                                     <outlet property="delegate" destination="p56-dO-ssl" id="DH2-ZG-ujs"/>
                                 </connections>
                             </tableView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bg_actions" translatesAutoresizingMaskIntoConstraints="NO" id="4Cm-Gh-b08">
+                            <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bg_actions" translatesAutoresizingMaskIntoConstraints="NO" id="4Cm-Gh-b08">
                                 <rect key="frame" x="0.0" y="660" width="393" height="192"/>
                             </imageView>
                         </subviews>
@@ -151,7 +151,7 @@
                                                                                         <nil key="highlightedColor"/>
                                                                                     </label>
                                                                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="8cl-nG-Ewv">
-                                                                                        <rect key="frame" x="24" y="37" width="345" height="100"/>
+                                                                                        <rect key="frame" x="24" y="37.000000000000057" width="345" height="100"/>
                                                                                         <color key="backgroundColor" name="customTextFieldBg"/>
                                                                                         <constraints>
                                                                                             <constraint firstAttribute="height" constant="100" id="hB7-YX-hMz"/>
@@ -161,7 +161,7 @@
                                                                                         <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardAppearance="alert" smartInsertDeleteType="no"/>
                                                                                     </textView>
                                                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6fZ-EG-BUX">
-                                                                                        <rect key="frame" x="263.66666666666669" y="97" width="95.333333333333314" height="30"/>
+                                                                                        <rect key="frame" x="263.66666666666669" y="97.000000000000057" width="95.333333333333314" height="30"/>
                                                                                         <color key="backgroundColor" red="0.29411764705882354" green="0.29411764705882354" blue="0.29411764705882354" alpha="1" colorSpace="calibratedRGB"/>
                                                                                         <constraints>
                                                                                             <constraint firstAttribute="height" constant="30" id="uwz-IN-uFT"/>

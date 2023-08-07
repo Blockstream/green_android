@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Update gdk to 0.0.65
 - Improve signing on Ledger
 
+### Added
+- Address authentication for singlesig software wallets
+
 ## [4.0.10] - 2023-07-25
 
 ### Changed
