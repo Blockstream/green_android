@@ -146,6 +146,9 @@ extension UIColor {
     class func gW40() -> UIColor {
         return UIColor(named: "gW40")!
     }
+    class func gW60() -> UIColor {
+        return UIColor(named: "gW60")!
+    }
     class func gGreenFluo() -> UIColor {
         return UIColor(named: "gGreenFluo")!
     }

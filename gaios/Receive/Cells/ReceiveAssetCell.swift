@@ -30,7 +30,7 @@ class ReceiveAssetCell: UITableViewCell {
         self.lblAsset.text = name ?? ticker
         self.iconAsset.image = model.icon
         self.lblAccount1.text = model.account.localizedName.uppercased()
-        self.lblAccount2.text = model.account.localizedType.uppercased()
+        self.lblAccount2.text = model.account.type.longText.uppercased()
         self.iconType.image = networkImage(model.account.gdkNetwork)
         self.onTap = onTap
     }

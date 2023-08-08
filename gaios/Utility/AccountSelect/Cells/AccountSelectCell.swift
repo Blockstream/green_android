@@ -30,6 +30,6 @@ class AccountSelectCell: UITableViewCell {
         imgMS.isHidden = !model.account.type.multisig
         imgLight.isHidden = !model.account.type.lightning
         lblName.text = model.account.localizedName
-        lblType.text = model.account.type.subtitle.uppercased()
+        lblType.text = model.account.type.longText.uppercased()
     }
 }

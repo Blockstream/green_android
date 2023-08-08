@@ -54,7 +54,7 @@ class AccountArchiveCell: UITableViewCell {
             lblBalance.text = "\(denom) \(amount)"
             lblBalance.isHidden = false
         }
-        self.lblAccountHint.text = account.localizedType
+        self.lblAccountHint.text = account.type.longText.uppercased()
         self.action = action
         self.actionBtn.isHidden = false
         for v in iconsStack.subviews {

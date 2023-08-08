@@ -18,7 +18,7 @@ class AccountArchiveViewModel {
     func loadSubaccounts() async throws {
         let subaccounts = try await wm.subaccounts().filter { $0.hidden }
         let res = try? await wm.balances(subaccounts: subaccounts)
-        self.accountCellModels = subaccounts.map { AccountCellModel(subaccount: $0, satoshi: $0.btc) }
+        self.accountCellModels = subaccounts.map { AccountCellModel(account: $0, satoshi: $0.btc) }
     }
 
     func unarchiveSubaccount(_ subaccount: WalletItem) async throws {

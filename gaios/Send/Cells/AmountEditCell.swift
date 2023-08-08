@@ -92,17 +92,18 @@ class AmountEditCell: UITableViewCell {
     }
 
     @IBAction func convertTap(_ sender: Any) {
-        delegate?.onInputDenomination()
-//        let newState = !(cellModel?.isFiat ?? false)
-//        cellModel?.isFiat = newState
-//        balance(isFiat: newState)
-//        ticker(isFiat: newState)
-//        if newState {
-//            amountTextField.text = Balance.fromDenomination(amountTextField.text ?? "", assetId: cellModel?.assetId ?? AssetInfo.btcId)?.toFiat().0
-//        } else {
-//            amountTextField.text = Balance.fromFiat(amountTextField.text ?? "")?.toDenom().0
-//        }
-//        triggerTextChange()
+        /// not testable yet
+        //delegate?.onInputDenomination()
+        let newState = !(cellModel?.isFiat ?? false)
+        cellModel?.isFiat = newState
+        balance(isFiat: newState)
+        ticker(isFiat: newState)
+        if newState {
+            amountTextField.text = Balance.fromDenomination(amountTextField.text ?? "", assetId: cellModel?.assetId ?? AssetInfo.btcId)?.toFiat().0
+        } else {
+            amountTextField.text = Balance.fromFiat(amountTextField.text ?? "")?.toDenom().0
+        }
+        triggerTextChange()
     }
 
     @IBAction func pasteTap(_ sender: Any) {
@@ -118,7 +119,8 @@ class AmountEditCell: UITableViewCell {
     }
 
     @IBAction func btnInputDenomination(_ sender: Any) {
-        delegate?.onInputDenomination()
+        /// not testable yet
+        //delegate?.onInputDenomination()
     }
 
     func configure(cellModel: AmountEditCellModel, delegate: AmountEditCellDelegate) {

@@ -6,7 +6,8 @@ struct PolicyCellModel {
 
     var isSS: Bool { policy.accountType.singlesig }
     var isLight: Bool { policy.accountType.lightning }
-    var type: String { policy.accountType.subtitle }
+    var type: String { policy.accountType.network }
+    var typeDesc: String { policy.accountType.shortText }
     var name: String { policy.accountType.string }
     var hint: String
     var policy: PolicyCellType

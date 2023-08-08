@@ -21,9 +21,4 @@ extension WalletItem {
         }
         return "\(type.string.localized)\(network)"
     }
-
-    var localizedType: String {
-        return type.subtitle.localized.uppercased()
-    }
-
 }

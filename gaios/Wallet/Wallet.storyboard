@@ -134,7 +134,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Eyp-hM-WIP">
-                                <rect key="frame" x="0.0" y="48" width="414" height="814"/>
+                                <rect key="frame" x="0.0" y="48" width="414" height="848"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Gue-4M-nav" userLabel="NetworkView">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="20"/>
@@ -156,7 +156,7 @@
                                         </constraints>
                                     </view>
                                     <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GVC-MA-XMp">
-                                        <rect key="frame" x="0.0" y="20" width="414" height="794"/>
+                                        <rect key="frame" x="0.0" y="20" width="414" height="828"/>
                                         <connections>
                                             <segue destination="34U-nb-dki" kind="embed" id="ySC-LT-Tbw"/>
                                         </connections>
@@ -169,7 +169,7 @@
                         <constraints>
                             <constraint firstItem="Eyp-hM-WIP" firstAttribute="leading" secondItem="qbj-po-6Ot" secondAttribute="leading" id="BtH-dR-aTV"/>
                             <constraint firstItem="qbj-po-6Ot" firstAttribute="trailing" secondItem="Eyp-hM-WIP" secondAttribute="trailing" id="COR-2y-BgN"/>
-                            <constraint firstItem="qbj-po-6Ot" firstAttribute="bottom" secondItem="Eyp-hM-WIP" secondAttribute="bottom" id="IOC-Vo-s3g"/>
+                            <constraint firstAttribute="bottom" secondItem="Eyp-hM-WIP" secondAttribute="bottom" id="IOC-Vo-s3g"/>
                             <constraint firstItem="Eyp-hM-WIP" firstAttribute="top" secondItem="qbj-po-6Ot" secondAttribute="top" id="jSs-nv-qEO"/>
                         </constraints>
                     </view>

@@ -36,7 +36,7 @@ class AccountAssetCell: UITableViewCell {
     func configure(model: AccountAssetCellModel) {
         self.lblAsset.text = model.asset.name ?? model.asset.assetId
         self.lblAccount.text = model.account.localizedName.uppercased()
-        self.lblType.text = model.account.localizedType.uppercased()
+        self.lblType.text = model.account.type.longText.uppercased()
 
         imgView.image = model.icon
         imgSS.isHidden = !model.account.gdkNetwork.singlesig

@@ -8,8 +8,11 @@ class PolicyCell: UITableViewCell {
     @IBOutlet weak var imgSS: UIImageView!
     @IBOutlet weak var imgLight: UIImageView!
     @IBOutlet weak var lblType: UILabel!
+    @IBOutlet weak var lblTypeDesc: UILabel!
     @IBOutlet weak var lblName: UILabel!
     @IBOutlet weak var lblHint: UILabel!
+    @IBOutlet weak var bgType: UIView!
+    @IBOutlet weak var bgTypeDesc: UIView!
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -18,6 +21,11 @@ class PolicyCell: UITableViewCell {
         btnDisclose.isUserInteractionEnabled = false
         btnDisclose.backgroundColor = UIColor.gGreenMatrix()
         btnDisclose.cornerRadius = 4.0
+        bgType.cornerRadius = bgType.frame.size.height / 2.0
+        bgTypeDesc.cornerRadius = bgType.frame.size.height / 2.0
+        lblName.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
+        lblHint.setStyle(.txtCard)
+        lblHint.textColor = UIColor.gW60()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -35,12 +43,15 @@ class PolicyCell: UITableViewCell {
         imgSS.isHidden = !model.isSS
         imgMS.isHidden = model.isSS
         lblType.text = model.type.uppercased()
+        lblTypeDesc.text = model.typeDesc.uppercased()
         lblName.text = model.name
         lblHint.text = model.hint
         if model.isLight == true {
             imgLight.isHidden = false
             imgSS.isHidden = true
             imgMS.isHidden = true
+            lblTypeDesc.textColor = .white
+            bgTypeDesc.backgroundColor = UIColor.gLightning()
         }
     }
 }

@@ -51,7 +51,7 @@ class WalletViewModel {
     }
 
     func loadSubaccounts() async {
-        self.accountCellModels = self.subaccounts.map { AccountCellModel(subaccount: $0, satoshi: $0.btc) }
+        self.accountCellModels = self.subaccounts.map { AccountCellModel(account: $0, satoshi: $0.btc) }
     }
 
     func selectSubaccount(_ newAccount: WalletItem? = nil) {
@@ -72,7 +72,7 @@ class WalletViewModel {
     func loadBalances() async throws {
         let balances = try await wm?.balances(subaccounts: self.subaccounts)
         let cachedBalance = await AssetAmountList(balances ?? [:])
-        self.accountCellModels = subaccounts.map { AccountCellModel(subaccount: $0, satoshi: $0.btc) }
+        self.accountCellModels = subaccounts.map { AccountCellModel(account: $0, satoshi: $0.btc) }
         self.cachedBalance = cachedBalance
         let satoshi = cachedBalance.satoshi()
         balanceCellModel = BalanceCellModel(satoshi: satoshi,

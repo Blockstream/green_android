@@ -109,7 +109,7 @@ class AccountViewModel {
         if let balances = try? await wm.balances(subaccounts: [account]) {
             cachedBalance = AssetAmountList(balances)
         }
-        accountCellModels = [AccountCellModel(subaccount: account, satoshi: satoshi)]
+        accountCellModels = [AccountCellModel(account: account, satoshi: satoshi)]
         assetCellModels = cachedBalance.amounts.map { WalletAssetCellModel(assetId: $0.0, satoshi: $0.1) }
     }
 
@@ -128,7 +128,7 @@ class AccountViewModel {
         }
         try await session.updateSubaccount(subaccount: account.pointer, hidden: true)
         account = try await wm.subaccount(account: account)
-        accountCellModels = [AccountCellModel(subaccount: account, satoshi: satoshi)]
+        accountCellModels = [AccountCellModel(account: account, satoshi: satoshi)]
     }
 
     func removeSubaccount() async throws {
@@ -152,6 +152,6 @@ class AccountViewModel {
         }
         try await session.renameSubaccount(subaccount: account.pointer, newName: name)
         account = try await wm.subaccount(account: account)
-        accountCellModels = [AccountCellModel(subaccount: account, satoshi: satoshi)]
+        accountCellModels = [AccountCellModel(account: account, satoshi: satoshi)]
     }
 }
