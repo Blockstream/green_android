@@ -2,12 +2,18 @@ import UIKit
 
 class ReceiveAddressCell: UITableViewCell {
 
+    @IBOutlet weak var bgCard: UIView!
     @IBOutlet weak var bgCardQR: UIView!
     @IBOutlet weak var btnQRCode: UIButton!
     @IBOutlet weak var lblAddress: UILabel!
     @IBOutlet weak var btnCopy: UIButton!
     @IBOutlet weak var qrFrame: UIView!
     @IBOutlet weak var loader: UIActivityIndicatorView!
+    
+    @IBOutlet weak var lnBannerBox: UIView!
+    @IBOutlet weak var lnBanner: UIView!
+    @IBOutlet weak var lblInfo: UILabel!
+    @IBOutlet weak var btnRefresh: UIButton!
     
     static var identifier: String { return String(describing: self) }
 
@@ -18,12 +24,16 @@ class ReceiveAddressCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        bgCardQR.layer.cornerRadius = 5.0
+        bgCard.layer.cornerRadius = 5.0
         //btnCopy.setTitle("id_copy_address".localized, for: .normal)
         btnCopy.cornerRadius = 5.0
 
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
         qrFrame.addGestureRecognizer(longPressRecognizer)
+        lnBanner.backgroundColor = UIColor.gGreenFluo().withAlphaComponent(0.2)
+        lnBanner.cornerRadius = 5.0
+        lblInfo.setStyle(.txtSmaller)
+        lnBannerBox.isHidden = true
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -44,7 +54,7 @@ class ReceiveAddressCell: UITableViewCell {
             let frame = CGRect(x: 0.0, y: 0.0, width: dim, height: dim)
             btnQRCode.setImage(QRImageGenerator.imageForTextWhite(text: uri, frame: frame), for: .normal)
             btnQRCode.imageView?.contentMode = .scaleAspectFit
-            if model.tyoe == .bolt11 {
+            if model.type == .bolt11 {
                 qrFrame.backgroundColor = .white
             }
         } else {
@@ -58,6 +68,13 @@ class ReceiveAddressCell: UITableViewCell {
             loader.stopAnimating()
             loader.isHidden = true
         }
+        lnBannerBox.isHidden = true
+        if let onChaininfo = model.onChaininfo, model.type == .swap {
+            lnBannerBox.isHidden = false
+            lblInfo.text = onChaininfo
+            btnRefresh.isHidden = true
+        }
+        
         self.onLongpress = onLongpress
     }
 

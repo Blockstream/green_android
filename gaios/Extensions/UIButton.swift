@@ -9,6 +9,7 @@ enum ButtonStyle {
     case outlinedWhite
     case outlinedWhiteDisabled
     case inline
+    case inlineGray
     case inlineDisabled
     case destructiveOutlined
 }
@@ -152,7 +153,7 @@ extension UIButton {
             setTitleColor(.white, for: .normal)
             isEnabled = true
         case .primaryGray:
-            backgroundColor = UIColor.customModalMedium()
+            backgroundColor = UIColor.gW40()
             setTitleColor(.white, for: .normal)
             isEnabled = true
         case .primaryDisabled:
@@ -189,6 +190,10 @@ extension UIButton {
         case .inline:
             backgroundColor = UIColor.clear
             setTitleColor(UIColor.gGreenMatrix(), for: .normal)
+            isEnabled = true
+        case .inlineGray:
+            backgroundColor = UIColor.clear
+            setTitleColor(UIColor.gW40(), for: .normal)
             isEnabled = true
         case .inlineDisabled:
             backgroundColor = UIColor.clear

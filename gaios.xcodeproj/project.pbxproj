@@ -87,6 +87,9 @@
 		342560AC268B4C5300136ACC /* PopoverMenuWallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342560AB268B4C5300136ACC /* PopoverMenuWallet.swift */; };
 		342560AE268B4EBE00136ACC /* DialogWalletDelete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342560AD268B4EBE00136ACC /* DialogWalletDelete.swift */; };
 		342560B0268B52E100136ACC /* RestoreWallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342560AF268B52E100136ACC /* RestoreWallet.swift */; };
+		34287B722A8385330065471F /* Alert.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34287B712A8385330065471F /* Alert.storyboard */; };
+		34287B752A83855B0065471F /* AlertViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34287B742A83855B0065471F /* AlertViewController.swift */; };
+		34287B772A8385820065471F /* AlertViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34287B762A8385820065471F /* AlertViewModel.swift */; };
 		342F980C29351415005876A8 /* DialogEnable2faCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 342F980B29351415005876A8 /* DialogEnable2faCell.xib */; };
 		342F980E29351444005876A8 /* DialogEnable2faCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342F980D29351444005876A8 /* DialogEnable2faCell.swift */; };
 		342F98102935145A005876A8 /* DialogEnable2faCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342F980F2935145A005876A8 /* DialogEnable2faCellModel.swift */; };
@@ -736,6 +739,9 @@
 		342560AB268B4C5300136ACC /* PopoverMenuWallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverMenuWallet.swift; sourceTree = "<group>"; };
 		342560AD268B4EBE00136ACC /* DialogWalletDelete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWalletDelete.swift; sourceTree = "<group>"; };
 		342560AF268B52E100136ACC /* RestoreWallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreWallet.swift; sourceTree = "<group>"; };
+		34287B712A8385330065471F /* Alert.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Alert.storyboard; sourceTree = "<group>"; };
+		34287B742A83855B0065471F /* AlertViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertViewController.swift; sourceTree = "<group>"; };
+		34287B762A8385820065471F /* AlertViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertViewModel.swift; sourceTree = "<group>"; };
 		342F980B29351415005876A8 /* DialogEnable2faCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = DialogEnable2faCell.xib; path = gaios/Shared/Controllers/DialogList/Cells/DialogListCell/DialogEnable2faCell.xib; sourceTree = SOURCE_ROOT; };
 		342F980D29351444005876A8 /* DialogEnable2faCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DialogEnable2faCell.swift; sourceTree = "<group>"; };
 		342F980F2935145A005876A8 /* DialogEnable2faCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DialogEnable2faCellModel.swift; path = gaios/Shared/Controllers/DialogList/Cells/DialogListCell/DialogEnable2faCellModel.swift; sourceTree = SOURCE_ROOT; };
@@ -1511,6 +1517,15 @@
 				34B30F77277C693700D37A3C /* SendConfirmViewController.swift */,
 			);
 			path = Controllers;
+			sourceTree = "<group>";
+		};
+		34287B732A83854C0065471F /* Alert */ = {
+			isa = PBXGroup;
+			children = (
+				34287B742A83855B0065471F /* AlertViewController.swift */,
+				34287B762A8385820065471F /* AlertViewModel.swift */,
+			);
+			path = Alert;
 			sourceTree = "<group>";
 		};
 		342F98082934F45A005876A8 /* AlertCardCell */ = {
@@ -2414,8 +2429,10 @@
 		34DDD0A7260A484E00020380 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				34287B732A83854C0065471F /* Alert */,
 				3457F4B62923A6D300EF33B5 /* Models */,
 				34DDD0A8260A486300020380 /* Shared.storyboard */,
+				34287B712A8385330065471F /* Alert.storyboard */,
 				3457F4A62923943C00EF33B5 /* Dialogs.storyboard */,
 				343A697C27E08AA3008D5F4C /* Cells */,
 				34DDD0AC260A48DF00020380 /* Controllers */,
@@ -3363,6 +3380,7 @@
 				345E1A8A261EEB7000A1D934 /* DrawerNetworkSelection.storyboard in Resources */,
 				34C8E77729BF868500C84066 /* JadeDeviceCell.xib in Resources */,
 				81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */,
+				34287B722A8385330065471F /* Alert.storyboard in Resources */,
 				34D51B692A77939D00C0AF12 /* DialogInputDenominationFooter.xib in Resources */,
 				34BBCEF62971516F0057DF4A /* AccountAssetCell.xib in Resources */,
 				3487657C29D43B2A0059D05F /* Jade 04 - Faster + BG + Refresh.riv in Resources */,
@@ -3574,6 +3592,7 @@
 				818BA7182A30838F00DFB03A /* PairingSuccessViewController.swift in Sources */,
 				818BA7132A2F909B00DFB03A /* ScanListItem.swift in Sources */,
 				3497936F25F8B18C0029ECB1 /* StrokeAnimation.swift in Sources */,
+				34287B772A8385820065471F /* AlertViewModel.swift in Sources */,
 				3498079F291CF05700F8DB95 /* Collection.swift in Sources */,
 				3499655529E542D70092B5BD /* DialogRenameViewController.swift in Sources */,
 				344915DE2A090CA800D35818 /* LTInboundCell.swift in Sources */,
@@ -3834,6 +3853,7 @@
 				81961AB029E4B29C00E9B94D /* AssetInfo.swift in Sources */,
 				34F8E7C32823E66C00555F5B /* AMViews.swift in Sources */,
 				34BEEAEF2857274700C0187D /* DialogWatchOnlySetUpViewController.swift in Sources */,
+				34287B752A83855B0065471F /* AlertViewController.swift in Sources */,
 				34D369C125FA3ED0001B32A3 /* MnemonicViewController.swift in Sources */,
 				345E1A91261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift in Sources */,
 				344915ED2A0CE26700D35818 /* ReceiveAddressCell.swift in Sources */,

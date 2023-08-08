@@ -650,7 +650,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
             /*
             if tx.isLightningSwap ?? false {
                 if tx.isRefundableSwap ?? false {
-                    presentLTRecoverFundsViewController(tx)
+                    pushLTRecoverFundsViewController(tx)
                 } else {
                     DropAlert().warning(message: "Swap in progress")
                 }
@@ -673,7 +673,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
 
-    func presentLTRecoverFundsViewController(_ tx: Transaction) {
+    func pushLTRecoverFundsViewController(_ tx: Transaction) {
         let amount = tx.amounts["btc"].map {UInt64($0)}
         let address = tx.inputs?.first?["address"] as? String
         let model = LTRecoverFundsViewModel(wallet: tx.subaccountItem,

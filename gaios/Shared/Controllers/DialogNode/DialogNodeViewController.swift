@@ -6,6 +6,11 @@ protocol DialogNodeViewControllerProtocol {
     func onCloseChannels()
 }
 
+enum DialogNodeAction {
+    case closeChannel
+    case cancel
+}
+
 class DialogNodeViewController: KeyboardViewController {
 
     @IBOutlet weak var tappableBg: UIView!
@@ -16,7 +21,8 @@ class DialogNodeViewController: KeyboardViewController {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var tableViewHeight: NSLayoutConstraint!
-
+    @IBOutlet weak var btnCloseChannel: UIButton!
+    
     var viewModel: DialogNodeViewModel!
     var delegate: DialogNodeViewControllerProtocol?
     private var nodeCellTypes: [NodeCellType] { viewModel.cells }
@@ -62,6 +68,8 @@ class DialogNodeViewController: KeyboardViewController {
         obs = tableView.observe(\UITableView.contentSize, options: .new) { [weak self] table, _ in
             self?.tableViewHeight.constant = table.contentSize.height
         }
+
+        btnCloseChannel.isHidden = viewModel.hideBtnClose
     }
 
     deinit {
@@ -92,11 +100,12 @@ class DialogNodeViewController: KeyboardViewController {
 
     @objc func didTap(gesture: UIGestureRecognizer) {
 
-        dismiss()
+        dismiss(.cancel)
     }
 
     func setContent() {
         lblTitle.text = "Node Info"
+        btnCloseChannel.setTitle("Close Channel", for: .normal)
     }
 
     func setStyle() {
@@ -104,6 +113,7 @@ class DialogNodeViewController: KeyboardViewController {
         cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         handle.cornerRadius = 1.5
         lblTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
+        btnCloseChannel.setStyle(.primary)
     }
 
     func register() {
@@ -112,13 +122,21 @@ class DialogNodeViewController: KeyboardViewController {
         }
     }
 
-    func dismiss() {
+    func dismiss(_ action: DialogNodeAction) {
         anchorBottom.constant = -cardView.frame.size.height
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0
             self.view.layoutIfNeeded()
         }, completion: { _ in
-            self.dismiss(animated: false, completion: nil)
+            self.dismiss(animated: false, completion: {
+                switch action {
+                case .closeChannel:
+                    self.delegate?.onCloseChannels()
+                default:
+                    break
+                }
+                
+            })
         })
     }
 
@@ -127,7 +145,7 @@ class DialogNodeViewController: KeyboardViewController {
         if let swipeGesture = gesture as? UISwipeGestureRecognizer {
             switch swipeGesture.direction {
             case .down:
-                dismiss()
+                dismiss(.cancel)
             default:
                 break
             }
@@ -136,6 +154,10 @@ class DialogNodeViewController: KeyboardViewController {
 
     func onAssetsUpdated(_ notification: Notification) {
         self.tableView.reloadData()
+    }
+
+    @IBAction func btnCloseChannel(_ sender: Any) {
+        dismiss(.closeChannel)
     }
 }
 
@@ -169,8 +191,6 @@ extension DialogNodeViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.configureAmount("Max Receivable Amount".localized, viewModel.maxReceivable, hideBalance)
             case .connectedPeers:
                 cell.configureAmount("Connected Peers".localized, viewModel.connectedPeers, false)
-            case .closeChannels:
-                cell.configureAmount("Close Channels".localized, viewModel.closeChannels, false)
             }
             return cell
         }
@@ -180,9 +200,6 @@ extension DialogNodeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let cellType = nodeCellTypes[indexPath.row]
         switch cellType {
-        case .closeChannels:
-            delegate?.onCloseChannels()
-            dismiss()
         default:
             break
         }

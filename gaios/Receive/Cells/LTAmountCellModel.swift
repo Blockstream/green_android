@@ -1,64 +1,115 @@
 import Foundation
 import UIKit
+import BreezSDK
 import gdk
 
 struct LTAmountCellModel {
-    var satoshi: Int64? {
-        didSet {
-            if let satoshi = satoshi, let balance = Balance.fromSatoshi(satoshi, assetId: AssetInfo.btcId) {
-                (fiat, currency) = balance.toFiat()
-            }
-            if let satoshi = satoshi, let balance = Balance.fromSatoshi(satoshi, assetId: AssetInfo.btcId) {
-                (amount, denom) = balance.toDenom()
-            }
-        }
-    }
-    var maxLimit: UInt64? {
-        didSet {
-            if let maxLimit = maxLimit, let balance = Balance.fromSatoshi(UInt64(maxLimit), assetId: AssetInfo.btcId) {
-                (maxLimitAmount, denom) = balance.toDenom()
-            }
-        }
-    }
-    var isFiat: Bool = false
-    var amountText: String? { isFiat ? fiat : amount }
-    var denomText: NSAttributedString {
-        var txt: String?
+    var satoshi: Int64?
+    var maxLimit: UInt64?
+    var isFiat: Bool
+    var inputDenomination: gdk.DenominationType
+    var gdkNetwork: gdk.GdkNetwork?
+    var nodeState: NodeState?
+    var lspInfo: LspInformation?
+
+    var amountText: String? { isFiat ? fiat : btc }
+    var reversedAmountText: String? { !isFiat ? fiat : btc }
+    var denomText: String? {
         if isFiat {
-            txt = currency == nil ? defaultCurrency : currency
+            return currency == nil ? defaultCurrency : currency
         } else {
-            if let inputDenomination = inputDenomination {
-                txt = inputDenomination.rawValue
+            if let gdkNetwork = gdkNetwork {
+                return inputDenomination.string(for: gdkNetwork)
             } else {
-                txt = denom
+                return defaultDenomination
             }
         }
-        return NSAttributedString(string: txt ?? "", attributes:
+    }
+    var reversedDenomText: String? {
+        if !isFiat {
+            return currency == nil ? defaultCurrency : currency
+        } else {
+            if let gdkNetwork = gdkNetwork {
+                return inputDenomination.string(for: gdkNetwork)
+            } else {
+                return defaultDenomination
+            }
+        }
+    }
+    var denomUnderlineText: NSAttributedString {
+        return NSAttributedString(string: denomText ?? "", attributes:
             [.underlineStyle: NSUnderlineStyle.single.rawValue])
     }
-    var fiat: String? = nil
-    var currency: String? = nil
-    var maxLimitAmount: String? = nil
-    var denom: String? = nil
-    var amount: String? = nil
-    var channelFeePercent: Float? = nil
-    var channelMinFee: Int64? = nil
-    var inboundLiquidity: UInt64? = nil
+    
+    var btc: String? {
+        if let satoshi = satoshi {
+            return Balance.fromSatoshi(satoshi, assetId: AssetInfo.btcId)?.toDenom(inputDenomination).0
+        }
+        return nil
+    }
+    var fiat: String? {
+        if let satoshi = satoshi {
+            return Balance.fromSatoshi(satoshi, assetId: AssetInfo.btcId)?.toFiat().0
+        }
+        return nil
+    }
+    var currency: String? {
+        if let satoshi = satoshi {
+            return Balance.fromSatoshi(satoshi, assetId: AssetInfo.btcId)?.toFiat().1
+        }
+        return nil
+    }
+    
+    var maxLimitAmount: String? {
+        if let maxLimit = maxLimit {
+            return Balance.fromSatoshi(UInt64(maxLimit), assetId: AssetInfo.btcId)?.toDenom(inputDenomination).0
+        }
+        return nil
+    }
     var state: LTAmountCellState {
-        if satoshi ?? 0 > maxLimit ?? 0 {
-            return .invalid
-        } else if satoshi ?? 0 > inboundLiquidity ?? 0 {
-            return .valid
+        guard let satoshi = satoshi else {
+            return .disabled
+        }
+        guard let lspInfo = lspInfo, let nodeState = nodeState else {
+            return .disconnected
+        }
+        if satoshi >= nodeState.maxReceivableSatoshi {
+            return .tooHigh
+        } else if satoshi <= nodeState.inboundLiquiditySatoshi || satoshi >= lspInfo.channelMinimumFeeSatoshi {
+            if nodeState.inboundLiquiditySatoshi == 0 || satoshi > nodeState.inboundLiquiditySatoshi {
+                return .validFunding
+            } else {
+                return .valid
+            }
+        } else if satoshi <= lspInfo.channelMinimumFeeSatoshi {
+            return .tooLow
         } else {
             return .disabled
         }
     }
-    var defaultCurrency: String {
-        var currency = ""
-        if let balance = Balance.fromSatoshi(0, assetId: AssetInfo.btcId) {
-            (_, currency) = balance.toFiat()
-        }
-        return currency
+    var defaultCurrency: String? = {
+        return Balance.fromSatoshi(0, assetId: AssetInfo.btcId)?.toFiat().1
+    }()
+    var defaultDenomination: String? = {
+        return Balance.fromSatoshi(0, assetId: AssetInfo.btcId)?.toDenom().1
+    }()
+
+    var channelFee: Int64? {
+        let feeVariable = (Float((lspInfo?.channelFeePercent ?? 0)) / 100) * Float(satoshi ?? 0)
+        let fee = Int64(feeVariable)
+        return fee > lspInfo?.channelMinimumFeeSatoshi ?? 0 ? fee : lspInfo?.channelMinimumFeeSatoshi
     }
-    var inputDenomination: gdk.DenominationType?
+    
+    func toFiatText(_ amount: Int64?) -> String? {
+        if let amount = amount {
+            return Balance.fromSatoshi(amount, assetId: AssetInfo.btcId)?.toFiatText()
+        }
+        return nil
+    }
+    func toBtcText(_ amount: Int64?) -> String? {
+        if let amount = amount {
+            return Balance.fromSatoshi(amount, assetId: AssetInfo.btcId)?.toText(inputDenomination)
+        }
+        return nil
+    }
 }

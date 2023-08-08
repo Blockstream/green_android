@@ -9,7 +9,6 @@ enum NodeCellType: CaseIterable {
     case maxSinglePaymentAmount
     case maxReceivable
     case connectedPeers
-    case closeChannels
 }
 
 class DialogNodeViewModel {
@@ -19,13 +18,12 @@ class DialogNodeViewModel {
     
 
     var cells: [NodeCellType] {
-        var list = NodeCellType.allCases
-        if lightningSession.nodeState?.channelsBalanceSatoshi ?? 0 == 0 {
-            list.removeAll { $0 == NodeCellType.closeChannels }
-        }
-        return list
+        return NodeCellType.allCases
     }
 
+    var hideBtnClose: Bool {
+        return (lightningSession.nodeState?.channelsBalanceSatoshi ?? 0 == 0)
+    }
 
     var id: String {
         return lightningSession.nodeState?.id ?? ""
@@ -53,10 +51,6 @@ class DialogNodeViewModel {
 
     var connectedPeers: String {
         return lightningSession.nodeState?.connectedPeers.joined(separator: ", ") ?? ""
-    }
-
-    var closeChannels: String {
-        return "Tap to close channels"
     }
 
     init(lightningSession: LightningSessionManager) {

@@ -24,7 +24,8 @@ class ReceiveViewModel {
     var address: Address?
     var invoice: LnInvoice?
     var swap: SwapInfo?
-    var inputDenomination: gdk.DenominationType?
+    var inputDenomination: gdk.DenominationType = .Sats
+    var state: LTAmountCellState = .disabled
 
     var wm: WalletManager { WalletManager.current! }
 
@@ -33,6 +34,7 @@ class ReceiveViewModel {
         self.accounts = accounts
         self.asset = account.gdkNetwork.getFeeAsset()
         self.type = account.gdkNetwork.lightning ? .bolt11 : .address
+        self.inputDenomination = wm.prominentSession?.settings?.denomination ?? .Sats
     }
 
     func accountType() -> String {
@@ -85,17 +87,15 @@ class ReceiveViewModel {
     }
 
     var amountCellModel: LTAmountCellModel {
-        var amountCell = LTAmountCellModel()
         let nodeState = account.lightningSession?.nodeState
         let lspInfo = account.lightningSession?.lspInfo
-        amountCell.isFiat = isFiat
-        amountCell.satoshi = satoshi
-        amountCell.maxLimit = nodeState?.maxReceivableSatoshi
-        amountCell.channelFeePercent =  lspInfo?.channelFeePercent
-        amountCell.channelMinFee =  lspInfo?.channelMinimumFeeSatoshi
-        amountCell.inboundLiquidity =  nodeState?.inboundLiquiditySatoshi
-        amountCell.inputDenomination = inputDenomination
-        return amountCell
+        return LTAmountCellModel(satoshi: satoshi,
+                                 maxLimit: nodeState?.maxReceivableSatoshi,
+                                 isFiat: isFiat,
+                                 inputDenomination: inputDenomination,
+                                 gdkNetwork: account.session?.gdkNetwork,
+                                 nodeState: nodeState,
+                                 lspInfo: lspInfo)
     }
 
     var infoReceivedAmountCellModel: LTInfoCellModel {
@@ -144,7 +144,16 @@ class ReceiveViewModel {
     }
 
     var addressCellModel: ReceiveAddressCellModel {
-        return ReceiveAddressCellModel(text: text, tyoe: type)
+        let nodeState = account.lightningSession?.nodeState
+        let lspInfo = account.lightningSession?.lspInfo
+        return ReceiveAddressCellModel(text: text,
+                                       type: type,
+                                       swapInfo: swap,
+                                       satoshi: satoshi,
+                                       maxLimit: nodeState?.maxReceivableSatoshi,
+                                       inputDenomination: inputDenomination,
+                                       nodeState: nodeState,
+                                       lspInfo: lspInfo)
     }
 
     func getAssetSelectViewModel() -> AssetSelectViewModel {
@@ -178,14 +187,11 @@ class ReceiveViewModel {
         return AssetExpandableSelectViewModel(assets: list, enableAnyAsset: true /* isLiquid */, onlyFunded: false)
     }
 
-    func dialogInputDenominationViewModel(inputDenomination: DenominationType?) -> DialogInputDenominationViewModel? {
-        guard let session =  account.session else { return nil }
-
+    func dialogInputDenominationViewModel() -> DialogInputDenominationViewModel {
         let list: [DenominationType] = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats]
-        var selected = DenominationType.Sats // todo: settings.denomination
-        if let inputDenomination = inputDenomination { selected = inputDenomination }
-        let network: NetworkSecurityCase = session.gdkNetwork.mainnet ? .bitcoinSS : .testnetSS
-        return DialogInputDenominationViewModel(denomination: selected,
+        let gdkNetwork = account.session?.gdkNetwork
+        let network: NetworkSecurityCase = gdkNetwork?.mainnet ?? true ? .bitcoinSS : .testnetSS
+        return DialogInputDenominationViewModel(denomination: inputDenomination ?? .Sats,
                                            denominations: list,
                                            network: network,
                                             isFiat: isFiat)

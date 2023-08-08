@@ -36,17 +36,17 @@ extension Balance {
         return Balance.from(details: details)
     }
 
-    static func from(_ value: String, assetId: String) -> Balance? {
+    static func from(_ value: String, assetId: String, denomination: DenominationType? = nil) -> Balance? {
         if AssetInfo.baseIds.contains(assetId) {
-            return fromDenomination(value, assetId: assetId)
+            return fromDenomination(value, assetId: assetId, denomination: denomination)
         }
         return fromValue(value, assetId: assetId)
     }
 
-    static func fromDenomination(_ value: String, assetId: String) -> Balance? {
+    static func fromDenomination(_ value: String, assetId: String, denomination: DenominationType? = nil) -> Balance? {
         let value = value.unlocaleFormattedString()
-        let denomination = session?.settings?.denomination.rawValue
-        let details: [String: Any] = [denomination ?? Balance.session?.gdkNetwork.getFeeAsset() ?? "btc": value,
+        let denomination = denomination ?? session?.settings?.denomination
+        let details: [String: Any] = [denomination?.rawValue ?? Balance.session?.gdkNetwork.getFeeAsset() ?? "btc": value,
                                       "asset_id": assetId]
         return Balance.from(details: details)
     }
@@ -83,8 +83,8 @@ extension Balance {
         }
     }
 
-    func toDenom() -> (String, String) {
-        let denomination = Balance.session?.settings?.denomination ?? .BTC
+    func toDenom(_ denomination: DenominationType? = nil) -> (String, String) {
+        let denomination = denomination ?? Balance.session?.settings?.denomination ?? .BTC
         let res = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any]
         let value = res![denomination.rawValue] as? String
         let network: NetworkSecurityCase = {
@@ -97,8 +97,8 @@ extension Balance {
         return (value?.localeFormattedString(Int(denomination.digits)) ?? "n/a", denomination.string(for: network.gdkNetwork))
     }
 
-    func toUnlocaleDenom() -> (String, String) {
-        let denomination = Balance.session?.settings?.denomination ?? .BTC
+    func toUnlocaleDenom(_ denomination: DenominationType? = nil) -> (String, String) {
+        let denomination = denomination ?? Balance.session?.settings?.denomination ?? .BTC
         let res = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any]
         let value = res![denomination.rawValue] as? String
         let network: NetworkSecurityCase = {
@@ -122,16 +122,16 @@ extension Balance {
         return (asset?.first?.value.localeFormattedString(Int(assetInfo?.precision ?? 8)) ?? "n/a", assetInfo?.ticker ?? "n/a")
     }
 
-    func toValue() -> (String, String) {
+    func toValue(_ denomination: DenominationType? = nil) -> (String, String) {
         if !Balance.isBtc(assetId) {
             return toAssetValue()
         } else {
-            return toDenom()
+            return toDenom(denomination)
         }
     }
 
-    func toText() -> String {
-        let (amount, ticker) = toValue()
+    func toText(_ denomination: DenominationType? = nil) -> String {
+        let (amount, ticker) = toValue(denomination)
         return "\(amount) \(ticker)"
     }
 

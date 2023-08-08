@@ -331,12 +331,12 @@ class AccountViewController: UIViewController {
         SafeNavigationManager.shared.navigate( ExternalUrls.helpReceiveCapacity )
     }
 
-    func presentLTRecoverFundsViewController(_ model: LTRecoverFundsViewModel) {
+    func pushLTRecoverFundsViewController(_ model: LTRecoverFundsViewModel) {
         let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
         if let vc = ltFlow.instantiateViewController(withIdentifier: "LTRecoverFundsViewController") as? LTRecoverFundsViewController {
             vc.viewModel = model
             vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 
@@ -463,7 +463,7 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
             if let cell = tableView.dequeueReusableCell(withIdentifier: LTSweepCell.identifier, for: indexPath) as? LTSweepCell {
                 cell.configure(model: viewModel.sweepCellModels[indexPath.row], onInfo: { [weak self] in
                     if let self = self {
-                        self.presentLTRecoverFundsViewController(self.viewModel.ltRecoverFundsViewModel())
+                        self.pushLTRecoverFundsViewController(self.viewModel.ltRecoverFundsViewModel())
                     }
                 })
                 cell.selectionStyle = .none
@@ -575,7 +575,7 @@ extension AccountViewController: UITableViewDelegate, UITableViewDataSource {
             if let tx = viewModel?.txCellModels[indexPath.row].tx {
                 if tx.isLightningSwap ?? false {
                     if tx.isRefundableSwap ?? false {
-                        presentLTRecoverFundsViewController(viewModel.ltRecoverFundsViewModel(tx: tx))
+                        pushLTRecoverFundsViewController(viewModel.ltRecoverFundsViewModel(tx: tx))
                     } else {
                         DropAlert().warning(message: "Swap in progress")
                     }
@@ -605,6 +605,7 @@ extension AccountViewController: UITableViewDataSourcePrefetching {
         }
     }
 }
+
 extension AccountViewController: UIPopoverPresentationControllerDelegate {
 
     func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
@@ -854,13 +855,19 @@ extension AccountViewController: DialogNodeViewControllerProtocol {
     
     @MainActor
     func presentAlertClosedChannels() {
-        let alert = UIAlertController(title: "Close Channel",
-                                      message: "We are closing your channel. You can recover your funds in a bit",
-                                      preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: "id_ok".localized,
-                                      style: .cancel) { _ in
-            self.reload()
-        })
-        self.present(alert, animated: true, completion: nil)
+        let viewModel = AlertViewModel(title: "Close Channel", hint: "We are closing your channel. You can recover your funds in a bit.")
+        let storyboard = UIStoryboard(name: "Alert", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AlertViewController") as? AlertViewController {
+            vc.viewModel = viewModel
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: false, completion: nil)
+        }
+    }
+}
+
+extension AccountViewController: AlertViewControllerDelegate {
+    func onAlertOk() {
+        reload()
     }
 }

@@ -3,8 +3,12 @@ import gdk
 
 enum LTAmountCellState: Int {
     case valid
-    case invalid
+    case validFunding
+    case tooHigh
+    case tooLow
     case disabled
+    case invalidAmount
+    case disconnected
 }
 
 protocol LTAmountCellDelegate: AnyObject {
@@ -12,6 +16,7 @@ protocol LTAmountCellDelegate: AnyObject {
     func textFieldEnabled()
     func onFeeInfo()
     func onInputDenomination()
+    func stateDidChange(_ state: LTAmountCellState)
 }
 
 class LTAmountCell: UITableViewCell {
@@ -19,12 +24,11 @@ class LTAmountCell: UITableViewCell {
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var textField: UITextField!
     @IBOutlet weak var lblAsset: UILabel!
-    @IBOutlet weak var lblLimit: UILabel!
     @IBOutlet weak var lblAmount: UILabel!
     @IBOutlet weak var lblInfo: UILabel!
     @IBOutlet weak var infoPanel: UIView!
-    @IBOutlet weak var iconInfoErr: UIImageView!
 
+    @IBOutlet weak var lblMoreInfo: UILabel!
     @IBOutlet weak var btnCancel: UIButton!
     @IBOutlet weak var btnPaste: UIButton!
     @IBOutlet weak var btnSwitch: UIButton!
@@ -33,7 +37,7 @@ class LTAmountCell: UITableViewCell {
 
     var state: LTAmountCellState = .valid
     weak var delegate: LTAmountCellDelegate?
-    var model: LTAmountCellModel?
+    var model: LTAmountCellModel!
     var enabled: Bool = true
 
     static var identifier: String { return String(describing: self) }
@@ -43,11 +47,13 @@ class LTAmountCell: UITableViewCell {
         bg.cornerRadius = 5.0
         bg.borderWidth = 1.0
         infoPanel.cornerRadius = 5.0
-        [lblAmount, lblLimit].forEach{ $0?.setStyle(.txtCard)}
-        lblInfo.setStyle(.txt)
+        lblAmount.setStyle(.txtCard)
+        lblInfo.setStyle(.txtCard)
+        lblMoreInfo.setStyle(.txtCard)
         lblAsset.setStyle(.txtBigger)
-        btnFeeInfo.setTitle("id_more_info".localized, for: .normal)
-        btnFeeInfo.setStyle(.inline)
+        lblMoreInfo.text = "For more information,".localized
+        btnFeeInfo.setTitle("Read More".localized, for: .normal)
+        btnFeeInfo.setStyle(.inlineGray)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -59,12 +65,12 @@ class LTAmountCell: UITableViewCell {
         self.model = model
         self.enabled = enabled
         textField.text = model.amountText
-        lblAsset.attributedText = model.denomText
+        lblAsset.attributedText = model.denomUnderlineText
         textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         if enabled {
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-                self.textField.becomeFirstResponder()
-            }
+//            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+//                self.textField.becomeFirstResponder()
+//            }
         } else {
             state = .disabled
         }
@@ -81,36 +87,27 @@ class LTAmountCell: UITableViewCell {
             btnCancel.isHidden = !(textField.text?.count ?? 0 > 0)
             btnPaste.isHidden = textField.text?.count ?? 0 > 0
         }
-
-        if model?.isFiat ?? false {
-            lblAmount.text = "≈\(model?.amount ?? "") \(model?.denom ?? "")"
-        } else {
-            lblAmount.text = "≈\(model?.fiat ?? "") \(model?.currency ?? "")"
+        if let model = model {
+            lblAmount.text = "≈\(model.reversedAmountText ?? "") \(model.reversedDenomText ?? "")"
+            lblAsset.attributedText = model.denomUnderlineText
         }
-        lblLimit.text = "Max Limit: \(model?.maxLimitAmount ?? "") \(model?.denom ?? "")"
-        lblAsset.attributedText = model?.denomText
         lblAmount.isHidden = lblAmount.text == "≈ "
         updateState()
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {
         if let value = textField.text {
-            if model?.isFiat ?? false {
-                if let balance = Balance.fromFiat(value) {
-                    model?.satoshi = balance.satoshi
-                } else {
-                    model?.satoshi = nil
-                }
+            if model.isFiat {
+                let balance = Balance.fromFiat(value)
+                model.satoshi = balance?.satoshi
             } else {
-                if let balance = Balance.fromDenomination(value, assetId: AssetInfo.btcId) {
-                    model?.satoshi = balance.satoshi
-                } else {
-                    model?.satoshi = nil
-                }
+                let balance = Balance.fromDenomination(value, assetId: AssetInfo.btcId, denomination: model.inputDenomination)
+                model.satoshi = balance?.satoshi
             }
             reload()
         }
-        delegate?.textFieldDidChange(model?.satoshi, isFiat: model?.isFiat ?? false)
+        delegate?.textFieldDidChange(model.satoshi, isFiat: model.isFiat)
+        delegate?.stateDidChange(model.state)
     }
 
     @IBAction func onEdit(_ sender: Any) {
@@ -121,21 +118,20 @@ class LTAmountCell: UITableViewCell {
     }
 
     @IBAction func onSwitch(_ sender: Any) {
-        /// not testable yet
-        //delegate?.onInputDenomination()
-        model?.isFiat.toggle()
-        if let value = textField.text {
-            if model?.isFiat ?? false {
-                if let balance = Balance.fromDenomination(value, assetId: AssetInfo.btcId) {
-                    textField.text = balance.toFiat().0
-                }
-            } else {
-                if let balance = Balance.fromFiat(value) {
-                    textField.text = (balance.toUnlocaleDenom().0)
-                }
-            }
-        }
-        textFieldDidChange(textField)
+        delegate?.onInputDenomination()
+//        model?.isFiat.toggle()
+//        if let value = textField.text {
+//            if model?.isFiat ?? false {
+//                if let balance = Balance.fromDenomination(value, assetId: AssetInfo.btcId, denomination: model?.inputDenomination) {
+//                    textField.text = balance.toFiat().0
+//                }
+//            } else {
+//                if let balance = Balance.fromFiat(value) {
+//                    textField.text = (balance.toUnlocaleDenom().0)
+//                }
+//            }
+//        }
+//        textFieldDidChange(textField)
     }
 
     @IBAction func btnPaste(_ sender: Any) {
@@ -149,38 +145,56 @@ class LTAmountCell: UITableViewCell {
         textField.text = ""
         textFieldDidChange(textField)
     }
+    
+    func errorState(text: String) {
+        bg.borderColor = UIColor.gRedFluo()
+        infoPanel.backgroundColor = UIColor.gRedFluo().withAlphaComponent(0.2)
+        lblInfo.text = text
+        lblInfo.isHidden = false
+        btnFeeInfo.isHidden = false
+        lblMoreInfo.isHidden = false
+        lblAmount.isHidden = true
+    }
+
+    func disableState() {
+        bg.borderColor = UIColor.gBlackBg()
+        infoPanel.backgroundColor = UIColor.clear
+        //lblInfo.isHidden = true
+        lblInfo.text = " "
+        btnFeeInfo.isHidden = true
+        lblMoreInfo.isHidden = true
+        lblAmount.isHidden = true
+    }
 
     func updateState() {
-        switch model?.state {
+        switch model.state {
+        case .invalidAmount:
+            let text = "id_invalid_amount".localized
+            errorState(text: text)
         case .valid:
+            disableState()
+            lblAmount.isHidden = false
+        case .validFunding:
             bg.borderColor = UIColor.gGreenFluo()
             infoPanel.backgroundColor = UIColor.gGreenFluo().withAlphaComponent(0.2)
-            lblInfo.text = "A funding fee of \(model?.channelFeePercent ?? 0)% (minimum \(model?.channelMinFee ?? 0)) sats is applied when receiving amounts above your current receive capacity: \(model?.inboundLiquidity ?? 0) sats"
-            lblInfo.textColor = .white
-            lblInfo.alpha = 0.55
+            let amount = model.channelFee
+            lblInfo.text = "A set up funding fee of \(model.toBtcText(amount) ?? "") (~\(model.toFiatText(amount) ?? "")) will be applied to the received amount."
             lblInfo.isHidden = false
-            iconInfoErr.isHidden = true
             btnFeeInfo.isHidden = false
-        case .invalid:
-            bg.borderColor = UIColor.gRedFluo()
-            infoPanel.backgroundColor = UIColor.gRedFluo().withAlphaComponent(0.2)
-            lblInfo.text = "The amount you requested is above your max limit."
-            lblInfo.textColor = UIColor.gRedFluo()
-            lblInfo.alpha = 1.0
-            lblInfo.isHidden = false
-            iconInfoErr.isHidden = false
-            btnFeeInfo.isHidden = true
+            lblMoreInfo.isHidden = false
+            lblAmount.isHidden = true
+        case .tooHigh:
+            let amount = Int64(model.nodeState?.maxReceivableSatoshi ?? 0)
+            let text = "The amount is above your max limit \(model.toBtcText(amount) ?? "") (~\(model.toFiatText(amount) ?? ""))."
+            errorState(text: text)
+        case .tooLow:
+            let amount = model.lspInfo?.channelMinimumFeeSatoshi
+            let text = "This amount is below the minimum fee \(model.toBtcText(amount) ?? "") (~\(model.toFiatText(amount) ?? ""))."
+            errorState(text: text)
         case .disabled:
-            bg.borderColor = UIColor.gBlackBg()
-            infoPanel.backgroundColor = UIColor.clear
-            //lblInfo.isHidden = true
-            lblInfo.text = " "
-            lblInfo.textColor = .white
-            lblInfo.alpha = 0.55
-            iconInfoErr.isHidden = true
-            btnFeeInfo.isHidden = true
-        case .none:
-            break
+            disableState()        case .disconnected:
+            let text = "No LSP connected".localized
+            errorState(text: text)
         }
     }
 
@@ -189,7 +203,6 @@ class LTAmountCell: UITableViewCell {
     }
 
     @IBAction func btnInputDenomination(_ sender: Any) {
-        /// not testable yet
-        //delegate?.onInputDenomination()
+        delegate?.onInputDenomination()
     }
 }

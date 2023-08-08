@@ -36,6 +36,7 @@ class ReceiveViewController: KeyboardViewController {
     private var newAddressToken, invoicePaidToken: NSObjectProtocol?
     private var headerH: CGFloat = 36.0
     private var loading = true
+    private var keyboardVisible = false
     var viewModel: ReceiveViewModel!
     var dialogReceiveVerifyAddressViewController: DialogReceiveVerifyAddressViewController?
     
@@ -74,19 +75,24 @@ class ReceiveViewController: KeyboardViewController {
     override func keyboardWillShow(notification: Notification) {
         super.keyboardWillShow(notification: notification)
         let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
-        
         let inset = (UIApplication.shared.windows.first?.safeAreaInsets.bottom ?? 0) - 5
+        keyboardVisible = true
         stackBottom.constant = keyboardFrame.height - inset
         UIView.animate(withDuration: 0.5, animations: { [weak self] in
             self?.view.layoutIfNeeded()
+            let network = self?.viewModel.account.gdkNetwork
+            self?.btnOnChain.isHidden = !(network?.lightning ?? false) || self?.keyboardVisible ?? false
         })
     }
     
     override func keyboardWillHide(notification: Notification) {
         super.keyboardWillShow(notification: notification)
+        keyboardVisible = false
         stackBottom.constant = 0.0
         UIView.animate(withDuration: 0.5, animations: { [weak self] in
             self?.view.layoutIfNeeded()
+            let network = self?.viewModel.account.gdkNetwork
+            self?.btnOnChain.isHidden = !(network?.lightning ?? false) || self?.keyboardVisible ?? false
         })
     }
     
@@ -106,9 +112,10 @@ class ReceiveViewController: KeyboardViewController {
     }
     
     func setStyle() {
-        [btnShare, btnConfirm].forEach{ $0.setStyle(.primary) }
+        btnShare.setStyle(.primary)
         [btnEdit, btnOptions, btnVerify].forEach{ $0.setStyle(.outlinedWhite) }
         btnOnChain.semanticContentAttribute = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft ? .forceLeftToRight : .forceRightToLeft
+        stateDidChange(.disabled)
     }
     
     var sections: [ReceiveSection] {
@@ -130,11 +137,15 @@ class ReceiveViewController: KeyboardViewController {
     
     func reload() {
         let network = viewModel.account.gdkNetwork
-        btnOnChain.isHidden = !network.lightning
+        btnOnChain.isHidden = !network.lightning || keyboardVisible
         btnEdit.isHidden = network.liquid || network.lightning || viewModel.satoshi == nil
         btnOptions.isHidden = network.lightning
         btnConfirm.isHidden = !(network.lightning && lightningAmountEditing)
         btnShare.isHidden = !(!network.lightning || !lightningAmountEditing)
+        if viewModel.type == .swap {
+            btnConfirm.isHidden = true
+            btnShare.isHidden = false
+        }
         let userAccount = viewModel.wm.account
         btnVerify.isHidden = !(userAccount.isHW == true && userAccount.isLedger == false)
         btnOnChain.setTitle(viewModel.type == .bolt11 ? "Show Onchain Address" : "Show Invoice", for: .normal)
@@ -168,7 +179,7 @@ class ReceiveViewController: KeyboardViewController {
                 switch parser.lightningType {
                 case .some(.bolt11(let invoice)):
                     if let balance = Balance.fromSatoshi(invoice.amountSatoshi ?? 0, assetId: AssetInfo.btcId) {
-                        let (amount, denom) = balance.toDenom()
+                        let (amount, denom) = balance.toDenom(viewModel.inputDenomination)
                         let model = LTSuccessViewModel(account: account?.name ?? "", amount: amount, denom: denom)
                         ltSuccessViewController(model: model)
                     }
@@ -347,8 +358,7 @@ class ReceiveViewController: KeyboardViewController {
     }
 
     func showDialogInputDenominations() {
-        guard let model = viewModel.dialogInputDenominationViewModel(inputDenomination: viewModel.inputDenomination) else { return }
-
+        let model = viewModel.dialogInputDenominationViewModel()
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogInputDenominationViewController") as? DialogInputDenominationViewController, let balance = viewModel.getBalance() {
             vc.viewModel = model
@@ -705,11 +715,11 @@ extension ReceiveViewController: LTSuccessViewControllerDelegate {
 }
 
 extension ReceiveViewController: LTAmountCellDelegate {
-
+    
     func onInputDenomination() {
         showDialogInputDenominations()
     }
-
+    
     func onFeeInfo() {
         showLightningFeeInfo()
     }
@@ -724,6 +734,11 @@ extension ReceiveViewController: LTAmountCellDelegate {
         viewModel.isFiat = isFiat
         tableView.beginUpdates()
         tableView.endUpdates()
+    }
+    func stateDidChange(_ state: LTAmountCellState) {
+        viewModel.state = state
+        btnConfirm.isEnabled = viewModel.state == .valid || viewModel.state == .validFunding
+        btnConfirm.setStyle( btnConfirm.isEnabled ? .primary : .primaryGray)
     }
 }
 
