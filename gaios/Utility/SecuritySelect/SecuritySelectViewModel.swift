@@ -73,11 +73,15 @@ class SecuritySelectViewModel {
     func create(policy: PolicyCellType, asset: String, params: CreateSubaccountParams?) async throws -> WalletItem? {
         let network = policy.getNetwork(testnet: wm.testnet, liquid: asset != "btc")!
         let prominentSession = wm.prominentSession!
-        if network.lightning, let session = wm.lightningSession {
+        if network.lightning {
+            if wm.account.isHW {
+                throw GaError.GenericError("Cannot create a lightning account for an hardware wallet")
+            }
+            guard let session = wm.lightningSession else {
+                throw GaError.GenericError("Invalid lightning session")
+            }
             if session.logged {
                 throw GaError.GenericError("Lightning account already exist")
-            } else if wm.account.isHW {
-                throw GaError.GenericError("Cannot create a lightning account for an hardware wallet")
             }
             try await session.connect()
             guard let credentials = try await prominentSession.getCredentials(password: "") else { throw GaError.GenericError() }

@@ -645,6 +645,9 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
             tableView.endUpdates()
         case .transaction:
             let tx = viewModel.txCellModels[indexPath.row].tx
+            // TODO test
+            presentLTRecoverFundsViewController(tx)
+            /*
             if tx.isLightningSwap ?? false {
                 if tx.isRefundableSwap ?? false {
                     presentLTRecoverFundsViewController(tx)
@@ -653,7 +656,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                 }
             } else {
                 pushTransactionViewController(tx)
-            }
+            }*/
             tableView.deselectRow(at: indexPath, animated: false)
             tableView.selectRow(at: IndexPath(row: sIdx, section: WalletSection.account.rawValue), animated: false, scrollPosition: .none)
         default:
@@ -672,14 +675,16 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
 
     func presentLTRecoverFundsViewController(_ tx: Transaction) {
         let amount = tx.amounts["btc"].map {UInt64($0)}
+        let address = tx.inputs?.first?["address"] as? String
         let model = LTRecoverFundsViewModel(wallet: tx.subaccountItem,
-                                            address: tx.addressees.first?.address,
-                                            amount: amount)
+                                            onChainAddress: address,
+                                            amount: amount,
+                                            type: .refund)
         let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
         if let vc = ltFlow.instantiateViewController(withIdentifier: "LTRecoverFundsViewController") as? LTRecoverFundsViewController {
             vc.viewModel = model
             vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 }

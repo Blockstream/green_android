@@ -152,8 +152,8 @@ public class LightningBridge {
         return payment
     }
     
-    public func refund(swapAddress: String, toAddress: String, satPerVbyte: UInt32?) -> String? {
-        let refund = try? breezSdk?.refund(swapAddress: swapAddress, toAddress: toAddress, satPerVbyte: satPerVbyte ?? UInt32(recommendedFees()?.economyFee ?? 0))
+    public func refund(swapAddress: String, toAddress: String, satPerVbyte: UInt32?) throws -> String? {
+        let refund = try breezSdk?.refund(swapAddress: swapAddress, toAddress: toAddress, satPerVbyte: satPerVbyte ?? UInt32(recommendedFees()?.economyFee ?? 0))
         print("refund \(refund)")
         return refund
     }
@@ -211,7 +211,7 @@ public class LightningBridge {
         _ = updateNodeInfo()
     }
 
-    public func sweep(toAddress: String, satPerVbyte: UInt?) throws  {
+    public func sweep(toAddress: String, satPerVbyte: UInt?) throws {
         let feeRateSatsPerVbyte = satPerVbyte.map {UInt64($0)} ?? recommendedFees()?.economyFee ?? 0
         try breezSdk?.sweep(toAddress: toAddress, feeRateSatsPerVbyte: feeRateSatsPerVbyte)
         _ = updateNodeInfo()

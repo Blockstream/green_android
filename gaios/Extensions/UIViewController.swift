@@ -7,10 +7,10 @@ import BreezSDK
 extension UIViewController {
 
     @MainActor
-    func showAlert(title: String, message: String) {
+    func showAlert(title: String, message: String, completion: @escaping() -> () = { }) {
         DispatchQueue.main.async {
             let alert = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in })
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in completion() })
             self.present(alert, animated: true, completion: nil)
         }
     }

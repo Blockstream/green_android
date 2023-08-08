@@ -168,14 +168,16 @@ class AccountViewModel {
 
     func ltRecoverFundsViewModel() -> LTRecoverFundsViewModel {
         LTRecoverFundsViewModel(wallet: account,
-                                address: nil,
-                                amount: wm.lightningSession?.nodeState?.onchainBalanceSatoshi)
+                                amount: wm.lightningSession?.nodeState?.onchainBalanceSatoshi,
+                                type: .sweep)
     }
     
     func ltRecoverFundsViewModel(tx: Transaction) -> LTRecoverFundsViewModel {
         let amount = tx.amounts["btc"].map {UInt64($0)}
+        let address = tx.inputs?.first?["address"] as? String
         return LTRecoverFundsViewModel(wallet: account,
-                                address: tx.addressees.first?.address,
-                                amount: amount)
+                                onChainAddress: address,
+                                amount: amount,
+                                type: .refund)
     }
 }
