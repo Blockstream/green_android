@@ -95,7 +95,7 @@ class ChooseAccountTypeFragment : AbstractAddAccountFragment<ChooseAccountTypeFr
                         if(item.accountType.isLightning()){
                             dialog(
                                 title = R.string.id_experimental_feature,
-                                message = R.string.id_experimental_features_might_change_break,
+                                message = R.string.id_experimental_features_might,
                                 icon = R.drawable.ic_fill_flash_24,
                                 listener = {
                                     createAccount.invoke()

@@ -172,7 +172,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="3"
-                        android:text="@{String.format(@string/id_withdrawal_limits, vm.minWithdrawAmount , vm.maxWithdrawAmount)}"
+                        android:text="@{String.format(@string/id_withdraw_limits_s__s, vm.minWithdrawAmount , vm.maxWithdrawAmount)}"
                         android:textAppearance="?attr/textAppearanceBodySmall"
                         android:textColor="@color/color_on_surface_emphasis_medium" />
 

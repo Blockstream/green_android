@@ -440,17 +440,24 @@ class ReceiveViewModel @AssistedInject constructor(
 
             viewModelScope.launch {
                 liquidityFeeError.value = if (amountIsValid.value == -1 && balance != null) {
+                    val maxReceivableSatoshi =
+                        session.lightningNodeInfoStateFlow.value.maxReceivableSatoshi()
                     val channelMinimum =
                         session.lightningSdk.lspInfoStateFlow.value?.channelMinimumFeeSatoshi() ?: 0
-                    if (balance.satoshi > session.lightningNodeInfoStateFlow.value.maxReceivableSatoshi()) {
-                        context.getString(R.string.id_the_amount_you_requested_is_above)
-                    } else if (balance.satoshi < channelMinimum) {
+                    if (balance.satoshi > maxReceivableSatoshi) {
                         context.getString(
-                            R.string.id_the_amount_you_requested_is_below,
-                            channelMinimum.toAmountLook(
+                            R.string.id_you_cannot_receive_more_than_s,
+                            maxReceivableSatoshi.toAmountLook(session = session, withUnit = true, denomination = denomination.value?.notFiat()),
+                            maxReceivableSatoshi.toAmountLook(
                                 session = session,
-                                withUnit = true
+                                withUnit = true,
+                                denomination = Denomination.fiat(session)
                             )
+                        )
+                    } else if (balance.satoshi < channelMinimum) {
+                        context.getString(R.string.id_this_amount_is_below_the,
+                            channelMinimum.toAmountLook(session = session, withUnit = true, denomination = denomination.value?.notFiat()),
+                            channelMinimum.toAmountLook(session = session, withUnit = true, denomination = Denomination.fiat(session))
                         )
                     } else {
                         null

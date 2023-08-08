@@ -138,7 +138,7 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
                 findNavController().popBackStack(R.id.walletOverviewFragment, false)
             }
             consumableEvent?.getContentIfNotHandledForType<GdkEvent.Success>()?.let {
-                snackbar(R.string.id_swap_transaction_refund_is_initiated)
+                snackbar(R.string.id_refund_initiated)
             }
         }
 
@@ -281,7 +281,7 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
             R.id.remove-> {
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle(R.string.id_remove)
-                    .setMessage(R.string.id_are_you_sure_you_want_to_remove_your_lightning)
+                    .setMessage(R.string.id_are_you_sure_you_want_to_remove)
                     .setPositiveButton(R.string.id_remove) { _, _ ->
                         viewModel.removeAccount()
                         snackbar(R.string.id_account_has_been_removed)

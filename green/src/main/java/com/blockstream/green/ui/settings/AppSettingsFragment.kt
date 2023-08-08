@@ -33,7 +33,7 @@ class AppSettingsFragment : AppFragment<AppSettingsFragmentBinding>(R.layout.app
             if(viewModel.areSettingsDirty()){
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle(R.string.id_app_settings)
-                    .setMessage(R.string.id_your_settings_are_unsaved_setting)
+                    .setMessage(R.string.id_your_settings_are_unsavednndo)
                     .setPositiveButton(R.string.id_continue) { _, _ ->
                         isEnabled = false
                         popBackStack()

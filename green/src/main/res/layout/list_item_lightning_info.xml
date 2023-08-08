@@ -100,7 +100,7 @@
                         android:text="@{capacityText}"
                         android:textAppearance="?attr/textAppearanceLabelMedium"
                         android:textColor="@color/color_on_surface_emphasis_low"
-                        tools:text="@string/id_your_receive_capacity_is_s" />
+                        tools:text="@string/id_your_current_receive_capacity" />
                 </LinearLayout>
 
                 <Button

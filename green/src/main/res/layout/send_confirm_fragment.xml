@@ -93,7 +93,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/id_this_might_take_up_to_a_minute"
+                    android:text="@string/id_this_might_take_up_to_a"
                     android:textColor="@color/color_on_surface_emphasis_medium"
                     android:textAlignment="center"
                     android:layout_marginTop="8dp"

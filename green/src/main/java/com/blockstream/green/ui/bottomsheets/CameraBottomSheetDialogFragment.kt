@@ -203,7 +203,7 @@ class CameraBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<CameraB
                     if (result != null) {
                         callback.barcodeResult(BarcodeResult(result, null))
                     } else {
-                        errorDialog(getString(R.string.id_couldnt_recognized_qr_code))
+                        errorDialog(getString(R.string.id_could_not_recognized_qr_code))
                     }
                 }
             } catch (e: Exception) {

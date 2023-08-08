@@ -129,7 +129,7 @@ fun AccountType?.descriptionRes(): Int = when (this) {
     AccountType.BIP49_SEGWIT_WRAPPED -> R.string.id_simple_portable_standard
     AccountType.BIP84_SEGWIT -> R.string.id_cheaper_singlesig_option
     AccountType.BIP86_TAPROOT -> R.string.id_cheaper_singlesig_option
-    AccountType.LIGHTNING -> R.string.id_fast_transactions_on_the_lightning_network
+    AccountType.LIGHTNING -> R.string.id_fast_transactions_on_the
     else -> R.string.id_unknown
 }
 

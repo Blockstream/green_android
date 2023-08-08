@@ -110,7 +110,7 @@ fun Context.errorFromResourcesAndGDK(error: String, vararg formatArgs: String): 
         return getString(R.string.id_login_failed)
     } else if (error.contains("Breez SDK error")) {
         return if (error.contains("Self-payments")) {
-            getString(R.string.id_this_payment_is_destined_to_ourselves)
+            getString(R.string.id_payments_to_self_are_not)
         } else {
             val message = try {
                 error.substring(error.indexOf("message: "))

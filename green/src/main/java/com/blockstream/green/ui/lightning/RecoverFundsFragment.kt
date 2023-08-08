@@ -94,11 +94,11 @@ class RecoverFundsFragment :
         viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
             consumableEvent?.getContentIfNotHandledForType<NavigateEvent.NavigateBack>()?.let {
                 if(isRefund){
-                    dialog(R.string.id_refund, R.string.id_we_have_initiated_your_refund) {
+                    dialog(R.string.id_refund, R.string.id_refund_in_progress) {
                         popBackStack()
                     }
                 }else{
-                    dialog(R.string.id_close_channel, R.string.id_we_have_initiated_transfer_of_your_funds) {
+                    dialog(R.string.id_close_channel, R.string.id_channel_closure_initiated_you) {
                         popBackStack()
                     }
                 }

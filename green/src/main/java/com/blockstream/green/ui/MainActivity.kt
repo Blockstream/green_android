@@ -421,7 +421,7 @@ class MainActivity : AppActivity() {
             if(navController.currentDestination?.id == R.id.introFragment) {
                 Snackbar.make(
                     binding.root,
-                    R.string.id_you_have_clicked_a_uri,
+                    R.string.id_you_have_clicked_a_payment_uri,
                     Snackbar.LENGTH_LONG
                 ).setAction(R.string.id_cancel) {
                     sessionManager.pendingUri.postValue(null)

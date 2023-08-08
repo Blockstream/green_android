@@ -90,7 +90,7 @@
                         android:layout_marginBottom="8dp"
                         style="?attr/textAppearanceLabelMedium"
                         android:textColor="@color/color_on_surface_emphasis_medium"
-                        android:text="@string/id_this_is_your_bip85_derived_recovery_phrase"
+                        android:text="@string/id_use_this_recovery_phrase_to"
                         />
 
                 </com.google.android.material.card.MaterialCardView>

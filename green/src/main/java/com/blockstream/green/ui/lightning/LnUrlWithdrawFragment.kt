@@ -76,11 +76,11 @@ class LnUrlWithdrawFragment : AbstractWalletFragment<LnurlWithdrawFragmentBindin
 
         binding.vm = viewModel
 
-        binding.redeemFrom = getString(R.string.id_you_are_redeeming_funds_from, requestData.domain())
+        binding.redeemFrom = getString(R.string.id_you_are_redeeming_funds_from_s, requestData.domain())
 
         viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
             consumableEvent?.getContentIfNotHandledForType<NavigateEvent.NavigateBack>()?.let {
-                dialog(getString(R.string.id_success), getString(R.string.id_s_will_send_you_the_funds, requestData.domain() ?: "-")){
+                dialog(getString(R.string.id_success), getString(R.string.id_s_will_send_you_the_funds_it, requestData.domain() ?: "-")){
                     popBackStack()
                 }
             }

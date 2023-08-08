@@ -328,7 +328,7 @@ class WalletSettingsFragment :
 
                 denominationAndExchangeRatePreference.subtitle = StringHolder(colorText(
                     getString(
-                        R.string.id_display_values_in_s_and_exchange,
+                        R.string.id_display_values_in_s_and,
                         getBitcoinOrLiquidUnit(session = session),
                         it.pricing.currency,
                         it.pricing.exchange

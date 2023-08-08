@@ -87,7 +87,7 @@ data class AccountsListItem constructor(
                 binding.experimental.setOnClickListener {
                     context.dialog(
                         title = R.string.id_experimental_feature,
-                        message = R.string.id_experimental_features_might_change_break,
+                        message = R.string.id_experimental_features_might,
                         icon = R.drawable.ic_fill_flash_24
                     )
                 }

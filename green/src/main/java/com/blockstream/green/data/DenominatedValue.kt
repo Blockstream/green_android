@@ -105,6 +105,10 @@ sealed class Denomination(open val denomination: String) : Parcelable {
     val isFiat
         get() = this is FIAT
 
+    fun notFiat(): Denomination?{
+        return this.takeIf { !it.isFiat }
+    }
+
     companion object : KLogging() {
 
         fun byUnit(unit: String) = when (unit) {

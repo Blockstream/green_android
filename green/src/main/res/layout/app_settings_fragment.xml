@@ -169,7 +169,7 @@
                 isVisible="@{vm.lightningEnabled || vm.enableExperimentalFeatures}"
                 app:icon="@drawable/ic_fill_flash_24"
                 app:titleText="@string/id_enable_experimental_features"
-                app:captionText="@string/id_experimental_features_might_change_break" />
+                app:captionText="@string/id_experimental_features_might" />
 
             <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"

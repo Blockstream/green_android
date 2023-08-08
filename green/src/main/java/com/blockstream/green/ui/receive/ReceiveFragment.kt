@@ -137,7 +137,7 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
                             withGrouping = true
                         )
 
-                        dialog(getString(R.string.id_funds_received), getString(R.string.id_you_have_just_received, amount), R.drawable.ic_lightning)
+                        dialog(getString(R.string.id_funds_received), getString(R.string.id_you_have_just_received_s, amount), R.drawable.ic_lightning)
                     }
                 }
             }

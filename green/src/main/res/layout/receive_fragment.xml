@@ -246,7 +246,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:fontFamily="@font/monospace"
-                                    android:text="@{String.format(@string/id_max_limit, vm.maxReceiveAmount)}"
+                                    android:text="@{String.format(@string/id_max_limit_s, vm.maxReceiveAmount)}"
                                     android:textAppearance="?attr/textAppearanceBodySmall"
                                     android:textColor="@color/color_on_surface_emphasis_medium" />
 
@@ -312,8 +312,8 @@
                                         android:layout_marginTop="8dp"
                                         android:layout_marginEnd="12dp"
                                         android:textColor="@color/color_on_surface_emphasis_medium"
-                                        android:text="@{String.format(@string/id_a_funding_fee_of_s, vm.channelFeePercent, vm.channelMinFee, vm.inboundLiquidity)}"
-                                        tools:text="@string/id_a_funding_fee_of_s"/>
+                                        android:text="@{String.format(@string/id_a_funding_fee_of_s_minimum_s_is, vm.channelFeePercent, vm.channelMinFee, vm.inboundLiquidity)}"
+                                        tools:text="@string/id_a_funding_fee_of_s_minimum_s_is"/>
 
                                     <Button
                                         android:id="@+id/buttonLearnMore"
@@ -458,8 +458,8 @@
                                                 android:layout_marginBottom="8dp"
                                                 android:textAlignment="center"
                                                 alphaPulse="@{vm.accountLiveData.lightning &amp;&amp; vm.showOnchainAddress}"
-                                                android:text="@{String.format(@string/id_send_more_than_s, vm.onChainMin, vm.onChainMax, vm.channelFeePercent, vm.channelMinFee)}"
-                                                tools:text="@string/id_send_more_than_s"/>
+                                                android:text="@{String.format(@string/id_send_more_than_s_and_up_to_s_to, vm.onChainMin, vm.onChainMax, vm.channelFeePercent, vm.channelMinFee)}"
+                                                tools:text="@string/id_send_more_than_s_and_up_to_s_to"/>
 
                                         </com.google.android.material.card.MaterialCardView>
 

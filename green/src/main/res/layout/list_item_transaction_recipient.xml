@@ -120,8 +120,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_marginBottom="2dp"
-                android:text="@{vm.isSweep ? @string/id_private_key : vm.accountLiveData.lightning ? @string/id_lightning_invoice_lnurl : @string/id_recipient_address}"
-                tools:text="@string/id_lightning_invoice_lnurl" />
+                android:text="@{vm.isSweep ? @string/id_private_key : vm.accountLiveData.lightning ? @string/id_lightning_invoice__lnurl : @string/id_recipient_address}"
+                tools:text="@string/id_lightning_invoice__lnurl" />
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
@@ -208,7 +208,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_marginEnd="4dp"
-                android:text="@{String.format(@string/id_payment_requested_by, liveData.domain)}"
+                android:text="@{String.format(@string/id_payment_requested_by_s, liveData.domain)}"
                 isVisible="@{!liveData.domain.empty}"
                 android:textAppearance="?attr/textAppearanceLabelMedium" />
 
@@ -364,7 +364,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="3"
                     isVisible="@{(vm.transactionError == null || vm.transactionError.empty) &amp;&amp; liveData.minAmount != null &amp;&amp; !liveData.hasLockedAmount}"
-                    android:text="@{String.format(@string/id_limits, liveData.minAmount , liveData.maxAmount)}"
+                    android:text="@{String.format(@string/id_limits_s__s, liveData.minAmount , liveData.maxAmount)}"
                     android:textAppearance="?attr/textAppearanceBodySmall"
                     android:textColor="@color/color_on_surface_emphasis_medium" />
 

@@ -68,7 +68,7 @@ class LightningNodeBottomSheetFragment :
             )
 
             list += OverlineTextListItem(
-                StringHolder(R.string.id_max_payable),
+                StringHolder(R.string.id_max_payable_amount),
                 StringHolder(it.maxPayableSatoshi().toAmountLookOrNa(
                     session = session,
                     withUnit = true,
