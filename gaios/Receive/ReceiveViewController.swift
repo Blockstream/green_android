@@ -77,8 +77,6 @@ class ReceiveViewController: KeyboardViewController {
         
         let inset = (UIApplication.shared.windows.first?.safeAreaInsets.bottom ?? 0) - 5
         stackBottom.constant = keyboardFrame.height - inset
-        
-        //btnOnChain.isHidden = true
         UIView.animate(withDuration: 0.5, animations: { [weak self] in
             self?.view.layoutIfNeeded()
         })
@@ -87,7 +85,6 @@ class ReceiveViewController: KeyboardViewController {
     override func keyboardWillHide(notification: Notification) {
         super.keyboardWillShow(notification: notification)
         stackBottom.constant = 0.0
-        //btnOnChain.isHidden = false
         UIView.animate(withDuration: 0.5, animations: { [weak self] in
             self?.view.layoutIfNeeded()
         })
@@ -133,14 +130,14 @@ class ReceiveViewController: KeyboardViewController {
     
     func reload() {
         let network = viewModel.account.gdkNetwork
-        btnOnChain.isHidden = true // !network.lightning
+        btnOnChain.isHidden = !network.lightning
         btnEdit.isHidden = network.liquid || network.lightning || viewModel.satoshi == nil
         btnOptions.isHidden = network.lightning
         btnConfirm.isHidden = !(network.lightning && lightningAmountEditing)
         btnShare.isHidden = !(!network.lightning || !lightningAmountEditing)
         let userAccount = viewModel.wm.account
         btnVerify.isHidden = !(userAccount.isHW == true && userAccount.isLedger == false)
-        //btnOnChain.setTitle(viewModel.type == .bolt11 ? "Show Onchain Address" : "Show Invoice", for: .normal)
+        btnOnChain.setTitle(viewModel.type == .bolt11 ? "Show Onchain Address" : "Show Invoice", for: .normal)
         reloadNavigationBtns()
         tableView.reloadData()
     }
