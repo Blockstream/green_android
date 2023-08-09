@@ -27,10 +27,11 @@ extension Transaction {
     var amountsWithoutFees: [String: Int64] {
         if type == .some(.redeposit) {
             return [:]
-        }
-        // remove L-BTC asset only if fee on outgoing transactions
-        if type == .some(.outgoing) || type == .some(.mixed) {
-            return amounts.filter({ !($0.0 == feeAsset && abs($0.1) == Int64(fee)) })
+        } else if isLiquid {
+            // remove L-BTC asset only if fee on outgoing transactions
+            if type == .some(.outgoing) || type == .some(.mixed) {
+                return amounts.filter({ !($0.0 == feeAsset && abs($0.1) == Int64(fee)) })
+            }
         }
         return amounts
     }
@@ -83,9 +84,9 @@ extension Transaction {
             case .message(let data):
                 tx.message = data.message
             case .aes(let data):
-                tx.plaintext = [data.description: data.plaintext]
+                tx.plaintext = (data.description, data.plaintext)
             case .url(let data):
-                tx.url = [data.description: data.url]
+                tx.url = (data.description, data.url)
             default:
                 break
             }

@@ -6,7 +6,7 @@ class TransactionDetailNoteCell: UITableViewCell {
     @IBOutlet weak var lblNoteTitle: UILabel!
     @IBOutlet weak var lblNoteTxt: UILabel!
     @IBOutlet weak var bgNote: UIView!
-
+    @IBOutlet weak var btnNote: UIButton!
     var noteAction: VoidToVoid?
 
     override func awakeFromNib() {
@@ -25,16 +25,14 @@ class TransactionDetailNoteCell: UITableViewCell {
         lblNoteTxt.text = ""
     }
 
-    func configure(transaction: Transaction,
+    func configure(title: String,
+                   text: String?,
                    noteAction: VoidToVoid?) {
 
-        lblNoteTitle.text = NSLocalizedString("id_my_notes", comment: "").lowercased().firstUppercased
-        if !transaction.memo.isEmpty {
-            lblNoteTxt.text = transaction.memo
-        } else {
-            lblNoteTxt.text = ""
-        }
+        lblNoteTitle.text = title.localized.lowercased().firstUppercased
+        lblNoteTxt.text = text ?? ""
         self.noteAction = noteAction
+        self.btnNote.isHidden = noteAction == nil
     }
 
     @IBAction func btnNote(_ sender: Any) {

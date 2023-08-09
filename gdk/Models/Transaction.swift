@@ -183,8 +183,8 @@ public struct Transaction: Comparable {
         get { privateKey != nil }
     }
 
-    public var memo: String {
-        get { return get("memo") ?? String() }
+    public var memo: String? {
+        get { return get("memo") }
         set { details["memo"] = newValue }
     }
 
@@ -254,12 +254,12 @@ public struct Transaction: Comparable {
         set { details["message"] = newValue }
     }
 
-    public var plaintext: [String: String]? {
+    public var plaintext: (String, String)? {
         get { return get("plaintext") }
         set { details["plaintext"] = newValue }
     }
 
-    public var url: [String: String]? {
+    public var url: (String, String)? {
         get { return get("url") }
         set { details["url"] = newValue }
     }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -21,14 +21,6 @@
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PO2-Ak-rfF">
                         <rect key="frame" x="25" y="5" width="345" height="106"/>
                         <subviews>
-                            <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tT2-ws-OQK">
-                                <rect key="frame" x="0.0" y="104" width="100" height="2"/>
-                                <color key="backgroundColor" name="gGreenMatrix"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="2" id="07k-bs-3Kw"/>
-                                    <constraint firstAttribute="width" constant="100" id="Sfe-L7-MS1"/>
-                                </constraints>
-                            </view>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_tx_received" translatesAutoresizingMaskIntoConstraints="NO" id="Ac8-PC-sk1">
                                 <rect key="frame" x="20" y="41" width="24" height="24"/>
                                 <constraints>
@@ -43,19 +35,28 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="a7n-lN-ZsY">
                                 <rect key="frame" x="64" y="10" width="261" height="86"/>
                             </stackView>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progressViewStyle="bar" progress="0.40000000000000002" translatesAutoresizingMaskIntoConstraints="NO" id="2h2-tZ-HJB">
+                                <rect key="frame" x="0.0" y="104" width="345" height="3"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="2" id="Nrk-Z2-hGj"/>
+                                </constraints>
+                                <color key="progressTintColor" name="gGreenMatrix"/>
+                            </progressView>
                         </subviews>
                         <color key="backgroundColor" name="gGrayCard"/>
                         <constraints>
                             <constraint firstItem="hPk-HP-ha5" firstAttribute="centerX" secondItem="Ac8-PC-sk1" secondAttribute="centerX" id="2Tj-Yj-K8x"/>
                             <constraint firstItem="Ac8-PC-sk1" firstAttribute="centerY" secondItem="PO2-Ak-rfF" secondAttribute="centerY" id="2sW-as-t2I"/>
                             <constraint firstItem="a7n-lN-ZsY" firstAttribute="top" secondItem="PO2-Ak-rfF" secondAttribute="top" constant="10" id="I3S-TH-nww"/>
+                            <constraint firstAttribute="bottom" secondItem="2h2-tZ-HJB" secondAttribute="bottom" id="ILx-Cf-X9u"/>
                             <constraint firstAttribute="bottom" secondItem="a7n-lN-ZsY" secondAttribute="bottom" constant="10" id="MfD-6z-9OS"/>
-                            <constraint firstItem="tT2-ws-OQK" firstAttribute="leading" secondItem="PO2-Ak-rfF" secondAttribute="leading" id="VLD-hw-Bco"/>
+                            <constraint firstAttribute="trailing" secondItem="2h2-tZ-HJB" secondAttribute="trailing" id="VAO-Zf-LZ0"/>
                             <constraint firstItem="hPk-HP-ha5" firstAttribute="centerY" secondItem="Ac8-PC-sk1" secondAttribute="centerY" id="b4x-O0-N6a"/>
+                            <constraint firstItem="2h2-tZ-HJB" firstAttribute="leading" secondItem="PO2-Ak-rfF" secondAttribute="leading" id="bM2-3u-hbh"/>
                             <constraint firstItem="Ac8-PC-sk1" firstAttribute="leading" secondItem="PO2-Ak-rfF" secondAttribute="leading" constant="20" id="f9t-yt-W57"/>
                             <constraint firstAttribute="trailing" secondItem="a7n-lN-ZsY" secondAttribute="trailing" constant="20" id="kIp-bS-SED"/>
                             <constraint firstItem="a7n-lN-ZsY" firstAttribute="leading" secondItem="Ac8-PC-sk1" secondAttribute="trailing" constant="20" id="m4q-K2-Z27"/>
-                            <constraint firstAttribute="bottom" secondItem="tT2-ws-OQK" secondAttribute="bottom" id="peS-43-ILs"/>
                         </constraints>
                     </view>
                 </subviews>
@@ -73,8 +74,7 @@
                 <outlet property="bg" destination="PO2-Ak-rfF" id="e2j-9X-FEl"/>
                 <outlet property="imgView" destination="Ac8-PC-sk1" id="Q7R-2L-4xf"/>
                 <outlet property="innerStack" destination="a7n-lN-ZsY" id="UUn-Wl-lor"/>
-                <outlet property="progressBar" destination="tT2-ws-OQK" id="dph-mt-Rzm"/>
-                <outlet property="progressWidth" destination="Sfe-L7-MS1" id="QF9-sS-Ax3"/>
+                <outlet property="progressBar" destination="2h2-tZ-HJB" id="V97-Gu-ZVH"/>
             </connections>
             <point key="canvasLocation" x="26.717557251908396" y="11.971830985915494"/>
         </tableViewCell>
@@ -85,7 +85,7 @@
             <color red="0.075000002980232239" green="0.086000002920627594" blue="0.11400000005960464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gGrayCard">
-            <color red="0.13300000131130219" green="0.13300000131130219" blue="0.14900000393390656" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.12941176470588237" green="0.12941176470588237" blue="0.14509803921568629" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gGreenMatrix">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

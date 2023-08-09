@@ -126,7 +126,7 @@ class LightningSessionManager: SessionManager {
     override func sendTransaction(tx: Transaction) async throws {
         let invoiceOrLnUrl = tx.addressees.first?.address
         let satoshi = tx.addressees.first?.satoshi ?? 0
-        let comment = tx.memo
+        let comment = tx.memo ?? ""
         switch lightBridge?.parseBoltOrLNUrl(input: invoiceOrLnUrl) {
         case .bolt11(let invoice):
             // Check for expiration

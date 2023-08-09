@@ -8,6 +8,9 @@ enum TransactionSection: Int, CaseIterable {
     case status = 2
     case detail = 3
     case note = 4
+    case message = 5
+    case url = 6
+    case plaintext = 7
 }
 
 protocol TransactionViewControllerDelegate: AnyObject {
@@ -114,7 +117,7 @@ class TransactionViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogEditViewController") as? DialogEditViewController {
             vc.modalPresentationStyle = .overFullScreen
-            vc.prefill = transaction.memo
+            vc.prefill = transaction.memo ?? ""
             vc.delegate = self
             present(vc, animated: false, completion: nil)
         }
@@ -276,11 +279,7 @@ class TransactionViewController: UIViewController {
 extension TransactionViewController: UITableViewDelegate, UITableViewDataSource {
 
     var sections: [TransactionSection] {
-        if wallet.gdkNetwork.lightning {
-            return [.amount, .status, .note]
-        } else {
-            return TransactionSection.allCases
-        }
+        return TransactionSection.allCases
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -292,13 +291,19 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
         case TransactionSection.amount:
             return assetAmountList.amounts.count
         case TransactionSection.fee:
-            return 1
+            return (transaction.isLightning && transaction.type == .incoming) ? 0 : 1
         case TransactionSection.status:
             return 1
         case TransactionSection.detail:
-            return 1
+            return transaction.isLightning && !(transaction.isLightningSwap ?? false) ? 0 : 1
         case TransactionSection.note:
-            return 1
+            return transaction.isLightning && transaction.memo == nil ? 0 : 1
+        case TransactionSection.message:
+            return transaction.isLightning && transaction.message != nil ? 1 : 0
+        case TransactionSection.url:
+            return transaction.isLightning && transaction.url != nil ? 1 : 0
+        case TransactionSection.plaintext:
+            return transaction.isLightning && transaction.plaintext != nil ? 1 : 0
         }
     }
 
@@ -368,14 +373,45 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
 
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionDetailNoteCell") as? TransactionDetailNoteCell {
                 cell.configure(
-                    transaction: transaction,
-                    noteAction: noteAction
+                    title: "Description",
+                    text: transaction.memo,
+                    noteAction: transaction.isLightning ? nil : noteAction
                 )
                 cell.selectionStyle = .none
                 return cell
             }
-        default:
-            break
+        case .message:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionDetailNoteCell") as? TransactionDetailNoteCell {
+                cell.configure(
+                    title: "Message",
+                    text: transaction.message,
+                    noteAction: nil
+                )
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .url:
+            let url = transaction.url ?? ("", "")
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionDetailNoteCell") as? TransactionDetailNoteCell {
+                cell.configure(
+                    title: url.0,
+                    text: url.1,
+                    noteAction: nil
+                )
+                cell.selectionStyle = .none
+                return cell
+            }
+        case .plaintext:
+            let plaintext = transaction.plaintext ?? ("", "")
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionDetailNoteCell") as? TransactionDetailNoteCell {
+                cell.configure(
+                    title: plaintext.0,
+                    text: plaintext.1,
+                    noteAction: nil
+                )
+                cell.selectionStyle = .none
+                return cell
+            }
         }
         return UITableViewCell()
     }
@@ -395,12 +431,6 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         return nil
-//        switch section {
-//        case TransactionSection.detail.rawValue:
-//            return headerView(NSLocalizedString("id_transaction_details", comment: ""))
-//        default:
-//            return headerView("")
-//        }
     }
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
@@ -412,35 +442,6 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
             didSelectAmountAt(indexPath.row)
         }
     }
-}
-
-extension TransactionViewController {
-//    func headerView(_ txt: String) -> UIView {
-//        if txt == "" {
-//            let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 1.0))
-//            section.backgroundColor = .clear
-//            return section
-//        }
-//        let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: headerH))
-//        section.backgroundColor = UIColor.customTitaniumDark()
-//        let title = UILabel(frame: .zero)
-//        title.text = txt
-//        title.numberOfLines = 0
-//
-//        title.font = UIFont.systemFont(ofSize: 14.0, weight: .bold)
-//        title.textColor = .yellow.withAlphaComponent(0.4)
-//
-//        title.translatesAutoresizingMaskIntoConstraints = false
-//        section.addSubview(title)
-//
-//        NSLayoutConstraint.activate([
-//            title.centerYAnchor.constraint(equalTo: section.centerYAnchor),
-//            title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 20),
-//            title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -20)
-//        ])
-//
-//        return section
-//    }
 }
 
 extension TransactionViewController: DialogEditViewControllerDelegate {

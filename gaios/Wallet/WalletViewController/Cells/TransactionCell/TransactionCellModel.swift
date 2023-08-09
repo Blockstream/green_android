@@ -5,7 +5,7 @@ import gdk
 struct PendingStateUI {
     var style: MultiLabelStyle
     var label: String
-    var progress: Double?
+    var progress: Float?
 }
 
 class TransactionCellModel {
@@ -55,7 +55,7 @@ class TransactionCellModel {
         } else if tx.isLightning {
             if tx.isPending(block: blockHeight) {
                 return PendingStateUI(style: .unconfirmed,
-                                      label: "id_unconfirmed".localized,
+                                      label: "",
                                       progress: nil)
             }
         } else if tx.isLiquid {
@@ -71,7 +71,7 @@ class TransactionCellModel {
                                       progress: nil)
             }
             let confirmCount = tx.blockHeight == 0 ? 0 : (blockHeight - tx.blockHeight) + 1
-            let progress = confirmCount >= 6 ? 1.0 : Double(confirmCount) / 6.0
+            let progress = confirmCount >= 6 ? 1.0 : Float(confirmCount) / 6.0
             if progress < 1.0 {
                 return PendingStateUI(style: .pending,
                                       label: String(format: "id_d6_confirmations".localized, confirmCount),
@@ -87,7 +87,7 @@ class TransactionCellModel {
         let feeAsset = subaccount.gdkNetwork.getFeeAsset()
         if tx.type == .redeposit {
             return [feeAsset: -1 * Int64(tx.fee)]
-        } else {
+        } else if tx.isLiquid {
             // remove L-BTC asset only if fee on outgoing transactions
             if tx.type == .some(.outgoing) || tx.type == .some(.mixed) {
                 return tx.amounts.filter({ !($0.key == feeAsset && abs($0.value) == Int64(tx.fee)) })

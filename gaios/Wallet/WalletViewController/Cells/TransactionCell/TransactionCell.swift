@@ -5,10 +5,10 @@ class TransactionCell: UITableViewCell {
 
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var imgView: UIImageView!
-    @IBOutlet weak var progressBar: UIView!
     @IBOutlet weak var innerStack: UIStackView!
-    @IBOutlet weak var progressWidth: NSLayoutConstraint!
     @IBOutlet weak var activity: UIActivityIndicatorView!
+    @IBOutlet weak var progressBar: UIProgressView!
+    private var timer: Timer?
 
     class var identifier: String { return String(describing: self) }
 
@@ -18,10 +18,16 @@ class TransactionCell: UITableViewCell {
         progressBar.cornerRadius = 5.0
         progressBar.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
     }
+    
+    deinit {
+        timer?.invalidate()
+    }
 
     override func prepareForReuse() {
         super.prepareForReuse()
         innerStack.subviews.forEach { $0.removeFromSuperview() }
+        progressBar.progress = 0
+        timer?.invalidate()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -58,19 +64,29 @@ class TransactionCell: UITableViewCell {
                                         hideBalance: nil,
                                         style: model.statusUI().style))
 
-        if !model.tx.memo.isEmpty {
+        if !(model.tx.memo?.isEmpty ?? true) {
             addStackRow(MultiLabelViewModel(txtLeft: model.tx.memo,
                                             txtRight: "",
                                             hideBalance: nil,
                                             style: .simple))
         }
 
-        progressWidth.constant = (UIScreen.main.bounds.width - 50.0) * (model.statusUI().progress ?? 0.0)
-//        let unconf = model.statusUI().style == .unconfirmed
-//        imgView.isHidden = unconf
-//        activity.isHidden = !unconf
-//        activity.startAnimating()
+        progressBar.progress = model.statusUI().progress ?? 0
+        if model.statusUI().style == .unconfirmed {
+            progressLoop()
+        }
         activity.isHidden = true
+    }
+
+    func progressLoop() {
+        var i: Float = 0
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 0.02, repeats: true) { timer in
+            DispatchQueue.main.async {
+                self.progressBar.progress = i.truncatingRemainder(dividingBy: 100) / 100
+                i += 1
+            }
+        }
     }
 
     func addStackRow(_ model: MultiLabelViewModel) {

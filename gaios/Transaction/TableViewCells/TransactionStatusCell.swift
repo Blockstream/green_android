@@ -53,7 +53,7 @@ class TransactionStatusCell: UITableViewCell {
         let isLightning = transaction.subaccountItem?.gdkNetwork.lightning ?? false
 
         var status: TransactionStatus = .unconfirmed
-        if !isLightning && transaction.blockHeight == 0 {
+        if transaction.isUnconfirmed(block: blockHeight) {
             lblStatus.text = NSLocalizedString("id_unconfirmed", comment: "")
             lblStatus.textColor = UIColor.errorRed()
         } else if !isLightning && transaction.isLiquid && blockHeight < transaction.blockHeight + 1 {

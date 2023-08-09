@@ -9,7 +9,6 @@ class LTRecoverFundsFeeCell: UITableViewCell {
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var lblFeeAmount: UILabel!
     @IBOutlet weak var feeSlider: UISlider!
-    @IBOutlet weak var lblLegend: UILabel!
 
     class var identifier: String { return String(describing: self) }
     var feeSliderMaxIndex: Int = 3
@@ -37,9 +36,7 @@ class LTRecoverFundsFeeCell: UITableViewCell {
     }
     
     func setFeeSlider(_ index: Int) {
-        let legend = ["Economy", "Hour", "Half Hour", "Fast"]
         feeSlider.value = Float(index)
-        lblLegend.text = legend[index]
     }
     
     @IBAction func didValueChange(_ sender: UISlider) {

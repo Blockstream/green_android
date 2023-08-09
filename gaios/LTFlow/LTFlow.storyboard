@@ -845,28 +845,60 @@
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
                                                                 <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="3" continuous="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cUo-n0-jeh">
-                                                                    <rect key="frame" x="18" y="37" width="338" height="35"/>
+                                                                    <rect key="frame" x="18" y="37" width="338" height="31"/>
                                                                     <color key="minimumTrackTintColor" name="customMatrixGreen"/>
                                                                     <connections>
                                                                         <action selector="didValueChange:" destination="HFr-dq-OZd" eventType="valueChanged" id="CPZ-rD-ghc"/>
                                                                     </connections>
                                                                 </slider>
-                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bgO-eP-arH">
-                                                                    <rect key="frame" x="169.33333333333334" y="70" width="35.333333333333343" height="17"/>
-                                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                    <nil key="highlightedColor"/>
-                                                                </label>
+                                                                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="a6S-iJ-Eez">
+                                                                    <rect key="frame" x="8" y="66" width="358" height="31"/>
+                                                                    <subviews>
+                                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="rightArrow" translatesAutoresizingMaskIntoConstraints="NO" id="TpL-9s-DsF">
+                                                                            <rect key="frame" x="0.0" y="10.666666666666671" width="83.666666666666671" height="10"/>
+                                                                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                            <constraints>
+                                                                                <constraint firstAttribute="height" constant="10" id="D7F-1p-wAc"/>
+                                                                                <constraint firstAttribute="width" constant="20" id="lEH-OJ-daP"/>
+                                                                            </constraints>
+                                                                        </imageView>
+                                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="rightArrow" translatesAutoresizingMaskIntoConstraints="NO" id="0VS-rn-LsZ">
+                                                                            <rect key="frame" x="91.666666666666686" y="10.666666666666671" width="83.333333333333314" height="10"/>
+                                                                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                            <constraints>
+                                                                                <constraint firstAttribute="height" constant="10" id="2Pa-K0-Rff"/>
+                                                                                <constraint firstAttribute="width" constant="20" id="G2S-UC-ho3"/>
+                                                                            </constraints>
+                                                                        </imageView>
+                                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="rightArrow" translatesAutoresizingMaskIntoConstraints="NO" id="LKc-6h-bnP">
+                                                                            <rect key="frame" x="183" y="10.666666666666671" width="83.666666666666686" height="10"/>
+                                                                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                            <constraints>
+                                                                                <constraint firstAttribute="width" constant="20" id="9Wu-mb-UpG"/>
+                                                                                <constraint firstAttribute="height" constant="10" id="k1s-Pa-qky"/>
+                                                                            </constraints>
+                                                                        </imageView>
+                                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_double_arrow_right" translatesAutoresizingMaskIntoConstraints="NO" id="sQM-3D-3hF">
+                                                                            <rect key="frame" x="274.66666666666669" y="5.6666666666666714" width="83.333333333333314" height="20"/>
+                                                                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                            <constraints>
+                                                                                <constraint firstAttribute="width" constant="20" id="BKV-eC-Gn8"/>
+                                                                                <constraint firstAttribute="height" constant="20" id="Bym-dq-eAh"/>
+                                                                            </constraints>
+                                                                        </imageView>
+                                                                    </subviews>
+                                                                </stackView>
                                                             </subviews>
                                                             <color key="backgroundColor" name="gGrayCard"/>
                                                             <constraints>
-                                                                <constraint firstItem="bgO-eP-arH" firstAttribute="centerX" secondItem="ljn-f2-f1n" secondAttribute="centerX" id="L4Q-eL-g8t"/>
+                                                                <constraint firstAttribute="bottom" secondItem="a6S-iJ-Eez" secondAttribute="bottom" constant="10" id="CR6-6e-pBM"/>
+                                                                <constraint firstItem="a6S-iJ-Eez" firstAttribute="top" secondItem="cUo-n0-jeh" secondAttribute="bottom" constant="-1" id="D7I-Fm-Mvt"/>
                                                                 <constraint firstAttribute="trailing" secondItem="cUo-n0-jeh" secondAttribute="trailing" constant="20" id="NVP-20-mem"/>
-                                                                <constraint firstAttribute="bottom" secondItem="bgO-eP-arH" secondAttribute="bottom" constant="20" id="PkQ-UH-WUs"/>
-                                                                <constraint firstItem="bgO-eP-arH" firstAttribute="top" secondItem="cUo-n0-jeh" secondAttribute="bottom" constant="-1" id="QZz-al-IBc"/>
                                                                 <constraint firstItem="7fb-4K-0hl" firstAttribute="top" secondItem="ljn-f2-f1n" secondAttribute="top" constant="20" id="YE1-sl-9uC"/>
                                                                 <constraint firstAttribute="trailing" secondItem="7fb-4K-0hl" secondAttribute="trailing" constant="20" id="agQ-og-SOf"/>
                                                                 <constraint firstItem="cUo-n0-jeh" firstAttribute="top" secondItem="7fb-4K-0hl" secondAttribute="bottom" id="ftn-Ry-2YB"/>
+                                                                <constraint firstItem="a6S-iJ-Eez" firstAttribute="leading" secondItem="ljn-f2-f1n" secondAttribute="leading" constant="8" id="gCD-qK-ymy"/>
+                                                                <constraint firstAttribute="trailing" secondItem="a6S-iJ-Eez" secondAttribute="trailing" constant="8" id="gvh-ha-kKW"/>
                                                                 <constraint firstItem="cUo-n0-jeh" firstAttribute="leading" secondItem="ljn-f2-f1n" secondAttribute="leading" constant="20" id="xeb-27-YzJ"/>
                                                             </constraints>
                                                         </view>
@@ -893,7 +925,6 @@
                                             <outlet property="bg" destination="ljn-f2-f1n" id="unW-SJ-Mn6"/>
                                             <outlet property="feeSlider" destination="cUo-n0-jeh" id="34Y-4C-Pym"/>
                                             <outlet property="lblFeeAmount" destination="7fb-4K-0hl" id="0mA-We-Lej"/>
-                                            <outlet property="lblLegend" destination="bgO-eP-arH" id="26z-Zj-vyV"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -948,7 +979,9 @@
         <image name="ic_any_asset" width="18" height="18.333333969116211"/>
         <image name="ic_cancel" width="24" height="24"/>
         <image name="ic_clipboard" width="24" height="24.333333969116211"/>
+        <image name="ic_double_arrow_right" width="24" height="24"/>
         <image name="ic_lightning_flask" width="59" height="59"/>
+        <image name="rightArrow" width="9" height="14"/>
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
@@ -962,7 +995,7 @@
             <color red="0.075000002980232239" green="0.086000002920627594" blue="0.11400000005960464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gGrayCard">
-            <color red="0.13300000131130219" green="0.13300000131130219" blue="0.14900000393390656" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.12941176470588237" green="0.12941176470588237" blue="0.14509803921568629" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

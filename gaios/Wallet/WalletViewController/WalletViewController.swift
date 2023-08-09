@@ -645,9 +645,6 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
             tableView.endUpdates()
         case .transaction:
             let tx = viewModel.txCellModels[indexPath.row].tx
-            // TODO test
-            presentLTRecoverFundsViewController(tx)
-            /*
             if tx.isLightningSwap ?? false {
                 if tx.isRefundableSwap ?? false {
                     pushLTRecoverFundsViewController(tx)
@@ -656,7 +653,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                 }
             } else {
                 pushTransactionViewController(tx)
-            }*/
+            }
             tableView.deselectRow(at: indexPath, animated: false)
             tableView.selectRow(at: IndexPath(row: sIdx, section: WalletSection.account.rawValue), animated: false, scrollPosition: .none)
         default:
@@ -674,7 +671,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func pushLTRecoverFundsViewController(_ tx: Transaction) {
-        let amount = tx.amounts["btc"].map {UInt64($0)}
+        let amount = tx.amounts["btc"].map {UInt64(abs($0))}
         let address = tx.inputs?.first?["address"] as? String
         let model = LTRecoverFundsViewModel(wallet: tx.subaccountItem,
                                             onChainAddress: address,

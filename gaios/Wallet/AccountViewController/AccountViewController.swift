@@ -89,7 +89,7 @@ class AccountViewController: UIViewController {
         }
         notificationObservers = []
     }
-    
+
     func reload() {
         Task {
             if isReloading { return }
@@ -100,9 +100,10 @@ class AccountViewController: UIViewController {
                 _ = viewModel.account.lightningSession?.lightBridge?.updateNodeInfo()
                 reloadSections([.sweep, .inbound], animated: true)
             }
-            try? await viewModel.getTransactions()
-            print (viewModel.txCellModels.count)
-            reloadSections([.transaction], animated: true)
+            let refresh = try? await viewModel.getTransactions()
+            if refresh ?? true {
+                reloadSections([.transaction], animated: true)
+            }
             isReloading = false
         }
     }
@@ -597,11 +598,16 @@ extension AccountViewController: UITableViewDataSourcePrefetching {
         let filteredIndexPaths = indexPaths.filter { $0.section == AccountSection.transaction.rawValue }
         let row = filteredIndexPaths.last?.row ?? 0
         if viewModel.page > 0 && row > (viewModel.txCellModels.count - 3) {
-            Task {
-                try? await viewModel.getTransactions(restart: false, max: nil)
-                print (viewModel.txCellModels.count)
-                reloadSections([.transaction], animated: true)
+            Task.detached { [weak self] in
+                await self?.getTransactions()
             }
+        }
+    }
+
+    func getTransactions() async {
+        let refresh = try? await viewModel.getTransactions(restart: false, max: nil)
+        if refresh ?? true {
+            reloadSections([.transaction], animated: true)
         }
     }
 }

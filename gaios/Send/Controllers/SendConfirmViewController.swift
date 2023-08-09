@@ -53,7 +53,7 @@ class SendConfirmViewController: KeyboardViewController {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogEditViewController") as? DialogEditViewController {
             vc.modalPresentationStyle = .overFullScreen
-            vc.prefill = viewModel.tx.memo
+            vc.prefill = viewModel.tx.memo ?? ""
             vc.delegate = self
             present(vc, animated: false, completion: nil)
         }
@@ -169,7 +169,7 @@ class SendConfirmViewController: KeyboardViewController {
             self.showError(prettyError.localized)
         }
         let isSendAll = self.viewModel.tx.addressees.first?.isGreedy ?? false
-        let withMemo = !self.viewModel.tx.memo.isEmpty
+        let withMemo = !(self.viewModel.tx.memo?.isEmpty ?? true)
         let transSgmt = AnalyticsManager.TransactionSegmentation(transactionType: self.inputType,
                                                                  addressInputType: self.addressInputType,
                                                                  sendAll: isSendAll)
@@ -193,7 +193,7 @@ class SendConfirmViewController: KeyboardViewController {
     @MainActor
     func executeOnDone() {
         let isSendAll = viewModel.tx.addressees.first?.isGreedy ?? false
-        let withMemo = !viewModel.tx.memo.isEmpty
+        let withMemo = !(viewModel.tx.memo?.isEmpty ?? true)
         let transSgmt = AnalyticsManager.TransactionSegmentation(transactionType: inputType,
                                                                  addressInputType: addressInputType,
                                                                  sendAll: isSendAll)
@@ -300,7 +300,7 @@ extension SendConfirmViewController: UITableViewDelegate, UITableViewDataSource 
             }
         case SendConfirmSection.note.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "NoteCell") as? NoteCell {
-                cell.configure(note: viewModel.tx.memo)
+                cell.configure(note: viewModel.tx.memo ?? "")
                 cell.delegate = self
                 cell.selectionStyle = .none
                 return cell

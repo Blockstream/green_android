@@ -91,13 +91,17 @@ class AccountViewModel {
         self.cachedBalance = cachedBalance
     }
 
-    func getTransactions(restart: Bool = true, max: Int? = nil) async throws {
+    func getTransactions(restart: Bool = true, max: Int? = nil) async throws -> Bool {
         if fetchingTxs {
-            return
+            return false
         }
         fetchingTxs = true
         do {
             let txs = try await wm.transactions(subaccounts: [account], first: (restart == true) ? 0 : cachedTransactions.count)
+            if txs.count == 0 || txs.sorted(by: >) == cachedTransactions.suffix(txs.count) {
+                fetchingTxs = false
+                return false
+            }
             if restart {
                 page = 0
                 cachedTransactions = []
@@ -112,8 +116,13 @@ class AccountViewModel {
             txCellModels = cachedTransactions
                 .map { ($0, getNodeBlockHeight(subaccountHash: $0.subaccount!)) }
                 .map { TransactionCellModel(tx: $0.0, blockHeight: $0.1) }
-        } catch { print(error) }
-        fetchingTxs = false
+            fetchingTxs = false
+            return true
+        } catch {
+            print(error)
+            fetchingTxs = false
+            return false
+        }
     }
 
     func getBalance() async throws {
@@ -173,7 +182,7 @@ class AccountViewModel {
     }
     
     func ltRecoverFundsViewModel(tx: Transaction) -> LTRecoverFundsViewModel {
-        let amount = tx.amounts["btc"].map {UInt64($0)}
+        let amount = tx.amounts["btc"].map {UInt64(abs($0))}
         let address = tx.inputs?.first?["address"] as? String
         return LTRecoverFundsViewModel(wallet: account,
                                 onChainAddress: address,
