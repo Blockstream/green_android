@@ -101,8 +101,8 @@ class Parser {
             }
             self.error = error
         } else {
-            self.createTx = CreateTransaction(error: "id_invalid_address".localized)
-            self.error = "id_invalid_address".localized
+            self.createTx = CreateTransaction(error: "id_invalid_address")
+            self.error = "id_invalid_address"
         }
     }
 

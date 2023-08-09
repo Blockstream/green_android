@@ -83,8 +83,10 @@ class SendViewController: KeyboardViewController {
             let task = try await viewModel.validateTransaction()
             switch await task?.result {
             case .success(let tx):
-                if let error = tx?.error, !error.isEmpty, !self.viewModel.inlineErrors.contains(error) {
-                    DropAlert().error(message: error.localized)
+                if let error = tx?.error, !error.isEmpty {
+                    if !self.viewModel.inlineErrors.contains(error) {
+                        DropAlert().error(message: error.localized)
+                    }
                 }
             case .failure(let err):
                 switch err {

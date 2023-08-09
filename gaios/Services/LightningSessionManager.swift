@@ -137,7 +137,7 @@ class LightningSessionManager: SessionManager {
             let res = try lightBridge?.sendPayment(bolt11: invoice.bolt11, satoshi: nil)
             print("res \(res)")
         case .lnUrlPay(let data):
-            let res = lightBridge?.payLnUrl(requestData: data, amount: Long(satoshi), comment: comment)
+            let res = try lightBridge?.payLnUrl(requestData: data, amount: Long(satoshi), comment: comment)
             print("res \(res)")
             switch res {
             case .endpointSuccess(let data):
@@ -161,13 +161,13 @@ class LightningSessionManager: SessionManager {
     ) -> String? {
         let balance = account.btc ?? 0
         guard let satoshi = satoshi, satoshi > 0 else {
-            return "id_invalid_amount".localized
+            return "id_invalid_amount"
         }
         if let min = min, satoshi < min {
             return "Amount must be at least \(min)"
         }
         if satoshi > balance {
-            return "id_insufficient_funds".localized
+            return "id_insufficient_funds"
         }
         if let max = max, satoshi > max {
             return "Amount must be at most \(max)"
@@ -299,30 +299,36 @@ extension LightningSessionManager: LightningEventListener {
     func onLightningEvent(event: BreezSDK.BreezEvent) {
         switch event {
         case .synced:
-            //nodeState = lightBridge?.updateNodeInfo()
-            //lspInfo = lightBridge?.updateLspInformation()
-            break
+            NSLog("onLightningEvent synced")
+            DispatchQueue.main.async {
+                self.post(event: .InvoicePaid)
+            }
         case .newBlock(let block):
+            NSLog("onLightningEvent newBlock")
             blockHeight = block
             DispatchQueue.main.async {
                 self.post(event: .Block)
             }
         case .invoicePaid(let data):
+            NSLog("onLightningEvent invoicePaid")
             DispatchQueue.main.async {
                 self.post(event: .InvoicePaid, object: data)
                 DropAlert().success(message: "Invoice Paid".localized)
             }
         case .paymentSucceed(let details):
+            NSLog("onLightningEvent paymentSucceed")
             DispatchQueue.main.async {
                 self.post(event: .PaymentSucceed)
                 DropAlert().success(message: "Payment Successful \(details.amountSatoshi) sats".localized)
             }
         case .paymentFailed(_):
+            NSLog("onLightningEvent paymentFailed")
             DispatchQueue.main.async {
                 self.post(event: .PaymentFailed)
                 DropAlert().error(message: "Payment Failure".localized)
             }
         default:
+            NSLog("onLightningEvent others")
             break
         }
     }    

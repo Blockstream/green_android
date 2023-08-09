@@ -97,7 +97,6 @@ public class LightningBridge {
         if breezSdk == nil {
             return false
         }
-        
         if let credentials = LightningBridge.CREDENTIALS {
             appGreenlightCredentials = AppGreenlightCredentials(gc: credentials)
         }
@@ -179,8 +178,8 @@ public class LightningBridge {
         return try breezSdk?.sendPayment(bolt11: bolt11, amountSats: satoshi)
     }
 
-    public func payLnUrl(requestData: LnUrlPayRequestData, amount: Long, comment: String) -> LnUrlPayResult? {
-        return try? breezSdk?.payLnurl(reqData: requestData, amountSats: amount, comment: comment)
+    public func payLnUrl(requestData: LnUrlPayRequestData, amount: Long, comment: String) throws -> LnUrlPayResult? {
+        return try breezSdk?.payLnurl(reqData: requestData, amountSats: amount, comment: comment)
     }
 
     public func authLnUrl(requestData: LnUrlAuthRequestData) throws -> LnUrlCallbackStatus? {
@@ -225,6 +224,7 @@ extension LightningBridge: EventListener {
         eventListener.onLightningEvent(event: e)
         switch e {
         case BreezEvent.invoicePaid( _):
+            Task { try? breezSdk?.sync() }
             break
         case BreezEvent.paymentSucceed(_):
             break
