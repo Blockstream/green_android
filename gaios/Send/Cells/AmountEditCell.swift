@@ -78,6 +78,7 @@ class AmountEditCell: UITableViewCell {
 
     func setStyle() {
         bg.cornerRadius = 5.0
+        denominationLabel.setStyle(.txtBigger)
     }
 
     @IBAction func textEditChange(_ sender: Any) {
