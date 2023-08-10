@@ -48,9 +48,9 @@ class DenominationExchangeViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Denomination and Exchange Rate"
+        lblTitle.text = "id_denomination__exchange_rate".localized
         btnCancel.setTitle("id_cancel".localized, for: .normal)
-        btnOk.setTitle("OK", for: .normal)
+        btnOk.setTitle("id_ok".localized, for: .normal)
         lblDenTitle.text = "id_denomination".localized
         lblExTitle.text = "id_reference_exchange_rate".localized
     }

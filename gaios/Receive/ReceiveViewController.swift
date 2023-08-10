@@ -108,7 +108,7 @@ class ReceiveViewController: KeyboardViewController {
         btnEdit.setTitle("id_edit".localized, for: .normal)
         btnOptions.setTitle("id_more_options".localized, for: .normal)
         btnVerify.setTitle("id_verify_on_device".localized, for: .normal)
-        btnConfirm.setTitle("Confirm", for: .normal)
+        btnConfirm.setTitle("id_confirm".localized, for: .normal)
     }
     
     func setStyle() {
@@ -148,7 +148,7 @@ class ReceiveViewController: KeyboardViewController {
         }
         let userAccount = viewModel.wm.account
         btnVerify.isHidden = !(userAccount.isHW == true && userAccount.isLedger == false)
-        btnOnChain.setTitle(viewModel.type == .bolt11 ? "Show Onchain Address" : "Show Invoice", for: .normal)
+        btnOnChain.setTitle(viewModel.type == .bolt11 ? "id_show_onchain_address".localized : "id_show_lightning_invoice".localized, for: .normal)
         reloadNavigationBtns()
         tableView.reloadData()
     }
@@ -158,7 +158,7 @@ class ReceiveViewController: KeyboardViewController {
         if network.lightning {
             let settingsBtn = UIButton(type: .system)
             settingsBtn.setStyle(.inline)
-            settingsBtn.setTitle("Add a note".localized, for: .normal)
+            settingsBtn.setTitle("id_add_note".localized, for: .normal)
             settingsBtn.addTarget(self, action: #selector(editNoteBtnTapped), for: .touchUpInside)
             navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
         } else {
@@ -655,9 +655,9 @@ extension ReceiveViewController: UITableViewDelegate, UITableViewDataSource {
             case .address:
                 return headerView("id_account_address".localized)
             case .bolt11:
-                return headerView("Lightning Invoice".localized)
+                return headerView("id_lightning_invoice".localized)
             case .swap:
-                return headerView("Onchain Address".localized)
+                return headerView("id_onchain_address".localized)
             }
         case ReceiveSection.amount:
             return headerView("id_amount".localized)

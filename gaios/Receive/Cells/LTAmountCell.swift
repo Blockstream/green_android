@@ -52,7 +52,7 @@ class LTAmountCell: UITableViewCell {
         lblMoreInfo.setStyle(.txtCard)
         lblAsset.setStyle(.txtBigger)
         lblMoreInfo.text = "For more information,".localized
-        btnFeeInfo.setTitle("Read More".localized, for: .normal)
+        btnFeeInfo.setTitle("read more".localized, for: .normal)
         btnFeeInfo.setStyle(.inlineGray)
     }
 
@@ -178,18 +178,18 @@ class LTAmountCell: UITableViewCell {
             bg.borderColor = UIColor.gGreenFluo()
             infoPanel.backgroundColor = UIColor.gGreenFluo().withAlphaComponent(0.2)
             let amount = model.channelFee
-            lblInfo.text = "A set up funding fee of \(model.toBtcText(amount) ?? "") (~\(model.toFiatText(amount) ?? "")) will be applied to the received amount."
+            lblInfo.text = String(format: "id_a_set_up_funding_fee_of_s_s".localized, model.toBtcText(amount) ?? "", model.toFiatText(amount) ?? "")
             lblInfo.isHidden = false
             btnFeeInfo.isHidden = false
             lblMoreInfo.isHidden = false
             lblAmount.isHidden = true
         case .tooHigh:
             let amount = Int64(model.nodeState?.maxReceivableSatoshi ?? 0)
-            let text = "The amount is above your max limit \(model.toBtcText(amount) ?? "") (~\(model.toFiatText(amount) ?? ""))."
+            let text = String(format: "id_you_cannot_receive_more_than_s".localized, model.toBtcText(amount) ?? "", model.toFiatText(amount) ?? "")
             errorState(text: text)
         case .tooLow:
             let amount = model.lspInfo?.channelMinimumFeeSatoshi
-            let text = "This amount is below the minimum fee \(model.toBtcText(amount) ?? "") (~\(model.toFiatText(amount) ?? ""))."
+            let text = String(format: "id_this_amount_is_below_the".localized, model.toBtcText(amount) ?? "", model.toFiatText(amount) ?? "")
             errorState(text: text)
         case .disabled:
             disableState()        case .disconnected:

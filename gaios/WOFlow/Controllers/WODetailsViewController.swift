@@ -84,7 +84,7 @@ class WODetailsViewController: KeyboardViewController {
         case 0:
             lblDesc.text = "id_scan_or_paste_your_extended".localized
         case 1:
-            lblDesc.text = "Scan or paste your public descriptor to log in to your watch-only account.".localized
+            lblDesc.text = "id_scan_or_paste_your_public".localized
         default:
             break
         }
@@ -226,12 +226,12 @@ extension WODetailsViewController: UIDocumentPickerDelegate {
                 textView.text = keys.joined(separator: ", ")
             }
             if textView.text.isEmpty {
-                throw NSError(domain: "No xpubs found", code: 42)
+                throw NSError(domain: "id_invalid_xpub".localized, code: 42)
             }
             refresh()
         } catch {
             print(error)
-            showAlert(title: "id_error", message: "No xpubs found")
+            showAlert(title: "id_error", message: "id_invalid_xpub".localized)
             refresh()
         }
     }

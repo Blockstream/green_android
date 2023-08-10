@@ -32,9 +32,9 @@ class LTExperimentalViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Experimental Feature"
-        lblHint.text = "Experimental features might change, break, or be discontinued at any time, so you agree to use them at your own risk."
-        btnContinue.setTitle("Ok, I understand.", for: .normal)
+        lblTitle.text = "id_experimental_feature".localized
+        lblHint.text = "id_experimental_features_might".localized
+        btnContinue.setTitle("id_continue".localized, for: .normal)
     }
 
     func setStyle() {

@@ -82,8 +82,8 @@ class LTRecoverFundsViewController: KeyboardViewController {
     }
 
     func setContent() {
-        title = viewModel.type == .refund ? "Refund" : "Close channel"
-        btnNext.setTitle("Confirm", for: .normal)
+        title = viewModel.type == .refund ? "id_refund".localized : "id_close_channel".localized
+        btnNext.setTitle("id_confirm".localized, for: .normal)
     }
 
     func setStyle() {
@@ -133,11 +133,11 @@ class LTRecoverFundsViewController: KeyboardViewController {
     @MainActor
     func success() {
         if viewModel.type == .refund {
-            showAlert(title: "Refund", message: "We have initiated your refund") {
+            showAlert(title: "id_refund".localized, message: "id_refund_in_progress".localized) {
                 self.navigationController?.popToRootViewController(animated: true)
             }
         } else {
-            showAlert(title: "Close channel", message: "We have initiated transfer of your funds") {
+            showAlert(title: "id_close_channel".localized, message: "id_channel_closure_initiated_you".localized) {
                 self.navigationController?.popToRootViewController(animated: true)
             }
         }
@@ -217,11 +217,11 @@ extension LTRecoverFundsViewController: UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         switch LTRecoverFundsSection(rawValue: section) {
         case .address:
-            return headerView("Receive".localized)
+            return headerView("id_receive".localized)
         case .amount:
             return headerView("id_amount".localized)
         case .fee:
-            return headerView("Fee Network".localized)
+            return headerView("id_network_fee".localized)
         case .none:
             return nil
         }

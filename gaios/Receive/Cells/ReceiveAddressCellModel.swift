@@ -61,6 +61,6 @@ struct ReceiveAddressCellModel {
     }
 
     var onChaininfo: String? {
-        return "Send more than \(onChainMin ?? "") and up to \(onChainMax ?? "") to this address. A setup fee of \(channelFeePercent ?? "")% with a minimum of \(channelMinFee ?? "") will be applied on the received amount.\n\nThis address can be used only once."
+        return String(format: "id_send_more_than_s_and_up_to_s_to".localized, onChainMin ?? "", onChainMax ?? "", "\(channelFeePercent ?? "") %", channelMinFee ?? "")
     }
 }

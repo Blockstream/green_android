@@ -381,7 +381,7 @@ class WalletViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
             vc.delegate = self
-            vc.viewModel = DialogListViewModel(title: "Enable 2FA", type: .enable2faPrefs, items: Enable2faPrefs.getItems())
+            vc.viewModel = DialogListViewModel(title: "id_enable_2fa".localized, type: .enable2faPrefs, items: Enable2faPrefs.getItems())
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -649,7 +649,7 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                 if tx.isRefundableSwap ?? false {
                     pushLTRecoverFundsViewController(tx)
                 } else {
-                    DropAlert().warning(message: "Swap in progress")
+                    DropAlert().warning(message: "id_swap_is_in_progress".localized)
                 }
             } else {
                 pushTransactionViewController(tx)
@@ -953,7 +953,7 @@ extension WalletViewController: DialogScanViewControllerDelegate {
                 case .none:
                     break
                 default:
-                    DropAlert().warning(message: parser.error ?? "Invalid QR code")
+                    DropAlert().warning(message: parser.error ?? "id_could_not_recognized_qr_code")
                     return
                 }
                 // open send page

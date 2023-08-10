@@ -6,7 +6,7 @@ class LTSuccessViewModel {
     var amount: String
     var denom: String
     var hint: String {
-        String(format: "You have just funded your %@ Account with %@ %@.", account, amount, denom)
+        String(format: "You have just funded your %@ account with %@ %@.", account, amount, denom)
     }
 
     init(account: String, amount: String, denom: String) {

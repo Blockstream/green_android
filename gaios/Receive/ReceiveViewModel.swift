@@ -103,22 +103,22 @@ class ReceiveViewModel {
             if let balance = Balance.fromSatoshi(Int64(satoshi), assetId: "btc") {
                 let (value, denom) = balance.toDenom()
                 let (fiat, currency) = balance.toFiat()
-                return LTInfoCellModel(title: "Amount to Receive", hint1: "\(value) \(denom)", hint2: "\(fiat) \(currency)")
+                return LTInfoCellModel(title: "id_amount_to_receive".localized, hint1: "\(value) \(denom)", hint2: "\(fiat) \(currency)")
             }
         }
-        return LTInfoCellModel(title: "Amount to Receive", hint1: "", hint2: "")
+        return LTInfoCellModel(title: "id_amount_to_receive".localized, hint1: "", hint2: "")
     }
 
     var infoExpiredInCellModel: LTInfoCellModel {
         if let invoice = invoice {
             let numberOfDays = Calendar.current.dateComponents([.day], from: invoice.expireInAsDate, to: Date())
-            return LTInfoCellModel(title: "Expiration", hint1: "In \(abs(numberOfDays.day ?? 0)) days", hint2: "")
+            return LTInfoCellModel(title: "id_expiration".localized, hint1: "In \(abs(numberOfDays.day ?? 0)) days", hint2: "")
         }
-        return LTInfoCellModel(title: "Expiration", hint1: "", hint2: "")
+        return LTInfoCellModel(title: "id_expiration".localized, hint1: "", hint2: "")
     }
 
     var noteCellModel: LTNoteCellModel {
-        return LTNoteCellModel(note: description ?? "Some note")
+        return LTNoteCellModel(note: description ?? "id_note".localized)
     }
 
     var assetCellModel: ReceiveAssetCellModel {

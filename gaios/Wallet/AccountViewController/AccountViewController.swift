@@ -809,7 +809,7 @@ extension AccountViewController: DialogScanViewControllerDelegate {
                 case .none:
                     break
                 default:
-                    DropAlert().warning(message: parser.error ?? "Invalid QR code")
+                    DropAlert().warning(message: parser.error ?? "id_could_not_recognized_qr_code".localized)
                     return
                 }
                 // open send page
@@ -861,7 +861,7 @@ extension AccountViewController: DialogNodeViewControllerProtocol {
     
     @MainActor
     func presentAlertClosedChannels() {
-        let viewModel = AlertViewModel(title: "Close Channel", hint: "We are closing your channel. You can recover your funds in a bit.")
+        let viewModel = AlertViewModel(title: "id_close_channel".localized, hint: "id_channel_closure_initiated_you".localized)
         let storyboard = UIStoryboard(name: "Alert", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "AlertViewController") as? AlertViewController {
             vc.viewModel = viewModel

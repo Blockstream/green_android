@@ -8,7 +8,7 @@ class LTSweepCellModel {
     var denom: String
 
     var title: String {
-        "You can sweep \(amount) \(denom) of your funds to your onchain account."
+        String(format: "id_you_can_sweep_s_of_your_funds", "\(amount) \(denom)")
     }
 
     init(amount: UInt64, denom: String = "sats") {

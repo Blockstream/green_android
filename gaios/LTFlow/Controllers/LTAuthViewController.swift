@@ -22,9 +22,9 @@ class LTAuthViewController: UIViewController {
 
     func setContent() {
         title = "LNURL Auth"
-        lblTitle.text = "You can use your wallet to anonymously sign and authorize an action on:"
-        lblInfo.text = "No personal data will be shared with this service."
-        btnAuth.setTitle("Authenticate", for: .normal)
+        lblTitle.text = "id_you_can_use_your_wallet_to".localized
+        lblInfo.text = "id_no_personal_data_will_be_shared".localized
+        btnAuth.setTitle("id_authenticate".localized, for: .normal)
         reloadData()
     }
 

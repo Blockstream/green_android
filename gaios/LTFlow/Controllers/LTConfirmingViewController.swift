@@ -31,8 +31,8 @@ class LTConfirmingViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Confirming your transaction"
-        lblHint.text = "This might take up to a minute. Thanks for your patience!"
+        lblTitle.text = "id_confirming_your_transaction".localized
+        lblHint.text = "id_this_might_take_up_to_a".localized
     }
 
     func setStyle() {
