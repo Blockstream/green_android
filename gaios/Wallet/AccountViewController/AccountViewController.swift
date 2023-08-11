@@ -770,7 +770,7 @@ extension AccountViewController: DialogRenameViewControllerDelegate {
 
 extension AccountViewController: TransactionViewControllerDelegate {
     func onMemoEdit() {
-        Task { try? await viewModel.getTransactions(restart: true) }
+        reload()
     }
 }
 
