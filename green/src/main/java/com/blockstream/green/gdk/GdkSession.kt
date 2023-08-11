@@ -40,6 +40,7 @@ import com.blockstream.common.gdk.data.Output
 import com.blockstream.common.gdk.data.PreviousAddresses
 import com.blockstream.common.gdk.data.SendTransactionSuccess
 import com.blockstream.common.gdk.data.Settings
+import com.blockstream.common.gdk.data.SignMessage
 import com.blockstream.common.gdk.data.TorEvent
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.gdk.data.Transactions
@@ -71,6 +72,7 @@ import com.blockstream.common.gdk.params.LoginCredentialsParams
 import com.blockstream.common.gdk.params.PreviousAddressParams
 import com.blockstream.common.gdk.params.ReceiveAddressParams
 import com.blockstream.common.gdk.params.ReconnectHintParams
+import com.blockstream.common.gdk.params.SignMessageParams
 import com.blockstream.common.gdk.params.SubAccountParams
 import com.blockstream.common.gdk.params.SubAccountsParams
 import com.blockstream.common.gdk.params.TransactionParams
@@ -2250,6 +2252,11 @@ class GdkSession constructor(
         network,
         gdk.completeSwapTransaction(gdkSession(network), params)
     ).result<CreateTransaction>(twoFactorResolver = twoFactorResolver)
+
+    fun signMessage(network: Network, params: SignMessageParams, hardwareWalletResolver: HardwareWalletResolver? = null): SignMessage = authHandler(
+        network,
+        gdk.signMessage(gdkSession(network), params = params)
+    ).result(hardwareWalletResolver = hardwareWalletResolver)
 
     fun blindTransaction(network: Network, createTransaction: CreateTransaction) =
         authHandler(

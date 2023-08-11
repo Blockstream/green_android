@@ -28,6 +28,7 @@ import com.blockstream.common.gdk.params.LoginCredentialsParams
 import com.blockstream.common.gdk.params.PreviousAddressParams
 import com.blockstream.common.gdk.params.ReceiveAddressParams
 import com.blockstream.common.gdk.params.ReconnectHintParams
+import com.blockstream.common.gdk.params.SignMessageParams
 import com.blockstream.common.gdk.params.SubAccountParams
 import com.blockstream.common.gdk.params.SubAccountsParams
 import com.blockstream.common.gdk.params.TransactionParams
@@ -224,6 +225,9 @@ interface GdkBinding {
 
     @Throws(Exception::class)
     fun sendTransaction(session: GASession, transaction: JsonElement): GAAuthHandler
+
+    @Throws(Exception::class)
+    fun signMessage(session: GASession, params: SignMessageParams): GAAuthHandler
 
     @Throws(Exception::class)
     fun createSubAccount(session: GASession, params: SubAccountParams): GAAuthHandler

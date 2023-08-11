@@ -29,6 +29,7 @@ import com.blockstream.common.gdk.params.LoginCredentialsParams
 import com.blockstream.common.gdk.params.PreviousAddressParams
 import com.blockstream.common.gdk.params.ReceiveAddressParams
 import com.blockstream.common.gdk.params.ReconnectHintParams
+import com.blockstream.common.gdk.params.SignMessageParams
 import com.blockstream.common.gdk.params.SubAccountParams
 import com.blockstream.common.gdk.params.SubAccountsParams
 import com.blockstream.common.gdk.params.TransactionParams
@@ -275,6 +276,9 @@ class AndroidGdk(log: Boolean, config: InitConfig) : GdkBinding {
 
     override fun sendTransaction(session: GASession, transaction: JsonElement): GAAuthHandler =
         GDKJNI.send_transaction(session, transaction)
+
+    override fun signMessage(session: GASession, params: SignMessageParams): GAAuthHandler =
+        GDKJNI.sign_message(session, params)
 
     override fun createSubAccount(session: GASession, params: SubAccountParams): GAAuthHandler {
         return GDKJNI.create_subaccount(session, params)

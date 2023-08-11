@@ -9,11 +9,6 @@
         app:showAsAction="always"/>
 
     <item
-        android:id="@+id/addresses"
-        android:visible="false"
-        android:title="@string/id_addresses" />
-
-    <item
         android:id="@+id/rename"
         android:icon="@drawable/ic_pencil_simple_line"
         android:title="@string/id_rename_account" />

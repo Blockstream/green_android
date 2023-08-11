@@ -372,9 +372,6 @@
             android:name="account"
             app:argType="com.blockstream.common.gdk.data.Account" />
         <action
-            android:id="@+id/action_accountOverviewFragment_to_addressesFragment"
-            app:destination="@id/previousAddressesFragment" />
-        <action
             android:id="@+id/action_accountOverviewFragment_to_recoverFundsFragment"
             app:destination="@id/recoverFundsFragment" />
         <action
@@ -546,6 +543,9 @@
         <action
             android:id="@+id/action_receiveFragment_to_sendFragment"
             app:destination="@id/sendFragment" />
+        <action
+            android:id="@+id/action_receiveFragment_to_previousAddressesFragment"
+            app:destination="@id/previousAddressesFragment" />
     </fragment>
 
     <fragment
@@ -765,7 +765,7 @@
     <fragment
         android:id="@+id/previousAddressesFragment"
         android:name="com.blockstream.green.ui.addresses.AddressesFragment"
-        android:label="@string/id_addresses"
+        android:label="@string/id_previous_addresses"
         tools:layout="@layout/base_recycler_view">
         <argument
             android:name="wallet"

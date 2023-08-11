@@ -42,6 +42,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
+import kotlinx.coroutines.CompletableDeferred;
+import kotlinx.coroutines.CompletableDeferredKt;
 import kotlinx.coroutines.flow.StateFlow;
 import kotlinx.serialization.json.JsonElement;
 
@@ -244,12 +246,19 @@ public class BTChipHWWallet extends HWWallet {
             throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
         }
 
+        CompletableDeferred completable = CompletableDeferredKt.CompletableDeferred(null);
+
         try {
+            if(hwInteraction != null) {
+                hwInteraction.interactionRequest(this, completable, "id_check_your_device");
+            }
             mDongle.signMessagePrepare(path, message.getBytes(StandardCharsets.UTF_8));
             final String signature = Wally.hex_from_bytes(mDongle.signMessageSign(new byte[] {0}).getSignature());
             return new SignMessageResult(signature, null);
         } catch (final Exception e) {
             throw new RuntimeException(e.getMessage());
+        } finally {
+            completable.complete(true);
         }
     }
 

@@ -38,7 +38,6 @@ import java.util.Map;
 import kotlinx.coroutines.CompletableDeferred;
 import kotlinx.coroutines.CompletableDeferredKt;
 import kotlinx.coroutines.flow.MutableStateFlow;
-import kotlinx.serialization.json.JsonElement;
 
 
 public class TrezorHWWallet extends HWWallet {
@@ -89,9 +88,19 @@ public class TrezorHWWallet extends HWWallet {
             throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
         }
 
-        Message m = mTrezor.io(TrezorMessage.SignMessage.newBuilder()
-                               .addAllAddressN(path)
-                               .setMessage(ByteString.copyFromUtf8(message)));
+        TrezorMessage.SignMessage.Builder builder = TrezorMessage.SignMessage.newBuilder()
+                .addAllAddressN(path)
+                .setMessage(ByteString.copyFromUtf8(message));
+
+        if(path.size() > 0){
+            TrezorType.InputScriptType scriptType = mapAccountType(path.get(0));
+            if(scriptType != null){
+                builder.setScriptType(scriptType);
+            }
+        }
+
+        Message m = mTrezor.io(builder);
+
         m = handleCommon(hwInteraction, m);
         if (m.getClass().getSimpleName().equals("MessageSignature")) {
             final TrezorMessage.MessageSignature ms = (TrezorMessage.MessageSignature)m;
@@ -393,7 +402,7 @@ public class TrezorHWWallet extends HWWallet {
         case "ButtonRequest":
             CompletableDeferred completable = CompletableDeferredKt.CompletableDeferred(null);
             if(hwInteraction != null) {
-                hwInteraction.interactionRequest(this, completable, "id_check_device");
+                hwInteraction.interactionRequest(this, completable, "id_check_your_device");
             }
             Message io = mTrezor.io(TrezorMessage.ButtonAck.newBuilder());
             completable.complete(true);
@@ -454,6 +463,19 @@ public class TrezorHWWallet extends HWWallet {
             default:
                 return null;
         }
+    }
+
+    private static Integer unharden(final Integer i) {
+        return Integer.MIN_VALUE + i;
+    }
+
+    private static TrezorType.InputScriptType mapAccountType(final Integer path) {
+        return switch (unharden(path)) {
+            case 44 -> TrezorType.InputScriptType.SPENDADDRESS;
+            case 49 -> TrezorType.InputScriptType.SPENDP2SHWITNESS;
+            case 84 -> TrezorType.InputScriptType.SPENDWITNESS;
+            default -> null;
+        };
     }
 
     @Override

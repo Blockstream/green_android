@@ -190,7 +190,6 @@ abstract public class JadeHWWalletJava extends HWWallet {
     // Helper to turn the BIP32 paths back into a list of Longs, rather than a list of Integers
     // (which may well be expressed as negative [for hardened paths]).
     private static List<Long> getUnsignedPath(final List<Integer> signed) {
-        // return signed.stream().map(Integer::toUnsignedLong).collect(Collectors.toList());
         final List<Long> unsigned = new ArrayList<>(signed.size());
         for (final Integer i : signed) {
             if (i < 0) {
@@ -232,19 +231,18 @@ abstract public class JadeHWWalletJava extends HWWallet {
     public synchronized com.blockstream.common.gdk.device.SignMessageResult signMessage(@Nullable HardwareWalletInteraction hwInteraction, @NonNull List<Integer> path, @NonNull String message, boolean useAeProtocol, @Nullable String aeHostCommitment, @Nullable String aeHostEntropy) {
         Log.d(TAG, "signMessage() for message of length " + message.length() + " using path " + path);
 
-        CompletableSubject completable = CompletableSubject.create();
+        CompletableDeferred completable = CompletableDeferredKt.CompletableDeferred(null);
 
         try {
             final List<Long> unsignedPath = getUnsignedPath(path);
 
-//            if (parent != null) {
-//                parent.interactionRequest(this, completable, "id_check_device");
-//            }
+            if (hwInteraction != null) {
+                hwInteraction.interactionRequest(this, completable, "id_check_your_device");
+            }
 
             final SignMessageResult result = this.jade.signMessage(unsignedPath, message, useAeProtocol,
                                                                    hexToBytes(aeHostCommitment),
                                                                    hexToBytes(aeHostEntropy));
-            completable.onComplete();
 
             // Convert the signature from Base64 into into DER hex for GDK
             byte[] sigDecoded = BaseEncoding.base64().decode(result.getSignature());
@@ -261,8 +259,9 @@ abstract public class JadeHWWalletJava extends HWWallet {
             Log.d(TAG, "signMessage() returning: " + sigDerHex);
             return new com.blockstream.common.gdk.device.SignMessageResult(sigDerHex, hexFromBytes(result.getSignerCommitment()));
         } catch (final Exception e) {
-            completable.onError(e);
             throw new RuntimeException(e);
+        }finally {
+            completable.complete(true);
         }
     }
 

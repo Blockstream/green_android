@@ -28,6 +28,7 @@ import com.blockstream.common.gdk.params.LoginCredentialsParams
 import com.blockstream.common.gdk.params.PreviousAddressParams
 import com.blockstream.common.gdk.params.ReceiveAddressParams
 import com.blockstream.common.gdk.params.ReconnectHintParams
+import com.blockstream.common.gdk.params.SignMessageParams
 import com.blockstream.common.gdk.params.SubAccountParams
 import com.blockstream.common.gdk.params.SubAccountsParams
 import com.blockstream.common.gdk.params.TransactionParams
@@ -96,6 +97,7 @@ import gdk.GA_set_csvtime
 import gdk.GA_set_notification_handler
 import gdk.GA_set_transaction_memo
 import gdk.GA_set_watch_only
+import gdk.GA_sign_message
 import gdk.GA_sign_transaction
 import gdk.GA_twofactor_cancel_reset
 import gdk.GA_twofactor_change_limits
@@ -882,6 +884,19 @@ class IOSGdkBinding constructor(config: InitConfig) : GdkBinding {
                 GA_send_transaction(
                     session = session.asGASession(),
                     transaction_details = transaction.toGaJson(this),
+                    call = gaAuthHandler.ptr
+                ).okOrThrow(gaAuthHandler)
+            }
+        }
+    }
+
+    @Throws(Exception::class)
+    override fun signMessage(session: GASession, params: SignMessageParams): GAAuthHandler {
+        return memScoped {
+            gaAuthHandler().let { gaAuthHandler ->
+                GA_sign_message(
+                    session = session.asGASession(),
+                    details = params.toGaJson(this),
                     call = gaAuthHandler.ptr
                 ).okOrThrow(gaAuthHandler)
             }

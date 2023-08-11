@@ -255,15 +255,6 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
                 ))
                 true
             }
-            R.id.addresses -> {
-                navigate(
-                    AccountOverviewFragmentDirections.actionAccountOverviewFragmentToAddressesFragment(
-                        wallet = wallet,
-                        account = account
-                    )
-                )
-                true
-            }
             R.id.node_info-> {
                 LightningNodeBottomSheetFragment.show(childFragmentManager)
                 true

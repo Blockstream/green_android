@@ -183,9 +183,10 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
                 requestCode = 2,
                 title = getString(R.string.id_more_options),
                 menuItems = buildList {
-                    add(MenuListItem(title = StringHolder(R.string.id_request_amount)))
+                    add(MenuListItem(id = 0, title = StringHolder(R.string.id_request_amount)))
+                    add(MenuListItem(id = 1, title = StringHolder(R.string.id_list_of_addresses)))
                     if (!network.isLiquid && !network.isElectrum) {
-                        add(MenuListItem(title = StringHolder(R.string.id_sweep_from_paper_wallet)))
+                        add(MenuListItem(id = 2, title = StringHolder(R.string.id_sweep_from_paper_wallet)))
                     }
                 },
                 fragmentManager = childFragmentManager
@@ -440,17 +441,29 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
             } else {
                 createQRImageAndShare()
             }
-        } else if (requestCode == 2) {
-            if (position == 0) {
-                RequestAmountLabelBottomSheetDialogFragment.show(childFragmentManager)
-            } else {
-                navigate(
-                    ReceiveFragmentDirections.actionReceiveFragmentToSendFragment(
-                        wallet = wallet,
-                        accountAsset = viewModel.accountAsset,
-                        isSweep = true
+        } else if (requestCode == 2 && item is MenuListItem) {
+
+            when (item.id) {
+                0 -> {
+                    RequestAmountLabelBottomSheetDialogFragment.show(childFragmentManager)
+                }
+                1 -> {
+                    navigate(
+                        ReceiveFragmentDirections.actionReceiveFragmentToPreviousAddressesFragment(
+                            wallet = wallet,
+                            account = account
+                        )
                     )
-                )
+                }
+                2 -> {
+                    navigate(
+                        ReceiveFragmentDirections.actionReceiveFragmentToSendFragment(
+                            wallet = wallet,
+                            accountAsset = viewModel.accountAsset,
+                            isSweep = true
+                        )
+                    )
+                }
             }
         }
     }

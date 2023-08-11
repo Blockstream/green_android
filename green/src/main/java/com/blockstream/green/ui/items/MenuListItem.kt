@@ -12,6 +12,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class MenuListItem constructor(
+    val id: Int = 0,
     val icon: Int = 0,
     val title: StringHolder
 ) : AbstractBindingItem<ListItemMenuBinding>(), Parcelable {

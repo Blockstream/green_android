@@ -1386,4 +1386,12 @@
   <string name="id_allow_non_default_connection">Allow Non-Default Connection</string>
   <string name="id_connection_attempt_to_s">Connection attempt to: %s</string>
   <string name="id_dont_ask_me_again_for_this_oracle">Don\'t ask me again for this oracle</string>
+  <string name="id_list_of_addresses">List of Addresses</string>
+  <string name="id_authenticate_address">Authenticate Address</string>
+  <string name="id_sign_message">Sign Message</string>
+  <string name="id_paste_here_the_message_to_be_signed">Paste here the message to be signed</string>
+  <string name="id_here_s_the_proof_of_ownership">Here\'s the proof of ownership of the address</string>
+  <string name="id_copy_signature">Copy Signature</string>
+  <string name="id_signature">Signature</string>
+  <string name="id_previous_addresses">Previous Addresses</string>
 </resources>

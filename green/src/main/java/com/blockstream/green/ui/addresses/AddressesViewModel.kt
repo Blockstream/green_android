@@ -3,6 +3,8 @@ package com.blockstream.green.ui.addresses
 import androidx.lifecycle.*
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.Address
+import com.blockstream.common.gdk.device.DeviceResolver
+import com.blockstream.common.gdk.params.SignMessageParams
 import com.blockstream.green.data.Countly
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
@@ -10,9 +12,6 @@ import com.blockstream.green.managers.SessionManager
 import com.blockstream.green.ui.wallet.AbstractAccountWalletViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class AddressesViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
@@ -35,16 +34,32 @@ class AddressesViewModel @AssistedInject constructor(
     }
 
     fun getPreviousAddresses(){
-        viewModelScope.launch {
-            withContext(Dispatchers.IO){
-                session.getPreviousAddresses(account, lastPointer)
-            }.also { previousAddresses ->
-                lastPointer = previousAddresses.lastPointer ?: 0
+        doUserAction({
+            session.getPreviousAddresses(account, lastPointer)
+        }, onSuccess = { previousAddresses ->
+            lastPointer = previousAddresses.lastPointer ?: 0
 
-                _addressesLiveData.value = (_addressesLiveData.value ?: listOf()) + previousAddresses.addresses
-                _pagerLiveData.value = previousAddresses.lastPointer != null
-            }
-        }
+            _addressesLiveData.value = (_addressesLiveData.value ?: listOf()) + previousAddresses.addresses
+            _pagerLiveData.value = previousAddresses.lastPointer != null
+        })
+    }
+
+    fun signMessage(address: String, message: String, fn: ((signature: String) -> Unit)){
+        doUserAction({
+            session.signMessage(
+                network = network,
+                params = SignMessageParams(
+                    address = address,
+                    message = message
+                ),
+                hardwareWalletResolver = DeviceResolver.createIfNeeded(
+                    session.gdkHwWallet,
+                    this
+                )
+            ).signature
+        }, onSuccess = { signature ->
+            fn.invoke(signature)
+        })
     }
 
     @dagger.assisted.AssistedFactory

@@ -3,22 +3,25 @@ package com.blockstream.green.ui.addresses
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.gdk.data.Address
 import com.blockstream.green.R
-import com.blockstream.green.databinding.BaseRecyclerViewBinding
+import com.blockstream.green.databinding.AddressesFragmentBinding
 import com.blockstream.green.databinding.ListItemAddressBinding
+import com.blockstream.green.extensions.copyToClipboard
+import com.blockstream.green.extensions.endIconCustomMode
+import com.blockstream.green.extensions.showPopupMenu
+import com.blockstream.green.ui.bottomsheets.SignMessageBottomSheetDialogFragment
 import com.blockstream.green.ui.items.AddressListItem
 import com.blockstream.green.ui.items.ProgressListItem
 import com.blockstream.green.ui.items.TextListItem
 import com.blockstream.green.ui.wallet.AbstractAccountWalletFragment
 import com.blockstream.green.utils.StringHolder
-import com.blockstream.green.extensions.copyToClipboard
 import com.blockstream.green.utils.observeList
 import com.blockstream.green.utils.openBrowser
-import com.blockstream.green.extensions.showPopupMenu
 import com.blockstream.green.views.EndlessRecyclerOnScrollListener
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
@@ -33,7 +36,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class AddressesFragment :
-    AbstractAccountWalletFragment<BaseRecyclerViewBinding>(R.layout.base_recycler_view, 0) {
+    AbstractAccountWalletFragment<AddressesFragmentBinding>(R.layout.addresses_fragment, 0) {
 
     val args: AddressesFragmentArgs by navArgs()
     override val walletOrNull by lazy { args.wallet }
@@ -57,6 +60,8 @@ class AddressesFragment :
             AddressListItem(
                 index = viewModel.addressesLiveData.value?.indexOf(address) ?: 1,
                 address = address,
+                network = network,
+                session = session
             )
         }.observeList(viewLifecycleOwner, viewModel.addressesLiveData) {
             if (it.isEmpty()) {
@@ -76,6 +81,12 @@ class AddressesFragment :
             } else {
                 titleAdapter.clear()
             }
+        }
+
+        addressesModelAdapter.itemFilter.filterPredicate = { item: AddressListItem, constraint: CharSequence? ->
+            item.address.address.lowercase().contains(
+                constraint.toString().lowercase()
+            )
         }
 
         val footerAdapter = ItemAdapter<GenericItem>()
@@ -105,7 +116,7 @@ class AddressesFragment :
 
         binding.recycler.addOnScrollListener(endlessRecyclerOnScrollListener)
 
-        val fastAdapter = FastAdapter.with(listOf(titleAdapter, addressesModelAdapter))
+        val fastAdapter = FastAdapter.with(listOf(titleAdapter, addressesModelAdapter, footerAdapter))
 
         fastAdapter.onClickListener = { v, _, item, _ ->
             if(item is AddressListItem) {
@@ -118,13 +129,24 @@ class AddressesFragment :
 
         fastAdapter.addClickListener<ListItemAddressBinding, GenericItem>({ binding -> binding.buttonCopy }) { _, _, _, item ->
             if(item is AddressListItem) {
-                copyToClipboard("Address", item.address.address)
+                copyToClipboard(label = "Address", content = item.address.address, showCopyNotification = true)
+            }
+        }
+
+        fastAdapter.addClickListener<ListItemAddressBinding, GenericItem>({ binding -> binding.buttonSignature }) { _, _, _, item ->
+            if(item is AddressListItem) {
+                SignMessageBottomSheetDialogFragment.show(item.address.address, childFragmentManager)
             }
         }
 
         binding.recycler.apply {
             itemAnimator = SlideDownAlphaAnimator()
             adapter = fastAdapter
+        }
+
+        binding.searchTextInputLayout.endIconCustomMode()
+        binding.searchInputEditText.addTextChangedListener {
+            addressesModelAdapter.filter(it)
         }
     }
 
