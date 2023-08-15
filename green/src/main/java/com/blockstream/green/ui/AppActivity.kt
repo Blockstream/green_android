@@ -3,9 +3,9 @@ package com.blockstream.green.ui
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.R
 import com.blockstream.green.devices.DeviceManager
-import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.views.GreenToolbar
 import kotlinx.coroutines.CoroutineScope
@@ -66,7 +66,7 @@ abstract class AppActivity : AppCompatActivity() {
             if(it.enhancedPrivacy || !secureFragments.contains(navController.currentDestination?.id)){
                 setSecureScreen(it.enhancedPrivacy)
             }
-        }.launchIn(CoroutineScope(context = Dispatchers.Default))
+        }.launchIn(CoroutineScope(context = Dispatchers.Main))
     }
 
     private fun setSecureScreen(isSecure: Boolean) {

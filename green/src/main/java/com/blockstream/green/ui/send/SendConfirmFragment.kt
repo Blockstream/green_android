@@ -159,7 +159,7 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
 
                         MaterialAlertDialogBuilder(requireContext())
                             .setTitle(R.string.id_success)
-                            .setMessage(message)
+                            .setMessage(getString(R.string.id_message_from_recipient_s, message))
                             .setPositiveButton(if(successAction is SuccessActionProcessed.Url) R.string.id_open else android.R.string.ok) { _, _ ->
                                 if(successAction is SuccessActionProcessed.Url){
                                     openBrowser(successAction.data.url)

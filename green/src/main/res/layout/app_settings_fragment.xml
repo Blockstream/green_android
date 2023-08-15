@@ -167,7 +167,7 @@
                 android:layout_height="wrap_content"
                 android:checked="@={vm.enableExperimentalFeatures}"
                 isVisible="@{vm.lightningEnabled || vm.enableExperimentalFeatures}"
-                app:icon="@drawable/ic_fill_flash_24"
+                app:icon="@drawable/ic_fill_flask_24"
                 app:titleText="@string/id_enable_experimental_features"
                 app:captionText="@string/id_experimental_features_might" />
 

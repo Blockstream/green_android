@@ -23,7 +23,6 @@ import androidx.core.view.updatePadding
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.MutableLiveData
 import androidx.viewbinding.ViewBinding
-import com.blockstream.common.data.ScreenLockSetting
 import com.blockstream.green.R
 import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.isPolicyAsset
@@ -139,7 +138,7 @@ fun String?.isNotBlank() = !isNullOrBlank()
 
 fun String?.padHex() = this?.replace("........".toRegex(), "$0 ")
 
-fun List<String>.startsWith(other: String?): Boolean =
+fun List<String>?.startsWith(other: String?): Boolean = if(this == null) false else
     other.takeIf { it.isNotBlank() }?.let { o -> any { it.startsWith(o) } } ?: false
 
 fun String.fromHtml(): Spanned {

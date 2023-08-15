@@ -18,7 +18,6 @@ import com.blockstream.green.R
 import com.blockstream.green.data.Denomination
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.extensions.startsWith
 import com.blockstream.green.utils.getBitcoinOrLiquidUnit
 
 fun Transaction.getConfirmationsMax(session: GdkSession): Int {
@@ -317,5 +316,3 @@ fun String.isNotAuthorized() =
     getGDKErrorCode() == GA_NOT_AUTHORIZED || this == "id_invalid_pin"
 
 fun String.isConnectionError() = this.contains("failed to connect")
-
-fun List<String>?.startsWith(other: String?) = this?.startsWith(other) ?: false

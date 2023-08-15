@@ -3,9 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/buttonScan"
-        android:icon="@drawable/ic_qr_code"
-        android:title="@string/id_scan_qr_code"
+        android:id="@+id/buttonInvitation"
+        android:icon="@drawable/ic_tag"
+        android:title="@string/id_experimental_feature"
         app:showAsAction="always"/>
 
 </menu>

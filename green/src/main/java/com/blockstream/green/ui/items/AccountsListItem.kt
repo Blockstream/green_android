@@ -88,7 +88,7 @@ data class AccountsListItem constructor(
                     context.dialog(
                         title = R.string.id_experimental_feature,
                         message = R.string.id_experimental_features_might,
-                        icon = R.drawable.ic_fill_flash_24
+                        icon = R.drawable.ic_fill_flask_24
                     )
                 }
             }

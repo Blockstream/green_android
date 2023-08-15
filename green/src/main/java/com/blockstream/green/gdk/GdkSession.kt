@@ -422,7 +422,7 @@ class GdkSession constructor(
     fun walletExistsAndIsUnlocked(network: Network?) = network?.let { getTwoFactorReset(network)?.isActive != true } ?: false
     fun getTwoFactorReset(network: Network): TwoFactorReset? = twoFactorResetFlow(network).value
     fun getSettings(network: Network? = null): Settings? {
-        return (network?.let { it.takeIf { !it.isLightning } ?: bitcoin } ?: defaultNetwork).let {
+        return (network?.let { it.takeIf { !it.isLightning } ?: bitcoin } ?: defaultNetworkOrNull)?.let {
             settingsStateFlow(it).value ?: try {
                 gdk.getSettings(gdkSession(it))
             } catch (e: Exception) {

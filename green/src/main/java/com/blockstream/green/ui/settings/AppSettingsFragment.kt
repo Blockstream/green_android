@@ -1,6 +1,7 @@
 package com.blockstream.green.ui.settings
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
@@ -9,6 +10,7 @@ import androidx.fragment.app.viewModels
 import com.blockstream.common.data.ScreenLockSetting
 import com.blockstream.green.R
 import com.blockstream.green.databinding.AppSettingsFragmentBinding
+import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.extensions.endIconCustomMode
 import com.blockstream.green.extensions.getNavigationResult
 import com.blockstream.green.extensions.stringFromIdentifier
@@ -53,21 +55,7 @@ class AppSettingsFragment : AppFragment<AppSettingsFragmentBinding>(R.layout.app
             viewLifecycleOwner
         ) { result ->
             result?.also { scannedCode ->
-                try {
-                    countly.getRemoteConfigValueAsJsonArray("feature_lightning_codes")
-                        ?.mapNotNull { jsonElement ->
-                            jsonElement.jsonPrimitive.contentOrNull?.takeIf { it.isNotBlank() }
-                        }?.any { code ->
-                        code == scannedCode
-                    }?.also {
-                        if (it) {
-                            settingsManager.lightningCodeOverride = true
-                            binding.invalidateAll()
-                        }
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+                checkInvitationCode(scannedCode)
             }
         }
 
@@ -124,14 +112,50 @@ class AppSettingsFragment : AppFragment<AppSettingsFragmentBinding>(R.layout.app
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         return when (menuItem.itemId) {
-            R.id.buttonScan -> {
-                CameraBottomSheetDialogFragment.showSingle(
-                    screenName = screenName,
-                    fragmentManager = childFragmentManager
-                )
+            R.id.buttonInvitation -> {
+
+                val dialogBinding = EditTextDialogBinding.inflate(LayoutInflater.from(context))
+                dialogBinding.textInputLayout.endIconCustomMode()
+
+                dialogBinding.hint = getString(R.string.id_enter_your_code)
+                dialogBinding.text = ""
+
+                MaterialAlertDialogBuilder(requireContext())
+                    .setIcon(R.drawable.ic_fill_flask_24)
+                    .setTitle(R.string.id_enable_experimental_features)
+                    .setView(dialogBinding.root)
+                    .setPositiveButton(android.R.string.ok) { _, _ ->
+                        checkInvitationCode(dialogBinding.text.toString())
+                    }
+                    .setNeutralButton(R.string.id_qr_code) { _, _ ->
+                        CameraBottomSheetDialogFragment.showSingle(
+                            screenName = screenName,
+                            fragmentManager = childFragmentManager
+                        )
+                    }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show()
                 true
             }
             else -> super.onMenuItemSelected(menuItem)
+        }
+    }
+
+    private fun checkInvitationCode(userCode: String){
+        try {
+            countly.getRemoteConfigValueAsJsonArray("feature_lightning_codes")
+                ?.mapNotNull { jsonElement ->
+                    jsonElement.jsonPrimitive.contentOrNull?.takeIf { it.isNotBlank() }
+                }?.any { code ->
+                    code == userCode
+                }?.also {
+                    if (it) {
+                        settingsManager.lightningCodeOverride = true
+                        binding.invalidateAll()
+                    }
+                }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
