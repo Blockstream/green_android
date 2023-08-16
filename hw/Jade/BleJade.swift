@@ -93,7 +93,7 @@ public class BleJade: BleJadeCommands, HWProtocol {
         guard var sigDecoded = Data(base64Encoded: result?.signature ?? "") else {
             throw HWError.Abort("Invalid signature")
         }
-        if params.recoverable ?? false {
+        if params.createRecoverableSig ?? false {
             return HWSignMessageResult(signature: sigDecoded.hex, signerCommitment: result?.signerCommitment)
         }
         // Need to truncate lead byte if recoverable signature
