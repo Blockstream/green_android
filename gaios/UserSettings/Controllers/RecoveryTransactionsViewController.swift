@@ -54,7 +54,7 @@ class RecoveryTransactionsViewController: UIViewController {
             do {
                 let twoFactorEmail = try await viewModel.getTwoFactorItemEmail()
                 if let twoFactorEmail = twoFactorEmail {
-                    if let maskedData = twoFactorEmail.maskedData, maskedData.count > 1 {
+                    if let maskedData = twoFactorEmail.maskedData, maskedData.count > 1, twoFactorEmail.confirmed == true {
                         self.emailIsSet(true)
                     } else {
                         self.emailIsSet(false)

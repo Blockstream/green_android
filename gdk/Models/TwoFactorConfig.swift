@@ -90,9 +90,10 @@ public struct TwoFactorConfig: Codable {
 }
 
 public struct TwoFactorItem: Codable {
-    public init(name: String, enabled: Bool, maskedData: String? = nil, type: TwoFactorType) {
+    public init(name: String, enabled: Bool, confirmed: Bool, maskedData: String? = nil, type: TwoFactorType) {
         self.name = name
         self.enabled = enabled
+        self.confirmed = confirmed
         self.maskedData = maskedData
         self.type = type
     }
@@ -100,11 +101,13 @@ public struct TwoFactorItem: Codable {
     enum CodingKeys: String, CodingKey {
         case name = "name"
         case enabled
+        case confirmed
         case maskedData
         case type
     }
     public var name: String
     public var enabled: Bool
+    public var confirmed: Bool
     public var maskedData: String?
     public var type: TwoFactorType
 }

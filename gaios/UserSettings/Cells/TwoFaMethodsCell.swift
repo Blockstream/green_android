@@ -28,7 +28,7 @@ class TwoFaMethodsCell: UITableViewCell {
         self.actionSwitch.isOn = item.enabled
         self.actionSwitch.isUserInteractionEnabled = false
         self.onActionSwitch = onActionSwitch
-        if let data = item.maskedData {
+        if let data = item.maskedData, item.confirmed == true {
             self.maskedData.text = data
         } else {
             self.maskedData.text = ""

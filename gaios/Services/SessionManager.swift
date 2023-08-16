@@ -187,6 +187,7 @@ class SessionManager {
     
     func loadTwoFactorConfig() async throws -> TwoFactorConfig? {
         if let dataTwoFactorConfig = try self.session?.getTwoFactorConfig() {
+            print(dataTwoFactorConfig)
             let res = TwoFactorConfig.from(dataTwoFactorConfig) as? TwoFactorConfig
             self.twoFactorConfig = res
         }
