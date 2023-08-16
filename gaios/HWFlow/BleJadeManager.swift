@@ -2,6 +2,7 @@ import Foundation
 import AsyncBluetooth
 import hw
 import gdk
+import UIKit
 
 class BleJadeManager {
 
@@ -10,6 +11,27 @@ class BleJadeManager {
     var walletManager: WalletManager?
     var version: JadeVersionInfo?
     var hash: String?
+    var warningPinShowed = false
+
+    var customWhitelistUrls = [String]()
+    var persistCustomWhitelistUrls: [String] {
+        get { UserDefaults.standard.array(forKey: "whitelist_domains") as? [String] ?? [] }
+        set { UserDefaults.standard.setValue(customWhitelistUrls, forKey: "whitelist_domains") }
+    }
+
+    func domain(from url: String) -> String? {
+        var url = url.starts(with: "http://") || url.starts(with: "https://") ? url : "http://\(url)"
+        let urlComponents = URLComponents(string: url)
+        if let host = urlComponents?.host {
+            if let port = urlComponents?.port {
+                return "\(host):\(port)"
+            }
+            return host
+        }
+        return nil
+    }
+
+    var name: String { bleJade.peripheral.name ?? "" }
 
     init(bleJade: BleJade) {
         self.bleJade = bleJade
@@ -22,6 +44,7 @@ class BleJadeManager {
     
     public func disconnect() async throws {
         try await bleJade.close()
+        customWhitelistUrls = []
     }
 
     public func version() async throws -> JadeVersionInfo {
@@ -30,15 +53,21 @@ class BleJadeManager {
         return version
     }
 
-    func authenticating(testnet: Bool? = nil) async throws -> Bool {
-        _ = try await bleJade.addEntropy()
+    func connectPinServer(testnet: Bool? = nil) async throws {
         let version = try await bleJade.version()
         let isTestnet = (testnet == true && version.jadeNetworks == "ALL") || version.jadeNetworks == "TEST"
         let networkType: NetworkSecurityCase = isTestnet ? .testnetSS : .bitcoinSS
-        let chain = networkType.chain
-        // connect to network pin server
-        pinServerSession = SessionManager(networkType.gdkNetwork)
-        try? await pinServerSession?.connect()
+        if pinServerSession == nil {
+            pinServerSession = SessionManager(networkType.gdkNetwork)
+        }
+        try await pinServerSession?.connect()
+    }
+
+    func authenticating(testnet: Bool? = nil) async throws -> Bool {
+        _ = try await bleJade.addEntropy()
+        let version = try await bleJade.version()
+        try? await connectPinServer(testnet: testnet)
+        let chain = pinServerSession?.gdkNetwork.chain ?? "mainnet"
         switch version.jadeState {
         case "READY":
             return true
@@ -145,7 +174,66 @@ class BleJadeManager {
 }
 
 extension BleJadeManager: JadeGdkRequest {
-    func httpRequest(params: [String: Any]) -> [String: Any]? {
+
+    @MainActor
+    func showUrlValidationWarning(domains: [String], completion: @escaping(UIAlertOption) -> () = { _ in }) {
+        if warningPinShowed {
+            completion(.continue)
+            return
+        }
+        DispatchQueue.main.async {
+            let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
+            if let vc = hwFlow.instantiateViewController(withIdentifier: "PinServerWarnViewController") as? PinServerWarnViewController {
+                vc.onSupport = {
+                    if let url = URL(string: ExternalUrls.pinServerSupport + Common.versionNumber) {
+                        SafeNavigationManager.shared.navigate( url )
+                    }
+                    /// navigating info center sends cancel event
+                    completion(.cancel)
+                }
+                vc.onConnect = { [weak self] notAskAgain in
+                    self?.warningPinShowed = true
+                    self?.customWhitelistUrls += domains
+                    if notAskAgain {
+                        self?.persistCustomWhitelistUrls += self?.customWhitelistUrls ?? []
+                    }
+                    completion(.continue)
+                }
+                vc.onClose = {
+                    completion(.cancel)
+                }
+                vc.domains = domains
+                vc.modalPresentationStyle = .overFullScreen
+                UIApplication.topViewController()?.present(vc, animated: false, completion: nil)
+            }
+        }
+    }
+
+    @MainActor
+    func showUrlValidationWarning(domains: [String]) async -> UIAlertOption {
+        await withCheckedContinuation { continuation in
+            showUrlValidationWarning(domains: domains) { result in
+                continuation.resume(with: .success(result))
+            }
+        }
+    }
+
+    func urlValidation(urls: [String]) async -> Bool {
+        let whitelistUrls = bleJade.blockstreamUrls + customWhitelistUrls + persistCustomWhitelistUrls
+        let whitelistDomains = whitelistUrls.compactMap { domain(from: $0) }
+        let domains = urls.filter { !$0.isEmpty }
+            .compactMap { domain(from: $0) }
+        let isUrlSafe = domains.allSatisfy { domain in whitelistDomains.contains(domain) }
+        if isUrlSafe {
+            return true
+        }
+        switch await showUrlValidationWarning(domains: domains) {
+        case .continue: return true
+        case .cancel: return false
+        }
+    }
+
+    func httpRequest(params: [String: Any]) async -> [String: Any]? {
         return self.pinServerSession?.httpRequest(params: params)
     }
 }

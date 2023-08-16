@@ -158,6 +158,9 @@ extension UIColor {
     class func gLightning() -> UIColor {
         return UIColor(named: "gLightning")!
     }
+    class func gRedWarn() -> UIColor {
+        return UIColor(named: "gRedWarn")!
+    }
 }
 
 extension UIColor {

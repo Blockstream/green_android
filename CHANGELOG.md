@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Update gdk to 0.67.1
 - UI improvements on amount selection
+- Warning for non-default PIN server 
 
 ## [4.0.11] - 2023-08-11
 

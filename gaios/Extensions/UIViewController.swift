@@ -4,6 +4,11 @@ import gdk
 import greenaddress
 import BreezSDK
 
+enum UIAlertOption: String {
+    case `continue` = "id_continue"
+    case `cancel` = "id_cancel"
+}
+
 extension UIViewController {
 
     @MainActor
@@ -14,6 +19,7 @@ extension UIViewController {
             self.present(alert, animated: true, completion: nil)
         }
     }
+
     @MainActor
     func showError(_ message: String) {
         DispatchQueue.main.async {

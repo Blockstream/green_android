@@ -112,11 +112,6 @@ class BleViewModel {
             CBUUID(string: BleLedger.SERVICE_UUID.uuidString)])
         return !peripherals.filter { peripheral?.identifier == $0.identifier }.isEmpty
     }
-
-    func versionJade() async throws -> JadeVersionInfo? {
-        guard let _ = peripheral else { throw HWError.Abort("No peripheral found") }
-        return try await jade?.version()
-    }
     
     func disconnect() async throws {
         switch type {

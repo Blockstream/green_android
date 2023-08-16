@@ -12,6 +12,8 @@ enum ButtonStyle {
     case inlineGray
     case inlineDisabled
     case destructiveOutlined
+    case warnWhite
+    case warnRed
 }
 
 @IBDesignable
@@ -205,6 +207,16 @@ extension UIButton {
             setTitleColor(UIColor.customDestructiveRed(), for: .normal)
             borderWidth = 1.0
             borderColor = UIColor.customDestructiveRed()
+        case .warnWhite:
+            backgroundColor = .white
+            cornerRadius = 5.0
+            setTitleColor(UIColor.gBlackBg(), for: .normal)
+        case .warnRed:
+            backgroundColor = .clear
+            cornerRadius = 5.0
+            layer.borderWidth = 1.0
+            layer.borderColor = UIColor.white.cgColor
+            setTitleColor(.white, for: .normal)
         }
     }
 }

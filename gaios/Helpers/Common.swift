@@ -4,7 +4,11 @@ import UIKit
 class Common {
 
     static var versionString: String {
-        return "id_version_1s".localizedFormat(withArguments: "\(Bundle.main.versionNumber)")
+        return "id_version_1s".localizedFormat(withArguments: versionNumber)
+    }
+
+    static var versionNumber: String {
+        return Bundle.main.versionNumber
     }
 
     static func obfuscate(color: UIColor, size: CGFloat, length: Int = 1) -> NSAttributedString {

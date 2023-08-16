@@ -6,7 +6,8 @@ import SwiftCBOR
 import CommonCrypto
 
 public protocol JadeGdkRequest: AnyObject {
-    func httpRequest(params: [String: Any]) -> [String: Any]?
+    func httpRequest(params: [String: Any]) async -> [String: Any]?
+    func urlValidation(urls: [String]) async -> Bool
 }
 
 public class BleJade: BleJadeCommands, HWProtocol {
@@ -14,6 +15,8 @@ public class BleJade: BleJadeCommands, HWProtocol {
     public static let MIN_ALLOWED_FW_VERSION = "0.1.24"
     public static let FW_SERVER_HTTPS = "https://jadefw.blockstream.com"
     public static let FW_SERVER_ONION = "http://vgza7wu4h7osixmrx6e4op5r72okqpagr3w6oupgsvmim4cz3wzdgrad.onion"
+    public static let PIN_SERVER_HTTPS = "https://jadepin.blockstream.com"
+    public static let PIN_SERVER_ONION = "http://mrrxtq6tjpbnbm7vh5jt6mpjctn7ggyfy5wegvbeff3x7jrznqawlmid.onion"
     public static let FW_JADE_PATH = "/bin/jade/"
     public static let FW_JADEDEV_PATH = "/bin/jadedev/"
     public static let FW_JADE1_1_PATH = "/bin/jade1.1/"
@@ -23,14 +26,30 @@ public class BleJade: BleJadeCommands, HWProtocol {
     public static let FEATURE_SECURE_BOOT = "SB"
 
     public weak var gdkRequestDelegate: JadeGdkRequest?
-    
-    public func httpRequest<T: Codable, K: Codable>(_ httpRequest: JadeHttpRequest<T>) throws -> K {
-        let encoded = try JSONEncoder().encode(httpRequest.params)
-        let serialized = try JSONSerialization.jsonObject(with: encoded, options: .allowFragments) as? [String: Any]
-        let httpResponse = gdkRequestDelegate?.httpRequest(params: serialized ?? [:])
+
+    public let blockstreamUrls = [
+        BleJade.FW_SERVER_HTTPS,
+        BleJade.FW_SERVER_ONION,
+        BleJade.PIN_SERVER_HTTPS,
+        BleJade.PIN_SERVER_ONION]
+
+    public func httpRequest<T: Codable, K: Codable>(_ httpRequest: JadeHttpRequest<T>) async throws -> K {
+        let isUrlSafe = httpRequest.params.urls.allSatisfy { url in !blockstreamUrls.filter { url.starts(with: $0) }.isEmpty }
+        if !isUrlSafe {
+            let validated = await gdkRequestDelegate?.urlValidation(urls: httpRequest.params.urls)
+            if !(validated ?? false) {
+                throw HWError.Abort("Unkwnown url")
+            }
+        }
+        let httpResponse = await gdkRequestDelegate?.httpRequest(params: httpRequest.params.toDict() ?? [:])
+        if let error = httpResponse?["error"] as? String {
+            throw HWError.Abort(error)
+        }
         let httpResponseBody = httpResponse?["body"] as? [String: Any]
-        let deserialized = try JSONSerialization.data(withJSONObject: httpResponseBody ?? [:], options: .fragmentsAllowed)
-        return try JSONDecoder().decode(K.self, from: deserialized)
+        if let decoded = K.from(httpResponseBody ?? [:]) as? K {
+            return decoded
+        }
+        throw HWError.Abort("id_action_canceled")
     }
     
     public func unlock(network: String) async throws -> Bool {
@@ -50,12 +69,12 @@ public class BleJade: BleJadeCommands, HWProtocol {
         let res1: JadeResponse<JadeAuthResponse<String>> = try await exchange(req1)
         guard let res1 = res1.result else { throw HWError.Abort("Invalid auth") }
         let httpRequest1: JadeHttpRequest<String> = res1.httpRequest
-        let cmd2: JadeHandshakeInit = try self.httpRequest(httpRequest1)
+        let cmd2: JadeHandshakeInit = try await self.httpRequest(httpRequest1)
         let req2 = JadeRequest<JadeHandshakeInit>(method: httpRequest1.onReply, params: cmd2)
         let res2: JadeResponse<JadeAuthResponse<JadeHandshakeComplete>> = try await exchange(req2)
         guard let res2 = res2.result else { throw HWError.Abort("Invalid auth") }
         let httpRequest2: JadeHttpRequest<JadeHandshakeComplete> = res2.httpRequest
-        let cmd3: JadeHandshakeCompleteReply = try self.httpRequest(httpRequest2)
+        let cmd3: JadeHandshakeCompleteReply = try await self.httpRequest(httpRequest2)
         let req3 = JadeRequest<JadeHandshakeCompleteReply>(method: httpRequest2.onReply, params: cmd3)
         let res3: JadeResponse<Bool> = try await exchange(req3)
         guard let res3 = res3.result else { throw HWError.Abort("Invalid auth") }
@@ -397,13 +416,13 @@ extension BleJade {
         return BleJade.MIN_ALLOWED_FW_VERSION <= version
     }
 
-    public func download(_ fwpath: String, base64: Bool = false) -> [String: Any]? {
+    public func download(_ fwpath: String, base64: Bool = false) async -> [String: Any]? {
         let params: [String: Any] = [
             "method": "GET",
             "accept": base64 ? "base64": "json",
             "urls": ["\(BleJade.FW_SERVER_HTTPS)\(fwpath)",
                      "\(BleJade.FW_SERVER_ONION)\(fwpath)"] ]
-        return gdkRequestDelegate?.httpRequest(params: params)
+        return await gdkRequestDelegate?.httpRequest(params: params)
     }
 
     public func firmwarePath(_ verInfo: JadeVersionInfo) -> String? {
@@ -426,7 +445,7 @@ extension BleJade {
         guard let fwPath = firmwarePath(verInfo) else {
             throw HWError.Abort("Unsupported hardware")
         }
-        guard let res = download("\(fwPath)index.json"),
+        guard let res = await download("\(fwPath)index.json"),
               let body = res["body"] as? [String: Any],
               let json = try? JSONSerialization.data(withJSONObject: body, options: []),
               let channels = try? JSONDecoder().decode(FirmwareChannels.self, from: json) else {
@@ -449,7 +468,7 @@ extension BleJade {
         guard let fwPath = firmwarePath(verInfo) else {
             throw HWError.Abort("Unsupported hardware")
         }
-        if let res = download("\(fwPath)\(fmw.filename)", base64: true),
+        if let res = await download("\(fwPath)\(fmw.filename)", base64: true),
             let body = res["body"] as? String,
             let data = Data(base64Encoded: body) {
             return data

@@ -204,6 +204,7 @@
 		3463EBBF26AEBB1000F3F2D9 /* UserSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463EBBE26AEBB1000F3F2D9 /* UserSettingsViewController.swift */; };
 		3463EBC426AEE64000F3F2D9 /* UserSettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463EBC326AEE64000F3F2D9 /* UserSettingsCell.swift */; };
 		3463EBC626AFF25F00F3F2D9 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463EBC526AFF25F00F3F2D9 /* UserSettings.swift */; };
+		3465E2142A8F38FD0082D556 /* PinServerWarnViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465E2132A8F38FD0082D556 /* PinServerWarnViewController.swift */; };
 		346752EB291E316E00256132 /* ReceiveViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346752EA291E316E00256132 /* ReceiveViewModel.swift */; };
 		346752EF291E559900256132 /* AccountSelectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346752EE291E559900256132 /* AccountSelectViewController.swift */; };
 		346752F1291E55A600256132 /* AccountSelectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346752F0291E55A600256132 /* AccountSelectViewModel.swift */; };
@@ -858,6 +859,7 @@
 		3463EBBE26AEBB1000F3F2D9 /* UserSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsViewController.swift; sourceTree = "<group>"; };
 		3463EBC326AEE64000F3F2D9 /* UserSettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsCell.swift; sourceTree = "<group>"; };
 		3463EBC526AFF25F00F3F2D9 /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
+		3465E2132A8F38FD0082D556 /* PinServerWarnViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinServerWarnViewController.swift; sourceTree = "<group>"; };
 		346752EA291E316E00256132 /* ReceiveViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveViewModel.swift; sourceTree = "<group>"; };
 		346752EE291E559900256132 /* AccountSelectViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountSelectViewController.swift; sourceTree = "<group>"; };
 		346752F0291E55A600256132 /* AccountSelectViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountSelectViewModel.swift; sourceTree = "<group>"; };
@@ -2315,6 +2317,7 @@
 				34560B9A29BF1A9D007E916F /* HWFlowBaseViewController.swift */,
 				818BA7172A30838F00DFB03A /* PairingSuccessViewController.swift */,
 				34C8E77F29C069F400C84066 /* PinCreateViewController.swift */,
+				3465E2132A8F38FD0082D556 /* PinServerWarnViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -3571,6 +3574,7 @@
 				816184652A3B8AC1007D6569 /* BleJadeManager.swift in Sources */,
 				345ED1F429C088DC00BD9071 /* SelectOnBoardTypeViewController.swift in Sources */,
 				3483D09829FBDAF800C85106 /* LTInfoCell.swift in Sources */,
+				3465E2142A8F38FD0082D556 /* PinServerWarnViewController.swift in Sources */,
 				346752F5291E55CC00256132 /* AccountSelectCellModel.swift in Sources */,
 				34B170EF292E873900A829B2 /* DiscloseCellModel.swift in Sources */,
 				3418BAB6274285BD00F9B2D0 /* TransactionFeeCell.swift in Sources */,

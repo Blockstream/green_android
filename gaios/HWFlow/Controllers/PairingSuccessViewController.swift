@@ -91,7 +91,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
                     try? await bleViewModel.disconnect()
                     try await Task.sleep(nanoseconds:  3 * 1_000_000_000)
                     try await bleViewModel.connect()
-                    let version = try await bleViewModel.versionJade()
+                    let version = try await bleViewModel.jade?.version()
                     onJadeConnected(jadeHasPin: version?.jadeHasPin ?? true)
                 } else {
                     onLogin()

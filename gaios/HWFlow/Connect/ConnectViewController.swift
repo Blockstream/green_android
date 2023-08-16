@@ -42,7 +42,7 @@ class ConnectViewController: HWFlowBaseViewController {
         setStyle()
         loadNavigationBtns()
     }
-    
+
     @MainActor
     func setContent() {
         if account.isJade {
@@ -56,7 +56,14 @@ class ConnectViewController: HWFlowBaseViewController {
         lblTitle.text = "id_looking_for_device".localized
         
     }
-    
+
+    @objc func progressTor(_ notification: NSNotification) {
+        if let info = notification.userInfo as? [String : Any],
+           let tor = TorNotification.from(info) as? TorNotification {
+            progress("id_tor_status".localized + " \(tor.progress)%")
+        }
+    }
+
     func onScannedDevice(_ item: ScanListItem) {
         pairingState = .unknown
         Task {
@@ -76,10 +83,10 @@ class ConnectViewController: HWFlowBaseViewController {
                 }
                 // ping if still connected and responding
                 try await bleViewModel?.ping()
-                print("pinged")
-                // check version, only for jade
-                let version = try await bleViewModel?.versionJade()
                 if account.isJade {
+                    // only for jade, connect to pin server
+                    try await bleViewModel?.jade?.connectPinServer()
+                    let version = try await bleViewModel?.jade?.version()
                     if version?.jadeHasPin ?? false {
                         progress("id_unlock_jade_to_continue".localized)
                     } else {
@@ -203,6 +210,7 @@ class ConnectViewController: HWFlowBaseViewController {
         super.viewDidAppear(animated)
         activeToken = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main, using: applicationDidBecomeActive)
         resignToken = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main, using: applicationWillResignActive)
+        NotificationCenter.default.addObserver(self, selector: #selector(progressTor), name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -213,6 +221,7 @@ class ConnectViewController: HWFlowBaseViewController {
         if let token = resignToken {
             NotificationCenter.default.removeObserver(token)
         }
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
         stopScan()
     }
 
@@ -283,9 +292,10 @@ class ConnectViewController: HWFlowBaseViewController {
         loadingIndicator.isAnimating = false
     }
 
-    @MainActor
     func progress(_ txt: String) {
-        self.lblTitle.text = txt
+        DispatchQueue.main.async { [weak self] in
+            self?.lblTitle.text = txt
+        }
     }
 
     @MainActor
