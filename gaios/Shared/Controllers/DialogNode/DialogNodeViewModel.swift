@@ -9,6 +9,8 @@ enum NodeCellType: CaseIterable {
     case maxSinglePaymentAmount
     case maxReceivable
     case connectedPeers
+    case channelFeePercent
+    case channelMinFee
 }
 
 class DialogNodeViewModel {
@@ -53,6 +55,20 @@ class DialogNodeViewModel {
         return lightningSession.nodeState?.connectedPeers.joined(separator: ", ") ?? ""
     }
 
+    var channelFeePercent: String? {
+        if let channelFeePercent = lightningSession.lspInfo?.channelFeePercent {
+            return "\(channelFeePercent)"
+        }
+        return nil
+    }
+    
+    var channelMinFee: String? {
+        if let channelMinimumFeeSatoshi = lightningSession.lspInfo?.channelMinimumFeeSatoshi {
+            return asStr(satoshi: UInt64(channelMinimumFeeSatoshi))
+        }
+        return nil
+    }
+    
     init(lightningSession: LightningSessionManager) {
         self.lightningSession = lightningSession
     }

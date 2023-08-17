@@ -191,6 +191,10 @@ extension DialogNodeViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.configureAmount("Max Receivable Amount".localized, viewModel.maxReceivable, hideBalance)
             case .connectedPeers:
                 cell.configureAmount("Connected Peers".localized, viewModel.connectedPeers, false)
+            case .channelFeePercent:
+                cell.configureAmount("Channel Fee Percent".localized, "\(viewModel.channelFeePercent ?? "") %", false)
+            case .channelMinFee:
+                cell.configureAmount("Channel Min Fee".localized, "\(viewModel.channelMinFee ?? "")", false)
             }
             return cell
         }
