@@ -114,19 +114,6 @@ class LTAmountCell: UITableViewCell {
 
     @IBAction func onSwitch(_ sender: Any) {
         delegate?.onInputDenomination()
-//        model?.isFiat.toggle()
-//        if let value = textField.text {
-//            if model?.isFiat ?? false {
-//                if let balance = Balance.fromDenomination(value, assetId: AssetInfo.btcId, denomination: model?.inputDenomination) {
-//                    textField.text = balance.toFiat().0
-//                }
-//            } else {
-//                if let balance = Balance.fromFiat(value) {
-//                    textField.text = (balance.toUnlocaleDenom().0)
-//                }
-//            }
-//        }
-//        textFieldDidChange(textField)
     }
 
     @IBAction func btnPaste(_ sender: Any) {

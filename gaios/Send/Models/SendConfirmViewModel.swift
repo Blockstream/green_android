@@ -13,11 +13,13 @@ class SendConfirmViewModel {
     var isLightning: Bool { account.gdkNetwork.lightning }
     var isHW: Bool { wm?.account.isHW ?? false }
     var isLedger: Bool { wm?.account.isLedger ?? false }
+    var inputDenomination: DenominationType
 
-    init(account: WalletItem, tx: Transaction) {
+    init(account: WalletItem, tx: Transaction, inputDenomination: DenominationType) {
         self.account = account
         self.tx = tx
-        self.addresseeCellModels = [AddresseeCellModel(tx: tx, index: 0)]
+        self.inputDenomination = inputDenomination
+        self.addresseeCellModels = [AddresseeCellModel(tx: tx, index: 0, inputDenomination: inputDenomination)]
         self.remoteAlert = RemoteAlertManager.shared.alerts(screen: .sendConfirm, networks: wm?.activeNetworks ?? []).first
     }
     

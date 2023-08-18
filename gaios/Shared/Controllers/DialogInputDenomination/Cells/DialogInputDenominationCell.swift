@@ -22,13 +22,17 @@ class DialogInputDenominationCell: UITableViewCell {
     }
 
     func configure(denomination: DenominationType,
-                   balance: Balance,
+                   balance: Balance?,
                    network: NetworkSecurityCase,
                    isSelected: Bool) {
         lblTitle.text = self.symbol(denomination, network)
         icon.isHidden = isSelected == false
         lblTitle.textColor = isSelected ? UIColor.gGreenMatrix() : .white
         var hint = ""
+        guard let balance = balance else {
+            lblHint.text = ""
+            return
+        }
         
         switch denomination {
         case .BTC:

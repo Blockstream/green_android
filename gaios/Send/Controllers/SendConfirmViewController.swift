@@ -288,7 +288,7 @@ extension SendConfirmViewController: UITableViewDelegate, UITableViewDataSource 
             }
         case SendConfirmSection.fee.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "FeeSummaryCell") as? FeeSummaryCell {
-                cell.configure(viewModel.tx)
+                cell.configure(viewModel.tx, inputDenomination: viewModel.inputDenomination)
                 cell.selectionStyle = .none
                 return cell
             }

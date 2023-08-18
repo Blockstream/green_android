@@ -121,9 +121,9 @@ class SendViewController: KeyboardViewController {
             if let cell = item as? AmountEditCell {
                 if let text = cell.amountTextField.text,
                    text.isEmpty || self.viewModel.sendAll {
-                    cell.amountTextField.isEnabled = self.viewModel.editable
-                    cell.amountTextField.isUserInteractionEnabled = self.viewModel.editable
-                    cell.amountTextField.text = self.viewModel.amount
+                    cell.amountTextField.isEnabled = self.viewModel.editableAmount
+                    cell.amountTextField.isUserInteractionEnabled = self.viewModel.editableAmount
+                    cell.setAmount(amount: self.viewModel.amount ?? "", inputDenomination: viewModel.inputDenomination)
                 }
                 cell.errorLabel.text = self.viewModel.amountError?.localized
             }})
@@ -144,7 +144,8 @@ class SendViewController: KeyboardViewController {
         let storyboard = UIStoryboard(name: "Send", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendConfirmViewController") as? SendConfirmViewController, let tx = viewModel.transaction {
             vc.viewModel = SendConfirmViewModel(account: viewModel.account,
-                                                tx: tx)
+                                                tx: tx,
+                                                inputDenomination: viewModel.inputDenomination)
             vc.inputType = viewModel.inputType
             vc.addressInputType = addressInputType
             navigationController?.pushViewController(vc, animated: true)
@@ -152,13 +153,15 @@ class SendViewController: KeyboardViewController {
     }
 
     func showDialogInputDenominations() {
-        guard let model = viewModel.dialogInputDenominationViewModel(inputDenomination: viewModel.inputDenomination) else { return }
-
+        if viewModel.assetId != viewModel.account.gdkNetwork.getFeeAsset() {
+            return
+        }
+        let model = viewModel.dialogInputDenominationViewModel(inputDenomination: viewModel.inputDenomination)
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogInputDenominationViewController") as? DialogInputDenominationViewController, let balance = viewModel.getBalance() {
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogInputDenominationViewController") as? DialogInputDenominationViewController {
             vc.viewModel = model
             vc.delegate = self
-            vc.balance = balance
+            vc.balance = viewModel.getBalance()
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
@@ -451,18 +454,22 @@ extension SendViewController: AmountEditCellDelegate {
     }
 }
 
-extension SendViewController: DialogInputDenominationViewControllerDelagate {
+extension SendViewController: DialogInputDenominationViewControllerDelegate {
 
     func didSelectFiat() {
         viewModel.isFiat = true
-        reloadSections([.amount], animated: false)
-        validateTransaction()
+        tableView.reloadData {
+            self.cleanAmountCell()
+            self.refreshAmountCell()
+        }
     }
 
     func didSelectInput(denomination: gdk.DenominationType) {
         viewModel.isFiat = false
-        viewModel?.inputDenomination = denomination
-        reloadSections([.amount], animated: false)
-        validateTransaction()
+        viewModel.inputDenomination = denomination
+        tableView.reloadData {
+            self.cleanAmountCell()
+            self.refreshAmountCell()
+        }
     }
 }

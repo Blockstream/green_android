@@ -3,7 +3,7 @@ import UIKit
 
 import gdk
 
-protocol DialogInputDenominationViewControllerDelagate: AnyObject {
+protocol DialogInputDenominationViewControllerDelegate: AnyObject {
     func didSelectInput(denomination: DenominationType)
     func didSelectFiat()
 }
@@ -21,8 +21,8 @@ class DialogInputDenominationViewController: UIViewController {
 
     var viewModel: DialogInputDenominationViewModel!
     var obs: NSKeyValueObservation?
-    weak var delegate: DialogInputDenominationViewControllerDelagate?
-    var balance: Balance!
+    weak var delegate: DialogInputDenominationViewControllerDelegate?
+    var balance: Balance?
 
     lazy var blurredView: UIView = {
         let containerView = UIView()
@@ -90,7 +90,7 @@ class DialogInputDenominationViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Enter input type"
+        lblTitle.text = "id_enter_amount_in".localized
     }
 
     func setStyle() {
@@ -168,10 +168,10 @@ extension DialogInputDenominationViewController: UITableViewDelegate, UITableVie
     }
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-
+        let fiatCurrency = Balance.fromSatoshi(0, assetId: AssetInfo.btcId)?.toFiat().1
         if let fView = Bundle.main.loadNibNamed("DialogInputDenominationFooter", owner: self, options: nil)?.first as? DialogInputDenominationFooter {
-            fView.configure(title: balance.fiatCurrency,
-                            hint: balance.fiat ?? "",
+            fView.configure(title: fiatCurrency ?? "",
+                            hint: balance?.fiat ?? "",
                             isSelected: viewModel.isFiat, onTap: { [weak self] in
                 self?.onFooterTap()
             })

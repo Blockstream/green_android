@@ -46,8 +46,7 @@ extension Balance {
     static func fromDenomination(_ value: String, assetId: String, denomination: DenominationType? = nil) -> Balance? {
         let value = value.unlocaleFormattedString()
         let denomination = denomination ?? session?.settings?.denomination
-        let details: [String: Any] = [denomination?.rawValue ?? Balance.session?.gdkNetwork.getFeeAsset() ?? "btc": value,
-                                      "asset_id": assetId]
+        let details: [String: Any] = [denomination?.rawValue ?? Balance.session?.gdkNetwork.getFeeAsset() ?? "btc": value,"asset_id": assetId]
         return Balance.from(details: details)
     }
 
@@ -95,20 +94,6 @@ extension Balance {
             }
         }()
         return (value?.localeFormattedString(Int(denomination.digits)) ?? "n/a", denomination.string(for: network.gdkNetwork))
-    }
-
-    func toUnlocaleDenom(_ denomination: DenominationType? = nil) -> (String, String) {
-        let denomination = denomination ?? Balance.session?.settings?.denomination ?? .BTC
-        let res = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any]
-        let value = res![denomination.rawValue] as? String
-        let network: NetworkSecurityCase = {
-            switch assetId {
-            case Balance.lbtc: return .liquidSS
-            case Balance.ltest: return .testnetLiquidSS
-            default: return Balance.session?.gdkNetwork.mainnet ?? true ? .bitcoinSS : .testnetSS
-            }
-        }()
-        return (value?.unlocaleFormattedString(Int(denomination.digits)) ?? "n/a", denomination.string(for: network.gdkNetwork))
     }
 
     func toBTC() -> (String, String) {

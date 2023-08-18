@@ -12,6 +12,7 @@ struct FeeEditCellModel {
     var txError: String?
     var customFee: UInt64 = 1000
     var feeEstimates: [UInt64?]
+    var inputDenomination: DenominationType
     var transactionPriority: TransactionPriority?
     
     func selectedFee() -> Int {
@@ -110,7 +111,7 @@ class FeeEditCell: UITableViewCell {
         let btc = tx?.subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc"
         if ((cellModel.txError ?? "").isEmpty || cellModel.txError == "id_invalid_replacement_fee_rate"), let fee = cellModel.fee, let feeRate = cellModel.feeRate {
             if let balance = Balance.fromSatoshi(fee, assetId: btc) {
-                let (amount, denom) = balance.toDenom()
+                let (amount, denom) = balance.toDenom(cellModel.inputDenomination)
                 lblFeeValue.text = "\(amount) \(denom)"
                 let (fiat, fiatCurrency) = balance.toFiat()
                 lblFeeFiat.text = "≈ \(fiat) \(fiatCurrency)"

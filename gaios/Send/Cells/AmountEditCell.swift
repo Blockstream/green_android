@@ -10,7 +10,7 @@ protocol AmountEditCellDelegate {
 }
 
 struct AmountEditCellModel {
-    let text: String?
+    var text: String?
     let error: String?
     let balance: Int64?
     let assetId: String
@@ -21,14 +21,14 @@ struct AmountEditCellModel {
     var inputDenomination: gdk.DenominationType?
 
     var balanceText: String? {
-        Balance.fromSatoshi(balance ?? 0, assetId: assetId)?.toText()
+        Balance.fromSatoshi(balance ?? 0, assetId: assetId)?.toText(inputDenomination)
     }
     var balanceFiat: String? {
         Balance.fromSatoshi(balance ?? 0, assetId: assetId)?.toFiatText()
     }
     var satoshi: Int64? {
         if let text = text, !text.isEmpty {
-            return Balance.from(text, assetId: assetId)?.satoshi
+            return Balance.from(text, assetId: assetId, denomination: inputDenomination)?.satoshi
         }
         return nil
     }
@@ -51,6 +51,7 @@ class AmountEditCell: UITableViewCell {
     @IBOutlet weak var errorLabel: UILabel!
     @IBOutlet weak var balanceLabel: UILabel!
     @IBOutlet weak var sendallButton: UIButton!
+    @IBOutlet weak var availableTitleLabel: UILabel!
 
     private var cellModel: AmountEditCellModel?
     private var delegate: AmountEditCellDelegate?
@@ -71,6 +72,7 @@ class AmountEditCell: UITableViewCell {
     func setContent() {
         errorLabel.text = ""
         sendallButton.setTitle("id_send_all_funds".localized, for: .normal)
+        availableTitleLabel.text = "id_available".localized
         balanceLabel.text = ""
         denominationLabel.text = ""
         amountTextField.addDoneButtonToKeyboard(myAction: #selector(self.amountTextField.resignFirstResponder))
@@ -93,18 +95,7 @@ class AmountEditCell: UITableViewCell {
     }
 
     @IBAction func convertTap(_ sender: Any) {
-        /// not testable yet
-        //delegate?.onInputDenomination()
-        let newState = !(cellModel?.isFiat ?? false)
-        cellModel?.isFiat = newState
-        balance(isFiat: newState)
-        ticker(isFiat: newState)
-        if newState {
-            amountTextField.text = Balance.fromDenomination(amountTextField.text ?? "", assetId: cellModel?.assetId ?? AssetInfo.btcId)?.toFiat().0
-        } else {
-            amountTextField.text = Balance.fromFiat(amountTextField.text ?? "")?.toDenom().0
-        }
-        triggerTextChange()
+        delegate?.onInputDenomination()
     }
 
     @IBAction func pasteTap(_ sender: Any) {
@@ -120,8 +111,7 @@ class AmountEditCell: UITableViewCell {
     }
 
     @IBAction func btnInputDenomination(_ sender: Any) {
-        /// not testable yet
-        //delegate?.onInputDenomination()
+        delegate?.onInputDenomination()
     }
 
     func configure(cellModel: AmountEditCellModel, delegate: AmountEditCellDelegate) {
@@ -141,7 +131,7 @@ class AmountEditCell: UITableViewCell {
         amountTextField.addDoneButtonToKeyboard(myAction: #selector(self.amountTextField.resignFirstResponder))
         sendAll(enabled: cellModel.sendAll)
         balance(isFiat: cellModel.isFiat)
-        ticker(isFiat: cellModel.isFiat)
+        ticker()
         sendallButton.isHidden = cellModel.isLightning
     }
 
@@ -149,10 +139,17 @@ class AmountEditCell: UITableViewCell {
         balanceLabel.text = isFiat ? cellModel?.balanceFiat : cellModel?.balanceText
     }
 
-    func ticker(isFiat: Bool) {
-        let txt = isFiat ? cellModel?.currency : cellModel?.ticker
+    func ticker() {
+        let txt = cellModel?.isFiat ?? false ? cellModel?.currency : cellModel?.ticker
         denominationLabel.attributedText = NSAttributedString(string: txt ?? "", attributes:
             [.underlineStyle: NSUnderlineStyle.single.rawValue])
+    }
+
+    func setAmount(amount: String, inputDenomination: DenominationType) {
+        cellModel?.inputDenomination = inputDenomination
+        cellModel?.text = amount
+        amountTextField.text = amount
+        ticker()
     }
 
     func sendAll(enabled: Bool) {

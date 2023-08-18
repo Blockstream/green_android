@@ -205,19 +205,6 @@ class AccountViewController: UIViewController {
         }
     }
 
-    // open send flow
-    func sendfromWallet() {
-        let storyboard = UIStoryboard(name: "Send", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
-            vc.viewModel = SendViewModel(account: viewModel.account,
-                                         inputType: viewModel.watchOnly ? .sweep : .transaction,
-                                         transaction: nil,
-                                         input: nil)
-            vc.fixedWallet = true
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-
     // open receive screen
     func receiveScreen() {
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
@@ -363,7 +350,11 @@ class AccountViewController: UIViewController {
     }
 
     @IBAction func btnSend(_ sender: Any) {
-        sendfromWallet()
+        let sendViewModel = SendViewModel(account: viewModel.account,
+                                     inputType: viewModel.watchOnly ? .sweep : .transaction,
+                                     transaction: nil,
+                                     input: nil)
+        self.sendViewController(model: sendViewModel)
     }
 
     @IBAction func btnReceive(_ sender: Any) {
@@ -832,6 +823,15 @@ extension AccountViewController: DialogScanViewControllerDelegate {
     }
 
     func sendViewController(model: SendViewModel) {
+        if viewModel.satoshi == 0 {
+            let alert = UIAlertController(title: "id_warning".localized,
+                                          message: "id_you_have_no_coins_to_send".localized,
+                                          preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel) { _ in  })
+            alert.addAction(UIAlertAction(title: "id_receive".localized, style: .default) { _ in self.receiveScreen() })
+            present(alert, animated: true, completion: nil)
+            return
+        }
         let storyboard = UIStoryboard(name: "Send", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
             vc.viewModel = model

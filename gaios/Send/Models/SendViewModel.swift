@@ -12,7 +12,7 @@ class SendViewModel {
     var inputType: TxType
     var remoteAlert: RemoteAlert?
     var validateTask: Task<Transaction?, Error>?
-    var inputDenomination: gdk.DenominationType?
+    var inputDenomination: gdk.DenominationType
 
     var account: WalletItem {
         didSet {
@@ -30,7 +30,8 @@ class SendViewModel {
     var fee: UInt64? = nil
     var feeRate: UInt64? = nil
     var isFiat: Bool = false
-    var editable: Bool = true
+    var editableAddress: Bool = true
+    var editableAmount: Bool = false
     
     var transactionPriority: TransactionPriority = .Medium {
         didSet {
@@ -47,7 +48,7 @@ class SendViewModel {
                 if isFiat {
                     satoshi = Balance.fromFiat(newValue)?.satoshi
                 } else {
-                    satoshi = Balance.from(newValue, assetId: assetId ?? feeAsset)?.satoshi
+                    satoshi = Balance.from(newValue, assetId: assetId ?? feeAsset, denomination: inputDenomination)?.satoshi
                 }
             } else {
                 satoshi = nil
@@ -58,7 +59,7 @@ class SendViewModel {
                 if isFiat {
                     return Balance.fromSatoshi(satoshi, assetId: assetId ?? feeAsset)?.toFiat().0
                 } else {
-                    return Balance.fromSatoshi(satoshi, assetId: assetId ?? feeAsset)?.toValue().0
+                    return Balance.fromSatoshi(satoshi, assetId: assetId ?? feeAsset)?.toValue(inputDenomination).0
                 }
             } else {
                 return nil
@@ -92,6 +93,9 @@ class SendViewModel {
         self.assetId = account.gdkNetwork.getFeeAsset()
         self.inputType = inputType
         self.transactionPriority = inputType == .bumpFee ? .Custom : .Medium
+        let settings =  WalletManager.current?.prominentSession?.settings
+        let denom = settings?.denomination ?? .BTC
+        self.inputDenomination = denom
         self.remoteAlert = RemoteAlertManager.shared.alerts(screen: .send, networks: wm?.activeNetworks ?? []).first
         self.input = input
         if inputType == .bumpFee {
@@ -122,7 +126,9 @@ class SendViewModel {
             switch inputType {
             case .transaction:
                 let asset = assetId == "btc" ? nil : assetId
-                tx.addressees = [Addressee.from(address: input ?? "", satoshi: satoshi ?? 0, assetId: asset, isGreedy: sendAll)]
+                if let input = input {
+                    tx.addressees = [Addressee.from(address: input, satoshi: satoshi ?? 0, assetId: asset, isGreedy: sendAll)]
+                }
                 tx.feeRate = feeRate ?? feeEstimates[transactionPriority.rawValue]
             case .sweep:
                 tx.sessionSubaccount = account.pointer
@@ -195,7 +201,7 @@ class SendViewModel {
             if input == nil {
                 input = addressee.address
             }
-            if let addrAssetId = addressee.assetId, assetId == nil {
+            if let addrAssetId = addressee.assetId {
                 assetId = addrAssetId
             }
             if let addrSatoshi = addressee.satoshi, satoshi == nil, addrSatoshi != 0 {
@@ -209,10 +215,11 @@ class SendViewModel {
         }
         switch inputType {
         case .transaction, .lnurl:
-            editable = true
+            editableAddress = true
         default:
-            editable = false
+            editableAddress = false
         }
+        editableAmount = tx.privateKey == nil && tx.addressees.count > 0 && !sendAll
     }
     
     var alertCellModel: AlertCardCellModel? {
@@ -227,6 +234,7 @@ class SendViewModel {
                                 feeRate: feeRate,
                                 txError: nil,
                                 feeEstimates: feeEstimates,
+                                inputDenomination: inputDenomination,
                                 transactionPriority: transactionPriority)
     }
     
@@ -236,15 +244,18 @@ class SendViewModel {
     
     var amountCellModel: AmountEditCellModel {
         let balance = account.satoshi?[assetId ?? feeAsset]
-        return AmountEditCellModel(text: amount, error: amountError, balance: balance, assetId: assetId ?? AssetInfo.btcId, editable: editable, sendAll: sendAll, isFiat: isFiat, isLightning: account.type.lightning, inputDenomination: inputDenomination)
+        return AmountEditCellModel(text: amount, error: amountError, balance: balance, assetId: assetId ?? AssetInfo.btcId, editable: editableAmount, sendAll: sendAll, isFiat: isFiat, isLightning: account.type.lightning, inputDenomination: inputDenomination)
     }
     
     var addressEditCellModel: AddressEditCellModel {
-        return AddressEditCellModel(text: input, error: addressError, editable: editable)
+        return AddressEditCellModel(text: input, error: addressError, editable: editableAddress)
     }
     
     func validateInput() async throws {
-        guard let input = input, !input.isEmpty else { return }
+        guard let input = input, !input.isEmpty else {
+            editableAmount = false
+            return
+        }
         if inputType == .bumpFee {
             return // nothing to do
         } else if inputType == .sweep {
@@ -260,10 +271,9 @@ class SendViewModel {
     }
 
     func dialogInputDenominationViewModel(inputDenomination: DenominationType?) -> DialogInputDenominationViewModel? {
-        guard let settings = session.settings else { return nil }
-
+        let settings = wm?.prominentSession?.settings
         let list: [DenominationType] = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats]
-        var selected = settings.denomination
+        var selected = settings?.denomination ?? .BTC
         if let inputDenomination = inputDenomination { selected = inputDenomination }
         let network: NetworkSecurityCase = session.gdkNetwork.mainnet ? .bitcoinSS : .testnetSS
         return DialogInputDenominationViewModel(denomination: selected,
@@ -273,6 +283,9 @@ class SendViewModel {
     }
 
     func getBalance() -> Balance? {
-        return Balance.fromSatoshi(satoshi ?? 0.0, assetId: assetId ?? feeAsset)
+        if let satoshi = satoshi {
+            return Balance.fromSatoshi(satoshi, assetId: assetId ?? feeAsset)
+        }
+        return nil
     }
 }

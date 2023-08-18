@@ -10,6 +10,7 @@ struct AddresseeCellModel {
     var addreessee: Addressee { tx.addressees[index] }
     var assetId: String { addreessee.assetId ?? tx.subaccountItem?.gdkNetwork.getFeeAsset() ?? AssetInfo.btcId }
     var showFiat: Bool { [AssetInfo.btcId, AssetInfo.lbtcId, AssetInfo.ltestId].contains(assetId) }
+    var inputDenomination: DenominationType
 
     var satoshi: Int64 {
         var value = addreessee.satoshi
@@ -21,7 +22,7 @@ struct AddresseeCellModel {
 
     var amount: String {
         if let balance = Balance.fromSatoshi(satoshi, assetId: assetId) {
-            let (amount, _) = balance.toValue()
+            let (amount, _) = balance.toValue(inputDenomination)
             return amount
         }
         return ""
@@ -29,7 +30,7 @@ struct AddresseeCellModel {
 
     var ticker: String {
         if let balance = Balance.fromSatoshi(satoshi, assetId: assetId) {
-            let (_, ticker) = balance.toValue()
+            let (_, ticker) = balance.toValue(inputDenomination)
             return ticker
         }
         return ""

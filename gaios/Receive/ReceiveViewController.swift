@@ -742,7 +742,7 @@ extension ReceiveViewController: LTAmountCellDelegate {
     }
 }
 
-extension ReceiveViewController: DialogInputDenominationViewControllerDelagate {
+extension ReceiveViewController: DialogInputDenominationViewControllerDelegate {
 
     func didSelectFiat() {
         viewModel.isFiat = true

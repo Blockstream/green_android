@@ -191,7 +191,7 @@ class ReceiveViewModel {
         let list: [DenominationType] = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats]
         let gdkNetwork = account.session?.gdkNetwork
         let network: NetworkSecurityCase = gdkNetwork?.mainnet ?? true ? .bitcoinSS : .testnetSS
-        return DialogInputDenominationViewModel(denomination: inputDenomination ?? .Sats,
+        return DialogInputDenominationViewModel(denomination: inputDenomination,
                                            denominations: list,
                                            network: network,
                                             isFiat: isFiat)

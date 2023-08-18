@@ -24,9 +24,9 @@ class FeeSummaryCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
-    func configure(_ tx: Transaction) {
+    func configure(_ tx: Transaction, inputDenomination: DenominationType) {
         if let balance = Balance.fromSatoshi(tx.fee, assetId: tx.subaccountItem?.gdkNetwork.getFeeAsset() ?? "btc") {
-            let (amount, denom) = balance.toDenom()
+            let (amount, denom) = balance.toDenom(inputDenomination)
             lblFeeAmount.text = "\(amount) \(denom)"
             let (fiat, fiatCurrency) = balance.toFiat()
             lblFeeFiat.text = "≈ \(fiat) \(fiatCurrency)"
