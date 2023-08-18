@@ -82,16 +82,11 @@ class LTAmountCell: UITableViewCell {
         btnEdit.isHidden = enabled
         btnCancel.isHidden = !enabled
         btnPaste.isHidden = !enabled
-
-        if enabled {
-            btnCancel.isHidden = !(textField.text?.count ?? 0 > 0)
-            btnPaste.isHidden = textField.text?.count ?? 0 > 0
-        }
-        if let model = model {
-            lblAmount.text = "≈\(model.reversedAmountText ?? "") \(model.reversedDenomText ?? "")"
-            lblAsset.attributedText = model.denomUnderlineText
-        }
-        lblAmount.isHidden = lblAmount.text == "≈ "
+        btnCancel.isHidden = !(textField.text?.count ?? 0 > 0)
+        btnPaste.isHidden = textField.text?.count ?? 0 > 0
+        let balance = "\(model?.maxLimitAmount ?? "") \(model?.denomText ?? "")"
+        lblAmount.text = String(format: "id_max_limit_s".localized, balance)
+        lblAsset.attributedText = model?.denomUnderlineText
         updateState()
     }
 
@@ -163,7 +158,7 @@ class LTAmountCell: UITableViewCell {
         lblInfo.text = " "
         btnFeeInfo.isHidden = true
         lblMoreInfo.isHidden = true
-        lblAmount.isHidden = true
+        lblAmount.isHidden = false
     }
 
     func updateState() {

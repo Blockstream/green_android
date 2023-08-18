@@ -13,20 +13,8 @@ struct LTAmountCellModel {
     var lspInfo: LspInformation?
 
     var amountText: String? { isFiat ? fiat : btc }
-    var reversedAmountText: String? { !isFiat ? fiat : btc }
     var denomText: String? {
         if isFiat {
-            return currency == nil ? defaultCurrency : currency
-        } else {
-            if let gdkNetwork = gdkNetwork {
-                return inputDenomination.string(for: gdkNetwork)
-            } else {
-                return defaultDenomination
-            }
-        }
-    }
-    var reversedDenomText: String? {
-        if !isFiat {
             return currency == nil ? defaultCurrency : currency
         } else {
             if let gdkNetwork = gdkNetwork {

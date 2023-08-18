@@ -8,7 +8,7 @@ class LTSweepCellModel {
     var denom: String
 
     var title: String {
-        String(format: "id_you_can_sweep_s_of_your_funds", "\(amount) \(denom)")
+        String(format: "id_you_can_sweep_s_of_your_funds".localized, "\(amount) \(denom)")
     }
 
     init(amount: UInt64, denom: String = "sats") {
