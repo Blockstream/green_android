@@ -547,6 +547,7 @@
 		81B1EB2A28E3703200F409A3 /* AssetAmountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B1EB2928E3703200F409A3 /* AssetAmountView.swift */; };
 		81B1EB2C28E4466000F409A3 /* AssetAmountView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81B1EB2B28E4465E00F409A3 /* AssetAmountView.xib */; };
 		81B2350F2A6A8BCD00B8FF5D /* Countly in Frameworks */ = {isa = PBXBuildFile; productRef = 81B2350E2A6A8BCD00B8FF5D /* Countly */; };
+		81B7FD222A8F959C0024A0E8 /* URLSchemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B7FD212A8F959C0024A0E8 /* URLSchemeManager.swift */; };
 		81BAD32D289BD66900FF0F54 /* AccountNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BAD32C289BD66900FF0F54 /* AccountNavigator.swift */; };
 		81BB2C7E2215B86A0015F086 /* SystemMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */; };
 		81BF5D4928C885AF006225C6 /* WalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF5D4828C885AF006225C6 /* WalletManager.swift */; };
@@ -1211,6 +1212,7 @@
 		81ACC4B0227337F3004B1E92 /* Wallet.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Wallet.storyboard; sourceTree = "<group>"; };
 		81B1EB2928E3703200F409A3 /* AssetAmountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetAmountView.swift; sourceTree = "<group>"; };
 		81B1EB2B28E4465E00F409A3 /* AssetAmountView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AssetAmountView.xib; sourceTree = "<group>"; };
+		81B7FD212A8F959C0024A0E8 /* URLSchemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSchemeManager.swift; sourceTree = "<group>"; };
 		81BAD32C289BD66900FF0F54 /* AccountNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountNavigator.swift; sourceTree = "<group>"; };
 		81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemMessageViewController.swift; sourceTree = "<group>"; };
 		81BF4E2822E9E9EA005A04C6 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
@@ -2202,6 +2204,7 @@
 				3487653629D337150059D05F /* OnBoardManager.swift */,
 				81F328FB29ED319300D54F1D /* ResolverManager.swift */,
 				813872932A0480E20092CFD2 /* LightningSessionManager.swift */,
+				81B7FD212A8F959C0024A0E8 /* URLSchemeManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -3887,6 +3890,7 @@
 				34386C8A26F086BA00EBB6A6 /* DialogAccountIdViewController.swift in Sources */,
 				676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */,
 				81A5919B29156011001D1A65 /* MultisigSettingsViewModel.swift in Sources */,
+				81B7FD222A8F959C0024A0E8 /* URLSchemeManager.swift in Sources */,
 				34EB670528213A8A0036D615 /* AMConstants.swift in Sources */,
 				34237FD5276B693100618502 /* SendViewController.swift in Sources */,
 				3420470A291A6BD800EDE945 /* MultiLabelView.swift in Sources */,

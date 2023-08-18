@@ -181,7 +181,7 @@ class SessionManager {
     func parseTxInput(_ input: String, satoshi: Int64?, assetId: String?) async throws -> ValidateAddresseesResult {
         let asset = assetId == AssetInfo.btcId ? nil : assetId
         let addressee = Addressee.from(address: input, satoshi: satoshi, assetId: asset)
-        let addressees = ValidateAddresseesParams(addressees: [addressee])
+        let addressees = ValidateAddresseesParams(addressees: [addressee], network: gdkNetwork.chain)
         return try await self.wrapperAsync(fun: self.session?.validate, params: addressees)
     }
     

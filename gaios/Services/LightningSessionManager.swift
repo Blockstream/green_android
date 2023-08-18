@@ -232,15 +232,9 @@ class LightningSessionManager: SessionManager {
     }
 
     override func parseTxInput(_ input: String, satoshi: Int64?, assetId: String?) async throws -> ValidateAddresseesResult {
-        let inputType = parseLightningInputType(input)!
-        return parseLightningTxInput(input, inputType: inputType)
-    }
-
-    func parseLightningInputType(_ input: String) -> InputType? {
-        lightBridge?.parseBoltOrLNUrl(input: input)
-    }
-
-    func parseLightningTxInput(_ input: String, inputType: InputType) -> ValidateAddresseesResult {
+        guard let inputType =  lightBridge?.parseBoltOrLNUrl(input: input) else {
+            throw GaError.GenericError()
+        }
         switch inputType {
         case .bitcoinAddress(_):
             //let addr = Addressee.from(address: address.address, satoshi: Int64(address.amountSat ?? 0), assetId: nil)

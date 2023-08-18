@@ -174,8 +174,8 @@ class ReceiveViewController: KeyboardViewController {
             do {
                 let invoice = notification?.object as? InvoicePaidDetails
                 let account = WalletManager.current?.lightningSubaccount
-                let parser = Parser(selectedAccount: account!, input: invoice?.bolt11 ?? "", discoverable: true)
-                try await parser.parse()
+                let parser = Parser(input: invoice?.bolt11 ?? "")
+                try await parser.runSingleAccount(account: account!)
                 switch parser.lightningType {
                 case .some(.bolt11(let invoice)):
                     if let balance = Balance.fromSatoshi(invoice.amountSatoshi ?? 0, assetId: AssetInfo.btcId) {

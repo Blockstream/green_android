@@ -129,8 +129,10 @@ public struct GetAssetsResult: Codable {
 
 public struct ValidateAddresseesParams: Codable {
     public let addressees: [Addressee]
-    public init(addressees: [Addressee]) {
+    public let network: String
+    public init(addressees: [Addressee], network: String) {
         self.addressees = addressees
+        self.network = network
     }
 }
 

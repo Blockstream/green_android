@@ -2,6 +2,7 @@ import UIKit
 
 import RiveRuntime
 import gdk
+import greenaddress
 import BreezSDK
 
 enum WalletSection: Int, CaseIterable {
@@ -129,6 +130,13 @@ class WalletViewController: UIViewController {
                 }
             })
             notificationObservers.append(observer)
+        }
+
+        if URLSchemeManager.shared.isValid {
+            if let bip21 = URLSchemeManager.shared.bip21 {
+                parse(value: bip21, account: nil)
+                URLSchemeManager.shared.url = nil
+            }
         }
     }
 
@@ -937,33 +945,38 @@ extension WalletViewController: AccountViewControllerDelegate {
 extension WalletViewController: DialogScanViewControllerDelegate {
 
     func didScan(value: String, index: Int?) {
-        var account = viewModel.accountCellModels[sIdx].account
+        let account = viewModel.accountCellModels[sIdx].account
+        parse(value: value, account: account)
+    }
+
+    func parse(value: String, account: WalletItem?) {
         Task {
             do {
-                let parser = Parser(selectedAccount: account, input: value, discoverable: true)
-                try await parser.parse()
+                let parser = Parser(input: value)
+                try await parser.runMultiAccounts(preferredAccount: account)
                 switch parser.lightningType {
                 case .lnUrlAuth(let data):
+                    // open LNURL-Auth page
                     ltAuthViewController(requestData: data)
-                    return
-                case .lnUrlPay(_), .bolt11(_):
-                    if let lightningSubaccount = parser.lightningSubaccount {
-                        account = lightningSubaccount
-                    }
-                case .none:
-                    break
                 default:
-                    DropAlert().warning(message: parser.error ?? "id_could_not_recognized_qr_code")
-                    return
+                    // open Send page
+                    let tx = parser.createTx?.tx
+                    let sendModel = SendViewModel(account: parser.account!,
+                                                  inputType: tx?.txType ?? .transaction,
+                                                  transaction: tx,
+                                                  input: value)
+                    self.sendViewController(model: sendModel)
                 }
-                // open send page
-                let tx = parser.createTx?.tx
-                let sendModel = SendViewModel(account: account,
-                                              inputType: tx?.txType ?? .transaction,
-                                              transaction: tx,
-                                              input: value)
-                self.sendViewController(model: sendModel)
-            } catch { DropAlert().warning(message: error.localizedDescription) }
+            } catch {
+                switch error {
+                case ParserError.InvalidInput(let txt),
+                    ParserError.InvalidNetwork(let txt),
+                    ParserError.InvalidTransaction(let txt):
+                    DropAlert().warning(message: txt?.localized ?? "")
+                default:
+                    DropAlert().warning(message: error.localizedDescription)
+                }
+            }
         }
     }
 

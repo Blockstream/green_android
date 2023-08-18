@@ -241,16 +241,16 @@ class SendViewModel {
     var accountAssetCellModel: ReceiveAssetCellModel {
         return ReceiveAssetCellModel(assetId: assetId ?? AssetInfo.btcId, account: account)
     }
-    
+
     var amountCellModel: AmountEditCellModel {
         let balance = account.satoshi?[assetId ?? feeAsset]
         return AmountEditCellModel(text: amount, error: amountError, balance: balance, assetId: assetId ?? AssetInfo.btcId, editable: editableAmount, sendAll: sendAll, isFiat: isFiat, isLightning: account.type.lightning, inputDenomination: inputDenomination)
     }
-    
+
     var addressEditCellModel: AddressEditCellModel {
         return AddressEditCellModel(text: input, error: addressError, editable: editableAddress)
     }
-    
+
     func validateInput() async throws {
         guard let input = input, !input.isEmpty else {
             editableAmount = false
@@ -262,12 +262,28 @@ class SendViewModel {
             transaction?.privateKey = input
             return
         }
-        let parser = Parser(selectedAccount: account, input: input, discoverable: false)
-        try await parser.parse()
-        transaction = parser.createTx?.tx
-        inputType = parser.txType
-        inputError = parser.createTx?.error
-        self.reload()
+        let parser = Parser(input: input)
+        do {
+            try await parser.runSingleAccount(account: account)
+            transaction = parser.createTx?.tx
+            if let sat = parser.createTx?.satoshi {
+                satoshi = sat
+            }
+            inputType = parser.txType
+            inputError = parser.createTx?.error
+            reload()
+        } catch {
+            switch error {
+            case ParserError.InvalidInput(let txt),
+                ParserError.InvalidNetwork(let txt),
+                ParserError.InvalidTransaction(let txt):
+                inputError = txt
+                transaction = CreateTransaction(error: txt).tx
+            default:
+                transaction = CreateTransaction(error: error.localizedDescription).tx
+            }
+            reload()
+        }
     }
 
     func dialogInputDenominationViewModel(inputDenomination: DenominationType?) -> DialogInputDenominationViewModel? {
