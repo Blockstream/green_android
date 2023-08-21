@@ -57,6 +57,8 @@ class DenominationExchangeViewController: UIViewController {
 
     func setStyle() {
         cardView.layer.cornerRadius = 10
+        cardView.borderWidth = 1
+        cardView.borderColor = .white.withAlphaComponent(0.05)
         lblTitle.setStyle(.titleCard)
         btnCancel.setStyle(.inline)
         btnOk.setStyle(.inline)

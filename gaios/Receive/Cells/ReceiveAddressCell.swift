@@ -47,6 +47,7 @@ class ReceiveAddressCell: UITableViewCell {
                    onLongpress: (() -> Void)? = nil
     ) {
         lblAddress.text = model.text
+        lblAddress.lineBreakMode = .byTruncatingMiddle
         self.onCopyToClipboard = onCopyToClipboard
         self.onRefreshClick = onRefreshClick
         if let uri = model.text {
