@@ -29,6 +29,8 @@ import com.blockstream.green.extensions.authenticateWithBiometrics
 import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.errorSnackbar
 import com.blockstream.green.extensions.hideKeyboard
+import com.blockstream.green.gdk.isConnectionError
+import com.blockstream.green.gdk.isNotAuthorized
 import com.blockstream.green.ui.bottomsheets.Bip39PassphraseBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.DeleteWalletBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.RenameWalletBottomSheetDialogFragment
@@ -38,6 +40,7 @@ import com.blockstream.green.utils.openBrowser
 import com.blockstream.green.views.GreenAlertView
 import com.blockstream.green.views.GreenPinViewListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import java.security.UnrecoverableKeyException
 import javax.inject.Inject
@@ -152,20 +155,27 @@ class LoginFragment : AbstractWalletFragment<LoginFragmentBinding>(
         }
 
         viewModel.onError.observe(viewLifecycleOwner) {
-            it?.getContentIfNotHandledOrReturnNull()?.let { _ ->
-                binding.pinView.reset(true)
-            }
-        }
+            it?.getContentIfNotHandledOrReturnNull()?.let { throwable ->
 
-        viewModel.onErrorMessage.observe(viewLifecycleOwner) {
-            it?.getContentIfNotHandledOrReturnNull()?.let { error ->
-                if(device != null){
-                    errorDialog(error) {
-                        popBackStack()
+                if (!throwable.isNotAuthorized() || viewModel.watchOnlyCredentials.value != null) {
+
+                    if(throwable.isConnectionError()){
+                        errorSnackbar(throwable = throwable, session = session, showReport = true, duration = Snackbar.LENGTH_LONG)
+                    }else {
+                        errorDialog(
+                            throwable = throwable,
+                            network = null,
+                            session = session,
+                            showReport = true
+                        ) {
+                            if (device != null) {
+                                popBackStack()
+                            }
+                        }
                     }
-                }else{
-                    errorSnackbar(error)
                 }
+
+                binding.pinView.reset(true)
             }
         }
 

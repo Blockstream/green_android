@@ -2,6 +2,7 @@ package com.blockstream.green.ui.login
 
 import android.util.Base64
 import androidx.lifecycle.*
+import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.gdk.data.TorEvent
 import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.gdk.params.LoginCredentialsParams
@@ -15,7 +16,6 @@ import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.green.devices.Device
 import com.blockstream.green.extensions.logException
 import com.blockstream.green.extensions.string
@@ -50,8 +50,6 @@ class LoginViewModel @AssistedInject constructor(
         object LoginDevice : LoginEvent()
         object AskBip39Passphrase : LoginEvent()
     }
-
-    val onErrorMessage = MutableLiveData<ConsumableEvent<Throwable>>()
 
     var biometricsCredentials: MutableLiveData<LoginCredentials> = MutableLiveData()
     var watchOnlyCredentials: MutableLiveData<LoginCredentials> = MutableLiveData()
@@ -175,8 +173,6 @@ class LoginViewModel @AssistedInject constructor(
                 viewModelScope.launch {
                     walletRepository.updateLoginCredentials(loginCredentials)
                 }
-            } else {
-                onErrorMessage.postValue(ConsumableEvent(it))
             }
 
             onError.postValue(ConsumableEvent(it))
@@ -420,20 +416,13 @@ class LoginViewModel @AssistedInject constructor(
                         walletRepository.updateLoginCredentials(loginCredentials)
                     }
                 }
-
-                if(isWatchOnly){
-                    onErrorMessage.postValue(ConsumableEvent(it))
-                }
-
-            }else if(isBip39Login && it.message == "id_login_failed"){
-                // On Multisig & BIP39 Passphrase login, instead of registering a new wallet, show error "Wallet not found"
-                // Jade users restoring can still login
-                onErrorMessage.postValue(ConsumableEvent(Exception("id_wallet_not_found")))
-            }else{
-                onErrorMessage.postValue(ConsumableEvent(it))
             }
 
-            onError.postValue(ConsumableEvent(it))
+            if (isBip39Login && it.message == "id_login_failed") {
+                onError.postValue(ConsumableEvent(Exception("id_wallet_not_found")))
+            } else {
+                onError.postValue(ConsumableEvent(it))
+            }
             countly.failedWalletLogin(session, it)
         })
     }

@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
@@ -18,14 +19,17 @@ import androidx.core.app.ShareCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
+import com.blockstream.green.databinding.DialogErrorReportBinding
+import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.isConnectionError
 import com.blockstream.green.gdk.isNotAuthorized
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.utils.AppReviewHelper
 import com.blockstream.green.utils.clearClipboard
 import com.blockstream.green.utils.isDevelopmentFlavor
+import com.blockstream.green.utils.openNewTicket
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -123,11 +127,11 @@ fun Context.errorFromResourcesAndGDK(error: String, vararg formatArgs: String): 
 
     return error
 }
-fun Fragment.errorDialog(throwable: Throwable, listener: (() -> Unit)? = null) {
-    errorDialog(throwable, false, listener)
+fun Fragment.errorDialog(throwable: Throwable, network: Network? = null, session: GdkSession? = null, listener: (() -> Unit)? = null) {
+    errorDialog(throwable = throwable, network = network, session = session, showReport = false, listener = listener)
 }
 
-fun Fragment.errorDialog(throwable: Throwable, showReport: Boolean, listener: (() -> Unit)? = null) {
+fun Fragment.errorDialog(throwable: Throwable, network: Network?, session: GdkSession?, showReport: Boolean, listener: (() -> Unit)? = null) {
     if (isDevelopmentFlavor) {
         throwable.printStackTrace()
     }
@@ -141,23 +145,38 @@ fun Fragment.errorDialog(throwable: Throwable, showReport: Boolean, listener: ((
     errorDialog(
         error = errorFromResourcesAndGDK(throwable),
         showReport = showReport,
+        throwable = throwable,
+        network = network,
+        session = session,
         listener = listener
     )
 }
 fun Fragment.errorDialog(error: String, listener: (() -> Unit)? = null) {
-    errorDialog(error, false, listener)
+    errorDialog(error = error, showReport = false, throwable = null, network = null, session = null, listener)
 }
 
-fun Fragment.errorDialog(error: String, showReport: Boolean = false, listener: (() -> Unit)? = null) {
+fun Fragment.errorDialog(error: String, showReport: Boolean = false, throwable: Throwable? = null, network: Network? = null, session: GdkSession? = null, listener: (() -> Unit)? = null) {
     MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_Green_MaterialAlertDialog)
         .setTitle(R.string.id_error)
         .setMessage(error)
         .setPositiveButton(android.R.string.ok, null)
         .also {
-            if(showReport) {
-                it.setNeutralButton(R.string.id_report) { _, _ ->
-                    (this as? AppFragment<*>)?.also{
-                        AppReviewHelper.showErrorReport(error, it)
+            if(showReport && (this as? AppFragment<*>)?.zendeskSdk?.isAvailable == true) {
+                it.setNeutralButton(R.string.id_contact_support) { _, _ ->
+                    if(settingsManager.appSettings.tor){
+                        openNewTicket(
+                            settingsManager = settingsManager,
+                            subject = "Android Error Report",
+                            network = network,
+                        )
+                        copyToClipboard("Error Report", "$error}")
+                    }else {
+                        showErrorReport(
+                            error = error,
+                            throwable = throwable,
+                            network = network,
+                            session = session
+                        )
                     }
                 }
             }
@@ -166,6 +185,52 @@ fun Fragment.errorDialog(error: String, showReport: Boolean = false, listener: (
             listener?.invoke()
         }
         .show()
+}
+
+fun AppFragment<*>.showErrorReport(error: String, throwable: Throwable?, network: Network? = null, session: GdkSession? = null) {
+    val dialogBinding =
+        DialogErrorReportBinding.inflate(LayoutInflater.from(requireContext()))
+
+    val subject = this.screenName?.let { "Android Issue in $it" } ?: "Android Error Report"
+
+    MaterialAlertDialogBuilder(requireContext())
+        .setTitle(R.string.id_send_error_report)
+        .setView(dialogBinding.root)
+        .setPositiveButton(R.string.id_send) { _, _ ->
+            zendeskSdk.submitNewTicket(
+                subject = subject,
+                email = dialogBinding.emailText.text.toString(),
+                message = dialogBinding.feedbackText.text.toString(),
+                error = error,
+                throwable = throwable,
+                network = network,
+                hw = session?.let { session ->
+                    session.gdkHwWallet?.model?.lowercase()?.let {
+                        when{
+                            it.contains("jade") -> "jade"
+                            it.contains("ledger") && it.contains("s")-> "ledger_nano_s"
+                            it.contains("ledger") && it.contains("x")-> "ledger_nano_x"
+                            it.contains("trezor") && it.contains("one")-> "trezor_one"
+                            it.contains("trezor") -> "trezor_t"
+                            else -> null
+                        }
+                    }
+                }
+            )
+        }
+        .setNegativeButton(R.string.id_cancel) { _, _ ->
+
+        }
+        .show()
+
+    dialogBinding.emailText.setOnFocusChangeListener { _, hasFocus ->
+        val email = dialogBinding.emailText.text?.trim()
+        dialogBinding.emailLayout.error = if(hasFocus || email.isEmailValid()){
+            null
+        }else{
+            getString(R.string.id_not_a_valid_email_address)
+        }
+    }
 }
 
 fun Fragment.dialog(title: Int, message: Int, icon: Int? = null, isMessageSelectable: Boolean = false, listener: (() -> Unit)? = null) {
@@ -211,11 +276,7 @@ fun Fragment.toast(text: String, duration: Int = Toast.LENGTH_SHORT) {
 fun Fragment.errorSnackbar(
     throwable: Throwable,
     duration: Int = Snackbar.LENGTH_SHORT,
-    print: Boolean = false
 ) {
-    if (print) {
-        throwable.printStackTrace()
-    }
     snackbar(errorFromResourcesAndGDK(throwable), duration)
 }
 
@@ -229,9 +290,36 @@ fun Fragment.snackbar(text: String, duration: Int = Snackbar.LENGTH_SHORT) {
     }
 }
 
-fun Fragment.errorSnackbar(throwable: Throwable, duration: Int = Snackbar.LENGTH_SHORT) {
+fun Fragment.errorSnackbar(
+    throwable: Throwable,
+    network: Network? = null,
+    session: GdkSession? = null,
+    showReport: Boolean = false,
+    duration: Int = Snackbar.LENGTH_SHORT
+) {
     view?.let {
-        Snackbar.make(it, errorFromResourcesAndGDK(throwable), duration).show()
+        val message = errorFromResourcesAndGDK(throwable)
+        Snackbar.make(it, message, duration).apply {
+            if(showReport && (this@errorSnackbar as? AppFragment<*>)?.zendeskSdk?.isAvailable == true) {
+                setAction(R.string.id_contact_support) {
+                    if(settingsManager.appSettings.tor){
+                        openNewTicket(
+                            settingsManager = settingsManager,
+                            subject = "Android Error Report",
+                            network = network
+                        )
+                        copyToClipboard("Error Report", "$message}")
+                    }else {
+                        showErrorReport(
+                            error = message,
+                            throwable = throwable,
+                            network = network,
+                            session = session
+                        )
+                    }
+                }
+            }
+        }.show()
     }
 }
 

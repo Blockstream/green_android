@@ -1,7 +1,7 @@
 package com.blockstream.gms.di
 
-import com.blockstream.base.IAppReview
-import com.blockstream.gms.NoAppReview
+import com.blockstream.base.AppReview
+import com.blockstream.base.ZendeskSdk
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,7 +14,13 @@ class NoGmsModule {
 
     @Singleton
     @Provides
-    fun provideAppReview(): IAppReview {
-        return NoAppReview()
+    fun provideAppReview(): AppReview {
+        return AppReview()
+    }
+
+    @Singleton
+    @Provides
+    fun provideZendeskSdk(): ZendeskSdk {
+        return ZendeskSdk()
     }
 }

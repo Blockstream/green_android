@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.blockstream.base.ZendeskSdk
 import com.blockstream.common.managers.AssetManager
 import com.blockstream.common.managers.LifecycleManager
 import com.blockstream.common.managers.SettingsManager
@@ -68,6 +69,9 @@ class GreenApplication : Application() {
     lateinit var countly: Countly
 
     @Inject
+    lateinit var zendeskSdk: ZendeskSdk
+
+    @Inject
     lateinit var lifecycleManager: LifecycleManager
 
     override fun onCreate() {
@@ -99,6 +103,8 @@ class GreenApplication : Application() {
         if (isDevelopmentFlavor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             initShortcuts()
         }
+
+        zendeskSdk.appVersion = BuildConfig.VERSION_NAME
     }
 
     @RequiresApi(Build.VERSION_CODES.N_MR1)

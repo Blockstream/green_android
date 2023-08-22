@@ -196,14 +196,14 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
                     // If the error is the Anti-Exfil validation violation we show that prominently.
                     // Otherwise show a toast of the error text.
                     throwable.message == "id_signature_validation_failed_if" -> {
-                        errorDialog(throwable)
+                        errorDialog(network = network, throwable = throwable)
                     }
                     throwable.message == "id_transaction_already_confirmed" -> {
                         snackbar(R.string.id_transaction_already_confirmed)
                         findNavController().popBackStack(R.id.walletOverviewFragment, false)
                     }
                     throwable.message != "id_action_canceled" -> {
-                        errorDialog(throwable, true)
+                        errorDialog(throwable = throwable, network = network, session = session, showReport = true)
                     }
                 }
             }

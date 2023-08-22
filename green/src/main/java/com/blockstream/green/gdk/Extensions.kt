@@ -309,10 +309,11 @@ fun String.getGDKErrorCode(): Int {
     }
 }
 
-// TODO combine
-fun Throwable.isNotAuthorized() =
-    getGDKErrorCode() == GA_NOT_AUTHORIZED || message == "id_invalid_pin"
+fun Throwable.isNotAuthorized() = (message ?: "").isNotAuthorized()
 fun String.isNotAuthorized() =
     getGDKErrorCode() == GA_NOT_AUTHORIZED || this == "id_invalid_pin"
 
-fun String.isConnectionError() = this.contains("failed to connect")
+fun String.isConnectionError() = this.contains("failed to connect") || this == "id_connection_failed"
+fun Throwable.isConnectionError() = (message ?: "").isConnectionError()
+
+

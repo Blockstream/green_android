@@ -22,8 +22,10 @@ import androidx.core.text.color
 import androidx.core.text.toSpanned
 import androidx.core.text.underline
 import androidx.fragment.app.Fragment
+import com.blockstream.base.zendeskSecurityPolicy
 import com.blockstream.common.Urls
 import com.blockstream.common.data.ApplicationSettings
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
@@ -32,16 +34,17 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.google.zxing.qrcode.encoder.Encoder
 import com.mohamedrejeb.ksoup.entities.KsoupEntities
-import java.net.URI
 
 fun Fragment.openNewTicket(
     settingsManager: SettingsManager,
     subject: String? = null,
-    isGreen: Boolean = false,
+    network: Network? = null,
     isJade: Boolean = false,
 ) {
-    val product = if (isGreen) "green" else if (isJade) "blockstream_jade" else ""
+    val product = if (isJade) "blockstream_jade" else "green"
     val hw = if (isJade) "jade" else ""
+
+    val policy: String = network?.zendeskSecurityPolicy() ?: ""
 
     openBrowser(
         settingsManager.getApplicationSettings(),
@@ -51,7 +54,8 @@ fun Fragment.openNewTicket(
             subject?.let { KsoupEntities.encodeHtml(it) } ?: "",
             product,
             hw,
-            BuildConfig.VERSION_NAME))
+            BuildConfig.VERSION_NAME,
+            policy))
 }
 
 fun AppFragment<*>.openBrowser(url: String) {
@@ -91,10 +95,10 @@ fun Fragment.openBrowser(appSettings: ApplicationSettings, url: String) {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.id_tor)
             .setMessage(R.string.id_you_have_tor_enabled_are_you)
-            .setPositiveButton(R.string.id_continue) { _, _ ->
+            .setPositiveButton(android.R.string.ok) { _, _ ->
                 openBrowserBlock.invoke(requireContext())
             }
-            .setNeutralButton(R.string.id_copy_to_clipboard) { _, _ ->
+            .setNeutralButton(R.string.id_copy_url) { _, _ ->
                 copyToClipboard("URL", url, requireContext())
             }
             .setNegativeButton(R.string.id_cancel) { _, _ ->

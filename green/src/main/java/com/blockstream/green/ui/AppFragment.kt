@@ -17,6 +17,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import com.blockstream.base.ZendeskSdk
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.Wally
 import com.blockstream.common.gdk.data.Device
@@ -83,6 +84,9 @@ abstract class AppFragment<T : ViewDataBinding>(
 
     @Inject
     lateinit var settingsManager: SettingsManager
+
+    @Inject
+    lateinit var zendeskSdk: ZendeskSdk
 
     open fun getAppViewModel(): AppViewModel? = null
 

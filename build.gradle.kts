@@ -24,5 +24,6 @@ allprojects {
         mavenCentral()
         maven ("https://jitpack.io")
         maven("https://mvn.breez.technology/releases")
+        maven("https://zendesk.jfrog.io/zendesk/repo")
     }
 }

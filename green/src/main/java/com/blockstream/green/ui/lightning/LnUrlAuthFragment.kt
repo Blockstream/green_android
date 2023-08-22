@@ -72,7 +72,7 @@ class LnUrlAuthFragment :
 
         viewModel.onError.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let { throwable ->
-                errorDialog(throwable, showReport = true) {
+                errorDialog(throwable = throwable, network = session.lightning, session = session, showReport = true) {
                     popBackStack()
                 }
             }

@@ -1,8 +1,10 @@
 package com.blockstream.gms.di
 
 import android.content.Context
-import com.blockstream.base.IAppReview
-import com.blockstream.gms.AppReview
+import com.blockstream.base.AppReview
+import com.blockstream.gms.AppReviewImpl
+import com.blockstream.gms.BuildConfig
+import com.blockstream.gms.ZendeskSdkImpl
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
 import dagger.Module
@@ -23,7 +25,13 @@ class GmsModule {
 
     @Singleton
     @Provides
-    fun provideAppReview(reviewManager: ReviewManager): IAppReview {
-        return AppReview(reviewManager)
+    fun provideAppReview(reviewManager: ReviewManager): AppReview {
+        return AppReviewImpl(reviewManager)
+    }
+
+    @Singleton
+    @Provides
+    fun provideZendeskSdk(@ApplicationContext context: Context): com.blockstream.base.ZendeskSdk {
+        return ZendeskSdkImpl(context, BuildConfig.ZENDESK_CLIENT_ID)
     }
 }

@@ -1394,4 +1394,5 @@
   <string name="id_copy_signature">Copy Signature</string>
   <string name="id_signature">Signature</string>
   <string name="id_previous_addresses">Previous Addresses</string>
+  <string name="id_copy_url">Copy URL</string>
 </resources>

@@ -240,8 +240,8 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
         }
 
         viewModel.onError.observe(viewLifecycleOwner) {
-            it?.getContentIfNotHandledOrReturnNull()?.let {
-                errorDialog(it, showReport = true)
+            it?.getContentIfNotHandledOrReturnNull()?.let { throwable ->
+                errorDialog(throwable = throwable, network = network, session = session, showReport = true)
             }
         }
 

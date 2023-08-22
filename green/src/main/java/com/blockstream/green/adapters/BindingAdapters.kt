@@ -13,9 +13,9 @@ import androidx.databinding.BindingAdapter
 import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
 import app.rive.runtime.kotlin.RiveAnimationView
+import com.blockstream.common.data.Banner
 import com.blockstream.common.gdk.data.Device
 import com.blockstream.green.R
-import com.blockstream.common.data.Banner
 import com.blockstream.green.extensions.errorFromResourcesAndGDK
 import com.blockstream.green.extensions.fromHtml
 import com.blockstream.green.gdk.getIcon

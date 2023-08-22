@@ -10,7 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.blockstream.base.IAppReview
+import com.blockstream.base.AppReview
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Transaction
@@ -90,7 +90,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
     lateinit var applicationScope: ApplicationScope
 
     @Inject
-    lateinit var appReview: IAppReview
+    lateinit var appReview: AppReview
 
     @Inject
     lateinit var viewModelFactory: WalletOverviewViewModel.AssistedFactory

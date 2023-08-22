@@ -1,0 +1,2 @@
+-keep class zendesk.** { *; }
+-keepnames class zendesk.** { *; }

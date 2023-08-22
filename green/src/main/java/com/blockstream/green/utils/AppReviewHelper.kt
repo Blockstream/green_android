@@ -1,14 +1,13 @@
 package com.blockstream.green.utils
 
 import android.view.LayoutInflater
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.R
 import com.blockstream.green.data.Countly
 import com.blockstream.green.databinding.DialogErrorReportBinding
 import com.blockstream.green.databinding.DialogFeedbackBinding
-import com.blockstream.green.extensions.copyToClipboard
 import com.blockstream.green.extensions.isEmailValid
 import com.blockstream.green.extensions.snackbar
-import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.ui.AppFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.datetime.Clock
@@ -74,41 +73,6 @@ object AppReviewHelper {
             }
             .setNegativeButton(R.string.id_cancel) { _, _ ->
 
-            }
-            .show()
-
-        dialogBinding.emailText.setOnFocusChangeListener { _, hasFocus ->
-            val email = dialogBinding.emailText.text?.trim()
-            dialogBinding.emailLayout.error = if(hasFocus || email.isNullOrBlank() || email.isEmailValid()){
-                null
-            }else{
-                fragment.getString(R.string.id_not_a_valid_email_address)
-            }
-        }
-    }
-
-    fun showErrorReport(error: String, fragment: AppFragment<*>) {
-        val dialogBinding =
-            DialogErrorReportBinding.inflate(LayoutInflater.from(fragment.requireContext()))
-
-        MaterialAlertDialogBuilder(fragment.requireContext())
-            .setTitle(R.string.id_send_error_report)
-            .setView(dialogBinding.root)
-            .setPositiveButton(R.string.id_send) { _, _ ->
-                    fragment.countly.recordFeedback(
-                        2,
-                        dialogBinding.emailText.text.toString().trim(),
-                        "${dialogBinding.feedbackText.text.toString()}\n\nError: $error"
-                    )
-
-                    fragment.snackbar(R.string.id_thank_you_for_your_feedback)
-
-            }
-            .setNegativeButton(R.string.id_cancel) { _, _ ->
-
-            }
-            .setNeutralButton(android.R.string.copy) { _, _ ->
-                fragment.copyToClipboard("Error", content = error, showCopyNotification = true)
             }
             .show()
 

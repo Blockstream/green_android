@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
@@ -12,6 +14,12 @@ android {
 
     defaultConfig {
         minSdk = 23
+
+        val zendeskClientId = System.getenv("ZENDESK_CLIENT_ID") ?: gradleLocalProperties(rootDir).getProperty("zendesk.clientId", "")
+
+        buildConfigField("String", "ZENDESK_CLIENT_ID", "\"${zendeskClientId}\"")
+
+        consumerProguardFiles("consumer-rules.pro")
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -35,6 +43,10 @@ dependencies {
     /**  --- Hilt Dependency Injection  --------------------------------------------------------- */
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
+    /** ----------------------------------------------------------------------------------------- */
+
+    /**  --- Zendesk ---------------------------------------------------------------------------- */
+    implementation(libs.zendesk.support.providers)
     /** ----------------------------------------------------------------------------------------- */
 
 }

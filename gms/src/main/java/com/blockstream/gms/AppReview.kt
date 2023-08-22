@@ -2,10 +2,10 @@ package com.blockstream.gms
 
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.blockstream.base.IAppReview
+import com.blockstream.base.AppReview
 import com.google.android.play.core.review.ReviewManager
 
-class AppReview(private val reviewManager: ReviewManager) : IAppReview {
+class AppReviewImpl(private val reviewManager: ReviewManager) : AppReview() {
 
     override fun showGooglePlayInAppReviewDialog(fragment: Fragment, openBrowser: () -> Unit) {
         Toast.makeText(fragment.requireContext(), "App Review", Toast.LENGTH_SHORT).show()

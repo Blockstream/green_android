@@ -12,7 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
-import com.blockstream.base.IAppReview
+import com.blockstream.base.AppReview
 import com.blockstream.common.Urls
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Transaction
@@ -79,7 +79,7 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
     lateinit var applicationScope: ApplicationScope
 
     @Inject
-    lateinit var appReview: IAppReview
+    lateinit var appReview: AppReview
 
     @Inject
     lateinit var viewModelFactory: AccountOverviewViewModel.AssistedFactory

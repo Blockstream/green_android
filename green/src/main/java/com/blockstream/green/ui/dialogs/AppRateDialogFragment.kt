@@ -6,10 +6,10 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import app.rive.runtime.kotlin.core.PlayableInstance
-import com.blockstream.base.IAppReview
+import com.blockstream.base.AppReview
 import com.blockstream.common.Urls
-import com.blockstream.green.databinding.AppRateDialogBinding
 import com.blockstream.common.managers.SettingsManager
+import com.blockstream.green.databinding.AppRateDialogBinding
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.utils.RiveListener
 import com.blockstream.green.utils.openBrowser
@@ -28,7 +28,7 @@ class AppRateDialogFragment : AbstractDialogFragment<AppRateDialogBinding>() {
     override val isFullWidth: Boolean = true
 
     @Inject
-    lateinit var appReview: IAppReview
+    lateinit var appReview: AppReview
 
     @Inject
     lateinit var settingsManager: SettingsManager

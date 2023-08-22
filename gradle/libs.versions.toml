@@ -2,7 +2,7 @@
 atomicfu-gradle-plugin = "0.21.0"
 buildTools = "33.0.2"
 activity-ktx = "1.7.2"
-android-gradle-plugin = "8.1.0-rc01"
+android-gradle-plugin = "8.1.1"
 androidx-junit = "1.1.5"
 annotation = "1.6.0"
 biometric = "1.2.0-alpha05"
@@ -45,6 +45,7 @@ rxkotlin = "3.0.1"
 slf4j = "2.0.4"
 slidetoact = "0.10.0"
 startup-runtime = "1.1.1"
+zendesk = "5.2.0"
 swiperefreshlayout = "1.1.0"
 beagle = "2.9.0"
 usb-serial = "6.0.6"
@@ -127,6 +128,7 @@ rxjava = { module = "io.reactivex.rxjava3:rxjava", version.ref = "rxjava" }
 rxkotlin = { module = "io.reactivex.rxjava3:rxkotlin", version.ref = "rxkotlin" }
 slf4j-simple = { module = "com.gitlab.mvysny.slf4j:slf4j-handroid", version.ref = "slf4j" }
 slidetoact = { module = "com.ncorti:slidetoact", version.ref = "slidetoact" }
+zendesk-support-providers = { module = "com.zendesk:support-providers", version.ref = "zendesk" }
 usb-serial = { module = "com.github.felHR85:UsbSerial", version.ref = "usb-serial" }
 zxing-core = { module = "com.google.zxing:core", version.ref = "zxing-core" }
 zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxing-android-embedded" }
