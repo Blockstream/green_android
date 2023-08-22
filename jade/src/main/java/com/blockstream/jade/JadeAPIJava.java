@@ -52,6 +52,7 @@ public abstract class JadeAPIJava {
     // Timeouts for autonomous calls that should return quickly, calls that require user confirmation,
     // and calls that need arbitrarily long (eg. entering a mnemonic) and should not timeout at all.
     static int TIMEOUT_AUTONOMOUS = 2000;  // 2 secs
+    static int TIMEOUT_AUTONOMOUS_LONG = 4000;  // 4 secs
     private static int TIMEOUT_USER_INTERACTION = 120000;  // 2 mins
     private static int TIMEOUT_NONE = -1;
 
@@ -362,7 +363,7 @@ public abstract class JadeAPIJava {
                 ++i;
 
                 final JsonNode params = JadeInterface.mapper().valueToTree(input);
-                final JsonNode signerCommitment = this.jadeRpc("tx_input", params, id, TIMEOUT_AUTONOMOUS);
+                final JsonNode signerCommitment = this.jadeRpc("tx_input", params, id, TIMEOUT_AUTONOMOUS_LONG);
                 signerCommitments.add(signerCommitment.binaryValue());
             }
 
@@ -373,7 +374,7 @@ public abstract class JadeAPIJava {
             for (final TxInput input : inputs) {
                 final String id = String.valueOf(newBaseId + i + 1);
                 final JsonNode params = makeParams("ae_host_entropy", input.getAeHostEntropy());
-                final JsonNode signature = this.jadeRpc("get_signature", params, id, i == 0 ? TIMEOUT_USER_INTERACTION : TIMEOUT_AUTONOMOUS);
+                final JsonNode signature = this.jadeRpc("get_signature", params, id, TIMEOUT_USER_INTERACTION);
                 signatures.add(signature.binaryValue());
             }
             return new SignTxInputsResult(signatures, signerCommitments);
@@ -405,7 +406,7 @@ public abstract class JadeAPIJava {
             final String lastId = String.valueOf(baseId + inputs.size());
             for (i = 0; i < inputs.size(); ++i) {
                 final String id = String.valueOf(baseId + i + 1);
-                final JsonNode response = this.jade.readResponse(i == 0 ? TIMEOUT_USER_INTERACTION : TIMEOUT_AUTONOMOUS);
+                final JsonNode response = this.jade.readResponse(TIMEOUT_USER_INTERACTION);
                 final JsonNode signatureResult = getResultOrRaiseError(response, id, lastId);
                 signatures.add(signatureResult.binaryValue());
             }
