@@ -91,7 +91,7 @@ public class JadeInterface {
         }
 
         Log.d(TAG, "Awaiting response - timeout(ms): " + timeout);
-        final ByteArrayOutputStream collected = new ByteArrayOutputStream(256);
+        final ByteArrayOutputStream collected = new ByteArrayOutputStream(515);
         while (true) {
             // Collect response bytes so we can try to parse them as a cbor message
             final Byte next = this.connection.read(timeout);

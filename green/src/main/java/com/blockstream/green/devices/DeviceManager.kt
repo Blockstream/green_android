@@ -11,6 +11,7 @@ import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.os.ParcelUuid
 import android.os.SystemClock
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.green.managers.SessionManager
 import com.blockstream.jade.JadeBleImpl
@@ -113,7 +114,12 @@ class DeviceManager constructor(
             it.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
         }
 
-        context.registerReceiver(broadcastReceiver, intentFilter)
+        ContextCompat.registerReceiver(
+            context,
+            broadcastReceiver,
+            intentFilter,
+            ContextCompat.RECEIVER_EXPORTED
+        )
 
         scanDevices()
     }

@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
@@ -25,7 +26,6 @@ import com.blockstream.green.extensions.logException
 import com.blockstream.green.gdk.GdkSession
 import com.blockstream.green.gdk.getNetworkColor
 import com.blockstream.green.gdk.getWallet
-import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.ui.MainActivity
 import kotlinx.coroutines.launch
 import mu.KLogging
@@ -68,13 +68,7 @@ class NotificationManager constructor(
             context,
             broadcastReceiver,
             IntentFilter(ACTION_LOGOUT),
-            ContextCompat.RECEIVER_NOT_EXPORTED
-        )
-        ContextCompat.registerReceiver(
-            context,
-            broadcastReceiver,
-            IntentFilter(ACTION_DISCONNECT_LIGHTNING),
-            ContextCompat.RECEIVER_NOT_EXPORTED
+            ContextCompat.RECEIVER_EXPORTED
         )
     }
 
@@ -133,16 +127,6 @@ class NotificationManager constructor(
                     NotificationChannel(
                         WALLETS_CHANNEL_ID,
                         context.getString(R.string.id_connected_wallets),
-                        NotificationManager.IMPORTANCE_LOW
-                    )
-                )
-            }
-
-            if (androidNotificationManager.getNotificationChannel(LIGHTNING_CHANNEL_ID) == null) {
-                androidNotificationManager.createNotificationChannel(
-                    NotificationChannel(
-                        LIGHTNING_CHANNEL_ID,
-                        context.getString(R.string.id_lightning),
                         NotificationManager.IMPORTANCE_LOW
                     )
                 )
@@ -215,57 +199,6 @@ class NotificationManager constructor(
             .build()
     }
 
-    fun showLightningNotification() {
-        androidNotificationManager.notify(
-            LIGHTNING_NOTIFICATION_ID.hashCode(),
-            createLightningNotification(context)
-        )
-    }
-
-    fun hideLightningNotification() {
-        androidNotificationManager.cancel(LIGHTNING_NOTIFICATION_ID.hashCode())
-    }
-
-    fun createLightningNotification(
-        context: Context,
-    ): Notification {
-        val intent = Intent(context, MainActivity::class.java).also {
-            it.action = MainActivity.OPEN_WALLET
-        }
-
-        val pendingIntent = PendingIntent.getActivity(
-            context, WALLET_REQUEST_CODE.hashCode(), intent,
-            PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val disconnectIntent = PendingIntent.getBroadcast(
-            context,
-            DISCONNECT_REQUEST_CODE.hashCode(),
-            Intent(ACTION_DISCONNECT_LIGHTNING).also {
-                it.putExtra(WALLET_ID, 234)
-            },
-            PendingIntent.FLAG_IMMUTABLE
-        )
-
-        return NotificationCompat.Builder(context, LIGHTNING_CHANNEL_ID)
-            .setContentTitle(context.getString(R.string.id_lightning))
-            .setColorized(true)
-            .setSmallIcon(R.drawable.ic_stat_green)
-            .setContentIntent(pendingIntent)
-            .setColor(ContextCompat.getColor(context, R.color.lightning))
-            .setOngoing(true)
-            .setPriority(NotificationCompat.PRIORITY_MIN)
-            .addAction(
-                R.drawable.ic_close,
-                context.getString(R.string.id_disconnect),
-                disconnectIntent
-            )
-            .apply {
-                setVisibility(if (settingsManager.appSettings.enhancedPrivacy) NotificationCompat.VISIBILITY_SECRET else NotificationCompat.VISIBILITY_PRIVATE)
-            }
-            .build()
-    }
-
     // Make hardware wallet id positive
     private fun notificationId(wallet: Wallet): Int = notificationId(wallet.id)
     private fun notificationId(walletId: WalletId): Int = (10000 + walletId).toInt()
@@ -275,15 +208,8 @@ class NotificationManager constructor(
 
     companion object : KLogging() {
         const val WALLETS_CHANNEL_ID = "${BuildConfig.APPLICATION_ID}.WALLETS_CHANNEL_ID"
-        const val LIGHTNING_CHANNEL_ID = "${BuildConfig.APPLICATION_ID}.LIGHTNING_CHANNEL_ID"
-
-        const val DISCONNECT_REQUEST_CODE = "DISCONNECT_REQUEST_CODE"
-        const val WALLET_REQUEST_CODE = "WALLET_REQUEST_CODE"
-        const val LIGHTNING_NOTIFICATION_ID = "LIGHTNING_NOTIFICATION_ID"
 
         const val ACTION_LOGOUT = "${BuildConfig.APPLICATION_ID}.ACTION_LOGOUT"
-        const val ACTION_DISCONNECT_LIGHTNING =
-            "${BuildConfig.APPLICATION_ID}.ACTION_DISCONNECT_LIGHTNING"
         const val WALLET_ID = "WALLET_ID"
     }
 }

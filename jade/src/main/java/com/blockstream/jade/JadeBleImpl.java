@@ -33,11 +33,7 @@ public class JadeBleImpl extends JadeConnectionImpl {
     private static final UUID IO_TX_CHAR_UUID = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e");
     private static final UUID IO_RX_CHAR_UUID = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e");
 
-    // Set the MTU/MRU to something large enough to receive jade responses.
-    // I believe the minimum would be 240+3 bytes - 240 is jade chunk size, and 3 for header info.
-    // Anything less and read data is truncated and lost.  Larger values seem ok.
-    // Set to match Jade's preferred MTU of 256.
-    private static final int JADE_MTU = 256;
+    private static final int JADE_MTU = 515;
 
     private final RxBleDevice device;
     private final PublishSubject<Boolean> disconnectTrigger;

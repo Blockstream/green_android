@@ -35,12 +35,12 @@ if (keystorePropertiesFile.exists()){
 
 android {
     namespace = "com.blockstream.green"
-    compileSdk = 33
+    compileSdk = 34
     buildToolsVersion = libs.versions.buildTools.get()
 
     defaultConfig {
         minSdk = 23
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 413
         versionName = "4.0.13"
         setProperty("archivesBaseName", "BlockstreamGreen-v$versionName")

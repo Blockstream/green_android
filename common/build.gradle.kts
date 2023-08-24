@@ -120,7 +120,7 @@ afterEvaluate {
 
 android {
     namespace = "com.blockstream.common"
-    compileSdk = 33
+    compileSdk = 34
     buildToolsVersion = libs.versions.buildTools.get()
 
     defaultConfig {

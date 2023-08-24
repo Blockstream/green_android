@@ -60,7 +60,7 @@ class DeviceInfoFragment : AbstractDeviceFragment<DeviceInfoFragmentBinding>(
     override val title: String?
         get() = deviceOrNull?.deviceBrand?.name
 
-    override fun getAppViewModel(): AppViewModel = viewModel
+    override fun getAppViewModel(): AppViewModel? = if(deviceOrNull == null) null else viewModel
 
     private val onBackCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {

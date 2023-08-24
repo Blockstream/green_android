@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.blockstream.lightning"
-    compileSdk = 33
+    compileSdk = 34
     buildToolsVersion = libs.versions.buildTools.get()
 
     defaultConfig {

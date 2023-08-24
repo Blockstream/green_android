@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.blockstream.jade"
-    compileSdk = 33
+    compileSdk = 34
     buildToolsVersion = libs.versions.buildTools.get()
 
     defaultConfig {
@@ -26,6 +26,10 @@ kotlin {
 dependencies {
     /**  --- Modules ---------------------------------------------------------------------------- */
     implementation(project(":common"))
+    /** ----------------------------------------------------------------------------------------- */
+
+    /**  --- Android / Google ------------------------------------------------------------------- */
+    api(libs.androidx.core.ktx)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Kotlin & KotlinX ------------------------------------------------------------------- */
