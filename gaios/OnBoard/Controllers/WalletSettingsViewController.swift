@@ -143,15 +143,11 @@ class WalletSettingsViewController: KeyboardViewController {
     }
 
     func loadNavigationBtns() {
-        let scanButton = UIButton(type: .system)
-        scanButton.setImage(UIImage(named: "ic_dialog_qr"), for: .normal)
-        scanButton.addTarget(self, action: #selector(scanButtonTapped), for: .touchUpInside)
-        scanButton.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
-        let codeBtn = UIButton(type: .system)
-        codeBtn.setImage(UIImage(named: "ic_pencil"), for: .normal)
-        codeBtn.addTarget(self, action: #selector(codeButtonTapped), for: .touchUpInside)
-        codeBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
-        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: codeBtn), UIBarButtonItem(customView: scanButton)]
+        let redeemBtn = UIButton(type: .system)
+        redeemBtn.setTitleColor(UIColor.gGreenMatrix(), for: .normal)
+        redeemBtn.setTitle("Redeem".localized, for: .normal)
+        redeemBtn.addTarget(self, action: #selector(onTapRedeem), for: .touchUpInside)
+        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: redeemBtn)]
     }
     
     func setStyle() {
@@ -175,7 +171,7 @@ class WalletSettingsViewController: KeyboardViewController {
         navigationController?.popViewController(animated: true)
     }
 
-    @objc func scanButtonTapped(_ sender: Any) {
+    func redeemScan() {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogScanViewController") as? DialogScanViewController {
             vc.modalPresentationStyle = .overFullScreen
@@ -184,11 +180,21 @@ class WalletSettingsViewController: KeyboardViewController {
         }
     }
 
-    @objc func codeButtonTapped(_ sender: Any) {
+    func redeemType() {
         let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "LTInvitationViewController") as? LTInvitationViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    @objc func onTapRedeem(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogListViewController") as? DialogListViewController {
+            vc.delegate = self
+            vc.viewModel = DialogListViewModel(title: "Redeem", type: .redeemPrefs, items: RedeemPrefs.getItems())
+            vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
     }
@@ -358,4 +364,18 @@ extension WalletSettingsViewController: LTInvitationViewControllerDelegate {
     }
     
     func didCancel() {}
+}
+
+extension WalletSettingsViewController: DialogListViewControllerDelegate {
+
+    func didSelectIndex(_ index: Int, with type: DialogType) {
+        switch RedeemPrefs(rawValue: index) {
+        case .scan:
+            redeemScan()
+        case .type:
+            redeemType()
+        default:
+            break
+        }
+    }
 }

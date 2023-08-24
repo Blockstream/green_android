@@ -11,6 +11,7 @@ enum DialogType: CaseIterable {
     case sharePrefs
     case moreOptPrefs
     case loginPrefs
+    case redeemPrefs
 }
 
 enum DialogCellType: CaseIterable {

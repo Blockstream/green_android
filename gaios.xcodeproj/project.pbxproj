@@ -106,6 +106,7 @@
 		34347677268320C200D7AD43 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34347676268320C200D7AD43 /* Utils.swift */; };
 		34347679268322A100D7AD43 /* RecoveryVerify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34347678268322A100D7AD43 /* RecoveryVerify.swift */; };
 		34386C8A26F086BA00EBB6A6 /* DialogAccountIdViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34386C8926F086BA00EBB6A6 /* DialogAccountIdViewController.swift */; };
+		34389B632A9754260023DAC3 /* RedeemPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34389B622A9754260023DAC3 /* RedeemPrefs.swift */; };
 		34440E7A28B379C8006CD464 /* WalletListHDCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34440E7828B379C8006CD464 /* WalletListHDCell.swift */; };
 		34440E7B28B379C8006CD464 /* WalletListHDCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34440E7928B379C8006CD464 /* WalletListHDCell.xib */; };
 		34440E7F28B37C2D006CD464 /* WalletListEmptyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34440E7D28B37C2D006CD464 /* WalletListEmptyCell.swift */; };
@@ -758,6 +759,7 @@
 		34347676268320C200D7AD43 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		34347678268322A100D7AD43 /* RecoveryVerify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryVerify.swift; sourceTree = "<group>"; };
 		34386C8926F086BA00EBB6A6 /* DialogAccountIdViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogAccountIdViewController.swift; sourceTree = "<group>"; };
+		34389B622A9754260023DAC3 /* RedeemPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedeemPrefs.swift; sourceTree = "<group>"; };
 		34440E7828B379C8006CD464 /* WalletListHDCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListHDCell.swift; sourceTree = "<group>"; };
 		34440E7928B379C8006CD464 /* WalletListHDCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletListHDCell.xib; sourceTree = "<group>"; };
 		34440E7D28B37C2D006CD464 /* WalletListEmptyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListEmptyCell.swift; sourceTree = "<group>"; };
@@ -1813,6 +1815,7 @@
 				34D535E329A773AF00D3B5C5 /* SharePrefs.swift */,
 				34D535E529A77D4B00D3B5C5 /* MoreOptPrefs.swift */,
 				34E8457829DC26DD00B207E7 /* LoginPrefs.swift */,
+				34389B622A9754260023DAC3 /* RedeemPrefs.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -3834,6 +3837,7 @@
 				81865F49299F7D24002CBA87 /* MigratorManager.swift in Sources */,
 				3468AFF02A96648300EDFC34 /* LTInvitationViewController.swift in Sources */,
 				340F07E826204AA40065A986 /* NetworkSelectorBarItem.swift in Sources */,
+				34389B632A9754260023DAC3 /* RedeemPrefs.swift in Sources */,
 				3488FC6D290AE28700122628 /* BalanceCellModel.swift in Sources */,
 				81E8C35D292041F800B2196B /* EnrichedAsset.swift in Sources */,
 				818BA70F2A2F900900DFB03A /* ScanViewController.swift in Sources */,
