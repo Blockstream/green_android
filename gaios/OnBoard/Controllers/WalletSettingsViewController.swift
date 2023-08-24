@@ -77,7 +77,6 @@ class WalletSettingsViewController: KeyboardViewController {
     @IBOutlet weak var btnSave: UIButton!
 
     weak var delegate: WalletSettingsViewControllerDelegate?
-    private let scanButton = UIButton(type: .system)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -140,11 +139,21 @@ class WalletSettingsViewController: KeyboardViewController {
         fieldSPVliquidServer.placeholder = GdkSettings.liquidElectrumSrvDefaultEndPoint
         fieldSPVtestnetServer.placeholder = GdkSettings.testnetElectrumSrvDefaultEndPoint
         fieldSPVliquidTestnetServer.placeholder = GdkSettings.liquidTestnetElectrumSrvDefaultEndPoint
-        scanButton.setImage(UIImage(named: "ic_dialog_qr"), for: .normal)
-        scanButton.addTarget(self, action: #selector(scanButtonTapped), for: .touchUpInside)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: scanButton)
+        loadNavigationBtns()
     }
 
+    func loadNavigationBtns() {
+        let scanButton = UIButton(type: .system)
+        scanButton.setImage(UIImage(named: "ic_dialog_qr"), for: .normal)
+        scanButton.addTarget(self, action: #selector(scanButtonTapped), for: .touchUpInside)
+        scanButton.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
+        let codeBtn = UIButton(type: .system)
+        codeBtn.setImage(UIImage(named: "ic_pencil"), for: .normal)
+        codeBtn.addTarget(self, action: #selector(codeButtonTapped), for: .touchUpInside)
+        codeBtn.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
+        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: codeBtn), UIBarButtonItem(customView: scanButton)]
+    }
+    
     func setStyle() {
         btnCancel.cornerRadius = 4.0
         btnSave.cornerRadius = 4.0
@@ -160,7 +169,6 @@ class WalletSettingsViewController: KeyboardViewController {
         [lblTorHint, lblTestnetHint, lblAnalyticsHint, lblExperimentalHint, lblProxyHint, lblSPVPersonalNodeHint, lblMultiHint, lblTxCheckHint].forEach{ $0?.setStyle(.txtCard)}
         btnAnalytics.setStyle(.inline)
         lblSPVTitle.setStyle(.subTitle)
-        scanButton.contentEdgeInsets = UIEdgeInsets(top: 7.0, left: 7.0, bottom: 7.0, right: 7.0)
     }
 
     @objc func donePressed() {
@@ -170,6 +178,15 @@ class WalletSettingsViewController: KeyboardViewController {
     @objc func scanButtonTapped(_ sender: Any) {
         let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogScanViewController") as? DialogScanViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    @objc func codeButtonTapped(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "LTFlow", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "LTInvitationViewController") as? LTInvitationViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.delegate = self
             present(vc, animated: false, completion: nil)
@@ -333,4 +350,12 @@ extension WalletSettingsViewController: DialogScanViewControllerDelegate {
     func didStop() {
         //
     }
+}
+
+extension WalletSettingsViewController: LTInvitationViewControllerDelegate {
+    func didConfirm(txt: String) {
+        print(txt)
+    }
+    
+    func didCancel() {}
 }

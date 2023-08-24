@@ -210,6 +210,7 @@
 		346752F5291E55CC00256132 /* AccountSelectCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346752F4291E55CC00256132 /* AccountSelectCellModel.swift */; };
 		346752F7291E5D0100256132 /* AccountSelectCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 346752F6291E5D0100256132 /* AccountSelectCell.xib */; };
 		34675B0A29409D9900771D50 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34675B0929409D9900771D50 /* Common.swift */; };
+		3468AFF02A96648300EDFC34 /* LTInvitationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3468AFEF2A96648300EDFC34 /* LTInvitationViewController.swift */; };
 		3469701C2779D81200796D37 /* DialogCustomFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3469701B2779D81200796D37 /* DialogCustomFeeViewController.swift */; };
 		3469A2462887D23700B2F640 /* StoreReviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3469A2452887D23700B2F640 /* StoreReviewManager.swift */; };
 		3469A2482887D56E00B2F640 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3469A2472887D56E00B2F640 /* Date.swift */; };
@@ -861,6 +862,7 @@
 		346752F4291E55CC00256132 /* AccountSelectCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountSelectCellModel.swift; sourceTree = "<group>"; };
 		346752F6291E5D0100256132 /* AccountSelectCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountSelectCell.xib; sourceTree = "<group>"; };
 		34675B0929409D9900771D50 /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
+		3468AFEF2A96648300EDFC34 /* LTInvitationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTInvitationViewController.swift; sourceTree = "<group>"; };
 		3469701B2779D81200796D37 /* DialogCustomFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogCustomFeeViewController.swift; sourceTree = "<group>"; };
 		3469A2452887D23700B2F640 /* StoreReviewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreReviewManager.swift; sourceTree = "<group>"; };
 		3469A2472887D56E00B2F640 /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
@@ -2385,6 +2387,7 @@
 				345402F62A20A6A7002CB598 /* LTAuthViewController.swift */,
 				3407F5CC2A49BBC3005EF8E1 /* LTConfirmingViewController.swift */,
 				3407F5D52A4AD034005EF8E1 /* LTErrorViewController.swift */,
+				3468AFEF2A96648300EDFC34 /* LTInvitationViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -3829,6 +3832,7 @@
 				81961AAC29E4B01F00E9B94D /* NetworkSecurityCase.swift in Sources */,
 				3407F5D42A4ABC94005EF8E1 /* DialogFeedbackViewController.swift in Sources */,
 				81865F49299F7D24002CBA87 /* MigratorManager.swift in Sources */,
+				3468AFF02A96648300EDFC34 /* LTInvitationViewController.swift in Sources */,
 				340F07E826204AA40065A986 /* NetworkSelectorBarItem.swift in Sources */,
 				3488FC6D290AE28700122628 /* BalanceCellModel.swift in Sources */,
 				81E8C35D292041F800B2196B /* EnrichedAsset.swift in Sources */,
