@@ -56,6 +56,6 @@ class AddressAuthViewModel {
 
     func canSign() -> Bool {
         guard let account = AccountsRepository.shared.current else { return false }
-        return wallet.gdkNetwork.electrum == true && wallet.gdkNetwork.liquid == false && !account.isHW
+        return wallet.gdkNetwork.electrum && !wallet.gdkNetwork.liquid
     }
 }
