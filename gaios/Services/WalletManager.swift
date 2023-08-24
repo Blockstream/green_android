@@ -189,6 +189,9 @@ class WalletManager {
         guard let prominentSession = sessions[prominentNetwork.rawValue] else { fatalError() }
         let fullRestore = account.xpubHashId == nil || !existDatadir(prominentSession)
         let ifLogin: ((_ session: SessionManager) -> Bool) = {
+            if $0.gdkNetwork.lightning && !AppSettings.shared.experimental && fullRestore {
+                return false
+            }
             if $0.gdkNetwork.lightning && device != nil {
                 return false
             }
