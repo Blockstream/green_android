@@ -14,6 +14,7 @@ class DialogJadeCheckViewController: UIViewController {
     @IBOutlet weak var lblAddress: UILabel!
 
     var isLedger = false
+    var message = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,13 +28,11 @@ class DialogJadeCheckViewController: UIViewController {
         } else {
             icWallet.image = UIImage(named: "ic_hww_jade")
         }
-
-        AnalyticsManager.shared.recordView(.verifyAddress, sgmt: AnalyticsManager.shared.sessSgmt(AccountsRepository.shared.current))
     }
 
     func setContent() {
         lblVerify.text = NSLocalizedString("id_check_device", comment: "")
-        lblAddress.text = ""
+        lblAddress.text = message
         icArrow.image = UIImage(named: "ic_hww_arrow")!.maskWithColor(color: UIColor.customMatrixGreen())
     }
 

@@ -21,6 +21,7 @@ class DialogSignViewController: KeyboardViewController {
     @IBOutlet weak var signView: UIView!
     
     var viewModel: DialogSignViewModel!
+    var dialogJadeCheckViewController: DialogJadeCheckViewController?
 
     lazy var blurredView: UIView = {
         let containerView = UIView()
@@ -169,14 +170,35 @@ class DialogSignViewController: KeyboardViewController {
         let message = messageTextView.text
         Task {
             do {
+                if viewModel.isHW {
+                    showHWCheckDialog(message: message ?? "")                    
+                }
                 let signature = try await viewModel.sign(message: message ?? "")
+                hideHWCheckDialog()
                 await MainActor.run {
                     lblSign.text = signature
                 }
             } catch {
+                hideHWCheckDialog()
                 showError(error)
             }
         }
+    }
+    
+    @MainActor
+    func showHWCheckDialog(message: String) {
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        dialogJadeCheckViewController = storyboard.instantiateViewController(withIdentifier: "DialogJadeCheckViewController") as? DialogJadeCheckViewController
+        if let vc = dialogJadeCheckViewController {
+            vc.message = message
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    @MainActor
+    func hideHWCheckDialog() {
+        dialogJadeCheckViewController?.dismiss()
     }
     
     @IBAction func btnCopy(_ sender: Any) {

@@ -7,6 +7,7 @@ class DialogSignViewModel {
 
     var wallet: WalletItem
     var address: String
+    var isHW: Bool { WalletManager.current?.account.isHW ?? false }
 
     init(wallet: WalletItem, address: String) {
         self.wallet = wallet

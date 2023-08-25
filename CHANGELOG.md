@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- Enable signing address with HW
+
 ### Changed
 - Update gdk to 0.67.1
 - UI improvements on amount selection
