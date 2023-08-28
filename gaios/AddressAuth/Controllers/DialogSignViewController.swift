@@ -19,7 +19,8 @@ class DialogSignViewController: KeyboardViewController {
     @IBOutlet weak var btnsStack: UIStackView!
     @IBOutlet weak var stackBottom: NSLayoutConstraint!
     @IBOutlet weak var signView: UIView!
-    
+    @IBOutlet weak var signMessageView: UIView!
+    @IBOutlet weak var lblSignMessage: UILabel!
     var viewModel: DialogSignViewModel!
     var dialogJadeCheckViewController: DialogJadeCheckViewController?
 
@@ -97,6 +98,7 @@ class DialogSignViewController: KeyboardViewController {
         btnSign.setTitle("Sign message", for: .normal)
         btnCopy.setTitle("Copy Signature", for: .normal)
         lblSign.text = ""
+        lblSignMessage.text = "This is the signature for the message signed by the address for proof of ownership.".localized
     }
 
     func setStyle() {
@@ -107,6 +109,8 @@ class DialogSignViewController: KeyboardViewController {
         [btnPaste, btnCopy].forEach{
             $0?.cornerRadius = 5.0
         }
+        lblAddress.setStyle(.txtCard)
+        lblSignMessage.setStyle(.subTitle)
     }
 
     func refreshUI() {
@@ -116,6 +120,7 @@ class DialogSignViewController: KeyboardViewController {
         } else {
             btnSign.setStyle(.primaryDisabled)
         }
+        signMessageView.isHidden = true
     }
 
     override func keyboardWillShow(notification: Notification) {
@@ -132,6 +137,14 @@ class DialogSignViewController: KeyboardViewController {
         UIView.animate(withDuration: 0.5, animations: { [unowned self] in
             self.stackBottom.constant = 36.0
         })
+    }
+
+    func onSignatureReady(_ signature: String?) {
+        lblSign.text = signature
+        btnPaste.isHidden = true
+        btnSign.isHidden = true
+        signMessageView.isHidden = false
+        messageTextView.isEditable = false
     }
 
     func dismiss() {
@@ -176,7 +189,7 @@ class DialogSignViewController: KeyboardViewController {
                 let signature = try await viewModel.sign(message: message ?? "")
                 hideHWCheckDialog()
                 await MainActor.run {
-                    lblSign.text = signature
+                    onSignatureReady(signature)
                 }
             } catch {
                 hideHWCheckDialog()
