@@ -37,7 +37,7 @@ public enum AccountType: String, CaseIterable, Codable, Comparable, Equatable {
             case .segwitWrapped:
                 return "Legacy SegWit"
             case .segWit:
-                return "Standard"
+                return "Native SegWit"
             case .taproot:
                 return "Taproot"
             case .lightning:
