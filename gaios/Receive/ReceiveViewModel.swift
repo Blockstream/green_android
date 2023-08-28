@@ -101,7 +101,7 @@ class ReceiveViewModel {
     var infoReceivedAmountCellModel: LTInfoCellModel {
         if let invoice = invoice, let satoshi = invoice.amountSatoshi {
             if let balance = Balance.fromSatoshi(Int64(satoshi), assetId: "btc") {
-                let (value, denom) = balance.toDenom()
+                let (value, denom) = balance.toDenom(inputDenomination)
                 let (fiat, currency) = balance.toFiat()
                 return LTInfoCellModel(title: "id_amount_to_receive".localized, hint1: "\(value) \(denom)", hint2: "\(fiat) \(currency)")
             }
