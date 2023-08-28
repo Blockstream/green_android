@@ -21,6 +21,9 @@ class DialogSignViewController: KeyboardViewController {
     @IBOutlet weak var signView: UIView!
     @IBOutlet weak var signMessageView: UIView!
     @IBOutlet weak var lblSignMessage: UILabel!
+    @IBOutlet weak var animateView: UIView!
+    
+    
     var viewModel: DialogSignViewModel!
     var dialogJadeCheckViewController: DialogJadeCheckViewController?
 
@@ -145,6 +148,14 @@ class DialogSignViewController: KeyboardViewController {
         btnSign.isHidden = true
         signMessageView.isHidden = false
         messageTextView.isEditable = false
+
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
+            let riveView = RiveModel.animationCheckMark.createRiveView()
+            riveView.frame = CGRect(x: 0.0, y: 0.0, width: self.animateView.frame.width, height: self.animateView.frame.height)
+            
+            print(riveView.frame)
+            self.animateView.addSubview(riveView)
+        }
     }
 
     func dismiss() {

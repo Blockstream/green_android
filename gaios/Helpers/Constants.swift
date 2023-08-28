@@ -64,4 +64,5 @@ enum RiveModel {
     static let animationCheckList = RiveViewModel(fileName: "Illustration Checklist")
     static let animationRocket = RiveViewModel(fileName: "Illustration Rocket")
     static let animationLightningTransaction = RiveViewModel(fileName: "Illustration Lightning Transaction")
+    static let animationCheckMark = RiveViewModel(fileName: "Illustration Checkmark")
 }
