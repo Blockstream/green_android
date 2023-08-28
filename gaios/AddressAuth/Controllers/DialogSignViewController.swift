@@ -214,7 +214,7 @@ class DialogSignViewController: KeyboardViewController {
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
         dialogJadeCheckViewController = storyboard.instantiateViewController(withIdentifier: "DialogJadeCheckViewController") as? DialogJadeCheckViewController
         if let vc = dialogJadeCheckViewController {
-            vc.message = message
+            vc.isLedger = BleViewModel.shared.type == .Ledger
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false, completion: nil)
         }
