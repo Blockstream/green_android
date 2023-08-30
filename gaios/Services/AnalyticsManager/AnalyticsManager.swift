@@ -70,6 +70,7 @@ class AnalyticsManager {
                            CLYConsent.location,
                            CLYConsent.remoteConfig,
                            CLYConsent.metrics,
+                           CLYConsent.performanceMonitoring,
                            CLYConsent.feedback]
 
     let deniedGroup = [CLYConsent.crashReporting,
