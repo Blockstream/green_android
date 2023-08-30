@@ -251,6 +251,20 @@ class WalletSettingsViewController: KeyboardViewController {
         super.keyboardWillHide(notification: notification)
     }
 
+    func redeem(_ value: String) {
+        // invitation code
+        let data = Data(base64Encoded: value)
+        let code = data != nil ? String(data: data!, encoding: .utf8) : nil
+        let codes = AnalyticsManager.shared.getRemoteConfigValue(key: "feature_lightning_codes") as? [String]
+        let valid = codes?.contains(code ?? value) ?? false
+        if valid {
+            AppSettings.shared.lightningCodeOverride = valid
+        } else {
+            showError("Invite code invalid or expired".localized)
+        }
+        reload()
+    }
+
     @IBAction func switchProxyChange(_ sender: UISwitch) {
         cardProxyDetail.isHidden = !sender.isOn
     }
@@ -341,17 +355,7 @@ extension WalletSettingsViewController: UITextFieldDelegate {
 
 extension WalletSettingsViewController: DialogScanViewControllerDelegate {
     func didScan(value: String, index: Int?) {
-        // invitation code
-        let data = Data(base64Encoded: value)
-        let code = data != nil ? String(data: data!, encoding: .utf8) : nil
-        let codes = AnalyticsManager.shared.getRemoteConfigValue(key: "feature_lightning_codes") as? [String]
-        let valid = codes?.contains(code ?? value) ?? false
-        if valid {
-            AppSettings.shared.lightningCodeOverride = valid
-        } else {
-            showError("Invite code invalid or expired".localized)
-        }
-        reload()
+        redeem(value)
     }
     func didStop() {
         //
@@ -360,7 +364,7 @@ extension WalletSettingsViewController: DialogScanViewControllerDelegate {
 
 extension WalletSettingsViewController: LTInvitationViewControllerDelegate {
     func didConfirm(txt: String) {
-        print(txt)
+        redeem(txt)
     }
     
     func didCancel() {}
