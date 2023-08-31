@@ -383,6 +383,13 @@ class AccountViewController: UIViewController {
             if connected == true && loginRequired == false {
                 reload()
             }
+        case .bip21Scheme:
+            if URLSchemeManager.shared.isValid {
+                if let bip21 = URLSchemeManager.shared.bip21 {
+                    parse(value: bip21, account: viewModel.account)
+                    URLSchemeManager.shared.url = nil
+                }
+            }
         default:
             break
         }

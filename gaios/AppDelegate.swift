@@ -76,7 +76,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         URLSchemeManager.shared.url = url
         DispatchQueue.main.async {
             DropAlert().info(message: "id_you_have_clicked_a_uri_select_a".localized)
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: EventType.bip21Scheme.rawValue),
+                                                object: nil, userInfo: nil)
         }
+        
         return true
     }
 

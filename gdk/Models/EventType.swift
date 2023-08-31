@@ -15,4 +15,5 @@ public enum EventType: String, CaseIterable, Codable {
     case InvoicePaid = "invoice_paid"
     case PaymentSucceed = "payment_succeed"
     case PaymentFailed = "payment_failed"
+    case bip21Scheme = "bip21_scheme"
 }
