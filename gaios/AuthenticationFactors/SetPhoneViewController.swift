@@ -68,6 +68,10 @@ class SetPhoneViewController: KeyboardViewController {
             return
         }
         view.endEditing(true)
+        if method == .sms && ["001", "+1"].contains(countryCode) {
+            showError("SMS delivery is unreliable in the US due to network operator policy changes. You can try to get your 2FA code via call instead.")
+            return
+        }
         self.startAnimating()
         Task {
             do {

@@ -61,7 +61,7 @@ class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate {
             codeCustomDialog(method)
         }
     }
-    
+
     func codeCustomDialog(_ method: String) {
         let methodDesc: String
         if method == TwoFactorType.email.rawValue { methodDesc = "id_email" } else if method == TwoFactorType.phone.rawValue { methodDesc = "id_phone_call" } else if method == TwoFactorType.sms.rawValue { methodDesc = "id_sms" } else { methodDesc = "id_authenticator_app" }
