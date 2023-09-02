@@ -63,6 +63,7 @@ public class GDKResolver {
             let error = res["error"] as? String ?? ""
             throw TwoFactorCallError.failure(localizedDescription: error)
         case "call":
+            try await self.waitConnection()
             try self.twoFactorCall?.call()
         case "request_code":
             let methods = res["methods"] as? [String] ?? []
