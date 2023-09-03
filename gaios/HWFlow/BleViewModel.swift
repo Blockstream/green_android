@@ -201,7 +201,10 @@ class BleViewModel {
 
     func updateFirmware(firmware: Firmware, binary: Data) async throws -> Bool {
         guard let jade = jade else { throw HWError.Abort("No peripheral found") }
-        return try await jade.updateFirmware(firmware: firmware, binary: binary)
+        AnalyticsManager.shared.otaStartJade(account: AccountsRepository.shared.current, firmware: firmware)
+        let updated = try await jade.updateFirmware(firmware: firmware, binary: binary)
+        AnalyticsManager.shared.otaCompleteJade(account: AccountsRepository.shared.current, firmware: firmware)
+        return updated
     }
     
     func ping() async throws {

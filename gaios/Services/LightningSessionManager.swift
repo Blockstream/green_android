@@ -32,7 +32,10 @@ class LightningSessionManager: SessionManager {
         guard let mnemonic = getLightningMnemonic(credentials: credentials) else {
             fatalError("Unsupported feature")
         }
-        return lightBridge?.connectToGreenlight(mnemonic: mnemonic, isRestore: isRestore) ?? false
+        AnalyticsManager.shared.loginLightningStart()
+        let connected = lightBridge?.connectToGreenlight(mnemonic: mnemonic, isRestore: isRestore) ?? false
+        AnalyticsManager.shared.loginLightningStop()
+        return connected
     }
 
     override func loginUser(credentials: Credentials? = nil, hw: HWDevice? = nil, restore: Bool) async throws -> LoginUserResult {

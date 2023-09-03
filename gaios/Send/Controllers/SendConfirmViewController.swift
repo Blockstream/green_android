@@ -122,6 +122,7 @@ class SendConfirmViewController: KeyboardViewController {
 
     func send() {
         AnalyticsManager.shared.startSendTransaction()
+        AnalyticsManager.shared.startFailedTransaction()
         sliderView.isUserInteractionEnabled = false
         presentProgress()
         Task {

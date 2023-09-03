@@ -5,7 +5,10 @@ import hw
 enum AnalyticsEventName: String {
     case debugEvent = "debug_event"
     case walletActive = "wallet_active"
+    case walletActiveTor = "wallet_active_tor"
     case walletLogin = "wallet_login"
+    case walletLoginTor = "wallet_login_tor"
+    case lightningLogin = "lightning_login"
     case walletCreate = "wallet_create"
     case walletRestore = "wallet_restore"
     case renameWallet = "wallet_rename"
@@ -16,6 +19,7 @@ enum AnalyticsEventName: String {
     case receiveAddress = "receive_address"
     case shareTransaction = "share_transaction"
     case failedWalletLogin = "failed_wallet_login"
+    case failedWalletLoginTor = "failed_wallet_login_tor"
     case failedRecoveryPhraseCheck = "failed_recovery_phrase_check"
     case failedTransaction = "failed_transaction"
     case appReview = "app_review"
@@ -43,36 +47,48 @@ enum AnalyticsEventName: String {
 extension AnalyticsManager {
 
     func activeWalletStart() {
-        startTrace(.walletActive)
-        cancelEvent(.walletActive)
-        startEvent(.walletActive)
+        let event: AnalyticsEventName = AppSettings.shared.gdkSettings?.tor ?? false ? .walletActiveTor : .walletActive
+        startTrace(event)
+        cancelEvent(event)
+        startEvent(event)
     }
 
     func activeWalletEnd(account: Account?, walletData: WalletData) {
-        endTrace(.walletActive)
+        let event: AnalyticsEventName = AppSettings.shared.gdkSettings?.tor ?? false ? .walletActiveTor : .walletActive
+        endTrace(event)
         var s = sessSgmt(account)
         s?[AnalyticsManager.strWalletFunded] = walletData.walletFunded ? "true" : "false"
         s?[AnalyticsManager.strAccountsFunded] = "\(walletData.accountsFunded)"
         s?[AnalyticsManager.strAccounts] = "\(walletData.accounts)"
         s?[AnalyticsManager.strAccountsTypes] = walletData.accountsTypes
-        endEvent(.walletActive, sgmt: s ?? [:])
+        endEvent(event, sgmt: s ?? [:])
     }
 
     func loginWalletStart() {
-        startTrace(.walletLogin)
-        cancelEvent(.walletLogin)
-        startEvent(.walletLogin)
+        let event: AnalyticsEventName = AppSettings.shared.gdkSettings?.tor ?? false ? .walletLoginTor : .walletLogin
+        startTrace(event)
+        cancelEvent(event)
+        startEvent(event)
     }
     
     func loginWalletEnd(account: Account, loginType: AnalyticsManager.LoginType) {
-        endTrace(.walletLogin)
+        let event: AnalyticsEventName = AppSettings.shared.gdkSettings?.tor ?? false ? .walletLoginTor : .walletLogin
+        endTrace(event)
         if var s = sessSgmt(account) {
             s[AnalyticsManager.strMethod] = loginType.rawValue
             s[AnalyticsManager.strEphemeralBip39] = "\(account.isEphemeral)"
             endEvent(.walletLogin, sgmt: s)
         }
     }
+    
+    func loginLightningStart(){
+        startTrace(.lightningLogin)
+    }
 
+    func loginLightningStop(){
+        endTrace(.lightningLogin)
+    }
+    
     func renameWallet() {
         recordEvent(.renameWallet)
     }
@@ -158,16 +174,25 @@ extension AnalyticsManager {
     }
 
     func failedWalletLogin(account: Account?, error: Error, prettyError: String?) {
+        let event: AnalyticsEventName = AppSettings.shared.gdkSettings?.tor ?? false ? .failedWalletLoginTor : .failedWalletLogin
         if var s = sessSgmt(account) {
             if let prettyError = prettyError {
                 s[AnalyticsManager.strError] = prettyError
             } else {
                 s[AnalyticsManager.strError] = error.localizedDescription
             }
-            recordEvent(.failedWalletLogin, sgmt: s)
+            recordEvent(event, sgmt: s)
         }
     }
+
+    func startFailedTransaction(){
+        startTrace(.failedTransaction)
+        cancelEvent(.failedTransaction)
+        startEvent(.failedTransaction)
+    }
+
     func failedTransaction(account: Account?, walletItem: WalletItem?, transactionSgmt: AnalyticsManager.TransactionSegmentation, withMemo: Bool, error: Error, prettyError: String?) {
+        endTrace(.failedTransaction)
         if var s = subAccSeg(account, walletItem: walletItem) {
             switch transactionSgmt.transactionType {
             case .transaction:

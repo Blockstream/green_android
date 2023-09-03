@@ -165,7 +165,6 @@ class PinCreateViewController: HWFlowBaseViewController {
 extension PinCreateViewController: UpdateFirmwareViewControllerDelegate {
     @MainActor
     func didUpdate(version: String, firmware: Firmware) {
-        AnalyticsManager.shared.otaStartJade(account: AccountsRepository.shared.current, firmware: firmware)
         Task {
             do {
                 startLoader(message: "id_updating_firmware".localized)
@@ -182,7 +181,6 @@ extension PinCreateViewController: UpdateFirmwareViewControllerDelegate {
                 await MainActor.run {
                     btnContinue.isHidden = false
                     if let res = res, res {
-                        AnalyticsManager.shared.otaCompleteJade(account: AccountsRepository.shared.current, firmware: firmware)
                         DropAlert().success(message: "id_firmware_update_completed".localized)
                         connectViewController()
                     } else {
