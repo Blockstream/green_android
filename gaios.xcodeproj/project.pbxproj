@@ -565,6 +565,7 @@
 		81D404E12A1D6138002631F5 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D404E02A1D6138002631F5 /* Utils.swift */; };
 		81D671EB26C8007600682508 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D671EA26C8007600682508 /* SessionManager.swift */; };
 		81D932132A77968500356D06 /* DialogSignViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D932122A77968500356D06 /* DialogSignViewModel.swift */; };
+		81E04A3B2AA63C6800867705 /* Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E04A3A2AA63C6800867705 /* Country.swift */; };
 		81E6897E2A234DAC00102BFC /* InputOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E6897D2A234DAC00102BFC /* InputOutput.swift */; };
 		81E8C359291FDAF000B2196B /* DialogTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E8C358291FDAF000B2196B /* DialogTableViewController.swift */; };
 		81E8C35B292000B400B2196B /* AccountArchiveViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E8C35A292000B400B2196B /* AccountArchiveViewModel.swift */; };
@@ -1249,6 +1250,7 @@
 		81DA3D922541F0D1001159D6 /* TxInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxInput.swift; sourceTree = "<group>"; };
 		81DA3D962541F110001159D6 /* TxChangeOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxChangeOutput.swift; sourceTree = "<group>"; };
 		81DC54342885BD8300DC37C9 /* Balance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Balance.swift; sourceTree = "<group>"; };
+		81E04A3A2AA63C6800867705 /* Country.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Country.swift; sourceTree = "<group>"; };
 		81E0B4CA25531470001C8544 /* Commitment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Commitment.swift; sourceTree = "<group>"; };
 		81E6897D2A234DAC00102BFC /* InputOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputOutput.swift; sourceTree = "<group>"; };
 		81E8C358291FDAF000B2196B /* DialogTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogTableViewController.swift; sourceTree = "<group>"; };
@@ -3029,6 +3031,7 @@
 				343BC9562AA9BF1200F0FEE5 /* TwoFAViewController.swift */,
 				3450C85F2AAF0616002B67AE /* TwoFAMethodViewController.swift */,
 				3482351C2AB97B8800B1ABE3 /* TwoFAInfoViewController.swift */,
+				81E04A3A2AA63C6800867705 /* Country.swift */,
 			);
 			path = AuthenticationFactors;
 			sourceTree = "<group>";
@@ -3893,6 +3896,7 @@
 				3483D09B29FBDB0B00C85106 /* LTInfoCellModel.swift in Sources */,
 				3482351D2AB97B8800B1ABE3 /* TwoFAInfoViewController.swift in Sources */,
 				8157CDAC299BE9E100365F1B /* SendConfirmViewModel.swift in Sources */,
+				81E04A3B2AA63C6800867705 /* Country.swift in Sources */,
 				3484118C265E6113002D2202 /* Constants.swift in Sources */,
 				093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */,
 				81961AB029E4B29C00E9B94D /* AssetInfo.swift in Sources */,

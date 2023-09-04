@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 
-
 class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
 
     @IBOutlet weak var tableView: UITableView!

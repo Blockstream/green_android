@@ -33,6 +33,8 @@ class SetPhoneViewController: KeyboardViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: updateConnection)
+        countryCodeField.addTarget(self, action: #selector(onTapCountry), for: UIControl.Event.touchDown)
+
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -58,6 +60,10 @@ class SetPhoneViewController: KeyboardViewController {
               let connection = try? JSONDecoder().decode(Connection.self, from: json) {
             self.connected = connection.connected
         }
+    }
+
+    @objc func onTapCountry(textField: UITextField) {
+        print("country")
     }
 
     @objc func click(_ sender: UIButton) {
