@@ -79,9 +79,9 @@ public class HWResolver: HwResolverDelegate {
             HWResolver.semaphore.signal()
             return HWResolverResult(publicKeys: keys)
         case "get_master_blinding_key":
-            let res = try await hw.getMasterBlindingKey()
+            let res = try? await hw.getMasterBlindingKey()
             HWResolver.semaphore.signal()
-            return HWResolverResult(masterBlindingKey: res)
+            return HWResolverResult(masterBlindingKey: res ?? "")
         default:
             HWResolver.semaphore.signal()
             throw HWError.Abort("Invalid request")
