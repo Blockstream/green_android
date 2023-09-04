@@ -36,10 +36,15 @@ class SendViewController: KeyboardViewController {
         
         Task(priority: .high) { await viewModel.loadFees() }
         if viewModel.transaction != nil {
-            viewModel.reload()
-            refreshAmountCell()
-            reloadSections([.accountAsset, .address, .fee], animated: false)
-            validateTransaction()
+            Task {
+                viewModel.reload()
+                refreshAmountCell()
+                reloadSections([.accountAsset, .address, .fee], animated: false)
+                startAnimating()
+                try? await viewModel.wait()
+                validateTransaction()
+                stopAnimating()
+            }
         }
     }
 

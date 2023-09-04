@@ -117,17 +117,17 @@ class SendViewModel {
         }
         return validateTask
     }
-    
+
     func wait() async throws {
         var attempts = 0
         func attempt() async throws {
-            if attempts == 5 {
+            if attempts == 10 {
                 throw GaError.TimeoutError()
             }
             attempts += 1
             if let session = account.session {
                 if !(session.logged && !session.paused) {
-                    try await Task.sleep(nanoseconds:  3 * 1_000_000_000)
+                    try await Task.sleep(nanoseconds:  500_000_000)
                     try await attempt()
                 }
             }
@@ -138,7 +138,6 @@ class SendViewModel {
     func validate(tx: Transaction) async throws -> Transaction? {
         var tx = tx
         if Task.isCancelled { return nil }
-        try? await wait()
         if let subaccount = tx.subaccountItem,
            let session = subaccount.session {
             switch inputType {
