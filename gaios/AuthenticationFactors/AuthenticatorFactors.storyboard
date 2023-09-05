@@ -226,25 +226,31 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZXh-te-gIk">
-                                <rect key="frame" x="25" y="72" width="364" height="24"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZXh-te-gIk">
+                                <rect key="frame" x="25" y="84" width="364" height="24"/>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="20"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="+1" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="S7O-Bp-T6b">
-                                <rect key="frame" x="32" y="176" width="60" height="54"/>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="+1" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="S7O-Bp-T6b">
+                                <rect key="frame" x="25" y="168" width="101.5" height="54"/>
                                 <color key="backgroundColor" name="gGrayCard"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="60" id="nfw-1p-XVK"/>
                                     <constraint firstAttribute="height" constant="54" id="wYE-An-Y5m"/>
                                 </constraints>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="phonePad" keyboardAppearance="alert" returnKeyType="done" smartDashesType="yes"/>
                             </textField>
-                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="123456489" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="4Pf-xw-3H0">
-                                <rect key="frame" x="100" y="176" width="282" height="54"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BNC-bD-KHW">
+                                <rect key="frame" x="25" y="168" width="101.5" height="54"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <connections>
+                                    <action selector="btnCountryPicker:" destination="KNB-l5-3cg" eventType="touchUpInside" id="h9d-Lo-4BN"/>
+                                </connections>
+                            </button>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="123456489" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="4Pf-xw-3H0">
+                                <rect key="frame" x="134.5" y="168" width="254.5" height="54"/>
                                 <color key="backgroundColor" name="gGrayCard"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="54" id="XGd-F9-yHH"/>
@@ -269,19 +275,25 @@
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="Qez-EH-YoO" firstAttribute="leading" secondItem="N6D-cb-vPl" secondAttribute="leading" constant="25" id="2DJ-Zo-d6Q"/>
-                            <constraint firstItem="4Pf-xw-3H0" firstAttribute="top" secondItem="ZXh-te-gIk" secondAttribute="bottom" constant="80" id="CO8-wM-wL9"/>
-                            <constraint firstItem="N6D-cb-vPl" firstAttribute="trailing" secondItem="4Pf-xw-3H0" secondAttribute="trailing" constant="32" id="I5v-lQ-oAp"/>
+                            <constraint firstItem="4Pf-xw-3H0" firstAttribute="top" secondItem="ZXh-te-gIk" secondAttribute="bottom" constant="60" id="CO8-wM-wL9"/>
+                            <constraint firstItem="N6D-cb-vPl" firstAttribute="trailing" secondItem="4Pf-xw-3H0" secondAttribute="trailing" constant="25" id="I5v-lQ-oAp"/>
                             <constraint firstItem="ZXh-te-gIk" firstAttribute="leading" secondItem="N6D-cb-vPl" secondAttribute="leading" constant="25" id="KSO-v4-XFk"/>
-                            <constraint firstItem="ZXh-te-gIk" firstAttribute="top" secondItem="N6D-cb-vPl" secondAttribute="top" constant="24" id="NEb-Fg-OhE"/>
+                            <constraint firstItem="ZXh-te-gIk" firstAttribute="top" secondItem="N6D-cb-vPl" secondAttribute="top" constant="36" id="NEb-Fg-OhE"/>
+                            <constraint firstItem="BNC-bD-KHW" firstAttribute="bottom" secondItem="S7O-Bp-T6b" secondAttribute="bottom" id="NpX-36-KQB"/>
                             <constraint firstItem="N6D-cb-vPl" firstAttribute="bottom" secondItem="Qez-EH-YoO" secondAttribute="bottom" constant="36" id="OV7-bA-CvQ"/>
+                            <constraint firstItem="S7O-Bp-T6b" firstAttribute="width" secondItem="4Pf-xw-3H0" secondAttribute="width" multiplier="0.4" id="Qpu-e6-s8q"/>
+                            <constraint firstItem="BNC-bD-KHW" firstAttribute="leading" secondItem="S7O-Bp-T6b" secondAttribute="leading" id="ShA-ua-9Uf"/>
                             <constraint firstItem="S7O-Bp-T6b" firstAttribute="centerY" secondItem="4Pf-xw-3H0" secondAttribute="centerY" id="SmG-DA-mrz"/>
-                            <constraint firstItem="S7O-Bp-T6b" firstAttribute="leading" secondItem="N6D-cb-vPl" secondAttribute="leading" constant="32" id="UwZ-1k-TZs"/>
+                            <constraint firstItem="S7O-Bp-T6b" firstAttribute="leading" secondItem="N6D-cb-vPl" secondAttribute="leading" constant="25" id="UwZ-1k-TZs"/>
                             <constraint firstItem="4Pf-xw-3H0" firstAttribute="leading" secondItem="S7O-Bp-T6b" secondAttribute="trailing" constant="8" id="Yzx-rX-ziP"/>
                             <constraint firstItem="N6D-cb-vPl" firstAttribute="trailing" secondItem="Qez-EH-YoO" secondAttribute="trailing" constant="25" id="bbL-af-HLw"/>
                             <constraint firstItem="N6D-cb-vPl" firstAttribute="trailing" secondItem="ZXh-te-gIk" secondAttribute="trailing" constant="25" id="g7D-kI-1AF"/>
+                            <constraint firstItem="BNC-bD-KHW" firstAttribute="trailing" secondItem="S7O-Bp-T6b" secondAttribute="trailing" id="jOG-wD-DUb"/>
+                            <constraint firstItem="BNC-bD-KHW" firstAttribute="top" secondItem="S7O-Bp-T6b" secondAttribute="top" id="mo3-yn-ytr"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="btnCountryPicker" destination="BNC-bD-KHW" id="TaF-rV-bZA"/>
                         <outlet property="buttonConstraint" destination="OV7-bA-CvQ" id="sAU-Qd-cOB"/>
                         <outlet property="countryCodeField" destination="S7O-Bp-T6b" id="S3S-dP-6MN"/>
                         <outlet property="headerTitle" destination="ZXh-te-gIk" id="07E-ZM-HO4"/>

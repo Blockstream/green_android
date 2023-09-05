@@ -109,6 +109,10 @@
 		34389B632A9754260023DAC3 /* RedeemPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34389B622A9754260023DAC3 /* RedeemPrefs.swift */; };
 		343BC9542AA9BEAD00F0FEE5 /* TwoFAFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 343BC9532AA9BEAD00F0FEE5 /* TwoFAFlow.storyboard */; };
 		343BC9572AA9BF1200F0FEE5 /* TwoFAViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343BC9562AA9BF1200F0FEE5 /* TwoFAViewController.swift */; };
+		343BC9472AA7012B00F0FEE5 /* GreenPIckerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343BC9462AA7012B00F0FEE5 /* GreenPIckerViewController.swift */; };
+		343BC9492AA7017600F0FEE5 /* GreenPickerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343BC9482AA7017600F0FEE5 /* GreenPickerViewModel.swift */; };
+		343BC94D2AA702F600F0FEE5 /* GreenPickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343BC94B2AA702F600F0FEE5 /* GreenPickerCell.swift */; };
+		343BC94E2AA702F600F0FEE5 /* GreenPickerCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 343BC94C2AA702F600F0FEE5 /* GreenPickerCell.xib */; };
 		34440E7A28B379C8006CD464 /* WalletListHDCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34440E7828B379C8006CD464 /* WalletListHDCell.swift */; };
 		34440E7B28B379C8006CD464 /* WalletListHDCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34440E7928B379C8006CD464 /* WalletListHDCell.xib */; };
 		34440E7F28B37C2D006CD464 /* WalletListEmptyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34440E7D28B37C2D006CD464 /* WalletListEmptyCell.swift */; };
@@ -773,6 +777,10 @@
 		34389B622A9754260023DAC3 /* RedeemPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedeemPrefs.swift; sourceTree = "<group>"; };
 		343BC9532AA9BEAD00F0FEE5 /* TwoFAFlow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = TwoFAFlow.storyboard; sourceTree = "<group>"; };
 		343BC9562AA9BF1200F0FEE5 /* TwoFAViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFAViewController.swift; sourceTree = "<group>"; };
+		343BC9462AA7012B00F0FEE5 /* GreenPIckerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreenPIckerViewController.swift; sourceTree = "<group>"; };
+		343BC9482AA7017600F0FEE5 /* GreenPickerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreenPickerViewModel.swift; sourceTree = "<group>"; };
+		343BC94B2AA702F600F0FEE5 /* GreenPickerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreenPickerCell.swift; sourceTree = "<group>"; };
+		343BC94C2AA702F600F0FEE5 /* GreenPickerCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GreenPickerCell.xib; sourceTree = "<group>"; };
 		34440E7828B379C8006CD464 /* WalletListHDCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListHDCell.swift; sourceTree = "<group>"; };
 		34440E7928B379C8006CD464 /* WalletListHDCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletListHDCell.xib; sourceTree = "<group>"; };
 		34440E7D28B37C2D006CD464 /* WalletListEmptyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListEmptyCell.swift; sourceTree = "<group>"; };
@@ -1470,6 +1478,7 @@
 		3420470D291B913E00EDE945 /* Utility */ = {
 			isa = PBXGroup;
 			children = (
+				343BC9452AA700BF00F0FEE5 /* GreenPicker */,
 				34DBF1792A442F4D00066479 /* MagnifyQRViewController */,
 				34927BC52971449D00D741DB /* AccountAssetSelectViewController */,
 				34B8DA092938FAB1001DA9B9 /* AccountCreateFooterView */,
@@ -1661,6 +1670,25 @@
 			children = (
 				34FE20152A1CADC200301746 /* DialogDetailCell.swift */,
 				34FE20162A1CADC200301746 /* DialogDetailCell.xib */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		343BC9452AA700BF00F0FEE5 /* GreenPicker */ = {
+			isa = PBXGroup;
+			children = (
+				343BC94A2AA702D100F0FEE5 /* Cells */,
+				343BC9462AA7012B00F0FEE5 /* GreenPIckerViewController.swift */,
+				343BC9482AA7017600F0FEE5 /* GreenPickerViewModel.swift */,
+			);
+			path = GreenPicker;
+			sourceTree = "<group>";
+		};
+		343BC94A2AA702D100F0FEE5 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				343BC94B2AA702F600F0FEE5 /* GreenPickerCell.swift */,
+				343BC94C2AA702F600F0FEE5 /* GreenPickerCell.xib */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -3471,6 +3499,7 @@
 				3499655929E569D60092B5BD /* Jade 02 - Adjusted.riv in Resources */,
 				34F9809D2913A5EC00C12D48 /* WalletAssetCell.xib in Resources */,
 				81B1EB2C28E4466000F409A3 /* AssetAmountView.xib in Resources */,
+				343BC94E2AA702F600F0FEE5 /* GreenPickerCell.xib in Resources */,
 				348EB95329FA93860001CC47 /* LTAmountCell.xib in Resources */,
 				3458AB10292D1F0B006EC7FB /* AnyAssetCell.xib in Resources */,
 				818BA71E2A30B45200DFB03A /* green.crt in Resources */,
@@ -3675,6 +3704,7 @@
 				8189BF002236F2270091B466 /* ScreenLocker.swift in Sources */,
 				34FB695D27FDC6EC00A13197 /* AccountArchiveViewController.swift in Sources */,
 				34E8457729DBFA4500B207E7 /* DialogAmountViewController.swift in Sources */,
+				343BC9472AA7012B00F0FEE5 /* GreenPIckerViewController.swift in Sources */,
 				34F5689A2A828D490081BF0C /* LTRecoverFundsAmountCell.swift in Sources */,
 				81E8C359291FDAF000B2196B /* DialogTableViewController.swift in Sources */,
 				344915F02A0CE27F00D35818 /* ReceiveAssetCellModel.swift in Sources */,
@@ -3889,6 +3919,7 @@
 				34FE20122A1CA1FC00301746 /* DialogNodeViewController.swift in Sources */,
 				812DBDC62977FAC4002992D6 /* TwoFactorSettingsCell.swift in Sources */,
 				818BA7072A2F8ACB00DFB03A /* ScanViewModel.swift in Sources */,
+				343BC9492AA7017600F0FEE5 /* GreenPickerViewModel.swift in Sources */,
 				3423C6DE27BFDC4B001D9E2C /* AccountCreateRecoveryKeyViewController.swift in Sources */,
 				3497936B25F8B18C0029ECB1 /* SetPinViewController.swift in Sources */,
 				344915E92A0CE24700D35818 /* ReceiveAssetCell.swift in Sources */,
@@ -3941,6 +3972,7 @@
 				3458AB12292D1F25006EC7FB /* AnyAssetCell.swift in Sources */,
 				34EDF6BC28BF6EDC00145AD4 /* AlertCardCell.swift in Sources */,
 				346752F3291E55BF00256132 /* AccountSelectCell.swift in Sources */,
+				343BC94D2AA702F600F0FEE5 /* GreenPickerCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

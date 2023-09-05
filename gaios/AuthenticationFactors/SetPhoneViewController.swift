@@ -11,6 +11,8 @@ class SetPhoneViewController: KeyboardViewController {
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var buttonConstraint: NSLayoutConstraint!
 
+    @IBOutlet weak var btnCountryPicker: UIButton!
+
     var sms = false
     var phoneCall = false
     var session: SessionManager!
@@ -19,15 +21,16 @@ class SetPhoneViewController: KeyboardViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        headerTitle.text = NSLocalizedString("id_enter_phone_number", comment: "")
-        countryCodeField.attributedPlaceholder = NSAttributedString(string: "+1", attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.6)])
-        textField.attributedPlaceholder = NSAttributedString(string: "123456789", attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.6)])
+        title = "id_twofactor_settings".localized
+        headerTitle.text = "id_insert_your_phone_number_to".localized
+        headerTitle.setStyle(.txtBigger)
+        countryCodeField.attributedPlaceholder = NSAttributedString(string: "id_country".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.6)])
+        textField.attributedPlaceholder = NSAttributedString(string: "id_phone_number".localized.capitalized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.6)])
         nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
         nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         nextButton.setStyle(.primary)
         textField.layer.cornerRadius = 5.0
         countryCodeField.layer.cornerRadius = 5.0
-        headerTitle.font = UIFont.systemFont(ofSize: 24.0, weight: .bold)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -39,7 +42,7 @@ class SetPhoneViewController: KeyboardViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        countryCodeField.becomeFirstResponder()
+//        countryCodeField.becomeFirstResponder()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -64,6 +67,10 @@ class SetPhoneViewController: KeyboardViewController {
 
     @objc func onTapCountry(textField: UITextField) {
         print("country")
+    }
+
+    func didSelectCountry(_ country: Country) {
+        countryCodeField.text = country.dialCodeString
     }
 
     @objc func click(_ sender: UIButton) {
@@ -99,4 +106,26 @@ class SetPhoneViewController: KeyboardViewController {
             self.stopAnimating()
         }
     }
+
+    @IBAction func btnCountryPicker(_ sender: Any) {
+        
+        let storyboard = UIStoryboard(name: "Utility", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "GreenPickerViewController") as? GreenPickerViewController {
+            vc.vm = GreenPickerViewModel(title: "id_country".localized,
+                                         item: nil,
+                                         items: Country.pickerItems())
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
+            present(vc, animated: false, completion: nil)
+        }
+    }
+}
+
+extension SetPhoneViewController: GreenPickerDelegate {
+
+    func didSelectItem(_ idx: Int) {
+        didSelectCountry(Country.all()[idx])
+    }
+
+    func didCancel() {}
 }

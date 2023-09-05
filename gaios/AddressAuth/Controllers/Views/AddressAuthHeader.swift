@@ -1,11 +1,3 @@
-//
-//  AddressAuthHeader.swift
-//  gaios
-//
-//  Created by Mauro Olivo on 19/07/23.
-//  Copyright © 2023 Blockstream Corporation. All rights reserved.
-//
-
 import UIKit
 
 class AddressAuthHeader: UIView {
