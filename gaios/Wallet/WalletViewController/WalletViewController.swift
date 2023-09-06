@@ -522,53 +522,64 @@ extension WalletViewController: UITableViewDelegate, UITableViewDataSource {
                 let alertCard = viewModel.alertCardCellModel[indexPath.row]
                 switch alertCard.type {
                 case .reset(let msg), .dispute(let msg):
-                    cell.configure(viewModel.alertCardCellModel[indexPath.row],
+                    cell.configure(alertCard,
                                    onLeft: nil,
                                    onRight: {[weak self] in
                                         self?.twoFactorResetMessageScreen(msg: msg)
                                     }, onDismiss: nil)
                 case .reactivate:
-                    cell.configure(viewModel.alertCardCellModel[indexPath.row],
+                    cell.configure(alertCard,
                                    onLeft: nil,
                                    onRight: nil,
                                    onDismiss: nil)
                 case .systemMessage(let msg):
-                    cell.configure(viewModel.alertCardCellModel[indexPath.row],
+                    cell.configure(alertCard,
                                    onLeft: nil,
                                    onRight: {[weak self] in
                                         self?.systemMessageScreen(msg: msg)
                                     },
                                    onDismiss: nil)
                 case .fiatMissing:
-                    cell.configure(viewModel.alertCardCellModel[indexPath.row],
+                    cell.configure(alertCard,
                                    onLeft: nil,
                                    onRight: nil,
                                    onDismiss: nil)
                 case .testnetNoValue:
-                    cell.configure(viewModel.alertCardCellModel[indexPath.row],
+                    cell.configure(alertCard,
                                    onLeft: nil,
                                    onRight: nil,
                                    onDismiss: nil)
                 case .ephemeralWallet:
-                    cell.configure(viewModel.alertCardCellModel[indexPath.row],
+                    cell.configure(alertCard,
                                    onLeft: nil,
                                    onRight: nil,
                                    onDismiss: nil)
-                case .remoteAlert:
-                    cell.configure(viewModel.alertCardCellModel[indexPath.row],
+                case .remoteAlert(let remoteAlert):
+                    cell.configure(alertCard,
                                    onLeft: nil,
-                                   onRight: (viewModel.remoteAlert?.link ?? "" ).isEmpty ? nil : {[weak self] in
-                        if let url = URL(string: self?.viewModel.remoteAlert?.link ?? "") {
-                            UIApplication.shared.open(url)
-                        }
-                    },
+                                   onRight: {
+                                        if let link = remoteAlert.link, let url = URL(string: link) {
+                                            UIApplication.shared.open(url)
+                                        }
+                                    },
                                    onDismiss: {[weak self] in
                         self?.remoteAlertDismiss()
                     })
-                case .login:
+                case .login(let network, let error):
+                    let handleAlertGesture: (() -> Void)? = { [weak self] in
+                        switch error {
+                        case LoginError.hostUnblindingDisabled(_):
+                            Task {
+                                try? await self?.viewModel.reconnectHW(network)
+                                await MainActor.run { self?.reload() }
+                            }
+                        default:
+                            break
+                        }
+                    }
                     cell.configure(viewModel.alertCardCellModel[indexPath.row],
                                    onLeft: nil,
-                                   onRight: nil,
+                                   onRight: handleAlertGesture,
                                    onDismiss: nil)
                 }
                 cell.selectionStyle = .none

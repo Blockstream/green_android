@@ -12,6 +12,7 @@ public enum LoginError: Error, Equatable {
     case connectionFailed(_ localizedDescription: String? = nil)
     case failed(_ localizedDescription: String? = nil)
     case walletMismatch(_ localizedDescription: String? = nil)
+    case hostUnblindingDisabled(_ localizedDescription: String? = nil)
 }
 
 class SessionManager {

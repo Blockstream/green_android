@@ -78,7 +78,7 @@ class BleJadeManager {
         }
     }
     
-    func login(account: Account) async throws -> Account {
+    func login(account: Account, fullRestore: Bool = false) async throws -> Account {
         let version = try await bleJade.version()
         let device: HWDevice = .defaultJade(fmwVersion: version.jadeVersion)
         let masterXpub = try await bleJade.xpubs(network: account.gdkNetwork.chain, path: [])
@@ -88,7 +88,7 @@ class BleJadeManager {
         account = normalizeAccount(account)
         walletManager = WalletsRepository.shared.getOrAdd(for: account)
         walletManager?.hwDevice = BLEDevice(peripheral: bleJade.peripheral, device: device, interface: bleJade)
-        try await walletManager?.login(device: device, masterXpub: masterXpub)
+        try await walletManager?.login(device: device, masterXpub: masterXpub, fullRestore: fullRestore)
         AccountsRepository.shared.current = walletManager?.account
         return account
     }

@@ -45,6 +45,8 @@ extension UIViewController {
             return "id_connection_failed"
         case LoginError.walletNotFound:
             return "id_wallet_not_found"
+        case LoginError.hostUnblindingDisabled(let txt):
+            return txt ?? "id_operation_failed"
         case GaError.NotAuthorizedError:
             return "NotAuthorizedError"
         case GaError.GenericError(let txt):

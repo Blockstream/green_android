@@ -94,7 +94,23 @@ class SecuritySelectViewModel {
                                                           recoveryMnemonic: nil,
                                                           recoveryXpub: nil)
             if !session.logged {
-                try await registerSession(session: session)
+                do {
+                    try await registerSession(session: session)
+                } catch {
+                    switch error {
+                    case TwoFactorCallError.failure(let txt):
+                        if txt.contains("HWW must enable host unblinding for singlesig wallets") {
+                            try? await session.disconnect()
+                            if let masterXpub = try? await BleViewModel.shared.ledger?.getMasterXpub() {
+                                session.removeDatadir(masterXpub: masterXpub)
+                            }
+                            throw LoginError.hostUnblindingDisabled("Account creation is not possible without exporting master blinding key.")
+                        }
+                        throw error
+                    default:
+                        throw error
+                    }
+                }
             }
             let accounts = self.wm.subaccounts.filter { $0.gdkNetwork == session.gdkNetwork && $0.type == params.type && $0.hidden }
             let txs = try await self.wm.transactions(subaccounts: accounts)

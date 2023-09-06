@@ -1,7 +1,8 @@
 import Foundation
 import UIKit
-
 import gdk
+import greenaddress
+import hw
 
 class WalletViewModel {
 
@@ -196,6 +197,16 @@ class WalletViewModel {
         analyticsDone = false
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
             self.selectSubaccount(wallet)
+        }
+    }
+
+    func reconnectHW(_ network: String) async throws {
+        if let account = wm?.account {
+            if let jade = BleViewModel.shared.jade {
+                try await jade.login(account: account, fullRestore: true)
+                try await wm?.subaccounts()
+                await reload()
+            }
         }
     }
 

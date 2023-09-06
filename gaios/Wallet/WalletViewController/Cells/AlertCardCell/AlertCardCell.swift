@@ -118,6 +118,8 @@ class AlertCardCell: UITableViewCell {
                 switch error {
                 case LoginError.connectionFailed(let txt), LoginError.walletNotFound(let txt):
                     return txt ?? ""
+                case LoginError.hostUnblindingDisabled(_):
+                    return "Some wallet functionalities have been disabled or will not work properly"
                 case TwoFactorCallError.failure(let txt), TwoFactorCallError.cancel(let txt):
                     return txt
                 default:
@@ -126,11 +128,20 @@ class AlertCardCell: UITableViewCell {
             }()
             
             let networkName = NetworkSecurityCase(rawValue: network)?.name()
-            let errText = NSLocalizedString(errorString, comment: "")
-            lblHint.text = "Login failure in network \(networkName ?? ""): \(errText)"
+            var errText = NSLocalizedString(errorString, comment: "")
             btnRight.isHidden = true
             btnLeft.isHidden = true
             btnsContainer.isHidden = true
+            lblHint.text = "In network \(networkName ?? ""): \(errText)"
+            switch error {
+            case LoginError.hostUnblindingDisabled(_):
+                lblHint.text = "\(errText)"
+                btnRight.setTitle(NSLocalizedString("id_try_again", comment: ""), for: .normal)
+                btnRight.isHidden = false
+                btnsContainer.isHidden = false
+            default:
+                break
+            }
         }
     }
 

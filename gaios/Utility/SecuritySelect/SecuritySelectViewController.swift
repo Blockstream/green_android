@@ -228,7 +228,8 @@ extension SecuritySelectViewController: UITableViewDelegate, UITableViewDataSour
         self.startLoader(message: msg)
         Task {
             do {
-                if let wallet = try await viewModel.create(policy: policy, asset: self.viewModel.asset, params: nil) {
+                let wallet = try await viewModel.create(policy: policy, asset: self.viewModel.asset, params: nil)
+                if let wallet = wallet {
                     DropAlert().success(message: "id_new_account_created".localized)
                     self.navigationController?.popViewController(animated: true)
                     self.delegate?.didCreatedWallet(wallet)

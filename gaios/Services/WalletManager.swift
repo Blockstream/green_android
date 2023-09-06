@@ -174,7 +174,7 @@ class WalletManager {
         try? await self.loadRegistry()
 }
 
-    func login(credentials: Credentials? = nil, device: HWDevice? = nil, masterXpub: String? = nil) async throws {
+    func login(credentials: Credentials? = nil, device: HWDevice? = nil, masterXpub: String? = nil, fullRestore: Bool = false) async throws {
         let walletId: ((_ session: SessionManager) -> WalletIdentifier?) = { session in
             if let credentials = credentials {
                 return session.walletIdentifier(credentials: credentials)
@@ -187,7 +187,7 @@ class WalletManager {
             session.existDatadir(walletHashId: walletId(session)!.walletHashId)
         }
         guard let prominentSession = sessions[prominentNetwork.rawValue] else { fatalError() }
-        let fullRestore = account.xpubHashId == nil || !existDatadir(prominentSession)
+        let fullRestore = fullRestore || account.xpubHashId == nil || !existDatadir(prominentSession)
         let ifLogin: ((_ session: SessionManager) -> Bool) = {
             if $0.gdkNetwork.lightning && !AppSettings.shared.experimental && fullRestore {
                 return false
@@ -237,9 +237,12 @@ class WalletManager {
                     }
                 }
             } catch {
+                try? await session.disconnect()
                 switch error {
                 case TwoFactorCallError.failure(let txt):
-                    if txt != "id_login_failed" {
+                    if txt.contains("HWW must enable host unblinding for singlesig wallets") {
+                        self.failureSessions[session.gdkNetwork.network] = LoginError.hostUnblindingDisabled(txt)
+                    } else if txt != "id_login_failed" {
                         self.failureSessions[session.gdkNetwork.network] = error
                     }
                 default:
