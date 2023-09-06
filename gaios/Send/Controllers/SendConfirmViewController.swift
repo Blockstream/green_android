@@ -110,13 +110,14 @@ class SendConfirmViewController: KeyboardViewController {
     }
 
     @MainActor
-    func dismissProgress() {
+    func dismissProgress(_ completion: @escaping (()->Void)) {
         if viewModel.isHW {
-            dialogSendHWSummaryViewController?.dismiss()
+            dialogSendHWSummaryViewController?.dismiss(animated: true, completion: completion)
         } else if viewModel.isLightning {
-            ltConfirmingViewController?.dismiss()
+            ltConfirmingViewController?.dismiss(animated: true, completion: completion)
         } else {
             stopAnimating()
+            completion()
         }
     }
 
@@ -137,9 +138,6 @@ class SendConfirmViewController: KeyboardViewController {
 
     @MainActor
     func failure(_ error: Error) {
-        dismissProgress()
-        self.sliderView.isUserInteractionEnabled = true
-        self.sliderView.reset()
         let prettyError: String = {
             switch error {
             case BreezSDK.SdkError.Generic(let msg),
@@ -164,10 +162,15 @@ class SendConfirmViewController: KeyboardViewController {
                 return error.localizedDescription
             }
         }()
-        if self.viewModel.isLightning {
-            self.showBreezError(prettyError.localized)
-        } else {
-            self.showError(prettyError.localized)
+        
+        dismissProgress() {
+            self.sliderView.isUserInteractionEnabled = true
+            self.sliderView.reset()
+            if self.viewModel.isLightning {
+                self.showBreezError(prettyError.localized)
+            } else {
+                self.showError(prettyError.localized)
+            }
         }
         let isSendAll = self.viewModel.tx.addressees.first?.isGreedy ?? false
         let withMemo = !(self.viewModel.tx.memo?.isEmpty ?? true)
@@ -187,7 +190,7 @@ class SendConfirmViewController: KeyboardViewController {
             vc.delegate = self
             vc.errorStr = message
             vc.modalPresentationStyle = .overFullScreen
-            self.present(vc, animated: false, completion: nil)
+            present(vc, animated: false, completion: nil)
         }
     }
     
@@ -201,14 +204,15 @@ class SendConfirmViewController: KeyboardViewController {
         AnalyticsManager.shared.endSendTransaction(account: AccountsRepository.shared.current,
                                                    walletItem: viewModel.account,
                                                    transactionSgmt: transSgmt, withMemo: withMemo)
-        StoreReviewHelper
-            .shared
-            .request(isSendAll: isSendAll,
-                     account: AccountsRepository.shared.current,
-                     walletItem: viewModel.account)
-        dismissProgress()
-        DropAlert().success(message: "id_transaction_sent".localized)
-        navigationController?.popToRootViewController(animated: true)
+        dismissProgress() {
+            DropAlert().success(message: "id_transaction_sent".localized)
+            StoreReviewHelper
+                .shared
+                .request(isSendAll: isSendAll,
+                         account: AccountsRepository.shared.current,
+                         walletItem: self.viewModel.account)
+            self.navigationController?.popToRootViewController(animated: true)
+        }
     }
 
     func updateConnection(_ notification: Notification) {
