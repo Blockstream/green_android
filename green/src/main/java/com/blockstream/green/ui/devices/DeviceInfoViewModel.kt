@@ -104,7 +104,7 @@ class DeviceInfoViewModel constructor(
             // Disable Jade wallet fingerprint, keep the device name // getWalletName(session, network, device)
             val walletName = device.name
 
-            var wallet: GreenWallet
+            val wallet: GreenWallet
             if (isEphemeral) {
                 wallet = GreenWallet.createEphemeralWallet(
                     networkId = network.id,

@@ -120,7 +120,6 @@ class RecoverFundsViewModel constructor(
                     satPerVbyte = getFee()?.toUInt()
                 )
             }
-
         }, onSuccess = {
             postSideEffect(SideEffects.Success())
         })

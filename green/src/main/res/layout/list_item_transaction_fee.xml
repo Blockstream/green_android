@@ -67,7 +67,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@{`(`+feeRate+`)`}"
+                        isVisible="@{feeRate != null}"
+                        android:text="@{feeRate}"
                         android:textAppearance="?attr/textAppearanceBodyMedium"
                         tools:text="(fee / rate)" />
 
@@ -96,7 +97,7 @@
                             android:singleLine="true"
                             android:text="@{feeFiat}"
                             android:textAlignment="textEnd"
-                            android:textAppearance="?attr/textAppearanceLabelMedium"
+                            android:textAppearance="?attr/textAppearanceLabelSmall"
                             android:textIsSelectable="true"
                             tools:text="~ 3434.34 USD" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -152,7 +153,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@{`(`+feeRate+`)`}"
+                    android:text="@{feeRate}"
                     android:textAppearance="?attr/textAppearanceLabelSmall"
                     android:textColor="@color/color_on_surface_emphasis_medium"
                     tools:text="(fee / rate)"/>

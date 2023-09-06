@@ -1410,4 +1410,8 @@
   <string name="id_add_lightning_shortcut">Add lightning shortcut</string>
   <string name="id_remove_lightning_shortcut">Remove lightning shortcut</string>
   <string name="id_invoice_expired">Invoice expired</string>
+  <string name="id_a_funding_fee_of_s_is">A funding fee of %s is applied when receiving amounts above your current receive capacity of %s</string>
+  <string name="id_a_set_up_funding_fee_of_s">A set up funding fee of %s (%s) will be applied to the received amount.</string>
+  <string name="id_a_funding_fee_of_s_s">A funding fee of %s (%s) is applied when receiving amounts above your current receive capacity %s (%s)</string>
+  <string name="id_send_more_than_s_and_up_to_s_to_this">Send more than %s and up to %s to this address. A minimum setup fee of %s will be applied on the received amount.\n\nThis address can be used only once.</string>
 </resources>

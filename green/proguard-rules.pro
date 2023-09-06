@@ -96,3 +96,14 @@
 -dontwarn org.bouncycastle.**
 -dontwarn org.openjsse.**
 -dontwarn org.slf4j.impl.StaticLoggerBinder
+
+
+# Temp until KMP is fixed
+# for JNA
+-dontwarn java.awt.*
+-keep class com.sun.jna.* { *; }
+-keepclassmembers class * extends com.sun.jna.* { public *; }
+-keep class technology.breez.* { *; }
+-keep class breez_sdk.** { *; }
+-keepclassmembers class * extends technology.breez.* { public *; }
+-keepclassmembers class * extends breez_sdk.** { public *; }

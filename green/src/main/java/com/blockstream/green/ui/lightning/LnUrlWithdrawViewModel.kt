@@ -2,8 +2,8 @@ package com.blockstream.green.ui.lightning
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asFlow
-import breez_sdk.LnUrlCallbackStatus
 import breez_sdk.LnUrlWithdrawRequestData
+import breez_sdk.LnUrlWithdrawResult
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
@@ -161,7 +161,7 @@ class LnUrlWithdrawViewModel constructor(
     fun withdraw() {
         doUserAction({
             session.lightningSdk.withdrawLnurl(requestData = requestData, amountInSatoshi(), description.string()).also {
-                if (it is LnUrlCallbackStatus.ErrorStatus) {
+                if (it is LnUrlWithdrawResult.ErrorStatus) {
                     throw Exception(it.data.reason)
                 }
             }

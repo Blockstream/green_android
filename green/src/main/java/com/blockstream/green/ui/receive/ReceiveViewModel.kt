@@ -9,6 +9,7 @@ import android.text.format.DateUtils.DAY_IN_MILLIS
 import androidx.lifecycle.*
 import breez_sdk.InputType
 import breez_sdk.LnInvoice
+import breez_sdk.ReceivePaymentResponse
 import breez_sdk.SwapInfo
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
@@ -16,14 +17,13 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Address
-import com.blockstream.common.lightning.amountSatoshi
-import com.blockstream.common.lightning.channelFeePercent
-import com.blockstream.common.lightning.channelMinimumFeeSatoshi
 import com.blockstream.common.lightning.expireIn
+import com.blockstream.common.lightning.feeSatoshi
 import com.blockstream.common.lightning.fromInvoice
 import com.blockstream.common.lightning.fromSwapInfo
 import com.blockstream.common.lightning.inboundLiquiditySatoshi
 import com.blockstream.common.lightning.maxReceivableSatoshi
+import com.blockstream.common.lightning.receiveAmountSatoshi
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.common.utils.UserInput
@@ -34,7 +34,6 @@ import com.blockstream.green.ui.bottomsheets.DenominationListener
 import com.blockstream.green.ui.bottomsheets.INote
 import com.blockstream.green.ui.wallet.AbstractAssetWalletViewModel
 import com.blockstream.green.utils.createQrBitmap
-import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.utils.toAmountLook
 import com.blockstream.green.utils.toAmountLookOrNa
 import com.rickclephas.kmm.viewmodel.coroutineScope
@@ -59,8 +58,6 @@ class ReceiveViewModel constructor(
     wallet,
     initAccountAsset
 ), DenominationListener, INote {
-    var isDevelopment = isDevelopmentFlavor
-
     var addressLiveData = MutableLiveData<Address>()
     val addressAsString: String get() = addressLiveData.value?.address ?: ""
     val addressUri = MutableLiveData<String>("")
@@ -76,9 +73,14 @@ class ReceiveViewModel constructor(
 
     val note: MutableLiveData<String> = MutableLiveData("")
 
-    val channelFeePercent: MutableLiveData<String> = MutableLiveData("")
-    val channelMinFee: MutableLiveData<String> = MutableLiveData("")
+    val isSetupChannel: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    val channelFee: MutableLiveData<String> = MutableLiveData("")
+    val channelFeeFiat: MutableLiveData<String> = MutableLiveData("")
+
     val inboundLiquidity: MutableLiveData<String> = MutableLiveData("")
+    val inboundLiquidityFiat: MutableLiveData<String> = MutableLiveData("")
+
     val liquidityFeeError: MutableLiveData<String?> = MutableLiveData(null)
     val showLiquidityFee: MutableLiveData<Boolean> = MutableLiveData(false)
 
@@ -134,24 +136,11 @@ class ReceiveViewModel constructor(
             // Support single lightning account, else we have to incorporate account change events
             val lightningAccount = session.lightningAccount
 
-            combine(session.lightningSdk.lspInfoStateFlow.filterNotNull(), denomination.asFlow()) { lspInfo , _ ->
+            combine(session.lightningSdk.lspInfoStateFlow.filterNotNull(), amount.asFlow(), denomination.asFlow()) { lspInfo , _, _ ->
                 lspInfo
-            }.onEach { lspInfo ->
-                channelFeePercent.value = "${lspInfo.channelFeePercent()}%"
-                channelMinFee.value = lspInfo.channelMinimumFeeSatoshi().toAmountLook(
-                    session = session,
-                    assetId = accountValue.network.policyAsset,
-                    denomination = denomination.value,
-                    withUnit = true
-                )
-            }.launchIn(viewModelScope.coroutineScope)
-
-            combine(amount.asFlow(), channelFeePercent.asFlow(), channelMinFee.asFlow()) { _, _, _ ->
-                Unit
-            }.onEach {
+            }.onEach { _ ->
                 updateAmountExchangeRate()
-            }
-            .launchIn(viewModelScope.coroutineScope)
+            }.launchIn(viewModelScope.coroutineScope)
 
             denomination.asFlow()
                 .onEach {
@@ -168,12 +157,21 @@ class ReceiveViewModel constructor(
                     withUnit = true
                 )
 
+                isSetupChannel.value = it.inboundLiquiditySatoshi() == 0L
+
                 inboundLiquidity.value = it.inboundLiquiditySatoshi().toAmountLookOrNa(
                     session = session,
                     assetId = lightningAccount.network.policyAsset,
-                    denomination = denomination.value,
+                    denomination = denomination.value?.notFiat(),
                     withUnit = true
-                )
+                ) ?: ""
+
+                inboundLiquidityFiat.value = it.inboundLiquiditySatoshi().toAmountLook(
+                    session = session,
+                    assetId = lightningAccount.network.policyAsset,
+                    denomination = Denomination.fiat(session),
+                    withUnit = true
+                ) ?: ""
             }.launchIn(viewModelScope.coroutineScope)
 
             combine(swapInfo.asFlow().filterNotNull(), denomination.asFlow()) { swapInfo, _ ->
@@ -324,9 +322,13 @@ class ReceiveViewModel constructor(
         update()
     }
 
-    private fun setLightningInvoice(invoice: LnInvoice) {
+    private fun setLightningInvoice(paymentResponse: ReceivePaymentResponse) {
+        val invoice = paymentResponse.lnInvoice
+        val openingFeeParams = paymentResponse.openingFeeParams
+
         doUserAction({
-            invoice.amountSatoshi().let { amountSatoshi ->
+
+            invoice.receiveAmountSatoshi(openingFeeParams).let { amountSatoshi ->
                 amountSatoshi.toAmountLookOrNa(
                     session = session,
                     assetId = accountValue.network.policyAsset,
@@ -351,7 +353,7 @@ class ReceiveViewModel constructor(
             invoiceExpiration.value = DateUtils.getRelativeTimeSpanString(
                 invoice.expireIn().toEpochMilliseconds(),
                 System.currentTimeMillis(),
-                DAY_IN_MILLIS
+                DateUtils.SECOND_IN_MILLIS
             ).toString()
 
             lightningInvoice.value = invoice
@@ -394,20 +396,31 @@ class ReceiveViewModel constructor(
                 ).getBalance()
             }
 
-            balance to (balance?.let {
+            (balance?.let {
                 "≈ " + it.toAmountLook(
                     session = session,
                     assetId = accountAsset.assetId,
-                    denomination = Denomination.exchange(session = session, denomination = denomination.value),
+                    denomination = Denomination.exchange(
+                        session = session,
+                        denomination = denomination.value
+                    ),
                     withUnit = true,
                     withGrouping = true,
                     withMinimumDigits = false
                 )
-            } ?: "")
+            } ?: "").also {
+                amountExchange.postValue(it)
+            }
+
+            balance to
+                    balance?.satoshi?.let {
+                        if (it > session.lightningNodeInfoStateFlow.value.inboundLiquiditySatoshi()) session.lightningSdk.openChannelFee(
+                            it
+                        ) else null
+                    }
         }, preAction = null, postAction = null, onSuccess = {
             val balance = it.first
-
-            amountExchange.postValue(it.second)
+            val openChannelFee = it.second
 
             amountIsValid.value = if (amount.string().isBlank()) {
                 0
@@ -416,22 +429,32 @@ class ReceiveViewModel constructor(
             } else {
                 if (balance.satoshi >= 0 &&
                     balance.satoshi <= session.lightningNodeInfoStateFlow.value.maxReceivableSatoshi() &&
-                    (
-                            balance.satoshi <= session.lightningNodeInfoStateFlow.value.inboundLiquiditySatoshi() ||
-                                    session.lspInfoStateFlow.value?.let { balance.satoshi >= it.channelMinimumFeeSatoshi() } == true
-                            )
+                    (balance.satoshi <= session.lightningNodeInfoStateFlow.value.inboundLiquiditySatoshi() || (balance.satoshi > (openChannelFee?.feeSatoshi() ?: 0)))
                 ) 1 else -1
             }
 
-            showLiquidityFee.value = amountIsValid.value == 1 && session.lspInfoStateFlow.value != null &&
-                    (session.lightningNodeInfoStateFlow.value.inboundLiquidityMsats == 0uL || (balance != null && balance.satoshi >= session.lightningNodeInfoStateFlow.value.inboundLiquiditySatoshi()))
-
             viewModelScope.coroutineScope.launch {
+
+                channelFee.value = openChannelFee?.feeSatoshi()?.toAmountLook(
+                    session = session,
+                    assetId = accountValue.network.policyAsset,
+                    denomination = denomination.value?.notFiat(),
+                    withUnit = true
+                ) ?: ""
+
+                channelFeeFiat.value = openChannelFee?.feeSatoshi()?.toAmountLook(
+                    session = session,
+                    assetId = accountValue.network.policyAsset,
+                    denomination = Denomination.fiat(session),
+                    withUnit = true
+                ) ?: ""
+
+                showLiquidityFee.value =
+                    amountIsValid.value == 1 && session.lspInfoStateFlow.value != null && (session.lightningNodeInfoStateFlow.value.inboundLiquidityMsats == 0uL || (balance != null && balance.satoshi >= session.lightningNodeInfoStateFlow.value.inboundLiquiditySatoshi()))
+
                 liquidityFeeError.value = if (amountIsValid.value == -1 && balance != null) {
-                    val maxReceivableSatoshi =
-                        session.lightningNodeInfoStateFlow.value.maxReceivableSatoshi()
-                    val channelMinimum =
-                        session.lightningSdk.lspInfoStateFlow.value?.channelMinimumFeeSatoshi() ?: 0
+                    val maxReceivableSatoshi = session.lightningNodeInfoStateFlow.value.maxReceivableSatoshi()
+                    val channelMinimum = openChannelFee?.feeSatoshi() ?: 0
                     if (balance.satoshi > maxReceivableSatoshi) {
                         context.getString(
                             R.string.id_you_cannot_receive_more_than_s,
@@ -442,7 +465,7 @@ class ReceiveViewModel constructor(
                                 denomination = Denomination.fiat(session)
                             )
                         )
-                    } else if (balance.satoshi < channelMinimum) {
+                    } else if (balance.satoshi <= channelMinimum) {
                         context.getString(R.string.id_this_amount_is_below_the,
                             channelMinimum.toAmountLook(session = session, withUnit = true, denomination = denomination.value?.notFiat()),
                             channelMinimum.toAmountLook(session = session, withUnit = true, denomination = Denomination.fiat(session))

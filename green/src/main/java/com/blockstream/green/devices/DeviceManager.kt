@@ -2,6 +2,7 @@ package com.blockstream.green.devices
 
 import android.annotation.SuppressLint
 import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -67,8 +68,8 @@ class DeviceManager constructor(
             } else if (ACTION_USB_PERMISSION == intent.action) {
                 val device: UsbDevice? = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
 
-                if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                    device?.apply {
+                if (device != null && (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false) || hasPermissions(device))) {
+                    device.apply {
                         logger.info { "Permission granted for device $device" }
                         onPermissionSuccess?.get()?.invoke()
                     }
@@ -238,7 +239,10 @@ class DeviceManager constructor(
     fun askForPermissions(device: UsbDevice, onSuccess: (() -> Unit), onError: ((throwable: Throwable?) -> Unit)? = null) {
         onPermissionSuccess = WeakReference(onSuccess)
         onPermissionError = onError?.let { WeakReference(it) }
-        val permissionIntent = PendingIntent.getBroadcast(context, 0, Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_MUTABLE)
+        val permissionIntent = PendingIntent.getBroadcast(context, 748, Intent(ACTION_USB_PERMISSION).also {
+            // Cause of FLAG_IMMUTABLE OS won't give us the Extra Device
+            it.putExtra(UsbManager.EXTRA_DEVICE, device)
+        }, FLAG_IMMUTABLE)
         usbManager.requestPermission(device, permissionIntent)
     }
 

@@ -33,6 +33,8 @@ import kotlinx.coroutines.flow.onEach
 class LightningNodeBottomSheetFragment :
     WalletBottomSheetDialogFragment<LightningNodeBottomSheetBinding, AbstractWalletViewModel>() {
     override val screenName = "LightningNodeState"
+
+    override val expanded: Boolean = true
     
     override fun inflate(layoutInflater: LayoutInflater) =
         LightningNodeBottomSheetBinding.inflate(layoutInflater)
@@ -43,7 +45,7 @@ class LightningNodeBottomSheetFragment :
         val itemAdapter = FastItemAdapter<GenericItem>()
 
         val showRecoveryPhrase = ActionListItem(
-            buttonOutline = StringHolder(R.string.id_show_recovery_phrase),
+            buttonText = StringHolder(R.string.id_show_recovery_phrase),
         )
         val closeChannel = ActionListItem(
             buttonText = StringHolder(R.string.id_close_channel),
@@ -119,15 +121,11 @@ class LightningNodeBottomSheetFragment :
 
         val fastAdapter = FastAdapter.with(itemAdapter)
 
-        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.buttonOutline }) { view, _, _, item ->
+        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.buttonText }) { view, _, _, item ->
             if (item == showRecoveryPhrase) {
                 (parentFragment as? AccountOverviewFragment)?.showLightningRecoveryPhrase()
                 dismiss()
-            }
-        }
-
-        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.buttonText }) { view, _, _, item ->
-            if (item == closeChannel) {
+            } else if (item == closeChannel) {
                 (parentFragment as? AccountOverviewFragment)?.viewModel?.closeChannel()
                 (view as? Button)?.isEnabled = false
             }

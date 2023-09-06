@@ -8,19 +8,29 @@ import breez_sdk.EventListener
 import breez_sdk.GreenlightCredentials
 import breez_sdk.GreenlightNodeConfig
 import breez_sdk.InputType
+import breez_sdk.ListPaymentsRequest
 import breez_sdk.LnInvoice
 import breez_sdk.LnUrlAuthRequestData
 import breez_sdk.LnUrlCallbackStatus
 import breez_sdk.LnUrlPayRequestData
 import breez_sdk.LnUrlPayResult
 import breez_sdk.LnUrlWithdrawRequestData
+import breez_sdk.LnUrlWithdrawResult
 import breez_sdk.LspInformation
 import breez_sdk.NodeConfig
 import breez_sdk.NodeState
+import breez_sdk.OpenChannelFeeRequest
+import breez_sdk.OpenChannelFeeResponse
+import breez_sdk.OpeningFeeParams
 import breez_sdk.Payment
 import breez_sdk.PaymentTypeFilter
+import breez_sdk.ReceiveOnchainRequest
+import breez_sdk.ReceivePaymentRequest
+import breez_sdk.ReceivePaymentResponse
 import breez_sdk.RecommendedFees
 import breez_sdk.SwapInfo
+import breez_sdk.SweepRequest
+import breez_sdk.SweepResponse
 import breez_sdk.connect
 import breez_sdk.defaultConfig
 import breez_sdk.mnemonicToSeed
@@ -28,6 +38,7 @@ import breez_sdk.parseInput
 import breez_sdk.parseInvoice
 import co.touchlab.kermit.Logger
 import com.blockstream.common.platformFileSystem
+import com.blockstream.common.utils.Loggable
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -97,7 +108,7 @@ class LightningBridge constructor(
         private set
 
     init {
-        Logger.i { "Lightning SDK: $workingDir" }
+        logger.i { "Lightning SDK: $workingDir" }
         workingDir.toPath().also { path ->
             if(!platformFileSystem().exists(path)){
                 platformFileSystem().createDirectories(path, mustCreate = true)
@@ -216,23 +227,44 @@ class LightningBridge constructor(
         updateSwapInfo()
 
         return breezSdkOrNull?.listPayments(
-            filter = PaymentTypeFilter.ALL,
-            fromTimestamp = null,
-            toTimestamp = null
+            ListPaymentsRequest(
+                filter = PaymentTypeFilter.ALL
+            )
         )
     }
 
-    fun createInvoice(satoshi: Long, description: String): LnInvoice {
+    fun openChannelFee(satoshi: Long): OpenChannelFeeResponse? {
         return try {
-            breezSdk.receivePayment(amountSats = satoshi.toULong(), description = description)
+            breezSdk.openChannelFee(OpenChannelFeeRequest(amountMsat = satoshi.toULong() * 1000u)).also {
+                logger.d { "openChannelFee: $it" }
+            }
+        }catch (e: Exception){
+            e.printStackTrace()
+            null
+        }
+    }
+
+    fun createInvoice(satoshi: Long, description: String, openingFeeParams: OpeningFeeParams? = null): ReceivePaymentResponse {
+        return try {
+            breezSdk.receivePayment(
+                ReceivePaymentRequest(
+                    amountSats = satoshi.toULong(),
+                    description = description,
+                    openingFeeParams = openingFeeParams
+                )
+            ).also {
+                logger.d { "receivePayment: $it" }
+            }
         } catch (e: Exception) {
             throw exceptionWithNodeId(e)
         }
     }
 
-    fun receiveOnchain(): SwapInfo? {
+    fun receiveOnchain(request: ReceiveOnchainRequest = ReceiveOnchainRequest()): SwapInfo? {
         return try {
-            breezSdk.receiveOnchain()
+            breezSdk.receiveOnchain(request).also {
+                logger.d { "receiveOnchain $it" }
+            }
         } catch (e: Exception) {
             e.printStackTrace()
 
@@ -271,11 +303,13 @@ class LightningBridge constructor(
         }
     }
 
-    fun sweep(toAddress: String, satPerVbyte: UInt?){
+    fun sweep(toAddress: String, satPerVbyte: UInt?): SweepResponse {
         return try {
             breezSdk.sweep(
-                toAddress = toAddress,
-                feeRateSatsPerVbyte = satPerVbyte?.toULong() ?: breezSdk.recommendedFees().economyFee.toULong()
+                SweepRequest(
+                    toAddress = toAddress,
+                    feeRateSatsPerVbyte = satPerVbyte ?: breezSdk.recommendedFees().economyFee.toUInt()
+                )
             )
         } catch (e: Exception) {
             e.printStackTrace()
@@ -317,7 +351,7 @@ class LightningBridge constructor(
         requestData: LnUrlWithdrawRequestData,
         amount: Long,
         description: String?
-    ): LnUrlCallbackStatus {
+    ): LnUrlWithdrawResult {
         return try {
             breezSdk.withdrawLnurl(requestData, amount.toULong(), description)
         } catch (e: Exception) {
@@ -362,4 +396,6 @@ class LightningBridge constructor(
 
     private fun exceptionWithNodeId(exception: Exception) =
         Exception("${exception.message}\nNodeId: ${_nodeInfoStateFlow.value.id}\nTimestamp: ${Clock.System.now().epochSeconds}", exception.cause)
+
+    companion object: Loggable()
 }

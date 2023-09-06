@@ -9,7 +9,7 @@ interface ITransactionLook {
     val network: Network
     suspend fun fee() : String
     suspend fun feeFiat(): String?
-    fun feeRate() : String
+    fun feeRate() : String?
 
     val utxoSize : Int
     fun getUtxoView(index: Int): UtxoView?

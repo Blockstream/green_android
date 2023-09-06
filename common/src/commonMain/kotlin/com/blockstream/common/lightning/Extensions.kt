@@ -4,10 +4,12 @@ import breez_sdk.GreenlightCredentials
 import breez_sdk.LnInvoice
 import breez_sdk.LnUrlPayRequestData
 import breez_sdk.LnUrlWithdrawRequestData
-import breez_sdk.LspInformation
 import breez_sdk.NodeState
+import breez_sdk.OpenChannelFeeResponse
+import breez_sdk.OpeningFeeParams
 import breez_sdk.Payment
 import breez_sdk.PaymentDetails
+import breez_sdk.PaymentStatus
 import breez_sdk.PaymentType
 import breez_sdk.SuccessActionProcessed
 import breez_sdk.SwapInfo
@@ -26,8 +28,13 @@ import kotlinx.datetime.periodUntil
 import kotlinx.serialization.json.Json
 import kotlin.io.encoding.Base64
 
+fun ULong.satoshi() = toLong() / 1000
 
-fun LnInvoice.amountSatoshi() = this.amountMsat?.let { it.toLong() / 1000 }
+fun OpenChannelFeeResponse.feeSatoshi() = feeMsat.satoshi()
+
+fun LnInvoice.amountSatoshi() = this.amountMsat?.satoshi()
+fun LnInvoice.receiveAmountSatoshi(openingFeeParams: OpeningFeeParams?) =
+    (this.amountMsat?.satoshi() ?: 0L) - (openingFeeParams?.minMsat?.satoshi() ?: 0L)
 
 fun LnInvoice.expireIn() = Instant.fromEpochSeconds((this.timestamp + this.expiry).toLong())
 fun LnInvoice.timeUntilExpiration() = expireIn().periodUntil(Clock.System.now(), TimeZone.currentSystemDefault())
@@ -46,8 +53,8 @@ fun LnInvoice.sendableSatoshi(userSatoshi: Long?): Long? {
     }
 }
 
-fun LnUrlWithdrawRequestData.maxWithdrawableSatoshi() = this.maxWithdrawable.toLong() / 1000
-fun LnUrlWithdrawRequestData.minWithdrawableSatoshi() = this.minWithdrawable.toLong() / 1000
+fun LnUrlWithdrawRequestData.maxWithdrawableSatoshi() = this.maxWithdrawable.satoshi()
+fun LnUrlWithdrawRequestData.minWithdrawableSatoshi() = this.minWithdrawable.satoshi()
 
 fun LnUrlWithdrawRequestData.domain() = this.callback.hostname(excludePort = true)
 
@@ -60,8 +67,8 @@ fun LnUrlPayRequestData.sendableSatoshi(userSatoshi: Long?): Long? {
     }
 }
 
-fun LnUrlPayRequestData.maxSendableSatoshi() = this.maxSendable.toLong() / 1000
-fun LnUrlPayRequestData.minSendableSatoshi() = this.minSendable.toLong() / 1000
+fun LnUrlPayRequestData.maxSendableSatoshi() = this.maxSendable.satoshi()
+fun LnUrlPayRequestData.minSendableSatoshi() = this.minSendable.satoshi()
 
 fun LnUrlPayRequestData.metadata(): List<List<String>>? {
     return try{
@@ -92,17 +99,14 @@ fun List<List<String>>?.lnUrlPayImage(): ByteArray? {
 }
 
 fun NodeState.isLoading() = this.id.isBlank()
-fun NodeState.channelsBalanceSatoshi() = this.channelsBalanceMsat.toLong() / 1000
-fun NodeState.onchainBalanceSatoshi() = this.onchainBalanceMsat.toLong() / 1000
-fun NodeState.maxReceivableSatoshi() = this.maxReceivableMsat.toLong() / 1000
-fun NodeState.inboundLiquiditySatoshi() = this.inboundLiquidityMsats.toLong() / 1000
-fun NodeState.maxSinglePaymentAmountSatoshi() = this.maxSinglePaymentAmountMsat.toLong() / 1000
-fun NodeState.maxPayableSatoshi() = this.maxPayableMsat.toLong() / 1000
+fun NodeState.channelsBalanceSatoshi() = this.channelsBalanceMsat.satoshi()
+fun NodeState.onchainBalanceSatoshi() = this.onchainBalanceMsat.satoshi()
+fun NodeState.maxReceivableSatoshi() = this.maxReceivableMsat.satoshi()
+fun NodeState.inboundLiquiditySatoshi() = this.inboundLiquidityMsats.satoshi()
+fun NodeState.maxSinglePaymentAmountSatoshi() = this.maxSinglePaymentAmountMsat.satoshi()
+fun NodeState.maxPayableSatoshi() = this.maxPayableMsat.satoshi()
 
-fun Payment.amountSatoshi() = (this.amountMsat.toLong() / 1000) * if(paymentType == PaymentType.RECEIVED) 1 else -1
-
-fun LspInformation.channelMinimumFeeSatoshi() = this.channelMinimumFeeMsat / 1000
-fun LspInformation.channelFeePercent() = this.channelFeePermyriad / 100.0
+fun Payment.amountSatoshi() = amountMsat.satoshi() * if(paymentType == PaymentType.RECEIVED) 1 else -1
 
 fun Addressee.Companion.fromInvoice(invoice: LnInvoice, fallbackAmount: Long): Addressee {
     return Addressee(
@@ -148,7 +152,7 @@ fun Transaction.Companion.fromPayment(payment: Payment): Transaction {
         createdAtTs = payment.paymentTime * 1_000_000,
         inputs = listOf(),
         outputs = listOf(),
-        fee = payment.feeMsat.toLong() / 1000,
+        fee = payment.feeMsat.satoshi(),
         feeRate = 0,
         memo = payment.description ?: "",
         rbfOptin = false,
@@ -159,7 +163,7 @@ fun Transaction.Companion.fromPayment(payment: Payment): Transaction {
         message = ((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Message)?.data?.message,
         plaintext = ((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Aes)?.data?.let { it.description to it.plaintext },
         url = ((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Url)?.data?.let { it.description to it.url},
-        isPendingCloseChannel = payment.paymentType == PaymentType.CLOSED_CHANNEL && payment.pending
+        isPendingCloseChannel = payment.paymentType == PaymentType.CLOSED_CHANNEL && payment.status == PaymentStatus.PENDING
     )
 }
 

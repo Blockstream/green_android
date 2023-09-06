@@ -1,6 +1,6 @@
 [versions]
 atomicfu-gradle-plugin = "0.22.0"
-breez = "0.1.4"
+breez = "0.2.6"
 androidCompileSdk = "34"
 androidTargetSdk = "34"
 androidMinSdk = "23"

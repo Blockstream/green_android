@@ -3,8 +3,8 @@ package com.blockstream.common.gdk
 import breez_sdk.BreezEvent
 import breez_sdk.InputType
 import breez_sdk.InvoicePaidDetails
-import breez_sdk.LnInvoice
 import breez_sdk.LnUrlPayResult
+import breez_sdk.ReceivePaymentResponse
 import breez_sdk.SwapInfo
 import co.touchlab.kermit.Logger
 import com.blockstream.common.BTC_POLICY_ASSET
@@ -1557,7 +1557,7 @@ class GdkSession constructor(
         return lightningSdk.receiveOnchain()
     }
 
-    fun createLightningInvoice(satoshi: Long, description: String): LnInvoice {
+    fun createLightningInvoice(satoshi: Long, description: String): ReceivePaymentResponse {
         return lightningSdk.createInvoice(satoshi, description)
     }
 
@@ -2177,7 +2177,7 @@ class GdkSession constructor(
         }
     }
     private suspend fun createLightningTransaction(network: Network, params: CreateTransactionParams): CreateTransaction {
-        Logger.i { "createLightningTransaction $params" }
+        Logger.d { "createLightningTransaction $params" }
 
         val address = params.addresseesAsParams?.firstOrNull()?.address ?: ""
         val userInputSatoshi = params.addresseesAsParams?.firstOrNull()?.satoshi
@@ -2186,7 +2186,7 @@ class GdkSession constructor(
             is InputType.Bolt11 -> {
                 val invoice = lightningInputType.invoice
 
-                Logger.i { "Expire in ${invoice.expireIn()}" }
+                Logger.d { "Expire in ${invoice.expireIn()}" }
 
                 var sendableSatoshi = invoice.sendableSatoshi(userInputSatoshi)
 
@@ -2287,7 +2287,7 @@ class GdkSession constructor(
         val satoshi = signedTransaction.addressees.first().satoshi?.absoluteValue ?: 0L
         val comment = signedTransaction.memo
 
-        Logger.i { "invoiceOrLnUrl: $invoiceOrLnUrl satoshi: $satoshi comment: $comment " }
+        Logger.d { "invoiceOrLnUrl: $invoiceOrLnUrl satoshi: $satoshi comment: $comment " }
 
         when (val inputType = lightningSdk.parseBoltOrLNUrlAndCache(invoiceOrLnUrl)) {
             is InputType.Bolt11 -> {
@@ -2296,7 +2296,7 @@ class GdkSession constructor(
                     throw Exception("id_invoice_expired")
                 }
 
-                Logger.i { "Sending invoice ${inputType.invoice.bolt11}" }
+                Logger.d { "Sending invoice ${inputType.invoice.bolt11}" }
 
                 SendTransactionSuccess(
                     payment = lightningSdk.sendPayment(
@@ -2368,7 +2368,7 @@ class GdkSession constructor(
 
         val network = gdkSessions.firstNotNullOfOrNull { if(it.value == gaSession) it.key else null } ?: return
 
-        Logger.i { "onNewNotification ${network.id} \t $notification" }
+        Logger.d { "onNewNotification ${network.id} \t $notification" }
 
         when (notification.event) {
             "block" -> {
@@ -2463,7 +2463,7 @@ class GdkSession constructor(
 
     private fun cacheAssets(assetIds: Collection<String>) {
         assetIds.filter { it != BTC_POLICY_ASSET }.takeIf { it.isNotEmpty() }?.also {
-            Logger.i { "Cache assets: $it" }
+            Logger.d { "Cache assets: $it" }
             networkAssetManager.cacheAssets(it, this)
         }
     }

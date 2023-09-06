@@ -108,7 +108,6 @@ sealed class Denomination(open val denomination: String) : Parcelable {
         return this.takeIf { !it.isFiat }
     }
 
-
     companion object {
 
         fun byUnit(unit: String) = when (unit) {

@@ -92,7 +92,8 @@ kotlin {
                 /** ----------------------------------------------------------------------------------------- */
 
                 /**  --- Breez ------------------------------------------------------------------------------ */
-                api(libs.breez.sdk.kmp)
+                // Disable Breez KMP until panic bug is fixed
+                // api(libs.breez.sdk.kmp)
                 /** ----------------------------------------------------------------------------------------- */
 
                 /**  --- Misc. ------------------------------------------------------------------------------ */
@@ -117,6 +118,9 @@ kotlin {
                 implementation(libs.androidx.lifecycle.viewmodel.ktx)
                 implementation(libs.koin.android)
                 implementation(libs.sqldelight.android.driver)
+                // Temp fix until Breez KMP is fixed
+                api("breez_sdk:bindings-android:0.2.5")
+                implementation("net.java.dev.jna:jna:5.13.0@aar")
             }
         }
 
@@ -124,6 +128,8 @@ kotlin {
             dependencies {
                 implementation(libs.stately.common) // until this is fixed https://github.com/touchlab/Stately/issues/93
                 implementation(libs.sqldelight.native.driver)
+                // Temp fix until Breez KMP is fixed, this dependency should only exist in common
+                api(libs.breez.sdk.kmp)
             }
         }
 
@@ -185,12 +191,7 @@ tasks.configureEach {
 // https://kotlinlang.org/docs/ksp-multiplatform.html
 // https://github.com/InsertKoinIO/hello-kmp/blob/annotations/shared/build.gradle.kts
 dependencies {
-//    androidTestImplementation("org.testng:testng:6.9.6")
     add("kspCommonMainMetadata", libs.koin.ksp.compiler)
-//    add("kspCommonMainMetadata", libs.koin.ksp.compiler)
-//    add("kspAndroid", libs.koin.ksp.compiler)
-//    add("kspIosArm64", libs.koin.ksp.compiler)
-//    add("kspIosSimulatorArm64", libs.koin.ksp.compiler)
 }
 
 // WORKAROUND: ADD this dependsOn("kspCommonMainKotlinMetadata") instead of above dependencies

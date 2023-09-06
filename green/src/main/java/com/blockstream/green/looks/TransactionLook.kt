@@ -41,12 +41,13 @@ class TransactionLook constructor(val tx: Transaction, val session: GdkSession):
             withMinimumDigits = true
         )
 
-    override suspend fun feeFiat(): String? = session.convertAmount(network, Convert(satoshi = tx.fee))
+    override suspend fun feeFiat(): String? = session.convertAmount(network.policyAsset, Convert(satoshi = tx.fee))
             ?.toAmountLook(session = session, denomination = Denomination.fiat(session), withUnit = true)?.let {
                 "≈ $it"
             }
 
-    override fun feeRate(): String = tx.feeRate.feeRateWithUnit()
+    override fun feeRate(): String? = tx.feeRate.takeIf { !tx.account.isLightning }
+        ?.let { "(${(tx.feeRate).feeRateWithUnit()})" }
 
     override val utxoSize: Int
         get() = tx.utxoViews.size
