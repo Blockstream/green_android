@@ -230,13 +230,15 @@ class SendViewModel {
             let value = tx.amounts.filter({$0.key == assetId}).first?.value ?? 0
             satoshi = abs(value)
         }
+        editableAddress = true
+        editableAmount = true
         switch inputType {
         case .transaction, .lnurl:
-            editableAddress = true
-        default:
+            editableAmount = tx.addressees.count > 0 && !sendAll
+        case .sweep, .bumpFee, .bolt11:
             editableAddress = false
+            editableAmount = false
         }
-        editableAmount = tx.privateKey == nil && tx.addressees.count > 0 && !sendAll
     }
     
     var alertCellModel: AlertCardCellModel? {
