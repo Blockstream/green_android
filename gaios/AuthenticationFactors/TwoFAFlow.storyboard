@@ -452,19 +452,19 @@
                                         <rect key="frame" x="0.0" y="0.0" width="393" height="759"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3U8-dT-U77">
-                                                <rect key="frame" x="29.333333333333343" y="244.66666666666669" width="334.33333333333326" height="270.00000000000006"/>
+                                                <rect key="frame" x="29.333333333333343" y="194.66666666666663" width="334.33333333333326" height="370"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="lbl_title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fa7-QM-4a0">
-                                                        <rect key="frame" x="25" y="30" width="284.33333333333331" height="20.333333333333329"/>
+                                                        <rect key="frame" x="25" y="30.000000000000028" width="284.33333333333331" height="20.333333333333329"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="H5y-e1-9ZB">
-                                                        <rect key="frame" x="0.0" y="70" width="334.33333333333331" height="120"/>
+                                                        <rect key="frame" x="0.0" y="70.000000000000028" width="334.33333333333331" height="219.99999999999997"/>
                                                         <subviews>
                                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="Lsd-Tq-7e5">
-                                                                <rect key="frame" x="25" y="10" width="284.33333333333331" height="100"/>
+                                                                <rect key="frame" x="25" y="10" width="284.33333333333331" height="200"/>
                                                                 <subviews>
                                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OE9-62-obO">
                                                                         <rect key="frame" x="0.0" y="0.0" width="284.33333333333331" height="50"/>
@@ -490,6 +490,30 @@
                                                                             <action selector="btnCall:" destination="RRJ-GE-mf6" eventType="touchUpInside" id="S7d-h8-6Jv"/>
                                                                         </connections>
                                                                     </button>
+                                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BhD-M0-wyq">
+                                                                        <rect key="frame" x="0.0" y="100" width="120" height="50"/>
+                                                                        <constraints>
+                                                                            <constraint firstAttribute="height" constant="50" id="wu5-Ij-H3i"/>
+                                                                        </constraints>
+                                                                        <inset key="contentEdgeInsets" minX="20" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                                                        <inset key="imageEdgeInsets" minX="-20" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                                        <state key="normal" title="btn_email" image="unselected_circle"/>
+                                                                        <connections>
+                                                                            <action selector="btnEmail:" destination="RRJ-GE-mf6" eventType="touchUpInside" id="irJ-q6-fj4"/>
+                                                                        </connections>
+                                                                    </button>
+                                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ffx-FR-af1">
+                                                                        <rect key="frame" x="0.0" y="150" width="124" height="50"/>
+                                                                        <constraints>
+                                                                            <constraint firstAttribute="height" constant="50" id="JFH-IH-0eP"/>
+                                                                        </constraints>
+                                                                        <inset key="contentEdgeInsets" minX="20" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                                                        <inset key="imageEdgeInsets" minX="-20" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                                        <state key="normal" title="btn_gauth" image="unselected_circle"/>
+                                                                        <connections>
+                                                                            <action selector="btnGauth:" destination="RRJ-GE-mf6" eventType="touchUpInside" id="6gx-Ag-6y1"/>
+                                                                        </connections>
+                                                                    </button>
                                                                 </subviews>
                                                                 <constraints>
                                                                     <constraint firstItem="OE9-62-obO" firstAttribute="leading" secondItem="Lsd-Tq-7e5" secondAttribute="leading" id="0Ng-CS-CQx"/>
@@ -508,7 +532,7 @@
                                                         </constraints>
                                                     </view>
                                                     <stackView opaque="NO" contentMode="scaleToFill" alignment="top" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="Q2f-Fp-BYh">
-                                                        <rect key="frame" x="159.33333333333331" y="200" width="150" height="50"/>
+                                                        <rect key="frame" x="159.33333333333331" y="300" width="150" height="50"/>
                                                         <subviews>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j7n-IL-430">
                                                                 <rect key="frame" x="0.0" y="0.0" width="74" height="50"/>
@@ -593,6 +617,8 @@
                         <outlet property="bgLayer" destination="gcK-RL-xK7" id="r2V-lD-RA2"/>
                         <outlet property="btnCall" destination="Vnn-iA-kiN" id="IXb-V8-vYh"/>
                         <outlet property="btnCancel" destination="j7n-IL-430" id="eZ0-0y-0pM"/>
+                        <outlet property="btnEmail" destination="BhD-M0-wyq" id="wUL-5Z-jum"/>
+                        <outlet property="btnGAuth" destination="Ffx-FR-af1" id="35c-hf-eQn"/>
                         <outlet property="btnOk" destination="9SX-qL-z9L" id="ijY-ya-Lw8"/>
                         <outlet property="btnSMS" destination="OE9-62-obO" id="fwz-nd-WxA"/>
                         <outlet property="cardView" destination="3U8-dT-U77" id="fIb-ns-2mT"/>
@@ -611,7 +637,7 @@
         <image name="ic_paste" width="24" height="24"/>
         <image name="unselected_circle" width="21" height="21"/>
         <namedColor name="gBlackBg">
-            <color red="0.075000002980232239" green="0.086000002920627594" blue="0.11400000005960464" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.074509803921568626" green="0.082352941176470587" blue="0.11372549019607843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="gGrayCard">
             <color red="0.12941176470588237" green="0.12941176470588237" blue="0.14509803921568629" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
