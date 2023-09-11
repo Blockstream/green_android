@@ -23,21 +23,6 @@ class QRCodeReaderView: UIView {
         return previewLayer
     }()
 
-    lazy var blurEffectView: UIVisualEffectView = {
-        let blurEffect = UIBlurEffect(style: .light)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        blurEffectView.frame = cFrame
-        blurEffectView.layer.masksToBounds = true
-        blurEffectView.alpha = 0.9
-        return blurEffectView
-    }()
-
-    lazy var borderView: UIView = {
-        let borderImageView = UIImageView(frame: cFrame)
-        borderImageView.image = UIImage(named: "qr_bg")
-        return borderImageView
-    }()
-
     lazy var placeholderTextView: UIView = {
         let placeholderTextView = UIView(frame: frame)
         placeholderTextView.backgroundColor = UIColor.customTitaniumDark()
@@ -106,8 +91,6 @@ class QRCodeReaderView: UIView {
         if previewLayer != nil {
             layer.addSublayer(previewLayer!)
         }
-        addSubview(blurEffectView)
-        addSubview(borderView)
     }
 
     private func setupPlaceholderView() {
@@ -132,50 +115,8 @@ class QRCodeReaderView: UIView {
     }
 
     override func layoutSubviews() {
-        blurEffectView.frame = cFrame
         previewLayer?.frame = cFrame
         placeholderTextView.frame = cFrame
-
-        borderView.frame = createFrame(frame: cFrame)
-
-        let maskLayer = createMaskLayer()
-        if #available(iOS 11.0, *) {
-            blurEffectView.layer.mask = maskLayer
-        } else {
-            let maskView = UIView(frame: cFrame)
-            maskView.backgroundColor = UIColor.clear
-            maskView.layer.mask = maskLayer
-            blurEffectView.mask = maskView
-        }
-    }
-
-    func createBorderView(frame: CGRect) -> UIView {
-        let rect = createFrame(frame: cFrame)
-        let borderView = UIView(frame: rect)
-        borderView.backgroundColor = UIColor(white: 0, alpha: 0)
-        borderView.borderWidth = 4
-        borderView.borderColor = UIColor.red
-        return borderView
-    }
-
-    private func createMaskLayer() -> CALayer {
-        let rect = createFrame(frame: cFrame)
-        let path = UIBezierPath(rect: cFrame)
-        let centerRectangle = UIBezierPath(rect: rect)
-        path.append(centerRectangle)
-        path.usesEvenOddFillRule = true
-
-        let maskLayer = CAShapeLayer()
-        maskLayer.path = path.cgPath
-        maskLayer.fillRule = CAShapeLayerFillRule.evenOdd
-        return maskLayer
-    }
-
-    private func createFrame(frame: CGRect) -> CGRect {
-        var rect = CGRect(x: 0.0, y: 0.0, width: frame.size.width / 2, height: frame.size.width / 2)
-        rect.origin.x = frame.size.width / 2 - rect.size.width / 2
-        rect.origin.y = frame.size.height / 2 - rect.size.height / 2
-        return rect
     }
 
     func startScan() {
@@ -184,7 +125,7 @@ class QRCodeReaderView: UIView {
             DispatchQueue.global(qos: .background).async {
                 self.captureSession.startRunning()
             }
-            if let rectOfInterest = self.previewLayer?.metadataOutputRectConverted(fromLayerRect: self.borderView.frame) {
+            if let rectOfInterest = self.previewLayer?.metadataOutputRectConverted(fromLayerRect: cFrame) {
                 self.captureMetadataOutput?.rectOfInterest = rectOfInterest
             }
         }
