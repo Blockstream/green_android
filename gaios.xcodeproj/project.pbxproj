@@ -107,6 +107,8 @@
 		34347679268322A100D7AD43 /* RecoveryVerify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34347678268322A100D7AD43 /* RecoveryVerify.swift */; };
 		34386C8A26F086BA00EBB6A6 /* DialogAccountIdViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34386C8926F086BA00EBB6A6 /* DialogAccountIdViewController.swift */; };
 		34389B632A9754260023DAC3 /* RedeemPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34389B622A9754260023DAC3 /* RedeemPrefs.swift */; };
+		343BC9542AA9BEAD00F0FEE5 /* TwoFAFlow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 343BC9532AA9BEAD00F0FEE5 /* TwoFAFlow.storyboard */; };
+		343BC9572AA9BF1200F0FEE5 /* TwoFAViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343BC9562AA9BF1200F0FEE5 /* TwoFAViewController.swift */; };
 		34440E7A28B379C8006CD464 /* WalletListHDCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34440E7828B379C8006CD464 /* WalletListHDCell.swift */; };
 		34440E7B28B379C8006CD464 /* WalletListHDCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34440E7928B379C8006CD464 /* WalletListHDCell.xib */; };
 		34440E7F28B37C2D006CD464 /* WalletListEmptyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34440E7D28B37C2D006CD464 /* WalletListEmptyCell.swift */; };
@@ -145,6 +147,7 @@
 		344FE34D2684CB3900C087A5 /* SetPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344FE34C2684CB3900C087A5 /* SetPin.swift */; };
 		344FE34F2684D2E800C087A5 /* WalletSuccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344FE34E2684D2E800C087A5 /* WalletSuccess.swift */; };
 		344FE35326850C8500C087A5 /* Container.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344FE35226850C8500C087A5 /* Container.swift */; };
+		3450C8602AAF0616002B67AE /* TwoFAMethodViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3450C85F2AAF0616002B67AE /* TwoFAMethodViewController.swift */; };
 		345142812693148B00E8BE1B /* TransactionsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345142802693148B00E8BE1B /* TransactionsUITests.swift */; };
 		345142832693154100E8BE1B /* XCTestBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345142822693154100E8BE1B /* XCTestBase.swift */; };
 		3451428526932B9300E8BE1B /* Receive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3451428426932B9300E8BE1B /* Receive.swift */; };
@@ -766,6 +769,8 @@
 		34347678268322A100D7AD43 /* RecoveryVerify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryVerify.swift; sourceTree = "<group>"; };
 		34386C8926F086BA00EBB6A6 /* DialogAccountIdViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogAccountIdViewController.swift; sourceTree = "<group>"; };
 		34389B622A9754260023DAC3 /* RedeemPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedeemPrefs.swift; sourceTree = "<group>"; };
+		343BC9532AA9BEAD00F0FEE5 /* TwoFAFlow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = TwoFAFlow.storyboard; sourceTree = "<group>"; };
+		343BC9562AA9BF1200F0FEE5 /* TwoFAViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFAViewController.swift; sourceTree = "<group>"; };
 		34440E7828B379C8006CD464 /* WalletListHDCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListHDCell.swift; sourceTree = "<group>"; };
 		34440E7928B379C8006CD464 /* WalletListHDCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletListHDCell.xib; sourceTree = "<group>"; };
 		34440E7D28B37C2D006CD464 /* WalletListEmptyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListEmptyCell.swift; sourceTree = "<group>"; };
@@ -804,6 +809,7 @@
 		344FE34C2684CB3900C087A5 /* SetPin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPin.swift; sourceTree = "<group>"; };
 		344FE34E2684D2E800C087A5 /* WalletSuccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSuccess.swift; sourceTree = "<group>"; };
 		344FE35226850C8500C087A5 /* Container.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Container.swift; sourceTree = "<group>"; };
+		3450C85F2AAF0616002B67AE /* TwoFAMethodViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFAMethodViewController.swift; sourceTree = "<group>"; };
 		345142802693148B00E8BE1B /* TransactionsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionsUITests.swift; sourceTree = "<group>"; };
 		345142822693154100E8BE1B /* XCTestBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestBase.swift; sourceTree = "<group>"; };
 		3451428426932B9300E8BE1B /* Receive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Receive.swift; sourceTree = "<group>"; };
@@ -3017,6 +3023,9 @@
 				092A84D2211C0D870062F0B2 /* SetEmailViewController.swift */,
 				09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */,
 				09546B322165EB3A009BABFE /* SetGauthViewController.swift */,
+				343BC9532AA9BEAD00F0FEE5 /* TwoFAFlow.storyboard */,
+				343BC9562AA9BF1200F0FEE5 /* TwoFAViewController.swift */,
+				3450C85F2AAF0616002B67AE /* TwoFAMethodViewController.swift */,
 			);
 			path = AuthenticationFactors;
 			sourceTree = "<group>";
@@ -3440,6 +3449,7 @@
 				34B170ED292E872A00A829B2 /* DiscloseCell.xib in Resources */,
 				34F980AF29151C6600C12D48 /* TransactionCell.xib in Resources */,
 				34F51A802A78F0E9000BE5D0 /* AddressAuthLoaderCell.xib in Resources */,
+				343BC9542AA9BEAD00F0FEE5 /* TwoFAFlow.storyboard in Resources */,
 				34B826C42608827F00579C0B /* Recovery.storyboard in Resources */,
 				3415CB042A67BD0100B66882 /* AddressAuth.storyboard in Resources */,
 				34237FD2276B68A900618502 /* Send.storyboard in Resources */,
@@ -3741,6 +3751,7 @@
 				816C3DFE298D0AF9003D29F1 /* DialogJadeCheckViewController.swift in Sources */,
 				34CEFD9E260202010098536C /* LoginViewController.swift in Sources */,
 				34560B7829B9C6E7007E916F /* JadeWaitViewController.swift in Sources */,
+				343BC9572AA9BF1200F0FEE5 /* TwoFAViewController.swift in Sources */,
 				092E1EB020CF993700362253 /* UIColor.swift in Sources */,
 				815A804429B3D44300269027 /* AccountsRepository.swift in Sources */,
 				09DA612620E73A2300C3EA03 /* String.swift in Sources */,
@@ -3895,6 +3906,7 @@
 				34560BA529BF349E007E916F /* OtherDeviceCell.swift in Sources */,
 				34440E7F28B37C2D006CD464 /* WalletListEmptyCell.swift in Sources */,
 				344915F22A0CE29C00D35818 /* ReceiveAddressCellModel.swift in Sources */,
+				3450C8602AAF0616002B67AE /* TwoFAMethodViewController.swift in Sources */,
 				3415CB172A69627500B66882 /* DialogSignViewController.swift in Sources */,
 				818BA71A2A30839B00DFB03A /* BleViewModel.swift in Sources */,
 				34C246512670F0BB009E8FCE /* UINavigationController.swift in Sources */,

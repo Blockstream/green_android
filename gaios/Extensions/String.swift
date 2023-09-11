@@ -139,3 +139,11 @@ extension String {
         return emailPred.evaluate(with: self)
     }
 }
+
+extension String {
+    func isCode6Digits() -> Bool {
+        let codeRegEx = "^[0-9]{6,6}"
+        let codePred = NSPredicate(format: "SELF MATCHES %@", codeRegEx)
+        return codePred.evaluate(with: self)
+    }
+}
