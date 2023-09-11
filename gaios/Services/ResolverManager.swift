@@ -58,34 +58,40 @@ class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate {
         }
         return try await withCheckedThrowingContinuation { continuation in
             textContinuation = continuation
-            codeDialog(method)
+            codeCustomDialog(method)
         }
     }
 
-    func codeDialog(_ method: String) {
+    func codeCustomDialog(_ method: String) {
         let methodDesc: String
         if method == TwoFactorType.email.rawValue { methodDesc = "id_email" } else if method == TwoFactorType.phone.rawValue { methodDesc = "id_phone_call" } else if method == TwoFactorType.sms.rawValue { methodDesc = "id_sms" } else { methodDesc = "id_authenticator_app" }
-        let title = String(format: NSLocalizedString("id_please_provide_your_1s_code", comment: ""), NSLocalizedString(methodDesc, comment: ""))
-        let alert = CodeAlertController(title: title, message: "", preferredStyle: .alert)
-        alert.addTextField {[weak self] (textField: UITextField!) in
-            textField.placeholder = ""
-            textField.keyboardType = .numberPad
-            textField.delegate = self
-            //textField.addTarget(self, action: #selector(alert.codeResolverTextFieldDidChange), for: .editingChanged)
+        
+        let twoFAFlow = UIStoryboard(name: "TwoFAFlow", bundle: nil)
+        guard let vc = twoFAFlow.instantiateViewController(withIdentifier: "TwoFAViewController") as? TwoFAViewController else { return }
+            
+        vc.commontitle = methodDesc
+        
+        vc.onCancel = { [weak self] in
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
+                appDelegate.resolveControllerOff()
+            }
+            self?.textContinuation?.resume(throwing: TwoFactorCallError.cancel(localizedDescription: "id_action_canceled".localized))
         }
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in
-            self.textContinuation?.resume(throwing: TwoFactorCallError.cancel(localizedDescription: "id_action_canceled".localized))
-        })
-        alert.didDisappearBlock = {[weak alert] _ in
-            if let text = alert?.textFields?.first?.text, text.count == 6 {
-                self.textContinuation?.resume(returning: text)
-                DispatchQueue.main.async {
-                    UIApplication.topViewController()?.startAnimating()
-                }
+        
+        vc.onCode = { [weak self] code in
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
+                appDelegate.resolveControllerOff()
+            }
+            self?.textContinuation?.resume(returning: code)
+            DispatchQueue.main.async {
+                UIApplication.topViewController()?.startAnimating()
             }
         }
+        
         DispatchQueue.main.async {
-            UIApplication.topViewController()?.present(alert, animated: true, completion: nil)
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
+                appDelegate.resolveControllerOn(vc)
+            }
         }
     }
 

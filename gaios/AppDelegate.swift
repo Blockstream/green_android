@@ -11,6 +11,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     var navigateWindow: UIWindow?
+    var resolveWindow: UIWindow?
 
     func setupAppearance() {
         if #available(iOS 15.0, *) {
@@ -106,4 +107,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ScreenLocker.shared.stopObserving()
     }
 
+    func resolveControllerOn(_ vc: UIViewController) {
+        resolveWindow = UIWindow(frame: UIScreen.main.bounds)
+        vc.view.frame = resolveWindow!.bounds
+        resolveWindow!.rootViewController = vc
+        resolveWindow!.makeKeyAndVisible()
+    }
+
+    func resolveControllerOff() {
+        resolveWindow?.removeFromSuperview()
+        resolveWindow = nil
+    }
 }

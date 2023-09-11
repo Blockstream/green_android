@@ -1,10 +1,6 @@
 import Foundation
 import UIKit
 
-protocol TwoFAViewControllerDelegate: AnyObject {
-    func onDone()
-}
-
 class TwoFAViewController: UIViewController {
 
     @IBOutlet weak var bgLayer: UIView!
@@ -16,9 +12,18 @@ class TwoFAViewController: UIViewController {
     @IBOutlet weak var btnCancel: UIButton!
     
     @IBOutlet var lblsDigit: [UILabel]!
-    weak var delegate: TwoFAViewControllerDelegate?
 
     var digits: [Int] = []
+
+    var onCancel: (() -> Void)?
+    var onCode: ((String) -> Void)?
+
+    var commontitle = "Please provide your code".localized
+
+    enum TwoFAAction {
+        case cancel
+        case code(digits: String)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,6 +44,7 @@ class TwoFAViewController: UIViewController {
     func setContent() {
         lblTitle.text = "Please provide your code".localized
         lblAttempts.text = "Attempts remaining: 3".localized
+        lblAttempts.isHidden = true
         btnCancel.setTitle("id_cancel".localized, for: .normal)
     }
 
@@ -69,24 +75,32 @@ class TwoFAViewController: UIViewController {
         super.viewWillAppear(animated)
     }
 
-    func dismiss() {
+    func dismiss(_ action: TwoFAAction) {
         UIView.animate(withDuration: 0.3, animations: {
             self.view.alpha = 0.0
         }, completion: { _ in
             self.dismiss(animated: false, completion: {
-                self.delegate?.onDone()
+                switch action {
+                case .cancel:
+                    self.onCancel?()
+                case .code(let digits):
+                    self.onCode?(digits)
+                }
             })
         })
     }
 
     @IBAction func btnCancel(_ sender: Any) {
-        dismiss()
+        dismiss(.cancel)
     }
 
     @IBAction func btnDigit(_ sender: UIButton) {
         if digits.count < 6 {
             digits.append(sender.tag)
             fill()
+        }
+        if digits.count == 6 {
+            dismiss(.code(digits: (digits.map(String.init)).joined()))
         }
     }
     
