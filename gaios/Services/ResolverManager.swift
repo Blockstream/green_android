@@ -61,7 +61,7 @@ class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate {
             codeCustomDialog(method)
         }
     }
-
+    
     func codeCustomDialog(_ method: String) {
         let methodDesc: String
         if method == TwoFactorType.email.rawValue { methodDesc = "id_email" } else if method == TwoFactorType.phone.rawValue { methodDesc = "id_phone_call" } else if method == TwoFactorType.sms.rawValue { methodDesc = "id_sms" } else { methodDesc = "id_authenticator_app" }
@@ -69,18 +69,18 @@ class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate {
         let twoFAFlow = UIStoryboard(name: "TwoFAFlow", bundle: nil)
         guard let vc = twoFAFlow.instantiateViewController(withIdentifier: "TwoFAViewController") as? TwoFAViewController else { return }
             
-        vc.commontitle = methodDesc
+        vc.commontitle = String(format: NSLocalizedString("id_please_provide_your_1s_code", comment: ""), NSLocalizedString(methodDesc, comment: ""))
         
         vc.onCancel = { [weak self] in
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
-                appDelegate.resolveControllerOff()
+                appDelegate.resolve2faOff()
             }
             self?.textContinuation?.resume(throwing: TwoFactorCallError.cancel(localizedDescription: "id_action_canceled".localized))
         }
         
         vc.onCode = { [weak self] code in
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
-                appDelegate.resolveControllerOff()
+                appDelegate.resolve2faOff()
             }
             self?.textContinuation?.resume(returning: code)
             DispatchQueue.main.async {
@@ -90,7 +90,7 @@ class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate {
         
         DispatchQueue.main.async {
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
-                appDelegate.resolveControllerOn(vc)
+                appDelegate.resolve2faOn(vc)
             }
         }
     }
@@ -113,14 +113,14 @@ class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate {
         
         vc.onCancel = { [weak self] in
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
-                appDelegate.resolveControllerOff()
+                appDelegate.resolve2faOff()
             }
             self?.textContinuation?.resume(throwing: TwoFactorCallError.cancel(localizedDescription: "id_action_canceled".localized))
         }
         
         vc.onType = { [weak self] tfType in
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
-                appDelegate.resolveControllerOff()
+                appDelegate.resolve2faOff()
             }
             self?.textContinuation?.resume(returning: tfType.rawValue)
             DispatchQueue.main.async {
@@ -130,29 +130,10 @@ class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate {
         
         DispatchQueue.main.async {
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
-                appDelegate.resolveControllerOn(vc)
+                appDelegate.resolve2faOn(vc)
             }
         }
     }
-//    func methodDialog(_ methods: [String]) {
-//        let alert = UIAlertController(title: NSLocalizedString("id_choose_twofactor_authentication", comment: ""), message: NSLocalizedString("id_choose_method_to_authorize_the", comment: ""), preferredStyle: .alert)
-//        methods.forEach { (method: String) in
-//            let methodDesc: String
-//            if method == TwoFactorType.email.rawValue { methodDesc = "id_email" } else if method == TwoFactorType.phone.rawValue { methodDesc = "id_phone_call" } else if method == TwoFactorType.sms.rawValue { methodDesc = "id_sms" } else { methodDesc = "id_authenticator_app" }
-//            alert.addAction(UIAlertAction(title: NSLocalizedString(methodDesc, comment: ""), style: .default) { (_: UIAlertAction) in
-//                self.textContinuation?.resume(returning: method)
-//                DispatchQueue.main.async {
-//                    UIApplication.topViewController()?.startAnimating()
-//                }
-//            })
-//        }
-//        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in
-//            self.textContinuation?.resume(throwing: TwoFactorCallError.cancel(localizedDescription: "id_action_canceled".localized))
-//        })
-//        DispatchQueue.main.async {
-//            UIApplication.topViewController()?.present(alert, animated: true, completion: nil)
-//        }
-//    }
 
     func textFieldDidChangeSelection(_ textField: UITextField) {
         DispatchQueue.main.async {

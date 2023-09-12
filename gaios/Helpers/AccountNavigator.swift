@@ -51,6 +51,9 @@ class AccountNavigator {
         let appDelegate = UIApplication.shared.delegate
         let nv = goLogin(account: account, nv: nv)
         appDelegate?.window??.rootViewController = nv
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
+            appDelegate.resolve2faOff()
+        }
         return nv
     }
 

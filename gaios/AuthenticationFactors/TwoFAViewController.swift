@@ -18,7 +18,7 @@ class TwoFAViewController: UIViewController {
     var onCancel: (() -> Void)?
     var onCode: ((String) -> Void)?
 
-    var commontitle = "Please provide your code".localized
+    var commontitle = ""
 
     enum TwoFAAction {
         case cancel
@@ -42,7 +42,7 @@ class TwoFAViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Please provide your code".localized
+        lblTitle.text = commontitle
         lblAttempts.text = "Attempts remaining: 3".localized
         lblAttempts.isHidden = true
         btnCancel.setTitle("id_cancel".localized, for: .normal)
@@ -114,6 +114,12 @@ class TwoFAViewController: UIViewController {
                     }
                 }
                 fill()
+                
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
+                    if self.digits.count == 6 {
+                        self.dismiss(.code(digits: (self.digits.map(String.init)).joined()))
+                    }
+                }
             }
         }
     }

@@ -11,7 +11,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     var navigateWindow: UIWindow?
-    var resolveWindow: UIWindow?
+    var resolve2faWindow: UIWindow?
 
     func setupAppearance() {
         if #available(iOS 15.0, *) {
@@ -87,6 +87,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
+        resolve2faWindow?.isHidden = true
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
@@ -100,6 +101,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        resolve2faWindow?.isHidden = false
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -107,15 +109,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ScreenLocker.shared.stopObserving()
     }
 
-    func resolveControllerOn(_ vc: UIViewController) {
-        resolveWindow = UIWindow(frame: UIScreen.main.bounds)
-        vc.view.frame = resolveWindow!.bounds
-        resolveWindow!.rootViewController = vc
-        resolveWindow!.makeKeyAndVisible()
+    func resolve2faOn(_ vc: UIViewController) {
+        resolve2faWindow = UIWindow(frame: UIScreen.main.bounds)
+        resolve2faWindow!.windowLevel = UIWindow.Level.alert
+        vc.view.frame = resolve2faWindow!.bounds
+        resolve2faWindow!.rootViewController = vc
+        resolve2faWindow!.makeKeyAndVisible()
     }
 
-    func resolveControllerOff() {
-        resolveWindow?.removeFromSuperview()
-        resolveWindow = nil
+    func resolve2faOff() {
+        resolve2faWindow?.removeFromSuperview()
+        resolve2faWindow = nil
     }
 }
