@@ -77,7 +77,7 @@ extension Transaction {
         tx.type = payment.paymentType == .received ? .incoming : .outgoing
         tx.amounts = ["btc": payment.amountSatoshi]
         tx.isLightningSwap = false
-        tx.isPendingCloseChannel = payment.paymentType == PaymentType.closedChannel && payment.pending
+        tx.isPendingCloseChannel = payment.paymentType == PaymentType.closedChannel && payment.status == PaymentStatus.pending
         switch payment.details {
         case .ln(let data):
             switch data.lnurlSuccessAction {

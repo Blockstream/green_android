@@ -158,8 +158,7 @@ class Parser {
                 createTx = res
                 return
             }
-        }
-        if !isBip21 || input.starts(with: "liquidnetwork:") {
+        } else if !isBip21 || input.starts(with: "liquidnetwork:") {
             do {
                 if let res = try await parseGdkLiquid(preferredAccount: preferredAccount) {
                     createTx = res
@@ -178,8 +177,7 @@ class Parser {
                     break
                 }
             }
-        }
-        if !isBip21 || input.starts(with: "bitcoin:") {
+        } else if !isBip21 || input.starts(with: "bitcoin:") {
             do {
                 if let res = try await parseGdkBitcoin(preferredAccount: preferredAccount) {
                     createTx = res
@@ -198,8 +196,9 @@ class Parser {
                     break
                 }
             }
+        } else {
+            throw ParserError.InvalidInput("Invalid text")
         }
-        throw ParserError.InvalidInput("Invalid text")
     }
     
     var txType: TxType {

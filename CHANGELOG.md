@@ -3,10 +3,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## Unreleased
+
+### Changed
+- Bump BreezSdk to 0.2.5
+
 ## [4.0.14] - 2023-10-05
 
 ### Changed
 - Improving ble pairing and failure messages
+- Bump BreezSdk to 0.2.3
 
 ## [4.0.13] - 2023-09-22
 

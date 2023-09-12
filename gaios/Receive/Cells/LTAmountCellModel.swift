@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 import BreezSDK
 import gdk
+import lightning
 
 struct LTAmountCellModel {
     var satoshi: Int64?
@@ -11,6 +12,7 @@ struct LTAmountCellModel {
     var gdkNetwork: gdk.GdkNetwork?
     var nodeState: NodeState?
     var lspInfo: LspInformation?
+    var breezSdk: LightningBridge?
 
     var amountText: String? { isFiat ? fiat : btc }
     var denomText: String? {
@@ -63,13 +65,13 @@ struct LTAmountCellModel {
         }
         if satoshi >= nodeState.maxReceivableSatoshi {
             return .tooHigh
-        } else if satoshi <= nodeState.inboundLiquiditySatoshi || satoshi >= lspInfo.channelMinimumFeeSatoshi {
+        } else if satoshi <= nodeState.inboundLiquiditySatoshi || satoshi >= openChannelFee ?? 0 {
             if nodeState.inboundLiquiditySatoshi == 0 || satoshi > nodeState.inboundLiquiditySatoshi {
                 return .validFunding
             } else {
                 return .valid
             }
-        } else if satoshi <= lspInfo.channelMinimumFeeSatoshi {
+        } else if satoshi <= openChannelFee ?? 0 {
             return .tooLow
         } else {
             return .disabled
@@ -82,12 +84,14 @@ struct LTAmountCellModel {
         return Balance.fromSatoshi(0, assetId: AssetInfo.btcId)?.toDenom().1
     }()
 
-    var channelFee: Int64? {
-        let feeVariable = (Float((lspInfo?.channelFeePercent ?? 0)) / 100) * Float(satoshi ?? 0)
-        let fee = Int64(feeVariable)
-        return fee > lspInfo?.channelMinimumFeeSatoshi ?? 0 ? fee : lspInfo?.channelMinimumFeeSatoshi
+    var openChannelFee: Int64? {
+        let channelFee = try? breezSdk?.openChannelFee(satoshi: Long(satoshi ?? 0))?.feeMsat.satoshi
+        if let channelFee = channelFee {
+            return Int64(channelFee)
+        }
+        return nil
     }
-    
+
     func toFiatText(_ amount: Int64?) -> String? {
         if let amount = amount {
             return Balance.fromSatoshi(amount, assetId: AssetInfo.btcId)?.toFiatText()

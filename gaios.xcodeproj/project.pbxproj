@@ -5282,7 +5282,7 @@
 			repositoryURL = "https://github.com/breez/breez-sdk-swift";
 			requirement = {
 				kind = revision;
-				revision = 55c0a99777802b3f0910cb45c04a3d2b7e6cc4d1;
+				revision = 26ecb70efe3f646aaacfee2d6ee56c48ef522414;
 			};
 		};
 		8173B8EA2AB19DB800C15C85 /* XCRemoteSwiftPackageReference "support_sdk_ios" */ = {

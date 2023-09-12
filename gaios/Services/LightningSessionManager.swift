@@ -227,7 +227,7 @@ class LightningSessionManager: SessionManager {
         return try await getBalance(subaccount: 0, numConfs: 0)["btc"] != 0
     }
 
-    func createInvoice(satoshi: UInt64, description: String) async throws -> LnInvoice? {
+    func createInvoice(satoshi: UInt64, description: String) async throws -> ReceivePaymentResponse? {
         try lightBridge?.createInvoice(satoshi: satoshi, description: description)
     }
 

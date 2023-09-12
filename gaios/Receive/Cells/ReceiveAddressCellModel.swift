@@ -14,6 +14,7 @@ struct ReceiveAddressCellModel {
     var inputDenomination: DenominationType
     var nodeState: NodeState?
     var lspInfo: LspInformation?
+    var breezSdk: LightningBridge?
 
     var btc: String? {
         if let satoshi = satoshi {
@@ -32,20 +33,6 @@ struct ReceiveAddressCellModel {
         }
         return nil
     }
-
-    var channelFeePercent: String? {
-        if let channelFeePercent = lspInfo?.channelFeePercent {
-            return "\(channelFeePercent)"
-        }
-        return nil
-    }
-    
-    var channelMinFee: String? {
-        if let channelMinimumFeeSatoshi = lspInfo?.channelMinimumFeeSatoshi {
-            return Balance.fromSatoshi(channelMinimumFeeSatoshi, assetId: AssetInfo.btcId)?.toText(inputDenomination)
-        }
-        return nil
-    }
     
     var onChainMin: String? {
         if let minAllowedDeposit = swapInfo?.minAllowedDeposit {
@@ -59,8 +46,16 @@ struct ReceiveAddressCellModel {
         }
         return nil
     }
+    
+    var channelFee: String? {
+        let channelFeeSatoshi = try? breezSdk?.openChannelFee(satoshi: Long(satoshi ?? 0))?.feeMsat.satoshi
+        if let channelFeeSatoshi = channelFeeSatoshi {
+            return Balance.fromSatoshi(channelFeeSatoshi, assetId: AssetInfo.btcId)?.toText(inputDenomination)
+        }
+        return nil
+    }
 
     var onChaininfo: String? {
-        return String(format: "id_send_more_than_s_and_up_to_s_to".localized, onChainMin ?? "", onChainMax ?? "", "\(channelFeePercent ?? "") %", channelMinFee ?? "")
+        return String(format: "Send more than %@ and up to %@ to this address. A minimum setup fee of %@ will be applied on the received amount.\n\nThis address can be used only once.".localized, onChainMin ?? "", onChainMax ?? "", channelFee ?? "")
     }
 }

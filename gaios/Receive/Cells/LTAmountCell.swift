@@ -159,7 +159,7 @@ class LTAmountCell: UITableViewCell {
         case .validFunding:
             bg.borderColor = UIColor.gGreenFluo()
             infoPanel.backgroundColor = UIColor.gGreenFluo().withAlphaComponent(0.2)
-            let amount = model.channelFee
+            let amount = model.openChannelFee
             lblInfo.text = String(format: "id_a_set_up_funding_fee_of_s_s".localized, model.toBtcText(amount) ?? "", model.toFiatText(amount) ?? "")
             lblInfo.isHidden = false
             btnFeeInfo.isHidden = false
@@ -170,11 +170,12 @@ class LTAmountCell: UITableViewCell {
             let text = String(format: "id_you_cannot_receive_more_than_s".localized, model.toBtcText(amount) ?? "", model.toFiatText(amount) ?? "")
             errorState(text: text)
         case .tooLow:
-            let amount = model.lspInfo?.channelMinimumFeeSatoshi
+            let amount = model.openChannelFee
             let text = String(format: "id_this_amount_is_below_the".localized, model.toBtcText(amount) ?? "", model.toFiatText(amount) ?? "")
             errorState(text: text)
         case .disabled:
-            disableState()        case .disconnected:
+            disableState()
+        case .disconnected:
             let text = "No LSP connected".localized
             errorState(text: text)
         }

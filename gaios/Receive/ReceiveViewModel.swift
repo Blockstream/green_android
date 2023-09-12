@@ -22,7 +22,8 @@ class ReceiveViewModel {
     var type: ReceiveType
     var description: String?
     var address: Address?
-    var invoice: LnInvoice?
+    var receivePaymentResponse: ReceivePaymentResponse?
+    var invoice: LnInvoice? { receivePaymentResponse?.lnInvoice }
     var swap: SwapInfo?
     var inputDenomination: gdk.DenominationType = .Sats
     var state: LTAmountCellState = .disabled
@@ -48,11 +49,11 @@ class ReceiveViewModel {
             let session = self.wm.sessions[account.gdkNetwork.network]
             address = try await session?.getReceiveAddress(subaccount: account.pointer)
         case .bolt11:
-            invoice = nil
+            receivePaymentResponse = nil
             if satoshi == nil {
                 return
             }
-            invoice = try await wm.lightningSession?.createInvoice(satoshi: UInt64(satoshi ?? 0), description: description ?? "")
+            receivePaymentResponse = try await wm.lightningSession?.createInvoice(satoshi: UInt64(satoshi ?? 0), description: description ?? "")
         case .swap:
             swap = try await wm.lightningSession?.lightBridge?.receiveOnchain()
         }
@@ -95,11 +96,13 @@ class ReceiveViewModel {
                                  inputDenomination: inputDenomination,
                                  gdkNetwork: account.session?.gdkNetwork,
                                  nodeState: nodeState,
-                                 lspInfo: lspInfo)
+                                 lspInfo: lspInfo,
+                                 breezSdk: account.lightningSession?.lightBridge
+        )
     }
 
     var infoReceivedAmountCellModel: LTInfoCellModel {
-        if let invoice = invoice, let satoshi = invoice.amountSatoshi {
+        if let satoshi = invoice?.receiveAmountSatoshi(openingFeeParams: receivePaymentResponse?.openingFeeParams) {
             if let balance = Balance.fromSatoshi(Int64(satoshi), assetId: "btc") {
                 let (value, denom) = balance.toDenom(inputDenomination)
                 let (fiat, currency) = balance.toFiat()
@@ -153,7 +156,9 @@ class ReceiveViewModel {
                                        maxLimit: nodeState?.maxReceivableSatoshi,
                                        inputDenomination: inputDenomination,
                                        nodeState: nodeState,
-                                       lspInfo: lspInfo)
+                                       lspInfo: lspInfo,
+                                       breezSdk: account.lightningSession?.lightBridge
+        )
     }
 
     func getAssetSelectViewModel() -> AssetSelectViewModel {

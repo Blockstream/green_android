@@ -141,15 +141,18 @@ public class LightningBridge {
     }
 
     public func getTransactions() -> [Payment] {
-        let list = try? breezSdk?.listPayments(filter: PaymentTypeFilter.all, fromTimestamp: nil, toTimestamp: nil)
+        let list = try? breezSdk?.listPayments(request: ListPaymentsRequest(filter: PaymentTypeFilter.all))
         list?.forEach { print("Payment: \($0)") }
         return list ?? []
     }
 
-    public func createInvoice(satoshi: Long, description: String) throws -> LnInvoice? {
-        let payment = try breezSdk?.receivePayment(amountSats: satoshi, description: description)
+    public func createInvoice(satoshi: Long, description: String, openingFeeParams: OpeningFeeParams? = nil) throws -> ReceivePaymentResponse? {
+        let payment = try breezSdk?.receivePayment(reqData: ReceivePaymentRequest(amountSats: satoshi, description: description, openingFeeParams: openingFeeParams))
         print("createInvoice \(payment)")
         return payment
+    }
+    public func openChannelFee(satoshi: Long) throws -> OpenChannelFeeResponse? {
+        try? breezSdk?.openChannelFee(req: OpenChannelFeeRequest(amountMsat: satoshi * 1000))
     }
     
     public func refund(swapAddress: String, toAddress: String, satPerVbyte: UInt32?) throws -> String? {
@@ -166,8 +169,8 @@ public class LightningBridge {
         try? breezSdk?.listRefundables()
     }
 
-    public func receiveOnchain() -> SwapInfo? {
-        return try? breezSdk?.receiveOnchain()
+    public func receiveOnchain(request: ReceiveOnchainRequest = ReceiveOnchainRequest()) -> SwapInfo? {
+        return try? breezSdk?.receiveOnchain(req: request)
     }
 
     public func recommendedFees() -> RecommendedFees? {
@@ -186,7 +189,7 @@ public class LightningBridge {
         return try breezSdk?.lnurlAuth(reqData: requestData)
     }
 
-    public func withdrawLnurl(requestData: LnUrlWithdrawRequestData, amount: Long, description: String?) -> LnUrlCallbackStatus? {
+    public func withdrawLnurl(requestData: LnUrlWithdrawRequestData, amount: Long, description: String?) -> LnUrlWithdrawResult? {
         return try? breezSdk?.withdrawLnurl(reqData: requestData, amountSats: amount, description: description)
     }
 
@@ -211,10 +214,11 @@ public class LightningBridge {
         _ = updateNodeInfo()
     }
 
-    public func sweep(toAddress: String, satPerVbyte: UInt?) throws {
+    public func sweep(toAddress: String, satPerVbyte: UInt?) throws -> SweepResponse? {
         let feeRateSatsPerVbyte = satPerVbyte.map {UInt64($0)} ?? recommendedFees()?.economyFee ?? 0
-        try breezSdk?.sweep(toAddress: toAddress, feeRateSatsPerVbyte: feeRateSatsPerVbyte)
+        let res = try breezSdk?.sweep(request: SweepRequest(toAddress: toAddress, feeRateSatsPerVbyte: UInt32(feeRateSatsPerVbyte)))
         _ = updateNodeInfo()
+        return res
     }
 }
 
