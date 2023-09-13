@@ -65,6 +65,58 @@ extension UIViewController {
             return err.localizedDescription
         }
     }
+
+    @MainActor
+    func showOpenSupportUrl(_ request: DialogErrorRequest) {
+        let alert = UIAlertController(
+            title: "id_warning".localized,
+            message: "id_you_have_tor_enabled_are_you".localized,
+            preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "id_continue".localized, style: .default) { _ in
+            let url = ZendeskSdk.shared.createNewTicketUrl(
+                subject: request.subject,
+                email: nil,
+                message: nil,
+                error: request.error,
+                network: request.network,
+                hw: request.hw)
+            if let url = url, UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+        })
+        alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel) { _ in
+        })
+        self.present(alert, animated: false, completion: nil)
+    }
+
+    @MainActor
+    func showReportError(account: Account?, wallet: WalletItem?, prettyError: String, screenName: String) {
+        let request = DialogErrorRequest(
+            account: account,
+            walletItem: wallet,
+            error: prettyError,
+            screenName: screenName)
+        let alert = UIAlertController(
+            title: "id_error".localized,
+            message: prettyError,
+            preferredStyle: .alert)
+        if AppSettings.shared.gdkSettings?.tor ?? false {
+            alert.addAction(UIAlertAction(title: "Contact Support".localized, style: .default) { _ in
+                self.showOpenSupportUrl(request)
+            })
+        } else {
+            alert.addAction(UIAlertAction(title: "id_report".localized, style: .default) { _ in
+                if let vc = UIStoryboard(name: "Dialogs", bundle: nil)
+                    .instantiateViewController(withIdentifier: "DialogErrorViewController") as? DialogErrorViewController {
+                    vc.request = request
+                    vc.modalPresentationStyle = .overFullScreen
+                    self.present(vc, animated: false, completion: nil)
+                }
+            })
+        }
+        alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel) { _ in })
+        present(alert, animated: true)
+    }
 }
 
 extension UIViewController {

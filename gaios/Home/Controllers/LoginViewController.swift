@@ -290,6 +290,7 @@ class LoginViewController: UIViewController {
         case LoginError.walletNotFound:
             prettyError = "id_wallet_not_found"
             DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
+            showReportError(account: account, wallet: nil, prettyError: prettyError, screenName: "Login")
         case GaError.NotAuthorizedError(_):
             self.wrongPin()
             prettyError = "NotAuthorizedError"
@@ -300,9 +301,11 @@ class LoginViewController: UIViewController {
                     wrongPin()
                 }
             } else {
+                showReportError(account: account, wallet: nil, prettyError: prettyError, screenName: "Login")
                 DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
             }
         default:
+            showReportError(account: account, wallet: nil, prettyError: prettyError, screenName: "Login")
             DropAlert().error(message: NSLocalizedString(prettyError, comment: ""))
         }
         self.pinCode = ""

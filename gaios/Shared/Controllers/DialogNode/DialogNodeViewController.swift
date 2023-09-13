@@ -204,6 +204,9 @@ extension DialogNodeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let cellType = nodeCellTypes[indexPath.row]
         switch cellType {
+        case .id:
+            UIPasteboard.general.string = viewModel.id
+            DropAlert().info(message: "id_copied_to_clipboard".localized, delay: 1.0)
         default:
             break
         }

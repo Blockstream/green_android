@@ -166,11 +166,7 @@ class SendConfirmViewController: KeyboardViewController {
         dismissProgress() {
             self.sliderView.isUserInteractionEnabled = true
             self.sliderView.reset()
-            if self.viewModel.isLightning {
-                self.showBreezError(prettyError.localized)
-            } else {
-                self.showError(prettyError.localized)
-            }
+            self.showReportError(account: AccountsRepository.shared.current, wallet: self.viewModel.account, prettyError: prettyError.localized, screenName: "FailedTransaction")
         }
         let isSendAll = self.viewModel.tx.addressees.first?.isGreedy ?? false
         let withMemo = !(self.viewModel.tx.memo?.isEmpty ?? true)
@@ -180,20 +176,8 @@ class SendConfirmViewController: KeyboardViewController {
         AnalyticsManager.shared.failedTransaction(account: AccountsRepository.shared.current,
                                                   walletItem: self.viewModel.account,
                                                   transactionSgmt: transSgmt, withMemo: withMemo, error: error, prettyError: prettyError)
-        AnalyticsManager.shared.recordException(prettyError)
-}
-
-    @MainActor
-    func showBreezError(_ message: String) {
-        let ltFlow = UIStoryboard(name: "LTFlow", bundle: nil)
-        if let vc = ltFlow.instantiateViewController(withIdentifier: "LTErrorViewController") as? LTErrorViewController {
-            vc.delegate = self
-            vc.errorStr = message
-            vc.modalPresentationStyle = .overFullScreen
-            present(vc, animated: false, completion: nil)
-        }
     }
-    
+
     @MainActor
     func executeOnDone() {
         let isSendAll = viewModel.tx.addressees.first?.isGreedy ?? false
@@ -228,19 +212,6 @@ class SendConfirmViewController: KeyboardViewController {
         if let token = updateToken {
             NotificationCenter.default.removeObserver(token)
             updateToken = nil
-        }
-    }
-
-    func openFeedback(_ errorStr: String?) {
-        let storyboard = UIStoryboard(name: "Dialogs", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogFeedbackViewController") as? DialogFeedbackViewController,
-           let errorStr = errorStr, let nodeId = viewModel.nodeId() {
-            vc.modalPresentationStyle = .overFullScreen
-            vc.delegate = self
-            vc.isLightningScope = true
-            vc.nodeId = nodeId
-            vc.breezErrStr = errorStr
-            present(vc, animated: false, completion: nil)
         }
     }
 }
@@ -367,16 +338,6 @@ extension SendConfirmViewController: SliderViewDelegate {
         if position == 1 {
             send()
         }
-    }
-}
-
-extension SendConfirmViewController: LTErrorViewControllerDelegate {
-    func onReport(_ errorStr: String?) {
-        openFeedback(errorStr)
-    }
-    
-    func onDone() {
-        //
     }
 }
 

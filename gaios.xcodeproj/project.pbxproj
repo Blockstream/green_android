@@ -447,6 +447,10 @@
 		81664BED2A31219500A0131D /* BreezSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 81664BEC2A31219500A0131D /* BreezSDK */; };
 		816C3DFE298D0AF9003D29F1 /* DialogJadeCheckViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816C3DFD298D0AF9003D29F1 /* DialogJadeCheckViewController.swift */; };
 		816F0AF423E4713600569A5D /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816F0AF323E4713600569A5D /* UIViewController.swift */; };
+		8173B8EC2AB19DB800C15C85 /* ZendeskSupportSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 8173B8EB2AB19DB800C15C85 /* ZendeskSupportSDK */; };
+		8173B8EE2AB19DCD00C15C85 /* ZendeskSdk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8173B8ED2AB19DCD00C15C85 /* ZendeskSdk.swift */; };
+		8173B8F02AB1B09700C15C85 /* DialogErrorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8173B8EF2AB1B09700C15C85 /* DialogErrorViewController.swift */; };
+		8173B8F22AB1B10C00C15C85 /* DialogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8173B8F12AB1B10C00C15C85 /* DialogViewController.swift */; };
 		817417372236E85500A28E36 /* ScreenLockWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817417362236E85500A28E36 /* ScreenLockWindow.swift */; };
 		81743D9A2A17B49A00525FA5 /* lightning.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81A8F8F529E5069E0052B214 /* lightning.framework */; };
 		81772B332992BC9800F05BF2 /* RecipientCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81772B322992BC9800F05BF2 /* RecipientCellModel.swift */; };
@@ -1123,6 +1127,9 @@
 		816C3DFD298D0AF9003D29F1 /* DialogJadeCheckViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogJadeCheckViewController.swift; sourceTree = "<group>"; };
 		816F0AF323E4713600569A5D /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
 		816F0AF523E47E1E00569A5D /* Wally.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wally.swift; sourceTree = "<group>"; };
+		8173B8ED2AB19DCD00C15C85 /* ZendeskSdk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZendeskSdk.swift; sourceTree = "<group>"; };
+		8173B8EF2AB1B09700C15C85 /* DialogErrorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogErrorViewController.swift; sourceTree = "<group>"; };
+		8173B8F12AB1B10C00C15C85 /* DialogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogViewController.swift; sourceTree = "<group>"; };
 		817417362236E85500A28E36 /* ScreenLockWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockWindow.swift; sourceTree = "<group>"; };
 		81772B322992BC9800F05BF2 /* RecipientCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientCellModel.swift; sourceTree = "<group>"; };
 		81772B342992EDE900F05BF2 /* SendViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendViewModel.swift; sourceTree = "<group>"; };
@@ -1262,6 +1269,7 @@
 			files = (
 				81B2350F2A6A8BCD00B8FF5D /* Countly in Frameworks */,
 				81961B3C29E4F4A200E9B94D /* greenaddress.framework in Frameworks */,
+				8173B8EC2AB19DB800C15C85 /* ZendeskSupportSDK in Frameworks */,
 				81961A6129E46B5600E9B94D /* gdk.framework in Frameworks */,
 				81961ACE29E4E41600E9B94D /* RiveRuntime in Frameworks */,
 				81A8F8FB29E5069F0052B214 /* lightning.framework in Frameworks */,
@@ -2207,6 +2215,7 @@
 				81F328FB29ED319300D54F1D /* ResolverManager.swift */,
 				813872932A0480E20092CFD2 /* LightningSessionManager.swift */,
 				81B7FD212A8F959C0024A0E8 /* URLSchemeManager.swift */,
+				8173B8ED2AB19DCD00C15C85 /* ZendeskSdk.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -2472,6 +2481,8 @@
 				340A5F5528E33F51003D56B1 /* DialogSafeNavigationViewController.swift */,
 				81E8C358291FDAF000B2196B /* DialogTableViewController.swift */,
 				816C3DFD298D0AF9003D29F1 /* DialogJadeCheckViewController.swift */,
+				8173B8F12AB1B10C00C15C85 /* DialogViewController.swift */,
+				8173B8EF2AB1B09700C15C85 /* DialogErrorViewController.swift */,
 				34C680E52A72773E00369639 /* DialogInputDenomination */,
 				34BF09DC2A658B9C00523E4C /* DialogQR */,
 				3407F5D22A4ABC4E005EF8E1 /* DialogFeedback */,
@@ -3165,6 +3176,7 @@
 			packageProductDependencies = (
 				81961ACD29E4E41600E9B94D /* RiveRuntime */,
 				81B2350E2A6A8BCD00B8FF5D /* Countly */,
+				8173B8EB2AB19DB800C15C85 /* ZendeskSupportSDK */,
 			);
 			productName = gaios;
 			productReference = 676FCF1C1F9D0CF800354E93 /* gaios.app */;
@@ -3366,6 +3378,7 @@
 				81B2350D2A6A8BCD00B8FF5D /* XCRemoteSwiftPackageReference "countly-sdk-ios" */,
 				818BA7012A2F6A6300DFB03A /* XCRemoteSwiftPackageReference "AsyncBluetooth" */,
 				817A0B2F2A3CC52500E2F80D /* XCRemoteSwiftPackageReference "Semaphore" */,
+				8173B8EA2AB19DB800C15C85 /* XCRemoteSwiftPackageReference "support_sdk_ios" */,
 			);
 			productRefGroup = 676FCF1D1F9D0CF800354E93 /* Products */;
 			projectDirPath = "";
@@ -3580,6 +3593,7 @@
 				3418BAB6274285BD00F9B2D0 /* TransactionFeeCell.swift in Sources */,
 				811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */,
 				34B826D12608831F00579C0B /* RecoveryVerifyViewController.swift in Sources */,
+				8173B8EE2AB19DCD00C15C85 /* ZendeskSdk.swift in Sources */,
 				09377B7221794A4B00C4E347 /* TwoFactorLimitViewController.swift in Sources */,
 				3491C9922912B3670063C055 /* AssetsViewController.swift in Sources */,
 				34D761382A38639D00DE57F5 /* DenominationExchangeViewModel.swift in Sources */,
@@ -3589,6 +3603,7 @@
 				34C680EA2A72779900369639 /* DialogInputDenominationViewModel.swift in Sources */,
 				81BF5D4928C885AF006225C6 /* WalletManager.swift in Sources */,
 				6D0983C623FC848C00289ACA /* HelpCell.swift in Sources */,
+				8173B8F22AB1B10C00C15C85 /* DialogViewController.swift in Sources */,
 				3497936C25F8B18C0029ECB1 /* StrokeColorAnimation.swift in Sources */,
 				6D0983F323FF033900289ACA /* DropAlert.swift in Sources */,
 				345C70882836254600EF3971 /* AssetsManager.swift in Sources */,
@@ -3883,6 +3898,7 @@
 				3415CB172A69627500B66882 /* DialogSignViewController.swift in Sources */,
 				818BA71A2A30839B00DFB03A /* BleViewModel.swift in Sources */,
 				34C246512670F0BB009E8FCE /* UINavigationController.swift in Sources */,
+				8173B8F02AB1B09700C15C85 /* DialogErrorViewController.swift in Sources */,
 				6D970470234418A600839598 /* ModalPresentationController.swift in Sources */,
 				345C70862836233800EF3971 /* AnalyticsManager.swift in Sources */,
 				3488FC6F290BCB2500122628 /* AccountCellModel.swift in Sources */,
@@ -5221,6 +5237,14 @@
 				revision = 55c0a99777802b3f0910cb45c04a3d2b7e6cc4d1;
 			};
 		};
+		8173B8EA2AB19DB800C15C85 /* XCRemoteSwiftPackageReference "support_sdk_ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/zendesk/support_sdk_ios";
+			requirement = {
+				kind = exactVersion;
+				version = 7.0.0;
+			};
+		};
 		817A0B2F2A3CC52500E2F80D /* XCRemoteSwiftPackageReference "Semaphore" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/groue/Semaphore";
@@ -5268,6 +5292,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 81664BEB2A31219500A0131D /* XCRemoteSwiftPackageReference "breez-sdk-swift" */;
 			productName = BreezSDK;
+		};
+		8173B8EB2AB19DB800C15C85 /* ZendeskSupportSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8173B8EA2AB19DB800C15C85 /* XCRemoteSwiftPackageReference "support_sdk_ios" */;
+			productName = ZendeskSupportSDK;
 		};
 		817A0B302A3CC52500E2F80D /* Semaphore */ = {
 			isa = XCSwiftPackageProductDependency;

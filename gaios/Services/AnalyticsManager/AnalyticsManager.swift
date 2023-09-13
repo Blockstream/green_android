@@ -88,8 +88,6 @@ class AnalyticsManager {
         "id_action_canceled",
         "id_login_failed"
     ]
-    // not ignorable exception counter
-    var exceptionCounter = 0
 
     var countlyFeedbackWidget: CountlyFeedbackWidget?
 
@@ -330,18 +328,6 @@ class AnalyticsManager {
         widget.recordResult(nil)
     }
 
-    func recordException(_ msg: String) {
-        if !msg.isEmpty && !skipExceptionRecording.contains(msg) {
-            exceptionCounter += 1
-            let exception = NSException(name: NSExceptionName(rawValue: msg), reason: msg)
-//            guard consent == .authorized else { return }
-//            Countly.sharedInstance().recordHandledException(exception)
-            Countly.sharedInstance().record(exception,
-                                            isFatal: false,
-                                            stackTrace: Thread.callStackSymbols,
-                                            segmentation:nil)
-        }
-    }
 
     func recordEvent(_ key: AnalyticsEventName) {
         guard consent == .authorized else { return }

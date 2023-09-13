@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Warning for non-default PIN server 
 - Increase QRCode scanner area
 - Improve support for host unblinding on Jade
+- Improve contact support
 
 ## [4.0.11] - 2023-08-11
 

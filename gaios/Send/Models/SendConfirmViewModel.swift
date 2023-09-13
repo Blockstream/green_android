@@ -42,8 +42,4 @@ class SendConfirmViewModel {
             return try await session.sendTransaction(tx: tx)
         }
     }
-
-    func nodeId() -> String? {
-        return WalletManager.current?.lightningSession?.nodeState?.id
-    }
 }
