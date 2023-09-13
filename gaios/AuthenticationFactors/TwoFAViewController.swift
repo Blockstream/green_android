@@ -7,6 +7,8 @@ class TwoFAViewController: UIViewController {
     @IBOutlet weak var cardView: UIView!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet var boxes: [UIView]!
+    
+    @IBOutlet var placeholders: [UIView]!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblAttempts: UILabel!
     @IBOutlet weak var btnCancel: UIButton!
@@ -50,20 +52,20 @@ class TwoFAViewController: UIViewController {
 
     func setStyle() {
         cardView.layer.cornerRadius = 10
-        boxes.forEach{
-            $0.borderWidth = 1.0
-            $0.borderColor = UIColor.gGreenMatrix()
-            $0.cornerRadius = 3.0
-        }
         lblTitle.setStyle(.txtBigger)
         lblAttempts.setStyle(.txt)
         btnCancel.setStyle(.inline)
+        placeholders.forEach {
+            $0.cornerRadius = $0.frame.width / 2
+        }
     }
 
     func fill() {
+        placeholders.forEach{ $0.isHidden = false}
         for n in 0...5 {
             if let d = digits[safe: n] {
                 lblsDigit[n].text = "\(d)"
+                placeholders[n].isHidden = true
             } else {
                 lblsDigit[n].text = ""
             }
