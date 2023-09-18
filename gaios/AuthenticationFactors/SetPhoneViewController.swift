@@ -67,6 +67,7 @@ class SetPhoneViewController: KeyboardViewController {
             DropAlert().warning(message: NSLocalizedString("id_invalid_phone_number_format", comment: ""))
             return
         }
+        view.endEditing(true)
         self.startAnimating()
         Task {
             do {

@@ -67,6 +67,7 @@ class SetEmailViewController: KeyboardViewController {
 
     @objc func click(_ sender: UIButton) {
         guard let text = textField.text else { return }
+        view.endEditing(true)
         self.startAnimating()
         Task {
             do {

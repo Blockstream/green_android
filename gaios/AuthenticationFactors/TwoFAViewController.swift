@@ -72,7 +72,6 @@ class TwoFAViewController: UIViewController {
                 lblsDigit[n].text = ""
             }
         }
-        print( digits )
     }
 
     override func viewWillAppear(_ animated: Bool) {
