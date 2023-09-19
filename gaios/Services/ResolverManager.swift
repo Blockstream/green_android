@@ -52,17 +52,17 @@ class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate {
     
     private var textContinuation: CheckedContinuation<String, Error>?
     
-    func code(_ method: String) async throws -> String {
+    func code(_ method: String, attemptsRemaining: Int?) async throws -> String {
         DispatchQueue.main.async {
             UIApplication.topViewController()?.stopAnimating()
         }
         return try await withCheckedThrowingContinuation { continuation in
             textContinuation = continuation
-            codeCustomDialog(method)
+            codeCustomDialog(method, attemptsRemaining: attemptsRemaining)
         }
     }
 
-    func codeCustomDialog(_ method: String) {
+    func codeCustomDialog(_ method: String, attemptsRemaining: Int?) {
         let methodDesc: String
         if method == TwoFactorType.email.rawValue { methodDesc = "id_email" } else if method == TwoFactorType.phone.rawValue { methodDesc = "id_phone_call" } else if method == TwoFactorType.sms.rawValue { methodDesc = "id_sms" } else { methodDesc = "id_authenticator_app" }
         
@@ -70,6 +70,7 @@ class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate {
         guard let vc = twoFAFlow.instantiateViewController(withIdentifier: "TwoFAViewController") as? TwoFAViewController else { return }
             
         vc.commontitle = String(format: NSLocalizedString("id_please_provide_your_1s_code", comment: ""), NSLocalizedString(methodDesc, comment: ""))
+        vc.attemptsRemaining = attemptsRemaining ?? 3
         
         vc.onCancel = { [weak self] in
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate{

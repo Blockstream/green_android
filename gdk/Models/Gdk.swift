@@ -237,6 +237,23 @@ public struct UnspentOutputsForPrivateKeyParams: Codable {
     }
 }
 
+public struct ResolveCodeData: Codable {
+    enum CodingKeys: String, CodingKey {
+        case attemptsRemaining = "attempts_remaining"
+        case status
+        case name
+        case authData = "auth_data"
+        case method
+        case action
+    }
+    let attemptsRemaining: Int64?
+    let status: String?
+    let name: String?
+    let authData: Bool?
+    let method: String?
+    let action: String?
+}
+
 public struct GdkInit: Codable {
     enum CodingKeys: String, CodingKey {
         case datadir

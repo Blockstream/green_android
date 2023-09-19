@@ -5,7 +5,7 @@ import greenaddress
 import hw
 
 public protocol PopupResolverDelegate {
-    func code(_ method: String) async throws -> String
+    func code(_ method: String, attemptsRemaining: Int?) async throws -> String
     func method(_ methods: [String]) async throws -> String
     func info() async -> Void
 }
@@ -83,8 +83,7 @@ public class GDKResolver {
             if let requiredData = res["required_data"] as? [String: Any],
                 let action = requiredData["action"] as? String,
                 let device = requiredData["device"] as? [String: Any],
-                let json = try? JSONSerialization.data(withJSONObject: device, options: []),
-                let hwdevice = try? JSONDecoder().decode(HWDevice.self, from: json) {
+                let hwdevice = HWDevice.from(device) as? HWDevice {
                 do {
                     let res = try await HWResolver().resolveCode(action: action, device: hwdevice, requiredData: requiredData, chain: chain, hwDevice: hwDevice)
                     try self.twoFactorCall?.resolveCode(code: res.stringify())
@@ -93,8 +92,8 @@ public class GDKResolver {
                 }
             } else {
                 // Software wallet interface resolver
-                let method = res["method"] as? String ?? ""
-                let code = try await self.popupDelegate?.code(method)
+                let resolveCode = ResolveCodeData.from(res) as? ResolveCodeData
+                let code = try await self.popupDelegate?.code(resolveCode?.method ?? "", attemptsRemaining: Int(resolveCode?.attemptsRemaining ?? 3))
                 try await self.waitConnection()
                 try self.twoFactorCall?.resolveCode(code: code)
             }

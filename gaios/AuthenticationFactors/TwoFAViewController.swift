@@ -21,6 +21,7 @@ class TwoFAViewController: UIViewController {
     var onCode: ((String) -> Void)?
 
     var commontitle = ""
+    var attemptsRemaining = 0
 
     enum TwoFAAction {
         case cancel
@@ -45,8 +46,8 @@ class TwoFAViewController: UIViewController {
 
     func setContent() {
         lblTitle.text = commontitle
-        lblAttempts.text = "Attempts remaining: 3".localized
-        lblAttempts.isHidden = true
+        lblAttempts.text = String(format: "id_attempts_remaining_d".localized, attemptsRemaining)
+        lblAttempts.isHidden = attemptsRemaining >= 3
         btnCancel.setTitle("id_cancel".localized, for: .normal)
     }
 
