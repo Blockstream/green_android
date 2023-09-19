@@ -49,7 +49,7 @@ class CodeAlertController: UIAlertController {
 }
 
 class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate {
-
+    
     private var textContinuation: CheckedContinuation<String, Error>?
     
     func code(_ method: String) async throws -> String {
@@ -135,6 +135,37 @@ class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate {
         }
     }
 
+    func info() async -> Void {
+        infoCustomDialog()
+    }
+    
+    func infoCustomDialog() {
+        
+        let twoFAFlow = UIStoryboard(name: "TwoFAFlow", bundle: nil)
+        guard let vc = twoFAFlow.instantiateViewController(withIdentifier: "TwoFAInfoViewController") as? TwoFAInfoViewController else { return }
+        
+        vc.onCancel = { [weak self] in
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
+                appDelegate.resolve2faOff()
+            }
+            self?.textContinuation?.resume(throwing: TwoFactorCallError.cancel(localizedDescription: "id_action_canceled".localized))
+        }
+        vc.onRetry = {
+            
+        }
+        vc.onSupport = {
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
+                appDelegate.resolve2faOff()
+            }
+            SafeNavigationManager.shared.navigate( ExternalUrls.aboutHelpCenter )
+        }
+        
+        DispatchQueue.main.async {
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate{
+                appDelegate.resolve2faOn(vc)
+            }
+        }
+    }
     func textFieldDidChangeSelection(_ textField: UITextField) {
         DispatchQueue.main.async {
             if textField.text?.count == 6 {

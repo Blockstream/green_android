@@ -226,6 +226,7 @@
 		347FD0A225FF74BA00BB3FAB /* MnemonicCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347FD0A125FF74BA00BB3FAB /* MnemonicCell.swift */; };
 		347FD0AD25FFA91700BB3FAB /* Home.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 347FD0AC25FFA91700BB3FAB /* Home.storyboard */; };
 		347FD0B125FFA98300BB3FAB /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347FD0B025FFA98300BB3FAB /* HomeViewController.swift */; };
+		3482351D2AB97B8800B1ABE3 /* TwoFAInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3482351C2AB97B8800B1ABE3 /* TwoFAInfoViewController.swift */; };
 		3483D09829FBDAF800C85106 /* LTInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3483D09629FBDAF800C85106 /* LTInfoCell.swift */; };
 		3483D09929FBDAF800C85106 /* LTInfoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3483D09729FBDAF800C85106 /* LTInfoCell.xib */; };
 		3483D09B29FBDB0B00C85106 /* LTInfoCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3483D09A29FBDB0B00C85106 /* LTInfoCellModel.swift */; };
@@ -888,6 +889,7 @@
 		347FD0A125FF74BA00BB3FAB /* MnemonicCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicCell.swift; sourceTree = "<group>"; };
 		347FD0AC25FFA91700BB3FAB /* Home.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Home.storyboard; sourceTree = "<group>"; };
 		347FD0B025FFA98300BB3FAB /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		3482351C2AB97B8800B1ABE3 /* TwoFAInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFAInfoViewController.swift; sourceTree = "<group>"; };
 		3483D09629FBDAF800C85106 /* LTInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTInfoCell.swift; sourceTree = "<group>"; };
 		3483D09729FBDAF800C85106 /* LTInfoCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LTInfoCell.xib; sourceTree = "<group>"; };
 		3483D09A29FBDB0B00C85106 /* LTInfoCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LTInfoCellModel.swift; sourceTree = "<group>"; };
@@ -3026,6 +3028,7 @@
 				343BC9532AA9BEAD00F0FEE5 /* TwoFAFlow.storyboard */,
 				343BC9562AA9BF1200F0FEE5 /* TwoFAViewController.swift */,
 				3450C85F2AAF0616002B67AE /* TwoFAMethodViewController.swift */,
+				3482351C2AB97B8800B1ABE3 /* TwoFAInfoViewController.swift */,
 			);
 			path = AuthenticationFactors;
 			sourceTree = "<group>";
@@ -3888,6 +3891,7 @@
 				344915E92A0CE24700D35818 /* ReceiveAssetCell.swift in Sources */,
 				81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */,
 				3483D09B29FBDB0B00C85106 /* LTInfoCellModel.swift in Sources */,
+				3482351D2AB97B8800B1ABE3 /* TwoFAInfoViewController.swift in Sources */,
 				8157CDAC299BE9E100365F1B /* SendConfirmViewModel.swift in Sources */,
 				3484118C265E6113002D2202 /* Constants.swift in Sources */,
 				093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */,
