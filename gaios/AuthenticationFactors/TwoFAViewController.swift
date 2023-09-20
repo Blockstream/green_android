@@ -168,7 +168,7 @@ class TwoFAViewController: UIViewController {
     }
 
     @IBAction func btnInfoRetry(_ sender: Any) {
-        refresh()
+        dismiss(.cancel)
     }
     
     @IBAction func btnInfoSupport(_ sender: Any) {
