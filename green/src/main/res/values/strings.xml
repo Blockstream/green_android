@@ -1395,4 +1395,6 @@
   <string name="id_signature">Signature</string>
   <string name="id_previous_addresses">Previous Addresses</string>
   <string name="id_copy_url">Copy URL</string>
+  <string name="id_are_you_not_receiving_your_2fa_code">Are you not receiving your 2FA code?</string>
+  <string name="id_try_again_using_another_2fa_method">Try again, using another 2FA method.</string>
 </resources>

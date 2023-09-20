@@ -53,6 +53,9 @@ data class Account constructor(
     val isBitcoin
         get() = network.isBitcoin
 
+    val isBitcoinOrLightning
+        get() = network.isBitcoinOrLightning
+
     val isBitcoinMainnet
         get() = network.isBitcoinMainnet
 

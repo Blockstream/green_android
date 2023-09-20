@@ -695,20 +695,20 @@ class Countly constructor(
 
         val isMainnet = session.isMainnet
 
-        val hasBitcoin = session.accounts.any { it.isBitcoin } // check for unarchived bitcoin accounts
+        val hasBitcoinOrLightning = session.accounts.any { it.isBitcoinOrLightning } // check for unarchived bitcoin/ln accounts
         val hasLiquid = session.accounts.any { it.isLiquid } // check for unarchived liquid accounts
 
         // "Networks: mainnet / liquid / mainnet-mixed / testnet / testnet-liquid / testnet-mixed
         val network = when{
-            hasBitcoin && !hasLiquid -> "mainnet".takeIf { isMainnet } ?: "testnet"
-            !hasBitcoin && hasLiquid -> "liquid".takeIf { isMainnet } ?: "testnet-liquid"
-            hasBitcoin && hasLiquid -> "mainnet-mixed".takeIf { isMainnet } ?: "testnet-mixed"
+            hasBitcoinOrLightning && !hasLiquid -> "mainnet".takeIf { isMainnet } ?: "testnet"
+            !hasBitcoinOrLightning && hasLiquid -> "liquid".takeIf { isMainnet } ?: "testnet-liquid"
+            hasBitcoinOrLightning && hasLiquid -> "mainnet-mixed".takeIf { isMainnet } ?: "testnet-mixed"
             else -> "none"
         }
 
         val hasSinglesig = session.accounts.any { it.isSinglesig } // check for unarchived singlesig accounts
         val hasMultisig = session.accounts.any { it.isMultisig } // check for unarchived multisig accounts
-        val hasLightning = session.accounts.any { it.isLightning } // check for unarchived multisig accounts
+        val hasLightning = session.accounts.any { it.isLightning } // check for unarchived lightning accounts
 
         // Security: singlesig / multisig / lightning / single-multi / single-light / multi-light / single-multi-light"
         val security = mutableListOf<String>()

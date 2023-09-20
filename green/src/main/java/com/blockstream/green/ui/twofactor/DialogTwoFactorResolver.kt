@@ -5,15 +5,16 @@ import android.content.Context
 import android.content.DialogInterface
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
+import com.blockstream.common.gdk.TwoFactorResolver
 import com.blockstream.common.gdk.data.AuthHandlerStatus
 import com.blockstream.green.R
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.databinding.TwofactorCodeDialogBinding
 import com.blockstream.green.extensions.localized2faMethod
 import com.blockstream.green.extensions.localized2faMethods
-import com.blockstream.common.gdk.TwoFactorResolver
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.utils.openBrowser
+import com.blockstream.green.utils.openNewTicket
 import com.blockstream.green.views.GreenPinViewListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CompletableDeferred
@@ -101,6 +102,27 @@ class DialogTwoFactorResolver : TwoFactorResolver {
                             deferred.completeExceptionally(Exception("id_action_canceled"))
                         }
                     }
+                    .apply {
+                        if (authHandlerStatus.method == "sms"){
+                            setNeutralButton(R.string.id_help) { _, _ ->
+
+                                MaterialAlertDialogBuilder(context)
+                                    .setTitle(R.string.id_are_you_not_receiving_your_2fa_code)
+                                    .setMessage(R.string.id_try_again_using_another_2fa_method)
+                                    .setPositiveButton(R.string.id_try_again, null)
+                                    .setNeutralButton(R.string.id_contact_support) { _, _ ->
+                                        appFragment?.also {
+                                            appFragment?.openNewTicket(
+                                                settingsManager = it.settingsManager,
+                                                subject = "Android: I am not receiving my 2FA code",
+                                            )
+                                        }
+                                    }
+                                    .show()
+                            }
+                        }
+                    }
+
                     .show()
 
                 dialogBinding.pinView.listener = object : GreenPinViewListener {

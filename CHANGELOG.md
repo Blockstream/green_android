@@ -3,6 +3,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.13] - 2023-09-20
+
+### Changed
+- Bump GDK to version 0.67.1
+
+### Added
+- Jade: Warning for non-default PIN server
+- Support for message signing
+
+### Fixed
+- Bug fixes
+
 ## [4.0.12] - 2023-08-14
 
 ### Changed

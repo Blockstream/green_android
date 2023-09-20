@@ -2342,7 +2342,7 @@ class GdkSession constructor(
                 session = this,
                 walletAssets = walletAssets,
                 accountAssets = _accountAssetsFlow.mapValues { entry -> entry.value.value },
-                accounts = allAccounts
+                accounts = accounts
             )
             walletActiveEventInvalidated = false
         }

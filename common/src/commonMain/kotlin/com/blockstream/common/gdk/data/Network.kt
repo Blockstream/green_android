@@ -41,6 +41,9 @@ data class Network(
     val isBitcoin
         get() = !isLiquid && !isLightning
 
+    val isBitcoinOrLightning
+        get() = !isLiquid
+
     val isBitcoinMainnet
         get() = isBitcoinMainnet(id)
 
