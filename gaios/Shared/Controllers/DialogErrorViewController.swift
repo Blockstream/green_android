@@ -8,9 +8,9 @@ class DialogErrorRequest {
     var network: NetworkSecurityCase?
     var hw: String?
     var subject: String?
-    
-    init(account: Account?, walletItem: WalletItem?, error: String?, screenName: String?) {
-        self.network = walletItem?.networkType
+
+    init(account: Account?, networkType: NetworkSecurityCase?, error: String?, screenName: String?) {
+        self.network = networkType
         self.hw = account?.isJade ?? false ? "jade" : account?.isLedger ?? false ? "ledger" : nil
         self.error = error
         self.throwable = Thread.callStackSymbols.joined(separator: "\n")

@@ -68,32 +68,23 @@ extension UIViewController {
 
     @MainActor
     func showOpenSupportUrl(_ request: DialogErrorRequest) {
-        let alert = UIAlertController(
-            title: "id_warning".localized,
-            message: "id_you_have_tor_enabled_are_you".localized,
-            preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "id_continue".localized, style: .default) { _ in
-            let url = ZendeskSdk.shared.createNewTicketUrl(
-                subject: request.subject,
-                email: nil,
-                message: nil,
-                error: request.error,
-                network: request.network,
-                hw: request.hw)
-            if let url = url, UIApplication.shared.canOpenURL(url) {
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
-            }
-        })
-        alert.addAction(UIAlertAction(title: "id_cancel".localized, style: .cancel) { _ in
-        })
-        self.present(alert, animated: false, completion: nil)
+        let url = ZendeskSdk.shared.createNewTicketUrl(
+            subject: request.subject,
+            email: nil,
+            message: nil,
+            error: request.error,
+            network: request.network,
+            hw: request.hw)
+        if let url = url {
+            SafeNavigationManager.shared.navigate(url)
+        }
     }
 
     @MainActor
     func showReportError(account: Account?, wallet: WalletItem?, prettyError: String, screenName: String) {
         let request = DialogErrorRequest(
             account: account,
-            walletItem: wallet,
+            networkType: wallet?.networkType ?? .bitcoinSS,
             error: prettyError,
             screenName: screenName)
         let alert = UIAlertController(

@@ -51,6 +51,7 @@ class CodeAlertController: UIAlertController {
 class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate {
     
     private var textContinuation: CheckedContinuation<String, Error>?
+    var session: SessionManager? = nil
     
     func code(_ method: String, attemptsRemaining: Int?) async throws -> String {
         DispatchQueue.main.async {
@@ -71,6 +72,7 @@ class PopupResolver: NSObject, UITextFieldDelegate, PopupResolverDelegate {
             
         vc.commontitle = String(format: NSLocalizedString("id_please_provide_your_1s_code", comment: ""), NSLocalizedString(methodDesc, comment: ""))
         vc.attemptsRemaining = attemptsRemaining ?? 3
+        vc.session = session
         
         vc.onCancel = { [weak self] in
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate{

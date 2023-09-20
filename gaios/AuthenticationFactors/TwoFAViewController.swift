@@ -27,6 +27,7 @@ class TwoFAViewController: UIViewController {
 
     var commontitle = ""
     var attemptsRemaining = 0
+    var session: SessionManager?
 
     var orderedPlaceHolders: [UIView] {
         return placeholders.sorted { $0.tag < $1.tag }
@@ -172,7 +173,12 @@ class TwoFAViewController: UIViewController {
     }
     
     @IBAction func btnInfoSupport(_ sender: Any) {
+        let request = DialogErrorRequest(
+            account: AccountsRepository.shared.current,
+            networkType: session?.networkType ?? .bitcoinSS,
+            error: "",
+            screenName: "2FA")
+        showOpenSupportUrl(request)
         dismiss(.cancel)
-        SafeNavigationManager.shared.navigate( ExternalUrls.aboutHelpCenter )
     }
 }

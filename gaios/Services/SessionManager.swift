@@ -31,7 +31,11 @@ class SessionManager {
     
     // Serial reconnect queue for network events
     static let reconnectionQueue = DispatchQueue(label: "reconnection_queue")
-    
+
+    var networkType: NetworkSecurityCase {
+        NetworkSecurityCase(rawValue: gdkNetwork.network) ?? .bitcoinSS
+    }
+
     var isResetActive: Bool? {
         get { twoFactorConfig?.twofactorReset.isResetActive }
     }
