@@ -242,14 +242,12 @@ public struct ResolveCodeData: Codable {
         case attemptsRemaining = "attempts_remaining"
         case status
         case name
-        case authData = "auth_data"
         case method
         case action
     }
     let attemptsRemaining: Int64?
     let status: String?
     let name: String?
-    let authData: Bool?
     let method: String?
     let action: String?
 }
