@@ -40,7 +40,7 @@ class SetGauthViewController: UIViewController {
         lblTitle.font = UIFont.systemFont(ofSize: 24.0, weight: .bold)
         subtitleLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
         subtitleLabel.textColor = .white.withAlphaComponent(0.6)
-        btnCopy.setTitle("id_copy_address".localized, for: .normal)
+        btnCopy.setTitle("id_copy".localized, for: .normal)
         btnCopy.cornerRadius = 3.0
 
         qrCodeImageView.isUserInteractionEnabled = true
