@@ -6,15 +6,20 @@ class TwoFAViewController: UIViewController {
     @IBOutlet weak var bgLayer: UIView!
     @IBOutlet weak var cardView: UIView!
     @IBOutlet weak var scrollView: UIScrollView!
-    @IBOutlet var boxes: [UIView]!
-    
+
     @IBOutlet var placeholders: [UIView]!
     @IBOutlet weak var lblTitle: UILabel!
-    @IBOutlet weak var lblAttempts: UILabel!
+    @IBOutlet weak var btnHelp: UIButton!
     @IBOutlet weak var btnCancel: UIButton!
     
+    @IBOutlet weak var cardInfo: UIView!
+    @IBOutlet weak var lblInfoTitle: UILabel!
+    @IBOutlet weak var lblInfoHint: UILabel!
+    @IBOutlet weak var btnInfoRetry: UIButton!
+    @IBOutlet weak var btnInfoSupport: UIButton!
+    
     @IBOutlet var lblsDigit: [UILabel]!
-
+    
     var digits: [Int] = []
 
     var onCancel: (() -> Void)?
@@ -22,6 +27,14 @@ class TwoFAViewController: UIViewController {
 
     var commontitle = ""
     var attemptsRemaining = 0
+
+    var orderedPlaceHolders: [UIView] {
+        return placeholders.sorted { $0.tag < $1.tag }
+    }
+
+    var orderedLblsDigit: [UILabel] {
+        return lblsDigit.sorted { $0.tag < $1.tag }
+    }
 
     enum TwoFAAction {
         case cancel
@@ -35,6 +48,7 @@ class TwoFAViewController: UIViewController {
         setContent()
         view.alpha = 0.0
         fill()
+        cardInfo.isHidden = true
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -46,37 +60,52 @@ class TwoFAViewController: UIViewController {
 
     func setContent() {
         lblTitle.text = commontitle
-        lblAttempts.text = String(format: "id_attempts_remaining_d".localized, attemptsRemaining)
-        lblAttempts.isHidden = attemptsRemaining >= 3
+        btnHelp.setTitle("id_help".localized, for: .normal)
         btnCancel.setTitle("id_cancel".localized, for: .normal)
+        lblInfoTitle.text = "Are you not receiving your 2FA code?".localized
+        lblInfoHint.text = "Try again, using another 2FA method.".localized
+        btnInfoRetry.setTitle("Try Again".localized, for: .normal)
+        btnInfoSupport.setTitle("Contact Support".localized, for: .normal)
     }
 
     func setStyle() {
-        cardView.layer.cornerRadius = 10
-        cardView.borderWidth = 1.0
-        cardView.borderColor = .white.withAlphaComponent(0.05)
+        [cardInfo, cardView].forEach{
+            $0.layer.cornerRadius = 10
+            $0.borderWidth = 1.0
+            $0.borderColor = .white.withAlphaComponent(0.05)
+        }
         lblTitle.setStyle(.txtBigger)
-        lblAttempts.setStyle(.txt)
+        btnHelp.setStyle(.outlinedWhite)
         btnCancel.setStyle(.inline)
-        placeholders.forEach {
+        orderedPlaceHolders.forEach {
             $0.cornerRadius = $0.frame.width / 2
         }
+        lblInfoTitle.setStyle(.txtBigger)
+        lblInfoHint.setStyle(.txtCard)
+        btnInfoRetry.setStyle(.primary)
+        btnInfoSupport.setStyle(.outlinedWhite)
     }
 
     func fill() {
-        placeholders.forEach{ $0.isHidden = false}
+        orderedPlaceHolders.forEach{ $0.isHidden = false}
         for n in 0...5 {
             if let d = digits[safe: n] {
-                lblsDigit[n].text = "\(d)"
-                placeholders[n].isHidden = true
+                orderedLblsDigit[n].text = "\(d)"
+                orderedPlaceHolders[n].isHidden = true
             } else {
-                lblsDigit[n].text = ""
+                orderedLblsDigit[n].text = ""
             }
         }
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+    }
+
+    func refresh() {
+        cardInfo.isHidden.toggle()
+        cardView.isHidden.toggle()
+        btnCancel.isHidden.toggle()
     }
 
     func dismiss(_ action: TwoFAAction) {
@@ -92,6 +121,10 @@ class TwoFAViewController: UIViewController {
                 }
             })
         })
+    }
+
+    @IBAction func btnHelp(_ sender: Any) {
+        refresh()
     }
 
     @IBAction func btnCancel(_ sender: Any) {
@@ -132,5 +165,14 @@ class TwoFAViewController: UIViewController {
         guard digits.count > 0 else { return }
         digits.removeLast()
         fill()
+    }
+
+    @IBAction func btnInfoRetry(_ sender: Any) {
+        refresh()
+    }
+    
+    @IBAction func btnInfoSupport(_ sender: Any) {
+        dismiss(.cancel)
+        SafeNavigationManager.shared.navigate( ExternalUrls.aboutHelpCenter )
     }
 }

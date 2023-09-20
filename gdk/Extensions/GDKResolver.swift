@@ -7,7 +7,6 @@ import hw
 public protocol PopupResolverDelegate {
     func code(_ method: String, attemptsRemaining: Int?) async throws -> String
     func method(_ methods: [String]) async throws -> String
-    func info() async -> Void
 }
 
 public enum ResolverError: Error {
@@ -62,9 +61,6 @@ public class GDKResolver {
             break
         case "error":
             let error = res["error"] as? String ?? ""
-            if error == "id_invalid_twofactor_code" {
-                await popupDelegate?.info()
-            }
             throw TwoFactorCallError.failure(localizedDescription: error)
         case "call":
             try await self.waitConnection()
