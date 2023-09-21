@@ -37,10 +37,11 @@ class SendViewController: KeyboardViewController {
         Task(priority: .high) { await viewModel.loadFees() }
         if viewModel.transaction != nil {
             Task {
+                startAnimating()
                 viewModel.reload()
                 refreshAmountCell()
-                reloadSections([.accountAsset, .address, .fee], animated: false)
-                startAnimating()
+                reloadSections([.accountAsset, .amount, .address, .fee], animated: false)
+                await viewModel.loadFees()
                 try? await viewModel.wait()
                 validateTransaction()
                 stopAnimating()
