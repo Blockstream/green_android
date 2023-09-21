@@ -28,7 +28,7 @@ class SetPhoneViewController: KeyboardViewController {
         textField.attributedPlaceholder = NSAttributedString(string: "id_phone_number".localized.capitalized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.6)])
         nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
         nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
-        nextButton.setStyle(.primary)
+        nextButton.setStyle(.primaryDisabled)
         textField.layer.cornerRadius = 5.0
         countryCodeField.layer.cornerRadius = 5.0
     }
@@ -105,6 +105,13 @@ class SetPhoneViewController: KeyboardViewController {
             }
             self.stopAnimating()
         }
+    }
+
+    @IBAction func editingChange(_ sender: Any) {
+        guard let countryCode = countryCodeField.text, var phone = textField.text else { return }
+                phone = phone.trimmingCharacters(in: .whitespacesAndNewlines)
+        let isEnabled = !countryCode.isEmpty && !phone.isEmpty && phone.count > 7
+        nextButton.setStyle(isEnabled ? .primary : .primaryDisabled)
     }
 
     @IBAction func btnCountryPicker(_ sender: Any) {
