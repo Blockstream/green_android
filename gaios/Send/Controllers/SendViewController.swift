@@ -390,7 +390,7 @@ extension SendViewController: AccountAssetViewControllerDelegate {
         Task {
             try await viewModel.validateInput()
             self.refreshAmountCell()
-            self.reloadSections([.address], animated: false)
+            self.reloadSections([.address, .amount], animated: false)
             if self.viewModel.satoshi != nil {
                 self.validateTransaction()
             }
@@ -426,7 +426,7 @@ extension SendViewController: AddressEditCellDelegate {
         Task {
             try? await viewModel.validateInput()
             self.refreshAmountCell()
-            self.reloadSections([.address], animated: false)
+            self.reloadSections([.address, .amount], animated: false)
             if self.viewModel.satoshi != nil || self.viewModel.inputType == .sweep {
                 self.validateTransaction()
             }

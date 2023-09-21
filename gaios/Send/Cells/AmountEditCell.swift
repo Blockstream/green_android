@@ -126,7 +126,7 @@ class AmountEditCell: UITableViewCell {
         pasteButton.isEnabled = cellModel.editable
         cancelButton.isEnabled = cellModel.editable
         sendallButton.isEnabled = cellModel.editable
-        cancelButton.isHidden = (amountTextField.text?.isEmpty ?? false)
+        cancelButton.isHidden = amountTextField.text?.isEmpty ?? false
         pasteButton.isHidden = !(amountTextField.text?.isEmpty ?? false)
         amountTextField.addDoneButtonToKeyboard(myAction: #selector(self.amountTextField.resignFirstResponder))
         sendAll(enabled: cellModel.sendAll)
