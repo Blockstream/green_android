@@ -121,9 +121,9 @@ class AnalyticsManager {
             .filter { net in !(wm?.subaccounts.filter { !$0.hidden && $0.networkType == net }.isEmpty ?? false) }
     }
 
-    var analyticsNtw: AnalyticsManager.NtwTypeDescriptor? {
+    var analyticsNetworks: AnalyticsManager.NtwTypeDescriptor? {
         if let activeNetworks = activeNetworks {
-            let bitcoinNtws = activeNetworks.filter { $0 == .bitcoinSS || $0 == .bitcoinMS }
+            let bitcoinNtws = activeNetworks.filter { $0 == .bitcoinSS || $0 == .bitcoinMS || $0.lightning }
             let liquidNtws = activeNetworks.filter { $0 == .liquidSS || $0 == .liquidMS }
             let testnetNtws = activeNetworks.filter { $0 == .testnetSS || $0 == .testnetMS }
             let testnetLiquidNtws = activeNetworks.filter { $0 == .testnetLiquidSS || $0 == .testnetLiquidMS }
@@ -138,7 +138,7 @@ class AnalyticsManager {
         return nil
     }
 
-    var analyticsSec: [SecTypeDescriptor]? {
+    var analyticsSecurity: [SecTypeDescriptor]? {
         if let activeNetworks = activeNetworks {
             let hasSinglesig = activeNetworks.filter { [.bitcoinSS, .liquidSS, .testnetSS, .testnetLiquidSS].contains($0) }.count > 0
             let hasMultisig = activeNetworks.filter { [.bitcoinMS, .liquidMS, .testnetMS, .testnetLiquidMS].contains($0) }.count > 0

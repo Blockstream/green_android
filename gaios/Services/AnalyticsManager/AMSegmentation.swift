@@ -3,66 +3,42 @@ import gdk
 import hw
 
 extension AnalyticsManager {
-
+    
     typealias Sgmt = [String: String]
-
-    func ntwSgmt(_ onBoardParams: OnBoardParams?) -> Sgmt? {
-//        if let network = onBoardParams?.network {
-//            var s = Sgmt()
-//            s[AnalyticsManager.strNetwork] = network
-//            s[AnalyticsManager.strSecurity] = onBoardParams?.singleSig == true ? AnalyticsManager.strSinglesig : AnalyticsManager.strMultisig
-//            return s
-//        }
-        return nil
-    }
-
-//    func ntwSgmt(_ account: Account?) -> Sgmt? {
-//        if let network = account?.network {
-//            var s = Sgmt()
-//            s[AnalyticsManager.strNetwork] = network
-//            s[AnalyticsManager.strSecurity] = account?.isSingleSig == true ? AnalyticsManager.strSinglesig : AnalyticsManager.strMultisig
-//            return s
-//        }
-//        return nil
-//    }
-
-    func ntwSgmtUnified() -> Sgmt? {
-        if let analyticsNtw = analyticsNtw, let analyticsSec = analyticsSec {
-            var s = Sgmt()
+    
+    func ntwSgmtUnified() -> Sgmt {
+        var s = Sgmt()
+        if let analyticsNtw = analyticsNetworks {
             s[AnalyticsManager.strNetworks] = analyticsNtw.rawValue
-            s[AnalyticsManager.strSecurity] = analyticsSec.map { $0.rawValue }.joined(separator: "-")
-            return s
         }
-        return nil
+        if let analyticsSec = analyticsSecurity {
+            s[AnalyticsManager.strSecurity] = analyticsSec.map { $0.rawValue }.joined(separator: "-")
+        }
+        return s
     }
-
-    func onBoardSgmtUnified(flow: AnalyticsManager.OnBoardFlow) -> Sgmt? {
+    
+    func onBoardSgmtUnified(flow: AnalyticsManager.OnBoardFlow) -> Sgmt {
         var s = Sgmt()
         s[AnalyticsManager.strFlow] = flow.rawValue
         return s
     }
-
-    func sessSgmt(_ account: Account?) -> Sgmt? {
-        if var s = ntwSgmtUnified() {
-
-            if account?.isJade ?? false {
-                s[AnalyticsManager.strBrand] = "Blockstream"
-                s[AnalyticsManager.strFirmware] = BleViewModel.shared.jade?.version?.jadeVersion ?? ""
-                s[AnalyticsManager.strModel] = BleViewModel.shared.jade?.version?.boardType ?? ""
-                s[AnalyticsManager.strConnection] = AnalyticsManager.strBle
-            }
-            if account?.isLedger ?? false {
-                s[AnalyticsManager.strBrand] = "Ledger"
-                s[AnalyticsManager.strFirmware] = ""
-                s[AnalyticsManager.strModel] = "Ledger Nano X"
-                s[AnalyticsManager.strConnection] = AnalyticsManager.strBle
-            }
-
-            s[AnalyticsManager.strAppSettings] = appSettings()
-
-            return s
+    
+    func sessSgmt(_ account: Account?) -> Sgmt {
+        var s = ntwSgmtUnified()
+        if account?.isJade ?? false {
+            s[AnalyticsManager.strBrand] = "Blockstream"
+            s[AnalyticsManager.strFirmware] = BleViewModel.shared.jade?.version?.jadeVersion ?? ""
+            s[AnalyticsManager.strModel] = BleViewModel.shared.jade?.version?.boardType ?? ""
+            s[AnalyticsManager.strConnection] = AnalyticsManager.strBle
         }
-        return nil
+        if account?.isLedger ?? false {
+            s[AnalyticsManager.strBrand] = "Ledger"
+            s[AnalyticsManager.strFirmware] = ""
+            s[AnalyticsManager.strModel] = "Ledger Nano X"
+            s[AnalyticsManager.strConnection] = AnalyticsManager.strBle
+        }
+        s[AnalyticsManager.strAppSettings] = appSettings()
+        return s
     }
 
     func accountNetworkLabel(_ gdkNetwork: GdkNetwork) -> String {
@@ -77,34 +53,30 @@ extension AnalyticsManager {
         return [server, liquid, mainnet].compactMap { $0 }.joined(separator: "-")
     }
 
-    func subAccSeg(_ account: Account?, walletItem: WalletItem?) -> Sgmt? {
-        if var s = sessSgmt(account), let walletItem = walletItem {
+    func subAccSeg(_ account: Account?, walletItem: WalletItem?) -> Sgmt {
+        var s = sessSgmt(account)
+        if let walletItem = walletItem {
             s[AnalyticsManager.strAccountType] = walletItem.type.rawValue
             s[AnalyticsManager.strNetwork] = accountNetworkLabel(walletItem.gdkNetwork)
-            return s
         }
-        return nil
+        return s
     }
 
-    func twoFacSgmt(_ account: Account?, walletItem: WalletItem?, twoFactorType: TwoFactorType?) -> Sgmt? {
-        if var s = subAccSeg(account, walletItem: walletItem) {
-            if let twoFactorType = twoFactorType, let walletItem = walletItem {
-                s[AnalyticsManager.str2fa] = twoFactorType.rawValue
-                s[AnalyticsManager.strNetwork] = accountNetworkLabel(walletItem.gdkNetwork)
-            }
-            return s
+    func twoFacSgmt(_ account: Account?, walletItem: WalletItem?, twoFactorType: TwoFactorType?) -> Sgmt {
+        var s = subAccSeg(account, walletItem: walletItem)
+        if let twoFactorType = twoFactorType, let walletItem = walletItem {
+            s[AnalyticsManager.str2fa] = twoFactorType.rawValue
+            s[AnalyticsManager.strNetwork] = accountNetworkLabel(walletItem.gdkNetwork)
         }
-        return nil
+        return s
     }
 
-    func firmwareSgmt(_ account: Account?, firmware: Firmware) -> Sgmt? {
-        if var s = sessSgmt(account) {
-            s[AnalyticsManager.strSelectedConfig] = firmware.config.lowercased()
-            s[AnalyticsManager.strSelectedDelta] = firmware.isDelta == true ? "true" : "false"
-            s[AnalyticsManager.strSelectedVersion] = firmware.version
-            return s
-        }
-        return nil
+    func firmwareSgmt(_ account: Account?, firmware: Firmware) -> Sgmt {
+        var s = sessSgmt(account)
+        s[AnalyticsManager.strSelectedConfig] = firmware.config.lowercased()
+        s[AnalyticsManager.strSelectedDelta] = firmware.isDelta == true ? "true" : "false"
+        s[AnalyticsManager.strSelectedVersion] = firmware.version
+        return s
     }
 
     func appSettings() -> String {
@@ -130,33 +102,4 @@ extension AnalyticsManager {
         }
         return settingsProps.sorted().joined(separator: ",")
     }
-}
-
-extension AnalyticsManager {
-    // these need a custom dictionary
-//    func chooseNtwSgmt(flow: AnalyticsManager.OnBoardFlow) -> Sgmt? {
-//        var s = Sgmt()
-//        s[AnalyticsManager.strFlow] = flow.rawValue
-//        return s
-//    }
-
-//    func chooseSecuritySgmt(onBoardParams: OnBoardParams?, flow: AnalyticsManager.OnBoardFlow) -> Sgmt? {
-//        if let network = onBoardParams?.network {
-//            var s = Sgmt()
-//            s[AnalyticsManager.strNetwork] = network
-//            s[AnalyticsManager.strFlow] = flow.rawValue
-//            return s
-//        }
-//        return nil
-//    }
-//
-//    func chooseRecoverySgmt(onBoardParams: OnBoardParams?, flow: AnalyticsManager.OnBoardFlow) -> Sgmt? {
-//        if let network = onBoardParams?.network {
-//            var s = Sgmt()
-//            s[AnalyticsManager.strNetwork] = network
-//            s[AnalyticsManager.strFlow] = flow.rawValue
-//            return s
-//        }
-//        return nil
-//    }
 }
