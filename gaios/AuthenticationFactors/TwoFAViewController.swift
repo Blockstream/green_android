@@ -175,7 +175,7 @@ class TwoFAViewController: UIViewController {
     @IBAction func btnInfoSupport(_ sender: Any) {
         let request = DialogErrorRequest(
             account: AccountsRepository.shared.current,
-            networkType: session?.networkType ?? .bitcoinSS,
+            networkType: WalletManager.current?.prominentNetwork ?? .bitcoinSS,
             error: "",
             screenName: "2FA")
         showOpenSupportUrl(request)
