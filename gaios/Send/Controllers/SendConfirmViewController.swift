@@ -166,7 +166,12 @@ class SendConfirmViewController: KeyboardViewController {
         dismissProgress() {
             self.sliderView.isUserInteractionEnabled = true
             self.sliderView.reset()
-            self.showReportError(account: AccountsRepository.shared.current, wallet: self.viewModel.account, prettyError: prettyError.localized, screenName: "FailedTransaction")
+            switch error {
+            case TwoFactorCallError.cancel(_):
+                break
+            default:
+                self.showReportError(account: AccountsRepository.shared.current, wallet: self.viewModel.account, prettyError: prettyError.localized, screenName: "FailedTransaction")
+            }
         }
         let isSendAll = self.viewModel.tx.addressees.first?.isGreedy ?? false
         let withMemo = !(self.viewModel.tx.memo?.isEmpty ?? true)
