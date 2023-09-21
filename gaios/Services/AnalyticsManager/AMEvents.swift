@@ -214,7 +214,7 @@ extension AnalyticsManager {
             } else {
                 s[AnalyticsManager.strError] = error.localizedDescription
             }
-            recordEvent(.failedTransaction, sgmt: s)
+            endEvent(.failedTransaction, sgmt: s)
         }
     }
 
