@@ -314,7 +314,8 @@ class WalletViewController: UIViewController {
             vc.viewModel = SendViewModel(account: model.account,
                                          inputType: viewModel.watchOnly ? .sweep : .transaction,
                                          transaction: nil,
-                                         input: nil)
+                                         input: nil,
+                                         addressInputType: nil)
             vc.fixedWallet = false
             navigationController?.pushViewController(vc, animated: true)
         }
@@ -982,7 +983,8 @@ extension WalletViewController: DialogScanViewControllerDelegate {
                     let sendModel = SendViewModel(account: parser.account!,
                                                   inputType: tx?.txType ?? .transaction,
                                                   transaction: tx,
-                                                  input: value)
+                                                  input: value,
+                                                  addressInputType: .scan)
                     self.sendViewController(model: sendModel)
                 }
             } catch {

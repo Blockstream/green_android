@@ -21,7 +21,6 @@ class SendViewController: KeyboardViewController {
     var viewModel: SendViewModel!
     var fixedWallet: Bool = false
     var fixedAsset: Bool = false
-    var addressInputType: AnalyticsManager.AddressInputType = .paste
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -153,7 +152,7 @@ class SendViewController: KeyboardViewController {
                                                 tx: tx,
                                                 inputDenomination: viewModel.inputDenomination)
             vc.inputType = viewModel.inputType
-            vc.addressInputType = addressInputType
+            vc.addressInputType = viewModel.addressInputType ?? .paste
             navigationController?.pushViewController(vc, animated: true)
         }
     }

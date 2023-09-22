@@ -123,7 +123,7 @@ extension AnalyticsManager {
         case .lnurl:
             break
         }
-        s[AnalyticsManager.strAddressInput] = transactionSgmt.addressInputType.rawValue
+        s[AnalyticsManager.strAddressInput] = (transactionSgmt.addressInputType ?? .paste).rawValue
         // s[AnalyticsManager.strSendAll] = transactionSgmt.sendAll ? "true" : "false"
         s[AnalyticsManager.strWithMemo] = withMemo ? "true" : "false"
         endEvent(.sendTransaction, sgmt: s)
@@ -192,7 +192,7 @@ extension AnalyticsManager {
         case .lnurl:
             break
         }
-        s[AnalyticsManager.strAddressInput] = transactionSgmt.addressInputType.rawValue
+        s[AnalyticsManager.strAddressInput] = transactionSgmt.addressInputType?.rawValue
         // s[AnalyticsManager.strSendAll] = transactionSgmt.sendAll ? "true" : "false"
         s[AnalyticsManager.strWithMemo] = withMemo ? "true" : "false"
         if let prettyError = prettyError {
@@ -336,7 +336,7 @@ extension AnalyticsManager {
 
     struct TransactionSegmentation {
         let transactionType: TxType
-        let addressInputType: AddressInputType
+        let addressInputType: AddressInputType?
         let sendAll: Bool
     }
 

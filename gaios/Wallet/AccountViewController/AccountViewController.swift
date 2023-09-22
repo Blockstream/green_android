@@ -354,7 +354,8 @@ class AccountViewController: UIViewController {
         let sendViewModel = SendViewModel(account: viewModel.account,
                                      inputType: viewModel.watchOnly ? .sweep : .transaction,
                                      transaction: nil,
-                                     input: nil)
+                                     input: nil,
+                                     addressInputType: nil)
         self.sendViewController(model: sendViewModel)
     }
 
@@ -809,7 +810,8 @@ extension AccountViewController: DialogScanViewControllerDelegate {
                     let sendModel = SendViewModel(account: account,
                                                   inputType: tx?.txType ?? .transaction,
                                                   transaction: tx,
-                                                  input: value)
+                                                  input: value,
+                                                  addressInputType: .scan)
                     self.sendViewController(model: sendModel)
                 }
             } catch {

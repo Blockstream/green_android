@@ -252,7 +252,8 @@ class TransactionViewController: UIViewController {
                 vc.viewModel = SendViewModel(account: self.wallet,
                                              inputType: .bumpFee,
                                              transaction: tx,
-                                             input: nil)
+                                             input: nil,
+                                             addressInputType: nil)
                 vc.fixedWallet = true
                 vc.fixedAsset = true
                 self.navigationController?.pushViewController(vc, animated: true)

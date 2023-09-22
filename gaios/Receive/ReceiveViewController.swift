@@ -283,7 +283,7 @@ class ReceiveViewController: KeyboardViewController {
     func optSweep() {
         let storyboard = UIStoryboard(name: "Send", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SendViewController") as? SendViewController {
-            let sendViewModel = SendViewModel(account: viewModel.account, inputType: .sweep, transaction: nil, input: nil)
+            let sendViewModel = SendViewModel(account: viewModel.account, inputType: .sweep, transaction: nil, input: nil, addressInputType: nil)
             vc.viewModel = sendViewModel
             navigationController?.pushViewController(vc, animated: true)
         }

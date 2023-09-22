@@ -32,6 +32,7 @@ class SendViewModel {
     var isFiat: Bool = false
     var editableAddress: Bool = true
     var editableAmount: Bool = false
+    var addressInputType: AnalyticsManager.AddressInputType?
     
     var transactionPriority: TransactionPriority = .Medium {
         didSet {
@@ -87,12 +88,13 @@ class SendViewModel {
     private var btc: String { session.gdkNetwork.getFeeAsset() }
     private var feeAsset: String { session.gdkNetwork.getFeeAsset() }
     
-    init(account: WalletItem, inputType: TxType, transaction: Transaction?, input: String?) {
+    init(account: WalletItem, inputType: TxType, transaction: Transaction?, input: String?, addressInputType: AnalyticsManager.AddressInputType?) {
         self.account = account
         self.transaction = transaction
         self.assetId = account.gdkNetwork.getFeeAsset()
         self.inputType = inputType
         self.transactionPriority = inputType == .bumpFee ? .Custom : .Medium
+        self.addressInputType = addressInputType
         let settings =  WalletManager.current?.prominentSession?.settings
         let denom = settings?.denomination ?? .BTC
         self.inputDenomination = denom

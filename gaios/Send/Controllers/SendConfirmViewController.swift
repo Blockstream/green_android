@@ -27,7 +27,7 @@ class SendConfirmViewController: KeyboardViewController {
     private var ltConfirmingViewController: LTConfirmingViewController?
 
     var inputType: TxType = .transaction // for analytics
-    var addressInputType: AnalyticsManager.AddressInputType = .paste // for analytics
+    var addressInputType: AnalyticsManager.AddressInputType? = .paste // for analytics
 
     override func viewDidLoad() {
         super.viewDidLoad()
