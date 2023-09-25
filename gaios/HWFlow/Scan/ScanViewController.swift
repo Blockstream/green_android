@@ -138,15 +138,15 @@ class ScanViewController: HWFlowBaseViewController {
 }
 
 extension ScanViewController: UITableViewDelegate, UITableViewDataSource {
-
+    
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
-
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return scanViewModel.peripherals.count
     }
-
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let peripheral = scanViewModel.peripherals[indexPath.row]
         if peripheral.jade {
@@ -164,35 +164,47 @@ extension ScanViewController: UITableViewDelegate, UITableViewDataSource {
         }
         return UITableViewCell()
     }
-
+    
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 0.1
     }
-
+    
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 0.1
     }
-
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
-
+    
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         return nil
     }
-
+    
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         return nil
     }
-
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let peripheral = scanViewModel.peripherals[indexPath.row]
         stopScan()
+        startAnimating()
         Task {
-            BleViewModel.shared.type = peripheral.type
-            BleViewModel.shared.peripheralID = peripheral.identifier
-            try? await BleViewModel.shared.connect()
-            await MainActor.run { self.next() }
+            do {
+                BleViewModel.shared.type = peripheral.type
+                BleViewModel.shared.peripheralID = peripheral.identifier
+                try await scanViewModel.connect(peripheral.identifier)
+                try await Task.sleep(nanoseconds:  3 * 1_000_000_000)
+                await MainActor.run {
+                    self.stopAnimating()
+                    self.next() }
+            } catch {
+                await MainActor.run {
+                    self.stopAnimating()
+                    let txt = BleViewModel.shared.toBleError(error, network: nil).localizedDescription
+                    self.showError(txt.localized)
+                }
+            }
         }
     }
 }

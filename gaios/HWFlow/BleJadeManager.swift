@@ -156,19 +156,19 @@ class BleJadeManager {
     }
 
     func ping() async throws -> JadeVersionInfo {
-        return try await withThrowingTaskGroup(of: JadeVersionInfo.self) { group in
-            group.addTask { return try await self.version() }
-            group.addTask {
-                try await Task.sleep(nanoseconds: UInt64(3 * 1_000_000_000))
-                try Task.checkCancellation()
-                try await self.disconnect()
-                throw BLEManagerError.genericErr(txt: "Re-pair your jade")
-            }
-            guard let success = try await group.next() else {
-                throw _Concurrency.CancellationError()
-            }
-            group.cancelAll()
-            return success
+        let versionTask = Task {
+            try await self.version()
+        }
+        let timeoutTask = Task {
+            try await Task.sleep(nanoseconds: 3 * 1_000_000_000)
+            versionTask.cancel()
+        }
+        do {
+            let version = try await versionTask.value
+            timeoutTask.cancel()
+            return version
+        } catch {
+            throw BLEManagerError.timeoutErr(txt: "Something went wrong when pairing Jade. Remove your Jade from iOS bluetooth settings and try again.")
         }
     }
 }

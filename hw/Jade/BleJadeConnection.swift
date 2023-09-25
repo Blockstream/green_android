@@ -56,7 +56,7 @@ public class BleJadeConnection: HWConnectionProtocol {
     }
 
     public func read() async throws -> Data? {
-        await semaphoreQueue.wait()
+        try await semaphoreQueue.waitUnlessCancelled()
         if queue.isEmpty {
             return nil
         }
@@ -72,14 +72,14 @@ public class BleJadeConnection: HWConnectionProtocol {
     }
 
     public func exchange(_ data: Data) async throws -> Data {
-        await semaphore.wait()
+        try await semaphore.waitUnlessCancelled()
         try await write(data)
         if let result = try await read() {
             semaphore.signal()
             return result
         }
         semaphore.signal()
-        throw HWError.Abort("Invalid response")
+        throw HWError.InvalidResponse("")
     }
 
     public func close() async throws {

@@ -5,6 +5,7 @@ public enum HWError: Error {
     case URLError(_ localizedDescription: String)
     case Declined(_ localizedDescription: String)
     case Disconnected(_ localizedDescription: String)
+    case InvalidResponse(_ localizedDescription: String)
 
     static let CBOR_RPC_USER_CANCELLED = -32000
 

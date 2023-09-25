@@ -212,6 +212,7 @@ class BleViewModel {
     }    
 
     func toBleError(_ err: Error, network: String?) -> BLEManagerError {
+        let defaultMsg = "Something went wrong when pairing Jade. Remove your Jade from iOS bluetooth settings and try again."
         if let err = err as? BLEManagerError {
             return err
         }
@@ -233,6 +234,8 @@ class BleViewModel {
                 HWError.URLError(let desc),
                 HWError.Declined(let desc):
                 return BLEManagerError.genericErr(txt: desc)
+            case HWError.InvalidResponse(_):
+                return BLEManagerError.genericErr(txt: defaultMsg)
             default:
                 return BLEManagerError.authErr(txt: "id_login_failed")
             }
@@ -246,7 +249,29 @@ class BleViewModel {
         if let err = err as? LoginError {
             return BLEManagerError.genericErr(txt: "id_login_failed")
         }
-        return BLEManagerError.genericErr(txt: err.localizedDescription)
+        if let err = err as? BluetoothError {
+            switch err {
+            case .bluetoothUnavailable:
+                return BLEManagerError.genericErr(txt: "\(defaultMsg). Error: Bluetooth Unavailable")
+            case .cancelledConnectionToPeripheral:
+                return BLEManagerError.genericErr(txt: "\(defaultMsg). Error: Cancelled Connection To Peripheral")
+            case .characteristicNotFound:
+                return BLEManagerError.genericErr(txt: "\(defaultMsg). Error: Characteristic Not Found")
+            case .connectingInProgress:
+                return BLEManagerError.genericErr(txt: "Connecting In Progress")
+            case .disconnectingInProgress:
+                return BLEManagerError.genericErr(txt: "Disconnecting In Progress")
+            case .errorConnectingToPeripheral(let err):
+                return BLEManagerError.genericErr(txt: "\(defaultMsg). Error: \(err?.localizedDescription ?? "")")
+            case .noConnectionToPeripheralExists:
+                return BLEManagerError.genericErr(txt: "\(defaultMsg). Error: No Connection To Peripheral Exists")
+            case .unableToConvertValueToData:
+                return BLEManagerError.genericErr(txt: "\(defaultMsg). Unable To Convert Value To Data")
+            case .unableToParseCharacteristicValue:
+                return BLEManagerError.genericErr(txt: "\(defaultMsg). Unable To Parse Characteristic Value")
+            }
+        }
+        return BLEManagerError.genericErr(txt: "id_login_failed")
     }
 
     func networkLabel(_ network: String) -> String {

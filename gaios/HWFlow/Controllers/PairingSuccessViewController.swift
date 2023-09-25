@@ -83,14 +83,8 @@ class PairingSuccessViewController: HWFlowBaseViewController {
                 fatalError()
             }
             do {
-                if !bleViewModel.isConnected() {
-                    throw BLEManagerError.genericErr(txt: "id_your_device_was_disconnected")
-                }
-                try await bleViewModel.connect()
+                try await self.connect()
                 if bleViewModel.type == .Jade {
-                    try? await bleViewModel.disconnect()
-                    try await Task.sleep(nanoseconds:  3 * 1_000_000_000)
-                    try await bleViewModel.connect()
                     let version = try await bleViewModel.jade?.version()
                     onJadeConnected(jadeHasPin: version?.jadeHasPin ?? true)
                 } else {
@@ -102,12 +96,40 @@ class PairingSuccessViewController: HWFlowBaseViewController {
             }
         }
     }
+    
+    func connect() async throws {
+        let connectTask = Task {
+            try? await bleViewModel?.disconnect()
+            try await Task.sleep(nanoseconds:  3 * 1_000_000_000)
+            try await bleViewModel?.connect()
+            if bleViewModel?.type == .Jade {
+                let version = try await bleViewModel?.jade?.version()
+            }
+        }
+        let timeoutTask = Task {
+            try await Task.sleep(nanoseconds: 12 * 1_000_000_000)
+            connectTask.cancel()
+        }
+        do {
+            try await connectTask.value
+            timeoutTask.cancel()
+        } catch {
+            throw BLEManagerError.timeoutErr(txt: "Something went wrong when pairing Jade. Remove your Jade from iOS bluetooth settings and try again.")
+        }
+    }
 
     @IBAction func btnAppSettings(_ sender: Any) {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
+    }
+
+    @MainActor
+    override func onError(_ err: Error) {
+        stopLoader()
+        let txt = BleViewModel.shared.toBleError(err, network: nil).localizedDescription
+        self.showError(txt.localized)
     }
 
     @MainActor

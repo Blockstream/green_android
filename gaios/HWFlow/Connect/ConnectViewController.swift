@@ -302,10 +302,10 @@ class ConnectViewController: HWFlowBaseViewController {
     override func onError(_ err: Error) {
         stop()
         retryButton.isHidden = false
-        let txt = bleViewModel?.toBleError(err, network: nil).localizedDescription ?? "id_operation_failure"
-        lblTitle.text = txt.localized
+        let txt = bleViewModel?.toBleError(err, network: nil).localizedDescription
+        lblTitle.text = txt?.localized ?? ""
         image.image = UIImage(named: "il_connection_fail")
-        print ("error: \(txt)")
+        NSLog("error: \(txt ?? "")")
     }
 }
 

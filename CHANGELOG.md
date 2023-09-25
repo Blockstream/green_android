@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Changed
+- Improving ble pairing and failure messages
+
 ## [4.0.13] - 2023-09-22
 
 ### Added
