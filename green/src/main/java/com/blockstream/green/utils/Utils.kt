@@ -38,13 +38,14 @@ import com.mohamedrejeb.ksoup.entities.KsoupEntities
 fun Fragment.openNewTicket(
     settingsManager: SettingsManager,
     subject: String? = null,
+    isMultisig: Boolean = false,
     network: Network? = null,
     isJade: Boolean = false,
 ) {
     val product = if (isJade) "blockstream_jade" else "green"
     val hw = if (isJade) "jade" else ""
 
-    val policy: String = network?.zendeskSecurityPolicy() ?: ""
+    val policy: String = network?.zendeskSecurityPolicy() ?: if(isMultisig) "multisig_shield__green_" else ""
 
     openBrowser(
         settingsManager.getApplicationSettings(),

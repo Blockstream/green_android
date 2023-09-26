@@ -135,7 +135,7 @@ class TwoFactorSetupFragment : AbstractWalletFragment<TwofactorSetupFragmentBind
             }
             TwoFactorSetupAction.CANCEL -> {
                 // Cancel action
-                viewModel.cancel2FA(network, twoFactorResolver = DialogTwoFactorResolver(requireContext()))
+                viewModel.cancel2FA(network, twoFactorResolver = DialogTwoFactorResolver(this))
             }
             TwoFactorSetupAction.DISPUTE -> {
                 binding.message = getString(R.string.id_if_you_did_not_request_the)
@@ -172,7 +172,7 @@ class TwoFactorSetupFragment : AbstractWalletFragment<TwofactorSetupFragmentBind
                             network = network,
                             email = email,
                             isDispute = false,
-                            twoFactorResolver = DialogTwoFactorResolver(requireContext())
+                            twoFactorResolver = DialogTwoFactorResolver(this)
                         )
                     }
                     TwoFactorSetupAction.DISPUTE -> {
@@ -180,14 +180,14 @@ class TwoFactorSetupFragment : AbstractWalletFragment<TwofactorSetupFragmentBind
                             network = network,
                             email = email,
                             isDispute = true,
-                            twoFactorResolver = DialogTwoFactorResolver(requireContext())
+                            twoFactorResolver = DialogTwoFactorResolver(this)
                         )
                     }
                     TwoFactorSetupAction.UNDO_DISPUTE -> {
                         viewModel.undoReset2FA(
                             network = network,
                             email = email,
-                            twoFactorResolver = DialogTwoFactorResolver(requireContext())
+                            twoFactorResolver = DialogTwoFactorResolver(this)
                         )
                     }
                     TwoFactorSetupAction.SETUP,TwoFactorSetupAction.SETUP_EMAIL, TwoFactorSetupAction.CANCEL -> {

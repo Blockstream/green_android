@@ -140,11 +140,11 @@ class SwapFragment : AbstractWalletFragment<SwapFragmentBinding>(
         }
 
         binding.buttonSwap.setOnClickListener {
-            viewModel.createSwapProposal(twoFactorResolver = DialogTwoFactorResolver(requireContext()))
+            viewModel.createSwapProposal(twoFactorResolver = DialogTwoFactorResolver(this))
         }
 
         binding.buttonTx.setOnClickListener {
-            viewModel.completeSwapProposal(twoFactorResolver = DialogTwoFactorResolver(requireContext()))
+            viewModel.completeSwapProposal(twoFactorResolver = DialogTwoFactorResolver(this))
         }
 
         binding.switchExchangeRate.setOnClickListener {

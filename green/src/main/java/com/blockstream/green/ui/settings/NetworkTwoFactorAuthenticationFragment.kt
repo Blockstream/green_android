@@ -196,7 +196,7 @@ class NetworkTwoFactorAuthenticationFragment :
                                     viewModel.setCsvTime(
                                         network,
                                         csvTime,
-                                        DialogTwoFactorResolver(requireContext())
+                                        DialogTwoFactorResolver(this)
                                     )
                                 }
                             }
@@ -414,7 +414,7 @@ class NetworkTwoFactorAuthenticationFragment :
                         input = binding.amount.takeIf { it.isNotBlank() } ?: "0",
                         denomination = Denomination.fiatOrNull(session, isFiat))
 
-                    viewModel.setLimits(network, input.toLimit(), DialogTwoFactorResolver(requireContext()))
+                    viewModel.setLimits(network, input.toLimit(), DialogTwoFactorResolver(this))
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -449,7 +449,7 @@ class NetworkTwoFactorAuthenticationFragment :
                 .setSingleChoiceItems(requireContext().localized2faMethods(methods).toTypedArray(), -1) { dialog, i: Int ->
                     viewModel.disable2FA(network,
                         method,
-                        DialogTwoFactorResolver(requireContext(), selectedMethod = methods[i])
+                        DialogTwoFactorResolver(this, selectedMethod = methods[i])
                     )
                     dialog.dismiss()
                 }

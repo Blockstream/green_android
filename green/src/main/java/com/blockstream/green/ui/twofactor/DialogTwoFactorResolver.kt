@@ -23,21 +23,11 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
-class DialogTwoFactorResolver : TwoFactorResolver {
-    private val context: Context
-    private var appFragment: AppFragment<*>? = null
-    private var selectedMethod: String?
-
-    constructor (context: Context, selectedMethod: String? = null) {
-        this.context = context
-        this.selectedMethod = selectedMethod
-    }
-
-    constructor (appFragment: AppFragment<*>, selectedMethod: String? = null) {
-        this.context = appFragment.requireContext()
-        this.appFragment = appFragment
-        this.selectedMethod = selectedMethod
-    }
+class DialogTwoFactorResolver(
+    private var appFragment: AppFragment<*>,
+    private var selectedMethod: String? = null
+) : TwoFactorResolver {
+    private val context: Context = appFragment.requireContext()
 
     override suspend fun selectMethod(availableMethods: List<String>): CompletableDeferred<String> {
         return withContext(context = Dispatchers.Main) {
@@ -111,10 +101,11 @@ class DialogTwoFactorResolver : TwoFactorResolver {
                                     .setMessage(R.string.id_try_again_using_another_2fa_method)
                                     .setPositiveButton(R.string.id_try_again, null)
                                     .setNeutralButton(R.string.id_contact_support) { _, _ ->
-                                        appFragment?.also {
-                                            appFragment?.openNewTicket(
+                                        appFragment.also {
+                                            it.openNewTicket(
                                                 settingsManager = it.settingsManager,
                                                 subject = "Android: I am not receiving my 2FA code",
+                                                isMultisig = true
                                             )
                                         }
                                     }
@@ -136,7 +127,7 @@ class DialogTwoFactorResolver : TwoFactorResolver {
                     override fun onChangeMode(isVerify: Boolean) {}
                 }
 
-                appFragment?.let {
+                appFragment.let {
                     try {
                         authHandlerStatus.authData?.jsonObject?.get("telegram_url")?.jsonPrimitive?.content?.let { url ->
                             it.openBrowser(url)

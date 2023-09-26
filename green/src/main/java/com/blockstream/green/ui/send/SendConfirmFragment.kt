@@ -136,7 +136,7 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
 
         binding.buttonSend.onSlideCompleteListener = object : SlideToActView.OnSlideCompleteListener{
             override fun onSlideComplete(view: SlideToActView) {
-                viewModel.signTransaction(broadcast = true, twoFactorResolver = DialogTwoFactorResolver(requireContext()))
+                viewModel.signTransaction(broadcast = true, twoFactorResolver = DialogTwoFactorResolver(this@SendConfirmFragment))
             }
         }
 
@@ -231,7 +231,7 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
                 return true
             }
             R.id.sign_transaction -> {
-                viewModel.signTransaction(broadcast = false, twoFactorResolver = DialogTwoFactorResolver(requireContext()))
+                viewModel.signTransaction(broadcast = false, twoFactorResolver = DialogTwoFactorResolver(this))
             }
         }
 
