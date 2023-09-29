@@ -12,4 +12,5 @@ data class Notification(
     @SerialName("tor") val tor: TorEvent? = null,
     @SerialName("network") val network: NetworkEvent? = null,
     @SerialName("transaction") val transaction: TransactionEvent? = null,
+    @SerialName("subaccount") val subaccount: SubaccountEvent? = null,
 )

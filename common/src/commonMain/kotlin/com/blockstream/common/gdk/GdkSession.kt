@@ -2437,6 +2437,12 @@ class GdkSession constructor(
                 // Update UI maybe
                 _tickerSharedFlow.tryEmit(Unit)
             }
+            "subaccount" -> {
+                if(notification.subaccount?.isSynced == true) {
+                    updateAccountsAndBalances()
+                    updateWalletTransactions()
+                }
+            }
             "transaction" -> {
                 if (!blockNotificationHandling) {
                     notification.transaction?.let { event ->

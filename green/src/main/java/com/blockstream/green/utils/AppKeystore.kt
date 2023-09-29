@@ -189,12 +189,8 @@ class AppKeystore(val context: Context): GreenKeystore {
     }
 
     @Throws(Exception::class)
-    fun decryptData(cipher: Cipher, encryptedData: EncryptedData): ByteArray {
-        return cipher.doFinal(encryptedData.getEncryptedData())
-    }
-
     override fun decryptData(cipher: PlatformCipher, encryptedData: EncryptedData): ByteArray {
-        return decryptData(cipher as Cipher, encryptedData)
+        return (cipher as Cipher).doFinal(encryptedData.getEncryptedData())
     }
 
     override fun canUseBiometrics(): Boolean {

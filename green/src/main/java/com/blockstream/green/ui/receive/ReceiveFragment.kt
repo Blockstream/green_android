@@ -179,7 +179,7 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
                 menuItems = buildList {
                     add(MenuListItem(id = 0, title = StringHolder(R.string.id_request_amount)))
                     add(MenuListItem(id = 1, title = StringHolder(R.string.id_list_of_addresses)))
-                    if (!network.isLiquid && !network.isElectrum) {
+                    if (!network.isLiquid) {
                         add(MenuListItem(id = 2, title = StringHolder(R.string.id_sweep_from_paper_wallet)))
                     }
                 },

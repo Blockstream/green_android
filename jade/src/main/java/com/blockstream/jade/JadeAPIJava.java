@@ -52,8 +52,8 @@ public abstract class JadeAPIJava {
 
     // Timeouts for autonomous calls that should return quickly, calls that require user confirmation,
     // and calls that need arbitrarily long (eg. entering a mnemonic) and should not timeout at all.
-    static int TIMEOUT_AUTONOMOUS = 2000;  // 2 secs
-    static int TIMEOUT_AUTONOMOUS_LONG = 4000;  // 4 secs
+    static int TIMEOUT_AUTONOMOUS = 4000;  // 4 secs
+    static int TIMEOUT_AUTONOMOUS_LONG = 6000;  // 6 secs
     private static int TIMEOUT_USER_INTERACTION = 120000;  // 2 mins
     private static int TIMEOUT_NONE = -1;
 
