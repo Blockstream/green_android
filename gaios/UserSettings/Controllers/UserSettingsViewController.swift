@@ -155,22 +155,23 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
         case .Version:
             break
         case .SupportID:
-            
-            let multiSigSessions = { WalletManager.current?.activeSessions.values.filter { !$0.gdkNetwork.electrum } }()
+            let multiSigSessions = { WalletManager.current?.activeSessions.values.filter { !$0.gdkNetwork.electrum && !$0.gdkNetwork.lightning} }()
             let msMainSession = multiSigSessions?.filter{ !$0.gdkNetwork.liquid }.first
             let msLiquidSession = multiSigSessions?.filter{ $0.gdkNetwork.liquid }.first
-            let uuid = UserDefaults.standard.string(forKey: AppStorage.analyticsUUID)
-            var str = "id:\(uuid ?? "")"
+            var strings: [String] = []
             
             Task {
                 if let item = try? await msMainSession?.subaccount(0) {
-                    str += ",bitcoin:\(item.receivingId)"
+                    strings.append("bitcoin:\(item.receivingId)")
                 }
                 if let item = try? await msLiquidSession?.subaccount(0) {
-                    str += ",liquidnetwork:\(item.receivingId)"
+                    strings.append("liquidnetwork:\(item.receivingId)")
+                }
+                if let nodeId = WalletManager.current?.lightningSession?.nodeState?.id {
+                    strings.append("lightning:\(nodeId)")
                 }
                 await MainActor.run {
-                    UIPasteboard.general.string = str
+                    UIPasteboard.general.string = strings.joined(separator: ",")
                     DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 1.0)
                     UINotificationFeedbackGenerator().notificationOccurred(.success)
                 }
