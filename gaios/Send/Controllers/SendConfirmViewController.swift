@@ -138,12 +138,18 @@ class SendConfirmViewController: KeyboardViewController {
 
     @MainActor
     func failure(_ error: Error) {
+        var prettyErrorLog = ""
+
         let prettyError: String = {
             switch error {
             case BreezSDK.SdkError.Generic(let msg),
                 BreezSDK.SdkError.LspConnectFailed(let msg),
                 BreezSDK.SdkError.PersistenceFailure(let msg),
                 BreezSDK.SdkError.ReceivePaymentFailed(let msg):
+
+                if let nodeId = WalletManager.current?.lightningSession?.nodeState?.id {
+                    prettyErrorLog = msg + " NodeId: \(nodeId)" + " Timestamp: \(Int(Date().timeIntervalSince1970))"
+                }
                 return msg
             case HWError.Abort(let desc),
                 HWError.Declined(let desc):
@@ -180,7 +186,7 @@ class SendConfirmViewController: KeyboardViewController {
                                                                  sendAll: isSendAll)
         AnalyticsManager.shared.failedTransaction(account: AccountsRepository.shared.current,
                                                   walletItem: self.viewModel.account,
-                                                  transactionSgmt: transSgmt, withMemo: withMemo, error: error, prettyError: prettyError)
+                                                  transactionSgmt: transSgmt, withMemo: withMemo, error: error, prettyError: prettyErrorLog)
     }
 
     @MainActor
@@ -343,16 +349,5 @@ extension SendConfirmViewController: SliderViewDelegate {
         if position == 1 {
             send()
         }
-    }
-}
-
-extension SendConfirmViewController: DialogFeedbackViewControllerDelegate {
-    func didSend(rating: Int, email: String?, comment: String) {
-        AnalyticsManager.shared.recordFeedback(rating: rating, email: email, comment: comment)
-        DropAlert().info(message: "id_thank_you_for_your_feedback".localized)
-    }
-    
-    func didCancel() {
-        //
     }
 }

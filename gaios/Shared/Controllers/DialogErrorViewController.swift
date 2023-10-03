@@ -8,6 +8,7 @@ class DialogErrorRequest {
     var network: NetworkSecurityCase?
     var hw: String?
     var subject: String?
+    var timestamp = Date().timeIntervalSince1970
 
     init(account: Account?, networkType: NetworkSecurityCase?, error: String?, screenName: String?) {
         self.network = networkType
@@ -176,11 +177,15 @@ class DialogErrorViewController: DialogViewController {
     }
 
     @IBAction func btnSend(_ sender: Any) {
+        var errorString = request?.error ?? ""
+        if let nodeId = WalletManager.current?.lightningSession?.nodeState?.id, let timestamp = request?.timestamp{
+            errorString += " NodeId: \(nodeId)" + " Timestamp: \(Int(timestamp))"
+        }
         ZendeskSdk.shared.submitNewTicket(
             subject: request?.subject,
             email: emailField.text,
             message: messageTextView.text,
-            error: request?.error,
+            error: errorString,
             network: request?.network,
             hw: request?.hw)
         dismiss(.send)
