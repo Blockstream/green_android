@@ -73,13 +73,8 @@ class ConnectViewController: HWFlowBaseViewController {
                 bleViewModel?.peripheralID = item.identifier
                 // connection
                 progress("id_connecting".localized)
-                try await bleViewModel?.connect()
-                if pairingState != .unknown && account.isJade {
-                    // pairing roundtrip for jade
-                    try? await bleViewModel?.disconnect()
-                    try await Task.sleep(nanoseconds:  5 * 1_000_000_000)
-                    startScan()
-                    return
+                if !(bleViewModel?.isConnected() ?? false) {
+                    try await bleViewModel?.connect()
                 }
                 // ping if still connected and responding
                 try await bleViewModel?.ping()

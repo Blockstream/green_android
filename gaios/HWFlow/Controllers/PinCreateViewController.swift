@@ -105,9 +105,9 @@ class PinCreateViewController: HWFlowBaseViewController {
         start()
         Task {
             do {
-                try? await bleViewModel?.disconnect()
-                try await Task.sleep(nanoseconds:  3 * 1_000_000_000)
-                try await bleViewModel?.connect()
+                if !(bleViewModel?.isConnected() ?? false) {
+                    try await bleViewModel?.connect()
+                }
                 try await bleViewModel?.initialize(testnet: testnet)
                 if let account = try await bleViewModel?.defaultAccount() {
                     self.account = try await bleViewModel?.login(account: account)

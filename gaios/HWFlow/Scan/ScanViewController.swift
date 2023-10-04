@@ -193,8 +193,7 @@ extension ScanViewController: UITableViewDelegate, UITableViewDataSource {
             do {
                 BleViewModel.shared.type = peripheral.type
                 BleViewModel.shared.peripheralID = peripheral.identifier
-                try await scanViewModel.connect(peripheral.identifier)
-                try await Task.sleep(nanoseconds:  3 * 1_000_000_000)
+                try await BleViewModel.shared.connect()
                 await MainActor.run {
                     self.stopAnimating()
                     self.next() }

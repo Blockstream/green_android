@@ -65,10 +65,4 @@ class ScanViewModel: ObservableObject {
     func peripheral(_ peripheralID: UUID) -> Peripheral? {
         centralManager.retrievePeripherals(withIdentifiers: [peripheralID]).first
     }
-    
-    func connect(_ peripheralID: UUID) async throws {
-        if let peripheral = peripheral(peripheralID) {
-            try await centralManager.connect(peripheral)
-        }
-    }
 }

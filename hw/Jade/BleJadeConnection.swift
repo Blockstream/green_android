@@ -31,14 +31,15 @@ public class BleJadeConnection: HWConnectionProtocol {
         try await centralManager?.connect(peripheral)
         mtu = peripheral.maximumWriteValueLength(for: .withResponse)
         print ("MTU \(mtu)")
+        try await peripheral.setNotifyValue(false, forCharacteristicWithUUID: CLIENT_CHARACTERISTIC_CONFIG, ofServiceWithUUID: BleJadeConnection.SERVICE_UUID)
         try await peripheral.discoverServices(nil)
-        try await peripheral.setNotifyValue(true, forCharacteristicWithUUID: CLIENT_CHARACTERISTIC_CONFIG, ofServiceWithUUID: BleJadeConnection.SERVICE_UUID)
         for service in peripheral.discoveredServices ?? [] {
             try await peripheral.discoverCharacteristics(nil, for: service)
             service.discoveredCharacteristics!.forEach {
                 print("\($0.uuid) \($0.properties) \($0.isNotifying)")
             }
         }
+        try await peripheral.setNotifyValue(true, forCharacteristicWithUUID: CLIENT_CHARACTERISTIC_CONFIG, ofServiceWithUUID: BleJadeConnection.SERVICE_UUID)
         var buffer = Data()
         cancellable = peripheral.characteristicValueUpdatedPublisher
             //.map { print("Data '\($0.value)'"); return $0 }

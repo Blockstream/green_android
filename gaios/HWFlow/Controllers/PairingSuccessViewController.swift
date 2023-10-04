@@ -83,7 +83,10 @@ class PairingSuccessViewController: HWFlowBaseViewController {
                 fatalError()
             }
             do {
-                try await self.connect()
+                if !bleViewModel.isConnected() {
+                    try await bleViewModel.connect()
+                }
+                try await bleViewModel.ping()
                 if bleViewModel.type == .Jade {
                     let version = try await bleViewModel.jade?.version()
                     onJadeConnected(jadeHasPin: version?.jadeHasPin ?? true)
@@ -94,27 +97,6 @@ class PairingSuccessViewController: HWFlowBaseViewController {
                 try? await bleViewModel.disconnect()
                 onError(error)
             }
-        }
-    }
-    
-    func connect() async throws {
-        let connectTask = Task {
-            try? await bleViewModel?.disconnect()
-            try await Task.sleep(nanoseconds:  3 * 1_000_000_000)
-            try await bleViewModel?.connect()
-            if bleViewModel?.type == .Jade {
-                let version = try await bleViewModel?.jade?.version()
-            }
-        }
-        let timeoutTask = Task {
-            try await Task.sleep(nanoseconds: 12 * 1_000_000_000)
-            connectTask.cancel()
-        }
-        do {
-            try await connectTask.value
-            timeoutTask.cancel()
-        } catch {
-            throw BLEManagerError.timeoutErr(txt: "Something went wrong when pairing Jade. Remove your Jade from iOS bluetooth settings and try again.")
         }
     }
 
@@ -151,8 +133,7 @@ class PairingSuccessViewController: HWFlowBaseViewController {
         Task {
             do {
                 let account = try await bleViewModel?.defaultAccount()
-                //try? await bleViewModel?.disconnect()
-                //try await Task.sleep(nanoseconds: UInt64(3 * 1_000_000_000))
+                try? await bleViewModel?.disconnect()
                 await MainActor.run {
                     stopLoader()
                     var account = account
@@ -175,7 +156,6 @@ class PairingSuccessViewController: HWFlowBaseViewController {
     @MainActor
     func onJadeInitialize(testnet: Bool) {
         Task {
-            try await bleViewModel?.jade?.disconnect()
             await MainActor.run {
                 stopLoader()
                 let hwFlow = UIStoryboard(name: "HWFlow", bundle: nil)
