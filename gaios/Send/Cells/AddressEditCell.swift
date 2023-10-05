@@ -28,6 +28,11 @@ class AddressEditCell: UITableViewCell {
         super.awakeFromNib()
         setStyle()
         setContent()
+
+        let cStyle = editField.defaultTextAttributes[.paragraphStyle, default: NSParagraphStyle()] as? NSParagraphStyle
+        let style = cStyle?.mutableCopy() as? NSMutableParagraphStyle
+        style?.lineBreakMode = .byTruncatingMiddle
+        editField.defaultTextAttributes[.paragraphStyle] = style
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {
