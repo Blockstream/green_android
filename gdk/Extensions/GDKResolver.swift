@@ -80,12 +80,8 @@ public class GDKResolver {
                 let action = requiredData["action"] as? String,
                 let device = requiredData["device"] as? [String: Any],
                 let hwdevice = HWDevice.from(device) as? HWDevice {
-                do {
-                    let res = try await HWResolver().resolveCode(action: action, device: hwdevice, requiredData: requiredData, chain: chain, hwDevice: hwDevice)
-                    try self.twoFactorCall?.resolveCode(code: res.stringify())
-                } catch {
-                    throw TwoFactorCallError.failure(localizedDescription: error.localizedDescription)
-                }
+                let res = try await HWResolver().resolveCode(action: action, device: hwdevice, requiredData: requiredData, chain: chain, hwDevice: hwDevice)
+                try self.twoFactorCall?.resolveCode(code: res.stringify())
             } else {
                 // Software wallet interface resolver
                 let resolveCode = ResolveCodeData.from(res) as? ResolveCodeData
