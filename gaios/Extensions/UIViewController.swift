@@ -72,7 +72,7 @@ extension UIViewController {
             subject: request.subject,
             email: nil,
             message: nil,
-            error: request.error,
+            error: request.msg,
             network: request.network,
             hw: request.hw)
         if let url = url {

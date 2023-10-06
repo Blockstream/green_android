@@ -177,7 +177,7 @@ extension AnalyticsManager {
         startEvent(.failedTransaction)
     }
 
-    func failedTransaction(account: Account?, walletItem: WalletItem?, transactionSgmt: AnalyticsManager.TransactionSegmentation, withMemo: Bool, error: Error, prettyError: String?) {
+    func failedTransaction(account: Account?, walletItem: WalletItem?, transactionSgmt: AnalyticsManager.TransactionSegmentation, withMemo: Bool, prettyError: String?) {
         endTrace(.failedTransaction)
         var s = subAccSeg(account, walletItem: walletItem)
         switch transactionSgmt.transactionType {
@@ -197,8 +197,6 @@ extension AnalyticsManager {
         s[AnalyticsManager.strWithMemo] = withMemo ? "true" : "false"
         if let prettyError = prettyError {
             s[AnalyticsManager.strError] = prettyError
-        } else {
-            s[AnalyticsManager.strError] = error.localizedDescription
         }
         endEvent(.failedTransaction, sgmt: s)
     }

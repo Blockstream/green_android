@@ -9,6 +9,15 @@ class DialogErrorRequest {
     var hw: String?
     var subject: String?
     var timestamp = Date().timeIntervalSince1970
+    var msg: String {
+        var text = error ?? ""
+        if let nodeId = WalletManager.current?.lightningSession?.nodeState?.id {
+            text += "\n NodeId: \(nodeId)"
+        }
+        text += "\n Timestamp: \(Int(timestamp))"
+        text += "\n Countly: \(AnalyticsManager.shared.analyticsUUID)"
+        return text
+    }
 
     init(account: Account?, networkType: NetworkSecurityCase?, error: String?, screenName: String?) {
         self.network = networkType
@@ -177,15 +186,11 @@ class DialogErrorViewController: DialogViewController {
     }
 
     @IBAction func btnSend(_ sender: Any) {
-        var errorString = request?.error ?? ""
-        if let nodeId = WalletManager.current?.lightningSession?.nodeState?.id, let timestamp = request?.timestamp{
-            errorString += " NodeId: \(nodeId)" + " Timestamp: \(Int(timestamp))"
-        }
         ZendeskSdk.shared.submitNewTicket(
             subject: request?.subject,
             email: emailField.text,
             message: messageTextView.text,
-            error: errorString,
+            error: request?.msg ?? "",
             network: request?.network,
             hw: request?.hw)
         dismiss(.send)

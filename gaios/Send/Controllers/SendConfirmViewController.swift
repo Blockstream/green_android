@@ -138,18 +138,12 @@ class SendConfirmViewController: KeyboardViewController {
 
     @MainActor
     func failure(_ error: Error) {
-        var prettyErrorLog = ""
-
         let prettyError: String = {
             switch error {
             case BreezSDK.SdkError.Generic(let msg),
                 BreezSDK.SdkError.LspConnectFailed(let msg),
                 BreezSDK.SdkError.PersistenceFailure(let msg),
                 BreezSDK.SdkError.ReceivePaymentFailed(let msg):
-
-                if let nodeId = WalletManager.current?.lightningSession?.nodeState?.id {
-                    prettyErrorLog = msg + " NodeId: \(nodeId)" + " Timestamp: \(Int(Date().timeIntervalSince1970))"
-                }
                 return msg
             case HWError.Abort(let desc),
                 HWError.Declined(let desc):
@@ -176,7 +170,11 @@ class SendConfirmViewController: KeyboardViewController {
             case TwoFactorCallError.cancel(_):
                 break
             default:
-                self.showReportError(account: AccountsRepository.shared.current, wallet: self.viewModel.account, prettyError: prettyError.localized, screenName: "FailedTransaction")
+                self.showReportError(
+                    account: AccountsRepository.shared.current,
+                    wallet: self.viewModel.account,
+                    prettyError: prettyError.localized,
+                    screenName: "FailedTransaction")
             }
         }
         let isSendAll = self.viewModel.tx.addressees.first?.isGreedy ?? false
@@ -184,9 +182,12 @@ class SendConfirmViewController: KeyboardViewController {
         let transSgmt = AnalyticsManager.TransactionSegmentation(transactionType: self.inputType,
                                                                  addressInputType: self.addressInputType,
                                                                  sendAll: isSendAll)
-        AnalyticsManager.shared.failedTransaction(account: AccountsRepository.shared.current,
-                                                  walletItem: self.viewModel.account,
-                                                  transactionSgmt: transSgmt, withMemo: withMemo, error: error, prettyError: prettyErrorLog)
+        AnalyticsManager.shared.failedTransaction(
+            account: AccountsRepository.shared.current,
+            walletItem: self.viewModel.account,
+            transactionSgmt: transSgmt,
+            withMemo: withMemo,
+            prettyError: prettyError.localized)
     }
 
     @MainActor
