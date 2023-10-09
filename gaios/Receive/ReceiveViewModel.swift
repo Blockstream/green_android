@@ -113,11 +113,10 @@ class ReceiveViewModel {
     }
 
     var infoExpiredInCellModel: LTInfoCellModel {
-        if let invoice = invoice {
-            let numberOfDays = Calendar.current.dateComponents([.day], from: invoice.expireInAsDate, to: Date())
-            return LTInfoCellModel(title: "id_expiration".localized, hint1: "In \(abs(numberOfDays.day ?? 0)) days", hint2: "")
-        }
-        return LTInfoCellModel(title: "id_expiration".localized, hint1: "", hint2: "")
+        LTInfoCellModel(
+            title: "id_expiration".localized,
+            hint1: "In \(abs(invoice?.expiringInMinutes ?? 0)) minutes",
+            hint2: "")
     }
 
     var noteCellModel: LTNoteCellModel {

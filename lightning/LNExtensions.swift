@@ -15,6 +15,7 @@ extension LnInvoice {
     public var expireIn: TimeInterval { TimeInterval(timestamp + expiry) }
     public var expireInAsDate: Date { Date(timeIntervalSince1970: expireIn) }
     public var timeUntilExpiration: Double { Date().distance(to: expireInAsDate) }
+    public var expiringInMinutes: Int? { Calendar.current.dateComponents([.minute], from: expireInAsDate, to: Date()).minute }
     public var isExpired: Bool { timeUntilExpiration < 0 }
     public func sendableSatoshi(userSatoshi: UInt64?) -> UInt64? {
         isAmountLocked ? amountSatoshi ?? 0 : userSatoshi
