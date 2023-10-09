@@ -68,15 +68,17 @@ extension UIViewController {
 
     @MainActor
     func showOpenSupportUrl(_ request: DialogErrorRequest) {
-        let url = ZendeskSdk.shared.createNewTicketUrl(
-            subject: request.subject,
-            email: nil,
-            message: nil,
-            error: request.msg,
-            network: request.network,
-            hw: request.hw)
-        if let url = url {
-            SafeNavigationManager.shared.navigate(url)
+        Task {
+            let url = await ZendeskSdk.shared.createNewTicketUrl(
+                subject: request.subject,
+                email: nil,
+                message: nil,
+                error: request.msg,
+                network: request.network,
+                hw: request.hw)
+            if let url = url {
+                SafeNavigationManager.shared.navigate(url)
+            }
         }
     }
 

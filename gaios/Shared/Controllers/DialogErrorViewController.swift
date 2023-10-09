@@ -186,14 +186,16 @@ class DialogErrorViewController: DialogViewController {
     }
 
     @IBAction func btnSend(_ sender: Any) {
-        ZendeskSdk.shared.submitNewTicket(
-            subject: request?.subject,
-            email: emailField.text,
-            message: messageTextView.text,
-            error: request?.msg ?? "",
-            network: request?.network,
-            hw: request?.hw)
-        dismiss(.send)
+        Task {
+            await ZendeskSdk.shared.submitNewTicket(
+                subject: request?.subject,
+                email: emailField.text,
+                message: messageTextView.text,
+                error: request?.msg ?? "",
+                network: request?.network,
+                hw: request?.hw)
+            dismiss(.send)
+        }
     }
 }
 

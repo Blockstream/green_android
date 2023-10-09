@@ -372,6 +372,7 @@
 		34EB670128212EBA0036D615 /* AMEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB670028212EBA0036D615 /* AMEvents.swift */; };
 		34EB6703282138710036D615 /* AMSegmentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB6702282138710036D615 /* AMSegmentation.swift */; };
 		34EB670528213A8A0036D615 /* AMConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB670428213A8A0036D615 /* AMConstants.swift */; };
+		34ED47042AD4259F000086D4 /* SupportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ED47032AD4259F000086D4 /* SupportManager.swift */; };
 		34EDF6BC28BF6EDC00145AD4 /* AlertCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EDF6BA28BF6EDC00145AD4 /* AlertCardCell.swift */; };
 		34EDF6BD28BF6EDC00145AD4 /* AlertCardCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34EDF6BB28BF6EDC00145AD4 /* AlertCardCell.xib */; };
 		34F164EF29E84B3800FE5B64 /* DialogDeleteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F164EE29E84B3800FE5B64 /* DialogDeleteViewController.swift */; };
@@ -1041,6 +1042,7 @@
 		34EB670028212EBA0036D615 /* AMEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMEvents.swift; sourceTree = "<group>"; };
 		34EB6702282138710036D615 /* AMSegmentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMSegmentation.swift; sourceTree = "<group>"; };
 		34EB670428213A8A0036D615 /* AMConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMConstants.swift; sourceTree = "<group>"; };
+		34ED47032AD4259F000086D4 /* SupportManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportManager.swift; sourceTree = "<group>"; };
 		34EDF6BA28BF6EDC00145AD4 /* AlertCardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertCardCell.swift; sourceTree = "<group>"; };
 		34EDF6BB28BF6EDC00145AD4 /* AlertCardCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AlertCardCell.xib; sourceTree = "<group>"; };
 		34F164EE29E84B3800FE5B64 /* DialogDeleteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogDeleteViewController.swift; sourceTree = "<group>"; };
@@ -2252,6 +2254,7 @@
 				813872932A0480E20092CFD2 /* LightningSessionManager.swift */,
 				81B7FD212A8F959C0024A0E8 /* URLSchemeManager.swift */,
 				8173B8ED2AB19DCD00C15C85 /* ZendeskSdk.swift */,
+				34ED47032AD4259F000086D4 /* SupportManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -3883,6 +3886,7 @@
 				8157CDAA299BE1E800365F1B /* AddresseeCellModel.swift in Sources */,
 				349804D42772385600EAA1F4 /* DialogRecipientDeleteViewController.swift in Sources */,
 				3415862329EE9A29005002D9 /* WOLoginViewController.swift in Sources */,
+				34ED47042AD4259F000086D4 /* SupportManager.swift in Sources */,
 				349F71E929C21945007B9154 /* DialogCountlyViewController.swift in Sources */,
 				3418BAE32743BDAD00F9B2D0 /* ArcView.swift in Sources */,
 				3418BABA2742ABE100F9B2D0 /* TransactionStatusCell.swift in Sources */,

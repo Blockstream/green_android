@@ -26,13 +26,17 @@ class ZendeskSdk {
         error: String?,
         network: NetworkSecurityCase?,
         hw: String?
-    ) -> URL? {
+    ) async -> URL? {
+        
+        let supportId = await SupportManager.shared.str()
+        
         var components = URLComponents(string: "https://help.blockstream.com/hc/en-us/requests/new")!
         components.queryItems = [
             URLQueryItem(name: "tf_900008231623", value: "ios"),
             URLQueryItem(name: "tf_900009625166", value: Bundle.main.versionNumber),
             URLQueryItem(name: "tf_900003758323", value: "green"),
-            URLQueryItem(name: "tf_21409433258649", value: error ?? "")
+            URLQueryItem(name: "tf_21409433258649", value: error ?? ""),
+            URLQueryItem(name: "tf_23833728377881", value: supportId)
         ]
         if let hw = hw {
             components.queryItems! += [URLQueryItem(name: "tf_900006375926", value: hw)]
@@ -55,7 +59,10 @@ class ZendeskSdk {
         error: String?,
         network: NetworkSecurityCase?,
         hw: String?
-    ) {
+    ) async {
+        
+        let supportId = await SupportManager.shared.str()
+        
         let request = ZDKCreateRequest()
         request.tags = ["ios", "green"]
         request.subject = subject
@@ -64,7 +71,8 @@ class ZendeskSdk {
             CustomField(fieldId: 900003758323, value: "green"),
             CustomField(fieldId: 900009625166, value: Bundle.main.versionNumber),
             CustomField(fieldId: 900008231623, value: "ios"),
-            CustomField(fieldId: 21409433258649, value: error ?? "")
+            CustomField(fieldId: 21409433258649, value: error ?? ""),
+            CustomField(fieldId: 23833728377881, value: supportId)
         ]
         if let hw = hw {
             customFields += [CustomField(fieldId: 900006375926, value: hw)]

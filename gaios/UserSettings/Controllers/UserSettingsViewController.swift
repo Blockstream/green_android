@@ -155,23 +155,10 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
         case .Version:
             break
         case .SupportID:
-            let multiSigSessions = { WalletManager.current?.activeSessions.values.filter { !$0.gdkNetwork.electrum && !$0.gdkNetwork.lightning} }()
-            let msMainSession = multiSigSessions?.filter{ !$0.gdkNetwork.liquid }.first
-            let msLiquidSession = multiSigSessions?.filter{ $0.gdkNetwork.liquid }.first
-            var strings: [String] = []
-            
             Task {
-                if let item = try? await msMainSession?.subaccount(0) {
-                    strings.append("bitcoin:\(item.receivingId)")
-                }
-                if let item = try? await msLiquidSession?.subaccount(0) {
-                    strings.append("liquidnetwork:\(item.receivingId)")
-                }
-                if let nodeId = WalletManager.current?.lightningSession?.nodeState?.id {
-                    strings.append("lightning:\(nodeId)")
-                }
+                let supportId = await SupportManager.shared.str()
                 await MainActor.run {
-                    UIPasteboard.general.string = strings.joined(separator: ",")
+                    UIPasteboard.general.string = supportId
                     DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 1.0)
                     UINotificationFeedbackGenerator().notificationOccurred(.success)
                 }
