@@ -39,8 +39,10 @@ class ZendeskSdkImpl constructor(context: Context, clientId: String) : ZendeskSd
         request.customFields = listOfNotNull(
             appVersion?.let { CustomField( 900009625166, it) }, // App Version
             CustomField( 21409433258649, errorReport.error), // Logs
+            errorReport.supportId?.let { CustomField(23833728377881L, it) }, // Support ID
             errorReport.zendeskHardwareWallet?.let { CustomField(900006375926L, it) }, // Hardware Wallet
             errorReport.zendeskSecurityPolicy?.let { CustomField(6167739898649L, it) } // Policy
+
         )
 
         AnonymousIdentity.Builder().apply {

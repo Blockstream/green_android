@@ -204,10 +204,8 @@ class WalletSettingsFragment :
                         )
                     }
                     supportIdPreference -> {
-                        viewModel.supportId?.also {
-                            copyToClipboard("SupportId", it, requireContext())
-                            snackbar(R.string.id_copied_to_clipboard)
-                        }
+                        copyToClipboard("SupportId", session.supportId(), requireContext())
+                        snackbar(R.string.id_copied_to_clipboard)
                     }
                     watchOnlyPreference -> {
                         navigate(

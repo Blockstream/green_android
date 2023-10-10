@@ -3,11 +3,12 @@ package com.blockstream.common.data
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Network
 
-data class ErrorReport(val error: String, val zendeskSecurityPolicy: String? = null, val zendeskHardwareWallet: String? = null){
+data class ErrorReport(val error: String, val supportId: String? = null, val zendeskSecurityPolicy: String? = null, val zendeskHardwareWallet: String? = null){
     companion object {
         fun create(throwable: Throwable, network: Network? = null, session: GdkSession? = null): ErrorReport{
             return ErrorReport(
                 error = throwable.message ?: "Undefined Error",
+                supportId = session?.supportId(),
                 zendeskSecurityPolicy = network?.let {
                     when {
                         it.isSinglesig -> "singlesig__green_"

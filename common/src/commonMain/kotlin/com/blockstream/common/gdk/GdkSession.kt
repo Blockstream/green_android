@@ -2486,6 +2486,10 @@ class GdkSession constructor(
         })
     }
 
+    fun supportId() = allAccounts.value.filter {
+        it.isMultisig && it.pointer == 0L || it.isLightning
+    }.joinToString(",") { "${it.network.bip21Prefix}:${if (it.isLightning) lightningSdk.nodeInfoStateFlow.value.id else it.receivingId}" }
+
     internal fun destroy() {
         disconnect()
         scope.cancel("Destroy")

@@ -18,8 +18,8 @@ import com.blockstream.common.gdk.data.TwoFactorReset
 import com.blockstream.common.gdk.params.CsvParams
 import com.blockstream.common.gdk.params.EncryptWithPinParams
 import com.blockstream.common.gdk.params.Limits
-import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.navigation.LogoutReason
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.common.utils.randomChars
 import com.blockstream.green.data.TwoFactorMethod
@@ -69,8 +69,6 @@ open class WalletSettingsViewModel constructor(
     val archivedAccountsLiveData: LiveData<Int> get() = _archivedAccountsLiveData
     val archivedAccounts: Int get() = _archivedAccountsLiveData.value ?: 0
 
-    var supportId: String? = null
-
     init {
         session.activeSessions.forEach { network ->
             session
@@ -83,11 +81,6 @@ open class WalletSettingsViewModel constructor(
         session.accounts.value.find {
             it.isMultisig
         }
-
-        session.allAccounts.onEach { accounts ->
-            supportId = accounts.filter { it.isMultisig && it.pointer == 0L || it.isLightning}
-                .joinToString(",") { "${it.network.bip21Prefix}:${if(it.isLightning) session.lightningSdk.nodeInfoStateFlow.value.id else it.receivingId}" }
-        }.launchIn(viewModelScope.coroutineScope)
 
         database.getLoginCredentialsFlow(wallet.id).onEach {
             biometricsLiveData.postValue(it.biometricsPinData)
