@@ -75,7 +75,7 @@ fun View.pulse(repeat: Boolean = false) {
 }
 
 fun View.alphaPulse(repeat: Boolean = false) {
-    ObjectAnimator.ofFloat(this, "alpha", 1f, 0.6f, 1f).apply {
+    ObjectAnimator.ofFloat(this, "alpha", 1f, 0.75f, 1f).apply {
         duration = 1000
         if(repeat){
             repeatMode = ValueAnimator.RESTART

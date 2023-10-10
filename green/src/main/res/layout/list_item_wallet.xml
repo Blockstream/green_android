@@ -52,17 +52,15 @@
                 <ImageView
                     android:id="@+id/connectionIcon"
                     isVisible="@{view.connected}"
-                    android:layout_width="5dp"
-                    android:layout_height="5dp"
-                    android:alpha="0.75"
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
                     android:src="@drawable/indicator_dot_filled"
                     app:layout_constraintBottom_toBottomOf="@+id/icon"
-                    app:layout_constraintEnd_toStartOf="@+id/icon"
-                    app:layout_constraintHorizontal_bias="0.75"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/arrow"
                     app:layout_constraintTop_toTopOf="@+id/icon" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linearLayoutCompat4"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -138,10 +136,12 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
+                    android:id="@+id/textView25"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/id_lightning_account"
                     android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/id_lightning_account"
                     android:textAppearance="?attr/textAppearanceLabelMedium"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/lnArrow"
@@ -151,12 +151,11 @@
                 <ImageView
                     android:id="@+id/lnConnectionIcon"
                     isVisible="@{view.lightningShortcutConnected}"
-                    android:layout_width="5dp"
-                    android:layout_height="5dp"
-                    android:alpha="0.75"
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
                     android:src="@drawable/indicator_dot_filled"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/lnIcon"
+                    app:layout_constraintEnd_toStartOf="@+id/lnArrow"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView

@@ -2,8 +2,8 @@ package com.blockstream.green.ui.onboarding
 
 import android.os.Bundle
 import android.view.View
-import com.blockstream.common.models.onboarding.WatchOnlyPolicyViewModel
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.onboarding.WatchOnlyPolicyViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
@@ -42,7 +42,7 @@ class WatchOnlyPolicyFragment : AppFragment<WatchOnlyPolicyFragmentBinding>(
 
             (sideEffect.destination as? WatchOnlyPolicyViewModel.Destination.ChooseNetwork)?.also {
                 navigate(
-                    WatchOnlyPolicyFragmentDirections.actionChooseWatchOnlyFragmentToChooseNetworkFragment(
+                    WatchOnlyPolicyFragmentDirections.actionWatchOnlyPolicyFragmentToChooseNetworkFragment(
                         it.setupArgs
                     )
                 )
@@ -50,7 +50,7 @@ class WatchOnlyPolicyFragment : AppFragment<WatchOnlyPolicyFragmentBinding>(
 
             (sideEffect.destination as? WatchOnlyPolicyViewModel.Destination.Singlesig)?.also {
                 navigate(
-                    WatchOnlyPolicyFragmentDirections.actionChooseWatchOnlyFragmentToWatchOnlyCredentialsFragment(
+                    WatchOnlyPolicyFragmentDirections.actionWatchOnlyPolicyFragmentToWatchOnlyCredentialsFragment(
                         it.setupArgs
                     )
                 )

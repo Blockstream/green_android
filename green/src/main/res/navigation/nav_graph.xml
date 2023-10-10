@@ -305,11 +305,11 @@
         android:label=""
         tools:layout="@layout/watch_only_policy_fragment">
         <action
-            android:id="@+id/action_chooseWatchOnlyFragment_to_watchOnlyCredentialsFragment"
-            app:destination="@id/watchOnlyCredentialsFragment" />
-        <action
-            android:id="@+id/action_chooseWatchOnlyFragment_to_chooseNetworkFragment"
+            android:id="@+id/action_watchOnlyPolicyFragment_to_chooseNetworkFragment"
             app:destination="@id/chooseNetworkFragment" />
+        <action
+            android:id="@+id/action_watchOnlyPolicyFragment_to_watchOnlyCredentialsFragment"
+            app:destination="@id/watchOnlyCredentialsFragment" />
     </fragment>
     <fragment
         android:id="@+id/watchOnlyCredentialsFragment"

@@ -118,6 +118,8 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
                         withGrouping = true
                     )
 
+                    hideKeyboard()
+
                     // Move it as a side effect in VM
                     dialog(getString(R.string.id_funds_received), getString(R.string.id_you_have_just_received_s, amount), R.drawable.ic_lightning_fill)
                 }

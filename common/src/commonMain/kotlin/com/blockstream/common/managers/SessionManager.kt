@@ -1,6 +1,5 @@
 package com.blockstream.common.managers
 
-import co.touchlab.kermit.Logger
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.GreenWallet
@@ -15,6 +14,7 @@ import com.blockstream.common.gdk.data.TorEvent
 import com.blockstream.common.gdk.device.DeviceInterface
 import com.blockstream.common.lightning.LightningManager
 import com.blockstream.common.utils.ConsumableEvent
+import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.Timer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -117,12 +117,12 @@ class SessionManager constructor(
                 for (session in gdkSessions.filter { it.isConnected }) {
                     val sessionTimeout = (session.getSettings(null)?.altimeout ?: 1) * 60 * 1000L
 
+                    logger.d { "Set timeout after ${sessionTimeout / 1000}..." }
                     timeoutTimers += Timer(sessionTimeout) {
-                        Logger.d { "Session timeout, disconnecting..." }
+                        logger.d { "Session timeout, disconnecting..." }
                         session.disconnectAsync()
                     }
                 }
-
             }
         }.launchIn(CoroutineScope(context = Dispatchers.Default))
 
@@ -306,9 +306,11 @@ class SessionManager constructor(
     }
 
     fun disconnectAll(){
-        Logger.i { "Disconnecting all sessions" }
+        logger.i { "Disconnecting all sessions" }
         getConnectedSessions().onEach {
             it.disconnectAsync()
         }
     }
+
+    companion object: Loggable()
 }

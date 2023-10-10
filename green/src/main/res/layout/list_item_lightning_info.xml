@@ -108,8 +108,8 @@
                     style="@style/Widget.Green.Button.Text.Tiny"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_marginEnd="6dp"
+                    android:layout_gravity="start"
+                    android:layout_marginStart="30dp"
                     android:layout_marginBottom="6dp"
                     android:paddingTop="0dp"
                     android:text="@string/id_learn_more" />

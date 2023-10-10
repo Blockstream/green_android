@@ -1409,4 +1409,5 @@
   <string name="id_lightning_account">Lightning Account</string>
   <string name="id_add_lightning_shortcut">Add lightning shortcut</string>
   <string name="id_remove_lightning_shortcut">Remove lightning shortcut</string>
+  <string name="id_invoice_expired">Invoice expired</string>
 </resources>

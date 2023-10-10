@@ -457,6 +457,7 @@
                                                 android:layout_marginEnd="12dp"
                                                 android:layout_marginBottom="8dp"
                                                 android:textAlignment="center"
+                                                android:textColor="@color/color_on_surface_emphasis_high"
                                                 alphaPulse="@{vm.accountLiveData.lightning &amp;&amp; vm.showOnchainAddress}"
                                                 android:text="@{String.format(@string/id_send_more_than_s_and_up_to_s_to, vm.onChainMin, vm.onChainMax, vm.channelFeePercent, vm.channelMinFee)}"
                                                 tools:text="@string/id_send_more_than_s_and_up_to_s_to"/>

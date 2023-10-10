@@ -185,7 +185,7 @@ fun GreenWallet.iconResource() = when(icon) {
     WalletIcon.TESTNET -> R.drawable.ic_regular_flask_24
     WalletIcon.BIP39 -> R.drawable.ic_regular_wallet_passphrase_24
     WalletIcon.HARDWARE -> R.drawable.ic_regular_hww_24 // session.device!!.getIcon()
-    WalletIcon.LIGHTNING -> R.drawable.ic_lightning
+    WalletIcon.LIGHTNING -> R.drawable.ic_lightning_fill
     else -> R.drawable.ic_regular_wallet_24
 }
 
