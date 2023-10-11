@@ -338,7 +338,9 @@ extension SendConfirmViewController: DialogEditViewControllerDelegate {
 extension SendConfirmViewController: NoteCellDelegate {
 
     func noteAction() {
-        editNote()
+        if !viewModel.isLightning {
+            editNote()
+        }
     }
 }
 
