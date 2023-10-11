@@ -16,6 +16,8 @@ public struct GdkNetwork: Codable, Equatable, Comparable {
         case serverType = "server_type"
         case csvBuckets = "csv_buckets"
         case bip21Prefix = "bip21_prefix"
+        case electrumUrl = "electrum_url"
+        case electrumOnionUrl = "electrum_onion_url"
     }
     
     public let name: String
@@ -29,6 +31,8 @@ public struct GdkNetwork: Codable, Equatable, Comparable {
     public var serverType: String?
     public var csvBuckets: [Int]?
     public var bip21Prefix: String?
+    public var electrumUrl: String?
+    public var electrumOnionUrl: String?
     
     /// Get the asset used to pay transaction fees
     public func getFeeAsset() -> String {
