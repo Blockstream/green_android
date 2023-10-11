@@ -9,7 +9,9 @@ class NoteCell: UITableViewCell {
     @IBOutlet weak var lblNoteTitle: UILabel!
     @IBOutlet weak var lblNoteTxt: UILabel!
     @IBOutlet weak var bgNote: UIView!
+
     weak var delegate: NoteCellDelegate?
+    var isLightning = false
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -25,11 +27,17 @@ class NoteCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
-    func configure(note: String) {
+    func configure(note: String, isLightning: Bool) {
         self.lblNoteTxt.text = note
+        self.isLightning = isLightning
+        if isLightning {
+            lblNoteTxt.alpha = 0.7
+        }
     }
 
     @IBAction func btnNote(_ sender: Any) {
-        delegate?.noteAction()
+        if !isLightning {
+            delegate?.noteAction()
+        }
     }
 }

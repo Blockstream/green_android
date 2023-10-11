@@ -287,7 +287,7 @@ extension SendConfirmViewController: UITableViewDelegate, UITableViewDataSource 
             }
         case SendConfirmSection.note.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "NoteCell") as? NoteCell {
-                cell.configure(note: viewModel.tx.memo ?? "")
+                cell.configure(note: viewModel.tx.memo ?? "", isLightning: viewModel.isLightning)
                 cell.delegate = self
                 cell.selectionStyle = .none
                 return cell

@@ -34,7 +34,9 @@ class LTAmountCell: UITableViewCell {
     @IBOutlet weak var btnSwitch: UIButton!
     @IBOutlet weak var btnEdit: UIButton!
     @IBOutlet weak var btnFeeInfo: UIButton!
-
+    @IBOutlet weak var lblToReceiveTitle: UILabel!
+    @IBOutlet weak var lblToReceiveHint: UILabel!
+    
     var state: LTAmountCellState = .valid
     weak var delegate: LTAmountCellDelegate?
     var model: LTAmountCellModel!
@@ -54,6 +56,11 @@ class LTAmountCell: UITableViewCell {
         lblMoreInfo.text = "For more information,".localized
         btnFeeInfo.setTitle("read more".localized, for: .normal)
         btnFeeInfo.setStyle(.inlineGray)
+        [lblToReceiveTitle, lblToReceiveHint].forEach {
+            $0?.setStyle(.sectionTitle)
+        }
+        lblToReceiveTitle.text = "id_amount_to_receive".localized
+        lblToReceiveHint.text = ""
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -90,7 +97,13 @@ class LTAmountCell: UITableViewCell {
         updateState()
     }
 
-    @objc func textFieldDidChange(_ textField: UITextField) {
+    func toReceiveAmount(show: Bool) {
+        [lblToReceiveTitle, lblToReceiveHint].forEach{
+            $0?.isHidden = !show
+        }
+    }
+
+    @objc func triggerTextChange() {
         if let value = textField.text {
             if model.isFiat {
                 let balance = Balance.fromFiat(value)
@@ -103,6 +116,11 @@ class LTAmountCell: UITableViewCell {
         }
         delegate?.textFieldDidChange(model.satoshi, isFiat: model.isFiat)
         delegate?.stateDidChange(model.state)
+    }
+    
+    @objc func textFieldDidChange(_ textField: UITextField) {
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.triggerTextChange), object: nil)
+        perform(#selector(self.triggerTextChange), with: nil, afterDelay: 0.5)
     }
 
     @IBAction func onEdit(_ sender: Any) {
@@ -136,6 +154,7 @@ class LTAmountCell: UITableViewCell {
         btnFeeInfo.isHidden = false
         lblMoreInfo.isHidden = false
         lblAmount.isHidden = true
+        toReceiveAmount(show: false)
     }
 
     func disableState() {
@@ -146,6 +165,7 @@ class LTAmountCell: UITableViewCell {
         btnFeeInfo.isHidden = true
         lblMoreInfo.isHidden = true
         lblAmount.isHidden = false
+        toReceiveAmount(show: false)
     }
 
     func updateState() {
@@ -165,6 +185,8 @@ class LTAmountCell: UITableViewCell {
             btnFeeInfo.isHidden = false
             lblMoreInfo.isHidden = false
             lblAmount.isHidden = true
+            toReceiveAmount(show: true)
+            lblToReceiveHint.text = model.toReceiveAmountStr
         case .tooHigh:
             let amount = Int64(model.nodeState?.maxReceivableSatoshi ?? 0)
             let text = String(format: "id_you_cannot_receive_more_than_s".localized, model.toBtcText(amount) ?? "", model.toFiatText(amount) ?? "")

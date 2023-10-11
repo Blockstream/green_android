@@ -26,6 +26,14 @@ struct LTAmountCellModel {
             }
         }
     }
+    var toReceiveAmountStr: String {
+        if let satoshi = satoshi, let openChannelFee = openChannelFee, let balance = Balance.fromSatoshi(satoshi - openChannelFee, assetId: "btc") {
+            let (value, denom) = balance.toDenom(inputDenomination)
+            let (fiat, currency) = balance.toFiat()
+            return "\(value) \(denom) ~(\(fiat) \(currency))"
+        }
+        return ""
+    }
     var denomUnderlineText: NSAttributedString {
         return NSAttributedString(string: denomText ?? "", attributes:
             [.underlineStyle: NSUnderlineStyle.single.rawValue])
