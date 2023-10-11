@@ -3,6 +3,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.15] - 2023-10-11
+
+### Changed
+- Bump Breez to version 0.2.5
+- Support Android 14
+
+### Added
+- Lightning Shortcut
+
+### Fixed
+- Minor UI improvements
+
 ## [4.0.13] - 2023-09-20
 
 ### Changed
