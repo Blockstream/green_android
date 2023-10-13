@@ -158,7 +158,6 @@ class DialogFeedbackViewController: KeyboardViewController {
         return email.isValidEmailAddr()
     }
 
-
     override func keyboardWillShow(notification: Notification) {
         super.keyboardWillShow(notification: notification)
 

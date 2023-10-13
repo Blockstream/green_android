@@ -18,4 +18,7 @@ extension Bundle {
         return infoDictionary?["CFBundleVersion"] as? String ?? ""
     }
 
+    var dev: Bool {
+        return bundleId == "io.blockstream.greendev"
+    }
 }
