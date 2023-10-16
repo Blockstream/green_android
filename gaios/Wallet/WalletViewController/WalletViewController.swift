@@ -979,6 +979,9 @@ extension WalletViewController: DialogScanViewControllerDelegate {
                     ltAuthViewController(requestData: data)
                 default:
                     // open Send page
+                    guard parser.account != nil else {
+                        throw ParserError.InvalidInput("Invalid text")
+                    }
                     let tx = parser.createTx?.tx
                     let sendModel = SendViewModel(account: parser.account!,
                                                   inputType: tx?.txType ?? .transaction,
