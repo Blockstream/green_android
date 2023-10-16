@@ -440,6 +440,10 @@ extension BleJade {
         }
     }
 
+    var dev: Bool {
+        return Bundle.main.bundleIdentifier == "io.blockstream.greendev"
+    }
+
     public func firmwareData(_ verInfo: JadeVersionInfo) async throws -> Firmware {
         // Get relevant fmw path (or if hw not supported)
         guard let fwPath = firmwarePath(verInfo) else {
@@ -451,11 +455,10 @@ extension BleJade {
               let channels = try? JSONDecoder().decode(FirmwareChannels.self, from: json) else {
             throw HWError.Abort("Failed to fetch firmware index")
         }
-        #if DEBUG
-        let images = [channels.beta?.delta, channels.beta?.full, channels.stable?.delta, channels.stable?.full]
-        #else
-        let images = [channels.stable?.delta, channels.stable?.full]
-        #endif
+        var images = [channels.stable?.delta, channels.stable?.full]
+        if dev {
+            images = [channels.beta?.delta, channels.beta?.full, channels.stable?.delta, channels.stable?.full]
+        }
         for image in images {
             if let fmw = image?.filter({ $0.upgradable(verInfo.jadeVersion) }).first {
                 return fmw
