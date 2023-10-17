@@ -79,26 +79,24 @@ class Parser {
         self.input = input
     }
 
-    private func parseLightning() async throws -> CreateTransaction? {
-        guard let session = lightningAccount?.lightningSession else {
-            return nil
-        }
-        lightningType = session.lightBridge?.parseBoltOrLNUrl(input: input)
-        if lightningType == nil {
-            return nil
-        }
-        if txType == .transaction {
-            return nil
-        }
-        let res = try? await session.parseTxInput(input, satoshi: nil, assetId: nil)
-        account = lightningAccount
-        if res?.isValid ?? false {
-            return CreateTransaction(addressee: res?.addressees.first)
-        } else {
-            throw ParserError.InvalidTransaction(res?.errors.first ?? "id_operation_failure")
+    private func parseLightning() async throws -> (InputType?, CreateTransaction?) {
+        let session = lightningAccount?.lightningSession
+        let lightningType = session?.lightBridge?.parseBoltOrLNUrl(input: input)
+        switch lightningType {
+        case .bitcoinAddress(_), .none:
+            return (nil,nil)
+        case .lnUrlAuth(_), .lnUrlWithdraw(_), .nodeId(_), .url(_), .lnUrlError(_):
+            return (lightningType, nil)
+        case .lnUrlPay(_), .bolt11(_):
+            let res = try? await session?.parseTxInput(input, satoshi: nil, assetId: nil)
+            if res?.isValid ?? false {
+                return (lightningType, CreateTransaction(addressee: res?.addressees.first))
+            } else {
+                throw ParserError.InvalidTransaction(res?.errors.first ?? "id_operation_failure")
+            }
         }
     }
-    
+
     private func parseGdkBitcoin(preferredAccount: WalletItem?) async throws -> CreateTransaction? {
         var account = preferredAccount ?? bitcoinAccounts.first
         if let network = preferredAccount?.networkType, network.lightning || network.liquid {
@@ -142,7 +140,7 @@ class Parser {
     
     func runSingleAccount(account: WalletItem) async throws {
         if account.networkType.lightning {
-            createTx = try await parseLightning()
+            (lightningType, createTx) = try await parseLightning()
             return
         }
         if let session = account.session {
@@ -154,8 +152,9 @@ class Parser {
     
     func runMultiAccounts(preferredAccount: WalletItem?) async throws {
         if !isBip21 || input.starts(with: "lightning:") {
-            if let res = try await parseLightning() {
-                createTx = res
+            (lightningType, createTx) = try await parseLightning()
+            if lightningType != nil {
+                account = lightningAccount
                 return
             }
         }
@@ -200,14 +199,6 @@ class Parser {
             }
         } else {
             throw ParserError.InvalidInput("Invalid text")
-        }
-    }
-    
-    var txType: TxType {
-        switch lightningType {
-        case .bolt11(_): return .bolt11
-        case .lnUrlPay(_): return .lnurl
-        default: return .transaction
         }
     }
 }

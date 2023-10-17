@@ -290,7 +290,11 @@ class SendViewModel {
             if let sat = parser.createTx?.satoshi {
                 satoshi = sat
             }
-            inputType = parser.txType
+            switch parser.lightningType {
+            case .bolt11(_): inputType = .bolt11
+            case .lnUrlPay(_): inputType = .lnurl
+            default: inputType = .transaction
+            }
             inputError = parser.createTx?.error
             reload()
         } catch {
