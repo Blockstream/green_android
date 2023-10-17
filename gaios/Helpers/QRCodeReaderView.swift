@@ -102,8 +102,9 @@ class QRCodeReaderView: UIView {
         requestVideoAccess(presentingViewController: nil)
         sessionQueue.async {
             if self.authorizationStatus == .authorized {
+                
                 DispatchQueue.main.async {
-                    self.setupSession()
+                    
                     self.setupCaptureView()
                 }
             } else {
@@ -122,7 +123,8 @@ class QRCodeReaderView: UIView {
     func startScan() {
 #if !(arch(i386) || arch(x86_64))
         if !self.captureSession.isRunning && self.authorizationStatus == .authorized {
-            DispatchQueue.global(qos: .background).async {
+            sessionQueue.async {
+                self.setupSession()
                 self.captureSession.startRunning()
             }
             if let rectOfInterest = self.previewLayer?.metadataOutputRectConverted(fromLayerRect: cFrame) {
