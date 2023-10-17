@@ -3,6 +3,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+### [4.0.16] - 2023-10-17
+
+### Fixed
+- Fix racy crash when using camera
+- Improve parsing of LNURL
+- Fix connection to custom electrum server through Tor
+
+### Changed
+- Improve error messages
+
 ## [4.0.15] - 2023-10-12
 
 ### Changed
