@@ -202,16 +202,10 @@ class ReceiveViewController: KeyboardViewController {
         }
     }
     
+    @MainActor
     func failure(_ err: Error) {
-        switch err {
-        case BreezSDK.SdkError.Generic(let msg),
-            BreezSDK.SdkError.LspConnectFailed(let msg),
-            BreezSDK.SdkError.PersistenceFailure(let msg),
-            BreezSDK.SdkError.ReceivePaymentFailed(let msg):
-            self.showError(msg)
-        default:
-            super.showError(err)
-        }
+        let txt = getError(err)
+        self.showError(txt)
     }
 
     func validate() {

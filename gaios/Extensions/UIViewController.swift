@@ -3,6 +3,7 @@ import UIKit
 import gdk
 import greenaddress
 import BreezSDK
+import hw
 
 enum UIAlertOption: String {
     case `continue` = "id_continue"
@@ -41,6 +42,11 @@ extension UIViewController {
         switch err {
         case AuthenticationTypeHandler.AuthError.CanceledByUser, AuthenticationTypeHandler.AuthError.SecurityError, AuthenticationTypeHandler.AuthError.KeychainError:
             return err.localizedDescription
+        case HWError.Abort(let txt), HWError.Declined(let txt), HWError.Disconnected(let txt):
+            return txt
+        case BleLedgerConnection.LedgerError.IOError,
+            BleLedgerConnection.LedgerError.InvalidParameter:
+            return "id_operation_failure"
         case LoginError.connectionFailed:
             return "id_connection_failed"
         case LoginError.walletNotFound:
@@ -62,11 +68,16 @@ extension UIViewController {
         case TwoFactorCallError.cancel(let txt),
             TwoFactorCallError.failure(let txt):
             return txt
+        case TransactionError.invalid(let txt):
+            return txt
         case BreezSDK.SdkError.Generic(let msg),
+            BreezSDK.SdkError.InitFailed(let msg),
             BreezSDK.SdkError.LspConnectFailed(let msg),
+            BreezSDK.SdkError.LspOpenChannelNotSupported(let msg),
             BreezSDK.SdkError.PersistenceFailure(let msg),
             BreezSDK.SdkError.ReceivePaymentFailed(let msg),
-            BreezSDK.SdkError.InitFailed(let msg):
+            BreezSDK.SdkError.SendPaymentFailed(let msg),
+            BreezSDK.SdkError.CalculateOpenChannelFeesFailed(let msg):
             return msg
         default:
             return err.localizedDescription

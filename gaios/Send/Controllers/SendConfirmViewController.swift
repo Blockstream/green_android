@@ -138,30 +138,7 @@ class SendConfirmViewController: KeyboardViewController {
 
     @MainActor
     func failure(_ error: Error) {
-        let prettyError: String = {
-            switch error {
-            case BreezSDK.SdkError.Generic(let msg),
-                BreezSDK.SdkError.LspConnectFailed(let msg),
-                BreezSDK.SdkError.PersistenceFailure(let msg),
-                BreezSDK.SdkError.ReceivePaymentFailed(let msg):
-                return msg
-            case HWError.Abort(let desc),
-                HWError.Declined(let desc):
-                return desc
-            case BleLedgerConnection.LedgerError.IOError,
-                BleLedgerConnection.LedgerError.InvalidParameter:
-                return "id_operation_failure"
-            case TwoFactorCallError.failure(let localizedDescription),
-                TwoFactorCallError.cancel(let localizedDescription):
-                return localizedDescription
-            case TransactionError.invalid(let localizedDescription):
-                return localizedDescription
-            case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
-                return "id_you_are_not_connected"
-            default:
-                return error.localizedDescription
-            }
-        }()
+        let prettyError = getError(error)
         
         dismissProgress() {
             self.sliderView.isUserInteractionEnabled = true
