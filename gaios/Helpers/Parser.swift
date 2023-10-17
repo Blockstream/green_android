@@ -158,7 +158,8 @@ class Parser {
                 createTx = res
                 return
             }
-        } else if !isBip21 || input.starts(with: "liquidnetwork:") {
+        }
+        if !isBip21 || input.starts(with: "liquidnetwork:") {
             do {
                 if let res = try await parseGdkLiquid(preferredAccount: preferredAccount) {
                     createTx = res
@@ -177,7 +178,8 @@ class Parser {
                     break
                 }
             }
-        } else if !isBip21 || input.starts(with: "bitcoin:") {
+        }
+        if !isBip21 || input.starts(with: "bitcoin:") {
             do {
                 if let res = try await parseGdkBitcoin(preferredAccount: preferredAccount) {
                     createTx = res
@@ -189,7 +191,7 @@ class Parser {
                 }
                 switch error {
                 case ParserError.InvalidTransaction(let txt):
-                    if txt != "id_invalid_address" {
+                    if txt != "id_invalid_amount" {
                         throw error
                     }
                 default:
