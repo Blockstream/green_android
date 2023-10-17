@@ -47,13 +47,20 @@ extension UIViewController {
             return "id_wallet_not_found"
         case LoginError.hostUnblindingDisabled(let txt):
             return txt ?? "id_operation_failed"
+        case LoginError.walletMismatch( _):
+            return "Wallet mismatch"
+        case LoginError.walletsJustRestored(_):
+            return "id_wallet_already_restored"
+        case LoginError.walletNotFound(_):
+            return "id_wallet_not_found"
+        case LoginError.invalidMnemonic(_):
+            return "id_invalid_mnemonic"
         case GaError.NotAuthorizedError:
-            return "NotAuthorizedError"
+            return "Not Authorized Error"
         case GaError.GenericError(let txt):
             return txt ?? "id_operation_failed"
-        case TwoFactorCallError.cancel(let txt):
-            return txt
-        case TwoFactorCallError.failure(let txt):
+        case TwoFactorCallError.cancel(let txt),
+            TwoFactorCallError.failure(let txt):
             return txt
         case BreezSDK.SdkError.Generic(let msg),
             BreezSDK.SdkError.LspConnectFailed(let msg),

@@ -238,23 +238,6 @@ class SetPinViewController: UIViewController {
 
     @MainActor
     func failure(_ error: Error) {
-        switch error {
-        case GaError.GenericError(_), GaError.NotAuthorizedError(_), LoginError.connectionFailed(_), AuthenticationTypeHandler.AuthError.ConnectionFailed:
-            self.showError("id_connection_failed".localized)
-        case LoginError.walletMismatch( _):
-            self.showError("Wallet mismatch".localized)
-        case LoginError.walletsJustRestored(_):
-            self.showError("id_wallet_already_restored".localized)
-        case LoginError.walletNotFound(_):
-            self.showError("id_wallet_not_found".localized)
-        case LoginError.invalidMnemonic(_):
-            self.showError("id_invalid_mnemonic".localized)
-        default:
-            if let error = error as? AuthenticationTypeHandler.AuthError {
-                self.showError(error.localizedDescription)
-                return
-            }
-            self.showError("id_operation_failure".localized)
-        }
+        self.showError(error)
     }
 }
