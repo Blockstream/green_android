@@ -89,7 +89,7 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
             }
         } else if(sideEffect is SideEffects.Navigate){
             (sideEffect.data as? SendTransactionSuccess)?.also { sendTransactionSuccess ->
-                val successAction = sendTransactionSuccess.successAction as? SuccessActionProcessed
+                val successAction = sendTransactionSuccess.successAction
                 if(successAction != null){
                     val message = when(successAction){
                         is SuccessActionProcessed.Aes -> {

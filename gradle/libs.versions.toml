@@ -1,6 +1,6 @@
 [versions]
 atomicfu = "0.22.0"
-breez = "0.2.6"
+breez = "0.2.7"
 androidCompileSdk = "34"
 androidTargetSdk = "34"
 androidMinSdk = "23"

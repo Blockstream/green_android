@@ -98,6 +98,8 @@ class AccountOverviewViewModel constructor(
         }.launchIn(viewModelScope.coroutineScope)
 
         session.getTransactions(account = account, isReset = true, isLoadMore = false)
+
+        bootstrap()
     }
 
     fun refresh() {
@@ -143,9 +145,7 @@ class AccountOverviewViewModel constructor(
         doUserAction({
             session.lightningSdk.closeLspChannels()
         }, onSuccess = {
-            postSideEffect(SideEffects.Navigate(AccountOverviewFragment.LIGHTNING_CLOSE_CHANNEL))
+            postSideEffect(SideEffects.Dialog("id_close_channel", "id_channel_closure_initiated_you"))
         })
     }
-
-
 }

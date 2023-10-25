@@ -1,5 +1,7 @@
 package com.blockstream.common.gdk.data
 
+import breez_sdk.Payment
+import breez_sdk.SuccessActionProcessed
 import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
@@ -12,9 +14,9 @@ data class SendTransactionSuccess(
     @SerialName("send_all") val isSendAll: Boolean = false,
     @SerialName("signed_transaction") val signedTransaction: String? = null,
     @Transient
-    val payment: Any? = null, // Payment
+    val payment: Payment? = null,
     @Transient
-    val successAction: Any? = null // SuccessActionProcessed
+    val successAction: SuccessActionProcessed? = null
 ) : GreenJson<SendTransactionSuccess>() {
 
     override fun kSerializer(): KSerializer<SendTransactionSuccess> = serializer()

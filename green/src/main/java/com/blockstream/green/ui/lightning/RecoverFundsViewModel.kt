@@ -112,13 +112,13 @@ class RecoverFundsViewModel constructor(
                     swapAddress = onChainAddress,
                     toAddress = address.string(),
                     satPerVbyte = getFee()?.toUInt()
-                )
+                ).refundTxId
             } else {
                 // Sweep
                 session.lightningSdk.sweep(
                     toAddress = address.string(),
                     satPerVbyte = getFee()?.toUInt()
-                )
+                ).txid
             }
         }, onSuccess = {
             postSideEffect(SideEffects.Success())

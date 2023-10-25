@@ -28,7 +28,8 @@ class RecoverFundsFragment :
         R.layout.recover_funds_fragment,
         menuRes = 0
     ) {
-    override val screenName = "RefundSwap"
+    override val screenName: String
+        get() = if(isRefund) "OnChainRefund" else "LightningSweep"
 
     val args: RecoverFundsFragmentArgs by navArgs()
     override val walletOrNull by lazy { args.wallet }
@@ -42,7 +43,7 @@ class RecoverFundsFragment :
     }
 
     override val title: String
-        get() = getString(if (isRefund) R.string.id_refund else R.string.id_close_channel)
+        get() = getString(if (isRefund) R.string.id_refund else R.string.id_sweep)
 
     override val subtitle: String
         get() = wallet.name
@@ -77,11 +78,11 @@ class RecoverFundsFragment :
         super.handleSideEffect(sideEffect)
         if(sideEffect is SideEffects.Success){
             if(isRefund){
-                dialog(R.string.id_refund, R.string.id_refund_in_progress) {
+                dialog(R.string.id_refund, R.string.id_refund_initiated) {
                     popBackStack()
                 }
             }else{
-                dialog(R.string.id_close_channel, R.string.id_channel_closure_initiated_you) {
+                dialog(R.string.id_sweep, R.string.id_sweep_initiated) {
                     popBackStack()
                 }
             }

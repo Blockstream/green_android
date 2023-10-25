@@ -17,6 +17,7 @@ class SideEffects : SideEffect {
     data class Snackbar(val text: String) : SideEffect
     data class ErrorSnackbar(val error: Throwable, val errorReport: ErrorReport? = null) :
         SideEffect
+    data class Dialog(val title: String? = null, val message: String) : SideEffect
     data class ErrorDialog(val error: Throwable, val errorReport: ErrorReport? = null) : SideEffect
     data class Success(val data: Any? = null) : SideEffect
     data class Navigate(val data: Any? = null) : SideEffect

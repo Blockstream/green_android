@@ -111,11 +111,6 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
                         destinationId = R.id.walletOverviewFragment
                     )
                     findNavController().popBackStack(R.id.walletOverviewFragment, false)
-                } else if (sideEffect.data == LIGHTNING_CLOSE_CHANNEL) {
-                    dialog(
-                        getString(R.string.id_close_channel),
-                        "We are closing your channel. You can recover your funds in a bit."
-                    )
                 }
             }
         }
@@ -631,9 +626,5 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
 
     override fun openProposal(link: String) {
         //
-    }
-
-    companion object {
-        const val LIGHTNING_CLOSE_CHANNEL = "LIGHTNING_CLOSE_CHANNEL"
     }
 }

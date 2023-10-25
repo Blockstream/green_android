@@ -2313,7 +2313,7 @@ class GdkSession constructor(
                     payment = lightningSdk.sendPayment(
                         inputType.invoice.bolt11,
                         satoshi.takeIf { inputType.invoice.amountMsat == null }
-                    )
+                    ).payment
                 )
             }
 

@@ -190,7 +190,7 @@
   <string name="id_change_address">Change address</string>
   <string name="id_change_pin">Change PIN</string>
   <string name="id_changing_reference_exchange">Changing reference exchange rate will reset your 2FA threshold to 0. Remember to adjust the 2FA threshold after spending.</string>
-  <string name="id_channel_closure_initiated_you">Channel closure initiated. You can sweep your funds after the transaction is confirmed</string>
+  <string name="id_channel_closure_initiated_you">Channel closure initiated. You can sweep your funds after the transaction is confirmed.</string>
   <string name="id_cheaper_and_more_private">Cheaper and more private singlesig option. Addresses are Bech32m.</string>
   <string name="id_cheaper_singlesig_option">Cheaper singlesig option. Addresses are Native SegWit Bech32.</string>
   <string name="id_check_device">Check Device</string>
@@ -1416,4 +1416,5 @@
   <string name="id_send_more_than_s_and_up_to_s_to_this">Send more than %s and up to %s to this address. A minimum setup fee of %s will be applied on the received amount.\n\nThis address can be used only once.</string>
   <string name="id_format_is_not_supported_or_no_data">Format is not supported or no data was found.</string>
   <string name="id_your_personal_electrum_server_for_s">Your Personal Electrum Server for %s can\'t be reached. Check your settings or your internet connection.</string>
+  <string name="id_sweep_initiated">Sweep initiated</string>
 </resources>

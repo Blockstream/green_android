@@ -45,6 +45,7 @@ import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.utils.*
 import com.blockstream.green.views.GreenAlertView
 import com.blockstream.green.views.GreenToolbar
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -224,7 +225,14 @@ abstract class AppFragment<T : ViewDataBinding>(
                 openBrowser(sideEffect.url)
             }
             is SideEffects.Snackbar -> {
-                view?.also { Snackbar.make(it, requireContext().stringFromIdentifier(sideEffect.text), Snackbar.LENGTH_SHORT).show() }
+                view?.also { Snackbar.make(it, requireContext().stringFromIdentifier(sideEffect.text) ?: "", Snackbar.LENGTH_SHORT).show() }
+            }
+            is SideEffects.Dialog -> {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(requireContext().stringFromIdentifier(sideEffect.title))
+                    .setMessage(requireContext().stringFromIdentifier(sideEffect.message))
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
             }
             is SideEffects.ErrorSnackbar -> {
                 errorSnackbar(

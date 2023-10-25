@@ -12,8 +12,10 @@ import breez_sdk.ListPaymentsRequest
 import breez_sdk.LnInvoice
 import breez_sdk.LnUrlAuthRequestData
 import breez_sdk.LnUrlCallbackStatus
+import breez_sdk.LnUrlPayRequest
 import breez_sdk.LnUrlPayRequestData
 import breez_sdk.LnUrlPayResult
+import breez_sdk.LnUrlWithdrawRequest
 import breez_sdk.LnUrlWithdrawRequestData
 import breez_sdk.LnUrlWithdrawResult
 import breez_sdk.LspInformation
@@ -28,6 +30,10 @@ import breez_sdk.ReceiveOnchainRequest
 import breez_sdk.ReceivePaymentRequest
 import breez_sdk.ReceivePaymentResponse
 import breez_sdk.RecommendedFees
+import breez_sdk.RefundRequest
+import breez_sdk.RefundResponse
+import breez_sdk.SendPaymentRequest
+import breez_sdk.SendPaymentResponse
 import breez_sdk.SwapInfo
 import breez_sdk.SweepRequest
 import breez_sdk.SweepResponse
@@ -248,7 +254,7 @@ class LightningBridge constructor(
         return try {
             breezSdk.receivePayment(
                 ReceivePaymentRequest(
-                    amountSats = satoshi.toULong(),
+                    amountMsat = satoshi.milliSatoshi(),
                     description = description,
                     openingFeeParams = openingFeeParams
                 )
@@ -279,12 +285,14 @@ class LightningBridge constructor(
         } ?: emptyList()))
     }
 
-    fun refund(swapAddress: String, toAddress: String, satPerVbyte: UInt?): String? {
+    fun refund(swapAddress: String, toAddress: String, satPerVbyte: UInt?): RefundResponse {
         return try {
             breezSdk.refund(
-                swapAddress = swapAddress,
-                toAddress = toAddress,
-                satPerVbyte = satPerVbyte ?: breezSdk.recommendedFees().economyFee.toUInt()
+                RefundRequest(
+                    swapAddress = swapAddress,
+                    toAddress = toAddress,
+                    satPerVbyte = satPerVbyte ?: breezSdk.recommendedFees().economyFee.toUInt()
+                )
             )
         } catch (e: Exception) {
             e.printStackTrace()
@@ -314,9 +322,11 @@ class LightningBridge constructor(
         return breezSdk.recommendedFees()
     }
 
-    fun sendPayment(bolt11: String, satoshi: Long?): Payment {
+    fun sendPayment(bolt11: String, satoshi: Long?): SendPaymentResponse {
         return try {
-            breezSdk.sendPayment(bolt11, amountSats = satoshi?.toULong())
+            breezSdk.sendPayment(
+                SendPaymentRequest(bolt11 = bolt11, amountMsat = satoshi?.milliSatoshi())
+            )
         } catch (e: Exception) {
             throw exceptionWithNodeId(e)
         }
@@ -324,7 +334,11 @@ class LightningBridge constructor(
 
     fun payLnUrl(requestData: LnUrlPayRequestData, amount: Long, comment: String): LnUrlPayResult {
         return try {
-            breezSdk.payLnurl(requestData, amount.toULong(), comment)
+            breezSdk.payLnurl(
+                LnUrlPayRequest(
+                    data = requestData, amountMsat = amount.milliSatoshi(), comment = comment
+                )
+            )
         } catch (e: Exception) {
             throw exceptionWithNodeId(e)
         }
@@ -344,7 +358,11 @@ class LightningBridge constructor(
         description: String?
     ): LnUrlWithdrawResult {
         return try {
-            breezSdk.withdrawLnurl(requestData, amount.toULong(), description)
+            breezSdk.withdrawLnurl(
+                LnUrlWithdrawRequest(
+                    data = requestData, amountMsat = amount.milliSatoshi(), description = description
+                )
+            )
         } catch (e: Exception) {
             throw exceptionWithNodeId(e)
         }

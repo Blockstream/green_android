@@ -18,9 +18,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.app.ShareCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.withResumed
 import com.blockstream.common.data.ErrorReport
 import com.blockstream.green.BuildConfig
@@ -104,8 +102,8 @@ fun Context.stringFromIdentifierOrNull(id: String, vararg formatArgs: String): S
     return null
 }
 
-fun Context.stringFromIdentifier(id: String, vararg formatArgs: String): String {
-    return stringFromIdentifierOrNull(id, *formatArgs) ?: id
+fun Context.stringFromIdentifier(id: String?, vararg formatArgs: String): String? {
+    return id?.let { stringFromIdentifierOrNull(it, *formatArgs) ?: id }
 }
 
 fun Fragment.errorFromResourcesAndGDK(throwable: Throwable): String = requireContext().errorFromResourcesAndGDK(throwable)

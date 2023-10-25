@@ -28,6 +28,8 @@ import kotlinx.datetime.periodUntil
 import kotlinx.serialization.json.Json
 import kotlin.io.encoding.Base64
 
+fun Long.milliSatoshi(): ULong = (this * 1000).toULong()
+
 fun ULong.satoshi() = toLong() / 1000
 
 fun OpenChannelFeeResponse.feeSatoshi() = feeMsat.satoshi()
