@@ -85,7 +85,7 @@
 
         <LinearLayout
             android:id="@+id/wrapPassword"
-            isVisible="@{!vm.isLightningShortcut() &amp;&amp; !vm.passwordCredentials.isEmpty()  &amp;&amp; !vm.onProgress}"
+            isVisible="@{!vm.isLightningShortcut() &amp;&amp; vm.passwordCredentials.isNonEmpty()  &amp;&amp; !vm.onProgress}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="48dp"
@@ -182,7 +182,7 @@
 
         <TextView
             android:id="@+id/mainTitleTextView"
-            isVisible="@{!vm.isLightningShortcut() &amp;&amp; (!vm.pinCredentials.isEmpty() || !vm.passwordCredentials.isEmpty() ) &amp;&amp; !vm.onProgress }"
+            isVisible="@{!vm.isLightningShortcut() &amp;&amp; (vm.pinCredentials.isNonEmpty() || vm.passwordCredentials.isNonEmpty() ) &amp;&amp; !vm.onProgress }"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
@@ -217,7 +217,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/passphraseButton"
             style="@style/Widget.Green.Button.Text.Small"
-            isVisible="@{!vm.isLightningShortcut() &amp;&amp; (!vm.pinCredentials.isEmpty() || !vm.passwordCredentials.isEmpty()) &amp;&amp; StringExtensionsKt.isNotBlank(vm.bip39Passphrase)  &amp;&amp; !vm.onProgress }"
+            isVisible="@{!vm.isLightningShortcut() &amp;&amp; (vm.pinCredentials.isNonEmpty() || vm.passwordCredentials.isNonEmpty()) &amp;&amp; StringExtensionsKt.isNotBlank(vm.bip39Passphrase)  &amp;&amp; !vm.onProgress }"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
@@ -233,7 +233,7 @@
 
         <com.blockstream.green.views.GreenPinView
             android:id="@+id/pinView"
-            isVisible="@{!vm.isLightningShortcut() &amp;&amp; !vm.pinCredentials.isEmpty() &amp;&amp; !vm.onProgress}"
+            isVisible="@{!vm.isLightningShortcut() &amp;&amp; vm.pinCredentials.isNonEmpty() &amp;&amp; !vm.onProgress}"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
@@ -342,7 +342,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonLoginWithBiometrics"
             style="@style/Widget.Green.Button.Text"
-            isVisible="@{!vm.isLightningShortcut() &amp;&amp; !vm.biometricsCredentials.isEmpty() &amp;&amp; !vm.onProgress}"
+            isVisible="@{!vm.isLightningShortcut() &amp;&amp; vm.biometricsCredentials.isNonEmpty() &amp;&amp; !vm.onProgress}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"

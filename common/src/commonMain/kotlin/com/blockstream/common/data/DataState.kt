@@ -44,6 +44,14 @@ sealed class DataState<out T> {
         return this is Empty || ((this as? Success<*>)?.data as? List<*>)?.isEmpty() == true
     }
 
+    fun isNonEmpty(): Boolean {
+        return (if (this is Success<*>) {
+            (this.data as? List<*>)?.isNotEmpty() ?: true
+        } else {
+            false
+        })
+    }
+
     companion object{
         fun <T> successOrEmpty(value: T?): DataState<T> {
             return if(value == null){

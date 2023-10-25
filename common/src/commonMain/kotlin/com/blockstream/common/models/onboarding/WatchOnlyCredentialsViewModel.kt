@@ -7,15 +7,15 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.database.LoginCredentials
+import com.blockstream.common.events.Event
+import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.createLoginCredentials
 import com.blockstream.common.extensions.objectId
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.events.Event
-import com.blockstream.common.events.Events
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.utils.generateWalletName
 import com.rickclephas.kmm.viewmodel.MutableStateFlow
 import com.rickclephas.kmm.viewmodel.coroutineScope
@@ -270,6 +270,10 @@ class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs): WatchOnlyCredentialsV
                         }
                     }
                 }
+            }
+
+            if(xpubs.isEmpty()){
+                throw Exception("id_format_is_not_supported_or_no_data")
             }
 
             xpubs

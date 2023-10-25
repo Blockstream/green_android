@@ -267,15 +267,6 @@ class LightningBridge constructor(
             }
         } catch (e: Exception) {
             e.printStackTrace()
-
-            if (e.message?.contains(
-                    "Swap in progress was detected".lowercase(),
-                    ignoreCase = true
-                ) == true
-            ) {
-                throw Exception("id_swap_in_progress_was_detected")
-            }
-
             throw exceptionWithNodeId(e)
         }
     }

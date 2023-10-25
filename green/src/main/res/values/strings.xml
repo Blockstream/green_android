@@ -1414,4 +1414,5 @@
   <string name="id_a_set_up_funding_fee_of_s">A set up funding fee of %s (%s) will be applied to the received amount.</string>
   <string name="id_a_funding_fee_of_s_s">A funding fee of %s (%s) is applied when receiving amounts above your current receive capacity %s (%s)</string>
   <string name="id_send_more_than_s_and_up_to_s_to_this">Send more than %s and up to %s to this address. A minimum setup fee of %s will be applied on the received amount.\n\nThis address can be used only once.</string>
+  <string name="id_format_is_not_supported_or_no_data">Format is not supported or no data was found.</string>
 </resources>
