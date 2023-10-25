@@ -79,8 +79,6 @@ class SessionManager constructor(
         get() = _torProxyProgress.asStateFlow()
 
     private val _torProxy : MutableStateFlow<String?> = MutableStateFlow(null)
-    val torProxy
-        get() = _torProxy.asStateFlow()
 
     private val gdkSessions = mutableSetOf<GdkSession>()
     private val walletSessions = mutableMapOf<String, GdkSession>()
@@ -153,7 +151,7 @@ class SessionManager constructor(
             }
         }.launchIn(scope)
 
-        torProxy.filterNotNull().onEach {
+        _torProxy.filterNotNull().onEach {
             countly.updateTorProxy(it)
         }.launchIn(CoroutineScope(context = Dispatchers.Default))
     }

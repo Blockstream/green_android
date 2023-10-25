@@ -40,9 +40,10 @@ import kotlin.properties.Delegates
      private val database: Database,
  ) {
 
+     abstract fun updateRemoteConfig()
      abstract fun updateOffset()
      abstract fun updateDeviceId()
-     abstract fun updateConcent(withUserConsent: Boolean)
+     abstract fun updateConsent(withUserConsent: Boolean)
      abstract fun viewRecord(viewName: String, segmentation: Map<String, Any>? = null)
      abstract fun eventRecord(key: String, segmentation: Map<String, Any>? = null)
      abstract fun eventStart(key: String)
@@ -84,7 +85,7 @@ import kotlin.properties.Delegates
 
      var analyticsConsent: Boolean by Delegates.observable(settingsManager.appSettings.analytics) { _, oldValue, newValue ->
          if (oldValue != newValue) {
-             updateConcent(newValue)
+             updateConsent(newValue)
 
              if (!newValue) {
                  resetDeviceId()
@@ -156,6 +157,9 @@ import kotlin.properties.Delegates
      fun updateTorProxy(proxy: String){
          _torProxy = proxy
          setProxy(countlyProxy)
+
+         // Update Remote Config when getting new Tor proxy
+         updateRemoteConfig()
      }
 
      private fun baseSegmentation(): HashMap<String, Any>{

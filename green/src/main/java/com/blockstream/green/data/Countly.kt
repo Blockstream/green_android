@@ -86,8 +86,6 @@ class Countly constructor(
             it.setRequiresConsent(true)
             // Set Device ID
             it.setDeviceId(getDeviceId())
-            // Set automatic remote config download
-            it.enableRemoteConfigAutomaticTriggers()
             it.RemoteConfigRegisterGlobalCallback { _, error, _, _ ->
                 logger.info { if (error.isNullOrBlank()) "Remote Config Completed" else "Remote Config error: $error" }
 
@@ -95,7 +93,8 @@ class Countly constructor(
                     remoteConfigUpdated()
                 }
             }
-
+            // Set automatic remote config download
+            it.enableRemoteConfigAutomaticTriggers()
             // Add initial enabled features
             it.setConsentEnabled(
                 if (settingsManager.appSettings.analytics) {
@@ -158,6 +157,10 @@ class Countly constructor(
         countly.onConfigurationChanged(newConfig)
     }
 
+    override fun updateRemoteConfig() {
+        _remoteConfig.downloadAllKeys(null)
+    }
+
     override fun updateDeviceId() {
         countly.deviceId().changeWithoutMerge(getDeviceId()) {
             // Update offset after the DeviceId is changed in the sdk
@@ -175,7 +178,7 @@ class Countly constructor(
         updateFeedbackWidget()
     }
 
-    override fun updateConcent(withUserConsent: Boolean) {
+    override fun updateConsent(withUserConsent: Boolean) {
         _consent.setConsentFeatureGroup(ANALYTICS_GROUP, withUserConsent)
     }
 

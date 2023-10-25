@@ -36,13 +36,15 @@ fun initKoinIos(
         single<CountlyBase> {
             // Dummy
             object : CountlyBase(get(), get(), get(), get()){
+                override fun updateRemoteConfig() {}
+
                 override fun updateOffset() {
                 }
 
                 override fun updateDeviceId() {
                 }
 
-                override fun updateConcent(withUserConsent: Boolean) {
+                override fun updateConsent(withUserConsent: Boolean) {
                 }
 
                 override fun viewRecord(viewName: String, segmentation: Map<String, Any>?) {
