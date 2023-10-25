@@ -6,10 +6,12 @@ import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.Redact
 import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.data.data
 import com.blockstream.common.data.isEmpty
 import com.blockstream.common.database.LoginCredentials
+import com.blockstream.common.events.Event
 import com.blockstream.common.extensions.biometricsPinData
 import com.blockstream.common.extensions.biometricsWatchOnlyCredentials
 import com.blockstream.common.extensions.isConnectionError
@@ -28,8 +30,6 @@ import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.gdk.params.LoginCredentialsParams
 import com.blockstream.common.lightning.AppGreenlightCredentials
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.events.Event
-import com.blockstream.common.data.Redact
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.rickclephas.kmm.viewmodel.MutableStateFlow
@@ -314,7 +314,7 @@ class LoginViewModel constructor(
     private fun loginLightningShortcut() {
         val lightningWallet = greenWallet.lightningShortcutWallet()
 
-        val lightningSession = sessionManager.getWalletSession(lightningWallet)
+        val lightningSession = sessionManager.getWalletSessionOrCreate(lightningWallet)
 
         if (lightningSession.isConnected) {
             postSideEffect(SideEffects.Navigate(lightningWallet))
@@ -511,10 +511,7 @@ class LoginViewModel constructor(
                 )
 
                 // Create an ephemeral session
-                val ephemeralSession = sessionManager.getWalletSession(ephemeralWallet)
-
-                // Set Ephemeral wallet
-                ephemeralSession.ephemeralWallet = ephemeralWallet
+                val ephemeralSession = sessionManager.getWalletSessionOrCreate(ephemeralWallet)
 
                 val loginData = ephemeralSession.loginWithMnemonic(
                     isTestnet = greenWallet.isTestnet,
@@ -616,9 +613,7 @@ class LoginViewModel constructor(
             countly.loginWalletStart()
 
             // Create an ephemeral lightning session
-            val lightningSession = sessionManager.getWalletSession(lightningWallet)
-            // Set Ephemeral wallet
-            lightningSession.ephemeralWallet = lightningWallet
+            val lightningSession = sessionManager.getWalletSessionOrCreate(lightningWallet)
 
             lightningSession.loginLightningShortcut(
                 wallet = lightningWallet,

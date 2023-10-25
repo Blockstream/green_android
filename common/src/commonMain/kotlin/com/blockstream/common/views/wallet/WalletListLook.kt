@@ -21,7 +21,7 @@ data class WalletListLook(
     companion object{
 
         fun create(wallet: GreenWallet, sessionManager: SessionManager): WalletListLook {
-            val session = sessionManager.getWalletSession(wallet)
+            val session = sessionManager.getWalletSessionOrCreate(wallet)
             val lightningShortcutSession = sessionManager.getWalletSessionOrNull(wallet.lightningShortcutWallet())
 
             return WalletListLook(

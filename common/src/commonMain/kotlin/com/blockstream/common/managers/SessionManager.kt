@@ -170,8 +170,14 @@ class SessionManager constructor(
         return getWalletSessionOrNull(wallet.id)
     }
 
-    fun getWalletSession(wallet: GreenWallet): GdkSession {
-        return getWalletSession(wallet.id)
+    fun getWalletSessionOrCreate(wallet: GreenWallet): GdkSession {
+        return getWalletSessionOrNull(wallet.id) ?: createSession().also {
+            if(wallet.isEphemeral){
+                it.setEphemeralWallet(wallet)
+            }else{
+                walletSessions[wallet.id] = it
+            }
+        }
     }
 
     fun getWalletSessionOrOnboarding(wallet: GreenWallet?): GdkSession =
@@ -189,13 +195,6 @@ class SessionManager constructor(
 
     fun getEphemeralWalletSession(walletHashId: String, isHardware: Boolean = false) =
         gdkSessions.find { it.ephemeralWallet?.xPubHashId == walletHashId && it.ephemeralWallet?.isHardware == isHardware }
-
-
-    private fun getWalletSession(walletId: String): GdkSession {
-        return getWalletSessionOrNull(walletId) ?: createSession().also {
-            walletSessions[walletId] = it
-        }
-    }
 
     fun getWalletIdFromSession(session: GdkSession): String? {
         return walletSessions.filterValues { it == session }.keys.firstOrNull()

@@ -76,7 +76,7 @@ abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
 
     final override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val sessionOrNull = walletOrNull?.let { wallet ->
-            sessionManager.getWalletSessionOrNull(wallet)
+            sessionManager.getWalletSessionOrCreate(wallet)
         }
 
         // Recovery intro screen is reused in onBoarding

@@ -363,6 +363,7 @@ class GdkSession constructor(
         private set
 
     var ephemeralWallet: GreenWallet? = null
+        private set
 
     // Consider as initialized if network is set
     val isNetworkInitialized: Boolean
@@ -431,6 +432,11 @@ class GdkSession constructor(
             }
         }
     }
+
+    fun setEphemeralWallet(wallet: GreenWallet) {
+        ephemeralWallet = wallet
+    }
+
     fun walletExistsAndIsUnlocked(network: Network?) = network?.let { getTwoFactorReset(network)?.isActive != true } ?: false
     fun getTwoFactorReset(network: Network): TwoFactorReset? = twoFactorReset(network).value
     fun getSettings(network: Network? = null): Settings? {

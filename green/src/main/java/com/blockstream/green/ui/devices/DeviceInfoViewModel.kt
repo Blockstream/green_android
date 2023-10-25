@@ -112,7 +112,7 @@ class DeviceInfoViewModel constructor(
                     isHardware = true,
                     isTestnet = network.isTestnet
                 ).also {
-                    session.ephemeralWallet = it
+                    session.setEphemeralWallet(it)
                 }
 
                 sessionManager.upgradeOnBoardingSessionToWallet(wallet)
@@ -155,7 +155,7 @@ class DeviceInfoViewModel constructor(
                     database.updateWallet(wallet)
                 }
 
-                session = sessionManager.getWalletSession(wallet)
+                session = sessionManager.getWalletSessionOrCreate(wallet)
 
                 countly.importWallet(session)
             }

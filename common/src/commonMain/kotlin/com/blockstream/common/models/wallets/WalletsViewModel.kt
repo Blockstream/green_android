@@ -72,7 +72,7 @@ abstract class WalletsViewModel(isHome: Boolean) : WalletsViewModelAbstract(isHo
         if (event is LocalEvents.SelectWallet) {
             val parentWallet = event.wallet
             val childWallet: GreenWallet = parentWallet.let { if (event.isLightningShortcut) it.lightningShortcutWallet() else it }
-            val session: GdkSession = sessionManager.getWalletSession(childWallet)
+            val session: GdkSession = sessionManager.getWalletSessionOrCreate(childWallet)
 
             if (session.isConnected) {
                 postSideEffect(SideEffects.NavigateTo(WalletDestinations.WalletOverview(childWallet)))

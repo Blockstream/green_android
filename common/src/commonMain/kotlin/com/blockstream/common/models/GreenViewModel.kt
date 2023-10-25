@@ -101,8 +101,8 @@ abstract class GreenViewModel constructor(
             // If GreenWallet is null, we can create an onboarding session
             sessionManager.getWalletSessionOrOnboarding(greenWalletOrNull)
         } else {
-            sessionManager.getWalletSessionOrNull(greenWalletOrNull)
-        }!!
+            sessionManager.getWalletSessionOrCreate(greenWalletOrNull)
+        }
     }
 
     @NativeCoroutines
