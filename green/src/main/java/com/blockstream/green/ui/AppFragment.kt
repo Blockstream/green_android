@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.withResumed
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
@@ -25,9 +26,9 @@ import com.blockstream.common.gdk.Wally
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.navigation.LogoutReason
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.navigation.LogoutReason
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.data.BannerView
 import com.blockstream.green.data.Countly
@@ -252,10 +253,12 @@ abstract class AppFragment<T : ViewDataBinding>(
                     childFragmentManager
                 )
 
-                sideEffect.completable?.also {
+                sideEffect.completable?.also { completable ->
                     lifecycleScope.launch {
-                        it.await()
-                        DeviceInteractionRequestBottomSheetDialogFragment.closeAll(childFragmentManager)
+                        completable.await()
+                        withResumed {
+                            DeviceInteractionRequestBottomSheetDialogFragment.closeAll(childFragmentManager)
+                        }
                     }
                 }
             }

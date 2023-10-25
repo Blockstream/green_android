@@ -21,6 +21,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.withResumed
 import com.blockstream.common.data.ErrorReport
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
@@ -70,8 +71,8 @@ fun Fragment.clearClipboard() {
 
 fun BottomSheetDialogFragment.dismissIn(timeMillis: Long){
     lifecycleScope.launch {
-        repeatOnLifecycle(Lifecycle.State.RESUMED) {
-            delay(timeMillis)
+        delay(timeMillis)
+        withResumed {
             dismiss()
         }
     }
