@@ -28,6 +28,7 @@ import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.navigation.LogoutReason
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.Loggable
 import com.rickclephas.kmm.viewmodel.KMMViewModel
 import com.rickclephas.kmm.viewmodel.MutableStateFlow
 import com.rickclephas.kmm.viewmodel.coroutineScope
@@ -133,6 +134,11 @@ abstract class GreenViewModel constructor(
 
         countly.viewModel(this)
 
+        // If session is connected, listen for network events
+        if(sessionOrNull?.isConnected == true){
+            listenForNetworksEvents()
+        }
+
         initBanner()
     }
 
@@ -166,6 +172,12 @@ abstract class GreenViewModel constructor(
             Logger.d { "postSideEffect: $sideEffect" }
         }
         viewModelScope.coroutineScope.launch { _sideEffect.send(sideEffect) }
+    }
+
+    private fun listenForNetworksEvents(){
+        session.networkErrors.onEach {
+            postSideEffect(SideEffects.ErrorDialog(Exception("id_your_personal_electrum_server_for_s|${it.first.canonicalName}")))
+        }.launchIn(viewModelScope.coroutineScope)
     }
 
     private fun initBanner() {
@@ -374,4 +386,6 @@ abstract class GreenViewModel constructor(
             runBlocking { it.await() }
         }
     }
+
+    companion object: Loggable()
 }

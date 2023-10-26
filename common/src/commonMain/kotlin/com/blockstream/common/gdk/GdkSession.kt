@@ -116,6 +116,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -123,6 +124,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
@@ -190,6 +192,7 @@ class GdkSession constructor(
     private var _settingsStateFlow = mutableMapOf<Network, MutableStateFlow<Settings?>>()
     private var _twoFactorResetStateFlow = mutableMapOf<Network, MutableStateFlow<TwoFactorReset?>>()
     private var _networkEventsStateFlow = mutableMapOf<Network, MutableStateFlow<NetworkEvent?>>()
+    private val _networkErrors: Channel<Pair<Network, NetworkEvent>> = Channel()
     private var _failedNetworksStateFlow: MutableStateFlow<List<Network>> = MutableStateFlow(listOf())
     private var _systemMessageStateFlow : MutableStateFlow<List<Pair<Network, String>>> = MutableStateFlow(listOf())
     private var _allAccountsStateFlow = MutableStateFlow<List<Account>>(listOf())
@@ -258,6 +261,8 @@ class GdkSession constructor(
     val tickerFlow = _tickerSharedFlow.asSharedFlow()
 
     val zeroAccounts = _zeroAccounts.asStateFlow()
+
+    val networkErrors = _networkErrors.receiveAsFlow()
 
     fun accountTransactions(account: Account) = accountTransactionsStateFlow(account).asStateFlow()
 
@@ -533,13 +538,13 @@ class GdkSession constructor(
         var spvServers: List<String>? = null
 
         // SPV for liquid is disabled // https://gl.blockstream.com/blockstream/green/gdk/-/issues/580
-        val spvEnabled = applicationSettings.spv && !Network.isLiquidMainnet(network.id)
+        val spvEnabled = applicationSettings.spv && !Network.isLiquid(network.id)
         var spvMulti = false // Only available in Singlesig
 
         if (network.isElectrum) {
             electrumUrl = applicationSettings.getPersonalElectrumServer(network).takeIf { it.isNotBlank() }
 
-            spvMulti = applicationSettings.multiServerValidation
+            spvMulti = applicationSettings.multiServerValidation && !Network.isLiquid(network.id)
 
             applicationSettings.getSpvElectrumServer(network).takeIf { spvMulti && it.isNotBlank() }?.also { spvElectrumServer ->
                 spvServers = spvElectrumServer.split(",").map { it.trim() }
@@ -2437,6 +2442,13 @@ class GdkSession constructor(
                     }
 
                     networkEventsStateFlow(network).value = event
+
+                    // Personal Electrum Server Error
+                    if(network.isSinglesig && !event.isConnected && settingsManager.appSettings.getPersonalElectrumServer(network).isNotBlank()){
+                        scope.launch {
+                            _networkErrors.send(network to event)
+                        }
+                    }
                 }
             }
             "ticker" -> {
