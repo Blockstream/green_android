@@ -27,9 +27,11 @@ import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.google.zxing.MultiFormatReader
 import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.ResultPoint
+import com.google.zxing.client.android.Intents
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.CaptureManager
+import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import com.journeyapps.barcodescanner.MixedDecoder
 import com.sparrowwallet.hummingbird.ResultType
 import com.sparrowwallet.hummingbird.URDecoder
@@ -122,6 +124,8 @@ class CameraBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<CameraB
         binding.decoratedBarcode.apply {
             viewFinder.isVisible = false
             statusView.isVisible = false
+            // Scan black/white or inverted
+            barcodeView.decoderFactory = DefaultDecoderFactory(null, null, null, Intents.Scan.MIXED_SCAN)
         }
 
         binding.decoratedBarcode.cameraSettings.apply {
