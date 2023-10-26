@@ -7,6 +7,7 @@ import android.view.*
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
+import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.databinding.DataBindingUtil
@@ -165,9 +166,9 @@ abstract class AppFragment<T : ViewDataBinding>(
         // Handle for example visibility of menu items
     }
 
+    @SuppressLint("RestrictedApi")
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        // TODO enable icons
-        // (menu as? MenuBuilder)?.setOptionalIconsVisible(true)
+        (menu as? MenuBuilder)?.setOptionalIconsVisible(true)
         menuInflater.inflate(menuRes, menu)
     }
 

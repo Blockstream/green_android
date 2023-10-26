@@ -4,6 +4,7 @@
 
     <item
         android:id="@+id/rename"
+        android:icon="@drawable/ic_text_aa"
         android:title="@string/id_rename_account" />
 
 </menu>

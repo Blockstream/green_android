@@ -4,13 +4,14 @@
 
     <item
         android:id="@+id/share"
-        android:icon="@drawable/ic_baseline_share_24"
+        android:icon="@drawable/ic_share_network"
         android:title="@string/id_share"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/account"
         android:title="@string/id_go_to_account"
+        android:icon="@drawable/ic_folder"
         app:showAsAction="never"/>
 
 </menu>

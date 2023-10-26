@@ -20,6 +20,7 @@ object Urls {
 
     const val TERMS_OF_SERVICE = "https://blockstream.com/green/terms/"
     const val PRIVACY_POLICY = "https://blockstream.com/green/privacy/"
+    const val BLOCKSTREAM_HELP_NEW_REQUEST = "https://help.blockstream.com/hc/en-us/requests/new?tf_900008231623=%s&tf_subject=%s&tf_900003758323=%s&tf_900006375926=%s&tf_900009625166=%s&tf_6167739898649=%s"
     const val HELP_MNEMONIC_NOT_WORKING = "https://help.blockstream.com/hc/en-us/articles/900001388566-Why-is-my-mnemonic-backup-not-working-"
     const val HELP_RECEIVE_ASSETS = "https://help.blockstream.com/hc/en-us/articles/900004651103-How-do-I-receive-assets-on-Blockstream-Green-"
     const val HELP_MNEMONIC_BACKUP = "https://help.blockstream.com/hc/en-us/articles/900001392563-What-is-a-mnemonic-backup-"
@@ -40,6 +41,4 @@ object Urls {
     const val HARDWARE_STORE = "https://store.blockstream.com/product-category/physical_storage/"
     const val LEDGER_SUPPORTED_ASSETS = "https://docs.blockstream.com/green/hww/hww-index.html#ledger-supported-assets"
     const val BLUETOOTH_PERMISSIONS = "https://developer.android.com/guide/topics/connectivity/bluetooth/permissions"
-
-    const val JADE_NON_DEFAULT_PIN_SERVER = "https://help.blockstream.com/hc/en-us/requests/new?tf_900008231623=%s&tf_subject=%s&tf_900003758323=%s&tf_900006375926=%s&tf_900009625166=%s&tf_6167739898649=%s"
 }

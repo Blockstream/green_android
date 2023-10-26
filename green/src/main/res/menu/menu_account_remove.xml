@@ -4,6 +4,7 @@
 
     <item
         android:id="@+id/remove"
+        android:icon="@drawable/ic_trash"
         android:title="@string/id_remove" />
 
 </menu>

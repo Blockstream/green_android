@@ -48,7 +48,7 @@ fun Fragment.openNewTicket(
     openBrowser(
         settingsManager.getApplicationSettings(),
         String.format(
-            Urls.JADE_NON_DEFAULT_PIN_SERVER,
+            Urls.BLOCKSTREAM_HELP_NEW_REQUEST,
             "android",
             subject?.let { KsoupEntities.encodeHtml(it) } ?: "",
             product,

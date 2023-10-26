@@ -223,6 +223,7 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
         menu.findItem(R.id.lightning_shortcut).also {
             it.isVisible = account.isLightning && !wallet.isLightning
             it.title = getString(if(viewModel.lightningShortcut.value == true) R.string.id_remove_lightning_shortcut else R.string.id_add_lightning_shortcut)
+            it.icon = ContextCompat.getDrawable(requireContext(), if(viewModel.lightningShortcut.value == true) R.drawable.ic_lightning_slash else R.drawable.ic_lightning)
         }
     }
 

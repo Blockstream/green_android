@@ -4,11 +4,12 @@
 
     <item
         android:id="@+id/rename"
+        android:icon="@drawable/ic_text_aa"
         android:title="@string/id_rename_account" />
 
     <item
         android:id="@+id/unarchive"
+        android:icon="@drawable/ic_arrow_up"
         android:title="@string/id_unarchive_account" />
-
 
 </menu>

@@ -11,5 +11,6 @@
     <item
         android:id="@+id/sign_transaction"
         android:title="@string/id_sign_transaction"
+        android:icon="@drawable/ic_signature"
         app:showAsAction="never"/>
 </menu>

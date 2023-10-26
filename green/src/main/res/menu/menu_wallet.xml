@@ -4,10 +4,12 @@
 
     <item
         android:id="@+id/rename"
+        android:icon="@drawable/ic_text_aa"
         android:title="@string/id_rename_wallet" />
 
     <item
         android:id="@+id/delete"
+        android:icon="@drawable/ic_trash"
         android:title="@string/id_remove_wallet" />
 
 </menu>

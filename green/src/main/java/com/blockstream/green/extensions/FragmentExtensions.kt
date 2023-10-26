@@ -347,6 +347,7 @@ fun Fragment.showPopupMenu(
     listener: PopupMenu.OnMenuItemClickListener
 ) {
     val popup = PopupMenu(requireContext(), view, Gravity.END)
+    popup.setForceShowIcon(true)
     popup.menuInflater.inflate(menuRes, popup.menu)
     popup.setOnMenuItemClickListener(listener)
     popup.show()

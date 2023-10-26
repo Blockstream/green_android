@@ -5,33 +5,37 @@
     <item
         android:id="@+id/help"
         android:title="@string/id_help"
-        android:icon="@drawable/ic_baseline_help_outline_24"
+        android:icon="@drawable/ic_question"
         app:showAsAction="always"/>
 
     <item
         android:id="@+id/rename"
-        android:icon="@drawable/ic_pencil_simple_line"
+        android:icon="@drawable/ic_text_aa"
         android:title="@string/id_rename_account" />
 
     <item
         android:id="@+id/archive"
-        android:icon="@drawable/ic_eye_closed"
+        android:icon="@drawable/ic_arrow_line_down"
         android:title="@string/id_archive_account" />
 
     <item
         android:id="@+id/node_info"
+        android:icon="@drawable/ic_info"
         android:title="@string/id_node_info" />
 
     <item
         android:id="@+id/enhance_security"
+        android:icon="@drawable/ic_shield_plus"
         android:title="@string/id_enhance_security" />
 
     <item
         android:id="@+id/lightning_shortcut"
+        android:icon="@drawable/ic_lightning_slash"
         android:title="@string/id_add_lightning_shortcut" />
 
     <item
         android:id="@+id/remove"
+        android:icon="@drawable/ic_trash"
         android:title="@string/id_remove" />
 
 </menu>
