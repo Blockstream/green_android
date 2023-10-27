@@ -54,7 +54,9 @@ fun Fragment.openNewTicket(
             product,
             hw,
             BuildConfig.VERSION_NAME,
-            policy))
+            policy
+        )
+    )
 }
 
 fun AppFragment<*>.openBrowser(url: String) {

@@ -17,6 +17,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.app.ShareCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.withResumed
@@ -198,7 +199,7 @@ fun AppFragment<*>.showErrorReport(errorReport: ErrorReport) {
 
     val subject = this.screenName?.let { "Android Issue in $it" } ?: "Android Error Report"
 
-    MaterialAlertDialogBuilder(requireContext())
+    val dialog = MaterialAlertDialogBuilder(requireContext())
         .setTitle(R.string.id_send_error_report)
         .setView(dialogBinding.root)
         .setPositiveButton(R.string.id_send) { _, _ ->
@@ -213,6 +214,12 @@ fun AppFragment<*>.showErrorReport(errorReport: ErrorReport) {
 
         }
         .show()
+
+    dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+
+    dialogBinding.emailText.doOnTextChanged { text, _, _, _ ->
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = text?.trim().isEmailValid()
+    }
 
     dialogBinding.emailText.setOnFocusChangeListener { _, hasFocus ->
         val email = dialogBinding.emailText.text?.trim()
