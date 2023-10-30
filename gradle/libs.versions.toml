@@ -95,6 +95,7 @@ androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefre
 androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
 atomicfu-gradle-plugin = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version.ref = "atomicfu" }
 breez-sdk-kmp = { module = "technology.breez:breez-sdk-kmp", version.ref = "breez" }
+breez-sdk-android = { module = "com.github.breez:breez-sdk", version.ref = "breez" }
 sqldelight-coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 countly-sdk-android = { module = "com.github.angelix:countly-sdk-android", version.ref = "countly-sdk-android" }
 fastadapter = { module = "com.mikepenz:fastadapter", version.ref = "fastadapter" }

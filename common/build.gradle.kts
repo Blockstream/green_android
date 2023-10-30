@@ -117,6 +117,8 @@ kotlin {
                 implementation(libs.androidx.lifecycle.viewmodel.ktx)
                 implementation(libs.koin.android)
                 implementation(libs.sqldelight.android.driver)
+                // Temp fix for FDroid breez dependencies
+                // api(libs.breez.sdk.android)
             }
         }
 
