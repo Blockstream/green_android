@@ -58,11 +58,11 @@ class DeviceInfoViewModel constructor(
         }
 
         if(device.gdkHardwareWallet == null){
-            unlockDevice(context)
+            connectDevice(context)
         }
     }
 
-    private fun unlockDevice(context: Context) {
+    private fun connectDevice(context: Context) {
         onProgressAndroid.value = true
         navigationLock.value = true
         deviceConnectionManager.connectDevice(context, device)
@@ -171,6 +171,11 @@ class DeviceInfoViewModel constructor(
     }
 
     override fun onDeviceReady(device: Device, isJadeUninitialized: Boolean?) {
+
+        if (deviceConnectionManager.needsAndroid14BleUpdate) {
+            postSideEffect(SideEffects.OpenDialog(0))
+        }
+
         onProgressAndroid.postValue(false)
         navigationLock.postValue(false)
         deviceIsConnected.postValue(true)

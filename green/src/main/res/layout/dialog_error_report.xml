@@ -18,8 +18,7 @@
             android:id="@+id/emailLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/id_email"
-            app:helperText="@string/id_optional">
+            android:hint="@string/id_email">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/emailText"

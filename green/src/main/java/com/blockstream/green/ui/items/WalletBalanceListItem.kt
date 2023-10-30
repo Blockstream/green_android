@@ -19,7 +19,6 @@ import com.blockstream.common.gdk.GdkSession
 import com.blockstream.green.R
 import com.blockstream.green.data.Countly
 import com.blockstream.green.databinding.ListItemWalletBalanceBinding
-import com.blockstream.green.extensions.setOnClickListener
 import com.blockstream.green.gdk.getAssetDrawableOrNull
 import com.blockstream.green.gdk.getAssetIcon
 import com.blockstream.green.utils.toAmountLook
@@ -39,9 +38,7 @@ data class WalletBalanceListItem constructor(val session: GdkSession, val countl
     override val type: Int
         get() = R.id.fastadapter_wallet_balance_item_id
 
-    var isFiat = false
-
-    private var denomination: Denomination = Denomination.default(session)
+    var denomination: Denomination = Denomination.default(session)
 
     private suspend fun balanceInBtc() = session.starsOrNull ?: session.walletTotalBalance.value.toAmountLook(
         session = session,
@@ -64,8 +61,22 @@ data class WalletBalanceListItem constructor(val session: GdkSession, val countl
 
     override fun createScope(): CoroutineScope = session.createScope(Dispatchers.Main)
 
-    fun reset() {
-        denomination = Denomination.default(session)
+    fun reset(denomination: Denomination) {
+        this.denomination = denomination
+    }
+
+    suspend fun updateBalanceView(binding: ListItemWalletBalanceBinding) {
+        val balance = session.walletTotalBalance.value
+
+        if (balance != -1L) {
+            if (denomination.isFiat) {
+                binding.balanceTextView.text = withContext(context = Dispatchers.IO) { balanceInFiat() }
+                binding.fiatTextView.text = withContext(context = Dispatchers.IO) { balanceInBtc() }
+            } else {
+                binding.balanceTextView.text = withContext(context = Dispatchers.IO) { balanceInBtc() }
+                binding.fiatTextView.text = withContext(context = Dispatchers.IO) { balanceInFiat() }
+            }
+        }
     }
 
     override fun bindView(binding: ListItemWalletBalanceBinding, payloads: List<Any>) {
@@ -78,41 +89,8 @@ data class WalletBalanceListItem constructor(val session: GdkSession, val countl
         binding.hideAmounts = session.hideAmounts
 
         scope.launch {
-            if (balance != -1L) {
-                binding.balanceTextView.text = withContext(context = Dispatchers.IO) { balanceInBtc() }
-                binding.fiatTextView.text = withContext(context = Dispatchers.IO) { balanceInFiat() }
-            }
+            updateBalanceView(binding)
         }
-
-        listOf(binding.balanceTextView,  binding.fiatTextView).setOnClickListener {
-            val walletDenomination = Denomination.default(session)
-
-            denomination = (when (denomination) {
-                is Denomination.FIAT -> {
-                    walletDenomination
-                }
-                // Disable BTC
-                // denomination == walletDenomination && denomination != Denomination.BTC -> {
-                //    Denomination.BTC
-                // }
-                else -> {
-                    Denomination.fiat(session)
-                }
-            }) ?: Denomination.BTC
-
-            scope.launch {
-                if (denomination.isFiat) {
-                    binding.balanceTextView.text = withContext(context = Dispatchers.IO) { balanceInFiat() }
-                    binding.fiatTextView.text = withContext(context = Dispatchers.IO) { balanceInBtc() }
-                } else {
-                    binding.balanceTextView.text = withContext(context = Dispatchers.IO) { balanceInBtc() }
-                    binding.fiatTextView.text = withContext(context = Dispatchers.IO) { balanceInFiat() }
-                }
-            }
-
-            countly.balanceConvert(session)
-        }
-
 
         // Clear all icons
         binding.assetsIcons.removeAllViews()

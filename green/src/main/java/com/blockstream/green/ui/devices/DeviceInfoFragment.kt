@@ -94,6 +94,18 @@ class DeviceInfoFragment : AbstractDeviceFragment<DeviceInfoFragmentBinding>(
                     }
                     .show()
             }
+        } else if (sideEffect is SideEffects.OpenDialog) {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.id_new_jade_firmware_required )
+                .setCancelable(false)
+                .setMessage(R.string.id_please_upgrade_your_jade_firmware_to)
+                .setPositiveButton(R.string.id_ok) { _, _ ->
+                    popBackStack()
+                }
+                .setNeutralButton(R.string.id_read_more) { _, _ ->
+                    popBackStack()
+                    openBrowser(Urls.HELP_JADE_USB_UPGRADE)
+                }.show()
         }
     }
 

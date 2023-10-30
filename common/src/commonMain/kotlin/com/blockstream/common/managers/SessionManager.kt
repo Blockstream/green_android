@@ -13,7 +13,6 @@ import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.TorEvent
 import com.blockstream.common.gdk.device.DeviceInterface
 import com.blockstream.common.lightning.LightningManager
-import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.Timer
 import kotlinx.coroutines.CoroutineScope
@@ -21,6 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -86,7 +86,7 @@ class SessionManager constructor(
 
     private var timeoutTimers = mutableListOf<Timer>()
 
-    var pendingUri = MutableStateFlow<ConsumableEvent<String>?>(null)
+    val pendingUri: Channel<String?> = Channel(capacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
     private val _connectionChangeEvent = MutableSharedFlow<Unit>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST).also {
         // Set initial value

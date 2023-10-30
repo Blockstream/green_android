@@ -10,6 +10,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.blockstream.common.Urls
+import com.blockstream.common.data.Denomination
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.data.Account
@@ -24,6 +25,7 @@ import com.blockstream.green.databinding.ListItemWalletBalanceBinding
 import com.blockstream.green.databinding.WalletOverviewFragmentBinding
 import com.blockstream.green.extensions.clearNavigationResult
 import com.blockstream.green.extensions.getNavigationResult
+import com.blockstream.green.extensions.setOnClickListener
 import com.blockstream.green.extensions.showPopupMenu
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.ui.MainActivity
@@ -68,10 +70,13 @@ import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -149,10 +154,8 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
         }
 
         // Handle pending URI (BIP-21 or lightning)
-        sessionManager.pendingUri.onEach {
-            it?.getContentIfNotHandledOrReturnNull()?.let { uri ->
-                handleUserInput(uri, false)
-            }
+        sessionManager.pendingUri.consumeAsFlow().filterNotNull().onEach {
+            handleUserInput(it, false)
         }.launchIn(lifecycleScope)
 
         binding.vm = viewModel
@@ -334,6 +337,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
 
         // Wallet Balance
         val walletBalanceListItem = WalletBalanceListItem(session = session, countly = countly).also {
+            it.denomination = viewModel.balanceDenomination.value
             if(!wallet.isLightning) {
                 totalBalanceAdapter.set(listOf(it))
             }
@@ -522,6 +526,22 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
             )
         }
 
+        viewModel.balanceDenomination.onEach {
+            walletBalanceListItem.denomination = it
+            fastAdapter.getPosition(walletBalanceListItem).takeIf { it >= 0 }?.also {
+                fastAdapter.notifyAdapterItemChanged(it)
+            }
+
+        }.launchIn(lifecycleScope)
+
+        fastAdapter.addClickListener<ListItemWalletBalanceBinding, GenericItem>({ binding -> binding.balanceTextView }) { _, _, _, _ ->
+            viewModel.changeDenomination()
+        }
+
+        fastAdapter.addClickListener<ListItemWalletBalanceBinding, GenericItem>({ binding -> binding.fiatTextView }) { _, _, _, _ ->
+            viewModel.changeDenomination()
+        }
+
         fastAdapter.addClickListener<ListItemLightningInfoBinding, GenericItem>({ binding -> binding.buttonLearnMore }) { _, _, _, _ ->
             openBrowser(Urls.HELP_RECEIVE_CAPACITY)
         }
@@ -542,7 +562,8 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
 
         fastAdapter.addClickListener<ListItemWalletBalanceBinding, GenericItem>({ binding -> binding.buttonDenomination }) { _, _, _, _ ->
             showDenominationAndExchangeRateDialog {
-                walletBalanceListItem.reset()
+                viewModel.balanceDenomination.value = Denomination.default(session)
+                walletBalanceListItem.reset(viewModel.balanceDenomination.value)
                 fastAdapter.notifyAdapterDataSetChanged()
             }
         }

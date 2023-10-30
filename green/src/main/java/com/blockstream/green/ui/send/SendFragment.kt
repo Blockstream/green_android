@@ -44,6 +44,8 @@ import com.blockstream.green.views.GreenAlertView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -133,11 +135,9 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
         }
 
         // Handle pending URI (BIP-21 or lightning)
-        sessionManager.pendingUri.onEach {
-            it?.getContentIfNotHandledOrReturnNull()?.let { uri ->
-                viewModel.setUri(uri)
-                snackbar(R.string.id_address_was_filled_by_a_payment)
-            }
+        sessionManager.pendingUri.consumeAsFlow().filterNotNull().onEach {
+            viewModel.setUri(it)
+            snackbar(R.string.id_address_was_filled_by_a_payment)
         }.launchIn(lifecycleScope)
 
         binding.vm = viewModel

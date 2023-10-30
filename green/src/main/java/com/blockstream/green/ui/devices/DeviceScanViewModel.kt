@@ -126,6 +126,11 @@ class DeviceScanViewModel constructor(
 
     override fun onDeviceReady(device: Device, isJadeUninitialized: Boolean?) {
 
+        if (deviceConnectionManager.needsAndroid14BleUpdate) {
+            postSideEffect(SideEffects.OpenDialog(0))
+            return
+        }
+
         doUserAction({
             val gdkHardwareWallet = device.gdkHardwareWallet ?: throw Exception("Not HWWallet initiated")
 

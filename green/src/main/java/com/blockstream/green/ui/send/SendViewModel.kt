@@ -277,6 +277,15 @@ class SendViewModel constructor(
                 }
             }
             .launchIn(viewModelScope.coroutineScope)
+
+        if (session.hasLightning) {
+            session.lightningNodeInfoStateFlow.drop(1).onEach {
+                if (accountAsset.account.isLightning) {
+                    // Re-check the transaction on node_info update
+                    checkTransaction()
+                }
+            }.launchIn(viewModelScope.coroutineScope)
+        }
     }
 
     private fun updateExchange(addressParamsLiveData: AddressParamsLiveData) {

@@ -1,6 +1,7 @@
 package com.blockstream.green.devices
 
 import android.content.Context
+import android.os.Build
 import com.blockstream.HardwareQATester
 import com.blockstream.JadeHWWallet
 import com.blockstream.common.CountlyBase
@@ -60,6 +61,9 @@ class DeviceConnectionManager constructor(
             false
         )
     }
+
+    var needsAndroid14BleUpdate:Boolean = false
+        private set
 
     fun connectDevice(context: Context, device: Device) {
         scope.launch(context = Dispatchers.IO) {
@@ -160,8 +164,11 @@ class DeviceConnectionManager constructor(
 
             val jadeWallet = JadeHWWallet(gdk, jade, jadeDevice, verInfo, qaTester)
 
-            onHWalletCreated(device, jadeWallet, jadeWallet.isUninitialized)
+            if (version.isLessThan(JadeVersion("1.0.25")) && device.isBle && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                needsAndroid14BleUpdate = true
+            }
 
+            onHWalletCreated(device, jadeWallet, jadeWallet.isUninitialized)
         } catch (e: Exception) {
             closeJadeAndFail(device, jade)
         }

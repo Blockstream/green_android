@@ -727,7 +727,7 @@ class GdkSession constructor(
         if(isConnected) {
             isConnected = false
 
-            scope.launch(context = Dispatchers.IO) {
+            scope.launch(context = Dispatchers.IO + logException(countly)) {
                 disconnect()
 
                 // Destroy session if it's ephemeral

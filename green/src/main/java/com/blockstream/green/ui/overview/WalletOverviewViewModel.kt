@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
+import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
 import com.blockstream.common.gdk.data.Account
@@ -16,6 +17,7 @@ import com.blockstream.green.ui.items.AlertType
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -69,7 +71,11 @@ class WalletOverviewViewModel constructor(
     val zeroAccounts: StateFlow<Boolean>
         get() = session.zeroAccounts
 
+
+    val balanceDenomination: MutableStateFlow<Denomination> = MutableStateFlow(Denomination.default(session))
+
     init {
+
         session
             .allAccounts
             .onEach { accounts ->
@@ -104,6 +110,19 @@ class WalletOverviewViewModel constructor(
         session.failedNetworks.onEach {
             _failedNetworkLoginsLiveData.value = it
         }.launchIn(viewModelScope.coroutineScope)
+    }
+
+    fun changeDenomination(){
+        balanceDenomination.value = (when (balanceDenomination.value) {
+            is Denomination.FIAT -> {
+                Denomination.default(session)
+            }
+            else -> {
+                Denomination.fiat(session)
+            }
+        }) ?: Denomination.BTC
+
+        countly.balanceConvert(session)
     }
 
     fun refresh(){

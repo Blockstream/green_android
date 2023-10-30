@@ -1417,4 +1417,6 @@
   <string name="id_format_is_not_supported_or_no_data">Format is not supported or no data was found.</string>
   <string name="id_your_personal_electrum_server_for_s">Your Personal Electrum Server for %s can\'t be reached. Check your settings or your internet connection.</string>
   <string name="id_sweep_initiated">Sweep initiated</string>
+  <string name="id_could_not_recognized_the_uri">Could not recognized the URI</string>
+  <string name="id_please_upgrade_your_jade_firmware_to">Please upgrade your Jade firmware to v1.0.25 via USB in order to restore the Bluetooth functionality using Android 14.</string>
 </resources>

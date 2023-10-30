@@ -9,6 +9,8 @@ import kotlinx.serialization.json.JsonElement
 abstract class GreenJson<T> {
     open fun encodeDefaultsValues() = true
 
+    open fun explicitNulls() = true
+
     open fun keepJsonElement() = false
 
     @Transient
@@ -19,6 +21,7 @@ abstract class GreenJson<T> {
     protected val json by lazy {
         Json {
             encodeDefaults = encodeDefaultsValues()
+            explicitNulls = explicitNulls()
             ignoreUnknownKeys = true
         }
     }

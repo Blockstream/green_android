@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.blockstream.HwWalletLogin
 import com.blockstream.JadeHWWallet
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.DeviceBrand
@@ -20,6 +21,8 @@ import com.greenaddress.greenbits.wallets.FirmwareFileData
 import com.greenaddress.greenbits.wallets.FirmwareUpgradeRequest
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
 
@@ -170,7 +173,10 @@ abstract class AbstractDeviceViewModel constructor(
         if(!proceedToLogin) {
 
             if(sessionManager.getConnectedHardwareWalletSessions().none { it.device?.id == device?.id }){
-                device?.disconnect()
+                // Disconnect without blocking the UI
+                applicationScope.launch(context = Dispatchers.IO + logException(countly)) {
+                    device?.disconnect()
+                }
             }
         }
     }

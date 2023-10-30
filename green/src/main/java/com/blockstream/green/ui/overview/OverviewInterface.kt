@@ -99,6 +99,8 @@ interface OverviewInterface {
             } else {
                 if (isQr) {
                     appFragment.snackbar(R.string.id_could_not_recognized_qr_code)
+                } else {
+                    appFragment.snackbar(R.string.id_could_not_recognized_the_uri)
                 }
             }
         }

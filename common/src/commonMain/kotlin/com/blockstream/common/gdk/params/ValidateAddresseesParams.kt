@@ -10,9 +10,11 @@ import kotlinx.serialization.Serializable
 data class ValidateAddresseesParams private constructor(
     @SerialName("addressees") val addressees: List<Addressee>,
 ) : GreenJson<ValidateAddresseesParams>() {
+    override fun explicitNulls(): Boolean = false
+
     override fun kSerializer() = serializer()
 
-    companion object{
+    companion object {
         fun create(network: Network, address: String): ValidateAddresseesParams {
             return ValidateAddresseesParams(
                 addressees = listOf(

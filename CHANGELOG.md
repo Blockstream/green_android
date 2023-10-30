@@ -3,6 +3,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.17] - 2023-10-30
+
+### Changed
+- Bump GDK to version 0.68.4
+- Bump Breez to version 0.2.7
+
+### Added
+- Add icons to menu items
+- Display an error message when personal electrum server is unreachable
+
+### Fixed
+- Fix scan of color inverted QR codes
+- Fix NPE crash related to session handling
+- Fix fetching remote config when Tor is enabled
+
 ## [4.0.15] - 2023-10-11
 
 ### Changed
