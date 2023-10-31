@@ -7,6 +7,8 @@ import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.Banner
 import com.blockstream.common.data.CredentialType
+import com.blockstream.common.data.DenominatedValue
+import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.Redact
 import com.blockstream.common.database.Database
@@ -20,6 +22,7 @@ import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.device.DeviceBrand
 import com.blockstream.common.gdk.device.GdkHardwareWallet
 import com.blockstream.common.gdk.device.HardwareWalletInteraction
@@ -56,7 +59,7 @@ import kotlin.native.ObjCName
 
 abstract class GreenViewModel constructor(
     val greenWalletOrNull: GreenWallet? = null,
-    val accountOrNull: Account? = null,
+    accountAssetOrNull: AccountAsset? = null,
 ) : KMMViewModel(), KoinComponent, ViewModelView, HardwareWalletInteraction {
     protected val appInfo: AppInfo by inject()
     protected val database: Database by inject()
@@ -92,6 +95,9 @@ abstract class GreenViewModel constructor(
             }
         }
     }
+
+    @NativeCoroutinesState
+    val accountAsset: MutableStateFlow<AccountAsset?> = MutableStateFlow(accountAssetOrNull)
 
     val sessionOrNull: GdkSession? by lazy {
         greenWalletOrNull?.let { sessionManager.getWalletSessionOrNull(it) }
@@ -249,7 +255,16 @@ abstract class GreenViewModel constructor(
                 }else{
                     _deviceRequest?.complete(event.data)
                 }
-
+            }
+            is Events.SelectDenomination -> {
+                viewModelScope.coroutineScope.launch {
+                    denominatedValue()?.also {
+                        postSideEffect(SideEffects.OpenDenominationDialog(it))
+                    }
+                }
+            }
+            is Events.SetDenomination -> {
+                setDenomination(event.denominatedValue)
             }
             is Events.Logout -> {
                 sessionOrNull?.disconnectAsync()
@@ -285,7 +300,7 @@ abstract class GreenViewModel constructor(
             if (appInfo.isDebug) {
                 it.printStackTrace()
             }
-            postSideEffect(SideEffects.ErrorDialog(it))
+            postSideEffect(SideEffects.ErrorDialog(it, errorReport = errorReport(it)))
         }
     ) {
         viewModelScope.coroutineScope.launch {
@@ -386,6 +401,10 @@ abstract class GreenViewModel constructor(
             runBlocking { it.await() }
         }
     }
+
+    protected open suspend fun denominatedValue(): DenominatedValue? = null
+    protected open fun setDenomination(denominatedValue: DenominatedValue) { }
+    protected open fun errorReport(exception: Throwable): ErrorReport? { return null}
 
     companion object: Loggable()
 }

@@ -696,7 +696,8 @@
         <argument
             android:name="address"
             app:argType="string"
-            app:nullable="true" />
+            app:nullable="true"
+            android:defaultValue="@null" />
 
         <argument
             android:name="amount"
@@ -711,11 +712,8 @@
             android:name="wallet"
             app:argType="com.blockstream.common.data.GreenWallet" />
         <argument
-            android:name="accountAsset"
-            app:argType="com.blockstream.common.gdk.data.AccountAsset" />
-        <argument
-            android:name="withdraw"
-            app:argType="string" />
+            android:name="lnUrlWithdrawRequest"
+            app:argType="com.blockstream.common.data.LnUrlWithdrawRequest" />
     </fragment>
     <fragment
         android:id="@+id/lnUrlAuthFragment"
@@ -726,11 +724,8 @@
             android:name="wallet"
             app:argType="com.blockstream.common.data.GreenWallet" />
         <argument
-            android:name="accountAsset"
-            app:argType="com.blockstream.common.gdk.data.AccountAsset" />
-        <argument
-            android:name="auth"
-            app:argType="string" />
+            android:name="lnUrlAuthRequest"
+            app:argType="com.blockstream.common.data.LnUrlAuthRequest" />
     </fragment>
     <action
         android:id="@+id/action_global_lnUrlWithdrawFragment"

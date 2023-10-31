@@ -5,18 +5,21 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
-import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.settings.WatchOnlyViewModel
+import com.blockstream.common.views.wallet.WatchOnlyLook
 import com.blockstream.green.R
 import com.blockstream.green.databinding.BaseRecyclerViewBinding
 import com.blockstream.green.databinding.ListItemOutputDescriptorsBinding
 import com.blockstream.green.extensions.copyToClipboard
+import com.blockstream.green.ui.AppFragment
+import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.ui.bottomsheets.QrBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.WatchOnlyBottomSheetDialogFragment
 import com.blockstream.green.ui.items.OutputDescriptorListItem
 import com.blockstream.green.ui.items.PreferenceListItem
 import com.blockstream.green.ui.items.TextListItem
 import com.blockstream.green.ui.items.TitleListItem
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.observeList
 import com.mikepenz.fastadapter.FastAdapter
@@ -26,187 +29,122 @@ import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class WatchOnlyFragment :
-    AbstractWalletFragment<BaseRecyclerViewBinding>(R.layout.base_recycler_view, 0) {
+    AppFragment<BaseRecyclerViewBinding>(R.layout.base_recycler_view, 0) {
     val args: WatchOnlyFragmentArgs by navArgs()
-    override val walletOrNull by lazy { args.wallet }
-
-    override val screenName = "WalletSettingsWatchOnly"
 
     val viewModel: WatchOnlyViewModel by viewModel {
         parametersOf(args.wallet)
     }
 
-    override fun getWalletViewModel() = viewModel
+    override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    private lateinit var bitcoinMultisigPreference: PreferenceListItem
-    private lateinit var liquidMultisigPreference: PreferenceListItem
+    override fun getAppViewModel(): AppViewModelAndroid? = null
 
-    private lateinit var fastAdapter: FastAdapter<GenericItem>
-
-    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.vm = viewModel
 
-        val list = mutableListOf<GenericItem>()
 
+        val multisigTitleAdapter = FastItemAdapter<GenericItem>().also {
+            it.set(
+                listOf(
+                    TitleListItem(
+                        StringHolder(R.string.id_multisig),
+                        iconLeft = ContextCompat.getDrawable(
+                            requireContext(),
+                            R.drawable.ic_multisig
+                        )
+                    )
+                )
+            )
+        }
+
+        val singlesigTitleAdapter = FastItemAdapter<GenericItem>().also {
+            it.set(
+                listOf(
+                    TitleListItem(
+                        StringHolder(R.string.id_singlesig),
+                        iconLeft = ContextCompat.getDrawable(
+                            requireContext(),
+                            R.drawable.ic_singlesig
+                        )
+                    )
+                )
+            )
+        }
         val extendedPublicKeyAdapter = FastItemAdapter<GenericItem>()
         val outputDescriptorsAdapter = FastItemAdapter<GenericItem>()
 
-        bitcoinMultisigPreference = PreferenceListItem(
-            StringHolder("Bitcoin"),
+
+        val multisigModelAdapter = ModelAdapter { look: WatchOnlyLook ->
+            PreferenceListItem(
+                title = StringHolder(look.network!!.canonicalName),
+                subtitle = StringHolder(if (look.username.isNullOrBlank()) {
+                    getString(R.string.id_set_up_watchonly_credentials)
+                } else {
+                    getString(R.string.id_enabled_1s, look.username)
+                })
+            )
+        }
+
+        multisigModelAdapter.observeList(
+            lifecycleScope,
+            viewModel.multisigWatchOnly
         )
 
-        liquidMultisigPreference = PreferenceListItem(
-            StringHolder("Liquid"),
-        )
-
-        val extendedPublicKeyModelAdapter = ModelAdapter { account: Account ->
+        val extendedPublicKeyModelAdapter = ModelAdapter { look: WatchOnlyLook ->
             OutputDescriptorListItem(
-                account = account,
-                isOutputDescriptor = false
+                look = look,
             )
         }
 
-        val outputDescriptorsModelAdapter = ModelAdapter { account: Account ->
+        val outputDescriptorsModelAdapter = ModelAdapter { look: WatchOnlyLook ->
             OutputDescriptorListItem(
-                account = account
+                look = look
             )
         }
 
-        if (session.activeMultisig.isNotEmpty()) {
-            list += TitleListItem(
-                StringHolder(R.string.id_multisig),
-                iconLeft = ContextCompat.getDrawable(requireContext(), R.drawable.ic_multisig)
-            )
-
-            if (session.activeBitcoinMultisig != null && session.walletExistsAndIsUnlocked(session.activeBitcoinMultisig)) {
-                list += bitcoinMultisigPreference
-
-                viewModel.watchOnlyUsernameLiveData(session.activeBitcoinMultisig!!).observe(viewLifecycleOwner) {
-                    bitcoinMultisigPreference.subtitle = StringHolder(
-                        if (it.isNullOrBlank()) {
-                            getString(R.string.id_set_up_watchonly_credentials)
-                        } else {
-                            getString(R.string.id_enabled_1s, it)
-                        }
-                    )
-
-                    fastAdapter.getItemById(bitcoinMultisigPreference.identifier)?.let {
-                        it.second?.let { it1 -> fastAdapter.notifyAdapterItemChanged(it1) }
-                    }
-                }
-            }
-
-            if (session.activeLiquidMultisig != null && session.walletExistsAndIsUnlocked(session.activeLiquidMultisig)) {
-                list += liquidMultisigPreference
-
-                viewModel.watchOnlyUsernameLiveData(session.activeLiquidMultisig!!).observe(viewLifecycleOwner) {
-                    liquidMultisigPreference.subtitle = StringHolder(
-                        if (it.isNullOrBlank()) {
-                            getString(R.string.id_set_up_watchonly_credentials)
-                        } else {
-                            getString(R.string.id_enabled_1s, it)
-                        }
-                    )
-
-                    fastAdapter.getItemById(liquidMultisigPreference.identifier)?.let {
-                        it.second?.let { it1 -> fastAdapter.notifyAdapterItemChanged(it1) }
-                    }
-                }
-            }
-        }
-
-        if (session.activeSinglesig.isNotEmpty()) {
-
-            list += TitleListItem(
-                StringHolder(R.string.id_singlesig),
-                iconLeft = ContextCompat.getDrawable(requireContext(), R.drawable.ic_singlesig)
-            )
-
-            viewModel.extendedPublicKeysAccounts.onEach {
-                if (it.isNotEmpty()) {
-                    extendedPublicKeyAdapter.set(
-                        listOf(
-                            TextListItem(
-                                text = StringHolder(R.string.id_extended_public_keys),
-                                textAppearance = R.style.TextAppearance_Green_TitleSmall,
-                                paddingBottom = R.dimen.dp0,
-                            ),
-                            TextListItem(
-                                text = StringHolder(R.string.id_tip_you_can_use_the),
-                                textColor = R.color.color_on_surface_emphasis_low,
-                                textAppearance = R.style.TextAppearance_Green_BodySmall,
-                                paddingTop = R.dimen.dp0,
-                                paddingBottom = R.dimen.dp8,
-                                paddingLeft = R.dimen.dp16,
-                                paddingRight = R.dimen.dp16
-                            )
-                        )
-                    )
-                }
-            }.launchIn(lifecycleScope)
-
-            extendedPublicKeyModelAdapter.observeList(
-                lifecycleScope,
-                viewModel.extendedPublicKeysAccounts
-            )
-
-            viewModel.outputDescriptorsAccounts.onEach {
-                if (it.isNotEmpty()) {
-                    outputDescriptorsAdapter.set(
-                        listOf(
-                            TextListItem(
-                                text = StringHolder(R.string.id_output_descriptors),
-                                textAppearance = R.style.TextAppearance_Green_TitleSmall,
-                                paddingBottom = R.dimen.dp8,
-                            )
-                        )
-                    )
-                }
-            }.launchIn(lifecycleScope)
-
-            outputDescriptorsModelAdapter.observeList(
-                lifecycleScope,
-                viewModel.outputDescriptorsAccounts
-            )
-
-        }
-
-        fastAdapter = FastAdapter.with(
+        val fastAdapter = FastAdapter.with(
             listOf(
-                FastItemAdapter<GenericItem>().also {
-                    it.set(list)
-                },
+                multisigTitleAdapter,
+                multisigModelAdapter,
+                singlesigTitleAdapter,
                 extendedPublicKeyAdapter,
                 extendedPublicKeyModelAdapter,
                 // Disable Output Descriptor
-                // outputDescriptorsAdapter,
-                // outputDescriptorsModelAdapter,
+//                 outputDescriptorsAdapter,
+//                 outputDescriptorsModelAdapter,
             )
         )
 
-        fastAdapter.onClickListener =
-            { _: View?, _: IAdapter<GenericItem>, iItem: GenericItem, _: Int ->
-                when (iItem) {
-                    bitcoinMultisigPreference -> {
-                        WatchOnlyBottomSheetDialogFragment.show(
-                            session.activeBitcoinMultisig!!,
-                            childFragmentManager
-                        )
-                    }
+        viewModel.multisigWatchOnly.onEach {
+             multisigTitleAdapter.itemAdapter.active = it.isNotEmpty()
+        }.launchIn(lifecycleScope)
 
-                    liquidMultisigPreference -> {
-                        WatchOnlyBottomSheetDialogFragment.show(
-                            session.activeLiquidMultisig!!,
-                            childFragmentManager
-                        )
-                    }
+        combine(viewModel.extendedPublicKeysAccounts, viewModel.outputDescriptorsAccounts) { a1, a2 ->
+            a1.isEmpty() && a2.isEmpty()
+        }.onEach {
+            singlesigTitleAdapter.itemAdapter.active = !it
+        }.launchIn(lifecycleScope)
+
+        fastAdapter.onClickListener =
+            { _: View?, adapter: IAdapter<GenericItem>, item: GenericItem, position: Int ->
+                if (adapter == multisigModelAdapter) {
+                    viewModel.multisigWatchOnly.value.getOrNull(adapter.getAdapterPosition(item))
+                        ?.also {
+                            WatchOnlyBottomSheetDialogFragment.show(
+                                it.network!!,
+                                childFragmentManager
+                            )
+                        }
                 }
 
                 true
@@ -239,5 +177,57 @@ class WatchOnlyFragment :
             itemAnimator = SlideDownAlphaAnimator()
             adapter = fastAdapter
         }
+
+        viewModel.extendedPublicKeysAccounts.onEach {
+            (if (it.isNotEmpty()) {
+                listOf(
+                    TextListItem(
+                        text = StringHolder(R.string.id_extended_public_keys),
+                        textAppearance = R.style.TextAppearance_Green_TitleSmall,
+                        paddingBottom = R.dimen.dp0,
+                    ),
+                    TextListItem(
+                        text = StringHolder(R.string.id_tip_you_can_use_the),
+                        textColor = R.color.color_on_surface_emphasis_low,
+                        textAppearance = R.style.TextAppearance_Green_BodySmall,
+                        paddingTop = R.dimen.dp0,
+                        paddingBottom = R.dimen.dp8,
+                        paddingLeft = R.dimen.dp16,
+                        paddingRight = R.dimen.dp16
+                    )
+                )
+            } else {
+                listOf()
+            }).also {
+                extendedPublicKeyAdapter.set(it)
+            }
+        }.launchIn(lifecycleScope)
+
+        extendedPublicKeyModelAdapter.observeList(
+            lifecycleScope,
+            viewModel.extendedPublicKeysAccounts
+        )
+
+        viewModel.outputDescriptorsAccounts.onEach {
+            (if (it.isNotEmpty()) {
+                listOf(
+                    TextListItem(
+                        text = StringHolder(R.string.id_output_descriptors),
+                        textAppearance = R.style.TextAppearance_Green_TitleSmall,
+                        paddingBottom = R.dimen.dp8,
+                    )
+                )
+
+            } else {
+                listOf()
+            }).also {
+                outputDescriptorsAdapter.set(it)
+            }
+        }.launchIn(lifecycleScope)
+
+        outputDescriptorsModelAdapter.observeList(
+            lifecycleScope,
+            viewModel.outputDescriptorsAccounts
+        )
     }
 }

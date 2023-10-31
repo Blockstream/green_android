@@ -14,9 +14,9 @@ import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
 import app.rive.runtime.kotlin.RiveAnimationView
 import com.blockstream.common.data.Banner
+import com.blockstream.common.data.DataState
 import com.blockstream.common.gdk.data.Device
 import com.blockstream.common.gdk.device.DeviceInterface
-import com.blockstream.common.data.DataState
 import com.blockstream.green.R
 import com.blockstream.green.extensions.errorFromResourcesAndGDK
 import com.blockstream.green.extensions.fromHtml
@@ -248,10 +248,7 @@ fun setGdkError(textView: TextView, error: String?) {
     if (trimmed.isNullOrBlank()) {
         textView.isVisible = false
     } else {
-        textView.text = textView.context.errorFromResourcesAndGDK(
-            error.substring(0, error.indexOf("|").takeIf { it != -1 } ?: error.length),
-            *(error.split("|").filterIndexed { index, _ -> index != 0 }.toTypedArray())
-        )
+        textView.text = textView.context.errorFromResourcesAndGDK(error)
 
         textView.isVisible = true
     }
@@ -264,6 +261,24 @@ fun setGdkErrorOrInvisible(textView: TextView, error: String?) {
     }else{
         textView.text = textView.context.errorFromResourcesAndGDK(error)
         textView.isInvisible = false
+    }
+}
+
+@InverseBindingAdapter(attribute = "slider")
+fun getSlider(slider: Slider): Int = slider.value.toInt()
+
+@BindingAdapter("slider")
+fun setSlider(view: Slider, newValue: Int) {
+    // Important to break potential infinite loops.
+    if (view.value.toInt() != newValue) {
+        view.value = newValue.toFloat()
+    }
+}
+
+@BindingAdapter("sliderAttrChanged")
+fun setSliderListener(slider: Slider, attrChange: InverseBindingListener) {
+    slider.addOnChangeListener { _, _, _ ->
+        attrChange.onChange()
     }
 }
 

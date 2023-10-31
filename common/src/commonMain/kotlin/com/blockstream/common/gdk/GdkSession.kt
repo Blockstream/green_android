@@ -132,6 +132,7 @@ import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
@@ -205,6 +206,9 @@ class GdkSession constructor(
     private val _tickerSharedFlow = MutableSharedFlow<Unit>(replay = 0)
     private val _zeroAccounts = MutableStateFlow<Boolean>(false)
 
+    private val _multisigBitcoinWatchOnly = MutableStateFlow<String?>(null)
+    private val _multisigLiquidWatchOnly = MutableStateFlow<String?>(null)
+
     private fun networkEventsStateFlow(network: Network) = _networkEventsStateFlow.getOrPut(network) { MutableStateFlow(null) }
 
     private fun twoFactorResetStateFlow(network: Network) = _twoFactorResetStateFlow.getOrPut(network) { MutableStateFlow(null) }
@@ -263,6 +267,9 @@ class GdkSession constructor(
     val tickerFlow = _tickerSharedFlow.asSharedFlow()
 
     val zeroAccounts = _zeroAccounts.asStateFlow()
+
+    val multisigBitcoinWatchOnly = _multisigBitcoinWatchOnly.asStateFlow()
+    val multisigLiquidWatchOnly = _multisigLiquidWatchOnly.asStateFlow()
 
     val networkErrors = _networkErrors.receiveAsFlow()
 
@@ -659,6 +666,9 @@ class GdkSession constructor(
 
         _accountAssetsFlow = mutableMapOf()
         _torStatusSharedFlow.value = TorEvent(progress = 100) // reset TOR status
+
+        _multisigBitcoinWatchOnly.value = null
+        _multisigLiquidWatchOnly.value = null
 
         // Clear Cache
         _twoFactorConfigCache = mutableMapOf()
@@ -1449,11 +1459,13 @@ class GdkSession constructor(
                 // Cache 2fa config
                 activeBitcoinMultisig?.also {
                     getTwoFactorConfig(network = it, useCache = false)
+                    updateWatchOnlyUsername(network = it)
                 }
 
                 // Cache 2fa config
                 activeLiquidMultisig?.also {
                     getTwoFactorConfig(network = it, useCache = false)
+                    updateWatchOnlyUsername(network = it)
                 }
             }catch (e: Exception){
                 countly.recordException(e)
@@ -1723,7 +1735,7 @@ class GdkSession constructor(
         }
     }
 
-    fun getFeeEstimates(network: Network): FeeEstimation = try {
+    suspend fun getFeeEstimates(network: Network): FeeEstimation = try {
         if(network.isLightning){
             lightningSdk.recommendedFees().let { fees ->
                 (
@@ -2083,13 +2095,42 @@ class GdkSession constructor(
         return _twoFactorConfigCache[network]!!
     }
 
-    fun getWatchOnlyUsername(network: Network) = gdk.getWatchOnlyUsername(gdkSession(network))
+    private fun getWatchOnlyUsername(network: Network) = gdk.getWatchOnlyUsername(gdkSession(network))
 
     fun setWatchOnly(network: Network, username: String, password: String) = gdk.setWatchOnly(
         gdkSession(network),
         username,
         password
-    )
+    ).also {
+        updateWatchOnlyUsername(network)
+    }
+
+    fun watchOnlyUsername(network: Network): StateFlow<String?> {
+        return (if (network.isBitcoin) {
+            _multisigBitcoinWatchOnly
+        } else {
+            _multisigLiquidWatchOnly
+        }).asStateFlow()
+    }
+
+    fun updateWatchOnlyUsername(network: Network? = null) {
+        if (isWatchOnly) return
+
+        (network?.let { listOfNotNull(network) } ?: activeMultisig).filter {
+            walletExistsAndIsUnlocked(it)
+        }.onEach {
+            try {
+                val username = getWatchOnlyUsername(it)
+                if (it.isBitcoin) {
+                    _multisigBitcoinWatchOnly.value = username
+                } else {
+                    _multisigLiquidWatchOnly.value = username
+                }
+            } catch (e: Exception) {
+                countly.recordException(e)
+            }
+        }
+    }
 
     fun twoFactorReset(network: Network, email:String, isDispute: Boolean) =
         authHandler(network, gdk.twoFactorReset(gdkSession(network), email, isDispute))
@@ -2126,18 +2167,20 @@ class GdkSession constructor(
     // asset_info in Convert object can be null for liquid assets that don't have asset metadata
     // if no asset is given, no conversion is needed (conversion will be identified as a btc value in gdk)
     suspend fun convertAmount(network: Network, convert: Convert, isAsset: Boolean = false) = try {
-        if(isAsset && convert.asset == null){
-            Balance.fromAssetWithoutMetadata(convert)
-        }else if(isAsset && convert.assetAmount != null){
-            val jsonElement = buildJsonObject {
-                put("asset_info", convert.asset!!.toJsonElement())
-                put(convert.asset?.assetId ?: "", convert.assetAmount)
+        withContext(context = Dispatchers.IO) {
+            if (isAsset && convert.asset == null) {
+                Balance.fromAssetWithoutMetadata(convert)
+            } else if (isAsset && convert.assetAmount != null) {
+                val jsonElement = buildJsonObject {
+                    put("asset_info", convert.asset!!.toJsonElement())
+                    put(convert.asset?.assetId ?: "", convert.assetAmount)
+                }
+                gdk.convertAmount(gdkSession(network), convert, jsonElement)
+            } else {
+                gdk.convertAmount(gdkSession(network), convert)
             }
-            gdk.convertAmount(gdkSession(network), convert, jsonElement)
-        } else {
-            gdk.convertAmount(gdkSession(network), convert)
         }
-    }catch (e: Exception){
+    } catch (e: Exception) {
         e.printStackTrace()
         null
     }

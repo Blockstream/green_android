@@ -5,9 +5,10 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.items.AccountAssetListItem
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.observeList
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.GenericFastItemAdapter
@@ -19,8 +20,8 @@ class AccountAssetBottomSheetDialogFragment : FilterBottomSheetDialogFragment(),
     FilterableDataProvider {
 
     @Suppress("UNCHECKED_CAST")
-    internal val viewModel: AbstractWalletViewModel by lazy {
-        (requireParentFragment() as AbstractWalletFragment<*>).getWalletViewModel()
+    internal val viewModel: GreenViewModel by lazy {
+        (requireParentFragment() as? AppFragment<*>)?.getGreenViewModel() ?: (requireParentFragment() as AbstractWalletFragment<*>).getWalletViewModel()
     }
 
     val session

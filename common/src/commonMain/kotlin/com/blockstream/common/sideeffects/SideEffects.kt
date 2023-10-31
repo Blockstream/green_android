@@ -1,5 +1,6 @@
 package com.blockstream.common.sideeffects
 
+import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.events.Event
 import com.blockstream.common.gdk.data.Account
@@ -19,6 +20,7 @@ class SideEffects : SideEffect {
         SideEffect
     data class Dialog(val title: String? = null, val message: String) : SideEffect
     data class ErrorDialog(val error: Throwable, val errorReport: ErrorReport? = null) : SideEffect
+    data class OpenDenominationDialog(val denominatedValue: DenominatedValue): SideEffect
     data class Success(val data: Any? = null) : SideEffect
     data class Navigate(val data: Any? = null) : SideEffect
     data class NavigateTo(val destination: NavigateDestination) : SideEffect

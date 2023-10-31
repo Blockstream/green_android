@@ -20,6 +20,7 @@ import kotlinx.serialization.json.putJsonObject
 data class Networks(
     @SerialName("networks") val networks: MutableMap<String, Network>
 ) : GreenJson<Networks>() {
+    override fun kSerializer(): KSerializer<Networks> = serializer()
 
     override fun keepJsonElement() = true
 
@@ -113,7 +114,6 @@ data class Networks(
         }
     }
 
-    override fun kSerializer(): KSerializer<Networks> = serializer()
     companion object {
         const val CustomNetworkId = "custom-network"
 

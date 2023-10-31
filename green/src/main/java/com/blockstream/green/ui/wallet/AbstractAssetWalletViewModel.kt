@@ -17,7 +17,7 @@ abstract class AbstractAssetWalletViewModel constructor(
     val accountAssetLiveData: LiveData<AccountAsset>
         get() = _accountAssetLiveData
 
-    var accountAsset
+    var accountAssetValue
         get() = _accountAssetLiveData.value!!
         set(value) {
             _accountAssetLiveData.value = value
@@ -26,7 +26,7 @@ abstract class AbstractAssetWalletViewModel constructor(
 
     // Override this, as accountAsset may not be updated in time
     override val accountValue: Account
-        get() = accountAsset.account
+        get() = accountAssetValue.account
 
     protected open val filterSubAccountsWithBalance = false
 

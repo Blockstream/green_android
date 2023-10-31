@@ -89,7 +89,7 @@ sealed class Denomination(open val denomination: String) : Parcelable {
         return denomination
     }
 
-    fun unit(session: GdkSession, assetId: String?): String = if (this is FIAT){
+    fun unit(session: GdkSession, assetId: String? = null): String = if (this is FIAT){
         this.denomination
     }else {
         getBitcoinOrLiquidUnit(session = session, assetId = assetId, denomination = this)

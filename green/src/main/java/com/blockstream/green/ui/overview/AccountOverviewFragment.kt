@@ -536,7 +536,6 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
             navigate(
                 AccountOverviewFragmentDirections.actionAccountOverviewFragmentToRecoverFundsFragment(
                     wallet = wallet,
-                    address = null,
                     amount = session.lightningSdk.nodeInfoStateFlow.value.onchainBalanceSatoshi()
                 )
             )

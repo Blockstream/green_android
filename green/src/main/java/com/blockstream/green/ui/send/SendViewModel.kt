@@ -280,7 +280,7 @@ class SendViewModel constructor(
 
         if (session.hasLightning) {
             session.lightningNodeInfoStateFlow.drop(1).onEach {
-                if (accountAsset.account.isLightning) {
+                if (accountAssetValue.account.isLightning) {
                     // Re-check the transaction on node_info update
                     checkTransaction()
                 }

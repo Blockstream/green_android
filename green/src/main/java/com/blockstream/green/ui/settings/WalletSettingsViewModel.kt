@@ -20,7 +20,6 @@ import com.blockstream.common.gdk.params.EncryptWithPinParams
 import com.blockstream.common.gdk.params.Limits
 import com.blockstream.common.navigation.LogoutReason
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.common.utils.randomChars
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
@@ -57,10 +56,6 @@ open class WalletSettingsViewModel constructor(
 
     fun networkTwoFactorConfig(network: Network) = networkTwoFactorConfigLiveData(network).value
 
-    private var _watchOnlyUsernameLiveData = mutableMapOf<Network, MutableLiveData<String>>()
-    fun watchOnlyUsernameLiveData(network: Network) =
-        _watchOnlyUsernameLiveData.getOrPut(network) { MutableLiveData<String>() }
-
     val biometricsLiveData = MutableLiveData<LoginCredentials>()
 
     val lightningShortcutLiveData = MutableLiveData<LoginCredentials>()
@@ -94,7 +89,7 @@ open class WalletSettingsViewModel constructor(
             }.launchIn(viewModelScope.coroutineScope)
 
         updateTwoFactorConfig()
-        updateWatchOnlyUsername()
+        // session.updateWatchOnlyUsername()
     }
 
     fun updateTwoFactorConfig() {
@@ -115,22 +110,6 @@ open class WalletSettingsViewModel constructor(
         }
     }
 
-    fun updateWatchOnlyUsername() {
-        if (!session.isWatchOnly) {
-            doUserAction({
-                session.activeSessions.filter { it.isMultisig }.map { network ->
-                    network to session.getWatchOnlyUsername(network)
-                }.toMap()
-            }, onError = {
-                onError.postValue(ConsumableEvent(Exception("id_username_not_available")))
-            }, onSuccess = {
-                it.forEach {
-                    watchOnlyUsernameLiveData(it.key).postValue(it.value)
-                }
-            })
-        }
-    }
-
     fun setWatchOnly(network: Network, username: String, password: String) {
         doUserAction({
             session.setWatchOnly(
@@ -139,7 +118,7 @@ open class WalletSettingsViewModel constructor(
                 password
             )
         }, onSuccess = {
-            updateWatchOnlyUsername()
+
         })
     }
 
@@ -280,7 +259,6 @@ open class WalletSettingsViewModel constructor(
 
     override fun saveGlobalSettings(newSettings: Settings, onSuccess: (() -> Unit)?) {
         super.saveGlobalSettings(newSettings){
-            updateWatchOnlyUsername()
             postSideEffect(SideEffects.Success())
         }
     }
@@ -290,7 +268,6 @@ open class WalletSettingsViewModel constructor(
             session.changeSettings(network, newSettings)
             session.updateSettings(network)
         }, onSuccess = {
-            updateWatchOnlyUsername()
             postSideEffect(SideEffects.Success())
         })
     }
@@ -306,7 +283,6 @@ open class WalletSettingsViewModel constructor(
                 }
             }
         }, onSuccess = {
-            updateWatchOnlyUsername()
             postSideEffect(SideEffects.Success())
         })
     }

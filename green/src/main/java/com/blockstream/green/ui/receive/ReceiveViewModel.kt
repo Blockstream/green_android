@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.text.format.DateUtils
-import android.text.format.DateUtils.DAY_IN_MILLIS
 import androidx.lifecycle.*
 import breez_sdk.InputType
 import breez_sdk.LnInvoice
@@ -294,7 +293,7 @@ class ReceiveViewModel constructor(
                 }
 
                 if (network.isLiquid) {
-                    it.appendQueryParameter("assetid", accountAsset.assetId)
+                    it.appendQueryParameter("assetid", accountAssetValue.assetId)
                 }
 
             }.toString()
@@ -391,7 +390,7 @@ class ReceiveViewModel constructor(
                 UserInput.parseUserInput(
                     session = session,
                     input = it,
-                    assetId = accountAsset.assetId,
+                    assetId = accountAssetValue.assetId,
                     denomination = denomination.value
                 ).getBalance()
             }
@@ -399,7 +398,7 @@ class ReceiveViewModel constructor(
             (balance?.let {
                 "≈ " + it.toAmountLook(
                     session = session,
-                    assetId = accountAsset.assetId,
+                    assetId = accountAssetValue.assetId,
                     denomination = Denomination.exchange(
                         session = session,
                         denomination = denomination.value

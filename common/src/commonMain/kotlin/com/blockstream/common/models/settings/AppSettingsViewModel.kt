@@ -2,9 +2,9 @@ package com.blockstream.common.models.settings
 
 import com.blockstream.common.data.ApplicationSettings
 import com.blockstream.common.data.ScreenLockSetting
-import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
+import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
@@ -255,46 +255,25 @@ class AppSettingsViewModelPreview(val initValue: Boolean = false) : AppSettingsV
         fun preview(initValue: Boolean) = AppSettingsViewModelPreview(initValue)
     }
 
-    override val analyticsFeatureEnabled: Boolean
-        get() = true
-    override val enhancedPrivacyEnabled: MutableStateFlow<Boolean>
-        get() = MutableStateFlow(viewModelScope, initValue)
-    override val screenLockInSeconds: MutableStateFlow<ScreenLockSetting>
-        get() = MutableStateFlow(viewModelScope, ScreenLockSetting.LOCK_IMMEDIATELY)
-    override val torEnabled: MutableStateFlow<Boolean>
-        get() = MutableStateFlow(viewModelScope, initValue)
-    override val proxyEnabled: MutableStateFlow<Boolean>
-        get() = MutableStateFlow(viewModelScope, initValue)
-    override val proxyUrl: MutableStateFlow<String>
-        get() = MutableStateFlow(viewModelScope, "")
-    override val testnetEnabled: MutableStateFlow<Boolean>
-        get() = MutableStateFlow(viewModelScope, initValue)
-    override val experimentalFeaturesVisible: MutableStateFlow<Boolean>
-        get() = MutableStateFlow(viewModelScope, initValue)
-    override val experimentalFeaturesEnabled: MutableStateFlow<Boolean>
-        get() = MutableStateFlow(viewModelScope, initValue)
-    override val analyticsEnabled: MutableStateFlow<Boolean>
-        get() = MutableStateFlow(viewModelScope, initValue)
-    override val electrumNodeEnabled: MutableStateFlow<Boolean>
-        get() = MutableStateFlow(viewModelScope, initValue)
-    override val spvEnabled: MutableStateFlow<Boolean>
-        get() = MutableStateFlow(viewModelScope, initValue)
-    override val multiServerValidationEnabled: MutableStateFlow<Boolean>
-        get() = MutableStateFlow(viewModelScope, initValue)
-    override val personalBitcoinElectrumServer: MutableStateFlow<String>
-        get() = MutableStateFlow(viewModelScope, "")
-    override val personalLiquidElectrumServer: MutableStateFlow<String>
-        get() = MutableStateFlow(viewModelScope, "")
-    override val personalTestnetElectrumServer: MutableStateFlow<String>
-        get() = MutableStateFlow(viewModelScope, "")
-    override val personalTestnetLiquidElectrumServer: MutableStateFlow<String>
-        get() = MutableStateFlow(viewModelScope, "")
-    override val spvBitcoinElectrumServer: MutableStateFlow<String>
-        get() = MutableStateFlow(viewModelScope, "")
-    override val spvLiquidElectrumServer: MutableStateFlow<String>
-        get() = MutableStateFlow(viewModelScope, "")
-    override val spvTestnetElectrumServer: MutableStateFlow<String>
-        get() = MutableStateFlow(viewModelScope, "")
-    override val spvTestnetLiquidElectrumServer: MutableStateFlow<String>
-        get() = MutableStateFlow(viewModelScope, "")
+    override val analyticsFeatureEnabled: Boolean = true
+    override val enhancedPrivacyEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
+    override val screenLockInSeconds: MutableStateFlow<ScreenLockSetting> = MutableStateFlow(viewModelScope, ScreenLockSetting.LOCK_IMMEDIATELY)
+    override val torEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
+    override val proxyEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
+    override val proxyUrl: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
+    override val testnetEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
+    override val experimentalFeaturesVisible: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
+    override val experimentalFeaturesEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
+    override val analyticsEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
+    override val electrumNodeEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
+    override val spvEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
+    override val multiServerValidationEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
+    override val personalBitcoinElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
+    override val personalLiquidElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
+    override val personalTestnetElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
+    override val personalTestnetLiquidElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
+    override val spvBitcoinElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
+    override val spvLiquidElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
+    override val spvTestnetElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
+    override val spvTestnetLiquidElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
 }

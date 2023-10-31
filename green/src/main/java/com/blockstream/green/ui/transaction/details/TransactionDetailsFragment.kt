@@ -13,6 +13,7 @@ import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.views.TransactionDetailsLook
 import com.blockstream.green.R
 import com.blockstream.green.databinding.BaseRecyclerViewBinding
 import com.blockstream.green.databinding.ListItemOverlineTextBinding
@@ -115,7 +116,7 @@ class TransactionDetailsFragment : AbstractAccountWalletFragment<BaseRecyclerVie
     }
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
-        binding.vm = viewModel
+        binding.vmWalletViewModel = viewModel
 
         if(isDevelopmentOrDebug){
             args.transaction.toJson().also {
@@ -125,7 +126,7 @@ class TransactionDetailsFragment : AbstractAccountWalletFragment<BaseRecyclerVie
         }
 
         viewModel.transactionLiveData.observe(viewLifecycleOwner) {
-            updateAdapter(it)
+            updateAdapter(it.first, it.second)
         }
 
         viewModel.onError.observe(viewLifecycleOwner) {
@@ -234,7 +235,7 @@ class TransactionDetailsFragment : AbstractAccountWalletFragment<BaseRecyclerVie
         return super.onMenuItemSelected(menuItem)
     }
 
-    private fun updateAdapter(transaction: Transaction) {
+    private fun updateAdapter(transaction: Transaction, transactionDetailsLook: TransactionDetailsLook) {
         val look = TransactionLook(transaction, session)
 
         // Amounts
@@ -254,10 +255,8 @@ class TransactionDetailsFragment : AbstractAccountWalletFragment<BaseRecyclerVie
         list = mutableListOf()
 
         list += TransactionProgressListItem(
-            session = session,
+            transactionStatusLook = transactionDetailsLook.transactionStatusLook,
             transaction = transaction,
-            confirmations = transaction.getConfirmationsMax(session),
-            confirmationsRequired = transaction.network.confirmationsRequired
         )
 
         if(!account.isLightning || transaction.txHash.isNotEmpty()) {

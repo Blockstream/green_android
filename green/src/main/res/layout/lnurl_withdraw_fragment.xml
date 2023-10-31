@@ -5,15 +5,9 @@
 
     <data>
 
-        <import type="com.blockstream.common.extensions.StringExtensionsKt" />
-
         <variable
             name="vm"
-            type="com.blockstream.green.ui.lightning.LnUrlWithdrawViewModel" />
-
-        <variable
-            name="redeemFrom"
-            type="String" />
+            type="com.blockstream.common.models.lightning.LnUrlWithdrawViewModel" />
 
     </data>
 
@@ -27,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="32dp"
-            android:text="@{redeemFrom}"
+            idText="@{vm.redeemMessage}"
             android:textAlignment="center"
             tools:text="@string/id_you_are_redeeming_funds_from" />
 
@@ -66,7 +60,7 @@
                         android:layout_marginBottom="16dp"
                         android:layout_weight="1"
                         android:background="@android:color/transparent"
-                        android:enabled="@{!vm.amountIsLocked}"
+                        android:enabled="@{vm.amountIsEditable &amp;&amp; !vm.onProgress}"
                         android:fontFamily="@font/monospace"
                         android:inputType="numberDecimal"
                         android:singleLine="true"
@@ -94,7 +88,7 @@
                         android:layout_gravity="center_vertical"
                         android:adjustViewBounds="true"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:enabled="@{!vm.amountIsLocked}"
+                        android:enabled="@{!vm.onProgress}"
                         android:paddingStart="12dp"
                         android:paddingTop="12dp"
                         android:paddingEnd="6dp"
@@ -113,7 +107,7 @@
                         android:layout_gravity="center_vertical"
                         android:adjustViewBounds="true"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:enabled="@{!vm.amountIsLocked}"
+                        android:enabled="@{vm.amountIsEditable &amp;&amp; !vm.onProgress}"
                         android:paddingStart="6dp"
                         android:paddingTop="12dp"
                         android:paddingEnd="12dp"
@@ -132,7 +126,7 @@
                         android:layout_gravity="center_vertical"
                         android:adjustViewBounds="true"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:enabled="@{!vm.amountIsLocked}"
+                        android:enabled="@{vm.amountIsEditable &amp;&amp; !vm.onProgress}"
                         android:paddingStart="6dp"
                         android:paddingTop="12dp"
                         android:paddingEnd="12dp"
@@ -168,11 +162,11 @@
                     android:orientation="horizontal">
 
                     <com.google.android.material.textview.MaterialTextView
-                        isVisible="@{(vm.amount.empty || vm.error == null) &amp;&amp; !vm.amountIsLocked}"
+                        isVisible="@{(vm.amount.empty || vm.error == null) &amp;&amp; vm.amountIsEditable}"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="3"
-                        android:text="@{String.format(@string/id_withdraw_limits_s__s, vm.minWithdrawAmount , vm.maxWithdrawAmount)}"
+                        idText="@{vm.withdrawaLimits}"
                         android:textAppearance="?attr/textAppearanceBodySmall"
                         android:textColor="@color/color_on_surface_emphasis_medium" />
 
@@ -214,7 +208,7 @@
                         android:layout_gravity="center_vertical|end"
                         android:layout_margin="16dp"
                         android:background="@android:color/transparent"
-                        android:enabled="@{!vm.onProgressAndroid}"
+                        android:enabled="@{!vm.onProgress}"
                         android:fontFamily="@font/monospace"
                         android:singleLine="true"
                         android:text="@{vm.description}"
@@ -232,12 +226,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:enabled="@{!vm.onProgressAndroid &amp;&amp; vm.error == null}"
+            android:enabled="@{!vm.onProgress &amp;&amp; vm.error == null}"
             android:text="@string/id_redeem" />
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/progress"
-            isVisible="@{vm.onProgressAndroid}"
+            isVisible="@{vm.onProgress}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"

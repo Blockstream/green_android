@@ -24,11 +24,11 @@ import org.koin.core.annotation.InjectedParam
 @KoinViewModel
 class RequestAmountLabelViewModel constructor(
     @InjectedParam wallet: GreenWallet,
-    @InjectedParam val accountAsset: AccountAsset,
+    @InjectedParam val accountAssetValue: AccountAsset,
     @InjectedParam val initialRequestAmount: String?,
-) : AbstractAccountWalletViewModel(wallet, accountAsset.account) {
+) : AbstractAccountWalletViewModel(wallet, accountAssetValue.account) {
 
-    val isPolicyAsset = accountAsset.assetId.isPolicyAsset(accountValue.network)
+    val isPolicyAsset = accountAssetValue.assetId.isPolicyAsset(accountValue.network)
 
     var requestAmount: MutableLiveData<String> =
         MutableLiveData(initialRequestAmount?.let { amount ->
@@ -74,10 +74,10 @@ class RequestAmountLabelViewModel constructor(
             .onEach {
                 amountCurrency.value = if (it) {
                     getFiatCurrency(session)
-                } else if (accountAsset.assetId.isPolicyAsset(accountAsset.account.network)) {
+                } else if (accountAssetValue.assetId.isPolicyAsset(accountAssetValue.account.network)) {
                     getBitcoinOrLiquidUnit(session = session, assetId = network.policyAsset)
                 } else {
-                    accountAsset.asset(session)?.ticker ?: ""
+                    accountAssetValue.asset(session)?.ticker ?: ""
                 }
             }.launchIn(viewModelScope.coroutineScope)
     }
@@ -91,12 +91,12 @@ class RequestAmountLabelViewModel constructor(
                 UserInput.parseUserInput(
                     session,
                     amount,
-                    assetId = accountAsset.assetId,
+                    assetId = accountAssetValue.assetId,
                     denomination = Denomination.defaultOrFiat(session, isFiat)
                 ).getBalance()?.let {
                     "≈ " + it.toAmountLook(
                         session = session,
-                        assetId = accountAsset.assetId,
+                        assetId = accountAssetValue.assetId,
                         denomination = Denomination.defaultOrFiat(session, !isFiat),
                         withUnit = true,
                         withGrouping = true,
@@ -125,14 +125,14 @@ class RequestAmountLabelViewModel constructor(
                     UserInput.parseUserInput(
                         session,
                         requestAmount.value,
-                        assetId = accountAsset.assetId,
+                        assetId = accountAssetValue.assetId,
                         denomination = Denomination.defaultOrFiat(session, isFiat)
                     )
                 input.getBalance()?.let {
                     if (it.satoshi > 0) {
                         it.toAmountLook(
                             session = session,
-                            assetId = accountAsset.assetId,
+                            assetId = accountAssetValue.assetId,
                             denomination = Denomination.defaultOrFiat(session, !isFiat),
                             withUnit = false,
                             withGrouping = false,

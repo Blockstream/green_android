@@ -3,20 +3,21 @@ package com.blockstream.green.ui.items
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Transaction
+import com.blockstream.common.views.TransactionStatusLook
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemTransactionProgressBinding
+import com.blockstream.green.extensions.context
 import com.blockstream.green.extensions.createdAt
+import com.blockstream.green.extensions.resource
+import com.blockstream.green.extensions.stringFromIdentifierOrNull
 import com.blockstream.green.utils.formatMediumWithTime
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
 
 data class TransactionProgressListItem constructor(
-    private val session: GdkSession,
+    private val transactionStatusLook: TransactionStatusLook,
     private val transaction: Transaction,
-    var confirmations: Int,
-    private val confirmationsRequired: Int
 ) : AbstractBindingItem<ListItemTransactionProgressBinding>() {
     override val type: Int
         get() = R.id.fastadapter_transaction_progress_item_id
@@ -28,9 +29,9 @@ data class TransactionProgressListItem constructor(
     override fun bindView(binding: ListItemTransactionProgressBinding, payloads: List<Any>) {
         binding.tx = transaction
         binding.date = transaction.createdAt().formatMediumWithTime()
-        binding.confirmations = confirmations
-        binding.confirmationsRequired = confirmationsRequired
-        binding.canRBF = transaction.canRBF && transaction.isIn == false && !session.isWatchOnly
+        binding.confirmations = transactionStatusLook.confirmations
+        binding.confirmationsRequired = transactionStatusLook.confirmationsRequired
+        binding.canRBF = transactionStatusLook.canRBF
 
         val spv = transaction.spv
 
@@ -38,44 +39,11 @@ data class TransactionProgressListItem constructor(
         binding.spvInProgress = spv.inProgressOrUnconfirmed()
         binding.spvFailed = spv.failed()
 
-        binding.status.setText(
-            when {
-                confirmations == 0 -> {
-                    R.string.id_unconfirmed
-                }
-                confirmations < confirmationsRequired || transaction.isPendingCloseChannel -> {
-                    R.string.id_pending_confirmation
-                }
-                spv.inProgressOrUnconfirmed() -> {
-                    R.string.id_verifying_transactions
-                }
-                spv == Transaction.SPVResult.NotVerified -> {
-                    R.string.id_invalid_merkle_proof
-                }
-                spv == Transaction.SPVResult.NotLongest -> {
-                    R.string.id_not_on_longest_chain
-                }
-                spv == Transaction.SPVResult.Verified -> {
-                    R.string.id_verified
-                }
-                else -> {
-                    R.string.id_completed
-                }
-            }
-        )
+        binding.status.text = binding.context().stringFromIdentifierOrNull(transactionStatusLook.statusText)
 
         binding.status.setTextColor(
             ContextCompat.getColor(
-                binding.root.context,
-                if (confirmations < confirmationsRequired || spv.inProgressOrUnconfirmed()) {
-                    R.color.color_on_surface_emphasis_low
-                } else if (spv == Transaction.SPVResult.NotVerified) {
-                    R.color.error
-                } else if (spv == Transaction.SPVResult.NotLongest) {
-                    R.color.warning
-                } else {
-                    R.color.brand_green
-                }
+                binding.root.context, transactionStatusLook.statusColor.resource()
             )
         )
 

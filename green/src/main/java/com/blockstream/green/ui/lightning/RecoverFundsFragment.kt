@@ -2,83 +2,64 @@ package com.blockstream.green.ui.lightning
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
-import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.ScanResult
-import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.events.Events
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.lightning.RecoverFundsViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
-import com.blockstream.green.databinding.AccountAssetLayoutBinding
 import com.blockstream.green.databinding.RecoverFundsFragmentBinding
+import com.blockstream.green.extensions.bind
 import com.blockstream.green.extensions.clearNavigationResult
 import com.blockstream.green.extensions.copyToClipboard
 import com.blockstream.green.extensions.dialog
-import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.getNavigationResult
+import com.blockstream.green.ui.AppFragment
+import com.blockstream.green.ui.AppViewModelAndroid
+import com.blockstream.green.ui.bottomsheets.AccountAssetBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
-import com.blockstream.green.ui.wallet.AbstractAccountWalletViewModel
-import com.blockstream.green.ui.wallet.AbstractAssetWalletFragment
 import com.blockstream.green.utils.getClipboard
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import java.text.NumberFormat
 
-class RecoverFundsFragment :
-    AbstractAssetWalletFragment<RecoverFundsFragmentBinding>(
-        R.layout.recover_funds_fragment,
-        menuRes = 0
-    ) {
-    override val screenName: String
-        get() = if(isRefund) "OnChainRefund" else "LightningSweep"
-
+class RecoverFundsFragment : AppFragment<RecoverFundsFragmentBinding>(
+    R.layout.recover_funds_fragment,
+    menuRes = 0
+) {
     val args: RecoverFundsFragmentArgs by navArgs()
-    override val walletOrNull by lazy { args.wallet }
-
-    private val isRefund by lazy {
-        args.address != null
-    }
-
-    private val isSweep by lazy {
-        args.address == null
-    }
 
     override val title: String
-        get() = getString(if (isRefund) R.string.id_refund else R.string.id_sweep)
+        get() = getString(if (viewModel.isRefund) R.string.id_refund else R.string.id_sweep)
 
     override val subtitle: String
-        get() = wallet.name
+        get() = viewModel.greenWallet.name
 
     override val toolbarIcon: Int
         get() = R.drawable.ic_lightning
 
-    override val showBalance: Boolean
-        get() = false
-
-    override val isRefundSwap: Boolean
-        get() = true
-
     val viewModel: RecoverFundsViewModel by viewModel {
         parametersOf(
             args.wallet,
-            AccountAsset.fromAccount(session.accounts.value.firstOrNull { it.isBitcoin && !it.isLightning }
-                ?: session.activeAccount.value!!),
             args.address,
             args.amount
         )
     }
 
-    override fun getAccountWalletViewModel(): AbstractAccountWalletViewModel {
-        return viewModel
-    }
+    override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override val accountAssetLayoutBinding: AccountAssetLayoutBinding
-        get() = binding.accountAsset
+    override fun getAppViewModel(): AppViewModelAndroid? = null
 
     override fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
         if(sideEffect is SideEffects.Success){
-            if(isRefund){
+            if(viewModel.isRefund){
                 dialog(R.string.id_refund, R.string.id_refund_initiated) {
                     popBackStack()
                 }
@@ -90,8 +71,26 @@ class RecoverFundsFragment :
         }
     }
 
-    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreatedGuarded(view, savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.accountAsset.filterNotNull().onEach {
+            binding.accountAsset.bind(
+                scope = lifecycleScope,
+                accountAsset = it,
+                session = viewModel.session,
+                showBalance = false,
+                showEditIcon = true
+            )
+        }.launchIn(lifecycleScope)
+
+        binding.accountAsset.root.setOnClickListener {
+            AccountAssetBottomSheetDialogFragment.show(
+                showBalance = false,
+                isRefundSwap = true,
+                fragmentManager = childFragmentManager
+            )
+        }
 
         getNavigationResult<ScanResult>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(
             viewLifecycleOwner
@@ -103,12 +102,6 @@ class RecoverFundsFragment :
         }
 
         binding.vm = viewModel
-
-        viewModel.onError.observe(viewLifecycleOwner) {
-            it?.getContentIfNotHandledOrReturnNull()?.let { throwable ->
-                errorDialog(throwable = throwable, errorReport = ErrorReport.create(throwable = throwable, network = session.lightning, session = session))
-            }
-        }
 
         binding.feeSlider.setLabelFormatter { value: Float ->
             val format = NumberFormat.getCurrencyInstance()
@@ -134,7 +127,7 @@ class RecoverFundsFragment :
         }
 
         binding.buttonConfirm.setOnClickListener {
-            viewModel.recoverFunds()
+            viewModel.postEvent(Events.Continue)
         }
 
         binding.buttonAddressScan.setOnClickListener {

@@ -2,49 +2,36 @@ package com.blockstream.green.ui.lightning
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
-import breez_sdk.InputType
-import breez_sdk.LnUrlWithdrawRequestData
-import com.blockstream.common.data.DenominatedValue
-import com.blockstream.common.data.ErrorReport
+import com.blockstream.common.events.Events
 import com.blockstream.common.lightning.domain
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.lightning.LnUrlWithdrawViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.UserInput
 import com.blockstream.green.R
 import com.blockstream.green.databinding.LnurlWithdrawFragmentBinding
 import com.blockstream.green.extensions.dialog
-import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.hideKeyboard
 import com.blockstream.green.extensions.setOnClickListener
+import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.AppViewModelAndroid
-import com.blockstream.green.ui.bottomsheets.DenominationBottomSheetDialogFragment
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.utils.getClipboard
-import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class LnUrlWithdrawFragment : AbstractWalletFragment<LnurlWithdrawFragmentBinding>(
+class LnUrlWithdrawFragment : AppFragment<LnurlWithdrawFragmentBinding>(
     R.layout.lnurl_withdraw_fragment,
     menuRes = 0
 ) {
-    override val screenName = "LNURLWithdraw"
 
     val args: LnUrlWithdrawFragmentArgs by navArgs()
-    override val walletOrNull by lazy { args.wallet }
 
-    private val requestDataOrNull: LnUrlWithdrawRequestData? by lazy {
-        (session.parseInput(
-            args.withdraw
-        )?.second as? InputType.LnUrlWithdraw)?.data
-    }
-
-    private val requestData by lazy { requestDataOrNull!! }
+    val requestData
+        get() = args.lnUrlWithdrawRequest.requestData
 
     override val subtitle: String
-        get() = wallet.name
+        get() = viewModel.greenWallet.name
 
     override val toolbarIcon: Int
         get() = R.drawable.ic_lightning
@@ -52,16 +39,13 @@ class LnUrlWithdrawFragment : AbstractWalletFragment<LnurlWithdrawFragmentBindin
     val viewModel: LnUrlWithdrawViewModel by viewModel {
         parametersOf(
             args.wallet,
-            args.accountAsset,
-            requestData
+            args.lnUrlWithdrawRequest.requestData
         )
     }
 
-    override fun getAppViewModel(): AppViewModelAndroid? {
-        return if (requestDataOrNull != null) viewModel else null
-    }
+    override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override fun getWalletViewModel() = viewModel
+    override fun getAppViewModel(): AppViewModelAndroid? = null
 
     override fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
@@ -72,48 +56,19 @@ class LnUrlWithdrawFragment : AbstractWalletFragment<LnurlWithdrawFragmentBindin
         }
     }
 
-    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
-        if (requestDataOrNull == null) {
-            popBackStack()
-            return
-        }
-
-        logger.info { requestData }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.vm = viewModel
 
-        binding.redeemFrom = getString(R.string.id_you_are_redeeming_funds_from_s, requestData.domain())
-
-        viewModel.onError.observe(viewLifecycleOwner) {
-            it?.getContentIfNotHandledOrReturnNull()?.let { throwable ->
-                errorDialog(throwable = throwable, errorReport = ErrorReport.create(throwable = throwable, network = session.lightning, session = session)) {
-                    popBackStack()
-                }
-            }
-        }
-
         listOf(binding.buttonAmountCurrency, binding.amountCurrency).setOnClickListener {
-            lifecycleScope.launch {
-                UserInput.parseUserInputSafe(
-                    session,
-                    viewModel.amount.value,
-                    assetId = viewModel.accountValue.network.policyAsset,
-                    denomination = viewModel.denomination.value!!
-
-                ).getBalance().also {
-                    DenominationBottomSheetDialogFragment.show(
-                        denominatedValue = DenominatedValue(
-                            balance = it,
-                            assetId = session.lightning?.policyAsset,
-                            denomination = viewModel.denomination.value!!
-                        ),
-                        childFragmentManager)
-                }
+            if (!viewModel.onProgress.value) {
+                viewModel.postEvent(Events.SelectDenomination)
             }
         }
 
         binding.buttonAmountPaste.setOnClickListener {
-            viewModel.amount.value = getClipboard(requireContext())
+            viewModel.amount.value = getClipboard(requireContext()) ?: ""
         }
 
         binding.buttonAmountClear.setOnClickListener {
@@ -121,7 +76,7 @@ class LnUrlWithdrawFragment : AbstractWalletFragment<LnurlWithdrawFragmentBindin
         }
 
         binding.buttonRedeem.setOnClickListener {
-            viewModel.withdraw()
+            viewModel.postEvent(Events.Continue)
             hideKeyboard()
         }
     }

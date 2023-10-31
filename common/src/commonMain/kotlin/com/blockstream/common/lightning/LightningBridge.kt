@@ -45,11 +45,14 @@ import breez_sdk.parseInvoice
 import co.touchlab.kermit.Logger
 import com.blockstream.common.platformFileSystem
 import com.blockstream.common.utils.Loggable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import okio.Path.Companion.toPath
 
@@ -322,8 +325,8 @@ class LightningBridge constructor(
         }
     }
 
-    fun recommendedFees(): RecommendedFees {
-        return breezSdk.recommendedFees()
+    suspend fun recommendedFees(): RecommendedFees = withContext(context = Dispatchers.IO) {
+        breezSdk.recommendedFees()
     }
 
     fun sendPayment(bolt11: String, satoshi: Long?): SendPaymentResponse {

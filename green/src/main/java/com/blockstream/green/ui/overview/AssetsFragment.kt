@@ -37,7 +37,7 @@ class AssetsFragment :
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
 
-        binding.vm = viewModel
+        binding.vmWalletViewModel = viewModel
 
         // Assets Balance
         val assetsAdapter = ModelAdapter<AssetPair, AssetListItem> {

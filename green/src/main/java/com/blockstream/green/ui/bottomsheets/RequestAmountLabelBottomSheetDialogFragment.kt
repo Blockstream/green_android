@@ -30,7 +30,7 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
     private val requestViewModel: RequestAmountLabelViewModel by viewModel {
         parametersOf(
             viewModel.wallet,
-            viewModel.accountAsset,
+            viewModel.accountAssetValue,
             viewModel.requestAmount.value
         )
     }
@@ -45,7 +45,7 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
 
         binding.buttonOK.setOnClickListener {
             val amount: String? = try{
-                val input = UserInput.parseUserInput(session = session, input = requestViewModel.requestAmount.value, assetId = viewModel.accountAsset.assetId, denomination = Denomination.defaultOrFiat(session,requestViewModel.isFiat.value ?: false))
+                val input = UserInput.parseUserInput(session = session, input = requestViewModel.requestAmount.value, assetId = viewModel.accountAssetValue.assetId, denomination = Denomination.defaultOrFiat(session,requestViewModel.isFiat.value ?: false))
 
                 // Convert it to BTC as per BIP21 spec
                 runBlocking {

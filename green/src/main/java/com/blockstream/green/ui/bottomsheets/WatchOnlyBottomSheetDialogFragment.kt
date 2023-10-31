@@ -7,19 +7,19 @@ import androidx.core.text.trimmedLength
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
+import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.R
 import com.blockstream.green.databinding.WatchOnlyBottomSheetBinding
-import com.blockstream.green.ui.settings.WalletSettingsViewModel
 import com.blockstream.green.extensions.errorDialog
-import com.blockstream.common.extensions.logException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mu.KLogging
 
 class WatchOnlyBottomSheetDialogFragment :
-    WalletBottomSheetDialogFragment<WatchOnlyBottomSheetBinding, WalletSettingsViewModel>() {
+    WalletBottomSheetDialogFragment<WatchOnlyBottomSheetBinding, GreenViewModel>() {
     override val screenName = "WatchOnlyCredentials"
 
     override fun inflate(layoutInflater: LayoutInflater) =
@@ -31,9 +31,9 @@ class WatchOnlyBottomSheetDialogFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val watchOnlyUsernameLiveData = viewModel.watchOnlyUsernameLiveData(network)
+        val watchOnlyUsernameStateFlow = session.watchOnlyUsername(network)
 
-        watchOnlyUsernameLiveData.value.let {
+        watchOnlyUsernameStateFlow.value.let {
             binding.username = it
             binding.hasWatchOnlyCredentials = !it.isNullOrBlank()
         }
@@ -53,8 +53,7 @@ class WatchOnlyBottomSheetDialogFragment :
         }
 
         binding.buttonDeleteConfirm.setOnClickListener {
-            viewModel.setWatchOnly(network = network, username = "", password = "")
-            dismiss()
+            updateWatchOnly(delete = true)
         }
 
         binding.buttonClose.setOnClickListener {
@@ -62,11 +61,11 @@ class WatchOnlyBottomSheetDialogFragment :
         }
 
         binding.buttonSave.setOnClickListener {
-            setWatchOnly()
+            updateWatchOnly()
         }
     }
 
-    private fun setWatchOnly() {
+    private fun updateWatchOnly(delete: Boolean = false) {
         lifecycleScope.launch(context = logException(countly)) {
             try {
                 binding.onProgress = true
@@ -74,10 +73,9 @@ class WatchOnlyBottomSheetDialogFragment :
                 withContext(Dispatchers.IO) {
                     viewModel.session.setWatchOnly(
                         network,
-                        username = binding.username?.trim() ?: "",
-                        password = binding.password?.trim() ?: ""
+                        username = binding.username?.trim().takeIf { !delete } ?: "",
+                        password = binding.password?.trim().takeIf { !delete } ?: ""
                     )
-                    viewModel.updateWatchOnlyUsername()
                 }
             } catch (e: Exception) {
                 errorDialog(e)

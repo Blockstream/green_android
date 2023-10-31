@@ -229,27 +229,3 @@ suspend fun Long?.toAmountLook(
         }
     }
 }
-
-//fun exchangeRate(session: GdkSession, assetId1: String, amount1: String, assetId2: String, amount2: String): String {
-//    val amount1Parsed = UserInput.parseUserInput(session = session, input = amount1, assetId = assetId1)
-//    val amount2Parsed = UserInput.parseUserInput(session = session, input = amount2, assetId = assetId2)
-//
-//    val rate = amount2Parsed.amountAsDouble.toBigDecimal().divide(amount1Parsed.amountAsDouble.toBigDecimal(),8, RoundingMode.HALF_EVEN)
-//
-//    val asset1Ticker = assetId1.getAssetTicker(session)
-//    val asset2Ticker = assetId2.getAssetTicker(session)
-//
-//    return "1 $asset1Ticker = ${rate.toPlainString()} $asset2Ticker"
-//}
-//fun Date.formatMediumOnlyDate(): String = DateFormat.getDateInstance(DateFormat.MEDIUM).format(this)
-//
-//fun Date.formatMediumWithTime(): String = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(this)
-//
-//fun Date.formatFullWithTime(): String = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.SHORT).format(this)
-//
-//fun Date.formatAuto(): String =
-//    if ((this.time + 24 * 60 * 60 * 1000) > (System.currentTimeMillis())) {
-//        formatMediumWithTime()
-//    } else {
-//        formatMediumOnlyDate()
-//    }

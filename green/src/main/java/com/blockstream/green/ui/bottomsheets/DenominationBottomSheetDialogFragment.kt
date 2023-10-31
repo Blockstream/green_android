@@ -8,25 +8,22 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
-import com.blockstream.common.managers.SettingsManager
+import com.blockstream.common.events.Events
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.R
 import com.blockstream.green.databinding.RecyclerBottomSheetBinding
 import com.blockstream.green.ui.items.AbstractBindingItem
 import com.blockstream.green.ui.items.DenominationListItem
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import mu.KLogging
-import org.koin.android.ext.android.inject
 
 class DenominationBottomSheetDialogFragment :
-    WalletBottomSheetDialogFragment<RecyclerBottomSheetBinding, AbstractWalletViewModel>() {
+    WalletBottomSheetDialogFragment<RecyclerBottomSheetBinding, GreenViewModel>() {
     override val screenName = "Denomination"
-
-    private val settingsManager: SettingsManager by inject()
 
     private val denominatedValue by lazy { requireArguments().getParcelable<DenominatedValue>(DENOMINATED_VALUE) ?: DenominatedValue.createDefault(session) }
 
@@ -82,15 +79,19 @@ class DenominationBottomSheetDialogFragment :
 
         fastAdapter.onClickListener = { _: View?, _, item: GenericItem, _: Int ->
                 if(item is DenominationListItem){
+                    // Deprecated: use postEvent instead
                     (viewModel as? DenominationListener)?.also {
                         it.setDenomination(item.denominatedValue)
-                        dismiss()
                     }
+
+                    viewModel.postEvent(Events.SetDenomination(item.denominatedValue))
+                    dismiss()
                 }
 
                 true
             }
 
+        @Suppress("UNCHECKED_CAST")
         return fastAdapter as FastAdapter<AbstractBindingItem<*>>
     }
 

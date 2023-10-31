@@ -1,5 +1,6 @@
 package com.blockstream.common.events
 
+import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.navigation.LogoutReason
 import com.blockstream.common.sideeffects.SideEffect
@@ -14,6 +15,8 @@ class Events : Event {
     object Continue : Event
     object BannerDismiss : Event
     object BannerAction : Event
+    object SelectDenomination : Event
+    data class SetDenomination(val denominatedValue: DenominatedValue) : Event
     data class RenameWallet(val wallet: GreenWallet, val name: String) : Event
     data class DeleteWallet(val wallet: GreenWallet) : Event
     data class Logout(val reason: LogoutReason) : Event

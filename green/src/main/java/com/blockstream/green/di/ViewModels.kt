@@ -4,6 +4,9 @@ import com.blockstream.common.models.about.AboutViewModel
 import com.blockstream.common.models.demo.DemoViewModel
 import com.blockstream.common.models.drawer.DrawerViewModel
 import com.blockstream.common.models.home.HomeViewModel
+import com.blockstream.common.models.lightning.LnUrlAuthViewModel
+import com.blockstream.common.models.lightning.LnUrlWithdrawViewModel
+import com.blockstream.common.models.lightning.RecoverFundsViewModel
 import com.blockstream.common.models.login.LoginViewModel
 import com.blockstream.common.models.onboarding.AddWalletViewModel
 import com.blockstream.common.models.onboarding.EnterRecoveryPhraseViewModel
@@ -17,6 +20,8 @@ import com.blockstream.common.models.recovery.RecoveryIntroViewModel
 import com.blockstream.common.models.recovery.RecoveryPhraseViewModel
 import com.blockstream.common.models.recovery.RecoveryWordsViewModel
 import com.blockstream.common.models.settings.AppSettingsViewModel
+import com.blockstream.common.models.settings.WatchOnlyViewModel
+import com.blockstream.common.models.transaction.TransactionDetailsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.dsl.module
@@ -38,6 +43,14 @@ val viewModels = module {
     viewModelOf(::RecoveryIntroViewModel)
     viewModelOf(::RecoveryWordsViewModel)
     viewModelOf(::RecoveryCheckViewModel)
+    viewModelOf(::LnUrlAuthViewModel)
+    viewModelOf(::LnUrlWithdrawViewModel)
+    viewModelOf(::WatchOnlyViewModel)
+    viewModelOf(::TransactionDetailsViewModel)
+    viewModel {
+        // https://github.com/InsertKoinIO/koin/issues/1352
+        RecoverFundsViewModel(get(), getOrNull(), get())
+    }
     viewModel {
         // https://github.com/InsertKoinIO/koin/issues/1352
         LoginViewModel(get(), get(), get(), getOrNull())

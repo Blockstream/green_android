@@ -56,6 +56,6 @@ abstract class AbstractAssetWalletFragment<T : ViewDataBinding> constructor(
     }
 
     override fun accountAssetClicked(accountAsset: AccountAsset) {
-        assetWalletViewModel.accountAsset = accountAsset
+        assetWalletViewModel.accountAssetValue = accountAsset
     }
 }

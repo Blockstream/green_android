@@ -3,14 +3,14 @@ package com.blockstream.green.ui.items
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.views.wallet.WatchOnlyLook
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemOutputDescriptorsBinding
 import com.blockstream.green.gdk.getNetworkIcon
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
 data class OutputDescriptorListItem constructor(
-    val account: Account,
-    val isOutputDescriptor: Boolean = true
+    val look: WatchOnlyLook
 ) : AbstractBindingItem<ListItemOutputDescriptorsBinding>() {
     override val type: Int
         get() = R.id.fastadapter_output_descriptor_item_id
@@ -19,13 +19,19 @@ data class OutputDescriptorListItem constructor(
         identifier = hashCode().toLong()
     }
 
+    val account: Account
+        get() = look.account!!
+
+    val isOutputDescriptor
+        get() = look.outputDescriptors != null
+
     override fun bindView(binding: ListItemOutputDescriptorsBinding, payloads: List<Any>) {
         binding.name.text = account.name
         binding.icon.setImageResource(account.network.getNetworkIcon())
-        if(isOutputDescriptor){
-            binding.content.text = account.outputDescriptors
+        if(look.outputDescriptors != null){
+            binding.content.text = look.outputDescriptors
         }else{
-            binding.content.text = account.extendedPubkey
+            binding.content.text = look.extendedPubkey
         }
     }
 

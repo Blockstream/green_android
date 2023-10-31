@@ -36,7 +36,7 @@ class ArchivedAccountsFragment :
     override fun getWalletViewModel() = viewModel
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
-        binding.vm = viewModel
+        binding.vmWalletViewModel = viewModel
 
         val titleAdapter = FastItemAdapter<GenericItem>()
 

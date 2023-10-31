@@ -6,6 +6,8 @@ import breez_sdk.InputType
 import com.blockstream.common.AddressInputType
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.ScanResult
+import com.blockstream.common.data.LnUrlAuthRequest
+import com.blockstream.common.data.LnUrlWithdrawRequest
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.green.NavGraphDirections
@@ -47,14 +49,13 @@ interface OverviewInterface {
 
             if (checkedInput != null) {
 
-                when (checkedInput.second) {
+                when (val inputType = checkedInput.second) {
                     is InputType.LnUrlAuth -> {
                         if (session.hasLightning) {
                             appFragment.navigate(
                                 NavGraphDirections.actionGlobalLnUrlAuthFragment(
                                     wallet = wallet,
-                                    accountAsset = AccountAsset.fromAccount(session.lightningAccount),
-                                    auth = data
+                                    lnUrlAuthRequest = LnUrlAuthRequest(inputType.data),
                                 )
                             )
                         }
@@ -65,8 +66,7 @@ interface OverviewInterface {
                             appFragment.navigate(
                                 NavGraphDirections.actionGlobalLnUrlWithdrawFragment(
                                     wallet = wallet,
-                                    accountAsset = AccountAsset.fromAccount(session.lightningAccount),
-                                    withdraw = data
+                                    lnUrlWithdrawRequest = LnUrlWithdrawRequest(inputType.data),
                                 )
                             )
                         }

@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.blockstream.green.ui.lightning.RecoverFundsViewModel" />
+            type="com.blockstream.common.models.lightning.RecoverFundsViewModel" />
 
     </data>
 
@@ -32,7 +32,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:orientation="vertical"
-                isVisible="@{vm.isRefund()}"
+                isVisible="@{vm.isRefund}"
                 app:layout_constraintTop_toBottomOf="@+id/addressLinearLayout">
 
                 <TextView
@@ -124,7 +124,7 @@
                                 android:layout_marginBottom="16dp"
                                 android:layout_weight="1"
                                 android:background="@android:color/transparent"
-                                android:enabled="@{!vm.onProgressAndroid}"
+                                android:enabled="@{!vm.onProgress}"
                                 android:fontFamily="@font/monospace"
                                 android:inputType="textMultiLine|textNoSuggestions"
                                 android:text="@={vm.address}"
@@ -138,7 +138,7 @@
                                 android:layout_gravity="center_vertical"
                                 android:adjustViewBounds="true"
                                 android:background="?attr/selectableItemBackgroundBorderless"
-                                android:enabled="@{!vm.onProgressAndroid}"
+                                android:enabled="@{!vm.onProgress}"
                                 android:paddingStart="12dp"
                                 android:paddingTop="12dp"
                                 android:paddingEnd="6dp"
@@ -156,7 +156,7 @@
                                 android:layout_gravity="center_vertical"
                                 android:adjustViewBounds="true"
                                 android:background="?attr/selectableItemBackgroundBorderless"
-                                android:enabled="@{!vm.onProgressAndroid}"
+                                android:enabled="@{!vm.onProgress}"
                                 android:paddingStart="12dp"
                                 android:paddingTop="12dp"
                                 android:paddingEnd="6dp"
@@ -173,7 +173,7 @@
                                 android:layout_gravity="center_vertical"
                                 android:adjustViewBounds="true"
                                 android:background="?attr/selectableItemBackgroundBorderless"
-                                android:enabled="@{!vm.onProgressAndroid}"
+                                android:enabled="@{!vm.onProgress}"
                                 android:paddingStart="6dp"
                                 android:paddingTop="12dp"
                                 android:paddingEnd="12dp"
@@ -198,7 +198,7 @@
                     <Button
                         android:id="@+id/buttonShowAddress"
                         style="@style/Widget.Green.Button.Outlined.Tiny"
-                        android:enabled="@{!vm.onProgressAndroid}"
+                        android:enabled="@{!vm.onProgress}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/id_show_address" />
@@ -308,7 +308,7 @@
                             android:layout_marginBottom="12dp"
                             android:contentDescription="@string/id_fee"
                             android:stepSize="1"
-                            android:value="@={vm.feeSlider}"
+                            slider="@={vm.feeSlider}"
                             android:valueFrom="0"
                             android:valueTo="3"
                             app:labelBehavior="floating"
@@ -397,7 +397,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="24dp"
-            android:enabled="@{!vm.onProgressAndroid &amp;&amp; !vm.address.empty}"
+            android:enabled="@{!vm.onProgress &amp;&amp; !vm.address.empty}"
             android:text="@{vm.isRefund ? @string/id_confirm_refund : @string/id_confirm}"
             tools:text="@string/id_confirm_refund"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -407,7 +407,7 @@
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/progress"
-            isVisible="@{vm.onProgressAndroid}"
+            isVisible="@{vm.onProgress}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"

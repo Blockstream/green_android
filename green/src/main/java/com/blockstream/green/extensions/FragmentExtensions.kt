@@ -93,9 +93,12 @@ fun Context.localized2faMethods(methods: List<String>): List<String> = methods.m
     localized2faMethod(it)
 }
 
-fun Context.stringFromIdentifierOrNull(id: String, vararg formatArgs: String): String? {
+fun Context.stringFromIdentifierOrNull(id: String): String? {
     if(id.startsWith("id_")) {
-        val intRes = resources.getIdentifier(id, "string", BuildConfig.APPLICATION_ID)
+        val res = id.substring(0, id.indexOf("|").takeIf { it != -1 } ?: id.length)
+        val formatArgs = (id.split("|").filterIndexed { index, _ -> index != 0 }.toTypedArray())
+
+        val intRes = resources.getIdentifier(res, "string", BuildConfig.APPLICATION_ID)
         if (intRes > 0) {
             return getString(intRes, *formatArgs)
         }
@@ -103,8 +106,8 @@ fun Context.stringFromIdentifierOrNull(id: String, vararg formatArgs: String): S
     return null
 }
 
-fun Context.stringFromIdentifier(id: String?, vararg formatArgs: String): String? {
-    return id?.let { stringFromIdentifierOrNull(it, *formatArgs) ?: id }
+fun Context.stringFromIdentifier(id: String?): String? {
+    return id?.let { stringFromIdentifierOrNull(it) ?: id }
 }
 
 fun Fragment.errorFromResourcesAndGDK(throwable: Throwable): String = requireContext().errorFromResourcesAndGDK(throwable)
@@ -112,14 +115,11 @@ fun Fragment.errorFromResourcesAndGDK(throwable: Throwable): String = requireCon
 
 fun Context.errorFromResourcesAndGDK(throwable: Throwable): String =
     (throwable.cause?.message ?: throwable.message ?: "An error occurred").let { error ->
-        errorFromResourcesAndGDK(
-            error.substring(0, error.indexOf("|").takeIf { it != -1 } ?: error.length),
-            *(error.split("|").filterIndexed { index, _ -> index != 0 }.toTypedArray())
-        )
+        errorFromResourcesAndGDK(error)
     }
 
-fun Context.errorFromResourcesAndGDK(error: String, vararg formatArgs: String): String {
-    stringFromIdentifierOrNull(error, *formatArgs)?.let {
+fun Context.errorFromResourcesAndGDK(error: String): String {
+    stringFromIdentifierOrNull(error)?.let {
         return it
     }
 

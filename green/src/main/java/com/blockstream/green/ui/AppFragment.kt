@@ -25,6 +25,7 @@ import com.blockstream.common.ScreenView
 import com.blockstream.common.extensions.handleException
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.Wally
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.models.GreenViewModel
@@ -38,6 +39,8 @@ import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.errorSnackbar
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.extensions.stringFromIdentifier
+import com.blockstream.green.ui.bottomsheets.AccountAssetListener
+import com.blockstream.green.ui.bottomsheets.DenominationBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.DeviceInteractionRequestBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.PassphraseBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.PinMatrixBottomSheetDialogFragment
@@ -69,7 +72,7 @@ import org.koin.android.ext.android.inject
 abstract class AppFragment<T : ViewDataBinding>(
     @LayoutRes val layout: Int,
     @MenuRes val menuRes: Int
-) : Fragment(), MenuProvider, ScreenView, BannerView {
+) : Fragment(), MenuProvider, ScreenView, BannerView, AccountAssetListener {
     open val isAdjustResize = false
 
     internal lateinit var binding: T
@@ -274,6 +277,9 @@ abstract class AppFragment<T : ViewDataBinding>(
                     }
                 }
             }
+            is SideEffects.OpenDenominationDialog -> {
+                DenominationBottomSheetDialogFragment.show(denominatedValue = sideEffect.denominatedValue, childFragmentManager)
+            }
             is SideEffects.NavigateBack -> {
                 if (sideEffect.error == null) {
                     popBackStack()
@@ -305,6 +311,12 @@ abstract class AppFragment<T : ViewDataBinding>(
     }
 
     override fun getBannerAlertView(): GreenAlertView? = null
+
+    override fun accountAssetClicked(accountAsset: AccountAsset) {
+        getGreenViewModel()?.also {
+            it.accountAsset.value = accountAsset
+        }
+    }
 
     companion object: KLogging()
 }

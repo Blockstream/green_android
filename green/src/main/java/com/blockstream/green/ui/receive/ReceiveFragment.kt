@@ -132,7 +132,7 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
 
         getNavigationResult<AccountAsset>(AbstractAddAccountFragment.SET_ACCOUNT)?.observe(viewLifecycleOwner) {
             it?.let {
-                viewModel.accountAsset = it
+                viewModel.accountAssetValue = it
                 clearNavigationResult(AbstractAddAccountFragment.SET_ACCOUNT)
             }
         }
@@ -453,7 +453,7 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
                     navigate(
                         ReceiveFragmentDirections.actionReceiveFragmentToSendFragment(
                             wallet = wallet,
-                            accountAsset = viewModel.accountAsset,
+                            accountAsset = viewModel.accountAssetValue,
                             isSweep = true
                         )
                     )

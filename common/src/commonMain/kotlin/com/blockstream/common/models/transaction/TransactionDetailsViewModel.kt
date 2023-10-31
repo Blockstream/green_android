@@ -1,13 +1,15 @@
 package com.blockstream.common.models.transaction
 
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.events.Event
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.gdk.params.TransactionParams
-import com.blockstream.common.events.Event
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
 import com.rickclephas.kmm.viewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -20,32 +22,31 @@ import kotlinx.serialization.json.jsonObject
 abstract class TransactionDetailsViewModelAbstract(
     transaction: Transaction,
     greenWallet: GreenWallet
-) :
-    GreenViewModel(
-        greenWalletOrNull = greenWallet,
-        accountOrNull = transaction.account
-    ) {
+) : GreenViewModel(
+    greenWalletOrNull = greenWallet,
+    accountAssetOrNull = AccountAsset.fromAccount(transaction.account)
+) {
 
     override fun screenName(): String = "TransactionDetails"
 
-    override fun segmentation(): HashMap<String, Any>? {
-        return super.segmentation()
-    }
-
     @NativeCoroutinesState
     abstract val transaction: StateFlow<Transaction>
+
+    @NativeCoroutinesState
+    abstract val memo: MutableStateFlow<String>
 }
 
 class TransactionDetailsViewModel(transaction: Transaction, greenWallet: GreenWallet) :
     TransactionDetailsViewModelAbstract(transaction = transaction, greenWallet = greenWallet) {
 
     class LocalEvents {
-        class SaveMemo(val memo: String) : Event
-        object BumpFee : Event
+        class SaveMemo : Event
+        class BumpFee : Event
     }
 
-    @NativeCoroutinesState
     override val transaction: StateFlow<Transaction>
+
+    override val memo: MutableStateFlow<String> = MutableStateFlow(transaction.memo)
 
     init {
 
@@ -75,7 +76,7 @@ class TransactionDetailsViewModel(transaction: Transaction, greenWallet: GreenWa
                 session.setTransactionMemo(
                     network = transaction.value.account.network,
                     txHash = transaction.value.txHash,
-                    memo = event.memo
+                    memo = memo.value
                 )
 
                 // update transaction
