@@ -171,6 +171,7 @@ public class JadeBleImpl extends JadeConnectionImpl {
     public int write(final byte[] bytes) {
         this.disposable.add(this.connection
                 .flatMap(rxConn -> rxConn.createNewLongWriteBuilder()
+                        .setMaxBatchSize(512)
                         .setCharacteristicUuid(IO_TX_CHAR_UUID)
                         .setBytes(bytes)
                         .build())
