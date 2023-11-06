@@ -1,12 +1,10 @@
 package com.blockstream.common.extensions
 
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.WalletIcon
-import com.blockstream.common.data.toGreenWallet
 import com.blockstream.common.database.Wallet
 import com.blockstream.common.views.wallet.WalletListLook
 
-fun previewWallet(isHardware: Boolean): GreenWallet {
+fun previewWallet(isHardware: Boolean = false, isEphemeral: Boolean = false, hasLightningShortcut: Boolean = false): GreenWallet {
     return Wallet(
         id = objectId().toString(),
         name = if(isHardware) listOf("Jade USB", "Jade BLE", "Ledger").random() else "Wallet #${(1L..999L).random()}",
@@ -21,19 +19,21 @@ fun previewWallet(isHardware: Boolean): GreenWallet {
         device_identifiers = null,
         extras = null,
         order = 0
-    ).toGreenWallet()
+    ).let {
+        GreenWallet(wallet = it, ephemeralIdOrNull = if(isEphemeral) 1 else null, hasLightningShortcut = hasLightningShortcut)
+    }
 }
 
-fun previewWalletListView(isHardware: Boolean): WalletListLook {
-    val wallet = previewWallet((isHardware))
+fun previewWalletListView(isHardware: Boolean = false, isEphemeral: Boolean = false, hasLightningShortcut: Boolean = false): WalletListLook {
+    val wallet = previewWallet(isHardware = isHardware, isEphemeral = isEphemeral, hasLightningShortcut = hasLightningShortcut)
 
     return WalletListLook(
         greenWallet = wallet,
         title = wallet.name,
-        subtitle = if(wallet.isEphemeral) "Jade".takeIf { isHardware } else null,
+        subtitle = if(wallet.isEphemeral) "Jade".takeIf { isHardware } ?: wallet.ephemeralBip39Name else null,
         hasLightningShortcut = wallet.hasLightningShortcut,
         isConnected = false,
         isLightningShortcutConnected = false,
-        icon = WalletIcon.REGULAR
+        icon = wallet.icon
     )
 }

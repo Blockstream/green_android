@@ -3,9 +3,9 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
-    kotlin("multiplatform")
-    id("com.android.library")
-    id("kotlinx-serialization")
+    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.kotlinxSerialization)
     id("kotlin-parcelize")
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.kmp.nativecoroutines)

@@ -120,7 +120,7 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.blockstream.green.ui.intro.HomeFragment"
+        android:name="com.blockstream.green.ui.home.HomeFragment"
         android:label=""
         tools:layout="@layout/home_fragment" />
 
@@ -669,7 +669,7 @@
         tools:layout="@layout/setup_new_wallet_fragment"/>
     <fragment
         android:id="@+id/introSetupNewWalletFragment"
-        android:name="com.blockstream.green.ui.intro.HomeSetupNewWalletFragment"
+        android:name="com.blockstream.green.ui.home.HomeSetupNewWalletFragment"
         android:label=""
         tools:layout="@layout/setup_new_wallet_fragment"/>
     <action android:id="@+id/action_global_setupNewWalletFragment" app:destination="@id/setupNewWalletFragment" />

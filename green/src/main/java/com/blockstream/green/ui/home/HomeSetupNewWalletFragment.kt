@@ -1,4 +1,4 @@
-package com.blockstream.green.ui.intro
+package com.blockstream.green.ui.home
 
 import com.blockstream.green.ui.onboarding.SetupNewWalletFragment
 

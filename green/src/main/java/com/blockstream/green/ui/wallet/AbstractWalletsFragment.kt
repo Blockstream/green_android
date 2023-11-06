@@ -2,31 +2,26 @@ package com.blockstream.green.ui.wallet
 
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.databinding.ViewDataBinding
-import androidx.lifecycle.lifecycleScope
+import com.blockstream.common.Urls
 import com.blockstream.common.models.wallets.WalletDestinations
 import com.blockstream.common.models.wallets.WalletsViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.views.wallet.WalletListLook
+import com.blockstream.compose.screens.DrawerScreen
+import com.blockstream.compose.screens.DrawerScreenCallbacks
+import com.blockstream.compose.screens.HomeScreen
+import com.blockstream.compose.screens.HomeScreenCallbacks
+import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.green.NavGraphDirections
-import com.blockstream.green.R
-import com.blockstream.green.databinding.AbstractWalletsFragmentBinding
-import com.blockstream.green.databinding.ListItemWalletBinding
-import com.blockstream.green.extensions.showPopupMenu
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.MainActivity
 import com.blockstream.green.ui.bottomsheets.DeleteWalletBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.RenameWalletBottomSheetDialogFragment
-import com.blockstream.green.ui.items.WalletListItem
 import com.blockstream.green.ui.login.LoginFragment
-import com.blockstream.green.utils.observeFlow
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ModelAdapter
-import com.mikepenz.fastadapter.binding.listeners.addClickListener
-import com.mikepenz.itemanimators.SlideDownAlphaAnimator
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import com.blockstream.green.utils.openBrowser
 
 
 abstract class AbstractWalletsFragment<T : ViewDataBinding> constructor(
@@ -36,108 +31,72 @@ abstract class AbstractWalletsFragment<T : ViewDataBinding> constructor(
 
     open val isDrawer = false
 
-    fun init(
-        binding: AbstractWalletsFragmentBinding,
-        viewModel: WalletsViewModel
-    ) {
-        binding.vm = viewModel
-        binding.lifecycleOwner = viewLifecycleOwner
-
-        val softwareWalletsModel = ModelAdapter { view: WalletListLook ->
-            WalletListItem(look = view)
-        }.observeFlow(lifecycleScope, viewModel.softwareWallets, useDiffUtil = false, toList = {
-            it ?: emptyList()
-        })
-
-        val softwareWalletsAdapter = FastAdapter.with(softwareWalletsModel)
-
-        softwareWalletsAdapter.onClickListener = { _, _, item, _ ->
-            viewModel.postEvent(WalletsViewModel.LocalEvents.SelectWallet(wallet = item.look.greenWallet))
-            closeDrawer()
-            true
-        }
-
-        softwareWalletsAdapter.addClickListener<ListItemWalletBinding, WalletListItem>({ binding -> binding.lightningShortcut }) { _, _, _, item ->
-            viewModel.postEvent(WalletsViewModel.LocalEvents.SelectWallet(wallet = item.look.greenWallet, isLightningShortcut = true))
-            closeDrawer()
-        }
-
-        val ephemeralWalletsModel = ModelAdapter { view: WalletListLook ->
-            WalletListItem(look = view)
-        }.observeFlow(lifecycleScope, viewModel.ephemeralWallets, useDiffUtil = false, toList = {
-            it ?: emptyList()
-        })
-
-
-        val ephemeralWalletsAdapter = FastAdapter.with(ephemeralWalletsModel)
-
-        ephemeralWalletsAdapter.onClickListener = { _, _, item, _ ->
-            viewModel.postEvent(WalletsViewModel.LocalEvents.SelectWallet(wallet = item.look.greenWallet))
-            closeDrawer()
-            true
-        }
-
-        val hardwareWalletsModel = ModelAdapter { view: WalletListLook ->
-            WalletListItem(look = view)
-        }.observeFlow(lifecycleScope, viewModel.hardwareWallets, useDiffUtil = false, toList = {
-            it ?: emptyList()
-        })
-
-        val hardwareWalletsAdapter = FastAdapter.with(hardwareWalletsModel)
-
-        hardwareWalletsAdapter.onClickListener = { _, _, item, _ ->
-            viewModel.postEvent(WalletsViewModel.LocalEvents.SelectWallet(wallet = item.look.greenWallet))
-            closeDrawer()
-            true
-        }
-
-        if (!isDrawer) {
-            listOf(softwareWalletsAdapter, hardwareWalletsAdapter).forEach {
-                it.onLongClickListener = { view, _, item, _ ->
-                    showPopupMenu(view, R.menu.menu_wallet) { menuItem ->
-                        when (menuItem.itemId) {
-                            R.id.delete -> {
-                                DeleteWalletBottomSheetDialogFragment.show(
-                                    item.look.greenWallet,
-                                    childFragmentManager
-                                )
+    fun init(composeView: ComposeView, viewModel: WalletsViewModel) {
+        composeView.apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            )
+            setContent {
+                GreenTheme {
+                    if(isDrawer){
+                        DrawerScreen(viewModel = viewModel, callbacks = DrawerScreenCallbacks(
+                            onWalletClick = { wallet, isLightningShortcut ->
+                                closeDrawer()
+                                viewModel.postEvent(WalletsViewModel.LocalEvents.SelectWallet(wallet = wallet, isLightningShortcut = isLightningShortcut))
+                            },
+                            onNewWalletClick = {
+                                closeDrawer()
+                                navigate(NavGraphDirections.actionGlobalSetupNewWalletFragment())
+                            },
+                            onHelpClick = {
+                                closeDrawer()
+                                openBrowser(Urls.HELP_CENTER)
+                            },
+                            onAboutClick = {
+                                closeDrawer()
+                                navigate(NavGraphDirections.actionGlobalAboutFragment())
+                            },
+                            onAppSettingsClick = {
+                                closeDrawer()
+                                navigate(NavGraphDirections.actionGlobalAppSettingsFragment())
                             }
-
-                            R.id.rename -> {
+                        ))
+                    }else{
+                        HomeScreen(viewModel = viewModel, callbacks = HomeScreenCallbacks(
+                            onWalletClick = { wallet, isLightningShortcut ->
+                                closeDrawer()
+                                viewModel.postEvent(WalletsViewModel.LocalEvents.SelectWallet(wallet = wallet, isLightningShortcut = isLightningShortcut))
+                            },
+                            onWalletRename = {
                                 RenameWalletBottomSheetDialogFragment.show(
-                                    item.look.greenWallet,
+                                    it,
                                     childFragmentManager
                                 )
+                            },
+                            onWalletDelete = {
+                                DeleteWalletBottomSheetDialogFragment.show(
+                                    it,
+                                    childFragmentManager
+                                )
+                            },
+                            onNewWalletClick = {
+                                closeDrawer()
+                                navigate(NavGraphDirections.actionGlobalSetupNewWalletFragment())
+                            },
+                            onAboutClick = {
+                                closeDrawer()
+                                navigate(NavGraphDirections.actionGlobalAboutFragment())
+                            },
+                            onAppSettingsClick = {
+                                closeDrawer()
+                                navigate(NavGraphDirections.actionGlobalAppSettingsFragment())
                             }
-                        }
-                        true
+                        ))
                     }
-
-                    true
                 }
             }
         }
 
-        binding.recyclerSoftwareWallets.apply {
-            adapter = softwareWalletsAdapter
-            itemAnimator = SlideDownAlphaAnimator()
-        }
-
-        binding.recyclerEphemeralWallets.apply {
-            adapter = ephemeralWalletsAdapter
-            itemAnimator = SlideDownAlphaAnimator()
-        }
-
-        binding.recyclerHardwareWallets.apply {
-            adapter = hardwareWalletsAdapter
-            itemAnimator = SlideDownAlphaAnimator()
-        }
-
-        sessionManager.connectionChangeEvent.onEach {
-            softwareWalletsAdapter.notifyAdapterDataSetChanged()
-            ephemeralWalletsAdapter.notifyAdapterDataSetChanged()
-            hardwareWalletsAdapter.notifyAdapterDataSetChanged()
-        }.launchIn(lifecycleScope)
     }
 
     override fun handleSideEffect(sideEffect: SideEffect) {
@@ -148,7 +107,6 @@ abstract class AbstractWalletsFragment<T : ViewDataBinding> constructor(
     }
 
     internal fun navigate(directions: WalletDestinations) {
-
         when (directions) {
             is WalletDestinations.WalletOverview -> navigate(
                 NavGraphDirections.actionGlobalWalletOverviewFragment(

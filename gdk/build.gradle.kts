@@ -1,6 +1,6 @@
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.kotlinAndroid)
 }
 
 android {
@@ -23,8 +23,9 @@ kotlin {
 
 task("fetchAndroidBinaries") {
     doFirst{
-        val exists = project.file("src/main/jniLibs").exists()
-        if (!exists) {
+        val jniLibs = project.file("src/main/jniLibs")
+        if (!jniLibs.exists()) {
+            println("${jniLibs.absolutePath} does not exist")
             exec {
                 commandLine("./fetch_android_binaries.sh")
             }

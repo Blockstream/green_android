@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="fastadapter_wallet_item_id" type="id" />
     <item name="fastadapter_device_item_id" type="id" />
     <item name="fastadapter_transaction_item_id" type="id" />
     <item name="fastadapter_action_item_id" type="id" />

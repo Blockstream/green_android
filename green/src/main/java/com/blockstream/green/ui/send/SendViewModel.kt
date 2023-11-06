@@ -133,14 +133,16 @@ class SendViewModel constructor(
         // Check transaction if we get a network event
         // we may have gotten an error "session is required"
         // TODO CHANGE THIS TO SUPPORT MULTI NETWORKS
-        session
-            .networkEvents(session.defaultNetwork).filterNotNull()
-            .onEach { event ->
-                if (event.isConnected) {
-                    checkTransaction()
-                }
+        session.defaultNetworkOrNull?.also {
+            session
+                .networkEvents(it).filterNotNull()
+                .onEach { event ->
+                    if (event.isConnected) {
+                        checkTransaction()
+                    }
+                }.launchIn(viewModelScope.coroutineScope)
+        }
 
-            }.launchIn(viewModelScope.coroutineScope)
 
         // Fee Slider
         feeSlider

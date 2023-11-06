@@ -34,8 +34,8 @@ data class WalletListLook(
             )
         }
 
-        fun preview(isHardware: Boolean): WalletListLook {
-            return previewWalletListView(isHardware)
+        fun preview(isHardware: Boolean = false, isEphemeral: Boolean = false, hasLightningShortcut: Boolean = false): WalletListLook {
+            return previewWalletListView(isHardware = isHardware, isEphemeral = isEphemeral, hasLightningShortcut = hasLightningShortcut)
         }
     }
 }

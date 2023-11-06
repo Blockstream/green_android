@@ -2,9 +2,9 @@ package com.blockstream.common.models.wallets
 
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.events.Event
 import com.blockstream.common.extensions.previewWalletListView
 import com.blockstream.common.gdk.GdkSession
-import com.blockstream.common.events.Event
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.views.wallet.WalletListLook
@@ -31,7 +31,12 @@ abstract class WalletsViewModelAbstract(val isHome: Boolean): GreenViewModel() {
 
 abstract class WalletsViewModel(isHome: Boolean) : WalletsViewModelAbstract(isHome) {
 
-    override val softwareWallets = combine(database.getWalletsFlow(credentialType = CredentialType.LIGHTNING_MNEMONIC, isHardware = false), sessionManager.connectionChangeEvent) { wallets, _ ->
+    override val softwareWallets = combine(
+        database.getWalletsFlow(
+            credentialType = CredentialType.LIGHTNING_MNEMONIC,
+            isHardware = false
+        ), sessionManager.connectionChangeEvent
+    ) { wallets, _ ->
         wallets
     }.map {
         it.map { greenWallet ->
@@ -39,7 +44,10 @@ abstract class WalletsViewModel(isHome: Boolean) : WalletsViewModelAbstract(isHo
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
-    override val ephemeralWallets = combine(sessionManager.ephemeralWallets, sessionManager.connectionChangeEvent) { wallets, _ ->
+    override val ephemeralWallets = combine(
+        sessionManager.ephemeralWallets,
+        sessionManager.connectionChangeEvent
+    ) { wallets, _ ->
         wallets
     }.map {
         it.map { greenWallet ->
@@ -138,11 +146,18 @@ class WalletsViewModelPreview(
             listOf(
                 previewWalletListView(isHardware = false),
                 previewWalletListView(isHardware = false),
+                previewWalletListView(isHardware = false),
+                previewWalletListView(isHardware = false),
+                previewWalletListView(isHardware = false),
+                previewWalletListView(isHardware = false),
                 previewWalletListView(isHardware = false)
             ), listOf(
                 previewWalletListView(isHardware = false),
+                previewWalletListView(isHardware = false),
                 previewWalletListView(isHardware = true),
             ), listOf(
+                previewWalletListView(isHardware = true),
+                previewWalletListView(isHardware = true),
                 previewWalletListView(isHardware = true),
                 previewWalletListView(isHardware = true),
                 previewWalletListView(isHardware = true)

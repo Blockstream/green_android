@@ -90,7 +90,7 @@ abstract class AppFragment<T : ViewDataBinding>(
     val settingsManager: SettingsManager by inject()
     open fun getGreenViewModel() = getAppViewModel() as GreenViewModel?
 
-    abstract fun getAppViewModel(): AppViewModelAndroid?
+    open fun getAppViewModel(): AppViewModelAndroid? = null
 
     open val title : String? = null
     open val subtitle : String? = null

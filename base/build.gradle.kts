@@ -1,6 +1,6 @@
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.kotlinAndroid)
 }
 
 android {
@@ -47,6 +47,7 @@ dependencies {
     api(libs.androidx.viewpager2)
     api(libs.installreferrer)
     api(libs.androidx.startup.runtime)
+    api(libs.compose.material3)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Lifecycle -------------------------------------------------------------------------- */

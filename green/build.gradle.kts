@@ -123,7 +123,11 @@ android {
     }
 
     buildFeatures {
+        compose = true
         dataBinding = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
     buildTypes {
         getByName("release") {
@@ -183,6 +187,7 @@ val productionImplementation by configurations
 dependencies {
     /**  --- Modules ---------------------------------------------------------------------------- */
     implementation(project(":base"))
+    implementation(project(":compose"))
     implementation(project(":hardware"))
     implementation(project(":jade"))
 
