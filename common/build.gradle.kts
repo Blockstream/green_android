@@ -1,5 +1,4 @@
 
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
@@ -24,10 +23,9 @@ sqldelight {
     linkSqlite.set(true)
 }
 
-@OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
     // Enable the default target hierarchy:
-    targetHierarchy.default()
+    applyDefaultHierarchyTemplate()
 
     androidTarget {
         compilations.configureEach {
@@ -206,7 +204,6 @@ tasks.configureEach {
 android {
     namespace = "com.blockstream.common"
     compileSdk = libs.versions.androidCompileSdk.get().toInt()
-    buildToolsVersion = libs.versions.buildTools.get()
 
     defaultConfig {
         minSdk = libs.versions.androidMinSdk.get().toInt()

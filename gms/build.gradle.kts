@@ -9,7 +9,6 @@ plugins {
 android {
     namespace = "com.blockstream.gms"
     compileSdk = libs.versions.androidCompileSdk.get().toInt()
-    buildToolsVersion = libs.versions.buildTools.get()
 
     defaultConfig {
         minSdk = libs.versions.androidMinSdk.get().toInt()

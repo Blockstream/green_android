@@ -10,7 +10,6 @@ plugins {
 android {
     namespace = "com.blockstream.crypto"
     compileSdk = 34
-    buildToolsVersion = libs.versions.buildTools.get()
 
     defaultConfig {
         minSdk = 23
