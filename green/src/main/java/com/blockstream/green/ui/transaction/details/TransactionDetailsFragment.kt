@@ -260,7 +260,7 @@ class TransactionDetailsFragment : AbstractAccountWalletFragment<BaseRecyclerVie
             confirmationsRequired = transaction.network.confirmationsRequired
         )
 
-        if(!account.isLightning) {
+        if(!account.isLightning || transaction.txHash.isNotEmpty()) {
             list += TransactionHashListItem(transaction)
         }
 

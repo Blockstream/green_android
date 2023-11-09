@@ -179,6 +179,10 @@ class LightningBridge constructor(
         }
     }
 
+    fun sync(){
+        breezSdkOrNull?.sync()
+    }
+
     fun balance(): Long? {
         if(breezSdkOrNull == null){
             return null

@@ -103,9 +103,7 @@ class AccountOverviewViewModel constructor(
     }
 
     fun refresh() {
-        session.getTransactions(account = accountValue, isReset = false, isLoadMore = false)
-        session.updateAccountsAndBalances(refresh = true, updateBalancesForAccounts = listOf(accountValue))
-        session.updateLiquidAssets()
+        session.refresh(accountValue)
     }
 
     fun loadMoreTransactions() {

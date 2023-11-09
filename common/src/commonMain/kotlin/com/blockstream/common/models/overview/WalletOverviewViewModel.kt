@@ -1,11 +1,11 @@
 package com.blockstream.common.models.overview
 
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.events.Event
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.Assets
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.gdk.device.DeviceResolver
-import com.blockstream.common.events.Event
 import com.blockstream.common.models.GreenViewModel
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.StateFlow
@@ -58,9 +58,7 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) : WalletOverviewViewMode
 
         when (event) {
             is LocalEvents.Refresh -> {
-                session.updateAccountsAndBalances(refresh = true)
-                session.updateWalletTransactions()
-                session.updateLiquidAssets()
+                session.refresh()
             }
 
             is LocalEvents.ArchiveAccount -> {

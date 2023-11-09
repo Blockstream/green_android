@@ -1762,6 +1762,31 @@ class GdkSession constructor(
         }
     }
 
+    private val refreshMutex = Mutex()
+    fun refresh(account: Account? = null) {
+        scope.launch(context = Dispatchers.IO + logException(countly)) {
+            refreshMutex.withLock {
+                if(account == null || account.isLightning){
+                    syncLightning()
+                }
+
+                if (account == null) {
+                    updateAccountsAndBalances(refresh = true)
+                    updateWalletTransactions()
+                } else {
+                    getTransactions(account = account, isReset = false, isLoadMore = false)
+                    updateAccountsAndBalances(refresh = true, updateBalancesForAccounts = listOf(account))
+                }
+
+                updateLiquidAssets()
+            }
+        }
+    }
+
+    private fun syncLightning() {
+        lightningSdkOrNull?.sync()
+    }
+
     private fun getLightningTransactions() = Transactions(transactions = lightningSdk.getTransactions()?.map {
         Transaction.fromPayment(it)
     } ?: listOf(Transaction.LoadingTransaction))
@@ -1784,7 +1809,7 @@ class GdkSession constructor(
 
                     for (account in this@GdkSession.allAccounts.value) {
                         if((updateBalancesForAccounts == null && updateBalancesForNetwork == null) || updateBalancesForAccounts?.find { account.id == it.id } != null || account.network == updateBalancesForNetwork) {
-                            getBalance(account = account, cacheAssets = isInitialize)?.also {
+                            getBalance(account = account, cacheAssets = isInitialize).also {
                                 accountAssetsStateFlow(account).value = it
                             }
                         }
@@ -1819,11 +1844,6 @@ class GdkSession constructor(
                     walletAssets.toSortedLinkedHashMap(::sortAssets).also {
                         _walletAssetsFlow.value = Assets(it)
                     }
-
-//                    val accountAndAssets = mutableListOf<AccountAsset>()
-//                    accounts.value.forEach { account ->
-//                        accountAndAssets + this@GdkSession.accountAssets(account).value.toAccountAsset(account)
-//                    }
 
                     val accountAndAssets = accounts.value.flatMap {
                         this@GdkSession.accountAssets(it).value.toAccountAsset(it)

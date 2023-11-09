@@ -31,6 +31,7 @@ data class Networks(
             isMainnet = true,
             isLiquid = false,
             isDevelopment = false,
+            explorerUrl = bitcoinElectrum.explorerUrl,
             bip21Prefix = "lightning",
             policyAsset = BTC_POLICY_ASSET,
             isLightning = true
