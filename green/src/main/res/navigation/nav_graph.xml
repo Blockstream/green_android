@@ -369,23 +369,29 @@
         <action
             android:id="@+id/action_chooseAccountTypeFragment_to_account2of3Fragment"
             app:destination="@id/account2of3Fragment" />
+        <action
+            android:id="@+id/action_chooseAccountTypeFragment_to_exportLightningKeyFragment"
+            app:destination="@id/exportLightningKeyFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/exportLightningKeyFragment"
+        android:name="com.blockstream.green.ui.add.ExportLightningKeyFragment"
+        tools:layout="@layout/compose_view"
+        android:label="@string/id_export_lightning_key_to_green" >
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.common.data.GreenWallet" />
     </fragment>
     <fragment
         android:id="@+id/account2of3Fragment"
         android:name="com.blockstream.green.ui.add.Account2of3Fragment"
         tools:layout="@layout/account_2of3_fragment">
         <argument
-            android:name="wallet"
-            app:argType="com.blockstream.common.data.GreenWallet" />
-        <argument
-            android:name="assetId"
-            app:argType="string" />
-        <argument
-            android:name="network"
-            app:argType="com.blockstream.common.gdk.data.Network" />
+            android:name="setupArgs"
+            app:argType="com.blockstream.common.data.SetupArgs" />
         <action
-            android:id="@+id/action_account2of3Fragment_to_enterXpubFragment"
-            app:destination="@id/enterXpubFragment" />
+            android:id="@+id/action_account2of3Fragment_to_xpubFragment"
+            app:destination="@id/xpubFragment" />
         <action
             android:id="@+id/action_account2of3Fragment_to_enterRecoveryPhraseFragment"
             app:destination="@id/enterRecoveryPhraseFragment" />
@@ -560,21 +566,12 @@
             android:defaultValue="@null" />
     </fragment>
     <fragment
-        android:id="@+id/enterXpubFragment"
-        android:name="com.blockstream.green.ui.add.EnterXpubFragment"
-        tools:layout="@layout/enter_xpub_fragment">
+        android:id="@+id/xpubFragment"
+        android:name="com.blockstream.green.ui.add.XpubFragment"
+        tools:layout="@layout/xpub_fragment">
         <argument
-            android:name="wallet"
-            app:argType="com.blockstream.common.data.GreenWallet" />
-        <argument
-            android:name="network"
-            app:argType="com.blockstream.common.gdk.data.Network" />
-        <argument
-            android:name="accountType"
-            app:argType="com.blockstream.common.gdk.data.AccountType" />
-        <argument
-            android:name="assetId"
-            app:argType="string" />
+            android:name="setupArgs"
+            app:argType="com.blockstream.common.data.SetupArgs" />
     </fragment>
 
     <fragment

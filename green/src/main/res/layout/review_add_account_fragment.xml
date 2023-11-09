@@ -10,7 +10,7 @@
 
         <variable
             name="vm"
-            type="com.blockstream.green.ui.add.ReviewAddAccountViewModel" />
+            type="com.blockstream.common.models.add.ReviewAddAccountViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -149,7 +149,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="24dp"
-            android:enabled="@{!vm.onProgressAndroid}"
+            android:enabled="@{!vm.onProgress}"
             android:text="@string/id_add_new_account"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -157,7 +157,7 @@
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/progress"
-            isVisible="@{vm.onProgressAndroid}"
+            isVisible="@{vm.onProgress}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"

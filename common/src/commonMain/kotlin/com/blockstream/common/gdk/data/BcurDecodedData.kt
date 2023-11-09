@@ -14,6 +14,8 @@ data class BcurDecodedData(
     @SerialName("descriptor") val descriptor: String? = null,
     @SerialName("descriptors") val descriptors: List<String>? = null,
     @SerialName("master_fingerprint") val masterFingerprint: String? = null,
+    @SerialName("encrypted") val encrypted: String? = null,
+    @SerialName("public_key") val publicΚey: String? = null,
 ): Parcelable {
 
     val result : String

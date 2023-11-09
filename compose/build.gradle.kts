@@ -18,6 +18,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
@@ -45,4 +46,7 @@ dependencies {
 
     implementation(libs.androidx.activity.compose)
 
+    /**  --- QR Scanner ------------------------------------------------------------------------- */
+    implementation(libs.zxing.core) // API <= 24 compatibility
+    /** ----------------------------------------------------------------------------------------- */
 }

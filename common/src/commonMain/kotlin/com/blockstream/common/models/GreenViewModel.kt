@@ -78,6 +78,9 @@ abstract class GreenViewModel constructor(
     @NativeCoroutinesState
     val onProgress = MutableStateFlow(viewModelScope, false)
 
+    @NativeCoroutinesState
+    val onProgressDescription = MutableStateFlow<String?>(viewModelScope, null)
+
     override fun screenName(): String? = null
     override fun segmentation(): HashMap<String, Any>? = null
 
@@ -151,6 +154,11 @@ abstract class GreenViewModel constructor(
     @ObjCName(name = "post", swiftName = "postEvent")
     fun postEvent(@ObjCName(swiftName = "_") event: Event) {
         if(!_bootstrapped){
+
+            if(this::class.simpleName?.contains("Preview") == true){
+                logger.i { "postEvent() Preview ViewModel detected"}
+                return
+            }
             throw RuntimeException("ViewModel wasn't bootstrapped")
         }
 
@@ -360,10 +368,11 @@ abstract class GreenViewModel constructor(
         }
     }
 
-    protected suspend fun _enableLightningShortcut() {
+    protected suspend fun _enableLightningShortcut(lightningMnemonic: String? = null) {
         sessionOrNull?.also { session ->
-            val lightningMnemonic = session.deriveLightningMnemonic()
-            val encryptedData = greenKeystore.encryptData(lightningMnemonic.encodeToByteArray())
+            val encryptedData = (lightningMnemonic ?: session.deriveLightningMnemonic()).let {
+                greenKeystore.encryptData(it.encodeToByteArray())
+            }
 
             greenWalletOrNull?.also { wallet ->
                 database.replaceLoginCredential(

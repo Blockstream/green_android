@@ -15,6 +15,7 @@ import com.blockstream.common.gdk.data.TwoFactorMethodConfig
 import com.blockstream.common.gdk.params.AssetsParams
 import com.blockstream.common.gdk.params.BalanceParams
 import com.blockstream.common.gdk.params.BcurDecodeParams
+import com.blockstream.common.gdk.params.BcurEncodeParams
 import com.blockstream.common.gdk.params.ConnectionParams
 import com.blockstream.common.gdk.params.Convert
 import com.blockstream.common.gdk.params.CredentialsParams
@@ -220,6 +221,10 @@ class AndroidGdk(log: Boolean, config: InitConfig) : GdkBinding {
 
     override fun twoFactorChangeLimits(session: GASession, limits: Limits): GAAuthHandler {
         return GDKJNI.twofactor_change_limits(session, limits)
+    }
+
+    override fun bcurEncode(session: GASession, params: BcurEncodeParams): GAAuthHandler {
+        return GDKJNI.bcur_encode(session, params)
     }
 
     override fun bcurDecode(session: GASession, params: BcurDecodeParams): GAAuthHandler {

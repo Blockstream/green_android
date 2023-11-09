@@ -9,7 +9,7 @@
 
         <variable
             name="vm"
-            type="com.blockstream.green.ui.add.EnterXpubViewModel" />
+            type="com.blockstream.common.models.add.XpubViewModel" />
 
     </data>
 
@@ -59,7 +59,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="@integer/material_motion_duration_long_1"
-                android:enabled="@{!vm.onProgressAndroid}"
+                android:enabled="@{!vm.onProgress}"
                 app:errorEnabled="true"
                 android:hint="@string/id_xpub"
                 android:orientation="horizontal"

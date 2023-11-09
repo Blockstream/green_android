@@ -326,10 +326,23 @@ class LoginViewModel constructor(
     private fun loginWithDevice() {
         device?.gdkHardwareWallet?.also { gdkHardwareWallet ->
             login {
+
+                // Do a database query as the StateFlow is not yet initialized
+                val derivedLightningMnemonic = database.getLoginCredentials(greenWallet.id).lightningMnemonic?.encrypted_data?.let {
+                    try{
+                        greenKeystore.decryptData(it).decodeToString()
+                    }catch (e: Exception){
+                        e.printStackTrace()
+                        postSideEffect(SideEffects.ErrorSnackbar(e))
+                        null
+                    }
+                }
+
                 session.loginWithDevice(
                     wallet = greenWallet,
                     device = device,
                     hardwareWalletResolver = DeviceResolver(gdkHardwareWallet, this),
+                    derivedLightningMnemonic = derivedLightningMnemonic,
                     hwInteraction = this
                 )
             }

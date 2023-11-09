@@ -96,6 +96,10 @@ class CameraBottomSheetDialogFragment : AbstractBottomSheetDialogFragment<Camera
                                     })
                             }
 
+                            // Stop capturing
+                            capture.onPause()
+                            bcurPartEmitter = null
+
                             setResultAndDismiss(
                                 ScanResult.from(bcurDecodedData)
                             )

@@ -53,7 +53,7 @@ private val GreenColors = ColorScheme(
 
 val GreenShapes = Shapes(
     extraSmall = RoundedCornerShape(8.dp),
-    small = RoundedCornerShape(8.dp),
+    small = RoundedCornerShape(4.dp),
     medium = RoundedCornerShape(4.dp),
     large = RoundedCornerShape(24.dp),
     extraLarge = RoundedCornerShape(24.dp)

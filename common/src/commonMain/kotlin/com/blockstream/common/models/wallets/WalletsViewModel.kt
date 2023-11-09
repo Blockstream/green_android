@@ -56,7 +56,10 @@ abstract class WalletsViewModel(isHome: Boolean) : WalletsViewModelAbstract(isHo
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     override val hardwareWallets = combine(
-        database.getWalletsFlow(true),
+        database.getWalletsFlow(
+            credentialType = CredentialType.LIGHTNING_MNEMONIC,
+            isHardware = true
+        ),
         sessionManager.hardwareWallets.map { ephemeralWallets ->
             ephemeralWallets
         },
@@ -84,7 +87,7 @@ abstract class WalletsViewModel(isHome: Boolean) : WalletsViewModelAbstract(isHo
 
             if (session.isConnected) {
                 postSideEffect(SideEffects.NavigateTo(WalletDestinations.WalletOverview(childWallet)))
-            } else if (childWallet.isHardware) {
+            } else if (childWallet.isHardware && !event.isLightningShortcut) {
                 postSideEffect(
                     SideEffects.NavigateTo(
                         WalletDestinations.DeviceScan(

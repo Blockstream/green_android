@@ -54,7 +54,7 @@ class SendConfirmViewModel constructor(
                 transaction = session.blindTransaction(network, transaction)
             }
 
-            if (session.isHardwareWallet) {
+            if (session.isHardwareWallet && !network.isLightning) {
                 deviceAddressValidationEvent.postValue(ConsumableEvent(null))
             }
 

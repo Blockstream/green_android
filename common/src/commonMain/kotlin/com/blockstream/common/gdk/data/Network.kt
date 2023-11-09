@@ -118,7 +118,6 @@ data class Network(
         const val ElectrumTestnetLiquid = "electrum-testnet-liquid"
 
         const val LightningMainnet = "greenlight-mainnet"
-        const val LightningTestnet = "greenlight-testnet"
 
         const val BIP32_VER_MAIN_PUBLIC = 0x0488B21E
         const val BIP32_VER_TEST_PUBLIC = 0x043587CF
@@ -134,12 +133,11 @@ data class Network(
         fun isBitcoinTestnet(id: String) = (id == GreenTestnet || id == ElectrumTestnet)
         fun isLiquidTestnet(id: String) = (id == GreenTestnetLiquid || id == ElectrumTestnetLiquid)
 
-        fun isLightning(id: String) = isLightningMainnet(id) || isLightningTestnet(id)
+        fun isLightning(id: String) = isLightningMainnet(id)
         fun isLightningMainnet(id: String) = id == LightningMainnet
-        fun isLightningTestnet(id: String) = id == LightningTestnet
 
         fun isLiquid(id: String) = isLiquidMainnet(id) || isLiquidTestnet(id)
-        fun isBitcoin(id: String) = isBitcoinMainnet(id) || isBitcoinTestnet(id) || isLightningTestnet(id)
-        fun isTestnet(id: String) = isBitcoinTestnet(id) || isLiquidTestnet(id) || isLightningTestnet(id)
+        fun isBitcoin(id: String) = isBitcoinMainnet(id) || isBitcoinTestnet(id)
+        fun isTestnet(id: String) = isBitcoinTestnet(id) || isLiquidTestnet(id)
     }
 }

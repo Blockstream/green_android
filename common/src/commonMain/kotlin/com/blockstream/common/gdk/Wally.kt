@@ -1,7 +1,12 @@
 package com.blockstream.common.gdk
 
 interface Wally {
+    val aesBlockLen: Int
+    val hmacSha256Len: Int
+    val ecPrivateKeyLen: Int
     val bip39TotalWords: Int
+
+    fun ecPrivateKeyVerify(privateKey: ByteArray): Boolean
 
     fun bip39GetWord(index: Int): String
     fun bip39MnemonicValidate(mnemonic: String) : Boolean
@@ -16,6 +21,12 @@ interface Wally {
         index: Long = 0,
         numOfWords: Long = 12
     ): String?
+
+    fun bip85FromJade(privateKey: ByteArray, publicKey: ByteArray, label: String, payload: ByteArray): String?
+
+    companion object {
+        const val BIP39_WORD_LIST_LANG = "en"
+    }
 }
 
 

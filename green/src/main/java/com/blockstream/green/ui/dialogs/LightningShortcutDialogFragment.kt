@@ -33,6 +33,7 @@ class LightningShortcutDialogFragment : AbstractDialogFragment<LightningShortcut
         super.onViewCreated(view, savedInstanceState)
 
         binding.isAddAccount = arguments?.getBoolean(IS_ADD_ACCOUNT, false) ?: false
+        binding.isHw = arguments?.getBoolean(IS_HW, false) ?: false
 
         binding.buttonNeutral.setOnClickListener {
             openBrowser(settingsManager.appSettings, Urls.HELP_LIGHTNING_SHORTCUT)
@@ -55,10 +56,12 @@ class LightningShortcutDialogFragment : AbstractDialogFragment<LightningShortcut
 
     companion object : KLogging() {
         private const val IS_ADD_ACCOUNT = "IS_ADD_ACCOUNT"
-        fun show(isAddAccount: Boolean = false, fragmentManager: FragmentManager) {
+        private const val IS_HW = "IS_HW"
+        fun show(isAddAccount: Boolean, isHw: Boolean, fragmentManager: FragmentManager) {
             showSingle(LightningShortcutDialogFragment().also {
                 it.arguments = Bundle().also { bundle ->
                     bundle.putBoolean(IS_ADD_ACCOUNT, isAddAccount)
+                    bundle.putBoolean(IS_HW, isHw)
                 }
             }, fragmentManager)
         }

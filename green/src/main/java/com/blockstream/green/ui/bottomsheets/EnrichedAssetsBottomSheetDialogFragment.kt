@@ -6,9 +6,10 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.extensions.getAssetName
+import com.blockstream.common.gdk.GdkSession
+import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.items.AssetListItem
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.GenericFastItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
@@ -20,13 +21,8 @@ import kotlinx.coroutines.withContext
 
 class EnrichedAssetsBottomSheetDialogFragment : FilterBottomSheetDialogFragment(), FilterableDataProvider {
 
-    @Suppress("UNCHECKED_CAST")
-    internal val viewModel: AbstractWalletViewModel by lazy {
-        (requireParentFragment() as AbstractWalletFragment<*>).getWalletViewModel()
-    }
-
-    val session
-        get() = viewModel.session
+    val session: GdkSession
+        get() = (requireParentFragment() as? AbstractWalletFragment<*>)?.getWalletViewModel()?.session ?: (requireParentFragment() as AppFragment<*>).getGreenViewModel()!!.session
 
     override val withDivider: Boolean = false
 

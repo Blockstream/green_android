@@ -15,6 +15,7 @@ import com.blockstream.common.gdk.data.TwoFactorMethodConfig
 import com.blockstream.common.gdk.params.AssetsParams
 import com.blockstream.common.gdk.params.BalanceParams
 import com.blockstream.common.gdk.params.BcurDecodeParams
+import com.blockstream.common.gdk.params.BcurEncodeParams
 import com.blockstream.common.gdk.params.ConnectionParams
 import com.blockstream.common.gdk.params.Convert
 import com.blockstream.common.gdk.params.CredentialsParams
@@ -186,6 +187,9 @@ interface GdkBinding {
 
     @Throws(Exception::class)
     fun twoFactorChangeLimits(session: GASession, limits: Limits): GAAuthHandler
+
+    @Throws(Exception::class)
+    fun bcurEncode(session: GASession, params: BcurEncodeParams): GAAuthHandler
 
     @Throws(Exception::class)
     fun bcurDecode(session: GASession, params: BcurDecodeParams): GAAuthHandler

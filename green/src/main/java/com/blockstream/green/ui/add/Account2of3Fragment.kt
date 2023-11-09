@@ -4,17 +4,16 @@ import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.data.SetupArgs
+import com.blockstream.common.models.add.Account2of3ViewModel
+import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
 import com.blockstream.green.databinding.Account2of3FragmentBinding
 import com.blockstream.green.gdk.getNetworkIcon
 import com.blockstream.green.ui.bottomsheets.ComingSoonBottomSheetDialogFragment
 import com.blockstream.green.ui.items.ContentCardListItem
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.ui.wallet.WalletViewModel
 import com.blockstream.green.utils.StringHolder
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
@@ -22,71 +21,73 @@ import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class Account2of3Fragment : AbstractWalletFragment<Account2of3FragmentBinding>(
+class Account2of3Fragment : AbstractAddAccountFragment<Account2of3FragmentBinding>(
     R.layout.account_2of3_fragment, 0
 ) {
     val args: Account2of3FragmentArgs by navArgs()
-    override val walletOrNull by lazy { args.wallet }
 
-    override val screenName by lazy { "AddAccountChooseRecovery" }
+    override val assetId: String?
+        get() = args.setupArgs.assetId
 
-    override val title: String
-        get() = args.network.canonicalName
+    override val title: String?
+        get() = args.setupArgs.network?.canonicalName
 
-    override val toolbarIcon: Int
-        get() = args.network.getNetworkIcon()
+    override val toolbarIcon: Int?
+        get() = args.setupArgs.network?.getNetworkIcon()
 
-    val network: Network
-        get() = args.network
+    override val network: Network?
+        get() = args.setupArgs.network
 
-    val viewModel: WalletViewModel by viewModel {
-        parametersOf(args.wallet)
+    override val viewModel: Account2of3ViewModel by viewModel {
+        parametersOf(args.setupArgs)
     }
 
     enum class TwoOfThreeRecovery {
         HARDWARE_WALLET, NEW_RECOVERY, EXISTING_RECOVERY, XPUB
     }
 
-    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+        if (sideEffect is SideEffects.NavigateTo) {
+            (sideEffect.destination as? NavigateDestinations.NewRecovery)?.also {
+                navigate(
+                    Account2of3FragmentDirections.actionAccount2of3FragmentToRecoveryIntroFragment(
+                        setupArgs = it.setupArgs
+                    )
+                )
+            }
+            (sideEffect.destination as? NavigateDestinations.ExistingRecovery)?.also {
+                navigate(
+                    Account2of3FragmentDirections.actionAccount2of3FragmentToEnterRecoveryPhraseFragment(
+                        setupArgs = it.setupArgs
+                    )
+                )
+            }
+            (sideEffect.destination as? NavigateDestinations.Xpub)?.also {
+                navigate(
+                    Account2of3FragmentDirections.actionAccount2of3FragmentToXpubFragment(
+                        setupArgs = it.setupArgs
+                    )
+                )
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         val fastItemAdapter = createAdapter()
 
         fastItemAdapter.onClickListener = { _, _, item: GenericItem, _: Int ->
             if (item is ContentCardListItem) {
                 when (item.key) {
                     TwoOfThreeRecovery.NEW_RECOVERY -> {
-                        navigate(
-                            Account2of3FragmentDirections.actionAccount2of3FragmentToRecoveryIntroFragment(
-                                setupArgs = SetupArgs(
-                                    mnemonic = "",
-                                    greenWallet = args.wallet,
-                                    assetId = args.assetId,
-                                    network = network,
-                                    accountType = AccountType.TWO_OF_THREE
-                                )
-                            )
-                        )
+                        viewModel.postEvent(Account2of3ViewModel.LocalEvents.NewRecovery)
                     }
                     TwoOfThreeRecovery.EXISTING_RECOVERY -> {
-                        navigate(
-                            Account2of3FragmentDirections.actionAccount2of3FragmentToEnterRecoveryPhraseFragment(
-                                setupArgs = SetupArgs(
-                                    greenWallet = args.wallet,
-                                    assetId = args.assetId,
-                                    network = args.network,
-                                    accountType = AccountType.TWO_OF_THREE
-                                ),
-                            )
-                        )
+                        viewModel.postEvent(Account2of3ViewModel.LocalEvents.ExistingRecovery)
                     }
                     TwoOfThreeRecovery.XPUB -> {
-                        navigate(
-                            Account2of3FragmentDirections.actionAccount2of3FragmentToEnterXpubFragment(
-                                wallet = args.wallet,
-                                assetId = args.assetId,
-                                network = network,
-                                accountType = AccountType.TWO_OF_THREE
-                            )
-                        )
+                        viewModel.postEvent(Account2of3ViewModel.LocalEvents.Xpub)
                     }
                     else -> {
                         ComingSoonBottomSheetDialogFragment.show(childFragmentManager)
@@ -140,6 +141,4 @@ class Account2of3Fragment : AbstractWalletFragment<Account2of3FragmentBinding>(
 
         return adapter
     }
-
-    override fun getWalletViewModel(): AbstractWalletViewModel = viewModel
 }

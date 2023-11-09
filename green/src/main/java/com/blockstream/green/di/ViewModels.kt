@@ -1,6 +1,11 @@
 package com.blockstream.green.di
 
 import com.blockstream.common.models.about.AboutViewModel
+import com.blockstream.common.models.add.Account2of3ViewModel
+import com.blockstream.common.models.add.ChooseAccountTypeViewModel
+import com.blockstream.common.models.add.ExportLightningKeyViewModel
+import com.blockstream.common.models.add.ReviewAddAccountViewModel
+import com.blockstream.common.models.add.XpubViewModel
 import com.blockstream.common.models.demo.DemoViewModel
 import com.blockstream.common.models.drawer.DrawerViewModel
 import com.blockstream.common.models.home.HomeViewModel
@@ -46,10 +51,18 @@ val viewModels = module {
     viewModelOf(::LnUrlAuthViewModel)
     viewModelOf(::LnUrlWithdrawViewModel)
     viewModelOf(::WatchOnlyViewModel)
+    viewModelOf(::ExportLightningKeyViewModel)
+    viewModelOf(::XpubViewModel)
     viewModelOf(::TransactionDetailsViewModel)
+    viewModelOf(::ReviewAddAccountViewModel)
+    viewModelOf(::Account2of3ViewModel)
     viewModel {
         // https://github.com/InsertKoinIO/koin/issues/1352
         RecoverFundsViewModel(get(), getOrNull(), get())
+    }
+    viewModel {
+        // https://github.com/InsertKoinIO/koin/issues/1352
+        ChooseAccountTypeViewModel(get(), getOrNull())
     }
     viewModel {
         // https://github.com/InsertKoinIO/koin/issues/1352

@@ -58,17 +58,16 @@ check_command curl
 check_command gzip
 check_command shasum
 
-if [ -d gdk ]; then
-    echo "Found a 'gdk' folder, exiting now"
-    exit 0
-fi
-
-
 # Find out where we are being run from to get paths right
 OLD_PWD=$(pwd)
 GDK_MODULE_ROOT=${OLD_PWD}
-if [ -d "${GDK_MODULE_ROOT}/gdk" ]; then
+if [ -d "${GDK_MODULE_ROOT}/green" ]; then
     GDK_MODULE_ROOT="${GDK_MODULE_ROOT}/gdk"
+fi
+
+if [ -d $GDK_MODULE_ROOT/gdk ]; then
+    echo "Found a 'gdk' folder, exiting now"
+    exit 0
 fi
 
 JNI_LIBS_DIR=${GDK_MODULE_ROOT}/src/main/jniLibs

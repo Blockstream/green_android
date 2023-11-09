@@ -1,56 +1,54 @@
 package com.blockstream.green.ui.add
 
-import android.content.DialogInterface
-import android.os.Bundle
-import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.databinding.ViewDataBinding
 import androidx.navigation.fragment.findNavController
-import com.blockstream.common.Urls
+import com.blockstream.common.events.Event
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.add.AddAccountViewModelAbstract
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
-import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.setNavigationResult
 import com.blockstream.green.gdk.getNetworkIcon
+import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.dialogs.EnableLightningShortcut
 import com.blockstream.green.ui.dialogs.LightningShortcutDialogFragment
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.utils.openBrowser
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 abstract class AbstractAddAccountFragment<T : ViewDataBinding>(
     @LayoutRes layout: Int,
     @MenuRes menuRes: Int
-): AbstractWalletFragment<T>(layout, menuRes), EnableLightningShortcut {
+): AppFragment<T>(layout, menuRes), EnableLightningShortcut {
     open val network: Network? = null
 
     override val title: String?
-        get() = network?.let { (if(it.isBitcoin) session.bitcoin else session.liquid)?.canonicalName }
+        get() = network?.let { (if(it.isBitcoin) getGreenViewModel()?.session?.bitcoin else getGreenViewModel()?.session?.liquid)?.canonicalName }
 
     override val toolbarIcon: Int?
         get() = network?.getNetworkIcon()
 
-    abstract val addAccountViewModel: AbstractAddAccountViewModel
-
     abstract val assetId: String?
 
-    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
-        addAccountViewModel.accountCreated.observe(viewLifecycleOwner) { account ->
-            if (account.isLightning && !wallet.isEphemeral) {
-                LightningShortcutDialogFragment.show(isAddAccount = true, fragmentManager = childFragmentManager)
-            } else {
-                navigate(account)
-            }
-        }
+    private var _pendingEvent: Event? = null
 
-        addAccountViewModel.onError.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandledOrReturnNull()?.let {
-                errorDialog(it)
+    abstract val viewModel: AddAccountViewModelAbstract
+
+    override fun getGreenViewModel(): GreenViewModel = viewModel
+
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+
+        if(sideEffect is SideEffects.Navigate){
+            (sideEffect.data as? Account)?.also {
+                navigate(it)
             }
+        } else if(sideEffect is AddAccountViewModelAbstract.LocalSideEffects.LightningShortcutDialog){
+            _pendingEvent = sideEffect.event
+            LightningShortcutDialogFragment.show(isAddAccount = true, isHw = viewModel.session.isHardwareWallet, fragmentManager = childFragmentManager)
         }
     }
 
@@ -69,15 +67,14 @@ abstract class AbstractAddAccountFragment<T : ViewDataBinding>(
         findNavController().popBackStack(destinationId, false)
     }
 
-    override fun getWalletViewModel(): AbstractWalletViewModel = addAccountViewModel
 
     override fun enableLightningShortcut(){
-        addAccountViewModel.enableLightningShortcut()
+        viewModel.postEvent(AddAccountViewModelAbstract.LocalEvents.EnableLightningShortcut())
     }
 
     override fun lightningShortcutDialogDismissed() {
-        addAccountViewModel.accountCreated.value?.also {
-            navigate(it)
+        _pendingEvent?.also {
+            viewModel.postEvent(it)
         }
     }
 

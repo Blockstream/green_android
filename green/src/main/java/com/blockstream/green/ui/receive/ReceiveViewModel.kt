@@ -130,8 +130,8 @@ class ReceiveViewModel constructor(
             }
         }.launchIn(viewModelScope.coroutineScope)
 
-
-        session.lightning?.also {
+        // lightningSdk is not null
+        session.lightning?.takeIf { session.hasLightning }?.also {
             // Support single lightning account, else we have to incorporate account change events
             val lightningAccount = session.lightningAccount
 

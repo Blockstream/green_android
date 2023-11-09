@@ -216,7 +216,8 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
         menu.findItem(R.id.remove).isVisible = account.isLightning && !wallet.isLightning
 
         menu.findItem(R.id.lightning_shortcut).also {
-            it.isVisible = account.isLightning && !wallet.isLightning
+            // Only allow the removal of LN Shortcut on Wallet
+            it.isVisible = account.isLightning && !wallet.isLightning && (viewModel.lightningShortcut.value == true || !wallet.isHardware)
             it.title = getString(if(viewModel.lightningShortcut.value == true) R.string.id_remove_lightning_shortcut else R.string.id_add_lightning_shortcut)
             it.icon = ContextCompat.getDrawable(requireContext(), if(viewModel.lightningShortcut.value == true) R.drawable.ic_lightning_slash else R.drawable.ic_lightning)
         }
@@ -256,6 +257,7 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
                 } else {
                     LightningShortcutDialogFragment.show(
                         isAddAccount = false,
+                        isHw = session.isHardwareWallet,
                         fragmentManager = childFragmentManager
                     )
                 }

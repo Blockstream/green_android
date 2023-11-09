@@ -82,7 +82,6 @@ fun WalletsScreen(
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
-                .padding(top = 8.dp, bottom = 8.dp),
         ) {
 
             if (!softwareWallets.isNullOrEmpty()) {

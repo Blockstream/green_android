@@ -3,6 +3,7 @@ package com.blockstream.common.extensions
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.data.AppInfo
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.mp.KoinPlatformTools
 
 
@@ -37,4 +38,8 @@ fun handleException(): CoroutineExceptionHandler {
             exception.printStackTrace()
         }
     }
+}
+
+fun MutableStateFlow<Boolean>.toggle() {
+    this.value = !value
 }

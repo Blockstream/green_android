@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="isAddAccount"
+            type="Boolean" />
+
+        <variable
+            name="isHw"
             type="Boolean" />
 
     </data>
@@ -60,7 +63,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="@{isAddAccount ? @string/id_maybe_later : @string/id_cancel}"
+            android:text="@{isAddAccount &amp;&amp; !isHw ? @string/id_maybe_later : @string/id_cancel}"
             tools:text="@string/id_maybe_later" />
 
     </LinearLayout>

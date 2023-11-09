@@ -1,5 +1,6 @@
 package com.blockstream.common.gdk
 
+import com.blockstream.common.gdk.Wally.Companion.BIP39_WORD_LIST_LANG
 import com.blockstream.common.utils.getSecureRandom
 import com.blockstream.common.utils.toHex
 import com.blockstream.libwally.Wally as WallyJNI
@@ -15,13 +16,24 @@ inline fun <T, R> T.bip32KeyFree(use: (T) -> R): R {
 }
 
 class AndroidWally: Wally {
-    private val bip39WordList by lazy { WallyJNI.bip39_get_wordlist(BIP39_WORD_LIST_LANG) }
-
+    override val aesBlockLen: Int = WallyJNI.AES_BLOCK_LEN
+    override val hmacSha256Len: Int = WallyJNI.HMAC_SHA256_LEN
+    override val ecPrivateKeyLen: Int = WallyJNI.EC_PRIVATE_KEY_LEN
     override val bip39TotalWords: Int = WallyJNI.BIP39_WORDLIST_LEN
+
+    private val bip39WordList by lazy { WallyJNI.bip39_get_wordlist(BIP39_WORD_LIST_LANG) }
 
     init {
         WallyJNI.init(0)
         WallyJNI.secp_randomize(getSecureRandom().randomBytes(WallyJNI.WALLY_SECP_RANDOMIZE_LEN))
+    }
+
+    override fun ecPrivateKeyVerify(privateKey: ByteArray): Boolean = try {
+        WallyJNI.ec_private_key_verify(privateKey)
+        true
+    } catch (e: Exception) {
+        e.printStackTrace()
+        false
     }
 
     override fun bip39GetWord(index: Int): String {
@@ -39,10 +51,10 @@ class AndroidWally: Wally {
     }
 
     override fun isXpubValid(xpub: String): Boolean {
-        try{
+        try {
             WallyJNI.bip32_key_from_base58(xpub)
             return true
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
         return false
@@ -76,13 +88,12 @@ class AndroidWally: Wally {
                 WallyJNI.BIP32_FLAG_SKIP_HASH.toLong()
             )
 
-            val bip85 =
-                WallyJNI.bip85_get_bip39_entropy(
-                    bip32Key,
-                    BIP39_WORD_LIST_LANG,
-                    numOfWords,
-                    index
-                )
+            val bip85 = WallyJNI.bip85_get_bip39_entropy(
+                bip32Key,
+                BIP39_WORD_LIST_LANG,
+                numOfWords,
+                index
+            )
 
             WallyJNI.bip39_mnemonic_from_bytes(bip39WordList, bip85)
 
@@ -92,8 +103,32 @@ class AndroidWally: Wally {
         }
     }
 
-    companion object {
-        const val BIP39_WORD_LIST_LANG = "en"
+    override fun bip85FromJade(
+        privateKey: ByteArray,
+        publicKey: ByteArray,
+        label: String,
+        payload: ByteArray
+    ): String? {
+        return try {
+            val out = ByteArray(payload.size)
+
+            val written = WallyJNI.aes_cbc_with_ecdh_key(
+                privateKey,
+                null,
+                payload,
+                publicKey,
+                label.encodeToByteArray(),
+                WallyJNI.AES_FLAG_DECRYPT.toLong(),
+                out
+            )
+
+            out.slice(0 until written).toByteArray().let {
+                WallyJNI.bip39_mnemonic_from_bytes(bip39WordList, it)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 }
 

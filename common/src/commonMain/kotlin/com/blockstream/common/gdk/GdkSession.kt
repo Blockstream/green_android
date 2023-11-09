@@ -30,6 +30,7 @@ import com.blockstream.common.gdk.data.Asset
 import com.blockstream.common.gdk.data.Assets
 import com.blockstream.common.gdk.data.Balance
 import com.blockstream.common.gdk.data.BcurDecodedData
+import com.blockstream.common.gdk.data.BcurEncodedData
 import com.blockstream.common.gdk.data.Block
 import com.blockstream.common.gdk.data.CreateSwapTransaction
 import com.blockstream.common.gdk.data.CreateTransaction
@@ -61,6 +62,7 @@ import com.blockstream.common.gdk.device.HardwareWalletInteraction
 import com.blockstream.common.gdk.params.AssetsParams
 import com.blockstream.common.gdk.params.BalanceParams
 import com.blockstream.common.gdk.params.BcurDecodeParams
+import com.blockstream.common.gdk.params.BcurEncodeParams
 import com.blockstream.common.gdk.params.CompleteSwapParams
 import com.blockstream.common.gdk.params.ConnectionParams
 import com.blockstream.common.gdk.params.Convert
@@ -105,8 +107,10 @@ import com.blockstream.common.managers.AssetsProvider
 import com.blockstream.common.managers.NetworkAssetManager
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
+import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.server
 import com.blockstream.common.utils.toAmountLook
+import com.blockstream.common.utils.toHex
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -582,7 +586,14 @@ class GdkSession constructor(
         )
     }
 
-    fun networks(isTestnet: Boolean, isWatchOnly: Boolean, isHardwareWallet: Boolean): List<Network> {
+    // Use it only for connected sessions
+    fun supportsLightning() = supportsLightning(isWatchOnly = isWatchOnly, device = device)
+
+    private fun supportsLightning(isWatchOnly: Boolean, device: DeviceInterface?) :Boolean {
+        return !isWatchOnly && (device == null || device.isJade)
+    }
+
+    fun networks(isTestnet: Boolean, isWatchOnly: Boolean, device: DeviceInterface?): List<Network> {
         return if (isTestnet) {
             listOfNotNull(
                 networks.testnetBitcoinElectrum,
@@ -596,14 +607,14 @@ class GdkSession constructor(
                 networks.bitcoinGreen,
                 networks.liquidElectrum,
                 networks.liquidGreen,
-                networks.lightning.takeIf { !isWatchOnly && !isHardwareWallet }, // Only for SW as we need the mnemonic for the time being
+                networks.lightning.takeIf { supportsLightning(isWatchOnly, device) }, // Only SW οr Jade
             )
         }
     }
 
     private fun initGdkSessions(initNetworks: List<Network>?) {
         (if (initNetworks.isNullOrEmpty()) {
-            networks(isTestnet = isTestnet, isWatchOnly = isWatchOnly, isHardwareWallet = isHardwareWallet)
+            networks(isTestnet = isTestnet, isWatchOnly = isWatchOnly, device = device)
         }else{
             // init the provided networks
             initNetworks
@@ -856,10 +867,27 @@ class GdkSession constructor(
         }
     }
 
-    fun initLightningIfNeeded() {
+    private fun initLightningSdk(lightningMnemonic: String?) {
+        val lightningLoginData = getWalletIdentifier(
+            network = defaultNetwork,
+            loginCredentialsParams = lightningMnemonic?.let { LoginCredentialsParams(mnemonic = it) },
+            hwInteraction = null
+        )
+
+        val workingDir = "${gdk.dataDir}/breezSdk/${lightningLoginData.walletHashId}/0"
+        lightningSdkOrNull = lightningManager.getLightningBridge(workingDir)
+    }
+
+    fun initLightningIfNeeded(mnemonic: String?) {
+
         if (lightning != null) {
+            if(lightningSdkOrNull == null && supportsLightning()){
+                // Init SDK
+                initLightningSdk(mnemonic)
+            }
+
             if (!hasLightning) {
-                connectToGreenlight(mnemonic = deriveLightningMnemonic(), checkCredentials = false)
+                connectToGreenlight(mnemonic = mnemonic ?: deriveLightningMnemonic(), checkCredentials = false)
 
                 if(!hasLightning){
                     throw Exception("Something went wrong while initiating your Lightning account")
@@ -1114,12 +1142,18 @@ class GdkSession constructor(
     suspend fun loginWithDevice(
         wallet: GreenWallet,
         device: DeviceInterface,
+        derivedLightningMnemonic: String?,
         hardwareWalletResolver: HardwareWalletResolver,
         hwInteraction: HardwareWalletInteraction? = null,
     ): LoginData {
-        val lastUsedNetwork = networks.getNetworkById(wallet.activeNetwork)
+        // If last used network is Lightning, change to bitcoin as the ln network can't be used for login
+        val lastUsedNetwork = (wallet.activeNetwork
+            .takeIf { !Network.isLightning(it) } ?: Network.ElectrumMainnet)
+            .let {
+                networks.getNetworkById(it)
+            }
 
-        val supportedNetworks = networks(isTestnet = wallet.isTestnet, isWatchOnly = false, isHardwareWallet = true)
+        val supportedNetworks = networks(isTestnet = wallet.isTestnet, isWatchOnly = false, device = device)
 
         val initNetworks = if (device.deviceBrand.isTrezor) {
             supportedNetworks.filter { it.isBitcoin }
@@ -1135,6 +1169,7 @@ class GdkSession constructor(
             initNetworks = initNetworks,
             wallet = wallet,
             loginCredentialsParams = LoginCredentialsParams.empty,
+            derivedLightningMnemonic = derivedLightningMnemonic,
             device = device,
             isSmartDiscovery = true,
             hardwareWalletResolver = hardwareWalletResolver,
@@ -1148,6 +1183,7 @@ class GdkSession constructor(
         wallet: GreenWallet? = null,
         loginCredentialsParams: LoginCredentialsParams,
         appGreenlightCredentials: AppGreenlightCredentials? = null,
+        derivedLightningMnemonic: String? = null,
         device: DeviceInterface? = null,
         isCreate: Boolean = false,
         isRestore: Boolean = false,
@@ -1210,7 +1246,7 @@ class GdkSession constructor(
         val exceptions = mutableListOf<Exception>()
 
         isLightningShortcut = wallet?.isLightning == true
-        hasLightning = isLightningShortcut || appGreenlightCredentials != null
+        hasLightning = isLightningShortcut || appGreenlightCredentials != null || derivedLightningMnemonic != null
 
         return (enabledGdkSessions.mapNotNull { gdkSession ->
             scope.async(context = Dispatchers.IO, start = CoroutineStart.LAZY) {
@@ -1314,20 +1350,19 @@ class GdkSession constructor(
                 }
             }
         } + listOfNotNull(
-            if (lightning == null || isHardwareWallet) null else scope.async(
+            if (lightning == null || !supportsLightning()) null else scope.async(
                 context = Dispatchers.IO,
                 start = CoroutineStart.LAZY
             ) {
-                val lightningMnemonic = deriveLightningMnemonic(Credentials.fromLoginCredentialsParam(loginCredentialsParams))
 
-                val lightningLoginData = getWalletIdentifier(
-                    network = defaultNetwork,
-                    loginCredentialsParams = LoginCredentialsParams(mnemonic = lightningMnemonic),
-                    hwInteraction = null
-                )
+                if(isHardwareWallet && derivedLightningMnemonic == null){
+                    return@async null
+                }
+
+                val lightningMnemonic = derivedLightningMnemonic ?: deriveLightningMnemonic(Credentials.fromLoginCredentialsParam(loginCredentialsParams))
 
                 // Init SDK
-                lightningSdkOrNull = initLightningSdk(lightningLoginData)
+                initLightningSdk(lightningMnemonic)
 
                 if (hasLightning || ((isRestore || isSmartDiscovery) && settingsManager.isLightningEnabled(countly) && settingsManager.appSettings.experimentalFeatures)) {
                     // Make it async to speed up login process
@@ -1376,11 +1411,6 @@ class GdkSession constructor(
                 )
             }
         }
-    }
-
-    private fun initLightningSdk(loginData: LoginData): LightningBridge {
-        val workingDir = "${gdk.dataDir}/breezSdk/${loginData.walletHashId}/0"
-        return lightningManager.getLightningBridge(workingDir)
     }
 
     private fun connectToGreenlight(mnemonic: String, checkCredentials: Boolean = false){
@@ -1435,7 +1465,7 @@ class GdkSession constructor(
         blockNotificationHandling = false
     }
 
-    private suspend fun initializeSessionData(initNetwork:String?, initAccount: Long?) {
+    private suspend fun initializeSessionData(initNetwork: String?, initAccount: Long?) {
         // Check if active account index was archived from 1) a different client (multisig) or 2) from cached Singlesig hww session
         // Expect refresh = true to be already called
         updateAccounts()
@@ -1511,11 +1541,14 @@ class GdkSession constructor(
         hwInteraction: HardwareWalletInteraction? = null,
     ) = gdk.getWalletIdentifier(
         connectionParams = createConnectionParams(network),
-        loginCredentialsParams = (gdkHwWallet ?: this.gdkHwWallet)?.let {
-            LoginCredentialsParams(
-                masterXpub = it.getXpubs(network, hwInteraction, listOf(listOf())).first()
-            )
-        } ?: loginCredentialsParams ?: getCredentials().let { LoginCredentialsParams.fromCredentials(it) }
+        loginCredentialsParams = loginCredentialsParams?.takeIf { !it.mnemonic.isNullOrBlank() }
+            ?: (gdkHwWallet ?: this.gdkHwWallet)?.let {
+                LoginCredentialsParams(
+                    masterXpub = it.getXpubs(network, hwInteraction, listOf(listOf())).first()
+                )
+            }
+            ?: loginCredentialsParams
+            ?: getCredentials().let { LoginCredentialsParams.fromCredentials(it) }
     )
 
     fun getWalletFingerprint(
@@ -1556,8 +1589,12 @@ class GdkSession constructor(
     }
 
     fun deriveLightningMnemonic(credentials: Credentials? = null): String {
+        if (isHardwareWallet && credentials == null) {
+            throw Exception("HWW can't derive lightning mnemonic")
+        }
+
         return (credentials ?: getCredentials()).let{
-            if (isLightningShortcut) {
+            if (isLightningShortcut || isHardwareWallet) {
                 it.mnemonic // Already derived
             } else {
                 wally.bip85FromMnemonic(
@@ -1565,7 +1602,7 @@ class GdkSession constructor(
                     passphrase = it.bip39Passphrase,
                     index = 0,
                     isTestnet = isTestnet
-                )?: throw Exception("Couldn't derive lightning mnemonic")
+                ) ?: throw Exception("Couldn't derive lightning mnemonic")
             }
         }
     }
@@ -2565,6 +2602,42 @@ class GdkSession constructor(
         gdk.validate(gdkSession(network), params)
     ).result<ValidateAddressees>()
 
+    private fun createEcPrivateKey(): ByteArray {
+        var privateKey: ByteArray
+        do {
+            privateKey = gdk.getRandomBytes(wally.ecPrivateKeyLen)
+        } while (!wally.ecPrivateKeyVerify(privateKey))
+
+        return privateKey
+    }
+
+    fun jadeBip8539Request(): Pair<ByteArray, BcurEncodedData> {
+        val privateKey = createEcPrivateKey()
+
+        val params = BcurEncodeParams(
+            urType = "jade-bip8539-request",
+            numWords = 12,
+            index = 0,
+            privateKey = privateKey.toHex()
+        )
+
+        return privateKey to authHandler(defaultNetwork, gdk.bcurEncode(gdkSession(defaultNetwork), params)).result<BcurEncodedData>()
+    }
+
+    fun jadeBip8539Reply(privateKey: ByteArray, publicKey: ByteArray, encrypted: ByteArray): String? {
+        return wally.bip85FromJade(privateKey, publicKey, "bip85_bip39_entropy", encrypted)
+    }
+
+    fun bcurEncode(params: BcurEncodeParams): BcurEncodedData {
+        val network = defaultNetworkOrNull ?: networks.bitcoinElectrum
+
+        runBlocking {
+            connect(network = network, initNetworks = listOf(network))
+        }
+
+        return authHandler(network, gdk.bcurEncode(gdkSession(network), params)).result<BcurEncodedData>()
+    }
+
     fun bcurDecode(params: BcurDecodeParams, bcurResolver: BcurResolver): BcurDecodedData {
         val network = defaultNetworkOrNull ?: networks.bitcoinElectrum
 
@@ -2594,7 +2667,7 @@ class GdkSession constructor(
         scope.cancel("Destroy")
     }
 
-    companion object {
+    companion object: Loggable() {
         const val WALLET_OVERVIEW_TRANSACTIONS = 10
 
         const val LIQUID_ASSETS_KEY = "liquid_assets"

@@ -4,12 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="com.blockstream.green.gdk.ExtensionsKt"/>
-        <import type="com.blockstream.common.gdk.data.AccountType"/>
 
         <variable
-            name="accountType"
-            type="com.blockstream.common.gdk.data.AccountType" />
+            name="accountTypeLook"
+            type="com.blockstream.common.views.AccountTypeLook" />
 
     </data>
 
@@ -20,6 +18,22 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:textColor="@color/black"
+            android:text="BETA"
+            isVisible="@{accountTypeLook.accountType.lightning}"
+            android:textAppearance="?attr/textAppearanceLabelMedium"
+            android:layout_gravity="end"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:layout_marginEnd="-30dp"
+            android:layout_marginTop="10dp"
+            android:rotation="45"
+            tools:ignore="HardcodedText" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -29,7 +43,7 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginStart="6dp"
-                android:src="@{accountType.mutlisig ? @drawable/ic_multisig : accountType.lightning ? @drawable/ic_lightning_fill : @drawable/ic_singlesig}"
+                android:src="@{accountTypeLook.multisig ? @drawable/ic_multisig : accountTypeLook.lightning ? @drawable/ic_lightning_fill : @drawable/ic_singlesig}"
                 app:layout_constraintBottom_toBottomOf="@+id/nameTextView"
                 app:layout_constraintDimensionRatio="w,1:1"
                 app:layout_constraintStart_toEndOf="@+id/nameTextView"
@@ -44,7 +58,7 @@
                 android:layout_marginTop="8dp"
                 android:ellipsize="end"
                 android:lines="1"
-                android:text="@{ExtensionsKt.titleRes(accountType)}"
+                idText="@{accountTypeLook.title}"
                 android:textAppearance="?attr/textAppearanceTitleLarge"
                 app:layout_constraintEnd_toStartOf="@+id/arrow"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -60,7 +74,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="16dp"
-                android:text="@{ExtensionsKt.descriptionRes(accountType)}"
+                idText="@{accountTypeLook.description}"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textColor="@color/color_on_surface_emphasis_medium"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -84,7 +98,7 @@
                 android:paddingTop="4dp"
                 android:paddingEnd="8dp"
                 android:paddingBottom="4dp"
-                android:text="@{ExtensionsKt.securityType(accountType, context)}"
+                idText="@{accountTypeLook.security}"
                 android:textAllCaps="true"
                 android:textAppearance="?attr/textAppearanceBodySmall"
                 android:textColor="@color/color_on_surface_emphasis_medium"
@@ -101,7 +115,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="16dp"
-                android:background="@{accountType.lightning ? @drawable/color_lightning_round : @drawable/color_dark_on_surface_variant_round}"
+                android:background="@{accountTypeLook.lightning ? @drawable/color_lightning_round : @drawable/color_dark_on_surface_variant_round}"
                 android:ellipsize="end"
                 android:includeFontPadding="false"
                 android:lines="1"
@@ -109,10 +123,10 @@
                 android:paddingTop="4dp"
                 android:paddingEnd="8dp"
                 android:paddingBottom="4dp"
-                android:text="@{ExtensionsKt.policyType(accountType, context)}"
+                idText="@{accountTypeLook.policy}"
                 android:textAllCaps="true"
                 android:textAppearance="?attr/textAppearanceBodySmall"
-                android:textColor="@{accountType.lightning ? @color/color_on_surface_emphasis_high : @color/color_on_surface_emphasis_medium}"
+                android:textColor="@{accountTypeLook.lightning ? @color/color_on_surface_emphasis_high : @color/color_on_surface_emphasis_medium}"
                 android:textSize="11dp"
                 app:layout_constraintStart_toEndOf="@+id/accountTypeTextView"
                 app:layout_constraintTop_toTopOf="parent"

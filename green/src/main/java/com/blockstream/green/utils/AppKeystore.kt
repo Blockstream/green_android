@@ -25,9 +25,12 @@ class AppKeystore(val context: Context): GreenKeystore {
 
     fun isBiometricsAuthenticationRequired(): Boolean {
         try{
-            getEncryptionCipher(BIOMETRICS_KEYSTORE_ALIAS)
+            getBiometricsEncryptionCipher()
         }catch (e: UserNotAuthenticatedException){
-            e.printStackTrace()
+            logger.info { "User not Authenticated, probably device was unlocked with Face biometrics" }
+            if(isDevelopmentOrDebug) {
+                e.printStackTrace()
+            }
             return true
         }catch (e: Exception){
             e.printStackTrace()
