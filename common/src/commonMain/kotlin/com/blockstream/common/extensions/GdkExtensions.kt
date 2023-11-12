@@ -13,7 +13,7 @@ import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.utils.getBitcoinOrLiquidUnit
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 
-fun <T : Any> GdkSession.ifConnected(block: () -> T?): T? {
+inline fun <T : Any> GdkSession.ifConnected(block: () -> T?): T? {
     return if (this.isConnected) {
         block()
     } else {
@@ -92,10 +92,6 @@ fun String?.assetTickerOrNull(
     }
 }
 
-fun String?.assetIsAmp(session: GdkSession) = session.enrichedAssets.value[this]?.isAmp ?: false
-fun String?.assetWeight(session: GdkSession) = session.enrichedAssets.value[this]?.weight ?: 0
-
-
 fun Account.hasHistory(session: GdkSession): Boolean {
     return bip44Discovered == true || isFunded(session) || session.accountTransactions(this).let {
         it.value.isNotEmpty() && it.value.firstOrNull()?.isLoadingTransaction == false
@@ -116,10 +112,12 @@ fun String.getAssetNameOrNull(session: GdkSession): String? {
     }
 }
 
+@Deprecated("Use EnrichedAsset")
 fun String.getAssetName(session: GdkSession): String {
     return getAssetNameOrNull(session) ?: this
 }
 
+@Deprecated("Use EnrichedAsset")
 fun String.getAssetTicker(session: GdkSession): String? {
     return if(this.isPolicyAsset(session)) {
         if(this == BTC_POLICY_ASSET){

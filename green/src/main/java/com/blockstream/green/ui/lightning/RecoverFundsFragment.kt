@@ -23,7 +23,6 @@ import com.blockstream.green.extensions.getNavigationResult
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.filters.NumberValueFilter
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.ui.bottomsheets.AccountAssetBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
 import com.blockstream.green.utils.getClipboard
@@ -61,8 +60,6 @@ class RecoverFundsFragment : AppFragment<RecoverFundsFragmentBinding>(
     }
 
     override fun getGreenViewModel(): GreenViewModel = viewModel
-
-    override fun getAppViewModel(): AppViewModelAndroid? = null
 
     override fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)

@@ -2,13 +2,17 @@ package com.blockstream.common.models.overview
 
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Event
-import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.gdk.data.Assets
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.utils.toAmountLookOrNa
+import com.rickclephas.kmm.viewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 
 abstract class WalletOverviewViewModelAbstract(
     greenWallet: GreenWallet
@@ -32,8 +36,10 @@ abstract class WalletOverviewViewModelAbstract(
 class WalletOverviewViewModel(greenWallet: GreenWallet) : WalletOverviewViewModelAbstract(greenWallet = greenWallet){
     override fun segmentation(): HashMap<String, Any> = countly.sessionSegmentation(session = session)
 
-    override val balancePrimary: StateFlow<String>
-        get() = TODO("Not yet implemented")
+    override val balancePrimary: StateFlow<String> = session.walletTotalBalance.map {
+        session.ifConnected { it.toAmountLookOrNa(session) } ?: ""
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), "")
+
     override val balanceSecondary: StateFlow<String>
         get() = TODO("Not yet implemented")
 
@@ -43,10 +49,7 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) : WalletOverviewViewMode
     class LocalEvents{
         object Refresh: Event
 
-        class ArchiveAccount(val account: Account): Event
-
         object ReconnectFailedNetworks: Event
-
     }
 
     init {
@@ -59,10 +62,6 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) : WalletOverviewViewMode
         when (event) {
             is LocalEvents.Refresh -> {
                 session.refresh()
-            }
-
-            is LocalEvents.ArchiveAccount -> {
-                updateAccount(account = event.account, isHidden = true)
             }
             is LocalEvents.ReconnectFailedNetworks -> {
                 tryFailedNetworks()

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.WalletIcon
 import com.blockstream.common.database.Database
@@ -103,6 +104,14 @@ fun Account.getAccountColor(context: Context): Int = when {
     else -> networkId.getNetworkColor()
 }.let {
     ContextCompat.getColor(context, it)
+}
+
+fun EnrichedAsset.getAssetIcon(context: Context, session: GdkSession, isLightning: Boolean = false): Drawable {
+    return session.liquid?.takeIf { isAnyAsset }?.let {
+        (if(session.isTestnet) R.drawable.ic_unknown else  if(isAmp) R.drawable.ic_amp_asset else R.drawable.ic_liquid_asset).let {
+            ContextCompat.getDrawable(context, it)!!
+        }
+    } ?: assetId.getAssetIcon(context, session, isLightning)
 }
 
 fun String?.getAssetIcon(context: Context, session: GdkSession, isLightning: Boolean = false): Drawable {

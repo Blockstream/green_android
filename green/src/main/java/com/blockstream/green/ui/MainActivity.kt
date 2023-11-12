@@ -21,7 +21,9 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.databinding.OnRebindCallback
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
@@ -36,6 +38,7 @@ import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.PinData
 import com.blockstream.common.managers.SessionManager
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
@@ -70,10 +73,6 @@ import kotlin.time.toDuration
 
 
 class MainActivity : AppActivity() {
-    sealed class HttpUrlWarningEvent : AppEvent {
-        data class UrlWarning(val urls: List<String>): HttpUrlWarningEvent()
-    }
-
     private val sessionManager: SessionManager by inject()
 
     private val database: Database by inject()
@@ -128,11 +127,13 @@ class MainActivity : AppActivity() {
             notificationManager.notificationPermissionGiven()
         }
 
-        activityViewModel.onEvent.observe(this) { onEvent ->
-            onEvent.getContentIfNotHandledForType<HttpUrlWarningEvent>()?.let {
-                if(it is HttpUrlWarningEvent.UrlWarning){
-                    UrlWarningDialogFragment.show(it.urls, supportFragmentManager)
-                }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                activityViewModel.sideEffect.onEach {
+                    if(it is SideEffects.UrlWarning){
+                        UrlWarningDialogFragment.show(it.urls, supportFragmentManager)
+                    }
+                }.launchIn(this)
             }
         }
 

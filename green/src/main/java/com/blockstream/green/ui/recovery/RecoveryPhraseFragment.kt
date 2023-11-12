@@ -12,7 +12,6 @@ import com.blockstream.common.models.recovery.RecoveryPhraseViewModel
 import com.blockstream.green.R
 import com.blockstream.green.databinding.RecoveryPhraseFragmentBinding
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.ui.dialogs.QrDialogFragment
 import com.blockstream.green.ui.items.RecoveryWordListItem
 import com.blockstream.green.utils.StringHolder
@@ -33,9 +32,6 @@ class RecoveryPhraseFragment : AppFragment<RecoveryPhraseFragmentBinding>(
 ) {
     private val args: RecoveryPhraseFragmentArgs by navArgs()
 
-    override val screenName = "RecoveryPhrase"
-    override val segmentation: HashMap<String, Any>? = null
-
     override val subtitle: String?
         get() = if(args.isLightning) getString(R.string.id_lightning) else null
 
@@ -44,8 +40,6 @@ class RecoveryPhraseFragment : AppFragment<RecoveryPhraseFragmentBinding>(
     }
 
     override fun getGreenViewModel(): GreenViewModel = viewModel
-
-    override fun getAppViewModel(): AppViewModelAndroid? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

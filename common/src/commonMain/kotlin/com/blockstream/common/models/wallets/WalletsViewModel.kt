@@ -6,6 +6,7 @@ import com.blockstream.common.events.Event
 import com.blockstream.common.extensions.previewWalletListView
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.views.wallet.WalletListLook
 import com.rickclephas.kmm.viewmodel.MutableStateFlow
@@ -87,20 +88,20 @@ abstract class WalletsViewModel(isHome: Boolean) : WalletsViewModelAbstract(isHo
             val session: GdkSession = sessionManager.getWalletSessionOrCreate(childWallet)
 
             if (session.isConnected) {
-                postSideEffect(SideEffects.NavigateTo(WalletDestinations.WalletOverview(childWallet)))
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(childWallet)))
             } else if (childWallet.isHardware && !event.isLightningShortcut) {
                 postSideEffect(
                     SideEffects.NavigateTo(
-                        WalletDestinations.DeviceScan(
-                            wallet = childWallet
+                        NavigateDestinations.DeviceScan(
+                            greenWallet = childWallet
                         )
                     )
                 )
             } else {
                 postSideEffect(
                     SideEffects.NavigateTo(
-                        WalletDestinations.WalletLogin(
-                            wallet = parentWallet,
+                        NavigateDestinations.WalletLogin(
+                            greenWallet = parentWallet,
                             isLightningShortcut = event.isLightningShortcut
                         )
                     )

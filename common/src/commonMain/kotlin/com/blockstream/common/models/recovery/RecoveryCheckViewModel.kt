@@ -2,9 +2,9 @@ package com.blockstream.common.models.recovery
 
 import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.SetupArgs
+import com.blockstream.common.events.Event
 import com.blockstream.common.gdk.Wally
 import com.blockstream.common.gdk.getBip39WordList
-import com.blockstream.common.events.Event
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
@@ -116,7 +116,7 @@ class RecoveryCheckViewModelPreview(setupArgs: SetupArgs) : RecoveryCheckViewMod
 
     override val wordRight: String = "rib"
 
-    override val words: List<String> = listOf("chalk", "verb", "patch", "cube", "sell", "west")
+    override val words: List<String> = listOf("chalk", "verb", "patch", "cube")
 
     override val checkWordIndex: Int = 8
     override val correctWordIndex: Int = 2

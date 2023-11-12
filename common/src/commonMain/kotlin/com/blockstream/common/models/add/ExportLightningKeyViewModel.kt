@@ -1,13 +1,12 @@
 package com.blockstream.common.models.add
 
-import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountType
-import com.blockstream.common.gdk.data.Asset
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.utils.randomChars
 import com.rickclephas.kmm.viewmodel.coroutineScope
@@ -119,7 +118,7 @@ class ExportLightningKeyViewModel(greenWallet: GreenWallet) :
             createAccount(
                 accountType = it,
                 accountName = it.toString(),
-                network = networkForAccountType(it, Asset.createEmpty(BTC_POLICY_ASSET)),
+                network = networkForAccountType(it, EnrichedAsset.Emtpy),
                 mnemonic = lightningMnemonic,
                 xpub = null
             )

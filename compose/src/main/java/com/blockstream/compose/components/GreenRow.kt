@@ -15,13 +15,13 @@ inline fun GreenRow(
     modifier: Modifier = Modifier,
     space: Int = 16,
     padding: Int = 16,
-    horizontalAlignment: Arrangement.Horizontal = Arrangement.spacedBy(space.dp),
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.spacedBy(space.dp),
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     content: @Composable RowScope.() -> Unit
 ) {
     Row(
         modifier = Modifier.padding(padding.dp).then(modifier),
-        horizontalArrangement = horizontalAlignment,
+        horizontalArrangement = horizontalArrangement,
         verticalAlignment = verticalAlignment,
         content = content
     )

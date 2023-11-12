@@ -1,6 +1,7 @@
 package com.blockstream.green.ui.items
 
 import android.view.View
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.gdk.getNetworkIcon
 import com.blockstream.green.views.GreenContentCardView
@@ -8,7 +9,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.expandable.items.AbstractExpandableItem
 
 
-class NetworkListItem constructor(val network: String, val networkName: String, val caption : String) : AbstractExpandableItem<NetworkListItem.ViewHolder>(){
+class NetworkListItem constructor(val network: Network, val caption : String) : AbstractExpandableItem<NetworkListItem.ViewHolder>(){
     override val type: Int
         get() = R.id.fastadapter_network_item_id
 
@@ -28,7 +29,7 @@ class NetworkListItem constructor(val network: String, val networkName: String, 
         var card: GreenContentCardView = view.findViewById(R.id.card)
 
         override fun bindView(item: NetworkListItem, payloads: List<Any>) {
-            card.setTitle(item.networkName)
+            card.setTitle(item.network.canonicalName)
             card.setCaption(item.caption)
             card.setIcon(item.network.getNetworkIcon())
         }

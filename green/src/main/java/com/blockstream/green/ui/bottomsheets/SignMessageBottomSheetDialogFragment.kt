@@ -4,37 +4,45 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
+import com.blockstream.common.events.Events
+import com.blockstream.common.models.addresses.AddressesViewModel
+import com.blockstream.common.models.addresses.SignMessageViewModel
 import com.blockstream.green.databinding.SignMessageBottomSheetBinding
 import com.blockstream.green.extensions.copyToClipboard
-import com.blockstream.green.ui.addresses.AddressesViewModel
 import com.blockstream.green.utils.getClipboard
 import mu.KLogging
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class SignMessageBottomSheetDialogFragment :
     WalletBottomSheetDialogFragment<SignMessageBottomSheetBinding, AddressesViewModel>() {
 
-    override val screenName = "SignMessage"
+        // screenName in ViewModel
+    override val screenName: String? = null
+
+    val address: String
+        get() = requireArguments().getString(ADDRESS, "")
+
+    private val signMessageViewModel: SignMessageViewModel by viewModel {
+        parametersOf(viewModel.greenWallet, viewModel.account, address)
+    }
 
     override val isAdjustResize: Boolean = true
 
     override fun inflate(layoutInflater: LayoutInflater) =
         SignMessageBottomSheetBinding.inflate(layoutInflater)
 
-    val address: String
-        get() = requireArguments().getString(ADDRESS, "")
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.address = address
-        binding.message = null
+        binding.vm = signMessageViewModel
 
         binding.buttonPaste.setOnClickListener {
-            binding.message = getClipboard(requireContext())
+            signMessageViewModel.message.value = getClipboard(requireContext()) ?: ""
         }
 
         binding.buttonClear.setOnClickListener {
-            binding.message = null
+            signMessageViewModel.message.value = ""
         }
 
         binding.buttonClose.setOnClickListener {
@@ -42,21 +50,15 @@ class SignMessageBottomSheetDialogFragment :
         }
 
         binding.buttonSign.setOnClickListener {
-            signMessage()
+            signMessageViewModel.postEvent(Events.Continue)
         }
 
         binding.messageCard.setOnClickListener {
-            copyToClipboard("Message", binding.message ?: "", animateView = binding.messageCard, showCopyNotification = true)
+            copyToClipboard("Message", signMessageViewModel.message.value, animateView = binding.messageCard, showCopyNotification = true)
         }
 
         binding.signatureCard.setOnClickListener {
-            copyToClipboard("Address", binding.signature ?: "", animateView = binding.signatureCard, showCopyNotification = true)
-        }
-    }
-
-    private fun signMessage() {
-        viewModel.signMessage(address, binding.message ?: ""){
-            binding.signature = it
+            copyToClipboard("Address", signMessageViewModel.signature.value ?: "", animateView = binding.signatureCard, showCopyNotification = true)
         }
     }
 

@@ -4,21 +4,16 @@ import android.os.Bundle
 import android.view.View
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.lifecycle.lifecycleScope
-import com.blockstream.common.Urls
 import com.blockstream.common.models.home.HomeViewModel
 import com.blockstream.common.models.wallets.WalletsViewModel
-import com.blockstream.compose.screens.DrawerScreen
-import com.blockstream.compose.screens.DrawerScreenCallbacks
 import com.blockstream.compose.screens.HomeScreen
 import com.blockstream.compose.screens.HomeScreenCallbacks
+import com.blockstream.compose.sheets.BottomSheetNavigatorM3
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ComposeViewBinding
-import com.blockstream.green.ui.bottomsheets.DeleteWalletBottomSheetDialogFragment
-import com.blockstream.green.ui.bottomsheets.RenameWalletBottomSheetDialogFragment
 import com.blockstream.green.ui.wallet.AbstractWalletsFragment
-import com.blockstream.green.utils.openBrowser
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -30,6 +25,8 @@ class HomeFragment :
     val viewModel: HomeViewModel by viewModel()
 
     override fun getGreenViewModel() = viewModel
+
+    override val useCompose: Boolean = true
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -52,39 +49,34 @@ class HomeFragment :
             )
             setContent {
                 GreenTheme {
-                    HomeScreen(viewModel = viewModel, callbacks = HomeScreenCallbacks(
-                        onWalletClick = { wallet, isLightningShortcut ->
-                            closeDrawer()
-                            viewModel.postEvent(WalletsViewModel.LocalEvents.SelectWallet(greenWallet = wallet, isLightningShortcut = isLightningShortcut))
-                        },
-                        onWalletRename = {
-                            RenameWalletBottomSheetDialogFragment.show(
-                                it,
-                                childFragmentManager
-                            )
-                        },
-                        onWalletDelete = {
-                            DeleteWalletBottomSheetDialogFragment.show(
-                                it,
-                                childFragmentManager
-                            )
-                        },
-                        onLightningShortcutDelete = {
-                             viewModel.postEvent(WalletsViewModel.LocalEvents.RemoveLightningShortcut(it))
-                        },
-                        onNewWalletClick = {
-                            closeDrawer()
-                            navigate(NavGraphDirections.actionGlobalSetupNewWalletFragment())
-                        },
-                        onAboutClick = {
-                            closeDrawer()
-                            navigate(NavGraphDirections.actionGlobalAboutFragment())
-                        },
-                        onAppSettingsClick = {
-                            closeDrawer()
-                            navigate(NavGraphDirections.actionGlobalAppSettingsFragment())
-                        }
-                    ))
+                    BottomSheetNavigatorM3 {
+                        HomeScreen(viewModel = viewModel, callbacks = HomeScreenCallbacks(
+                            onWalletClick = { wallet, isLightningShortcut ->
+                                closeDrawer()
+                                viewModel.postEvent(
+                                    WalletsViewModel.LocalEvents.SelectWallet(
+                                        greenWallet = wallet,
+                                        isLightningShortcut = isLightningShortcut
+                                    )
+                                )
+                            },
+                            onNewWalletClick = {
+                                closeDrawer()
+                                navigate(NavGraphDirections.actionGlobalSetupNewWalletFragment())
+                            },
+                            onLightningShortcutDelete = {
+                                viewModel.postEvent(WalletsViewModel.LocalEvents.RemoveLightningShortcut(it))
+                            },
+                            onAboutClick = {
+                                closeDrawer()
+                                navigate(NavGraphDirections.actionGlobalAboutFragment())
+                            },
+                            onAppSettingsClick = {
+                                closeDrawer()
+                                navigate(NavGraphDirections.actionGlobalAppSettingsFragment())
+                            }
+                        ))
+                    }
                 }
             }
         }

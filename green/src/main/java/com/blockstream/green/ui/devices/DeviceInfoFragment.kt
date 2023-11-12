@@ -20,7 +20,7 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.databinding.DeviceInfoFragmentBinding
-import com.blockstream.green.devices.DeviceManager
+import com.blockstream.green.devices.DeviceManagerAndroid
 import com.blockstream.green.extensions.navigate
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.ui.AppViewModelAndroid
@@ -41,7 +41,7 @@ class DeviceInfoFragment : AbstractDeviceFragment<DeviceInfoFragmentBinding>(
 ), EnvironmentListener {
     val args: DeviceInfoFragmentArgs by navArgs()
 
-    private val deviceOrNull by lazy { deviceManager.getDevice(args.deviceId) }
+    private val deviceOrNull by lazy { deviceManager.getAndroidDevice(args.deviceId) }
     private val device get() = deviceOrNull!!
 
     override val screenName = "DeviceInfo"
@@ -50,7 +50,7 @@ class DeviceInfoFragment : AbstractDeviceFragment<DeviceInfoFragmentBinding>(
         parametersOf(device)
     }
 
-    private val deviceManager: DeviceManager by inject()
+    private val deviceManager: DeviceManagerAndroid by inject()
 
     override val title: String?
         get() = deviceOrNull?.deviceBrand?.name
@@ -67,7 +67,7 @@ class DeviceInfoFragment : AbstractDeviceFragment<DeviceInfoFragmentBinding>(
         super.handleSideEffect(sideEffect)
         if (sideEffect is SideEffects.Navigate){
             (sideEffect.data as? GreenWallet)?.also {
-                NavGraphDirections.actionGlobalLoginFragment(it, deviceId = device.id)
+                NavGraphDirections.actionGlobalLoginFragment(it, deviceId = device.connectionIdentifier)
                     .let { navDirections ->
                         navigate(
                             findNavController(),

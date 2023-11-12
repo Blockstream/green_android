@@ -16,8 +16,10 @@ import com.arkivanov.essenty.parcelable.writeString
 import com.arkivanov.essenty.parcelable.writeStringOrNull
 import com.blockstream.common.database.GetWalletsWithCredentialType
 import com.blockstream.common.database.Wallet
-import com.blockstream.common.extensions.objectId
 import com.blockstream.common.extensions.isBlank
+import com.blockstream.common.extensions.objectId
+import com.blockstream.common.serializers.WalletSerializer
+import kotlinx.serialization.Serializable
 
 fun Wallet.toGreenWallet(): GreenWallet {
     return GreenWallet(wallet = this)
@@ -44,9 +46,14 @@ fun GetWalletsWithCredentialType.toGreenWallet(): GreenWallet {
 
 enum class WalletIcon { REGULAR, WATCH_ONLY, TESTNET, BIP39, HARDWARE, LIGHTNING }
 
+@Serializable
 @Parcelize
 @TypeParceler<Wallet, WalletParceler>()
-data class GreenWallet constructor(var wallet: Wallet, val ephemeralIdOrNull: Long? = null, val hasLightningShortcut: Boolean = false) : Parcelable{
+data class GreenWallet constructor(
+    @Serializable(with = WalletSerializer::class) var wallet: Wallet,
+    val ephemeralIdOrNull: Long? = null,
+    val hasLightningShortcut: Boolean = false
+) : Parcelable {
 
     var id
         get() = wallet.id
@@ -86,6 +93,7 @@ data class GreenWallet constructor(var wallet: Wallet, val ephemeralIdOrNull: Lo
 
     val watchOnlyUsername
         get() = wallet.watch_only_username
+
     val isWatchOnly
         get() = wallet.watch_only_username != null
 

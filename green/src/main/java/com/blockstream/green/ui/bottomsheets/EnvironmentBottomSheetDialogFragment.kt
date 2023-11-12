@@ -18,15 +18,12 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
-import com.russhwolf.settings.Settings
 import mu.KLogging
 import org.koin.android.ext.android.inject
 
 class EnvironmentBottomSheetDialogFragment : AbstractBottomSheetDialogFragment<MenuBottomSheetBinding>() {
 
     override val screenName: String? = null
-
-    private val settings: Settings by inject()
 
     private val gdk: Gdk by inject()
 

@@ -5,10 +5,8 @@ import android.view.View
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.blockstream.common.data.SetupArgs
+import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.extensions.toggle
-import com.blockstream.common.gdk.data.AccountType
-import com.blockstream.common.gdk.data.Asset
 import com.blockstream.common.models.add.ChooseAccountTypeViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
@@ -37,57 +35,64 @@ class ChooseAccountTypeFragment : AbstractAddAccountFragment<ChooseAccountTypeFr
     val args: ChooseAccountTypeFragmentArgs by navArgs()
 
     override val assetId: String?
-        get() = args.assetId
+        get() = args.asset?.assetId
 
     override val viewModel: ChooseAccountTypeViewModel by viewModel {
-        parametersOf(args.wallet, args.assetId)
+        parametersOf(args.wallet, args.asset)
     }
 
     override fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
 
-        if(sideEffect is SideEffects.NavigateTo){
-            (sideEffect.destination as? NavigateDestinations.ExportLightningKey)?.also {
-                navigate(
-                    ChooseAccountTypeFragmentDirections.actionChooseAccountTypeFragmentToExportLightningKeyFragment(
-                        wallet = args.wallet,
+        when (sideEffect) {
+            is SideEffects.NavigateTo -> {
+                (sideEffect.destination as? NavigateDestinations.ExportLightningKey)?.also {
+                    navigate(
+                        ChooseAccountTypeFragmentDirections.actionChooseAccountTypeFragmentToExportLightningKeyFragment(
+                            wallet = args.wallet,
+                        )
                     )
-                )
-            }
-            (sideEffect.destination as? NavigateDestinations.AddAccount2of3)?.also {
-                navigate(
-                    ChooseAccountTypeFragmentDirections.actionChooseAccountTypeFragmentToAccount2of3Fragment(
-
-                        setupArgs = SetupArgs(
-                            greenWallet = args.wallet,
-                            assetId = it.asset.assetId,
-                            network = it.network,
-                            accountType = AccountType.TWO_OF_THREE
-                        ),
+                }
+                (sideEffect.destination as? NavigateDestinations.AddAccount2of3)?.also {
+                    navigate(
+                        ChooseAccountTypeFragmentDirections.actionChooseAccountTypeFragmentToAccount2of3Fragment(
+                            setupArgs = it.setupArgs,
+                        )
                     )
-                )
+                }
+                (sideEffect.destination as? NavigateDestinations.ReviewAddAccount)?.also {
+                    navigate(
+                        ChooseAccountTypeFragmentDirections.actionGlobalReviewAddAccountFragment(
+                            setupArgs = it.setupArgs,
+                        )
+                    )
+                }
             }
-        } else if (sideEffect is ChooseAccountTypeViewModel.LocalSideEffects.ExperimentalFeaturesDialog){
-            dialog(
-                title = R.string.id_experimental_feature,
-                message = R.string.id_experimental_features_might,
-                icon = R.drawable.ic_fill_flask_24,
-                listener = {
-                    viewModel.postEvent(sideEffect.event)
-                }
-            )
 
-        }else if(sideEffect is ChooseAccountTypeViewModel.LocalSideEffects.ArchivedAccountDialog){
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.id_archived_account)
-                .setMessage(R.string.id_there_is_already_an_archived)
-                .setPositiveButton(R.string.id_continue) { _, _ ->
-                    viewModel.postEvent(sideEffect.event)
-                }
-                .setNeutralButton(R.string.id_archived_accounts) { _, _ ->
-                    navigate(NavGraphDirections.actionGlobalArchivedAccountsFragment(wallet = viewModel.greenWallet, navigateToOverview = true))
-                }
-                .show()
+            is ChooseAccountTypeViewModel.LocalSideEffects.ExperimentalFeaturesDialog -> {
+                dialog(
+                    title = R.string.id_experimental_feature,
+                    message = R.string.id_experimental_features_might,
+                    icon = R.drawable.ic_fill_flask_24,
+                    listener = {
+                        viewModel.postEvent(sideEffect.event)
+                    }
+                )
+
+            }
+
+            is ChooseAccountTypeViewModel.LocalSideEffects.ArchivedAccountDialog -> {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.id_archived_account)
+                    .setMessage(R.string.id_there_is_already_an_archived)
+                    .setPositiveButton(R.string.id_continue) { _, _ ->
+                        viewModel.postEvent(sideEffect.event)
+                    }
+                    .setNeutralButton(R.string.id_archived_accounts) { _, _ ->
+                        navigate(NavGraphDirections.actionGlobalArchivedAccountsFragment(wallet = viewModel.greenWallet, navigateToOverview = true))
+                    }
+                    .show()
+            }
         }
     }
 
@@ -97,7 +102,7 @@ class ChooseAccountTypeFragment : AbstractAddAccountFragment<ChooseAccountTypeFr
         binding.vm = viewModel
 
         viewModel.asset.onEach {
-            binding.asset.bind(scope = lifecycleScope, assetId = it.assetId, session = viewModel.session, showEditIcon = true)
+            binding.asset.bind(scope = lifecycleScope, asset = it, session = viewModel.session, showEditIcon = true)
         }.launchIn(lifecycleScope)
 
         binding.assetMaterialCardView.setOnClickListener {
@@ -132,7 +137,7 @@ class ChooseAccountTypeFragment : AbstractAddAccountFragment<ChooseAccountTypeFr
         }.launchIn(lifecycleScope)
     }
 
-    override fun assetClicked(assetId: String) {
-        viewModel.asset.value = Asset.create(assetId, viewModel.session)
+    override fun assetClicked(asset: EnrichedAsset) {
+        viewModel.asset.value = asset
     }
 }

@@ -96,12 +96,16 @@ abstract class AppFragment<T : ViewDataBinding>(
     open val subtitle : String? = null
     open val toolbarIcon: Int? = null
 
+    open val useCompose : Boolean = false
+
     override val screenName: String? = null
     override var screenIsRecorded = false
     override val segmentation: HashMap<String, Any>? = null
 
     protected val toolbar: GreenToolbar
         get() = (requireActivity() as AppActivity).toolbar
+
+    open val sideEffectsHandledByAppFragment: Boolean = true
 
     open fun updateToolbar() {
         title?.let {
@@ -146,7 +150,7 @@ abstract class AppFragment<T : ViewDataBinding>(
 
             viewLifecycleOwner.lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                    viewModel.sideEffect.onEach {
+                    (if(useCompose) viewModel.sideEffectReEmitted else viewModel.sideEffect).onEach {
                         handleSideEffect(it)
                     }.launchIn(this)
                 }
@@ -227,17 +231,30 @@ abstract class AppFragment<T : ViewDataBinding>(
     open fun handleSideEffect(sideEffect: SideEffect){
         when (sideEffect){
             is SideEffects.OpenBrowser -> {
-                openBrowser(sideEffect.url)
+                if(sideEffectsHandledByAppFragment) {
+                    openBrowser(sideEffect.url)
+                }
             }
             is SideEffects.Snackbar -> {
-                view?.also { Snackbar.make(it, requireContext().stringFromIdentifier(sideEffect.text) ?: "", Snackbar.LENGTH_SHORT).show() }
+                // Snackbar is implemented in compose but LocalSnackbar is only available in GreenApp
+                view?.also {
+                    Snackbar.make(
+                        it,
+                        requireContext().stringFromIdentifier(sideEffect.text) ?: "",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                }
+
             }
             is SideEffects.Dialog -> {
-                MaterialAlertDialogBuilder(requireContext())
-                    .setTitle(requireContext().stringFromIdentifier(sideEffect.title))
-                    .setMessage(requireContext().stringFromIdentifier(sideEffect.message))
-                    .setPositiveButton(android.R.string.ok, null)
-                    .show()
+                if (sideEffectsHandledByAppFragment) {
+                    MaterialAlertDialogBuilder(requireContext()).setTitle(
+                            requireContext().stringFromIdentifier(
+                                sideEffect.title
+                            )
+                        ).setMessage(requireContext().stringFromIdentifier(sideEffect.message))
+                        .setPositiveButton(android.R.string.ok, null).show()
+                }
             }
             is SideEffects.ErrorSnackbar -> {
                 errorSnackbar(
@@ -283,7 +300,9 @@ abstract class AppFragment<T : ViewDataBinding>(
             }
             is SideEffects.NavigateBack -> {
                 if (sideEffect.error == null) {
-                    popBackStack()
+                    if(sideEffectsHandledByAppFragment) {
+                        popBackStack()
+                    }
                 } else {
                     errorDialog(sideEffect.error!!, errorReport = sideEffect.errorReport) {
                         popBackStack()
@@ -291,9 +310,11 @@ abstract class AppFragment<T : ViewDataBinding>(
                 }
             }
             is SideEffects.CopyToClipboard -> {
-                copyToClipboard("Green", sideEffect.value, requireContext())
-                sideEffect.message?.also {
-                    snackbar(it)
+                if(sideEffectsHandledByAppFragment) {
+                    copyToClipboard("Green", sideEffect.value, requireContext())
+                    sideEffect.message?.also {
+                        snackbar(it)
+                    }
                 }
             }
             is SideEffects.Logout -> {

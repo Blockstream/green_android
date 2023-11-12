@@ -6,10 +6,10 @@ import java.io.FileInputStream
 import java.util.*
 
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("kotlin-parcelize")
-    id("kotlinx-serialization")
+    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.kotlinParcelize)
+    alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.google.devtools.ksp)
     id("kotlin-kapt") // until @BindingAdapter supports KSP
     id("androidx.navigation.safeargs.kotlin")
@@ -161,7 +161,6 @@ android {
     packaging {
         jniLibs.pickFirsts.add("**/*.so")
     }
-
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
@@ -289,10 +288,6 @@ dependencies {
 
     /**  --- Slide To Act ----------------------------------------------------------------------- */
     implementation(libs.slidetoact)
-    /** ----------------------------------------------------------------------------------------- */
-
-    /**  --- Rive ------------------------------------------------------------------------------- */
-    implementation(libs.rive.android)
     /** ----------------------------------------------------------------------------------------- */
 
     testImplementation(libs.junit)

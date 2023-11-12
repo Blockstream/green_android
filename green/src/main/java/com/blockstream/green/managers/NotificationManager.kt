@@ -150,7 +150,7 @@ class NotificationManager constructor(
             it.action = MainActivity.OPEN_WALLET
             it.putExtra(MainActivity.WALLET, wallet)
             session.device?.let { device ->
-                it.putExtra(MainActivity.DEVICE_ID, device.id)
+                it.putExtra(MainActivity.DEVICE_ID, device.connectionIdentifier)
             }
         }
         val pendingIntent = PendingIntent.getActivity(

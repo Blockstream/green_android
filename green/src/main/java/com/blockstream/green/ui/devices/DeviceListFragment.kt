@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.blockstream.common.Urls
+import com.blockstream.common.gdk.device.DeviceInterface
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
@@ -19,7 +20,8 @@ import com.blockstream.green.databinding.DeviceListFragmentBinding
 import com.blockstream.green.databinding.HwConnectStepBinding
 import com.blockstream.green.databinding.JadeConnectStepBinding
 import com.blockstream.green.devices.Device
-import com.blockstream.green.devices.DeviceManager
+import com.blockstream.green.devices.DeviceManagerAndroid
+import com.blockstream.green.devices.toAndroidDevice
 import com.blockstream.green.ui.items.DeviceListItem
 import com.blockstream.green.utils.observeList
 import com.blockstream.green.utils.openBrowser
@@ -50,7 +52,7 @@ class DeviceListFragment : AbstractDeviceFragment<DeviceListFragmentBinding>(
 
     override fun getAppViewModel() = viewModel
 
-    private val deviceManager: DeviceManager by inject()
+    private val deviceManager: DeviceManagerAndroid by inject()
 
     private var changeStepJob: Job? = null
 
@@ -76,8 +78,8 @@ class DeviceListFragment : AbstractDeviceFragment<DeviceListFragmentBinding>(
                 // Nothing to do here, it's already handled by DeviceManager
             }
 
-        val devicesAdapter = ModelAdapter<Device, DeviceListItem>() {
-            DeviceListItem(it)
+        val devicesAdapter = ModelAdapter<DeviceInterface, DeviceListItem>() {
+            DeviceListItem(it.toAndroidDevice())
         }.observeList(viewLifecycleOwner, viewModel.devices)
 
         val fastAdapter = FastAdapter.with(devicesAdapter)
@@ -167,7 +169,7 @@ class DeviceListFragment : AbstractDeviceFragment<DeviceListFragmentBinding>(
     }
 
     private fun selectDevice(device: Device) {
-        navigate(DeviceListFragmentDirections.actionDeviceListFragmentToDeviceInfoFragment(deviceId = device.id))
+        navigate(DeviceListFragmentDirections.actionDeviceListFragmentToDeviceInfoFragment(deviceId = device.connectionIdentifier))
     }
 }
 

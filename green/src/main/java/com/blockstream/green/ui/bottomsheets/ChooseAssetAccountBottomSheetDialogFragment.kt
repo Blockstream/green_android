@@ -3,14 +3,16 @@ package com.blockstream.green.ui.bottomsheets
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.data.EnrichedAsset
-import com.blockstream.common.extensions.getAssetName
 import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.green.R
 import com.blockstream.green.databinding.FilterBottomSheetBinding
+import com.blockstream.green.extensions.endIconCustomMode
 import com.blockstream.green.extensions.makeItConstant
 import com.blockstream.green.ui.items.AssetAccountsListItem
 import com.blockstream.green.ui.wallet.AbstractAssetWalletViewModel
@@ -40,7 +42,7 @@ class ChooseAssetAccountBottomSheetDialogFragment :
         super.onViewCreated(view, savedInstanceState)
 
         binding.showDivider = false
-        binding.showSearch = false
+        binding.showSearch = true
         binding.showLoader = true
 
         // Keep the height of the window always constant
@@ -54,7 +56,6 @@ class ChooseAssetAccountBottomSheetDialogFragment :
             it.isSelectable = true
             it.multiSelect = false
             it.selectWithItemUpdate = true
-
 
             it.selectionListener = object : ISelectionListener<GenericItem> {
                 override fun onSelectionChanged(item: GenericItem, selected: Boolean) {
@@ -70,32 +71,34 @@ class ChooseAssetAccountBottomSheetDialogFragment :
             itemAnimator = AlphaCrossFadeAnimator()
             adapter = fastAdapter
         }
+
+        binding.searchTextInputLayout.endIconCustomMode(R.drawable.ic_baseline_search_24)
+        binding.searchInputEditText.addTextChangedListener {
+            modelAdapter.filter(it)
+        }
     }
 
     private fun createEnrichedAssets(): List<EnrichedAsset> {
-        return (setOfNotNull(
-            EnrichedAsset.createOrNull(session.bitcoin?.policyAsset),
-            EnrichedAsset.createOrNull(session.liquid?.policyAsset)
-        ) + (session.enrichedAssets.value.values.takeIf { session.liquid != null } ?: emptyList()))
-            .sortedWith(session::sortAssets) + listOfNotNull(session.liquid?.let {
-            EnrichedAsset( // Any Liquid Asset
-                assetId = it.policyAsset,
-                weight = -1,
-                isAnyLiquidAsset = true
-            )
-        })
+        return listOfNotNull(
+            EnrichedAsset.createOrNull(session = session, session.bitcoin?.policyAsset),
+            EnrichedAsset.createOrNull(session = session, session.liquid?.policyAsset),
+        ) + (session.enrichedAssets.value.takeIf { session.liquid != null }?.map {
+            EnrichedAsset.create(session = session, assetId = it.assetId)
+        } ?: listOf()) + listOfNotNull(
+            EnrichedAsset.createAnyAsset(session = session, isAmp = false),
+            EnrichedAsset.createAnyAsset(session = session, isAmp = true)
+        ).sortedWith(session::sortEnrichedAssets)
     }
 
     private fun createModelAdapter(): ModelAdapter<*, *> {
         val assetsAdapter = ModelAdapter<EnrichedAsset, AssetAccountsListItem> { enrichedAsset ->
             AssetAccountsListItem(
-                assetPair = enrichedAsset.assetId to 0L,
+                assetPair = enrichedAsset to 0L,
                 session = session,
-                enrichedAsset = enrichedAsset,
                 listener = object : ChooseAssetAccountListener {
-                    override fun createNewAccountClicked(assetId: String) {
+                    override fun createNewAccountClicked(asset: EnrichedAsset) {
                         (requireParentFragment() as? ChooseAssetAccountListener)?.also {
-                            it.createNewAccountClicked(assetId)
+                            it.createNewAccountClicked(asset)
                             dismiss()
                         }
                     }
@@ -128,9 +131,11 @@ class ChooseAssetAccountBottomSheetDialogFragment :
         // Not used
         assetsAdapter.itemFilter.filterPredicate =
             { item: AssetAccountsListItem, constraint: CharSequence? ->
-                item.assetPair.first.getAssetName(session).lowercase().contains(
+                item.assetPair.first.name(session).lowercase().contains(
                     constraint.toString().lowercase()
-                )
+                ) || item.assetPair.first.ticker(session)?.lowercase()?.contains(
+                    constraint.toString().lowercase()
+                ) == true || item.assetPair.first.isAnyAsset
             }
 
         return assetsAdapter
@@ -144,5 +149,5 @@ class ChooseAssetAccountBottomSheetDialogFragment :
 }
 
 interface ChooseAssetAccountListener : AccountAssetListener {
-    fun createNewAccountClicked(assetId: String)
+    fun createNewAccountClicked(asset: EnrichedAsset)
 }

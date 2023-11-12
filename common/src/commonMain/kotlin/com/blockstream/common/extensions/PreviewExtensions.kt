@@ -1,16 +1,18 @@
 package com.blockstream.common.extensions
 
+import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.database.LoginCredentials
 import com.blockstream.common.database.Wallet
 import com.blockstream.common.views.wallet.WalletListLook
 
-fun previewWallet(isHardware: Boolean = false, isEphemeral: Boolean = false, hasLightningShortcut: Boolean = false): GreenWallet {
+fun previewWallet(isHardware: Boolean = false, isWatchOnly: Boolean = false, isEphemeral: Boolean = false, hasLightningShortcut: Boolean = false): GreenWallet {
     return Wallet(
         id = objectId().toString(),
         name = if(isHardware) listOf("Jade USB", "Jade BLE", "Ledger").random() else "Wallet #${(1L..999L).random()}",
         xpub_hash_id = "",
         ask_bip39_passphrase = false,
-        watch_only_username = null,
+        watch_only_username = if(isWatchOnly) "watch_only" else null,
         is_hardware = isHardware,
         is_testnet = false,
         is_lightning = false,
@@ -37,3 +39,5 @@ fun previewWalletListView(isHardware: Boolean = false, isEphemeral: Boolean = fa
         icon = wallet.icon
     )
 }
+
+fun previewLoginCredentials() = LoginCredentials("", CredentialType.BIOMETRICS_PINDATA, "", null, null, null, 0)

@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asFlow
 import com.blockstream.common.BTC_POLICY_ASSET
-import com.blockstream.common.data.EnrichedAsset
+import com.blockstream.common.data.CountlyAsset
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.assetTicker
 import com.blockstream.common.extensions.isPolicyAsset
@@ -67,8 +67,8 @@ class SwapViewModel constructor(
             exchangeRateDirection.value = false
         }
 
-    private var _remoteAssetsLiveData = MutableLiveData<Map<String, EnrichedAsset>>(mapOf())
-    val remoteAssetsLiveData: LiveData<Map<String, EnrichedAsset>> get() = _remoteAssetsLiveData
+    private var _remoteAssetsLiveData = MutableLiveData<Map<String, CountlyAsset>>(mapOf())
+    val remoteAssetsLiveData: LiveData<Map<String, CountlyAsset>> get() = _remoteAssetsLiveData
 
     var remoteAssets
         get() = remoteAssetsLiveData.value!!
@@ -119,7 +119,7 @@ class SwapViewModel constructor(
         }.launchIn(viewModelScope.coroutineScope)
 
         session.enrichedAssets.onEach {
-            remoteAssets = it
+            remoteAssets = it.map { it.assetId to it }.toMap()
             updateToAssets()
         }.launchIn(viewModelScope.coroutineScope)
 

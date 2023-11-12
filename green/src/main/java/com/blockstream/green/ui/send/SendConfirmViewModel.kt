@@ -76,7 +76,7 @@ class SendConfirmViewModel constructor(
                 SendTransactionSuccess(signedTransaction = signedTransaction.transaction ?: "")
             }
         }, postAction = {
-            onProgressAndroid.value = it == null
+            onProgress.value = it == null
         }, onSuccess = {
             deviceAddressValidationEvent.value = ConsumableEvent(true)
 
@@ -91,7 +91,7 @@ class SendConfirmViewModel constructor(
 
                 postSideEffect(SideEffects.Navigate(it))
             }else{
-                onProgressAndroid.value = false
+                onProgress.value = false
                 postSideEffect(SideEffects.Success(it))
             }
         }, onError = {

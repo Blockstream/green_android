@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,7 +32,7 @@ fun ComposeUI() {
     GreenColumn(space = 8, modifier = Modifier.verticalScroll(rememberScrollState())) {
         Text("Typography", style = MaterialTheme.typography.titleSmall)
 
-        Divider()
+        HorizontalDivider()
 
         GreenColumn(space = 0, padding = 0) {
 
@@ -70,7 +70,7 @@ fun ComposeUI() {
 
         Text("WalletListItem", style = MaterialTheme.typography.titleSmall)
 
-        Divider()
+        HorizontalDivider()
 
         GreenColumn(padding = 0, space = 4) {
             WalletListItem(look = WalletListLook.preview(hasLightningShortcut = true))

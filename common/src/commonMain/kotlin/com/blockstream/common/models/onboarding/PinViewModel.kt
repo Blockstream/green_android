@@ -86,6 +86,7 @@ class PinViewModel constructor(
     }
 
     private fun checkRecoveryPhrase(isTestnet: Boolean, mnemonic: String, password: String?) {
+        onProgressDescription.value = "id_recovery_phrase_check"
         doAsync({
             session.loginWithMnemonic(
                 isTestnet = isTestnet,
@@ -196,6 +197,7 @@ class PinViewModel constructor(
         setupArgs: SetupArgs,
         pin: String,
     ) {
+        onProgressDescription.value = "id_restoring_your_wallet"
         doAsync({
             session.loginWithMnemonic(
                 isTestnet = setupArgs.isTestnet == true,

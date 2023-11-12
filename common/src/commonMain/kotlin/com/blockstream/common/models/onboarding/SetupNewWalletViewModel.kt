@@ -4,6 +4,7 @@ import com.blockstream.common.Urls
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.rickclephas.kmm.viewmodel.MutableStateFlow
@@ -30,8 +31,6 @@ class SetupNewWalletViewModel : SetupNewWalletViewModelAbstract() {
 
     class LocalSideEffects {
         class ShowConsent(sideEffect: SideEffect): SideEffects.SideEffectEvent(Events.EventSideEffect(sideEffect))
-        object NavigateAddWallet : SideEffect
-        object NavigateUseHardwareDevice : SideEffect
     }
 
     @NativeCoroutinesState
@@ -54,18 +53,18 @@ class SetupNewWalletViewModel : SetupNewWalletViewModelAbstract() {
         when (event) {
             is LocalEvents.ClickAddWallet -> {
                 if (shouldShowConsentDialog()) {
-                    postSideEffect(LocalSideEffects.ShowConsent(LocalSideEffects.NavigateAddWallet))
+                    postSideEffect(LocalSideEffects.ShowConsent(SideEffects.NavigateTo(NavigateDestinations.AddWallet)))
                 } else {
-                    postSideEffect(LocalSideEffects.NavigateAddWallet)
+                    postSideEffect(SideEffects.NavigateTo(NavigateDestinations.AddWallet))
                 }
                 countly.addWallet()
             }
 
             is LocalEvents.ClickUseHardwareDevice -> {
                 if (shouldShowConsentDialog()) {
-                    postSideEffect(LocalSideEffects.ShowConsent(LocalSideEffects.NavigateUseHardwareDevice))
+                    postSideEffect(LocalSideEffects.ShowConsent(SideEffects.NavigateTo(NavigateDestinations.UseHardwareDevice)))
                 } else {
-                    postSideEffect(LocalSideEffects.NavigateUseHardwareDevice)
+                    postSideEffect(SideEffects.NavigateTo(NavigateDestinations.UseHardwareDevice))
                 }
                 countly.hardwareWallet()
                 settingsManager.setDeviceTermsAccepted()

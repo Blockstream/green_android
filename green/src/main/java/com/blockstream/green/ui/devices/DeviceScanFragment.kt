@@ -53,7 +53,7 @@ class DeviceScanFragment : AbstractDeviceFragment<DeviceScanFragmentBinding>(
                 @Suppress("UNCHECKED_CAST")
                 val data : Pair<GreenWallet, Device> = sideEffect.data as Pair<GreenWallet, Device>
 
-                NavGraphDirections.actionGlobalLoginFragment(wallet = data.first, deviceId = data.second.id).let { navDirections ->
+                NavGraphDirections.actionGlobalLoginFragment(wallet = data.first, deviceId = data.second.connectionIdentifier).let { navDirections ->
                     navigate(findNavController(), navDirections.actionId, navDirections.arguments, isLogout = true)
                 }
             }

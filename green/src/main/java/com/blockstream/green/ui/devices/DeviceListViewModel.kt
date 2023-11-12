@@ -2,12 +2,12 @@ package com.blockstream.green.ui.devices
 
 import android.os.Build
 import androidx.lifecycle.MutableLiveData
-import com.blockstream.common.gdk.device.DeviceBrand
+import com.blockstream.common.gdk.device.DeviceInterface
+import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceConnectionManager
-import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.utils.QATester
 import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.flow.launchIn
@@ -23,7 +23,7 @@ class DeviceListViewModel constructor(
     @InjectedParam val isJade: Boolean
 ) : AbstractDeviceViewModel(deviceManager, qaTester, null) {
 
-    val devices = MutableLiveData(listOf<Device>())
+    val devices = MutableLiveData(listOf<DeviceInterface>())
     val hasBleConnectivity = true // deviceBrand == null || deviceBrand.hasBleConnectivity
 
     var onSuccess: (() -> Unit)? = null
@@ -35,15 +35,11 @@ class DeviceListViewModel constructor(
     override val deviceConnectionManagerOrNull: DeviceConnectionManager? = null
 
     init {
-        deviceManager
-            .devicesStateFlow.map { devices ->
-                devices.filter {
-                    (it.deviceBrand == DeviceBrand.Blockstream && isJade) || (it.deviceBrand != DeviceBrand.Blockstream && !isJade)
-                }
-            }
-            .onEach {
-                devices.value = it
-            }.launchIn(viewModelScope.coroutineScope)
+        deviceManager.devices.map { devices ->
+            devices.filter { it.isJade == isJade }
+        }.onEach {
+            devices.value = it
+        }.launchIn(viewModelScope.coroutineScope)
     }
 
     fun askForPermissionOrBond(device: Device) {

@@ -141,9 +141,6 @@
             android:id="@+id/action_addWalletFragment_to_recoveryIntroFragment"
             app:destination="@id/recoveryIntroFragment" />
         <action
-            android:id="@+id/action_addWalletFragment_to_chooseNetworkFragment"
-            app:destination="@id/chooseNetworkFragment" />
-        <action
             android:id="@+id/action_addWalletFragment_to_enterRecoveryPhraseFragment"
             app:destination="@id/enterRecoveryPhraseFragment" />
     </fragment>
@@ -367,9 +364,9 @@
             android:defaultValue="UNKNOWN"
             app:argType="com.blockstream.common.gdk.data.AccountType" />
         <argument
-            android:name="assetId"
+            android:name="asset"
             android:defaultValue="@null"
-            app:argType="string"
+            app:argType="com.blockstream.common.data.EnrichedAsset"
             app:nullable="true" />
         <action
             android:id="@+id/action_chooseAccountTypeFragment_to_account2of3Fragment"

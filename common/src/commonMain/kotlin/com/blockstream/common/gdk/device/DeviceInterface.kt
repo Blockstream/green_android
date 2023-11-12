@@ -7,7 +7,8 @@ enum class DeviceState {
 }
 
 interface DeviceInterface {
-    val id: String
+    val connectionIdentifier: String
+    val uniqueIdentifier: String
     val name: String
     val manufacturer: String?
     val deviceBrand: DeviceBrand

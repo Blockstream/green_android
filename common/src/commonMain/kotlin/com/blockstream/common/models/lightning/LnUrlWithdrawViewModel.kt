@@ -193,7 +193,7 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
 
     private fun withdraw() {
         doAsync({
-            session.lightningSdk.withdrawLnurl(requestData = requestData, amountInSatoshi(), description.value).also {
+            session.lightningSdk.withdrawLnUrl(requestData = requestData, amountInSatoshi(), description.value).also {
                 if (it is LnUrlWithdrawResult.ErrorStatus) {
                     throw Exception(it.data.reason)
                 }

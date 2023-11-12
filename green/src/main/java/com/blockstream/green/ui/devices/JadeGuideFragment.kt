@@ -5,11 +5,12 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.devices.JadeGuideViewModel
 import com.blockstream.green.R
 import com.blockstream.green.databinding.JadeGuideFragmentBinding
 import com.blockstream.green.extensions.setOnClickListenerIndexed
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.utils.fadeIn
 import com.blockstream.green.utils.fadeOut
 import kotlinx.coroutines.Job
@@ -23,13 +24,12 @@ class JadeGuideFragment : AppFragment<JadeGuideFragmentBinding>(
     menuRes = 0
 ) {
     private var changeStepJob: Job? = null
-    override val screenName = "JadeSetupGuid"
 
     var step = 0
 
-    val viewModel: AppViewModelAndroid by viewModels()
+    val viewModel: JadeGuideViewModel by viewModels()
 
-    override fun getAppViewModel() = viewModel
+    override fun getGreenViewModel(): GreenViewModel = viewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

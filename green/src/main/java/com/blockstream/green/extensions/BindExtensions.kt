@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.updateMargins
 import androidx.core.view.updatePadding
 import com.blockstream.common.data.Denomination
+import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.extensions.getAssetName
 import com.blockstream.common.extensions.hasHistory
 import com.blockstream.common.extensions.isPolicyAsset
@@ -14,6 +15,7 @@ import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Utxo
+import com.blockstream.compose.utils.stringResourceId
 import com.blockstream.green.R
 import com.blockstream.green.databinding.AccountAssetLayoutBinding
 import com.blockstream.green.databinding.AccountCardLayoutBinding
@@ -68,6 +70,7 @@ fun AccountAssetLayoutBinding.bind(
     icon.setImageDrawable(accountAsset.assetId.getAssetIcon(root.context, session, isLightning = accountAsset.account.isLightning))
 }
 
+@Deprecated("Use EnrichedAsset")
 fun AssetLayoutBinding.bind(
     scope: CoroutineScope,
     assetId: String,
@@ -91,6 +94,31 @@ fun AssetLayoutBinding.bind(
     }
 
     this.icon.setImageDrawable(assetId.getAssetIcon(root.context, session))
+}
+
+fun AssetLayoutBinding.bind(
+    scope: CoroutineScope,
+    asset: EnrichedAsset,
+    session: GdkSession,
+    primaryValue: (suspend () -> String?)? = null,
+    secondaryValue: (suspend () -> String?)? = null,
+    showBalance: Boolean = false,
+    showEditIcon: Boolean = false,
+) {
+    this.name = stringResourceId(context(), asset.name(session))
+    this.showBalance = showBalance
+    this.showEditIcon = showEditIcon
+
+    this.primaryValue = ""
+    this.secondaryValue = ""
+    if(showBalance){
+        scope.launch {
+            this@bind.primaryValue = withContext(context = Dispatchers.IO){ primaryValue?.invoke() } ?: ""
+            this@bind.secondaryValue = withContext(context = Dispatchers.IO){ secondaryValue?.invoke() } ?: ""
+        }
+    }
+
+    this.icon.setImageDrawable(asset.getAssetIcon(root.context, session))
 }
 
 fun UtxoLayoutBinding.bind(

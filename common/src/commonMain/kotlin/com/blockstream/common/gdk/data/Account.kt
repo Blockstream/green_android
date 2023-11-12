@@ -186,4 +186,6 @@ data class Account constructor(
     fun isFunded(session: GdkSession): Boolean{
         return session.accountAssets(this).value.assets.values.sum() > 0
     }
+
+    fun accountAsset() = AccountAsset.fromAccount(this)
 }

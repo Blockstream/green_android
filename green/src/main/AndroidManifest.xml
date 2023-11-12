@@ -62,9 +62,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Green"
         android:hardwareAccelerated="true"
-        android:enableOnBackInvokedCallback="true"
+        android:enableOnBackInvokedCallback="false"
         android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="tiramisu">
+
+        <!--        Disable Predictive Back until this is fixed-->
+        <!--        https://issuetracker.google.com/issues/271303558-->
 
         <!--In v4 we have to change launch mode to singleTask-->
         <!--Setting launchMode="singleTask" prevents Android,-->

@@ -19,9 +19,11 @@ abstract class AppSettingsViewModelAbstract() :
     GreenViewModel() {
     override fun screenName(): String = "AppSettings"
 
-    abstract val analyticsFeatureEnabled:Boolean
+    abstract val multiServerValidationFeatureEnabled: Boolean
 
-    abstract val experimentalFeatureEnabled:Boolean
+    abstract val analyticsFeatureEnabled: Boolean
+
+    abstract val experimentalFeatureEnabled: Boolean
 
     @NativeCoroutinesState
     abstract val enhancedPrivacyEnabled: MutableStateFlow<Boolean>
@@ -94,8 +96,9 @@ abstract class AppSettingsViewModelAbstract() :
 }
 
 class AppSettingsViewModel : AppSettingsViewModelAbstract() {
-
     private var appSettings: ApplicationSettings = settingsManager.getApplicationSettings()
+
+    override val multiServerValidationFeatureEnabled = appInfo.isDevelopmentOrDebug
 
     override val analyticsFeatureEnabled = settingsManager.analyticsFeatureEnabled
 
@@ -160,12 +163,15 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
 
     class LocalEvents{
         object AnalyticsMoreInfo: Events.EventSideEffect(LocalSideEffects.AnalyticsMoreInfo)
+        object OnBack: Event
         object Save: Event
+        object Cancel: Event
         class InvitationCode(val code: String): Event
     }
 
-    class LocalSideEffects(){
+    class LocalSideEffects {
         object AnalyticsMoreInfo: SideEffect
+        object UnsavedAppSettings: SideEffect
     }
 
     init {
@@ -187,11 +193,27 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
     override fun handleEvent(event: Event) {
         super.handleEvent(event)
 
-        if (event is LocalEvents.Save) {
-            settingsManager.saveApplicationSettings(getSettings())
-            postSideEffect(SideEffects.NavigateBack())
-        } else if (event is LocalEvents.InvitationCode) {
-            invitationCode(event.code)
+        when (event) {
+            is LocalEvents.Save -> {
+                settingsManager.saveApplicationSettings(getSettings())
+                postSideEffect(SideEffects.NavigateBack())
+            }
+
+            is LocalEvents.InvitationCode -> {
+                invitationCode(event.code)
+            }
+
+            is LocalEvents.Cancel -> {
+                postSideEffect(SideEffects.NavigateBack())
+            }
+
+            is LocalEvents.OnBack -> {
+                if(areSettingsDirty()){
+                    postSideEffect(LocalSideEffects.UnsavedAppSettings)
+                }else{
+                    postSideEffect(SideEffects.NavigateBack())
+                }
+            }
         }
     }
 
@@ -248,6 +270,7 @@ class AppSettingsViewModelPreview(val initValue: Boolean = false) : AppSettingsV
         fun preview(initValue: Boolean) = AppSettingsViewModelPreview(initValue)
     }
 
+    override val multiServerValidationFeatureEnabled: Boolean = false
     override val analyticsFeatureEnabled: Boolean = true
     override val experimentalFeatureEnabled: Boolean = true
     override val enhancedPrivacyEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)

@@ -15,7 +15,6 @@ import com.blockstream.green.extensions.dialog
 import com.blockstream.green.extensions.hideKeyboard
 import com.blockstream.green.extensions.setOnClickListener
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.utils.getClipboard
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -44,8 +43,6 @@ class LnUrlWithdrawFragment : AppFragment<LnurlWithdrawFragmentBinding>(
     }
 
     override fun getGreenViewModel(): GreenViewModel = viewModel
-
-    override fun getAppViewModel(): AppViewModelAndroid? = null
 
     override fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)

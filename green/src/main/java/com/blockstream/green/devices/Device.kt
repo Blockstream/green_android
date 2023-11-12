@@ -31,7 +31,7 @@ import kotlin.properties.Delegates
  */
 class Device constructor(
     val type: ConnectionType,
-    val deviceManager: DeviceManager,
+    val deviceManager: DeviceManagerAndroid,
     val usbDevice: UsbDevice? = null,
     var bleDevice: RxBleDevice? = null,
     val bleService: ParcelUuid? = null,
@@ -96,14 +96,14 @@ class Device constructor(
     var timeout: Long = 0
 
     // On Jade devices is not safe to use mac address as an id cause of RPA. Prefer using the unique name as a way to identify the device.
-    override val id: String by lazy {
+    override val connectionIdentifier: String by lazy {
         usbDevice?.deviceId?.toString(10) ?: (if(deviceBrand.isJade) name else bleDevice?.bluetoothDevice?.address) ?: hashCode().toString(10)
     }
 
-    val uniqueIdentifier: String
+    override val uniqueIdentifier: String
         get() = try {
             (if(isBle) name else usbDevice?.serialNumber) ?: hashCode().toString(10)
-        }catch (e: Exception){
+        } catch (e: Exception){
             if(BuildConfig.DEBUG) {
                 e.printStackTrace()
             }
@@ -209,7 +209,7 @@ class Device constructor(
                     vId == VENDOR_JADE_B)
         }
 
-        fun fromDevice(deviceManager: DeviceManager, usbDevice: UsbDevice): Device? {
+        fun fromDevice(deviceManager: DeviceManagerAndroid, usbDevice: UsbDevice): Device? {
             if(hasSuportedVendorId(usbDevice)){
                 return Device(
                     ConnectionType.USB,
@@ -221,7 +221,7 @@ class Device constructor(
         }
 
         fun fromScan(
-            deviceManager: DeviceManager,
+            deviceManager: DeviceManagerAndroid,
             bleDevice: RxBleDevice,
             bleService: ParcelUuid?
         ): Device {
@@ -236,3 +236,5 @@ class Device constructor(
         }
     }
 }
+
+fun DeviceInterface.toAndroidDevice() = this as Device

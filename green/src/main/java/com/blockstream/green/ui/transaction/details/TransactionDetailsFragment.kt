@@ -119,7 +119,7 @@ class TransactionDetailsFragment : AbstractAccountWalletFragment<BaseRecyclerVie
     }
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
-        binding.vmWalletViewModel = viewModel
+        binding.vm = viewModel
 
         if(isDevelopmentOrDebug){
             args.transaction.toJson().also {

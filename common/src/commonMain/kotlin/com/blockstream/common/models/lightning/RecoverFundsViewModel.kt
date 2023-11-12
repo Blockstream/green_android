@@ -15,6 +15,7 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.feeRateKBWithUnit
 import com.blockstream.common.utils.toAmountLook
+import com.rickclephas.kmm.viewmodel.MutableStateFlow
 import com.rickclephas.kmm.viewmodel.coroutineScope
 import com.rickclephas.kmm.viewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
@@ -84,17 +85,17 @@ class RecoverFundsViewModel(
     onChainAddress: String?,
     val satoshi: Long,
 ) : RecoverFundsViewModelAbstract(greenWallet = greenWallet, isSendAll = isSendAll, onChainAddress = onChainAddress) {
-    private val accountAddress = MutableStateFlow("") // cached account address
+    private val accountAddress = MutableStateFlow(viewModelScope, "") // cached account address
 
-    override val address: MutableStateFlow<String> = MutableStateFlow("")
+    override val address: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
 
-    override val amountToBeRefunded: MutableStateFlow<String?> = MutableStateFlow(null)
-    override val amountToBeRefundedFiat: MutableStateFlow<String?> = MutableStateFlow(null)
-    override val error: MutableStateFlow<String?> = MutableStateFlow(null)
-    override val fee: MutableStateFlow<String?> = MutableStateFlow(null)
-    override val feeFiat: MutableStateFlow<String?> = MutableStateFlow(null)
+    override val amountToBeRefunded: MutableStateFlow<String?> = MutableStateFlow(viewModelScope, null)
+    override val amountToBeRefundedFiat: MutableStateFlow<String?> = MutableStateFlow(viewModelScope, null)
+    override val error: MutableStateFlow<String?> = MutableStateFlow(viewModelScope, null)
+    override val fee: MutableStateFlow<String?> = MutableStateFlow(viewModelScope,null)
+    override val feeFiat: MutableStateFlow<String?> = MutableStateFlow(viewModelScope,null)
 
-    override val customFee: MutableStateFlow<Long> = MutableStateFlow(1L)
+    override val customFee: MutableStateFlow<Long> = MutableStateFlow(viewModelScope,1L)
 
     override val amount: StateFlow<String> = flow {
         session.ifConnectedSuspend {
@@ -115,9 +116,9 @@ class RecoverFundsViewModel(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
-    override val feeSlider: MutableStateFlow<Int> = MutableStateFlow(2)
+    override val feeSlider: MutableStateFlow<Int> = MutableStateFlow(viewModelScope,2)
 
-    private val _feeAmountRate: MutableStateFlow<String> = MutableStateFlow("")
+    private val _feeAmountRate: MutableStateFlow<String> = MutableStateFlow(viewModelScope,"")
     override val feeAmountRate: StateFlow<String> = _feeAmountRate.asStateFlow()
 
     private val bitcoinAccounts = session.accounts.map { accounts ->
@@ -128,7 +129,7 @@ class RecoverFundsViewModel(
         accounts.any { it.isBitcoin && !it.isLightning }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), bitcoinAccounts.value.isNotEmpty())
 
-    override val showManualAddress: MutableStateFlow<Boolean> = MutableStateFlow(hasBitcoinAccount.value)
+    override val showManualAddress: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, hasBitcoinAccount.value)
 
     private val _showLightningAnimation = MutableStateFlow(false)
     override val showLightningAnimation: StateFlow<Boolean> = _showLightningAnimation.asStateFlow()

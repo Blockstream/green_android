@@ -2,15 +2,17 @@ package com.blockstream.common.navigation
 
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.gdk.data.Asset
-import com.blockstream.common.gdk.data.Network
 
 interface NavigateDestination
 sealed class NavigateDestinations : NavigateDestination {
-    data class WalletOverview(val greenWallet: GreenWallet) : NavigateDestination
-    data class NewWallet(val args: SetupArgs) : NavigateDestination
+    object About : NavigateDestination
+    object AppSettings : NavigateDestination
+    object SetupNewWallet : NavigateDestination
+    object AddWallet : NavigateDestination
+    object UseHardwareDevice : NavigateDestination
+    data class RecoveryIntro(val args: SetupArgs) : NavigateDestination
     object NewWatchOnlyWallet : NavigateDestination
-    data class RestoreWallet(val args: SetupArgs) : NavigateDestination
+    data class EnterRecoveryPhrase(val args: SetupArgs) : NavigateDestination
 
     data class RecoveryWords(val args: SetupArgs) : NavigateDestination
 
@@ -22,11 +24,21 @@ sealed class NavigateDestinations : NavigateDestination {
 
     data class RecoveryPhrase(val args: SetupArgs) : NavigateDestination
 
-    data class AddAccount2of3(val asset: Asset, val network: Network) : NavigateDestination
+    data class AddAccount2of3(val setupArgs: SetupArgs) : NavigateDestination
+
+    data class ReviewAddAccount(val setupArgs: SetupArgs) : NavigateDestination
 
     object ExportLightningKey : NavigateDestination
 
     class NewRecovery(val setupArgs: SetupArgs) : NavigateDestination
     class ExistingRecovery(val setupArgs: SetupArgs) : NavigateDestination
     class Xpub(val setupArgs: SetupArgs) : NavigateDestination
+    data class DeviceList(val isJade: Boolean) : NavigateDestination
+
+    data class WalletLogin(val greenWallet: GreenWallet, val isLightningShortcut: Boolean = false) : NavigateDestination
+
+    data class WalletOverview(val greenWallet: GreenWallet) : NavigateDestination
+
+    data class DeviceScan(val greenWallet: GreenWallet) : NavigateDestination
+
 }

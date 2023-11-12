@@ -34,7 +34,7 @@ import com.blockstream.green.ui.items.PreferenceListItem
 import com.blockstream.green.ui.items.TitleListItem
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.utils.AppKeystore
+import com.blockstream.common.utils.AndroidKeystore
 import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.colorText
 import com.blockstream.green.utils.copyToClipboard
@@ -94,7 +94,7 @@ class WalletSettingsFragment :
     val network: Network
         get() = networkOrNull!!
 
-    private val appKeystore: AppKeystore by inject()
+    private val androidKeystore: AndroidKeystore by inject()
 
     val viewModel: WalletSettingsViewModel by viewModel {
         parametersOf(args.wallet)
@@ -381,7 +381,7 @@ class WalletSettingsFragment :
     }
 
     private fun updateBiometricsSubtitle() {
-        val canUseBiometrics = appKeystore.canUseBiometrics()
+        val canUseBiometrics = androidKeystore.canUseBiometrics()
 
         biometricsPreference.subtitle = StringHolder(
             if (canUseBiometrics) {
@@ -549,7 +549,7 @@ class WalletSettingsFragment :
 
     private fun enableBiometrics(onlyDeviceCredentials: Boolean = false) {
 
-        if (appKeystore.isBiometricsAuthenticationRequired()) {
+        if (androidKeystore.isBiometricsAuthenticationRequired()) {
             authenticateWithBiometrics(object : AuthenticationCallback(fragment = this) {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     enableBiometrics(onlyDeviceCredentials = true)
@@ -579,7 +579,7 @@ class WalletSettingsFragment :
         try {
             biometricPrompt.authenticate(
                 promptInfo.build(),
-                BiometricPrompt.CryptoObject(appKeystore.getBiometricsEncryptionCipher(recreateKeyIfNeeded = true))
+                BiometricPrompt.CryptoObject(androidKeystore.getBiometricsEncryptionCipher(recreateKeyIfNeeded = true))
             )
         } catch (e: InvalidAlgorithmParameterException) {
             // At least one biometric must be enrolled

@@ -10,6 +10,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.text.isDigitsOnly
 import androidx.core.view.isVisible
 import com.blockstream.green.R
+import com.blockstream.green.adapters.setIdText
 import com.blockstream.green.databinding.GreenPinViewBinding
 import com.blockstream.green.utils.getClipboard
 import com.blockstream.green.utils.shake
@@ -193,7 +194,7 @@ class GreenPinView @JvmOverloads constructor(
     }
 
     fun setError(text: String?) {
-        binding.error.text = text
+        setIdText(binding.error , text)
         binding.error.isVisible = !text.isNullOrBlank()
     }
 }

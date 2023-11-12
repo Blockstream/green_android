@@ -1,8 +1,8 @@
 package com.blockstream.common.models.onboarding
 
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.events.Event
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestination
 import com.blockstream.common.navigation.NavigateDestinations
@@ -15,19 +15,21 @@ class AddWalletViewModel : AddWalletViewModelAbstract() {
     override fun screenName(): String = "AddWallet"
 
     class LocalEvents {
-        class ClickNewWallet : Event
-        class ClickRestoreWallet : Event
-        class ClickWatchOnly : Event
-        class SelectEnviroment(val pending: NavigateDestination, val isTestnet: Boolean, val customNetwork: Network?):
+        object NewWallet : Event
+        object RestoreWallet : Event
+        object WatchOnly : Event
+        class SelectEnviroment(val isTestnet: Boolean, val customNetwork: Network?):
             Event
     }
 
     sealed class LocalSideEffects{
-        class SelectEnvironment(val pending: NavigateDestination): SideEffect
+        object SelectEnvironment: SideEffect
     }
 
-    val isTestnetEnabled
+    private val isTestnetEnabled
         get() = settingsManager.getApplicationSettings().testnet
+
+    private var pendingDestination: NavigateDestination? = null
 
     init {
         bootstrap()
@@ -37,10 +39,11 @@ class AddWalletViewModel : AddWalletViewModelAbstract() {
         super.handleEvent(event)
 
         when (event) {
-            is LocalEvents.ClickNewWallet -> {
-                SideEffects.NavigateTo(NavigateDestinations.NewWallet(args = SetupArgs(isRestoreFlow = false))).also {
+            is LocalEvents.NewWallet -> {
+                SideEffects.NavigateTo(NavigateDestinations.RecoveryIntro(args = SetupArgs(isRestoreFlow = false))).also {
                     if(isTestnetEnabled){
-                        postSideEffect(LocalSideEffects.SelectEnvironment(it.destination))
+                        pendingDestination = it.destination
+                        postSideEffect(LocalSideEffects.SelectEnvironment)
                     }else{
                         postSideEffect(it)
                     }
@@ -48,10 +51,11 @@ class AddWalletViewModel : AddWalletViewModelAbstract() {
                 countly.newWallet()
             }
 
-            is LocalEvents.ClickRestoreWallet -> {
-                SideEffects.NavigateTo(NavigateDestinations.RestoreWallet(args = SetupArgs(isRestoreFlow = true))).also {
+            is LocalEvents.RestoreWallet -> {
+                SideEffects.NavigateTo(NavigateDestinations.EnterRecoveryPhrase(args = SetupArgs(isRestoreFlow = true))).also {
                     if(isTestnetEnabled){
-                        postSideEffect(LocalSideEffects.SelectEnvironment(it.destination))
+                        pendingDestination = it.destination
+                        postSideEffect(LocalSideEffects.SelectEnvironment)
                     }else{
                         postSideEffect(it)
                     }
@@ -59,15 +63,15 @@ class AddWalletViewModel : AddWalletViewModelAbstract() {
                 countly.restoreWallet()
             }
 
-            is LocalEvents.ClickWatchOnly -> {
+            is LocalEvents.WatchOnly -> {
                 postSideEffect(SideEffects.NavigateTo(NavigateDestinations.NewWatchOnlyWallet))
                 countly.watchOnlyWallet()
             }
 
             is LocalEvents.SelectEnviroment -> {
-                event.pending.let {
+                pendingDestination.let {
                     when (it) {
-                        is NavigateDestinations.NewWallet -> {
+                        is NavigateDestinations.RecoveryIntro -> {
                             it.copy(
                                 args = it.args.copy(
                                     isTestnet = event.isTestnet, network = event.customNetwork
@@ -75,7 +79,7 @@ class AddWalletViewModel : AddWalletViewModelAbstract() {
                             )
                         }
 
-                        is NavigateDestinations.RestoreWallet -> {
+                        is NavigateDestinations.EnterRecoveryPhrase -> {
                             it.copy(
                                 args = it.args.copy(
                                     isTestnet = event.isTestnet, network = event.customNetwork
@@ -94,9 +98,9 @@ class AddWalletViewModel : AddWalletViewModelAbstract() {
     }
 }
 
-class AddWalletWalletViewModelPreview() : AddWalletViewModelAbstract() {
+class AddWalletViewModelPreview() : AddWalletViewModelAbstract() {
 
     companion object {
-        fun preview() = AddWalletWalletViewModelPreview()
+        fun preview() = AddWalletViewModelPreview()
     }
 }

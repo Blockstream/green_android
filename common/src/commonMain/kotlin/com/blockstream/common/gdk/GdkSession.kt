@@ -9,6 +9,7 @@ import breez_sdk.SwapInfo
 import co.touchlab.kermit.Logger
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.CountlyBase
+import com.blockstream.common.data.CountlyAsset
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.ExceptionWithErrorReport
@@ -154,11 +155,9 @@ import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
 import kotlin.math.absoluteValue
 
-typealias AssetPair = Pair<String, Long>
+typealias EnrichedAssetPair = Pair<EnrichedAsset, Long>
 
 typealias AccountId = String
-
-// Temporary interface until migration to database
 
 /* Handles multiple GDK sessions per network */
 class GdkSession constructor(
@@ -192,7 +191,7 @@ class GdkSession constructor(
     private var _walletTotalBalanceSharedFlow = MutableStateFlow(-1L)
     private var _activeAccountStateFlow: MutableStateFlow<Account?> = MutableStateFlow(null)
     private var _walletAssetsFlow : MutableStateFlow<Assets> = MutableStateFlow(Assets())
-    private var _enrichedAssetsFlow : MutableStateFlow<Map<String, EnrichedAsset>> = MutableStateFlow(mapOf())
+    private var _enrichedAssetsFlow : MutableStateFlow<List<CountlyAsset>> = MutableStateFlow(listOf())
     private var _walletHasHistorySharedFlow = MutableStateFlow(false)
     private var _accountAssetsFlow = mutableMapOf<AccountId, MutableStateFlow<Assets>>()
     private val _accountsAndBalanceUpdatedSharedFlow = MutableSharedFlow<Unit>(replay = 0)
@@ -252,7 +251,7 @@ class GdkSession constructor(
 
     val walletAssets: StateFlow<Assets> get() = _walletAssetsFlow.asStateFlow()
 
-    val enrichedAssets: StateFlow<Map<String, EnrichedAsset>> get() = _enrichedAssetsFlow.asStateFlow()
+    val enrichedAssets: StateFlow<List<CountlyAsset>> get() = _enrichedAssetsFlow.asStateFlow()
 
     val walletHasHistory get() = _walletHasHistorySharedFlow.value
 
@@ -284,6 +283,7 @@ class GdkSession constructor(
     val multisigLiquidWatchOnly = _multisigLiquidWatchOnly.asStateFlow()
 
     val networkErrors = _networkErrors.receiveAsFlow()
+    fun getEnrichedAssets(id: String?) = _enrichedAssetsFlow.value.find { it.assetId == id }
 
     fun accountTransactions(account: Account) = accountTransactionsStateFlow(account).asStateFlow()
 
@@ -461,8 +461,9 @@ class GdkSession constructor(
     private fun updateEnrichedAssets() {
         if (isNetworkInitialized && !isWatchOnly) {
             countly.getRemoteConfigValueForAssets(if (isMainnet) LIQUID_ASSETS_KEY else LIQUID_ASSETS_TESTNET_KEY)?.also {
-                _enrichedAssetsFlow.value = it
-                cacheAssets(it.keys)
+                cacheAssets(it.map { it.assetId })
+            }.also {
+                _enrichedAssetsFlow.value = it ?: listOf()
             }
         }
     }
@@ -718,7 +719,7 @@ class GdkSession constructor(
         _walletAssetsFlow.value = Assets()
 
         // Clear Enriched Assets
-        _enrichedAssetsFlow.value = mapOf()
+        _enrichedAssetsFlow.value = listOf()
 
         // Clear Transactions
         _walletTransactionsStateFlow.value = listOf(Transaction.LoadingTransaction)
@@ -789,7 +790,7 @@ class GdkSession constructor(
 
                 // Disconnect last device connection
                 device?.also { device ->
-                    if(sessionManager.getConnectedHardwareWalletSessions().none { it.device?.id == device.id }){
+                    if(sessionManager.getConnectedHardwareWalletSessions().none { it.device?.connectionIdentifier == device.connectionIdentifier }){
                         device.disconnect()
                     }
                 }
@@ -862,7 +863,7 @@ class GdkSession constructor(
         } ?: listOf()
 
         httpRequestUrlValidator?.also { urlValidator ->
-            val isUrlSafe = urls.all { url ->
+            val isUrlSafe = urls.filter { it.isNotBlank() }.all { url ->
                 BlockstreamPinOracleUrls.any { blockstreamUrl ->
                     url.startsWith(blockstreamUrl)
                 }
@@ -1926,7 +1927,7 @@ class GdkSession constructor(
                     if(isInitialize) {
                         // Cache wallet assets (again) + Enriched assets + liquid asset if network exists
                         (walletAssets.keys +
-                                (enrichedAssets.value.keys.takeIf { liquid != null } ?: emptyList()) +
+                                (enrichedAssets.value.takeIf { liquid != null }?.map { it.assetId } ?: emptyList()) +
                                 listOfNotNull(liquid?.policyAsset))
                             .toSet().also {
                                 cacheAssets(it)
@@ -2086,11 +2087,6 @@ class GdkSession constructor(
 
     fun sortUtxos(a1: Utxo, a2: Utxo): Int = sortAssets(a1.assetId, a2.assetId)
 
-
-    fun sortAssets(a1: EnrichedAsset, a2: EnrichedAsset): Int {
-        return sortAssets(a1.assetId, a2.assetId)
-    }
-
     private fun sortAssets(a1: String, a2: String): Int = when {
             a1 == BTC_POLICY_ASSET && a2 == BTC_POLICY_ASSET -> 0
             a1 == BTC_POLICY_ASSET -> -1
@@ -2110,8 +2106,8 @@ class GdkSession constructor(
                 } else if ((asset1 == null) xor (asset2 == null)) {
                     if (asset1 != null) -1 else 1
                 } else if (asset1 != null && asset2 != null) {
-                    val weight1 = enrichedAssets.value[a1]?.weight ?: 0
-                    val weight2 = enrichedAssets.value[a2]?.weight ?: 0
+                    val weight1 = getEnrichedAssets(a1)?.weight ?: 0
+                    val weight2 = getEnrichedAssets(a2)?.weight ?: 0
 
                     if(weight1 == weight2){
                         asset1.name.compareTo(asset2.name)
@@ -2123,6 +2119,34 @@ class GdkSession constructor(
                 }
             }
         }
+
+    fun sortEnrichedAssets(a1: EnrichedAsset, a2: EnrichedAsset): Int = when {
+        a1.assetId == BTC_POLICY_ASSET && a2.assetId == BTC_POLICY_ASSET -> 0
+        a1.assetId == BTC_POLICY_ASSET -> -1
+        a2.assetId == BTC_POLICY_ASSET -> 1
+        a1.isLiquid(this) && a2.isLiquid(this) -> 0 // Liquid
+        a1.isLiquid(this) -> -1 // Liquid
+        a2.isLiquid(this) -> 1 // Liquid
+        else -> {
+            val icon1 = networkAssetManager.getAssetIcon(a1.assetId, this)
+            val icon2 = networkAssetManager.getAssetIcon(a2.assetId, this)
+
+            if ((icon1 == null) xor (icon2 == null)) {
+                if (icon1 != null) -1 else 1
+            } else if ((a1.name == null) xor (a2.name == null)) {
+                if (a1.name != null) -1 else 1
+            } else {
+                val weight1 = a1.weight
+                val weight2 = a2.weight
+
+                if (weight1 == weight2) {
+                    a1.name(this).compareTo(a2.name(this))
+                } else {
+                    weight2.compareTo(weight1)
+                }
+            }
+        }
+    }
 
     private fun sortAccountAssets(a1: AccountAsset, a2: AccountAsset): Int = when {
         a1.account.isBitcoin && a2.account.isLiquid -> -1

@@ -5,6 +5,7 @@ import android.view.View
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.add.Account2of3ViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
@@ -42,6 +43,8 @@ class Account2of3Fragment : AbstractAddAccountFragment<Account2of3FragmentBindin
         parametersOf(args.setupArgs)
     }
 
+    override fun getGreenViewModel(): GreenViewModel = viewModel
+
     enum class TwoOfThreeRecovery {
         HARDWARE_WALLET, NEW_RECOVERY, EXISTING_RECOVERY, XPUB
     }
@@ -75,6 +78,7 @@ class Account2of3Fragment : AbstractAddAccountFragment<Account2of3FragmentBindin
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val fastItemAdapter = createAdapter()
 
         fastItemAdapter.onClickListener = { _, _, item: GenericItem, _: Int ->

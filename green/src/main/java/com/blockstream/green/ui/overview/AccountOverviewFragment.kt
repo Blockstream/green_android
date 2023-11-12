@@ -12,19 +12,20 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.blockstream.common.Urls
+import com.blockstream.common.data.CountlyAsset
+import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.extensions.needs2faActivation
-import com.blockstream.common.gdk.AssetPair
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.lightning.isLoading
 import com.blockstream.common.lightning.onchainBalanceSatoshi
 import com.blockstream.common.data.SetupArgs
+import com.blockstream.common.gdk.EnrichedAssetPair
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
 import com.blockstream.green.databinding.AccountOverviewFragmentBinding
 import com.blockstream.green.databinding.ListItemLightningInfoBinding
-import com.blockstream.green.extensions.dialog
 import com.blockstream.green.extensions.setNavigationResult
 import com.blockstream.green.extensions.showPopupMenu
 import com.blockstream.green.extensions.snackbar
@@ -358,19 +359,19 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
 
         // Assets Balance
         @Suppress("UNCHECKED_CAST")
-        val assetsBalanceAdapter = ModelAdapter<AssetPair, AssetListItem> {
+        val assetsBalanceAdapter = ModelAdapter<EnrichedAssetPair, AssetListItem> {
             AssetListItem(
                 session = session,
                 assetPair = it,
                 showBalance = true,
-                isLoading = (it.first.isEmpty() && it.second == -1L)
+                isLoading = (it.first.assetId.isEmpty() && it.second == -1L)
             )
         }.observeLiveData(
             viewLifecycleOwner,
             viewModel.assetsLiveData as LiveData<Map<*, *>>,
             toList = {
                 it.map {
-                    AssetPair(it.key as String, it.value as Long)
+                    EnrichedAssetPair(it.key as EnrichedAsset, it.value as Long)
                 }
             })
 
@@ -551,7 +552,7 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
             when (item) {
                 is AssetListItem -> {
                     AssetDetailsBottomSheetFragment.show(
-                        item.assetPair.first,
+                        item.assetPair.first.assetId,
                         account = viewModel.accountValue,
                         childFragmentManager
                     )

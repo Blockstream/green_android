@@ -20,6 +20,7 @@ import com.blockstream.common.AddressType
 import com.blockstream.common.MediaType
 import com.blockstream.common.Urls
 import com.blockstream.common.data.DenominatedValue
+import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.lightning.amountSatoshi
@@ -63,6 +64,8 @@ import com.blockstream.green.utils.rotate
 import com.blockstream.green.utils.toAmountLook
 import com.blockstream.green.views.GreenAlertView
 import com.mikepenz.fastadapter.GenericItem
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -188,7 +191,7 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
         }
 
         binding.buttonNewAddress.setOnClickListener {
-            if (viewModel.onProgressAndroid.value == false) {
+            if (viewModel.onProgress.value == false) {
                 viewModel.generateAddress()
                 binding.buttonNewAddress.rotate()
             } else {
@@ -228,7 +231,7 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
         binding.buttonVerify.setOnClickListener {
             VerifyAddressBottomSheetDialogFragment.show(address = viewModel.addressAsString , fragmentManager = childFragmentManager)
 
-            if (viewModel.onProgressAndroid.value == false) {
+            if (viewModel.onProgress.value == false) {
                 viewModel.validateAddressInDevice()
             }
         }
@@ -245,11 +248,11 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
             })
         }
 
-        viewModel.onProgressAndroid.observe(viewLifecycleOwner) {
+        viewModel.onProgress.onEach {
             // On HWWallet Block going back until address is generated
             onBackCallback.isEnabled = session.isHardwareWallet && it
             invalidateMenu()
-        }
+        }.launchIn(lifecycleScope)
 
         viewModel.accountLiveData.observe(viewLifecycleOwner){
             invalidateMenu()
@@ -400,7 +403,7 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
 
     override fun onPrepareMenu(menu: Menu) {
         menu.findItem(R.id.add_description).isVisible = account.isLightning
-        menu.findItem(R.id.add_description).isEnabled = !viewModel.onProgressAndroid.boolean()
+        menu.findItem(R.id.add_description).isEnabled = !viewModel.onProgress.value
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -462,11 +465,11 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
         }
     }
 
-    override fun createNewAccountClicked(assetId: String) {
+    override fun createNewAccountClicked(asset: EnrichedAsset) {
         navigate(
             ReceiveFragmentDirections.actionGlobalChooseAccountTypeFragment(
                 wallet = wallet,
-                assetId = assetId
+                asset = asset
             )
         )
     }

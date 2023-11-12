@@ -13,7 +13,6 @@ import com.blockstream.green.databinding.BaseRecyclerViewBinding
 import com.blockstream.green.databinding.ListItemOutputDescriptorsBinding
 import com.blockstream.green.extensions.copyToClipboard
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.ui.bottomsheets.QrBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.WatchOnlyBottomSheetDialogFragment
 import com.blockstream.green.ui.items.OutputDescriptorListItem
@@ -44,8 +43,6 @@ class WatchOnlyFragment :
     }
 
     override fun getGreenViewModel(): GreenViewModel = viewModel
-
-    override fun getAppViewModel(): AppViewModelAndroid? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -19,8 +19,6 @@ class DemoFragment : AppFragment<DemoFragmentBinding>(R.layout.demo_fragment, me
 
     override fun getGreenViewModel() = viewModel
 
-    override fun getAppViewModel(): AppViewModelAndroid? = null
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

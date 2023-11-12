@@ -9,7 +9,6 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
 import com.blockstream.green.databinding.WatchOnlyPolicyFragmentBinding
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.ui.AppViewModelAndroid
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class WatchOnlyPolicyFragment : AppFragment<WatchOnlyPolicyFragmentBinding>(
@@ -21,8 +20,6 @@ class WatchOnlyPolicyFragment : AppFragment<WatchOnlyPolicyFragmentBinding>(
     val viewModel: WatchOnlyPolicyViewModel by viewModel()
 
     override fun getGreenViewModel(): GreenViewModel = viewModel
-
-    override fun getAppViewModel(): AppViewModelAndroid? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

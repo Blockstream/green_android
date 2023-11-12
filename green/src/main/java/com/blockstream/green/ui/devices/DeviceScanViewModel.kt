@@ -12,7 +12,8 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceConnectionManager
-import com.blockstream.green.devices.DeviceManager
+import com.blockstream.green.devices.DeviceManagerAndroid
+import com.blockstream.green.devices.toAndroidDevice
 import com.blockstream.green.utils.QATester
 import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.CompletableDeferred
@@ -25,7 +26,7 @@ import org.koin.core.annotation.InjectedParam
 class DeviceScanViewModel constructor(
     @SuppressLint("StaticFieldLeak")
     val context: Context,
-    deviceManager: DeviceManager,
+    deviceManager: DeviceManagerAndroid,
     qaTester: QATester,
     gdk: Gdk,
     settingsManager: SettingsManager,
@@ -60,17 +61,17 @@ class DeviceScanViewModel constructor(
         session.device.takeIf { session.isConnected }?.also { device ->
             postSideEffect(SideEffects.Navigate(wallet to device))
         } ?: run {
-            deviceManager.devicesStateFlow.onEach { devices ->
+            deviceManager.devices.onEach { devices ->
                 var foundDevice = devices.firstOrNull { device ->
                     wallet.deviceIdentifiers?.any { it.uniqueIdentifier == device.uniqueIdentifier } == true
-                }
+                }?.toAndroidDevice()
 
                 if(device == null) {
 
                     // Find a BLE device or request a usb authentication
                     foundDevice = foundDevice ?: devices.firstOrNull {
-                        it.needsUsbPermissionsToIdentify()
-                    }
+                        it.toAndroidDevice().needsUsbPermissionsToIdentify()
+                    }?.toAndroidDevice()
 
                     if(foundDevice != null){
                         if(foundDevice.isBle) {
@@ -121,7 +122,7 @@ class DeviceScanViewModel constructor(
     override fun onDeviceFailed(device: Device) {
         super.onDeviceFailed(device)
         this.device = null
-        deviceManager.startBluetoothScanning()
+        (deviceManager as DeviceManagerAndroid).startBluetoothScanning()
     }
 
     override fun onDeviceReady(device: Device, isJadeUninitialized: Boolean?) {

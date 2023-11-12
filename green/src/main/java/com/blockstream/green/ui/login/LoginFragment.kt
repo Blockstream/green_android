@@ -12,36 +12,30 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
-import com.blockstream.common.Urls
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.data.data
 import com.blockstream.common.data.isEmpty
 import com.blockstream.common.database.LoginCredentials
-import com.blockstream.common.gdk.data.Credentials
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.login.LoginViewModel
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.AndroidKeystore
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.databinding.LoginFragmentBinding
-import com.blockstream.green.devices.DeviceManager
+import com.blockstream.green.devices.DeviceManagerAndroid
+import com.blockstream.green.devices.toAndroidDevice
 import com.blockstream.green.extensions.AuthenticationCallback
 import com.blockstream.green.extensions.authenticateWithBiometrics
 import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.errorSnackbar
 import com.blockstream.green.extensions.hideKeyboard
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.ui.bottomsheets.Bip39PassphraseBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.DeleteWalletBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.RenameWalletBottomSheetDialogFragment
-import com.blockstream.green.utils.AppKeystore
-import com.blockstream.green.utils.openBrowser
 import com.blockstream.green.views.GreenAlertView
 import com.blockstream.green.views.GreenPinViewListener
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
@@ -54,21 +48,19 @@ class LoginFragment : AppFragment<LoginFragmentBinding>(
     menuRes = R.menu.login
 ) {
     val args: LoginFragmentArgs by navArgs()
-    val device by lazy { deviceManager.getDevice(args.deviceId) }
+    val device by lazy { deviceManager.getDevice(args.deviceId)?.toAndroidDevice() }
 
     val viewModel: LoginViewModel by viewModel { parametersOf(args.wallet, args.isLightningShortcut, args.autoLoginWallet, device) }
 
-    private val appKeystore: AppKeystore by inject()
+    private val androidKeystore: AndroidKeystore by inject()
 
-    private val deviceManager: DeviceManager by inject()
+    private val deviceManager: DeviceManagerAndroid by inject()
 
     private var biometricPrompt : BiometricPrompt? = null
 
     override fun getBannerAlertView(): GreenAlertView = binding.banner
 
     override fun getGreenViewModel(): GreenViewModel = viewModel
-
-    override fun getAppViewModel(): AppViewModelAndroid? = null
 
     override val title: String
         get() = viewModel.greenWallet.name
@@ -85,18 +77,26 @@ class LoginFragment : AppFragment<LoginFragmentBinding>(
                 }
             }
 
-            is SideEffects.Navigate -> {
-                (sideEffect.data as? GreenWallet)?.also {
-                    logger.info { "Login successful" }
-                    navigate(LoginFragmentDirections.actionGlobalWalletOverviewFragment(wallet = sideEffect.data as GreenWallet))
+            is SideEffects.NavigateTo -> {
+                (sideEffect.destination as? NavigateDestinations.EnterRecoveryPhrase)?.also {
+                    navigate(
+                        LoginFragmentDirections.actionLoginFragmentToEnterRecoveryPhraseFragment(
+                            setupArgs = it.args,
+                        )
+                    )
                 }
 
-                (sideEffect.data as? Credentials)?.also {
+                (sideEffect.destination as? NavigateDestinations.WalletOverview)?.also {
+                    navigate(LoginFragmentDirections.actionGlobalWalletOverviewFragment(wallet = it.greenWallet))
+                }
+
+
+                (sideEffect.destination as? NavigateDestinations.RecoveryPhrase)?.args?.credentials?.also {
                     logger.info { "Emergency Recovery Phrase" }
                     navigate(
                         LoginFragmentDirections.actionGlobalRecoveryPhraseFragment(
                             wallet = null,
-                            credentials = sideEffect.data as Credentials
+                            credentials = it
                         )
                     )
                 }
@@ -129,20 +129,8 @@ class LoginFragment : AppFragment<LoginFragmentBinding>(
             updateToolbar()
         }.launchIn(lifecycleScope)
 
-        viewModel.pinCredentials.onEach { dataState ->
-            dataState.data()?.also {
-
-                if(it.counter > 0){
-                    val errorMessage = if(it.counter == 2L) {
-                        getString(R.string.id_last_attempt_if_failed_you_will)
-                    }else {
-                        getString(R.string.id_invalid_pin_you_have_1d, 3 - it.counter)
-                    }
-
-                    binding.pinView.setError(errorMessage)
-                }
-            }
-
+        viewModel.error.onEach {
+            binding.pinView.setError(it)
             invalidateMenu()
         }.launchIn(lifecycleScope)
 
@@ -167,9 +155,7 @@ class LoginFragment : AppFragment<LoginFragmentBinding>(
         }
 
         binding.buttonLoginWithBiometrics.setOnClickListener {
-            viewModel.biometricsCredentials.data()?.let {
-                launchBiometricPrompt(it)
-            }
+            viewModel.postEvent(LoginViewModel.LocalEvents.ClickBiometrics)
         }
 
         binding.iconLightningShortcut.setOnClickListener {
@@ -189,13 +175,7 @@ class LoginFragment : AppFragment<LoginFragmentBinding>(
         }
 
         binding.buttonRestoreWallet.setOnClickListener {
-            navigate(
-                LoginFragmentDirections.actionLoginFragmentToEnterRecoveryPhraseFragment(
-                    setupArgs = SetupArgs.restoreMnemonic(
-                        greenWallet = viewModel.greenWallet
-                    ),
-                )
-            )
+            viewModel.postEvent(LoginViewModel.LocalEvents.ClickRestoreWithRecovery)
         }
 
         binding.buttonWatchOnlyLogin.setOnClickListener {
@@ -242,17 +222,10 @@ class LoginFragment : AppFragment<LoginFragmentBinding>(
                 RenameWalletBottomSheetDialogFragment.show(viewModel.greenWallet, childFragmentManager)
             }
             R.id.show_recovery_phrase -> {
-                MaterialAlertDialogBuilder(requireContext())
-                    .setTitle(R.string.id_emergency_recovery_phrase)
-                    .setMessage(R.string.id_if_for_any_reason_you_cant)
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .setPositiveButton(android.R.string.ok) { _, _ ->
-                        viewModel.postEvent(LoginViewModel.LocalEvents.EmergencyRecovery(true))
-                    }
-                    .show()
+                viewModel.postEvent(LoginViewModel.LocalEvents.EmergencyRecovery(true))
             }
             R.id.help -> {
-                openBrowser(settingsManager.getApplicationSettings(), Urls.HELP_MNEMONIC_BACKUP)
+                viewModel.postEvent(LoginViewModel.LocalEvents.ClickHelp)
             }
         }
         return super.onMenuItemSelected(menuItem)
@@ -263,7 +236,7 @@ class LoginFragment : AppFragment<LoginFragmentBinding>(
 
         val isV4Authentication = loginCredentials.keystore.isNullOrBlank()
 
-        if(isV4Authentication && appKeystore.isBiometricsAuthenticationRequired()){
+        if(isV4Authentication && androidKeystore.isBiometricsAuthenticationRequired()){
             authenticateWithBiometrics(object : AuthenticationCallback(fragment = this) {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     // authenticateUserIfRequired = false prevent eternal loops
@@ -304,7 +277,7 @@ class LoginFragment : AppFragment<LoginFragmentBinding>(
                         } else {
                             // Use v3 authentication system
                             try {
-                                appKeystore.getBiometricsDecryptionCipher(
+                                androidKeystore.getBiometricsDecryptionCipher(
                                     encryptedData,
                                     loginCredentials.keystore
                                 ).also {
@@ -324,7 +297,7 @@ class LoginFragment : AppFragment<LoginFragmentBinding>(
                     biometricPrompt?.authenticate(
                         promptInfo.build(),
                         BiometricPrompt.CryptoObject(
-                            appKeystore.getBiometricsDecryptionCipher(
+                            androidKeystore.getBiometricsDecryptionCipher(
                                 encryptedData = encryptedData
                             )
                         )

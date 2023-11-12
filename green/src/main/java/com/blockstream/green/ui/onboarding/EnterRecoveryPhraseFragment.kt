@@ -64,8 +64,6 @@ class EnterRecoveryPhraseFragment : AppFragment<EnterRecoveryPhraseFragmentBindi
 
     override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override fun getAppViewModel() = null
-
     private var itemAdapter: FastItemAdapter<RecoveryPhraseWordListItem> = FastItemAdapter()
 
     override fun handleSideEffect(sideEffect: SideEffect) {

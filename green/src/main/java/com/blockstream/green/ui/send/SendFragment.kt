@@ -120,7 +120,7 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
                 transactionSegmentation = viewModel.createTransactionSegmentation()
             ))
             // Re-enable continue button
-            viewModel.onProgressAndroid.postValue(false)
+            viewModel.onProgress.value = false
         }
     }
 

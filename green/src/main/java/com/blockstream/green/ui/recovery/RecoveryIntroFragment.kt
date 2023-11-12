@@ -9,9 +9,9 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.navArgs
 import com.arkivanov.essenty.statekeeper.stateKeeper
-import com.blockstream.common.models.recovery.RecoveryIntroViewModel
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.recovery.RecoveryIntroViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
@@ -19,14 +19,11 @@ import com.blockstream.green.R
 import com.blockstream.green.databinding.RecoveryIntroFragmentBinding
 import com.blockstream.green.extensions.AuthenticationCallback
 import com.blockstream.green.extensions.errorDialog
-import com.blockstream.green.ui.AppViewModelAndroid
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.ui.wallet.WalletViewModel
+import com.blockstream.green.ui.AppFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class RecoveryIntroFragment : AbstractWalletFragment<RecoveryIntroFragmentBinding>(
+class RecoveryIntroFragment : AppFragment<RecoveryIntroFragmentBinding>(
     layout = R.layout.recovery_intro_fragment,
     menuRes = 0
 ) {
@@ -34,25 +31,15 @@ class RecoveryIntroFragment : AbstractWalletFragment<RecoveryIntroFragmentBindin
 
     private val args: RecoveryIntroFragmentArgs by navArgs()
 
-    override val walletOrNull by lazy { args.setupArgs.greenWallet }
-
-    private val viewModel : RecoveryIntroViewModel by viewModel { parametersOf(args.setupArgs, stateKeeper()) }
+    private val viewModel : RecoveryIntroViewModel by viewModel {
+        parametersOf(args.setupArgs, stateKeeper())
+    }
 
     override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    private val walletViewModel: WalletViewModel by viewModel{
-        parametersOf(args.setupArgs.greenWallet!!)
-    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    // Recovery screens are reused in onboarding
-    // where we don't have a session yet.
-    override fun isSessionAndWalletRequired(): Boolean {
-        return args.setupArgs.greenWallet != null
-    }
-
-    override fun isLoggedInRequired(): Boolean = isSessionAndWalletRequired()
-
-    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.buttonNext.setOnClickListener {
             viewModel.postEvent(Events.Continue)
         }
@@ -88,11 +75,11 @@ class RecoveryIntroFragment : AbstractWalletFragment<RecoveryIntroFragmentBindin
                 )
             }
         } else if (sideEffect is RecoveryIntroViewModel.LocalSideEffects.LaunchUserPresence) {
-            launchUserPresencePrompt(sideEffect.navigateTo)
+            launchUserPresencePrompt()
         }
     }
 
-    private fun launchUserPresencePrompt(pendingSideEffect: SideEffects.SideEffectEvent) {
+    private fun launchUserPresencePrompt() {
         biometricPrompt?.cancelAuthentication()
 
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
@@ -115,14 +102,14 @@ class RecoveryIntroFragment : AbstractWalletFragment<RecoveryIntroFragmentBindin
                 ) {
                     if(errorCode == BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL){
                         // User hasn't enabled any device credential,
-                        viewModel.postEvent(pendingSideEffect.event)
+                        viewModel.postEvent(RecoveryIntroViewModel.LocalEvents.Authenticated(false))
                     }else{
                         super.onAuthenticationError(errorCode, errString)
                     }
                 }
 
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    viewModel.postEvent(pendingSideEffect.event)
+                    viewModel.postEvent(RecoveryIntroViewModel.LocalEvents.Authenticated(true))
                 }
             })
 
@@ -133,13 +120,8 @@ class RecoveryIntroFragment : AbstractWalletFragment<RecoveryIntroFragmentBindin
             errorDialog(e) {
                 // If an unsupported method is initiated, it's better to show the words rather than
                 // block the user from retrieving his words
-                viewModel.postEvent(pendingSideEffect.event)
+                viewModel.postEvent(RecoveryIntroViewModel.LocalEvents.Authenticated(false))
             }
         }
     }
-
-    // If wallet is null, WalletFragment will give the viewModel to AppFragment, guard this behavior and return null
-    override fun getAppViewModel() : AppViewModelAndroid? = if(args.setupArgs.greenWallet == null) null else getWalletViewModel()
-
-    override fun getWalletViewModel(): AbstractWalletViewModel = if(args.setupArgs.greenWallet != null) walletViewModel else throw RuntimeException("Can't be happening")
 }

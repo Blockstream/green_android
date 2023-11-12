@@ -3,8 +3,8 @@ package com.blockstream.green.ui.onboarding
 import android.os.Bundle
 import android.view.View
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.models.onboarding.AddWalletViewModel
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.onboarding.AddWalletViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
@@ -31,15 +31,15 @@ class AddWalletFragment :
         super.onViewCreated(view, savedInstanceState)
 
         binding.buttonNewWallet.setOnClickListener {
-            viewModel.postEvent(AddWalletViewModel.LocalEvents.ClickNewWallet())
+            viewModel.postEvent(AddWalletViewModel.LocalEvents.NewWallet)
         }
 
         binding.buttonRestoreWallet.setOnClickListener {
-            viewModel.postEvent(AddWalletViewModel.LocalEvents.ClickRestoreWallet())
+            viewModel.postEvent(AddWalletViewModel.LocalEvents.RestoreWallet)
         }
 
         binding.buttonWatchOnly.setOnClickListener {
-            viewModel.postEvent(AddWalletViewModel.LocalEvents.ClickWatchOnly())
+            viewModel.postEvent(AddWalletViewModel.LocalEvents.WatchOnly)
         }
     }
 
@@ -52,13 +52,13 @@ class AddWalletFragment :
         }
 
         (sideEffect as? SideEffects.NavigateTo)?.also { to ->
-            (to.destination as? NavigateDestinations.NewWallet)?.also {
+            (to.destination as? NavigateDestinations.RecoveryIntro)?.also {
                 navigate(AddWalletFragmentDirections.actionAddWalletFragmentToRecoveryIntroFragment(
                     setupArgs = it.args
                 ))
             }
 
-            (to.destination as? NavigateDestinations.RestoreWallet)?.also {
+            (to.destination as? NavigateDestinations.EnterRecoveryPhrase)?.also {
                 navigate(AddWalletFragmentDirections.actionAddWalletFragmentToEnterRecoveryPhraseFragment(
                     setupArgs = it.args
                 ))
@@ -75,7 +75,6 @@ class AddWalletFragment :
             _pendingSideEffect?.also {
                 viewModel.postEvent(
                     AddWalletViewModel.LocalEvents.SelectEnviroment(
-                        pending = it.pending,
                         isTestnet = isTestnet,
                         customNetwork = customNetwork
                     )

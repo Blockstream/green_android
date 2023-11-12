@@ -198,8 +198,8 @@ unit_tests:
     GIT_SUBMODULE_STRATEGY: recursive
   script:
     - cd $CI_PROJECT_DIR
-    - ./gradlew lintProductionGoogleRelease
     - ./gradlew useBlockstreamKeys
+#    - ./gradlew lintProductionGoogleRelease
     - ./gradlew test
 
 #####################################

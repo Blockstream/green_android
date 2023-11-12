@@ -31,8 +31,11 @@ class SideEffects : SideEffect {
     object WalletDelete : SideEffect
     data class CopyToClipboard(val value: String, val message: String?) : SideEffect
     data class AccountArchived(val account: Account) : SideEffect
+    data class AccountUnarchived(val account: Account) : SideEffect
+    data class UrlWarning(val urls: List<String>): SideEffect
     object DeviceRequestPassphrase: SideEffect
     object DeviceRequestPin: SideEffect
     class DeviceInteraction(val device: Device, val message: String?, val completable: CompletableDeferred<Boolean>?):
         SideEffect
+    object Dismiss : SideEffect
 }

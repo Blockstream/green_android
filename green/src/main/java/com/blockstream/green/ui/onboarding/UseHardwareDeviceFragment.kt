@@ -6,13 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.blockstream.common.Urls
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.onboarding.UseHardwareDeviceViewModel
+import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
 import com.blockstream.green.databinding.HardwarePageBinding
 import com.blockstream.green.databinding.UseHardwareDeviceFragmentBinding
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.ui.AppViewModelAndroid
-import com.blockstream.green.utils.openBrowser
 import com.google.android.material.tabs.TabLayoutMediator
 import mu.KLogging
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -21,26 +23,33 @@ class UseHardwareDeviceFragment : AppFragment<UseHardwareDeviceFragmentBinding>(
     R.layout.use_hardware_device_fragment,
     menuRes = 0
 ) {
+    val viewModel: UseHardwareDeviceViewModel by viewModel()
 
-    override val screenName = "UseHardwareDevice"
+    override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    val viewModel: AppViewModelAndroid by viewModel()
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
 
-    override fun getAppViewModel() = viewModel
+        if(sideEffect is SideEffects.NavigateTo){
+            (sideEffect.destination as? NavigateDestinations.DeviceList)?.also {
+                navigate(UseHardwareDeviceFragmentDirections.actionGlobalDeviceListFragment(isJade = it.isJade))
+            }
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.buttonConnectJade.setOnClickListener {
-            navigate(UseHardwareDeviceFragmentDirections.actionGlobalDeviceListFragment(isJade = true))
+            viewModel.postEvent(UseHardwareDeviceViewModel.LocalEvents.ConnectJade)
         }
 
         binding.buttonConnectDifferentDevice.setOnClickListener {
-            navigate(UseHardwareDeviceFragmentDirections.actionGlobalDeviceListFragment(isJade = false))
+            viewModel.postEvent(UseHardwareDeviceViewModel.LocalEvents.ConnectDifferentHardwareDevice)
         }
 
         binding.buttonStore.setOnClickListener {
-            openBrowser(settingsManager.getApplicationSettings(), Urls.JADE_STORE)
+            viewModel.postEvent(UseHardwareDeviceViewModel.LocalEvents.JadeStore)
         }
 
         val adapter = PagerAdapter(this)

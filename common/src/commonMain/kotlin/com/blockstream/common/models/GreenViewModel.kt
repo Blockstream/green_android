@@ -1,5 +1,6 @@
 package com.blockstream.common.models
 
+import cafe.adriel.voyager.core.model.ScreenModel
 import co.touchlab.kermit.Logger
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.ViewModelView
@@ -64,12 +65,12 @@ import kotlin.native.ObjCName
 abstract class GreenViewModel constructor(
     val greenWalletOrNull: GreenWallet? = null,
     accountAssetOrNull: AccountAsset? = null,
-) : KMMViewModel(), KoinComponent, ViewModelView, HardwareWalletInteraction {
+) : ScreenModel, KMMViewModel(), KoinComponent, ViewModelView, HardwareWalletInteraction {
     protected val appInfo: AppInfo by inject()
     protected val database: Database by inject()
     protected val countly: CountlyBase by inject()
     protected val sessionManager: SessionManager by inject()
-    protected val settingsManager: SettingsManager by inject()
+    val settingsManager: SettingsManager by inject()
     protected val applicationScope: ApplicationScope by inject()
     protected val greenKeystore: GreenKeystore by inject()
 
@@ -77,9 +78,12 @@ abstract class GreenViewModel constructor(
 
     private val _event: MutableSharedFlow<Event> = MutableSharedFlow()
     private val _sideEffect: Channel<SideEffect> = Channel()
+    // Check with Don't Keep activities if the logout event is persisted
 
     @NativeCoroutines
     val sideEffect = _sideEffect.receiveAsFlow()
+
+    val sideEffectReEmitted: MutableSharedFlow<SideEffect> = MutableSharedFlow()
 
     @NativeCoroutinesState
     val onProgress = MutableStateFlow(viewModelScope, false)
@@ -105,18 +109,21 @@ abstract class GreenViewModel constructor(
         get() = _greenWallet ?: greenWalletOrNull!!
 
     @NativeCoroutines
-    val greenWalletFlow: Flow<GreenWallet> by lazy {
-        if (greenWallet.isEphemeral) {
-            flowOf(greenWallet)
-        } else {
-            database.getWalletFlow(greenWallet.id).onEach {
-                _greenWallet = it
+    val greenWalletFlow: Flow<GreenWallet?> by lazy {
+        greenWalletOrNull?.let {
+            if (it.isEphemeral) {
+                flowOf(it)
+            } else {
+                database.getWalletFlowOrNull(it.id)
             }
-        }
+        } ?: flowOf(null)
     }
 
     @NativeCoroutinesState
     val accountAsset: MutableStateFlow<AccountAsset?> = MutableStateFlow(accountAssetOrNull)
+
+    val account: Account
+        get() = accountAsset.value!!.account
 
     val sessionOrNull: GdkSession? by lazy {
         greenWalletOrNull?.let { sessionManager.getWalletSessionOrNull(it) }
@@ -146,6 +153,8 @@ abstract class GreenViewModel constructor(
     }
 
     protected fun bootstrap(){
+        logger.d { "Bootstrap ${this::class.simpleName}" }
+
         _bootstrapped = true
         if (greenWalletOrNull != null) {
             if (isLoginRequired) {
@@ -157,6 +166,14 @@ abstract class GreenViewModel constructor(
                     }
                 }.launchIn(viewModelScope.coroutineScope)
             }
+
+            greenWalletFlow.onEach {
+                if(it == null){
+                    postSideEffect(SideEffects.WalletDelete)
+                }else{
+                    _greenWallet = it
+                }
+            }.launchIn(viewModelScope.coroutineScope)
         }
 
         _event.onEach {
@@ -213,7 +230,9 @@ abstract class GreenViewModel constructor(
         } else {
             Logger.d { "postSideEffect: $sideEffect" }
         }
-        viewModelScope.coroutineScope.launch { _sideEffect.send(sideEffect) }
+        viewModelScope.coroutineScope.launch {
+            _sideEffect.send(sideEffect)
+        }
     }
 
     private fun listenForNetworksEvents(){
@@ -250,6 +269,12 @@ abstract class GreenViewModel constructor(
 
     open fun handleEvent(event: Event) {
         when(event){
+            is Events.ArchiveAccount -> {
+                updateAccount(account = event.account, isHidden = true)
+            }
+            is Events.UnArchiveAccount -> {
+                updateAccount(account = event.account, isHidden = false)
+            }
             is EventWithSideEffect -> {
                 postSideEffect(event.sideEffect)
             }
@@ -272,7 +297,6 @@ abstract class GreenViewModel constructor(
                     database.deleteWallet(event.wallet.id)
                 }, onSuccess = {
                     countly.deleteWallet()
-                    postSideEffect(SideEffects.WalletDelete)
                 })
             }
             is Events.RenameWallet -> {
@@ -303,10 +327,8 @@ abstract class GreenViewModel constructor(
                 setDenomination(event.denominatedValue)
             }
             is Events.Logout -> {
+                logoutSideEffect(event.reason)
                 sessionOrNull?.disconnectAsync(event.reason)
-                (sessionOrNull?.logoutReason ?: event.reason).also {
-                    logoutSideEffect(it)
-                }
             }
         }
     }
@@ -372,7 +394,7 @@ abstract class GreenViewModel constructor(
         }
     }
 
-    protected fun updateAccount(account: Account, isHidden: Boolean){
+    private fun updateAccount(account: Account, isHidden: Boolean){
         doAsync({
             session.updateAccount(account = account, isHidden = isHidden)
         }, onSuccess = {
@@ -386,6 +408,8 @@ abstract class GreenViewModel constructor(
             }else{
                 // Make it active
                 setActiveAccount(account)
+
+                postSideEffect(SideEffects.AccountUnarchived(account = account))
             }
         })
     }

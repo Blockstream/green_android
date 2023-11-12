@@ -520,7 +520,7 @@ class SendViewModel constructor(
             }
         }, postAction = {
             // Avoid UI glitches
-            onProgressAndroid.value = finalCheckBeforeContinue
+            onProgress.value = finalCheckBeforeContinue
         }, onSuccess = { pair ->
             transactionError.value = null
 

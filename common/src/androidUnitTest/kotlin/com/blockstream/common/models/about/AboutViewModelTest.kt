@@ -3,6 +3,7 @@ package com.blockstream.common.models.about
 import app.cash.turbine.test
 import com.blockstream.common.models.TestViewModel
 import com.blockstream.common.sideeffects.SideEffects
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
@@ -27,13 +28,15 @@ class AboutViewModelTest : TestViewModel<AboutViewModel>() {
 
     @Test
     fun `Test click events`() = runTest {
-        viewModel.postEvent(AboutViewModel.LocalEvents.ClickWebsite())
-        viewModel.sideEffect.test {
-            assertTrue { awaitItem() is SideEffects.OpenBrowser }
+        // Delay them as .test is suspended
+        // this won't be needed when Channel is used in GreenViewModel
+        launch {
+            viewModel.postEvent(AboutViewModel.LocalEvents.ClickWebsite)
+            viewModel.postEvent(AboutViewModel.LocalEvents.ClickFeedback)
         }
 
-        viewModel.postEvent(AboutViewModel.LocalEvents.ClickFeedback())
         viewModel.sideEffect.test {
+            assertTrue { awaitItem() is SideEffects.OpenBrowser }
             assertTrue { awaitItem() is SideEffects.OpenDialog }
         }
     }

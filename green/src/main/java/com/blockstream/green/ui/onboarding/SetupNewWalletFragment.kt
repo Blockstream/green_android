@@ -6,12 +6,13 @@ import android.text.style.ClickableSpan
 import android.view.View
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.onboarding.SetupNewWalletViewModel
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.databinding.SetupNewWalletFragmentBinding
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.ui.bottomsheets.AbstractBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.ConsentBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.DismissBottomSheetDialogListener
@@ -29,18 +30,18 @@ open class SetupNewWalletFragment : AppFragment<SetupNewWalletFragmentBinding>(
 
     override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override fun getAppViewModel(): AppViewModelAndroid? = null
-
     override fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
 
         when (sideEffect) {
-            is SetupNewWalletViewModel.LocalSideEffects.NavigateAddWallet -> {
-                navigate(NavGraphDirections.actionGlobalAddWalletFragment())
-            }
+            is SideEffects.NavigateTo -> {
+                (sideEffect.destination as? NavigateDestinations.AddWallet)?.also {
+                    navigate(NavGraphDirections.actionGlobalAddWalletFragment())
+                }
 
-            is SetupNewWalletViewModel.LocalSideEffects.NavigateUseHardwareDevice -> {
-                navigate(NavGraphDirections.actionGlobalUseHardwareDeviceFragment())
+                (sideEffect.destination as? NavigateDestinations.UseHardwareDevice)?.also {
+                    navigate(NavGraphDirections.actionGlobalUseHardwareDeviceFragment())
+                }
             }
 
             is SetupNewWalletViewModel.LocalSideEffects.ShowConsent -> {

@@ -6,7 +6,7 @@ import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.ApplicationSettings
 import com.blockstream.common.data.Banner
 import com.blockstream.common.data.CredentialType
-import com.blockstream.common.data.EnrichedAsset
+import com.blockstream.common.data.CountlyAsset
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.database.Database
@@ -638,14 +638,12 @@ import kotlin.properties.Delegates
          return _cachedBanners
      }
 
-     fun getRemoteConfigValueForAssets(key: String): Map<String, EnrichedAsset>? {
+     fun getRemoteConfigValueForAssets(key: String): List<CountlyAsset>? {
          return try {
              getRemoteConfigValueAsString(key)?.let {
-                 JsonConverter.JsonDeserializer.decodeFromString<List<EnrichedAsset>>(it)
-             }?.associate {
-                 it.assetId to it
+                 JsonConverter.JsonDeserializer.decodeFromString<List<CountlyAsset>>(it)
              }
-         }catch (e: Exception){
+         } catch (e: Exception) {
              e.printStackTrace()
              null
          }

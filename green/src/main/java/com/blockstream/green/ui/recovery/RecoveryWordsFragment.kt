@@ -3,9 +3,9 @@ package com.blockstream.green.ui.recovery
 import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.navArgs
-import com.blockstream.common.models.recovery.RecoveryWordsViewModel
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.recovery.RecoveryWordsViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
@@ -13,7 +13,6 @@ import com.blockstream.green.R
 import com.blockstream.green.databinding.RecoveryWordsFragmentBinding
 import com.blockstream.green.gdk.getNetworkIcon
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.utils.greenText
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -38,8 +37,6 @@ class RecoveryWordsFragment : AppFragment<RecoveryWordsFragmentBinding>(
 
     // If wallet is null, WalletFragment will give the viewModel to AppFragment, guard this behavior and return null
     override fun getGreenViewModel(): GreenViewModel = viewModel
-
-    override fun getAppViewModel(): AppViewModelAndroid? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

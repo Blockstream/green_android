@@ -4,12 +4,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.extensions.getAssetNameOrNull
 import com.blockstream.common.extensions.isPolicyAsset
-import com.blockstream.common.gdk.AssetPair
+import com.blockstream.common.gdk.EnrichedAssetPair
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemAssetAccountsBinding
 import com.blockstream.green.databinding.SelectAccountLayoutBinding
@@ -24,16 +24,18 @@ import mu.KLogging
 
 data class AssetAccountsListItem constructor(
     val session: GdkSession,
-    val assetPair: AssetPair,
-    val enrichedAsset: EnrichedAsset,
+    val assetPair: EnrichedAssetPair,
     val listener: ChooseAssetAccountListener,
 ) : AbstractExpandableBindingItem<ListItemAssetAccountsBinding>() {
     override val type: Int
         get() = R.id.fastadapter_asset_accounts_item_id
 
     init {
-        identifier = (assetPair.first.ifBlank { "AssetAccountsListItem" }).hashCode().toLong() + enrichedAsset.hashCode().toLong()
+        identifier = assetPair.hashCode().toLong()
     }
+
+    val enrichedAsset
+        get() = assetPair.first
 
     override fun createScope(): CoroutineScope = session.createScope(dispatcher = Dispatchers.Main)
 
@@ -46,14 +48,28 @@ data class AssetAccountsListItem constructor(
 
         binding.asset.bind(
             scope = scope,
-            assetId = assetPair.first,
+            assetId = assetPair.first.assetId,
             session = session,
         )
 
-        if(enrichedAsset.isAnyLiquidAsset) {
+        if (enrichedAsset.isAnyAsset && !enrichedAsset.isAmp) {
             // Change asset name
             binding.asset.name = context(binding).getString(R.string.id_receive_any_liquid_asset)
-            binding.asset.icon.setImageDrawable(ContextCompat.getDrawable(context(binding), R.drawable.ic_unknown))
+            binding.asset.icon.setImageDrawable(
+                ContextCompat.getDrawable(
+                    context(binding),
+                    R.drawable.ic_liquid_asset
+                )
+            )
+        } else if (enrichedAsset.isAnyAsset && enrichedAsset.isAmp) {
+            // Change asset name
+            binding.asset.name = context(binding).getString(R.string.id_receive_any_amp_asset)
+            binding.asset.icon.setImageDrawable(
+                ContextCompat.getDrawable(
+                    context(binding),
+                    R.drawable.ic_amp_asset
+                )
+            )
         }
 
         val accountExists =
@@ -61,8 +77,11 @@ data class AssetAccountsListItem constructor(
 
         binding.messageTextView.text = context(binding).getString(
             when {
-                enrichedAsset.isAnyLiquidAsset -> {
+                enrichedAsset.isAnyAsset && !enrichedAsset.isAmp -> {
                     R.string.id_you_need_a_liquid_account_in
+                }
+                enrichedAsset.isAnyAsset && enrichedAsset.isAmp -> {
+                    R.string.id_you_need_an_amp_account_in
                 }
                 accountExists && enrichedAsset.isAmp -> {
                     R.string.id_s_is_an_amp_asset_you_can
@@ -85,10 +104,12 @@ data class AssetAccountsListItem constructor(
         if (isSelected) {
             val layoutInflater = LayoutInflater.from(context(binding))
 
-            val entries = (if (enrichedAsset.assetId.isPolicyAsset(session)) {
+            val entries = (if (enrichedAsset.isAnyAsset && enrichedAsset.isAmp) {
+                session.accounts.value.filter { it.type == AccountType.AMP_ACCOUNT }
+            } else if (enrichedAsset.assetId.isPolicyAsset(session)) {
                 session.accounts.value.filter { it.network.policyAsset == enrichedAsset.assetId }
             } else {
-                session.accounts.value.filter { it.isLiquid && it.isAmp == enrichedAsset.isAmp }
+                session.accounts.value.filter { it.isLiquid && (it.isAmp == enrichedAsset.isAmp || enrichedAsset.isAnyAsset) }
             })
 
             // Cache views
@@ -102,7 +123,7 @@ data class AssetAccountsListItem constructor(
                             accountBinding.account = account
 
                             accountBinding.root.setOnClickListener { _ ->
-                                listener.accountAssetClicked(AccountAsset(account = account, assetId = assetPair.first))
+                                listener.accountAssetClicked(AccountAsset(account = account, assetId = assetPair.first.assetId))
                             }
 
                             binding.accounts.addView(accountBinding.root)
@@ -114,12 +135,12 @@ data class AssetAccountsListItem constructor(
         }
 
         binding.createNewAccount.root.setOnClickListener {
-            listener.createNewAccountClicked(assetId = assetPair.first)
+            listener.createNewAccountClicked(asset = assetPair.first)
         }
 
         // Set last to avoid ui glitches
         binding.isSelected = isSelected
-        binding.isPolicy = assetPair.first.isPolicyAsset(session) && !enrichedAsset.isAnyLiquidAsset
+        binding.isPolicy = assetPair.first.assetId.isPolicyAsset(session) && !enrichedAsset.isAnyAsset
         binding.isWatchOnly = session.isWatchOnly
 
         // Disable animation

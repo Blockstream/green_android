@@ -3,15 +3,21 @@ package com.blockstream.green.ui.archived
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
+import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.archived.ArchivedAccountsViewModel
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
 import com.blockstream.green.databinding.BaseRecyclerViewBinding
 import com.blockstream.green.extensions.showPopupMenu
+import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.bottomsheets.RenameAccountBottomSheetDialogFragment
 import com.blockstream.green.ui.items.AccountListItem
 import com.blockstream.green.ui.items.TextListItem
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.observeList
 import com.mikepenz.fastadapter.FastAdapter
@@ -23,29 +29,37 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class ArchivedAccountsFragment :
-    AbstractWalletFragment<BaseRecyclerViewBinding>(R.layout.base_recycler_view, 0) {
+    AppFragment<BaseRecyclerViewBinding>(R.layout.base_recycler_view, 0) {
     val args: ArchivedAccountsFragmentArgs by navArgs()
-    override val walletOrNull by lazy { args.wallet }
-
-    override val screenName = "ArchivedAccounts"
 
     val viewModel: ArchivedAccountsViewModel by viewModel {
         parametersOf(args.wallet)
     }
 
-    override fun getWalletViewModel() = viewModel
+    override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
-        binding.vmWalletViewModel = viewModel
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+        if (sideEffect is SideEffects.AccountUnarchived) {
+            if (args.navigateToOverview) {
+                popBackStack(R.id.walletOverviewFragment, false)
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.vm = viewModel
 
         val titleAdapter = FastItemAdapter<GenericItem>()
 
         val accountsModelAdapter = ModelAdapter { account: Account ->
             AccountListItem(
-                session = session,
+                session = viewModel.session,
                 account = account,
             )
-        }.observeList(viewLifecycleOwner, viewModel.archivedAccountsLiveData) {
+        }.observeList(lifecycleScope, viewModel.archivedAccounts) {
             if (it.isEmpty()) {
                 titleAdapter.set(
                     listOf(
@@ -67,9 +81,9 @@ class ArchivedAccountsFragment :
 
         val fastAdapter = FastAdapter.with(listOf(titleAdapter, accountsModelAdapter))
 
-        if (!session.isWatchOnly) {
+        if (!viewModel.session.isWatchOnly) {
             fastAdapter.onClickListener = { v, _, item, _ ->
-                if(item is AccountListItem) {
+                if (item is AccountListItem) {
                     v?.let {
                         showPopupMenu(it, item.account)
                     }
@@ -94,11 +108,7 @@ class ArchivedAccountsFragment :
                     RenameAccountBottomSheetDialogFragment.show(account, childFragmentManager)
                 }
                 R.id.unarchive -> {
-                    viewModel.updateAccountVisibility(account = account, isHidden = false) {
-                        if(args.navigateToOverview){
-                            popBackStack(R.id.walletOverviewFragment, false)
-                        }
-                    }
+                    viewModel.postEvent(Events.UnArchiveAccount(account = account))
                 }
             }
             true

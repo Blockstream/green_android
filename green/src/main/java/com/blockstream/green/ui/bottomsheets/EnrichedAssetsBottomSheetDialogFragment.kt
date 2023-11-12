@@ -5,7 +5,6 @@ import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.blockstream.common.data.EnrichedAsset
-import com.blockstream.common.extensions.getAssetName
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.items.AssetListItem
@@ -26,13 +25,18 @@ class EnrichedAssetsBottomSheetDialogFragment : FilterBottomSheetDialogFragment(
 
     override val withDivider: Boolean = false
 
-    override val withSearch: Boolean = false
+    override val withSearch: Boolean = true
 
     private fun createEnrichedAssets(): List<EnrichedAsset> {
-        return (setOfNotNull(
-            EnrichedAsset.createOrNull(session.bitcoin?.policyAsset),
-            EnrichedAsset.createOrNull(session.liquid?.policyAsset)
-        ) + (session.enrichedAssets.value.values.takeIf { session.liquid != null } ?: emptyList())).sortedWith(session::sortAssets)
+        return listOfNotNull(
+            EnrichedAsset.createOrNull(session = session, session.bitcoin?.policyAsset),
+            EnrichedAsset.createOrNull(session = session, session.liquid?.policyAsset),
+        ) + (session.enrichedAssets.value.takeIf { session.liquid != null }?.map {
+            EnrichedAsset.create(session = session, assetId = it.assetId)
+        } ?: listOf()) + listOfNotNull(
+            EnrichedAsset.createAnyAsset(session = session, isAmp = false),
+            EnrichedAsset.createAnyAsset(session = session, isAmp = true)
+        ).sortedWith(session::sortEnrichedAssets)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -44,7 +48,7 @@ class EnrichedAssetsBottomSheetDialogFragment : FilterBottomSheetDialogFragment(
 
         val assetsAdapter = ModelAdapter<EnrichedAsset, AssetListItem> {
             AssetListItem(
-                assetPair = it.assetId to 0L,
+                assetPair = it to 0L,
                 session = session,
                 showBalance = false,
                 withBottomMargin = true
@@ -63,9 +67,11 @@ class EnrichedAssetsBottomSheetDialogFragment : FilterBottomSheetDialogFragment(
         }.launchIn(lifecycleScope)
 
         assetsAdapter.itemFilter.filterPredicate = { item: AssetListItem, constraint: CharSequence? ->
-                item.assetPair.first.getAssetName(session).lowercase().contains(
+                item.assetPair.first.name(session).lowercase().contains(
                     constraint.toString().lowercase()
-                )
+                ) || item.assetPair.first.ticker(session)?.lowercase()?.contains(
+                    constraint.toString().lowercase()
+                ) == true || item.assetPair.first.isAnyAsset
             }
 
         return assetsAdapter
@@ -100,5 +106,5 @@ class EnrichedAssetsBottomSheetDialogFragment : FilterBottomSheetDialogFragment(
 }
 
 interface EnrichedAssetsListener {
-    fun assetClicked(assetId: String)
+    fun assetClicked(asset: EnrichedAsset)
 }

@@ -1,5 +1,6 @@
 package com.blockstream.common.models.login
 
+import com.blockstream.common.Urls
 import com.blockstream.common.crypto.PlatformCipher
 import com.blockstream.common.data.ApplicationSettings
 import com.blockstream.common.data.CredentialType
@@ -8,11 +9,13 @@ import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.Redact
+import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.data.data
 import com.blockstream.common.data.isEmpty
 import com.blockstream.common.database.LoginCredentials
 import com.blockstream.common.events.Event
+import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.biometricsPinData
 import com.blockstream.common.extensions.biometricsWatchOnlyCredentials
 import com.blockstream.common.extensions.isConnectionError
@@ -22,6 +25,7 @@ import com.blockstream.common.extensions.lightningMnemonic
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.extensions.passwordPinData
 import com.blockstream.common.extensions.pinPinData
+import com.blockstream.common.extensions.previewLoginCredentials
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.extensions.watchOnlyCredentials
 import com.blockstream.common.gdk.GdkSession
@@ -31,6 +35,7 @@ import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.gdk.params.LoginCredentialsParams
 import com.blockstream.common.lightning.AppGreenlightCredentials
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.rickclephas.kmm.viewmodel.MutableStateFlow
@@ -42,13 +47,18 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlin.io.encoding.Base64
 
-abstract class LoginViewModelAbstract(greenWallet: GreenWallet) :
+abstract class LoginViewModelAbstract(
+    greenWallet: GreenWallet,
+    val isLightningShortcut: Boolean = false,
+    val device: DeviceInterface? = null
+) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
 
     override fun screenName(): String = "Login"
@@ -58,9 +68,14 @@ abstract class LoginViewModelAbstract(greenWallet: GreenWallet) :
     @NativeCoroutinesState
     abstract val bip39Passphrase: MutableStateFlow<String>
     @NativeCoroutinesState
+    abstract val watchOnlyUsername: MutableStateFlow<String>
+    @NativeCoroutinesState
     abstract val watchOnlyPassword: MutableStateFlow<String>
     @NativeCoroutinesState
     abstract val isEmergencyRecoveryPhrase: MutableStateFlow<Boolean>
+
+    @NativeCoroutinesState
+    abstract val error: StateFlow<String?>
 
     @NativeCoroutinesState
     abstract val tor: StateFlow<TorEvent>
@@ -71,8 +86,9 @@ abstract class LoginViewModelAbstract(greenWallet: GreenWallet) :
     @NativeCoroutinesState
     abstract val isWatchOnlyLoginEnabled: StateFlow<Boolean>
     @NativeCoroutinesState
+    abstract val showWatchOnlyUsername: StateFlow<Boolean>
+    @NativeCoroutinesState
     abstract val showWatchOnlyPassword: StateFlow<Boolean>
-
     @NativeCoroutinesState
     abstract val biometricsCredentials: StateFlow<DataState<LoginCredentials>>
     @NativeCoroutinesState
@@ -91,14 +107,16 @@ abstract class LoginViewModelAbstract(greenWallet: GreenWallet) :
 
 class LoginViewModel constructor(
     greenWallet: GreenWallet,
-    val isLightningShortcut: Boolean,
-    val autoLoginWallet: Boolean,
-    val device: DeviceInterface? = null
-) : LoginViewModelAbstract(greenWallet = greenWallet) {
+    isLightningShortcut: Boolean,
+    device: DeviceInterface? = null,
+    val autoLoginWallet: Boolean
+) : LoginViewModelAbstract(greenWallet = greenWallet, isLightningShortcut = isLightningShortcut, device = device) {
     override val isLoginRequired: Boolean = false
 
     @NativeCoroutinesState
     override val bip39Passphrase = MutableStateFlow(viewModelScope, "")
+    @NativeCoroutinesState
+    override val watchOnlyUsername: MutableStateFlow<String> = MutableStateFlow(viewModelScope, greenWallet.watchOnlyUsername ?: "")
     @NativeCoroutinesState
     override val watchOnlyPassword = MutableStateFlow(viewModelScope, "")
     @NativeCoroutinesState
@@ -108,6 +126,10 @@ class LoginViewModel constructor(
     override val tor = sessionManager.torProxyProgress
     @NativeCoroutinesState
     override val applicationSettings = settingsManager.appSettingsStateFlow
+
+    private val _error = MutableStateFlow<String?>(null)
+    @NativeCoroutinesState
+    override val error = _error.asStateFlow()
 
     private val isBip39Login
         get() = bip39Passphrase.value.trim().isNotBlank()
@@ -122,7 +144,7 @@ class LoginViewModel constructor(
     private val _lightningMnemonic: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Loading)
 
     @NativeCoroutinesState
-    override val walletName: StateFlow<String> = greenWalletFlow.map {
+    override val walletName: StateFlow<String> = greenWalletFlow.filterNotNull().map {
         it.name
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), greenWallet.name)
 
@@ -144,10 +166,14 @@ class LoginViewModel constructor(
         (watchOnlyPassword.isNotBlank() || greenWallet.isWatchOnlySingleSig || (!watchOnlyCredentials.isEmpty() && !_initialAction.value)) && !onProgress
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
+    @NativeCoroutinesState
+    override val showWatchOnlyUsername = combine(_initialAction, watchOnlyCredentials) { initialAction , watchOnlyCredentials ->
+        watchOnlyCredentials.isEmpty() || initialAction
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     @NativeCoroutinesState
-    override val showWatchOnlyPassword = combine(_initialAction, watchOnlyCredentials) { initialAction , watchOnlyCredentials ->
-        watchOnlyCredentials.isEmpty() || initialAction
+    override val showWatchOnlyPassword = combine(_initialAction, watchOnlyCredentials, showWatchOnlyUsername) { initialAction , watchOnlyCredentials, showWatchOnlyUsername ->
+        watchOnlyCredentials.isEmpty() || initialAction || showWatchOnlyUsername
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     class LocalEvents {
@@ -159,7 +185,10 @@ class LoginViewModel constructor(
         object LoginWatchOnly: Event
         data class LoginLightningShortcut(val isAuthenticated: Boolean = false) : Event
         object LoginWithDevice : Event
-        data class Bip39Passphrase(val passphrase: String, val alwaysAsk: Boolean): Event, Redact
+        object ClickRestoreWithRecovery : Event
+        object ClickBiometrics : Event
+        object ClickHelp : Events.OpenBrowser(Urls.HELP_MNEMONIC_BACKUP)
+        data class Bip39Passphrase(val passphrase: String, val alwaysAsk: Boolean?): Event, Redact
         data class EmergencyRecovery(val isEmergencyRecovery: Boolean): Event
         data class DeleteLoginCredentials(val loginCredentials: LoginCredentials) : Event
     }
@@ -174,7 +203,7 @@ class LoginViewModel constructor(
     init {
 
         if(session.isConnected && !isLightningShortcut){
-            postSideEffect(SideEffects.Navigate(greenWallet))
+            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(greenWallet)))
         }else{
             if (greenWallet.askForBip39Passphrase) {
                 postSideEffect(LocalSideEffects.AskBip39Passphrase)
@@ -199,7 +228,6 @@ class LoginViewModel constructor(
                     if(autoLoginWallet) {
                         biometricsBasedCredentials?.let { biometricsCredentials ->
                             postSideEffect(LocalSideEffects.LaunchBiometrics(biometricsCredentials))
-                            _initialAction.value = true
                         }
                     }else if(isLightningShortcut) {
                         // Ask for user presence if biometrics can be used and the parent session is not connected
@@ -210,6 +238,21 @@ class LoginViewModel constructor(
                         }
                     }
                 }
+            }.launchIn(viewModelScope.coroutineScope)
+
+            pinCredentials.onEach { dataState ->
+                _error.value = dataState.data()?.let {
+                    if (it.counter > 0) {
+                        if (it.counter == 2L) {
+                            "id_last_attempt_if_failed_you_will"
+                        } else {
+                            "id_invalid_pin_you_have_s|${3 - it.counter}"
+                        }
+                    } else {
+                        null
+                    }
+                }
+
             }.launchIn(viewModelScope.coroutineScope)
         }
 
@@ -248,18 +291,31 @@ class LoginViewModel constructor(
             is LocalEvents.EmergencyRecovery -> {
                 bip39Passphrase.value = ""
                 isEmergencyRecoveryPhrase.value = event.isEmergencyRecovery
+                if(event.isEmergencyRecovery){
+                    postSideEffect(SideEffects.Dialog("id_emergency_recovery_phrase", "id_if_for_any_reason_you_cant"))
+                }
             }
             is LocalEvents.Bip39Passphrase -> {
                 setBip39Passphrase(event.passphrase, event.alwaysAsk)
             }
+            is LocalEvents.ClickBiometrics -> {
+                _biometricsCredentials.data()?.also {
+                    postSideEffect(LocalSideEffects.LaunchBiometrics(it))
+                }
+            }
+            is LocalEvents.ClickRestoreWithRecovery -> {
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.EnterRecoveryPhrase(
+                    args = SetupArgs.restoreMnemonic(greenWallet)
+                )))
+            }
             is LocalEvents.LoginWatchOnly -> {
                 watchOnlyCredentials.data().also {
-                    if(it?.credential_type == CredentialType.BIOMETRICS_WATCHONLY_CREDENTIALS){
+                    if (it?.credential_type == CredentialType.BIOMETRICS_WATCHONLY_CREDENTIALS) {
                         postSideEffect(LocalSideEffects.LaunchBiometrics(it))
-                    }else{
-                        if(!_initialAction.value && it != null){
+                    } else {
+                        if (!_initialAction.value && it != null) {
                             loginWatchOnlyWithLoginCredentials(it)
-                        }else{
+                        } else {
                             watchOnlyLogin()
                         }
                     }
@@ -268,19 +324,20 @@ class LoginViewModel constructor(
         }
     }
 
-    private fun setBip39Passphrase(passphrase: String, alwaysAsk: Boolean){
+    private fun setBip39Passphrase(passphrase: String, alwaysAsk: Boolean?){
         bip39Passphrase.value = passphrase.trim()
-        viewModelScope.coroutineScope.launch(context = logException(countly)) {
-            greenWallet.also {
-                it.askForBip39Passphrase = alwaysAsk
-                database.updateWallet(it)
+        if(alwaysAsk != null) {
+            viewModelScope.coroutineScope.launch(context = logException(countly)) {
+                greenWallet.also {
+                    it.askForBip39Passphrase = alwaysAsk
+                    database.updateWallet(it)
+                }
             }
         }
 
         if(!_initialAction.value){
             biometricsCredentials.data()?.let { biometricsCredentials ->
                 postSideEffect(LocalSideEffects.LaunchBiometrics(biometricsCredentials))
-                _initialAction.value = true
             }
         }
     }
@@ -295,7 +352,7 @@ class LoginViewModel constructor(
                 session.disconnect()
             }
         }, onSuccess = {credentials ->
-            postSideEffect(SideEffects.Navigate(credentials))
+            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.RecoveryPhrase(SetupArgs(credentials = credentials))))
             isEmergencyRecoveryPhrase.value = false
         }, onError = {
 
@@ -318,7 +375,11 @@ class LoginViewModel constructor(
         val lightningSession = sessionManager.getWalletSessionOrCreate(lightningWallet)
 
         if (lightningSession.isConnected) {
-            postSideEffect(SideEffects.Navigate(lightningWallet))
+            postSideEffect(SideEffects.NavigateTo(
+                NavigateDestinations.WalletOverview(
+                    lightningWallet
+                )
+            ))
         } else {
             lightningShortcutLogin(lightningWallet = lightningWallet)
         }
@@ -382,11 +443,10 @@ class LoginViewModel constructor(
     }
 
     private fun loginWatchOnlyWithLoginCredentials(loginCredentials: LoginCredentials) {
+        _initialAction.value = true
+
         loginCredentials.encrypted_data?.let { encryptedData ->
             login(loginCredentials, isWatchOnly = true, updateWatchOnlyPassword = false) {
-
-                _initialAction.value = true
-
                 val watchOnlyCredentials = greenKeystore.decryptData(encryptedData).let {
                     if(loginCredentials.credential_type == CredentialType.KEYSTORE_PASSWORD){
                         WatchOnlyCredentials(
@@ -409,6 +469,8 @@ class LoginViewModel constructor(
     }
 
     private fun loginWithBiometrics(cipher: PlatformCipher, loginCredentials: LoginCredentials) {
+        _initialAction.value = true
+
         loginCredentials.encrypted_data?.let { encryptedData ->
             try {
                 greenKeystore.decryptData(cipher, encryptedData)
@@ -427,6 +489,8 @@ class LoginViewModel constructor(
     }
 
     private fun loginWithBiometricsV3(cipher: PlatformCipher, loginCredentials: LoginCredentials) {
+        _initialAction.value = true
+
         loginCredentials.encrypted_data?.also { encryptedData ->
             try {
                 val decrypted = greenKeystore.decryptData(cipher, encryptedData)
@@ -441,10 +505,12 @@ class LoginViewModel constructor(
     }
 
     private fun watchOnlyLogin() {
+        _initialAction.value = true
+
         login(null, isWatchOnly = true, updateWatchOnlyPassword = !greenWallet.isWatchOnlySingleSig) {
             session.loginWatchOnly(
                 wallet = greenWallet,
-                username = greenWallet.watchOnlyUsername ?: "",
+                username = watchOnlyUsername.value,
                 watchOnlyCredentials = WatchOnlyCredentials(password = watchOnlyPassword.value)
             )
         }
@@ -568,7 +634,7 @@ class LoginViewModel constructor(
                 session = pair.second,
                 loginCredentials = loginCredentials
             )
-            postSideEffect(SideEffects.Navigate(pair.first))
+            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(pair.first)))
         }, onError = {
 
             if(device == null) {
@@ -643,11 +709,10 @@ class LoginViewModel constructor(
                 wallet = pair.first,
                 session = pair.second,
             )
-            postSideEffect(SideEffects.Navigate(pair.first))
+            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(pair.first)))
         }, onError = {
             if(device == null){
                 postSideEffect(SideEffects.ErrorSnackbar(it))
-                postSideEffect(LocalSideEffects.PinError)
             }else{
                 postSideEffect(SideEffects.NavigateBack(it))
             }
@@ -665,18 +730,26 @@ class LoginViewModel constructor(
 
 }
 
-class LoginViewModelPreview(greenWallet: GreenWallet) : LoginViewModelAbstract(greenWallet = greenWallet) {
+class LoginViewModelPreview(
+    greenWallet: GreenWallet,
+    withPinCredentials: Boolean = false,
+    isWatchOnly: Boolean = false,
+    isLightningShortcut: Boolean = false
+) : LoginViewModelAbstract(greenWallet = greenWallet, isLightningShortcut = isLightningShortcut) {
     override val walletName: StateFlow<String> = MutableStateFlow(viewModelScope, "Name")
     override val bip39Passphrase: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
-    override val watchOnlyPassword: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
+    override val watchOnlyUsername: MutableStateFlow<String> = MutableStateFlow(viewModelScope, if(isWatchOnly) "username" else "")
+    override val watchOnlyPassword: MutableStateFlow<String> = MutableStateFlow(viewModelScope, if(isWatchOnly) "password" else "")
+    override val error: MutableStateFlow<String?> = MutableStateFlow(viewModelScope, null)
     override val isEmergencyRecoveryPhrase: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, false)
     override val tor: StateFlow<TorEvent> = MutableStateFlow(viewModelScope, TorEvent(progress = 0))
     override val applicationSettings: StateFlow<ApplicationSettings> = MutableStateFlow(viewModelScope, ApplicationSettings())
-    override val isWatchOnlyLoginEnabled: StateFlow<Boolean> = MutableStateFlow(viewModelScope, false)
+    override val isWatchOnlyLoginEnabled: StateFlow<Boolean> = MutableStateFlow(viewModelScope, isWatchOnly)
+    override val showWatchOnlyUsername: StateFlow<Boolean> = MutableStateFlow(viewModelScope, false)
     override val showWatchOnlyPassword: StateFlow<Boolean> = MutableStateFlow(viewModelScope, false)
     override val biometricsCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
     override val watchOnlyCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
-    override val pinCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
+    override val pinCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, if(withPinCredentials) DataState.Success(previewLoginCredentials()) else DataState.Empty)
     override val passwordCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
     override val lightningCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
     override val lightningMnemonic: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
@@ -684,7 +757,28 @@ class LoginViewModelPreview(greenWallet: GreenWallet) : LoginViewModelAbstract(g
     companion object{
         fun preview(): LoginViewModelPreview{
             return LoginViewModelPreview(
-                greenWallet = previewWallet(isHardware = false)
+                greenWallet = previewWallet()
+            )
+        }
+
+        fun previewWithPin(): LoginViewModelPreview{
+            return LoginViewModelPreview(
+                greenWallet = previewWallet(),
+                withPinCredentials = true
+            )
+        }
+
+        fun previewWatchOnly(): LoginViewModelPreview{
+            return LoginViewModelPreview(
+                greenWallet = previewWallet(isWatchOnly = true),
+                isWatchOnly = true
+            )
+        }
+
+        fun previewWithLightningShortcut(): LoginViewModelPreview{
+            return LoginViewModelPreview(
+                greenWallet = previewWallet(),
+                isLightningShortcut = true
             )
         }
     }

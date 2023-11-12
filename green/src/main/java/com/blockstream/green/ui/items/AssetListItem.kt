@@ -3,14 +3,14 @@ package com.blockstream.green.ui.items
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import com.blockstream.green.R
 import com.blockstream.common.data.Denomination
+import com.blockstream.common.extensions.networkForAsset
+import com.blockstream.common.gdk.EnrichedAssetPair
+import com.blockstream.common.gdk.GdkSession
+import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemAssetBinding
 import com.blockstream.green.extensions.bind
 import com.blockstream.green.extensions.context
-import com.blockstream.common.gdk.AssetPair
-import com.blockstream.common.gdk.GdkSession
-import com.blockstream.common.extensions.networkForAsset
 import com.blockstream.green.looks.AssetLook
 import com.blockstream.green.utils.toAmountLook
 import com.blockstream.green.utils.toPixels
@@ -20,7 +20,7 @@ import kotlinx.coroutines.Dispatchers
 
 data class AssetListItem constructor(
     val session: GdkSession,
-    val assetPair: AssetPair,
+    val assetPair: EnrichedAssetPair,
     val showBalance: Boolean = false,
     val isLoading: Boolean = false,
     val withBottomMargin : Boolean = true
@@ -29,16 +29,19 @@ data class AssetListItem constructor(
         get() = R.id.fastadapter_asset_item_id
 
     val network by lazy {
-        assetPair.first.networkForAsset(session)
+        assetPair.first.assetId.networkForAsset(session)
     }
     
-    private val look = AssetLook(assetPair.first, assetPair.second, session)
+    private val look = AssetLook(assetPair.first.assetId, assetPair.second, session)
 
     val name
         get() = look.name
 
+    val enrichedAsset
+        get() = assetPair.first
+
     init {
-        identifier = (assetPair.first.ifBlank { "AssetListItem" }).hashCode().toLong()
+        identifier = assetPair.first.hashCode().toLong()
     }
 
     override fun createScope(): CoroutineScope = session.createScope(dispatcher = Dispatchers.Main)
@@ -57,7 +60,7 @@ data class AssetListItem constructor(
 
         binding.asset.bind(
             scope = scope,
-            assetId = assetPair.first,
+            assetId = assetPair.first.assetId,
             session = session,
             showBalance = showBalance,
             primaryValue = {
@@ -74,6 +77,26 @@ data class AssetListItem constructor(
                 ) ?: "-" else null
             }
         )
+
+        if (enrichedAsset.isAnyAsset && !enrichedAsset.isAmp) {
+            // Change asset name
+            binding.asset.name = context(binding).getString(R.string.id_receive_any_liquid_asset)
+            binding.asset.icon.setImageDrawable(
+                ContextCompat.getDrawable(
+                    context(binding),
+                    R.drawable.ic_liquid_asset
+                )
+            )
+        } else if (enrichedAsset.isAnyAsset && enrichedAsset.isAmp) {
+            // Change asset name
+            binding.asset.name = context(binding).getString(R.string.id_receive_any_amp_asset)
+            binding.asset.icon.setImageDrawable(
+                ContextCompat.getDrawable(
+                    context(binding),
+                    R.drawable.ic_amp_asset
+                )
+            )
+        }
 
 
         // disable the animation on some assets

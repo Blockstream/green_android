@@ -197,7 +197,7 @@
                 android:layout_marginBottom="16dp"
                 android:layout_marginTop="24dp"
                 style="@style/Widget.Green.Button.Big"
-                android:enabled="@{!vm.onProgressAndroid &amp;&amp; vm.isValid}"
+                android:enabled="@{!vm.onProgress &amp;&amp; vm.isValidLiveData}"
                 android:text="@{button}" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -247,7 +247,7 @@
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/progress"
-            isVisible="@{vm.onProgressAndroid}"
+            isVisible="@{vm.onProgress}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:indeterminate="true"

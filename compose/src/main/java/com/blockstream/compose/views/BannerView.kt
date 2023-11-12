@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.blockstream.common.data.Banner
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
@@ -33,7 +34,7 @@ import com.blockstream.compose.utils.AnimatedNullableVisibility
 
 @Composable
 fun BannerView(viewModel: GreenViewModel) {
-    val bannerOrNull by viewModel.banner.collectAsState()
+    val bannerOrNull by viewModel.banner.collectAsStateWithLifecycle()
 
     AnimatedNullableVisibility(bannerOrNull) { _, banner ->
         BannerView(banner, modifier = Modifier.padding(top = 16.dp), onClick = {

@@ -126,11 +126,11 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
 
     override fun getFilterAdapter(requestCode: Int): ModelAdapter<*, *> {
         val adapter = ModelAdapter<Network, NetworkListItem>() {
-            NetworkListItem(it.id, it.name, "")
+            NetworkListItem(it, "")
         }.set(gdk.networks().networks.values.toList())
 
         adapter.itemFilter.filterPredicate = { item: NetworkListItem, constraint: CharSequence? ->
-            item.networkName.lowercase().contains(
+            item.network.canonicalName.lowercase().contains(
                 constraint.toString().lowercase()
             )
         }
@@ -151,7 +151,7 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
             .setTitle("Network hostname")
             .setView(dialogBinding.root)
             .setPositiveButton(android.R.string.ok) { _, _ ->
-                gdk.registerCustomNetwork(network, dialogBinding.text.toString())
+                gdk.registerCustomNetwork(network.id, dialogBinding.text.toString())
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()

@@ -7,8 +7,9 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.blockstream.common.interfaces.HttpRequestUrlValidator
-import com.blockstream.common.utils.ConsumableEvent
-import com.blockstream.green.utils.AppKeystore
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.AndroidKeystore
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.runBlocking
 import org.koin.android.annotation.KoinViewModel
@@ -18,8 +19,8 @@ import kotlin.concurrent.schedule
 @KoinViewModel
 class MainActivityViewModel constructor(
     @SuppressLint("StaticFieldLeak") val context: Context,
-    val appKeystore: AppKeystore
-) : AppViewModelAndroid(), DefaultLifecycleObserver, HttpRequestUrlValidator {
+    val androidKeystore: AndroidKeystore
+) : GreenViewModel(), DefaultLifecycleObserver, HttpRequestUrlValidator {
     private var lockTimer: Timer? = null
     val lockScreen = MutableLiveData(canLock())
     val buildVersion = MutableLiveData("")
@@ -33,7 +34,7 @@ class MainActivityViewModel constructor(
         sessionManager.httpRequestProvider.httpRequestUrlValidator = this
     }
 
-    private fun canLock() = settingsManager.getApplicationSettings().enhancedPrivacy && appKeystore.canUseBiometrics()
+    private fun canLock() = settingsManager.getApplicationSettings().enhancedPrivacy && androidKeystore.canUseBiometrics()
 
     fun unlock(){
         lockScreen.value = false
@@ -63,7 +64,7 @@ class MainActivityViewModel constructor(
     override fun unsafeUrlWarning(urls: List<String>): Boolean {
         unsafeUrlWarningEmitter = CompletableDeferred()
 
-        onEvent.postValue(ConsumableEvent(MainActivity.HttpUrlWarningEvent.UrlWarning(urls)))
+        postSideEffect(SideEffects.UrlWarning(urls))
 
         return runBlocking { unsafeUrlWarningEmitter!!.await() }
     }

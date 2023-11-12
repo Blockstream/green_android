@@ -26,7 +26,7 @@ import com.blockstream.green.extensions.getNavigationResult
 import com.blockstream.green.extensions.hideKeyboard
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
-import com.blockstream.green.utils.AppKeystore
+import com.blockstream.common.utils.AndroidKeystore
 import com.blockstream.green.utils.getClipboard
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.launchIn
@@ -54,7 +54,7 @@ class WatchOnlyCredentialsFragment : AppFragment<WatchOnlyCredentialsFragmentBin
 
     private var biometricsCipher: CompletableDeferred<Cipher>? = null
 
-    private val appKeystore: AppKeystore by inject()
+    private val androidKeystore: AndroidKeystore by inject()
 
     val viewModel: WatchOnlyCredentialsViewModel by viewModel {
         parametersOf(args.setupArgs)
@@ -131,7 +131,7 @@ class WatchOnlyCredentialsFragment : AppFragment<WatchOnlyCredentialsFragmentBin
 
     private fun getBiometricsCipher(onlyDeviceCredentials: Boolean = false) {
 
-        if (appKeystore.isBiometricsAuthenticationRequired()) {
+        if (androidKeystore.isBiometricsAuthenticationRequired()) {
             authenticateWithBiometrics(object : AuthenticationCallback(fragment = this) {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     getBiometricsCipher(onlyDeviceCredentials = true)
@@ -185,7 +185,7 @@ class WatchOnlyCredentialsFragment : AppFragment<WatchOnlyCredentialsFragmentBin
         try {
             biometricPrompt.authenticate(
                 promptInfo.build(),
-                BiometricPrompt.CryptoObject(appKeystore.getBiometricsEncryptionCipher(recreateKeyIfNeeded = true))
+                BiometricPrompt.CryptoObject(androidKeystore.getBiometricsEncryptionCipher(recreateKeyIfNeeded = true))
             )
         } catch (e: InvalidAlgorithmParameterException) {
             // At least one biometric must be enrolled

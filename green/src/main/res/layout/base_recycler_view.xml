@@ -5,10 +5,6 @@
     <data>
 
         <variable
-            name="vmWalletViewModel"
-            type="com.blockstream.green.ui.wallet.AbstractWalletViewModel" />
-
-        <variable
             name="vm"
             type="com.blockstream.common.models.GreenViewModel" />
 
@@ -26,7 +22,7 @@
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/progress"
-            isVisible="@{vmWalletViewModel.onProgressAndroid || vm.onProgress}"
+            isVisible="@{vm.onProgress}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"

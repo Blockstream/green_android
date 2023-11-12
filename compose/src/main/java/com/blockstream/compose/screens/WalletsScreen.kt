@@ -1,18 +1,22 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package com.blockstream.compose.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,13 +26,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.events.Events
 import com.blockstream.common.models.wallets.WalletsViewModelAbstract
 import com.blockstream.common.models.wallets.WalletsViewModelPreview
 import com.blockstream.common.views.wallet.WalletListLook
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenSpacer
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.whiteLow
@@ -37,26 +42,29 @@ import com.blockstream.compose.views.WalletListItemCallbacks
 
 open class WalletSectionCallbacks(
     onWalletClick: (wallet: GreenWallet, isLightning: Boolean) -> Unit = { _, _ -> },
-    onWalletRename: ((wallet: GreenWallet) -> Unit)? = null,
-    onWalletDelete: ((wallet: GreenWallet) -> Unit)? = null,
     onLightningShortcutDelete: ((wallet: GreenWallet) -> Unit)? = null,
-    val onNewWalletClick: () -> Unit = {}
-) : WalletListItemCallbacks(onWalletClick = onWalletClick, onWalletRename = onWalletRename , onWalletDelete = onWalletDelete, onLightningShortcutDelete = onLightningShortcutDelete)
+    val onNewWalletClick: () -> Unit = {},
+    hasContextMenu: Boolean = false
+) : WalletListItemCallbacks(
+    onWalletClick = onWalletClick,
+    onLightningShortcutDelete = onLightningShortcutDelete,
+    hasContextMenu = hasContextMenu
+)
 
-@Composable
-private fun WalletSection(
-    title: String,
+private fun LazyListScope.walletSection(
+    title: Int,
     wallets: List<WalletListLook>,
-    callbacks: WalletListItemCallbacks
+    callbacks: WalletListItemCallbacks,
 ) {
-    GreenColumn(padding = 0, space = 4) {
-        Text(title, style = labelMedium)
-
-        wallets.forEach {
-            WalletListItem(look = it, callbacks = callbacks)
-        }
-
-        GreenSpacer(0)
+    item {
+        Text(
+            text = stringResource(id = title),
+            style = labelMedium,
+            modifier = Modifier.padding(top = 8.dp)
+        )
+    }
+    items(wallets) { item ->
+        WalletListItem(look = item, callbacks = callbacks)
     }
 }
 
@@ -66,9 +74,9 @@ fun WalletsScreen(
     viewModel: WalletsViewModelAbstract,
     callbacks: WalletSectionCallbacks = WalletSectionCallbacks()
 ) {
-    val softwareWallets by viewModel.softwareWallets.collectAsState()
-    val ephemeralWallets by viewModel.ephemeralWallets.collectAsState()
-    val hardwareWallets by viewModel.hardwareWallets.collectAsState()
+    val softwareWallets by viewModel.softwareWallets.collectAsStateWithLifecycle()
+    val ephemeralWallets by viewModel.ephemeralWallets.collectAsStateWithLifecycle()
+    val hardwareWallets by viewModel.hardwareWallets.collectAsStateWithLifecycle()
 
     GreenColumn(
         space = 8,
@@ -77,34 +85,32 @@ fun WalletsScreen(
             .fillMaxWidth()
             .then(modifier)
     ) {
-        GreenColumn(
-            space = 16,
-            padding = 0,
+
+        LazyColumn(
             modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
+                .weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-
-            if (!softwareWallets.isNullOrEmpty()) {
-                WalletSection(
-                    title = stringResource(id = R.string.id_digital_wallets),
-                    wallets = softwareWallets!!,
+            softwareWallets?.takeIf { it.isNotEmpty() }?.also {
+                walletSection(
+                    title = R.string.id_digital_wallets,
+                    wallets = it,
                     callbacks = callbacks
                 )
             }
 
-            if (!ephemeralWallets.isNullOrEmpty()) {
-                WalletSection(
-                    title = stringResource(id = R.string.id_ephemeral_wallets),
-                    wallets = ephemeralWallets!!,
+            ephemeralWallets?.takeIf { it.isNotEmpty() }?.also {
+                walletSection(
+                    title = R.string.id_ephemeral_wallets,
+                    wallets = it,
                     callbacks = callbacks
                 )
             }
 
-            if (!hardwareWallets.isNullOrEmpty()) {
-                WalletSection(
-                    title = stringResource(id = R.string.id_hardware_devices),
-                    wallets = hardwareWallets!!,
+            hardwareWallets?.takeIf { it.isNotEmpty() }?.also {
+                walletSection(
+                    title = R.string.id_hardware_devices,
+                    wallets = it,
                     callbacks = callbacks
                 )
             }
@@ -114,6 +120,7 @@ fun WalletsScreen(
             Row(modifier = Modifier
                 .clickable {
                     callbacks.onNewWalletClick.invoke()
+                    viewModel.postEvent(Events.SetupNewWallet)
                 }
                 .height(52.dp)
                 .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {

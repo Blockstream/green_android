@@ -5,8 +5,9 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.kotlinxSerialization)
-    id("kotlin-parcelize")
+    alias(libs.plugins.kotlinParcelize)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.kmp.nativecoroutines)
     alias(libs.plugins.app.cash.sqldelight)
@@ -72,7 +73,7 @@ kotlin {
             }
         }
 
-        val commonMain by getting {
+        commonMain {
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
             dependencies {
                 /**  --- Kotlin & KotlinX ------------------------------------------------------------------- */
@@ -85,6 +86,13 @@ kotlin {
                 /**  --- Koin   ----------------------------------------------------------------------------- */
                 api(libs.koin.core)
                 api(libs.koin.annotations)
+                /** ----------------------------------------------------------------------------------------- */
+
+                /**  --- Voyager ---------------------------------------------------------------------------- */
+                api(libs.voyager.screenmodel)
+                // Required for iOS target compilation
+                compileOnly(compose.runtime)
+                compileOnly(compose.runtimeSaveable)
                 /** ----------------------------------------------------------------------------------------- */
 
                 /**  --- Breez ------------------------------------------------------------------------------ */
@@ -107,45 +115,26 @@ kotlin {
             }
         }
 
-        val androidMain by getting {
-            dependencies {
-                implementation(project(":gdk"))
-                implementation(libs.androidx.lifecycle.viewmodel.ktx)
-                implementation(libs.koin.android)
-                implementation(libs.sqldelight.android.driver)
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.koin.test)
 
-                /**  --- Breez FDroid ----------------------------------------------------------------------- */
-                // Temp fix for FDroid breez dependencies
-                // api(libs.breez.sdk.android)
-                /** ----------------------------------------------------------------------------------------- */
-            }
+            // Required by Voyager
+            compileOnly(compose.runtime)
+            compileOnly(compose.runtimeSaveable)
         }
 
-        val iosMain by getting {
-            dependencies {
-                implementation(libs.stately.common) // until this is fixed https://github.com/touchlab/Stately/issues/93
-                implementation(libs.sqldelight.native.driver)
-            }
-        }
+        androidMain.dependencies {
+            implementation(project(":gdk"))
+            implementation(libs.androidx.lifecycle.viewmodel.ktx)
+            implementation(libs.koin.android)
+            implementation(libs.sqldelight.android.driver)
 
-        val iosArm64Main by getting {
-            kotlin.srcDir("build/generated/ksp/metadata/iosArm64Main/kotlin")
-        }
-
-        val iosSimulatorArm64Main by getting {
-            kotlin.srcDir("build/generated/ksp/metadata/iosSimulatorArm64Main/kotlin")
-        }
-
-        val iosX64Main by getting {
-            kotlin.srcDir("build/generated/ksp/metadata/iosX64Main/kotlin")
-        }
-
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-                implementation(libs.kotlinx.coroutines.test)
-                implementation(libs.koin.test)
-            }
+            /**  --- Breez FDroid ----------------------------------------------------------------------- */
+            // Temp fix for FDroid breez dependencies
+            // api(libs.breez.sdk.android)
+            /** ----------------------------------------------------------------------------------------- */
         }
 
         val androidUnitTest by getting {
@@ -158,6 +147,23 @@ kotlin {
                 implementation(libs.koin.test.junit4)
                 implementation(libs.mockk)
             }
+        }
+
+        iosMain.dependencies {
+            implementation(libs.stately.common) // until this is fixed https://github.com/touchlab/Stately/issues/93
+            implementation(libs.sqldelight.native.driver)
+        }
+
+        val iosArm64Main by getting {
+            kotlin.srcDir("build/generated/ksp/metadata/iosArm64Main/kotlin")
+        }
+
+        val iosSimulatorArm64Main by getting {
+            kotlin.srcDir("build/generated/ksp/metadata/iosSimulatorArm64Main/kotlin")
+        }
+
+        val iosX64Main by getting {
+            kotlin.srcDir("build/generated/ksp/metadata/iosX64Main/kotlin")
         }
     }
 }

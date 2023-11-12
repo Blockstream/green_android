@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.R
-import com.blockstream.green.devices.DeviceManager
+import com.blockstream.green.devices.DeviceManagerAndroid
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.views.GreenToolbar
 import kotlinx.coroutines.CoroutineScope
@@ -18,7 +18,7 @@ abstract class AppActivity : AppCompatActivity() {
 
     protected val settingsManager: SettingsManager by inject()
 
-    private val deviceManager: DeviceManager by inject()
+    private val deviceManager: DeviceManagerAndroid by inject()
 
     abstract fun isDrawerOpen(): Boolean
     abstract fun closeDrawer()

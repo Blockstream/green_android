@@ -7,20 +7,22 @@ import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.gdk.data.Address
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.addresses.AddressesViewModel
+import com.blockstream.common.views.account.AddressLook
 import com.blockstream.green.R
 import com.blockstream.green.databinding.AddressesFragmentBinding
 import com.blockstream.green.databinding.ListItemAddressBinding
 import com.blockstream.green.extensions.copyToClipboard
 import com.blockstream.green.extensions.endIconCustomMode
 import com.blockstream.green.extensions.showPopupMenu
+import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.bottomsheets.SignMessageBottomSheetDialogFragment
 import com.blockstream.green.ui.items.AddressListItem
 import com.blockstream.green.ui.items.ProgressListItem
 import com.blockstream.green.ui.items.TextListItem
-import com.blockstream.green.ui.wallet.AbstractAccountWalletFragment
 import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.observeList
-import com.blockstream.green.utils.openBrowser
 import com.blockstream.green.views.EndlessRecyclerOnScrollListener
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
@@ -30,36 +32,31 @@ import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class AddressesFragment :
-    AbstractAccountWalletFragment<AddressesFragmentBinding>(R.layout.addresses_fragment, 0) {
+class AddressesFragment : AppFragment<AddressesFragmentBinding>(R.layout.addresses_fragment, 0) {
 
     val args: AddressesFragmentArgs by navArgs()
-    override val walletOrNull by lazy { args.wallet }
-
-    override val screenName = "PreviousAddresses"
 
     val viewModel: AddressesViewModel by viewModel {
         parametersOf(args.wallet, args.account)
     }
 
-    override fun getAccountWalletViewModel() = viewModel
+    override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         binding.vm = viewModel
 
         val titleAdapter = FastItemAdapter<GenericItem>()
 
-        val addressesModelAdapter = ModelAdapter { address: Address ->
-            AddressListItem(
-                index = viewModel.addressesLiveData.value?.indexOf(address) ?: 1,
-                address = address,
-                network = network,
-                session = session
-            )
-        }.observeList(viewLifecycleOwner, viewModel.addressesLiveData) {
+        val addressesModelAdapter = ModelAdapter<AddressLook, AddressListItem> {
+            AddressListItem(it)
+        }.observeList(lifecycleScope, viewModel.addresses) {
             if (it.isEmpty()) {
                 titleAdapter.set(
                     listOf(
@@ -80,7 +77,7 @@ class AddressesFragment :
         }
 
         addressesModelAdapter.itemFilter.filterPredicate = { item: AddressListItem, constraint: CharSequence? ->
-            item.address.address.lowercase().contains(
+            item.addressLook.address.address.lowercase().contains(
                 constraint.toString().lowercase()
             )
         }
@@ -91,16 +88,15 @@ class AddressesFragment :
             override fun onLoadMore() {
                 footerAdapter.set(listOf(ProgressListItem()))
                 disable()
-                viewModel.getPreviousAddresses()
+                viewModel.postEvent(AddressesViewModel.LocalEvents.LoadMore)
             }
         }.also {
             it.disable()
         }
 
-        viewModel.pagerLiveData.observe(viewLifecycleOwner) { hasMoreTransactions ->
+        viewModel.hasMore.onEach {
             footerAdapter.clear()
-
-            if(hasMoreTransactions == true){
+            if(it){
                 @Suppress("DEPRECATION")
                 lifecycleScope.launchWhenResumed {
                     delay(200L)
@@ -109,7 +105,7 @@ class AddressesFragment :
             }else{
                 endlessRecyclerOnScrollListener.disable()
             }
-        }
+        }.launchIn(lifecycleScope)
 
         binding.recycler.addOnScrollListener(endlessRecyclerOnScrollListener)
 
@@ -118,7 +114,7 @@ class AddressesFragment :
         fastAdapter.onClickListener = { v, _, item, _ ->
             if(item is AddressListItem) {
                 v?.let {
-                    showPopupMenu(v.findViewById(R.id.addressTextView) ?: v, item.address)
+                    showPopupMenu(v.findViewById(R.id.addressTextView) ?: v, item.addressLook.address)
                 }
             }
             true
@@ -126,13 +122,13 @@ class AddressesFragment :
 
         fastAdapter.addClickListener<ListItemAddressBinding, GenericItem>({ binding -> binding.buttonCopy }) { _, _, _, item ->
             if(item is AddressListItem) {
-                copyToClipboard(label = "Address", content = item.address.address, showCopyNotification = true)
+                copyToClipboard(label = "Address", content = item.addressLook.address.address, showCopyNotification = true)
             }
         }
 
         fastAdapter.addClickListener<ListItemAddressBinding, GenericItem>({ binding -> binding.buttonSignature }) { _, _, _, item ->
             if(item is AddressListItem) {
-                SignMessageBottomSheetDialogFragment.show(item.address.address, childFragmentManager)
+                SignMessageBottomSheetDialogFragment.show(item.addressLook.address.address, childFragmentManager)
             }
         }
 
@@ -154,7 +150,7 @@ class AddressesFragment :
         ) { menuItem ->
             when (menuItem.itemId) {
                 R.id.block_explorer -> {
-                    openBrowser("${account.network.explorerUrl?.replace("/tx/", "/address/")}${address.address}")
+                    viewModel.postEvent(AddressesViewModel.LocalEvents.AddressBlockExplorer(address))
                 }
             }
             true

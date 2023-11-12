@@ -25,6 +25,8 @@ class AccountAssetBottomSheetDialogFragment : FilterBottomSheetDialogFragment(),
         (requireParentFragment() as? AppFragment<*>)?.getGreenViewModel() ?: (requireParentFragment() as AbstractWalletFragment<*>).getWalletViewModel()
     }
 
+    override val withSearch: Boolean = true
+
     val session
         get() = viewModel.session
 

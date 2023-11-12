@@ -1445,4 +1445,9 @@
   <string name="id_receive_on">Receive on</string>
   <string name="id_empty_lightning_account">Empty Lightning Account</string>
   <string name="id_you_can_empty_your_lightning_account_when">You can empty your Lightning account when its balance is at least %s sats, as the process requires an onchain transaction. If your balance is low you should rather send out your funds to another lightning wallet.</string>
+  <string name="id_invalid_pin_you_have_s">Invalid PIN, you have %s attempts left</string>
+  <string name="id_receive_any_amp_asset">Receive any AMP Asset</string>
+  <string name="id_you_need_an_amp_account_in">You need an AMP account in order to receive it.</string>
+  <string name="id_added_already">Added Already!</string>
+  <string name="id_you_cannon_add_more_than_one">You cannot add more than one Lightning Account.</string>
 </resources>

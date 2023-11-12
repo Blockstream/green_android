@@ -7,40 +7,39 @@ import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.settings.TwoFactorAuthenticationViewModel
 import com.blockstream.green.R
 import com.blockstream.green.databinding.TwofactorAuthenticationFragmentBinding
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.ui.wallet.WalletViewModel
+import com.blockstream.green.ui.AppFragment
 import com.google.android.material.tabs.TabLayoutMediator
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class TwoFactorAuthenticationFragment : AbstractWalletFragment<TwofactorAuthenticationFragmentBinding>(
+class TwoFactorAuthenticationFragment : AppFragment<TwofactorAuthenticationFragmentBinding>(
     R.layout.twofactor_authentication_fragment,
     0
 ) {
     val args: TwoFactorAuthenticationFragmentArgs by navArgs()
-    override val walletOrNull by lazy { args.wallet }
-
-    override val screenName = "WalletSettings2FA"
 
     override val subtitle: String
         get() = getString(R.string.id_multisig)
 
-    val viewModel: WalletViewModel by viewModel {
+    val viewModel: TwoFactorAuthenticationViewModel by viewModel {
         parametersOf(args.wallet)
     }
 
-    override fun getWalletViewModel(): AbstractWalletViewModel = viewModel
+    override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
-        val networks = listOfNotNull(session.activeBitcoinMultisig, session.activeLiquidMultisig)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val networks = listOfNotNull(viewModel.session.activeBitcoinMultisig, viewModel.session.activeLiquidMultisig)
 
         binding.showTabs = networks.size > 1
 
         val adapter = TwoFactorAuthenticationPagerAdapter(
-            wallet = wallet,
+            wallet = viewModel.greenWallet,
             fragment = this,
             networks = networks
         )

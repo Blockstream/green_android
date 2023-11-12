@@ -19,7 +19,6 @@ import org.koin.core.component.KoinComponent
 @KoinViewModel
 open class AppViewModelAndroid constructor(greenWalletOrNull: GreenWallet? = null) : GreenViewModel(greenWalletOrNull = greenWalletOrNull), HardwareWalletInteraction, KoinComponent {
     val onEvent = MutableLiveData<ConsumableEvent<AppEvent>>()
-    val onProgressAndroid = MutableLiveData(false)
     val onError = MutableLiveData<ConsumableEvent<Throwable>>()
 
     init {
@@ -30,10 +29,10 @@ open class AppViewModelAndroid constructor(greenWalletOrNull: GreenWallet? = nul
         action: suspend () -> T,
         timeout: Long = 0,
         preAction: (() -> Unit)? = {
-            onProgressAndroid.value = true
+            onProgress.value = true
         },
         postAction: ((Exception?) -> Unit)? = {
-            onProgressAndroid.value = false
+            onProgress.value = false
         },
         onSuccess: (T) -> Unit,
         onError: ((Throwable) -> Unit) = {

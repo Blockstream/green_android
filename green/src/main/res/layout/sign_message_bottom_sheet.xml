@@ -8,19 +8,7 @@
 
         <variable
             name="vm"
-            type="com.blockstream.green.ui.addresses.AddressesViewModel" />
-
-        <variable
-            name="address"
-            type="String" />
-
-        <variable
-            name="message"
-            type="String" />
-
-        <variable
-            name="signature"
-            type="String" />
+            type="com.blockstream.common.models.addresses.SignMessageViewModel" />
 
     </data>
 
@@ -47,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:fontFamily="@font/monospace"
-            android:text="@{address}"
+            android:text="@{vm.address}"
             android:textAppearance="?attr/textAppearanceBodySmall"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/buttonClose"
@@ -81,7 +69,7 @@
             tools:visibility="gone">
 
             <com.google.android.material.card.MaterialCardView
-                isVisible="@{signature == null}"
+                isVisible="@{vm.signature == null}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -100,7 +88,7 @@
                         android:layout_marginEnd="16dp"
                         android:layout_weight="1"
                         android:background="@android:color/transparent"
-                        android:enabled="@{signature == null}"
+                        android:enabled="@{vm.signature == null}"
                         android:fontFamily="@font/monospace"
                         android:gravity="start|top"
                         android:hint="@string/id_paste_here_the_message_to_be_signed"
@@ -108,7 +96,7 @@
                         android:importantForAccessibility="no"
                         android:inputType="textMultiLine|textNoSuggestions"
                         android:lines="4"
-                        android:text="@={message}"
+                        android:text="@={vm.message}"
                         android:textSize="12dp"
                         tools:ignore="SpUsage" />
 
@@ -120,7 +108,7 @@
 
                         <ImageButton
                             android:id="@+id/buttonClear"
-                            isVisible="@{StringExtensionsKt.isNotBlank(message) &amp;&amp; signature == null}"
+                            isVisible="@{StringExtensionsKt.isNotBlank(vm.message) &amp;&amp; vm.signature == null}"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
@@ -137,7 +125,7 @@
 
                         <ImageButton
                             android:id="@+id/buttonPaste"
-                            isVisible="@{StringExtensionsKt.isBlank(message) &amp;&amp; signature == null}"
+                            isVisible="@{StringExtensionsKt.isBlank(vm.message) &amp;&amp; vm.signature == null}"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
@@ -160,11 +148,11 @@
             <Button
                 android:id="@+id/buttonSign"
                 style="@style/Widget.Green.Button"
-                isVisible="@{signature == null}"
+                isVisible="@{vm.signature == null}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:enabled="@{!vm.onProgressAndroid &amp;&amp; message.length() > 0}"
+                android:enabled="@{!vm.onProgress &amp;&amp; vm.message.length() > 0}"
                 android:text="@string/id_sign_message" />
         </LinearLayout>
 
@@ -181,7 +169,7 @@
             app:layout_constraintTop_toBottomOf="@+id/subtitle">
 
             <FrameLayout
-                isVisible="@{signature != null}"
+                isVisible="@{vm.signature != null}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -193,7 +181,7 @@
             </FrameLayout>
 
             <TextView
-                isVisible="@{signature != null}"
+                isVisible="@{vm.signature != null}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
@@ -208,7 +196,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/riveContainer" />
 
             <LinearLayout
-                isVisible="@{signature != null}"
+                isVisible="@{vm.signature != null}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
@@ -235,14 +223,14 @@
                         android:padding="12dp"
                         android:drawablePadding="8dp"
                         app:drawableEndCompat="@drawable/ic_copy"
-                        android:text="@{message}"
+                        android:text="@{vm.message}"
                         android:textAppearance="?attr/textAppearanceBodyMedium" />
 
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
 
             <LinearLayout
-                isVisible="@{signature != null}"
+                isVisible="@{vm.signature != null}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -267,7 +255,7 @@
                         android:drawablePadding="8dp"
                         app:drawableEndCompat="@drawable/ic_copy"
                         android:padding="12dp"
-                        android:text="@{signature}"
+                        android:text="@{vm.signature}"
                         android:textAppearance="?attr/textAppearanceBodyMedium"
                          />
 

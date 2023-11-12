@@ -8,10 +8,6 @@
         <import type="com.blockstream.green.gdk.ExtensionsKt" />
 
         <variable
-            name="index"
-            type="String" />
-
-        <variable
             name="pointer"
             type="String" />
 

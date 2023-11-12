@@ -3,13 +3,13 @@ package com.blockstream.common.data
 data class AppConfig constructor(
     val isDebug: Boolean,
     val gdkDataDir: String,
-    val breezApiKey: String?,
-    val greenlightKey: String?,
-    val greenlightCert: String?,
-    val zendeskClientId: String?,
-    val analyticsFeatureEnabled: Boolean,
-    val lightningFeatureEnabled: Boolean,
-    val storeRateEnabled: Boolean
+    val breezApiKey: String? = null,
+    val greenlightKey: String? = null,
+    val greenlightCert: String? = null,
+    val zendeskClientId: String? = null,
+    val analyticsFeatureEnabled: Boolean = true,
+    val lightningFeatureEnabled: Boolean = true,
+    val storeRateEnabled: Boolean = false
 ) {
     companion object {
         fun default(

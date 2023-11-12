@@ -2,6 +2,7 @@ package com.blockstream.common.models.add
 
 import com.blockstream.common.SATOSHI_UNIT
 import com.blockstream.common.data.CredentialType
+import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
@@ -10,7 +11,6 @@ import com.blockstream.common.extensions.createLoginCredentials
 import com.blockstream.common.extensions.hasHistory
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.data.AccountType
-import com.blockstream.common.gdk.data.Asset
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.gdk.params.SubAccountParams
@@ -150,7 +150,7 @@ abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet) :
         })
     }
 
-    protected fun networkForAccountType(accountType: AccountType, asset: Asset): Network {
+    protected fun networkForAccountType(accountType: AccountType, asset: EnrichedAsset): Network {
         return when (accountType) {
             AccountType.BIP44_LEGACY,
             AccountType.BIP49_SEGWIT_WRAPPED,

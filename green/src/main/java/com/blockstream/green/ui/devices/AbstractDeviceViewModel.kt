@@ -8,12 +8,13 @@ import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.DeviceBrand
+import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceConnectionManager
-import com.blockstream.green.devices.DeviceManager
+import com.blockstream.green.devices.DeviceManagerAndroid
 import com.blockstream.green.devices.HardwareConnectInteraction
 import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.utils.QATester
@@ -55,7 +56,7 @@ abstract class AbstractDeviceViewModel constructor(
     val deviceConnectionManager : DeviceConnectionManager
         get() = deviceConnectionManagerOrNull!!
 
-    val bleAdapterState = deviceManager.bleAdapterState
+    val bleAdapterState = (deviceManager as DeviceManagerAndroid).bleAdapterState
 
     val onInstructions = MutableLiveData<ConsumableEvent<Int>>()
 
@@ -93,11 +94,11 @@ abstract class AbstractDeviceViewModel constructor(
     }
 
     override fun onDeviceReady(device: Device, isJadeUninitialized: Boolean?) {
-        onProgressAndroid.postValue(true)
+        onProgress.value = true
     }
 
     override fun onDeviceFailed(device: Device) {
-        onProgressAndroid.postValue(false)
+        onProgress.value = false
     }
 
     override fun askForFirmwareUpgrade(
@@ -172,7 +173,7 @@ abstract class AbstractDeviceViewModel constructor(
 
         if(!proceedToLogin) {
 
-            if(sessionManager.getConnectedHardwareWalletSessions().none { it.device?.id == device?.id }){
+            if(sessionManager.getConnectedHardwareWalletSessions().none { it.device?.connectionIdentifier == device?.connectionIdentifier }){
                 // Disconnect without blocking the UI
                 applicationScope.launch(context = Dispatchers.IO + logException(countly)) {
                     device?.disconnect()

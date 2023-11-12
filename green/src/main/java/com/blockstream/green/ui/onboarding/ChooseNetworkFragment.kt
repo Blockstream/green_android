@@ -2,14 +2,16 @@ package com.blockstream.green.ui.onboarding
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.blockstream.common.gdk.data.Network
-import com.blockstream.green.R
 import com.blockstream.common.data.SetupArgs
+import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.onboarding.ChooseNetworkViewModel
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.green.R
 import com.blockstream.green.databinding.ChooseNetworkFragmentBinding
-import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.ui.items.NetworkListItem
 import com.blockstream.green.ui.items.TitleExpandableListItem
 import com.mikepenz.fastadapter.GenericItem
@@ -17,6 +19,8 @@ import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.fastadapter.expandable.getExpandableExtension
 import com.mikepenz.fastadapter.ui.utils.StringHolder
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class ChooseNetworkFragment :
     AbstractOnboardingFragment<ChooseNetworkFragmentBinding>(
@@ -26,28 +30,42 @@ class ChooseNetworkFragment :
 
     private val args: ChooseNetworkFragmentArgs by navArgs()
 
-    override val screenName = "OnBoardChooseNetwork"
 
-    val viewModel: AppViewModelAndroid by viewModels()
+    val viewModel: ChooseNetworkViewModel by viewModel {
+        parametersOf(args.setupArgs)
+    }
 
-    override fun getAppViewModel() = viewModel
+    override fun getGreenViewModel(): GreenViewModel = viewModel
+
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+
+        if(sideEffect is SideEffects.Navigate){
+            (sideEffect.data as? SetupArgs)?.also {
+                navigate(
+                    ChooseNetworkFragmentDirections.actionChooseNetworkFragmentToWatchOnlyCredentialsFragment(
+                        it
+                    )
+                )
+            }
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         setupArgs = args.setupArgs
 
-        val fastItemAdapter = createNetworkAdapter()
+        val fastItemAdapter = FastItemAdapter<GenericItem>()
+        fastItemAdapter.getExpandableExtension()
+
+        updateNetworkAdapter(fastItemAdapter)
 
         fastItemAdapter.onClickListener = { _, _, item: GenericItem, _ ->
             when (item) {
                 is NetworkListItem -> {
                     setupArgs?.apply {
-                        if(isRestoreFlow){
-                            navigate(createCopyForNetwork(gdk = gdk, item.network, isSinglesig == true))
-                        }else{
-                            navigate(copy(networkType = item.network))
-                        }
+                        navigate(copy(network = item.network))
                     }
                     true
                 }
@@ -62,63 +80,36 @@ class ChooseNetworkFragment :
         }
     }
 
-    private fun createNetworkAdapter(): FastItemAdapter<GenericItem> {
-        val fastItemAdapter = FastItemAdapter<GenericItem>()
-        fastItemAdapter.getExpandableExtension()
+    private fun updateNetworkAdapter(fastItemAdapter: FastItemAdapter<GenericItem>) {
+        val list = mutableListOf<GenericItem>()
 
-        fastItemAdapter.add(NetworkListItem(Network.GreenMainnet,"Bitcoin", getCaption(Network.GreenMainnet)))
-        if(args.setupArgs.isSinglesig == false) {
-            fastItemAdapter.add(
-                NetworkListItem(
-                    Network.GreenLiquid,
-                    "Liquid",
-                    getCaption(Network.GreenLiquid)
-                )
-            )
+        list += viewModel.mainNetworks.value.map {
+            NetworkListItem(it, getCaption(it))
         }
 
-        if(settingsManager.getApplicationSettings().testnet) {
-            val expandable = TitleExpandableListItem(StringHolder(R.string.id_additional_networks))
-            expandable.subItems.add(
-                NetworkListItem(
-                    Network.GreenTestnet,
-                    "Testnet",
-                    getCaption("testnet")
-                )
-            )
+        viewModel.additionalNetworks.value.also {
+            if(it.isNotEmpty()){
+                val expandable = TitleExpandableListItem(StringHolder(R.string.id_additional_networks))
 
-            if(args.setupArgs.isSinglesig == false) {
-                expandable.subItems.add(
-                    NetworkListItem(
-                        Network.GreenTestnetLiquid,
-                        "Testnet Liquid",
-                        getCaption("testnet-liquid")
-                    )
-                )
+                it.forEach {
+                    expandable.subItems.add(NetworkListItem(it, getCaption(it)))
+                }
+
+                list += expandable
             }
-
-            gdk.networks().customNetwork?.let {
-                expandable.subItems.add(
-                    NetworkListItem(
-                        it.id,
-                        it.name,
-                        "Force usage of custom network. Multisig/Singlesig selection is irrelevant."
-                    )
-                )
-            }
-
-            fastItemAdapter.add(expandable)
         }
 
-        return fastItemAdapter
+        fastItemAdapter.set(list)
     }
 
-    private fun getCaption(network: String): String {
-        return when (network) {
-            Network.GreenMainnet -> getString(R.string.id_bitcoin_is_the_worlds_leading)
-            Network.GreenLiquid -> getString(R.string.id_the_liquid_network_is_a_bitcoin)
-            else -> ""
-        }
+    private fun getCaption(network: Network): String {
+        return (if(network.isBitcoin){
+            getString(R.string.id_bitcoin_is_the_worlds_leading)
+        }else if(network.isLiquid){
+            getString(R.string.id_the_liquid_network_is_a_bitcoin)
+        }else{
+            ""
+        })
     }
 
     private fun navigate(setupArgs: SetupArgs) {

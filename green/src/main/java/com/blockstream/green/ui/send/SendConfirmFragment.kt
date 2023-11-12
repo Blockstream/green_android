@@ -6,6 +6,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import breez_sdk.AesSuccessActionDataResult
@@ -45,6 +46,8 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.ncorti.slidetoact.SlideToActView
 import com.pandulapeter.beagle.Beagle
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -208,12 +211,12 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
             }
         }
 
-        viewModel.onProgressAndroid.observe(viewLifecycleOwner){
+        viewModel.onProgress.onEach {
             onBackCallback.isEnabled = it
             if(account.isLightning){
                 binding.outputs.alpha = if(it) 0.2f else 1.0f
             }
-        }
+        }.launchIn(lifecycleScope)
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackCallback)
     }

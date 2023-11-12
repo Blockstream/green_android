@@ -5,10 +5,11 @@ package com.blockstream.green.di
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.hardware.usb.UsbManager
+import com.blockstream.common.managers.DeviceManager
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.GreenApplication
 import com.blockstream.green.R
-import com.blockstream.green.devices.DeviceManager
+import com.blockstream.green.devices.DeviceManagerAndroid
 import com.blockstream.green.managers.NotificationManager
 import com.blockstream.green.utils.isDebug
 import com.blockstream.green.utils.isDevelopmentOrDebug
@@ -29,6 +30,7 @@ import com.pandulapeter.beagle.modules.ScreenCaptureToolboxModule
 import com.pandulapeter.beagle.modules.TextModule
 import com.polidea.rxandroidble3.RxBleClient
 import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.binds
 import org.koin.dsl.module
 import kotlin.io.encoding.ExperimentalEncodingApi
 
@@ -45,13 +47,14 @@ val greenModules = module {
         )
     }
     single {
-        DeviceManager(
+        DeviceManagerAndroid(
+            get(),
             androidContext(),
             get(),
             get(),
             get()
         )
-    }
+    } binds (arrayOf(DeviceManager::class, DeviceManagerAndroid::class))
     single {
         androidContext().getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
     }

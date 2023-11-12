@@ -8,7 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.blockstream.compose.R
 import com.blockstream.compose.theme.GreenTheme
+import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.labelSmall
@@ -39,7 +40,7 @@ enum class GreenButtonType {
 }
 
 enum class GreenButtonColor {
-    GREEN, WHITE, RED
+    GREEN, GREENER, WHITE, RED
 }
 
 
@@ -147,6 +148,11 @@ fun GreenButton(
                     width = 1.dp,
                     color = Color.White,
                 )
+            } else if (enabled && color == GreenButtonColor.GREENER) {
+                BorderStroke(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.primary,
+                )
             } else {
                 ButtonDefaults.outlinedButtonBorder
             }
@@ -204,6 +210,61 @@ fun HelpButton(onClick: () -> Unit) {
 }
 
 @Composable
+fun PasteButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
+    TextButton(modifier = Modifier.then(modifier), onClick = onClick) {
+        GreenRow(padding = 0, space = 6) {
+            Icon(
+                painter = painterResource(id = R.drawable.clipboard_text),
+                contentDescription = null,
+                tint = green,
+                modifier = Modifier.size(20.dp)
+            )
+
+            Text(text = stringResource(id = R.string.id_paste), style = labelMedium, color = green)
+        }
+    }
+}
+
+@Composable
+fun ScanQrButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
+    TextButton(modifier = Modifier.then(modifier), onClick = onClick) {
+        GreenRow(padding = 0, space = 6) {
+            Icon(
+                painter = painterResource(id = R.drawable.qr_code),
+                contentDescription = null,
+                tint = green,
+                modifier = Modifier.size(20.dp)
+            )
+
+            Text(text = stringResource(id = R.string.id_scan_qr_code), style = labelMedium, color = green)
+        }
+    }
+}
+
+@Composable
+fun LearnMoreButton(
+    color: Color = green,
+    onClick: () -> Unit
+) {
+    TextButton(onClick = onClick) {
+        GreenRow(padding = 0, space = 8) {
+            Text(
+                text = stringResource(id = R.string.id_learn_more),
+                style = labelMedium,
+                color = color
+            )
+
+            Icon(
+                painter = painterResource(id = R.drawable.arrow_square_out),
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier.size(18.dp)
+            )
+        }
+    }
+}
+
+@Composable
 fun AboutButton(onClick: () -> Unit) {
     TextButton(onClick = onClick) {
         GreenRow(padding = 0, space = 6) {
@@ -220,8 +281,19 @@ fun AboutButton(onClick: () -> Unit) {
 }
 
 @Composable
-fun AppSettingsButton(onClick: () -> Unit) {
+fun BiometricsButton(onClick: () -> Unit) {
     TextButton(onClick = onClick) {
+        Text(
+            text = stringResource(id = R.string.id_biometrics),
+            style = labelMedium,
+            color = whiteMedium
+        )
+    }
+}
+
+@Composable
+fun AppSettingsButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
+    TextButton(onClick = onClick, modifier = modifier) {
         Text(
             text = stringResource(id = R.string.id_app_settings),
             style = labelMedium,
@@ -239,13 +311,24 @@ fun GreenButtonPreview() {
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
             Text("Specific")
+
+            GreenRow(padding = 0) {
+                ScanQrButton {
+
+                }
+
+                LearnMoreButton {
+
+                }
+            }
+
             GreenRow(padding = 0) {
                 AboutButton { }
                 AppSettingsButton { }
                 HelpButton { }
             }
 
-            Divider()
+            HorizontalDivider()
             Text("Normal")
             GreenRow(padding = 0) {
                 GreenButton(text = "Normal Enabled") { }
@@ -274,12 +357,13 @@ fun GreenButtonPreview() {
                 ) { }
             }
             GreenRow(padding = 0) {
-                GreenButton(text = "Green", color = GreenButtonColor.RED) { }
-                GreenButton(text = "Green", color = GreenButtonColor.WHITE) { }
+                GreenButton(text = "Greener", color = GreenButtonColor.RED) { }
+                GreenButton(text = "Red", color = GreenButtonColor.RED) { }
+                GreenButton(text = "White", color = GreenButtonColor.WHITE) { }
             }
 
 
-            Divider()
+            HorizontalDivider()
             Text("Outline")
             GreenRow(padding = 0, space = 4) {
                 GreenButton(text = "Normal Enabled", type = GreenButtonType.OUTLINE) { }
@@ -346,6 +430,11 @@ fun GreenButtonPreview() {
                 GreenButton(
                     text = "Green",
                     type = GreenButtonType.OUTLINE,
+                    color = GreenButtonColor.GREENER
+                ) { }
+                GreenButton(
+                    text = "Green",
+                    type = GreenButtonType.OUTLINE,
                     color = GreenButtonColor.RED
                 ) { }
                 GreenButton(
@@ -355,7 +444,7 @@ fun GreenButtonPreview() {
                 ) { }
             }
 
-            Divider()
+            HorizontalDivider()
             Text("Text")
             GreenRow(padding = 0, space = 4) {
                 GreenButton(text = "Normal Enabled", type = GreenButtonType.TEXT) { }

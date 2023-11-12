@@ -64,6 +64,13 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
             }
         }
 
+    fun getWalletFlowOrNull(id: String): Flow<GreenWallet?> =
+        db.walletQueries.getWallet(id).asFlow().map {
+            io {
+                it.executeAsOneOrNull()?.toGreenWallet()
+            }
+        }
+
     suspend fun getWalletWithXpubHashId(
         xPubHashId: String,
         isTestnet: Boolean,

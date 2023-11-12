@@ -6,13 +6,13 @@ import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
 import com.arkivanov.essenty.statekeeper.consume
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.gdk.Gdk
-import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
+import com.blockstream.common.gdk.Gdk
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.navigation.NavigateDestinations
 import com.rickclephas.kmm.viewmodel.MutableStateFlow
 import com.rickclephas.kmm.viewmodel.coroutineScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
@@ -46,7 +46,11 @@ class RecoveryIntroViewModel constructor(setupArgs: SetupArgs, stateKeeper: Stat
     override val mnemonicSize = MutableStateFlow(viewModelScope, state.mnemonicSize)
 
     class LocalSideEffects{
-        class LaunchUserPresence(val navigateTo: SideEffects.SideEffectEvent) : SideEffect
+        object LaunchUserPresence : SideEffect
+    }
+
+    class LocalEvents {
+        class Authenticated(val authenticated: Boolean): Event
     }
 
     init {
@@ -69,24 +73,12 @@ class RecoveryIntroViewModel constructor(setupArgs: SetupArgs, stateKeeper: Stat
 
         if(event is Events.Continue) {
             if (setupArgs.isShowRecovery) {
-                val navigateTo = SideEffects.NavigateTo(
-                    NavigateDestinations.RecoveryPhrase(
-                        nextRecoveryArgs()
-                    )
-                )
-
-                if(greenKeystore.canUseBiometrics()){
+                if (greenKeystore.canUseBiometrics()) {
                     postSideEffect(
-                        LocalSideEffects.LaunchUserPresence(
-                            SideEffects.SideEffectEvent(
-                                Events.EventSideEffect(navigateTo)
-                            )
-                        )
+                        LocalSideEffects.LaunchUserPresence
                     )
-                }else {
-                    postSideEffect(
-                        navigateTo
-                    )
+                } else {
+                    navigateToRecoveryPhrase()
                 }
             } else {
                 postSideEffect(
@@ -97,7 +89,19 @@ class RecoveryIntroViewModel constructor(setupArgs: SetupArgs, stateKeeper: Stat
                     )
                 )
             }
+        } else if (event is LocalEvents.Authenticated){
+            navigateToRecoveryPhrase()
         }
+    }
+
+    private fun navigateToRecoveryPhrase(){
+        postSideEffect(
+            SideEffects.NavigateTo(
+                NavigateDestinations.RecoveryPhrase(
+                    nextRecoveryArgs()
+                )
+            )
+        )
     }
 
     private fun nextRecoveryArgs(): SetupArgs {

@@ -33,13 +33,21 @@ val md_theme_onSurfaceVariant = Color(0xFFC1C9BE)
 
 val md_theme_outline = Color(0xFF2d2d31)
 val md_theme_inverseOnSurface = Color(0xFFEEF0FF)
-val md_theme_inverseSurface = Color(0xFF002B75)
+val md_theme_inverseSurface = Color(0xFF273545)
 val md_theme_inversePrimary = Color(0xFF4FE080)
 val md_theme_shadow = Color(0xFF000000)
 val md_theme_surfaceTint = Color(0xFF222226) // Make it the same as surface https://stackoverflow.com/a/76160786/914358
 val md_theme_outlineVariant = Color(0xFF414941)
 val md_theme_scrim = Color(0xFF000000)
 
+val md_theme_brandSurface = Color(0xFF19222c)
+
+val green = md_theme_primary
+
 val whiteHigh = Color.White
 val whiteMedium = Color.White.copy(alpha = 0.75f)
 val whiteLow = Color.White.copy(alpha = 0.5f)
+
+val bitcoin = Color(0xFFfe8e02)
+val liquid = Color(0xFF46BEAE)
+val lightning = Color(0xFFE8B810)

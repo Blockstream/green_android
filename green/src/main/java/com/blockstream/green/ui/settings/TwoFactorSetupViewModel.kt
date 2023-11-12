@@ -29,7 +29,7 @@ class TwoFactorSetupViewModel constructor(
     var authenticatorCode = MutableLiveData("")
     var authenticatorQRBitmap = MutableLiveData<Bitmap?>()
 
-    val isValid: LiveData<Boolean> by lazy {
+    val isValidLiveData: LiveData<Boolean> by lazy {
         MediatorLiveData<Boolean>().apply {
             val block = { _: Any? ->
                 value = if(method == TwoFactorMethod.EMAIL){

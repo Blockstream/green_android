@@ -6,7 +6,8 @@ import com.blockstream.common.gdk.data.AccountType
 
 @Parcelize
 data class AccountTypeLook(
-    val accountType: AccountType
+    val accountType: AccountType,
+    val canBeAdded: Boolean = true
 ) : Parcelable {
 
     val isMultisig

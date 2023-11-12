@@ -8,15 +8,14 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.recovery.RecoveryCheckViewModel
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.green.R
 import com.blockstream.green.databinding.RecoveryCheckFragmentBinding
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.gdk.getNetworkIcon
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.utils.isDevelopmentFlavor
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -41,7 +40,6 @@ class RecoveryCheckFragment : AppFragment<RecoveryCheckFragmentBinding>(
 
     // If wallet is null, WalletFragment will give the viewModel to AppFragment, guard this behavior and return null
     override fun getGreenViewModel(): GreenViewModel = viewModel
-    override fun getAppViewModel() : AppViewModelAndroid? = null
 
     override fun handleSideEffect(sideEffect: SideEffect) {
         if (sideEffect is SideEffects.NavigateTo) {

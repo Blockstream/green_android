@@ -4,6 +4,7 @@ package com.blockstream.green.ui.overview
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.common.data.CredentialType
+import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.lightningMnemonic
@@ -43,9 +44,9 @@ class AccountOverviewViewModel constructor(
     val transactionsPagerLiveData: LiveData<Boolean?> get() = _transactionsPagerLiveData
     val transactionsPager: Boolean? get() = _transactionsPagerLiveData.value
 
-    private val _assetsLiveData: MutableLiveData<Map<String, Long>> = MutableLiveData(mapOf())
-    val assetsLiveData: LiveData<Map<String, Long>> get() = _assetsLiveData
-    val assets: Map<String, Long> get() = _assetsLiveData.value!!
+    private val _assetsLiveData: MutableLiveData<Map<EnrichedAsset, Long>> = MutableLiveData(mapOf())
+    val assetsLiveData: LiveData<Map<EnrichedAsset, Long>> get() = _assetsLiveData
+    val assets: Map<EnrichedAsset, Long> get() = _assetsLiveData.value!!
 
     val policyAsset: Long get() = session.ifConnected { session.accountAssets(accountValue).value.policyAsset } ?: 0L
 
@@ -72,7 +73,9 @@ class AccountOverviewViewModel constructor(
                     it.assets.takeIf { account.isLiquid && it.size > 1 } ?: mapOf()
                 }
                 .onEach { assets ->
-                    _assetsLiveData.value = assets
+                    _assetsLiveData.value = assets.mapKeys {
+                        EnrichedAsset.create(session = session, assetId = it.key)
+                    }
                 }.launchIn(viewModelScope.coroutineScope)
 
             combine(

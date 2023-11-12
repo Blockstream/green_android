@@ -12,7 +12,7 @@ data class DeviceListItem constructor(val device: Device) : AbstractBindingItem<
         get() = R.id.fastadapter_device_item_id
 
     init {
-        identifier = device.id.hashCode().toLong()
+        identifier = device.connectionIdentifier.hashCode().toLong()
     }
 
     override fun bindView(binding: ListItemDeviceBinding, payloads: List<Any>) {

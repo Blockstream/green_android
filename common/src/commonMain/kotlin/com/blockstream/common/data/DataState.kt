@@ -44,7 +44,7 @@ sealed class DataState<out T> {
         return this is Empty || ((this as? Success<*>)?.data as? List<*>)?.isEmpty() == true
     }
 
-    fun isNonEmpty(): Boolean {
+    fun isNotEmpty(): Boolean {
         return (if (this is Success<*>) {
             (this.data as? List<*>)?.isNotEmpty() ?: true
         } else {

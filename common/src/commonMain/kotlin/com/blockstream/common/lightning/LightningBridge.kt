@@ -500,7 +500,7 @@ class LightningBridge constructor(
         }
     }
 
-    fun withdrawLnurl(
+    fun withdrawLnUrl(
         requestData: LnUrlWithdrawRequestData,
         amount: Long,
         description: String?

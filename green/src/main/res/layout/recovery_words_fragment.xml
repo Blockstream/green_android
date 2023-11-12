@@ -25,6 +25,7 @@
             android:layout_marginEnd="32dp"
             android:max="100"
             android:progress="@{vm.progress}"
+            tools:progress="50"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

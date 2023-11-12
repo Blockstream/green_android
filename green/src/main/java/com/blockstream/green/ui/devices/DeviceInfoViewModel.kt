@@ -10,7 +10,7 @@ import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceConnectionManager
-import com.blockstream.green.devices.DeviceManager
+import com.blockstream.green.devices.DeviceManagerAndroid
 import com.blockstream.green.devices.HardwareConnectInteraction
 import com.blockstream.green.extensions.boolean
 import com.blockstream.green.gdk.getWallet
@@ -26,7 +26,7 @@ import org.koin.core.annotation.InjectedParam
 class DeviceInfoViewModel constructor(
     @SuppressLint("StaticFieldLeak")
     val context: Context,
-    deviceManager: DeviceManager,
+    deviceManager: DeviceManagerAndroid,
     qaTester: QATester,
     val gdk: Gdk,
     @InjectedParam override val device: Device,
@@ -63,7 +63,7 @@ class DeviceInfoViewModel constructor(
     }
 
     private fun connectDevice(context: Context) {
-        onProgressAndroid.value = true
+        onProgress.value = true
         navigationLock.value = true
         deviceConnectionManager.connectDevice(context, device)
         countly.hardwareConnect(device)
@@ -163,7 +163,7 @@ class DeviceInfoViewModel constructor(
             wallet
         }, postAction = {
             navigationLock.value = false
-            onProgressAndroid.value = it == null
+            onProgress.value = it == null
         }, onSuccess = { wallet: GreenWallet ->
             proceedToLogin = true
             postSideEffect(SideEffects.Navigate(wallet))
@@ -176,7 +176,7 @@ class DeviceInfoViewModel constructor(
             postSideEffect(SideEffects.OpenDialog(0))
         }
 
-        onProgressAndroid.postValue(false)
+        onProgress.value = false
         navigationLock.postValue(false)
         deviceIsConnected.postValue(true)
         countly.hardwareConnected(device)

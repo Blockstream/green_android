@@ -31,6 +31,7 @@
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="24dp"
             android:orientation="vertical"
+            tools:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -85,13 +86,14 @@
 
         <LinearLayout
             android:id="@+id/wrapPassword"
-            isVisible="@{!vm.isLightningShortcut() &amp;&amp; vm.passwordCredentials.isNonEmpty()  &amp;&amp; !vm.onProgress}"
+            isVisible="@{!vm.isLightningShortcut() &amp;&amp; vm.passwordCredentials.isNotEmpty()  &amp;&amp; !vm.onProgress}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="48dp"
             android:layout_marginEnd="48dp"
             android:gravity="center"
             android:orientation="vertical"
+            tools:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline">
@@ -137,6 +139,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="gone"
             tools:text="@string/id_logging_in" />
 
         <ImageView
@@ -174,6 +177,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:text="@string/id_log_in"
+            tools:visibility="gone"
             isVisible="@{!vm.onProgress &amp;&amp; vm.device != null}"
             app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
             app:layout_constraintEnd_toEndOf="parent"
@@ -182,7 +186,7 @@
 
         <TextView
             android:id="@+id/mainTitleTextView"
-            isVisible="@{!vm.isLightningShortcut() &amp;&amp; (vm.pinCredentials.isNonEmpty() || vm.passwordCredentials.isNonEmpty() ) &amp;&amp; !vm.onProgress }"
+            isVisible="@{!vm.isLightningShortcut() &amp;&amp; (vm.pinCredentials.isNotEmpty() || vm.passwordCredentials.isNotEmpty() ) &amp;&amp; !vm.onProgress }"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
@@ -217,7 +221,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/passphraseButton"
             style="@style/Widget.Green.Button.Text.Small"
-            isVisible="@{!vm.isLightningShortcut() &amp;&amp; (vm.pinCredentials.isNonEmpty() || vm.passwordCredentials.isNonEmpty()) &amp;&amp; StringExtensionsKt.isNotBlank(vm.bip39Passphrase)  &amp;&amp; !vm.onProgress }"
+            isVisible="@{!vm.isLightningShortcut() &amp;&amp; (vm.pinCredentials.isNotEmpty() || vm.passwordCredentials.isNotEmpty()) &amp;&amp; StringExtensionsKt.isNotBlank(vm.bip39Passphrase)  &amp;&amp; !vm.onProgress }"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
@@ -233,7 +237,7 @@
 
         <com.blockstream.green.views.GreenPinView
             android:id="@+id/pinView"
-            isVisible="@{!vm.isLightningShortcut() &amp;&amp; vm.pinCredentials.isNonEmpty() &amp;&amp; !vm.onProgress}"
+            isVisible="@{!vm.isLightningShortcut() &amp;&amp; vm.pinCredentials.isNotEmpty() &amp;&amp; !vm.onProgress}"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
@@ -262,6 +266,7 @@
             android:layout_height="128dp"
             android:alpha="0.75"
             android:src="@drawable/ic_lightning_fill"
+            tools:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -278,6 +283,7 @@
             android:layout_marginBottom="8dp"
             android:gravity="center"
             android:orientation="vertical"
+            tools:visibility="visible"
             app:gap="0dp"
             app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
             app:layout_constraintEnd_toEndOf="parent"
@@ -342,7 +348,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonLoginWithBiometrics"
             style="@style/Widget.Green.Button.Text"
-            isVisible="@{!vm.isLightningShortcut() &amp;&amp; vm.biometricsCredentials.isNonEmpty() &amp;&amp; !vm.onProgress}"
+            isVisible="@{!vm.isLightningShortcut() &amp;&amp; vm.biometricsCredentials.isNotEmpty() &amp;&amp; !vm.onProgress}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -371,6 +377,7 @@
             indeterminate="@{vm.tor.progress == 100 ? true : false}"
             isInvisible="@{!vm.onProgress}"
             progress="@{vm.tor.progress}"
+            tools:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="32dp"
@@ -388,6 +395,7 @@
             android:cropToPadding="false"
             android:scaleType="fitCenter"
             android:src="@drawable/ledger_device"
+            tools:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/progress"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

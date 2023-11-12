@@ -27,6 +27,8 @@ class DrawerFragment : AbstractWalletsFragment<ComposeViewBinding>(R.layout.comp
 
     override fun getGreenViewModel() = viewModel
 
+    override val useCompose: Boolean = true
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

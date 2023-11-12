@@ -32,9 +32,9 @@ fun copyTextStyle(textStyle: TextStyle, fontSize: TextUnit = textStyle.fontSize,
 
 val Typography = Typography().let {
     Typography(
-        displayLarge = copyTextStyle(it.displayLarge, fontSize = 32.sp),
-        displayMedium = copyTextStyle(it.displayMedium, fontSize = 30.sp),
-        displaySmall = copyTextStyle(it.displaySmall, fontSize = 28.sp),
+        displayLarge = copyTextStyle(it.displayLarge, fontSize = 32.sp, fontWeight = FontWeight.Bold, lineHeight = 42.sp),
+        displayMedium = copyTextStyle(it.displayMedium, fontSize = 30.sp, fontWeight = FontWeight.Bold, lineHeight = 40.sp),
+        displaySmall = copyTextStyle(it.displaySmall, fontSize = 28.sp, fontWeight = FontWeight.Bold, lineHeight = 38.sp),
 
         headlineLarge = copyTextStyle(it.headlineLarge, fontSize = 26.sp, fontWeight = FontWeight.Bold),
         headlineMedium = copyTextStyle(it.headlineMedium, fontSize = 24.sp, fontWeight = FontWeight.Bold),
@@ -53,6 +53,18 @@ val Typography = Typography().let {
         labelSmall = copyTextStyle(it.labelSmall, fontSize = 10.sp, fontWeight = FontWeight.Bold),
     )
 }
+
+val displayLarge
+    @Composable
+    get() = MaterialTheme.typography.displayLarge
+
+val displayMedium
+    @Composable
+    get() = MaterialTheme.typography.displayMedium
+
+val displaySmall
+    @Composable
+    get() = MaterialTheme.typography.displaySmall
 
 val headlineLarge
     @Composable

@@ -25,5 +25,4 @@ inline fun GreenColumn(
         horizontalAlignment = horizontalAlignment,
         content = content
     )
-
 }

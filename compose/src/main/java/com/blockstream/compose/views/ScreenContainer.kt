@@ -1,5 +1,6 @@
 package com.blockstream.compose.views
 
+import android.view.LayoutInflater
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -16,7 +17,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -25,8 +25,12 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.rive.runtime.kotlin.RiveAnimationView
 import co.touchlab.kermit.Logger
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.theme.GreenTheme
@@ -37,8 +41,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun ScreenContainer(viewModel: GreenViewModel, content: @Composable BoxScope.() -> Unit) {
-    val onProgress by viewModel.onProgress.collectAsState()
+fun ScreenContainer(
+    viewModel: GreenViewModel,
+    showRiveAnimation: Boolean = false,
+    blurBackground: Boolean = true,
+    content: @Composable BoxScope.() -> Unit
+) {
+    val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
 
     Box(
         Modifier
@@ -66,7 +75,11 @@ fun ScreenContainer(viewModel: GreenViewModel, content: @Composable BoxScope.() 
                         // Catch all click events
                     }
                 }
-                .background(MaterialTheme.colorScheme.background.copy(alpha = 0.75f))
+                .background(MaterialTheme.colorScheme.background.let {
+                    if (blurBackground) it.copy(
+                        alpha = 0.75f
+                    ) else it
+                })
         ) {
             Column(
                 modifier = Modifier
@@ -75,14 +88,28 @@ fun ScreenContainer(viewModel: GreenViewModel, content: @Composable BoxScope.() 
                 horizontalAlignment = Alignment.CenterHorizontally
 
             ) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .size(120.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    trackColor = MaterialTheme.colorScheme.secondary,
-                )
+                if (showRiveAnimation) {
+                    AndroidView({
+                        LayoutInflater.from(it)
+                            .inflate(R.layout.rive, null)
+                            .apply {
+                                val animationView: RiveAnimationView = findViewById(R.id.rive)
+                                animationView.setRiveResource(
+                                    R.raw.rocket,
+                                    autoplay = true
+                                )
+                            }
+                    })
+                } else {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(120.dp),
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        trackColor = MaterialTheme.colorScheme.secondary,
+                    )
+                }
 
-                val onProgressDescription by viewModel.onProgressDescription.collectAsState()
+                val onProgressDescription by viewModel.onProgressDescription.collectAsStateWithLifecycle()
                 onProgressDescription?.also {
                     Text(text = stringResourceId(it), style = labelLarge)
                 }
