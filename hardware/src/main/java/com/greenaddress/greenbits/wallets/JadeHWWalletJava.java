@@ -126,10 +126,8 @@ abstract public class JadeHWWalletJava extends HWWallet {
                 while (!this.jade.authUser(network)) {
                     Log.w(TAG, "Jade authentication failed");
                 }
+            } finally {
                 completable.complete(true);
-            }catch (Exception e){
-                completable.completeExceptionally(e);
-                throw e;
             }
         }
 

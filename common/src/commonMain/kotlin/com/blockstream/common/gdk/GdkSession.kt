@@ -632,7 +632,7 @@ class GdkSession constructor(
     fun getProxySettings() = gdk.getProxySettings(gdkSession(defaultNetwork))
 
     fun reconnectHint(hint: ReconnectHintParams) =
-        scope.launch(context = Dispatchers.IO) {
+        scope.launch(context = Dispatchers.IO + logException(countly)) {
             gdkSessions.forEach {
                 gdk.reconnectHint(it.value, hint)
             }
@@ -936,7 +936,7 @@ class GdkSession constructor(
     }
 
     fun tryFailedNetworks(hardwareWalletResolver: HardwareWalletResolver? = null){
-        scope.launch(context = Dispatchers.IO){
+        scope.launch(context = Dispatchers.IO + logException(countly)){
 
             val loginCredentialsParams = if(isHardwareWallet){
                 LoginCredentialsParams.empty
@@ -1476,7 +1476,7 @@ class GdkSession constructor(
     }
 
     fun updateSystemMessage(){
-        scope.launch(context = Dispatchers.IO) {
+        scope.launch(context = Dispatchers.IO + logException(countly)) {
             _systemMessageStateFlow.value = gdkSessions.map {
                 it.key to (gdk.getSystemMessage(it.value) ?: "")
             }.filter { !it.second.isNullOrBlank() }
@@ -1801,7 +1801,7 @@ class GdkSession constructor(
         updateBalancesForAccounts: Collection<Account>? = null
     ) {
 
-        scope.launch(context = Dispatchers.IO) {
+        scope.launch(context = Dispatchers.IO + logException(countly)) {
 
             try{
                 accountsAndBalancesMutex.withLock {
@@ -1873,7 +1873,7 @@ class GdkSession constructor(
 
     private val transactionsMutex = Mutex()
     fun getTransactions(account: Account, isReset : Boolean, isLoadMore: Boolean) {
-        scope.launch(context = Dispatchers.IO) {
+        scope.launch(context = Dispatchers.IO + logException(countly)) {
             val transactionsPagerSharedFlow = accountTransactionsPagerSharedFlow(account)
             val transactionsStateFlow = accountTransactionsStateFlow(account)
 
@@ -1924,7 +1924,7 @@ class GdkSession constructor(
     private val walletTransactionsMutex = Mutex()
     private val _walletTransactions = mutableMapOf<AccountId, List<Transaction>>()
     fun updateWalletTransactions(updateForNetwork: Network? = null, updateForAccounts: Collection<Account>? = null) {
-        scope.launch(context = Dispatchers.IO) {
+        scope.launch(context = Dispatchers.IO + logException(countly)) {
             try {
                 walletTransactionsMutex.withLock {
                     // Clear walletTransactions to avoid keeping archived accounts
@@ -2454,7 +2454,7 @@ class GdkSession constructor(
                 notification.network?.let { event ->
                     if(isConnected){
                         if(event.isConnected && authenticationRequired[network] == true){
-                            scope.launch(context = Dispatchers.IO){
+                            scope.launch(context = Dispatchers.IO + logException(countly)){
                                 reLogin(network)
                             }
                         }else if(!event.isConnected){

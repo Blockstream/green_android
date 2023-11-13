@@ -18,3 +18,23 @@ fun logException(
         countly.recordException(exception)
     }
 }
+
+fun logException(): CoroutineExceptionHandler {
+    return CoroutineExceptionHandler { _, exception ->
+        if (KoinPlatformTools.defaultContext().get().get<AppInfo>().isDevelopmentOrDebug) {
+            exception.printStackTrace()
+        }
+
+        KoinPlatformTools.defaultContext().get().getOrNull<CountlyBase>()?.also {
+            it.recordException(exception)
+        }
+    }
+}
+
+fun handleException(): CoroutineExceptionHandler {
+    return CoroutineExceptionHandler { _, exception ->
+        if (KoinPlatformTools.defaultContext().get().get<AppInfo>().isDevelopmentOrDebug) {
+            exception.printStackTrace()
+        }
+    }
+}

@@ -676,7 +676,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                 .show()
             return
         }
-        lifecycleScope.launch(Dispatchers.Main) {
+        lifecycleScope.launch(context = Dispatchers.Main + logException()) {
             try {
                 viewModel.downloadProposal(link)?.let {
                     navigate(

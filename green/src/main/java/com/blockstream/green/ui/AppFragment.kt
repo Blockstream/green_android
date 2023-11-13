@@ -22,6 +22,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.blockstream.base.ZendeskSdk
 import com.blockstream.common.ScreenView
+import com.blockstream.common.extensions.handleException
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.Wally
 import com.blockstream.common.managers.SessionManager
@@ -263,10 +264,12 @@ abstract class AppFragment<T : ViewDataBinding>(
                 )
 
                 sideEffect.completable?.also { completable ->
-                    lifecycleScope.launch {
+                    lifecycleScope.launch(context = handleException()) {
                         completable.await()
                         withResumed {
-                            DeviceInteractionRequestBottomSheetDialogFragment.closeAll(childFragmentManager)
+                            DeviceInteractionRequestBottomSheetDialogFragment.closeAll(
+                                childFragmentManager
+                            )
                         }
                     }
                 }

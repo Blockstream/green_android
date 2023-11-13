@@ -66,7 +66,7 @@ class DeviceConnectionManager constructor(
         private set
 
     fun connectDevice(context: Context, device: Device) {
-        scope.launch(context = Dispatchers.IO) {
+        scope.launch(context = Dispatchers.IO + logException()) {
             try {
                 when {
                     device.deviceBrand.isJade -> {
