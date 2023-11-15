@@ -1,6 +1,6 @@
 package com.blockstream.common.utils
 
-const val DEFAULT_LOCALE = "en_US"
+const val GDK_LOCALE = "en_US"
 expect class DecimalFormat(locale: String?) {
     var minimumFractionDigits: Int
     var maximumFractionDigits: Int

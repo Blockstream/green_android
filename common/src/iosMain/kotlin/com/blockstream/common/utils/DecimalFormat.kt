@@ -4,6 +4,7 @@ import platform.Foundation.NSLocale
 import platform.Foundation.NSNumber
 import platform.Foundation.NSNumberFormatter
 import platform.Foundation.NSNumberFormatterDecimalStyle
+import platform.Foundation.systemLocale
 
 actual class DecimalFormat actual constructor(private val locale: String?) {
     actual var minimumFractionDigits: Int = 0
@@ -19,7 +20,7 @@ actual class DecimalFormat actual constructor(private val locale: String?) {
         formatter.maximumFractionDigits = maximumFractionDigits.toULong()
         formatter.numberStyle = NSNumberFormatterDecimalStyle ///1u // NSNumberFormatterDecimalStyle// 1u //Decimal
 
-        formatter.locale = NSLocale(localeIdentifier = locale ?: DEFAULT_LOCALE)
+        formatter.locale = locale?.let { NSLocale(localeIdentifier = it) } ?: NSLocale.systemLocale()
 
         decimalSeparator?.also {
             formatter.setDecimalSeparator(it.toString())

@@ -527,12 +527,10 @@ class SendViewModel constructor(
                 postSideEffect(SideEffects.Navigate())
             }
         }, onError = {
-            it.printStackTrace()
-
             transactionError.value = (it.cause?.message ?: it.message).let { error ->
                 if(recipients.value?.get(0)?.address?.value.isNullOrBlank() && (error == "id_invalid_address" || error == "id_invalid_private_key")){
                     "" // empty error to avoid ui glitches
-                }else if(recipients.value?.get(0)?.amount?.value.isNullOrBlank() && (error == "id_invalid_amount" || error == "id_insufficient_funds")){
+                }else if(recipients.value?.get(0)?.amount?.value.isNullOrBlank() && !isSendAll() && (error == "id_invalid_amount" || error == "id_insufficient_funds")){
                     "" // empty error to avoid ui glitches
                 }else{
                     error

@@ -14,7 +14,7 @@ actual class DecimalFormat actual constructor(private val locale: String?) {
     actual var isDecimalSeparatorAlwaysShown: Boolean = false
 
     private fun decimalFormat(): DecimalFormat {
-        val locale = Locale.forLanguageTag(locale ?: DEFAULT_LOCALE)
+        val locale = locale?.let { Locale.forLanguageTag(locale) } ?: Locale.getDefault()
         val df = (DecimalFormat.getInstance(locale) as DecimalFormat)
         df.minimumFractionDigits = minimumFractionDigits
         df.maximumFractionDigits = maximumFractionDigits

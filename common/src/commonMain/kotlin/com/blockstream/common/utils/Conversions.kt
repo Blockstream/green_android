@@ -65,7 +65,7 @@ fun getDecimals(unit: String): Int {
     }
 }
 
-fun gdkNumberFormat(decimals: Int, withDecimalSeparator: Boolean = false) = (DecimalFormat(DEFAULT_LOCALE)).apply {
+fun gdkNumberFormat(decimals: Int, withDecimalSeparator: Boolean = false) = (DecimalFormat(GDK_LOCALE)).apply {
     minimumFractionDigits = if(withDecimalSeparator) decimals else 0
     maximumFractionDigits = decimals
     isGroupingUsed = false
