@@ -150,6 +150,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        // SDK 23 support
+        isCoreLibraryDesugaringEnabled = true
     }
     packaging {
         jniLibs.pickFirsts.add("**/*.so")
@@ -196,6 +198,11 @@ dependencies {
     productionGoogleImplementation(project(":gms"))
     productionImplementation(project(":no-gms")) // F-Droid
     /** ----------------------------------------------------------------------------------------- */
+
+    /**  --- Java 8+ API desugaring support ----------------------------------------------------- */
+    coreLibraryDesugaring(libs.desugar)
+    /** ----------------------------------------------------------------------------------------- */
+
 
     /**  --- Navigation ------------------------------------------------------------------------- */
     implementation(libs.navigation.fragment.ktx)
@@ -244,10 +251,6 @@ dependencies {
     /**  --- QR Scanner ------------------------------------------------------------------------- */
     implementation(libs.zxing.android.embedded) { isTransitive = false }
     implementation(libs.zxing.core) // API <= 24 compatibility
-    /** ----------------------------------------------------------------------------------------- */
-
-    /**  --- Uniform Resources ------------------------------------------------------------------ */
-    implementation("com.sparrowwallet:hummingbird:1.6.7")
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Countly ---------------------------------------------------------------------------- */

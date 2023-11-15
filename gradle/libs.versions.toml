@@ -66,6 +66,7 @@ beagle = "2.9.0"
 turbine = "1.0.0"
 usb-serial = "6.0.6"
 uuid = "0.8.1"
+desugar = "2.0.4"
 viewpager2 = "1.1.0-beta02"
 zxing-core = "3.3.3" # API <= 24 compatibility
 zxing-android-embedded = "4.3.0"
@@ -77,6 +78,7 @@ activity-compose = "1.8.0"
 
 [libraries]
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar" }
 sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activity-ktx" }
