@@ -128,7 +128,7 @@ class WalletSettingsFragment :
             PreferenceListItem(title = StringHolder(R.string.id_watchonly), isInnerMenu = true)
         logoutPreference = PreferenceListItem(
             StringHolder(R.string.id_logout),
-            StringHolder(wallet.name),
+            if (!session.isLightningShortcut) StringHolder(wallet.name) else StringHolder(R.string.id_lightning_account),
             subtitleColor = R.color.red,
             iconRes = R.drawable.ic_baseline_logout_24
         )
@@ -440,7 +440,7 @@ class WalletSettingsFragment :
                 list += denominationAndExchangeRatePreference
             }
 
-            if (!session.isWatchOnly) {
+            if (!session.isWatchOnly && !session.isLightningShortcut) {
 
                 list += archivedAccountsPreference
 

@@ -1,7 +1,6 @@
 package com.blockstream.common.managers
 
 import com.benasher44.uuid.uuid4
-import com.blockstream.common.CountlyBase
 import com.blockstream.common.data.ApplicationSettings
 import com.blockstream.common.utils.server
 import com.russhwolf.settings.Settings
@@ -96,12 +95,8 @@ class SettingsManager constructor(
         settings.putLong(KEY_COUNTLY_OFFSET, 0L)
     }
 
-    fun setLightningInvitation() {
-        settings.putBoolean(KEY_LIGHTNING_INVITATION, true)
-    }
-
-    fun isLightningEnabled(countly: CountlyBase): Boolean {
-        return lightningFeatureEnabled && (countly.isLightningFeatureEnabled || settings[KEY_LIGHTNING_INVITATION, false])
+    fun isLightningEnabled(): Boolean {
+        return lightningFeatureEnabled && appSettings.experimentalFeatures
     }
 
     fun walletCounter(): Int {
@@ -126,7 +121,6 @@ class SettingsManager constructor(
         const val KEY_COUNTLY_OFFSET = "countly_offset"
         const val KEY_REMEMBER_DEVICE_WALLET = "remember_device_wallet"
         const val KEY_ALLOW_CUSTOM_PIN_SERVER = "allow_custom_pin_server"
-        const val KEY_LIGHTNING_INVITATION = "lightning_invitation"
         const val KEY_WALLET_COUNTER = "wallet_counter"
     }
 }

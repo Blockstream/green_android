@@ -100,9 +100,6 @@ import kotlin.properties.Delegates
      }
          private set
 
-     val isLightningFeatureEnabled: Boolean
-         get() = getRemoteConfigValueAsBoolean("feature_lightning") ?: true
-
      fun initBase(){
          settingsManager.appSettingsStateFlow.onEach {
              analyticsConsent = it.analytics

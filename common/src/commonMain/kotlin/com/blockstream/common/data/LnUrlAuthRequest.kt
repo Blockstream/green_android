@@ -17,16 +17,16 @@ import com.arkivanov.essenty.parcelable.writeStringOrNull
 internal object LnUrlAuthRequestDataParceler : CommonParceler<LnUrlAuthRequestData> {
     override fun create(reader: ParcelReader): LnUrlAuthRequestData = LnUrlAuthRequestData(
         reader.readString(), // k1
-        reader.readStringOrNull(), // action
         reader.readString(), // domain
         reader.readString(), // url
+        reader.readStringOrNull(), // action
     )
 
     override fun LnUrlAuthRequestData.write(writer: ParcelWriter) {
         writer.writeString(k1)
-        writer.writeStringOrNull(action)
         writer.writeString(domain)
         writer.writeString(url)
+        writer.writeStringOrNull(action)
     }
 }
 

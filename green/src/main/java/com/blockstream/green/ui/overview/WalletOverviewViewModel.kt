@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
+import breez_sdk.HealthCheckStatus
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
@@ -38,6 +39,7 @@ class WalletOverviewViewModel constructor(
     private val _systemMessageLiveData: MutableLiveData<AlertType?> = MutableLiveData()
     private val _twoFactorStateLiveData: MutableLiveData<AlertType?> = MutableLiveData()
     private val _failedNetworkLoginsLiveData: MutableLiveData<List<Network>> = MutableLiveData()
+    private val _lspHeath: MutableLiveData<HealthCheckStatus> = MutableLiveData(HealthCheckStatus.OPERATIONAL)
 
     private val _alertsLiveData: LiveData<List<AlertType>> by lazy {
         MediatorLiveData<List<AlertType>>().apply {
@@ -48,12 +50,16 @@ class WalletOverviewViewModel constructor(
                     if (wallet.isBip39Ephemeral) AlertType.EphemeralBip39 else null,
                     banner.value?.let { banner -> AlertType.Banner(banner) },
                     if (session.isTestnet) AlertType.TestnetWarning else null,
-                    if (_failedNetworkLoginsLiveData.value.isNullOrEmpty()) null else AlertType.FailedNetworkLogin
+                    if (_failedNetworkLoginsLiveData.value.isNullOrEmpty()) null else AlertType.FailedNetworkLogin,
+                    if (_lspHeath.value == HealthCheckStatus.OPERATIONAL) null else AlertType.LspStatus(
+                        maintenance = _lspHeath.value == HealthCheckStatus.MAINTENANCE
+                    )
                 )
             }
             addSource(_failedNetworkLoginsLiveData, combine)
             addSource(_twoFactorStateLiveData, combine)
             addSource(_systemMessageLiveData, combine)
+            addSource(_lspHeath, combine)
             addSource(banner.asLiveData(), combine)
         }
     }
@@ -89,6 +95,12 @@ class WalletOverviewViewModel constructor(
                 _systemMessageLiveData.value = AlertType.SystemMessage(it.first().first, it.first().second)
             }
         }.launchIn(viewModelScope.coroutineScope)
+
+        session.lightningSdkOrNull?.also {
+            it.healthCheckStatus.onEach { status ->
+                _lspHeath.value = status
+            }.launchIn(viewModelScope.coroutineScope)
+        }
 
         // Support only for Bitcoin
         session.bitcoinMultisig?.let { network ->

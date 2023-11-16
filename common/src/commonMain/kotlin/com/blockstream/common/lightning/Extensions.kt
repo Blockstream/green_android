@@ -1,5 +1,6 @@
 package com.blockstream.common.lightning
 
+import breez_sdk.AesSuccessActionDataResult
 import breez_sdk.GreenlightCredentials
 import breez_sdk.LnInvoice
 import breez_sdk.LnUrlPayRequestData
@@ -163,7 +164,7 @@ fun Transaction.Companion.fromPayment(payment: Payment): Transaction {
         type = if(payment.paymentType == PaymentType.RECEIVED) "incoming" else "outgoing",
         satoshi = mapOf(BTC_POLICY_ASSET to payment.amountSatoshi()),
         message = ((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Message)?.data?.message,
-        plaintext = ((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Aes)?.data?.let { it.description to it.plaintext },
+        plaintext = (((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Aes)?.result as? AesSuccessActionDataResult.Decrypted)?.data?.let { it.description to it.plaintext },
         url = ((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Url)?.data?.let { it.description to it.url},
         isPendingCloseChannel = payment.paymentType == PaymentType.CLOSED_CHANNEL && payment.status == PaymentStatus.PENDING
     )

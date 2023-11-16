@@ -26,10 +26,11 @@ class HomeScreenCallbacks(
     onWalletClick: (wallet: GreenWallet, isLightning: Boolean) -> Unit = { _, _ -> },
     onWalletRename: (wallet: GreenWallet) -> Unit = { },
     onWalletDelete: (wallet: GreenWallet) -> Unit = { },
+    onLightningShortcutDelete: ((wallet: GreenWallet) -> Unit)? = { },
     onNewWalletClick: () -> Unit = {},
     val onAboutClick: () -> Unit = {},
     val onAppSettingsClick: () -> Unit = {},
-) : WalletSectionCallbacks(onWalletClick = onWalletClick, onWalletRename = onWalletRename , onWalletDelete = onWalletDelete, onNewWalletClick = onNewWalletClick)
+) : WalletSectionCallbacks(onWalletClick = onWalletClick, onWalletRename = onWalletRename , onWalletDelete = onWalletDelete, onLightningShortcutDelete = onLightningShortcutDelete, onNewWalletClick = onNewWalletClick)
 
 @Composable
 fun HomeScreen(

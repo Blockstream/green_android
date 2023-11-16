@@ -23,6 +23,7 @@ import com.blockstream.common.lightning.fromSwapInfo
 import com.blockstream.common.lightning.inboundLiquiditySatoshi
 import com.blockstream.common.lightning.maxReceivableSatoshi
 import com.blockstream.common.lightning.receiveAmountSatoshi
+import com.blockstream.common.lightning.satoshi
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.common.utils.UserInput
@@ -376,9 +377,15 @@ class ReceiveViewModel constructor(
 
     fun createOnchain(){
         doUserAction({
-            session.receiveOnchain()
+            val swapInfo = session.receiveOnchain()
+            swapInfo to (swapInfo.channelOpeningFees?.minMsat?.satoshi()?.toAmountLook(
+                session = session,
+                assetId = accountValue.network.policyAsset,
+                withUnit = true
+            ) ?: "-")
         }, onSuccess = {
-            swapInfo.value = it
+            swapInfo.value = it.first
+            channelFee.value = it.second
             showOnchainAddress.value = true
         })
     }
@@ -439,14 +446,14 @@ class ReceiveViewModel constructor(
                     assetId = accountValue.network.policyAsset,
                     denomination = denomination.value?.notFiat(),
                     withUnit = true
-                ) ?: ""
+                ) ?: "-"
 
                 channelFeeFiat.value = openChannelFee?.feeSatoshi()?.toAmountLook(
                     session = session,
                     assetId = accountValue.network.policyAsset,
                     denomination = Denomination.fiat(session),
                     withUnit = true
-                ) ?: ""
+                ) ?: "-"
 
                 showLiquidityFee.value =
                     amountIsValid.value == 1 && session.lspInfoStateFlow.value != null && (session.lightningNodeInfoStateFlow.value.inboundLiquidityMsats == 0uL || (balance != null && balance.satoshi >= session.lightningNodeInfoStateFlow.value.inboundLiquiditySatoshi()))

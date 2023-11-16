@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.withResumed
 import com.blockstream.common.data.ErrorReport
+import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
 import com.blockstream.green.databinding.DialogErrorReportBinding
@@ -210,6 +211,12 @@ fun AppFragment<*>.showErrorReport(errorReport: ErrorReport) {
                 message = dialogBinding.feedbackText.text.toString(),
                 errorReport = errorReport
             )
+
+            if(errorReport.paymentHash.isNotBlank()) {
+                getGreenViewModel()?.sessionOrNull?.takeIf { it.isConnected }?.also {
+                    it.reportLightningError(errorReport.paymentHash ?: "")
+                }
+            }
         }
         .setNegativeButton(R.string.id_cancel) { _, _ ->
 

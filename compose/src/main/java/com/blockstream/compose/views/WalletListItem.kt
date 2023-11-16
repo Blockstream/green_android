@@ -17,8 +17,10 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
@@ -55,14 +57,14 @@ private fun WalletListRow(
     isConnected: Boolean,
     isLightning: Boolean,
     onClick: (isLightning: Boolean) -> Unit = {},
-    onLongClick: () -> Unit = {}
+    onLongClick: (isLightning: Boolean) -> Unit = {}
 ) {
     Row(
         modifier = Modifier
             .combinedClickable(onClick = {
                 onClick.invoke(isLightning)
             }, onLongClick = {
-                onLongClick.invoke()
+                onLongClick.invoke(isLightning)
             })
             .padding(horizontal = 16.dp)
             .ifTrue(isLightning) {
@@ -110,6 +112,7 @@ open class WalletListItemCallbacks(
     val onWalletClick: (wallet: GreenWallet, isLightning: Boolean) -> Unit = { _, _ -> },
     val onWalletRename: ((wallet: GreenWallet) -> Unit)? = null,
     val onWalletDelete: ((wallet: GreenWallet) -> Unit)? = null,
+    val onLightningShortcutDelete: ((wallet: GreenWallet) -> Unit)? = null,
 ) {
     fun hasContextMenu() = onWalletDelete != null && onWalletRename != null
 }
@@ -122,6 +125,7 @@ fun WalletListItem(
     val popupState = remember { PopupState(
         offset = mutableStateOf(DpOffset(0.dp, 0.dp))
     ) }
+    var isLightningPopup by remember { mutableStateOf(false) }
 
     val density = LocalDensity.current
 
@@ -133,7 +137,8 @@ fun WalletListItem(
                 popupState.isContextMenuVisible.value = true
             })
             .onSizeChanged {
-                popupState.offset.value = with(density) { DpOffset(16.dp, (-it.height.toDp() + 16.dp + 24.dp)) }
+                popupState.offset.value =
+                    with(density) { DpOffset(16.dp, (-it.height.toDp() + 16.dp + 24.dp)) }
             }
             .fillMaxWidth()
     ) {
@@ -144,9 +149,10 @@ fun WalletListItem(
             isConnected = look.isConnected,
             isLightning = false,
             onClick = {
-                 callbacks.onWalletClick.invoke(look.greenWallet, false)
+                 callbacks.onWalletClick.invoke(look.greenWallet, it)
             },
             onLongClick = {
+                isLightningPopup = it
                 popupState.isContextMenuVisible.value = true
             }
         )
@@ -159,32 +165,44 @@ fun WalletListItem(
                 isConnected = look.isLightningShortcutConnected,
                 isLightning = true,
                 onClick = {
-                    callbacks.onWalletClick.invoke(look.greenWallet, true)
+                    callbacks.onWalletClick.invoke(look.greenWallet, it)
                 },
                 onLongClick = {
+                    isLightningPopup = it
                     popupState.isContextMenuVisible.value = true
                 }
             )
         }
 
-        if(callbacks.hasContextMenu()) {
+        if (callbacks.hasContextMenu()) {
             PopupMenu(
                 popupState,
-                listOf(
-                    MenuEntry(
-                        title = stringResource(id = R.string.id_rename_wallet),
-                        iconRes = R.drawable.text_aa,
+                if (isLightningPopup) {
+                    listOf(MenuEntry(
+                        title = stringResource(id = R.string.id_remove_lightning_shortcut),
+                        iconRes = R.drawable.lightning_slash,
                         onClick = {
-                            callbacks.onWalletRename?.invoke(look.greenWallet)
+                            callbacks.onLightningShortcutDelete?.invoke(look.greenWallet)
                         }
-                    ), MenuEntry(
-                        title = stringResource(id = R.string.id_remove_wallet),
-                        iconRes = R.drawable.trash,
-                        onClick = {
-                            callbacks.onWalletDelete?.invoke(look.greenWallet)
-                        }
+                    ))
+                } else {
+                    listOf(
+                        MenuEntry(
+                            title = stringResource(id = R.string.id_rename_wallet),
+                            iconRes = R.drawable.text_aa,
+                            onClick = {
+                                callbacks.onWalletRename?.invoke(look.greenWallet)
+                            }
+                        ),
+                        MenuEntry(
+                            title = stringResource(id = R.string.id_remove_wallet),
+                            iconRes = R.drawable.trash,
+                            onClick = {
+                                callbacks.onWalletDelete?.invoke(look.greenWallet)
+                            }
+                        )
                     )
-                )
+                }
             )
         }
     }

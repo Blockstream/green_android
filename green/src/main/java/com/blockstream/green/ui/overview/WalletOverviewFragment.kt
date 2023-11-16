@@ -287,7 +287,6 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
     override fun onPrepareMenu(menu: Menu) {
         // Prevent from archiving all your acocunts
         menu.findItem(R.id.create_account).isVisible = !session.isWatchOnly && !wallet.isLightning
-        menu.findItem(R.id.settings).isVisible = !wallet.isLightning
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {

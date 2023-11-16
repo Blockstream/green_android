@@ -39,8 +39,9 @@ open class WalletSectionCallbacks(
     onWalletClick: (wallet: GreenWallet, isLightning: Boolean) -> Unit = { _, _ -> },
     onWalletRename: ((wallet: GreenWallet) -> Unit)? = null,
     onWalletDelete: ((wallet: GreenWallet) -> Unit)? = null,
+    onLightningShortcutDelete: ((wallet: GreenWallet) -> Unit)? = null,
     val onNewWalletClick: () -> Unit = {}
-) : WalletListItemCallbacks(onWalletClick = onWalletClick, onWalletRename = onWalletRename , onWalletDelete = onWalletDelete)
+) : WalletListItemCallbacks(onWalletClick = onWalletClick, onWalletRename = onWalletRename , onWalletDelete = onWalletDelete, onLightningShortcutDelete = onLightningShortcutDelete)
 
 @Composable
 private fun WalletSection(

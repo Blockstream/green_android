@@ -14,8 +14,6 @@ import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.jsonPrimitive
 
 abstract class AppSettingsViewModelAbstract() :
     GreenViewModel() {
@@ -40,9 +38,6 @@ abstract class AppSettingsViewModelAbstract() :
 
     @NativeCoroutinesState
     abstract val testnetEnabled: MutableStateFlow<Boolean>
-
-    @NativeCoroutinesState
-    abstract val experimentalFeaturesVisible: MutableStateFlow<Boolean>
 
     @NativeCoroutinesState
     abstract val experimentalFeaturesEnabled: MutableStateFlow<Boolean>
@@ -119,9 +114,6 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
 
     @NativeCoroutinesState
     override val testnetEnabled = MutableStateFlow(viewModelScope, appSettings.testnet)
-
-    @NativeCoroutinesState
-    override val experimentalFeaturesVisible = MutableStateFlow(viewModelScope,  appSettings.experimentalFeatures || settingsManager.isLightningEnabled(countly))
 
     @NativeCoroutinesState
     override val experimentalFeaturesEnabled = MutableStateFlow(viewModelScope, appSettings.experimentalFeatures)
@@ -229,19 +221,16 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
 
     private fun invitationCode(userCode: String){
         try {
+            /* Example
             countly.getRemoteConfigValueAsJsonArray("feature_lightning_codes")
                 ?.mapNotNull { jsonElement ->
                     jsonElement.jsonPrimitive.contentOrNull?.takeIf { it.isNotBlank() }
                 }?.any { code ->
                     code == userCode
                 }?.also {
-                    if (it) {
-                        settingsManager.setLightningInvitation()
-                    }
 
-                    experimentalFeaturesVisible.value = appSettings.experimentalFeatures || settingsManager.isLightningEnabled(countly)
                 }
-
+             */
         } catch (e: Exception) {
             e.printStackTrace()
             postSideEffect(SideEffects.ErrorDialog(Exception("id_something_went_wrong")))
@@ -262,7 +251,6 @@ class AppSettingsViewModelPreview(val initValue: Boolean = false) : AppSettingsV
     override val proxyEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
     override val proxyUrl: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
     override val testnetEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
-    override val experimentalFeaturesVisible: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
     override val experimentalFeaturesEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
     override val analyticsEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
     override val electrumNodeEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)

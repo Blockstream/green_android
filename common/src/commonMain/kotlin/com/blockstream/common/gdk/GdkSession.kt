@@ -10,6 +10,8 @@ import co.touchlab.kermit.Logger
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.data.EnrichedAsset
+import com.blockstream.common.data.ErrorReport
+import com.blockstream.common.data.ExceptionWithErrorReport
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.WatchOnlyCredentials
@@ -463,6 +465,12 @@ class GdkSession constructor(
         }
     }
 
+    fun reportLightningError(paymentHash: String){
+        lightningSdkOrNull?.also {
+            it.reportIssue(paymentHash)
+        }
+    }
+
     fun setEphemeralWallet(wallet: GreenWallet) {
         ephemeralWallet = wallet
     }
@@ -669,7 +677,7 @@ class GdkSession constructor(
         }
 
     fun disconnect() {
-        isConnected = false
+        _isConnectedState.value = false
 
         authenticationRequired.clear()
 
@@ -763,7 +771,7 @@ class GdkSession constructor(
         // Disconnect only if needed
         if(isConnected) {
             logoutReason = reason
-            isConnected = false
+            _isConnectedState.value = false
 
             scope.launch(context = Dispatchers.IO + logException(countly)) {
                 disconnect()
@@ -1379,7 +1387,7 @@ class GdkSession constructor(
                 // Init SDK
                 initLightningSdk(lightningMnemonic)
 
-                if (hasLightning || ((isRestore || isSmartDiscovery) && settingsManager.isLightningEnabled(countly) && settingsManager.appSettings.experimentalFeatures)) {
+                if (hasLightning || ((isRestore || isSmartDiscovery) && settingsManager.isLightningEnabled())) {
                     // Make it async to speed up login process
                     val job = scope.async {
                         try {
@@ -1468,7 +1476,7 @@ class GdkSession constructor(
         initAccount: Long?,
         initializeSession: Boolean
     ) {
-        isConnected = true
+        _isConnectedState.value = true
         xPubHashId = if(isWatchOnly) loginData?.networkHashId else loginData?.walletHashId
 
         if(initializeSession) {
@@ -1495,7 +1503,7 @@ class GdkSession constructor(
         // Update the enriched assets
         updateEnrichedAssets()
 
-        if(!isWatchOnly) {
+        if(!isWatchOnly && !isLightningShortcut) {
             // Sync settings from prominent network to the rest
             syncSettings()
 
@@ -1630,7 +1638,7 @@ class GdkSession constructor(
     ).result<Address>()
 
     // Combine with receive address
-    fun receiveOnchain(): SwapInfo? {
+    fun receiveOnchain(): SwapInfo {
         return lightningSdk.receiveOnchain()
     }
 
@@ -2426,12 +2434,24 @@ class GdkSession constructor(
 
                 Logger.d { "Sending invoice ${inputType.invoice.bolt11}" }
 
-                SendTransactionSuccess(
-                    payment = lightningSdk.sendPayment(
+                try {
+                    val response = lightningSdk.sendPayment(
                         inputType.invoice.bolt11,
                         satoshi.takeIf { inputType.invoice.amountMsat == null }
-                    ).payment
-                )
+                    )
+
+                    SendTransactionSuccess(paymentId = response.payment.id)
+                } catch (e: Exception){
+                    throw ExceptionWithErrorReport(
+                        throwable = e,
+                        ErrorReport.create(
+                            throwable = e,
+                            paymentHash = inputType.invoice.paymentHash,
+                            network = network,
+                            session = this
+                        )
+                    )
+                }
             }
 
             is InputType.LnUrlPay -> {
@@ -2442,10 +2462,22 @@ class GdkSession constructor(
                 ).let {
                     when (it) {
                         is LnUrlPayResult.EndpointSuccess -> {
-                            SendTransactionSuccess(successAction = it.data)
+                            SendTransactionSuccess.create(it.data)
                         }
                         is LnUrlPayResult.EndpointError -> {
                             throw Exception(it.data.reason)
+                        }
+                        is LnUrlPayResult.PayError -> {
+                            val exception = Exception(it.data.reason)
+                            throw ExceptionWithErrorReport(
+                                throwable = exception,
+                                ErrorReport.create(
+                                    throwable = exception,
+                                    paymentHash = it.data.paymentHash,
+                                    network = network,
+                                    session = this
+                                )
+                            )
                         }
                     }
                 }

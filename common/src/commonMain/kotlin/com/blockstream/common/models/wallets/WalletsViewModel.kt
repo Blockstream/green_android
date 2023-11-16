@@ -71,7 +71,8 @@ abstract class WalletsViewModel(isHome: Boolean) : WalletsViewModelAbstract(isHo
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     class LocalEvents{
-        class SelectWallet(val wallet: GreenWallet, val isLightningShortcut: Boolean = false): Event
+        class SelectWallet(val greenWallet: GreenWallet, val isLightningShortcut: Boolean = false): Event
+        class RemoveLightningShortcut(val greenWallet: GreenWallet): Event
     }
 
     init {
@@ -81,7 +82,7 @@ abstract class WalletsViewModel(isHome: Boolean) : WalletsViewModelAbstract(isHo
     override fun handleEvent(event: Event) {
         super.handleEvent(event)
         if (event is LocalEvents.SelectWallet) {
-            val parentWallet = event.wallet
+            val parentWallet = event.greenWallet
             val childWallet: GreenWallet = parentWallet.let { if (event.isLightningShortcut) it.lightningShortcutWallet() else it }
             val session: GdkSession = sessionManager.getWalletSessionOrCreate(childWallet)
 
@@ -105,7 +106,17 @@ abstract class WalletsViewModel(isHome: Boolean) : WalletsViewModelAbstract(isHo
                     )
                 )
             }
+        }else if(event is LocalEvents.RemoveLightningShortcut){
+            removeLightningShortcut(event.greenWallet)
         }
+    }
+
+    private fun removeLightningShortcut(greenWallet: GreenWallet) {
+        doAsync({
+            database.deleteLoginCredentials(greenWallet.id, CredentialType.LIGHTNING_MNEMONIC)
+        }, onSuccess = {
+
+        })
     }
 }
 

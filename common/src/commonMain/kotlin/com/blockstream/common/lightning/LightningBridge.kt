@@ -7,6 +7,7 @@ import breez_sdk.EnvironmentType
 import breez_sdk.EventListener
 import breez_sdk.GreenlightCredentials
 import breez_sdk.GreenlightNodeConfig
+import breez_sdk.HealthCheckStatus
 import breez_sdk.InputType
 import breez_sdk.ListPaymentsRequest
 import breez_sdk.LnInvoice
@@ -25,13 +26,14 @@ import breez_sdk.OpenChannelFeeRequest
 import breez_sdk.OpenChannelFeeResponse
 import breez_sdk.OpeningFeeParams
 import breez_sdk.Payment
-import breez_sdk.PaymentTypeFilter
 import breez_sdk.ReceiveOnchainRequest
 import breez_sdk.ReceivePaymentRequest
 import breez_sdk.ReceivePaymentResponse
 import breez_sdk.RecommendedFees
 import breez_sdk.RefundRequest
 import breez_sdk.RefundResponse
+import breez_sdk.ReportIssueRequest
+import breez_sdk.ReportPaymentFailureDetails
 import breez_sdk.SendPaymentRequest
 import breez_sdk.SendPaymentResponse
 import breez_sdk.SwapInfo
@@ -86,6 +88,11 @@ class LightningBridge constructor(
 
     val nodeInfoStateFlow
         get() = _nodeInfoStateFlow.asStateFlow()
+
+    private val _healthCheckStatus = MutableStateFlow<HealthCheckStatus>(HealthCheckStatus.OPERATIONAL)
+
+    val healthCheckStatus
+        get() = _healthCheckStatus.asStateFlow()
 
     private val _eventSharedFlow = MutableSharedFlow<BreezEvent>(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
@@ -179,6 +186,8 @@ class LightningBridge constructor(
             _nodeInfoStateFlow.value = it
             // Emit New Block as a way to identify established connection
             _eventSharedFlow.tryEmit(BreezEvent.NewBlock(it.blockHeight))
+
+            serviceHealthCheck()
         }
     }
 
@@ -240,9 +249,7 @@ class LightningBridge constructor(
         updateSwapInfo()
 
         return breezSdkOrNull?.listPayments(
-            ListPaymentsRequest(
-                filter = PaymentTypeFilter.ALL
-            )
+            ListPaymentsRequest()
         )
     }
 
@@ -273,7 +280,7 @@ class LightningBridge constructor(
         }
     }
 
-    fun receiveOnchain(request: ReceiveOnchainRequest = ReceiveOnchainRequest()): SwapInfo? {
+    fun receiveOnchain(request: ReceiveOnchainRequest = ReceiveOnchainRequest()): SwapInfo {
         return try {
             breezSdk.receiveOnchain(request).also {
                 logger.d { "receiveOnchain $it" }
@@ -290,6 +297,19 @@ class LightningBridge constructor(
         } + (breezSdkOrNull?.listRefundables()?.map {
             it to true
         } ?: emptyList()))
+    }
+
+    private fun serviceHealthCheck() = try {
+        _healthCheckStatus.value = breezSdk.serviceHealthCheck().status.also {
+            logger.d { "ServiceHealthCheck: ${it}" }
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+
+    fun reportIssue(paymentHash: String){
+        val report = ReportIssueRequest.PaymentFailure(ReportPaymentFailureDetails(paymentHash, null))
+        breezSdk.reportIssue(report)
     }
 
     fun refund(swapAddress: String, toAddress: String, satPerVbyte: UInt?): RefundResponse {
@@ -314,7 +334,7 @@ class LightningBridge constructor(
             breezSdk.sweep(
                 SweepRequest(
                     toAddress = toAddress,
-                    feeRateSatsPerVbyte = satPerVbyte ?: breezSdk.recommendedFees().economyFee.toUInt()
+                    satPerVbyte = satPerVbyte ?: breezSdk.recommendedFees().economyFee.toUInt()
                 )
             )
         } catch (e: Exception) {

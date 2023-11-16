@@ -39,7 +39,7 @@ class DrawerFragment : AbstractWalletsFragment<ComposeViewBinding>(R.layout.comp
                     DrawerScreen(viewModel = viewModel, callbacks = DrawerScreenCallbacks(
                         onWalletClick = { wallet, isLightningShortcut ->
                             closeDrawer()
-                            viewModel.postEvent(WalletsViewModel.LocalEvents.SelectWallet(wallet = wallet, isLightningShortcut = isLightningShortcut))
+                            viewModel.postEvent(WalletsViewModel.LocalEvents.SelectWallet(greenWallet = wallet, isLightningShortcut = isLightningShortcut))
                         },
                         onNewWalletClick = {
                             closeDrawer()

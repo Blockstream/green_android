@@ -28,6 +28,7 @@ import com.blockstream.green.extensions.endIconCustomMode
 import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.getNavigationResult
 import com.blockstream.green.extensions.hideKeyboard
+import com.blockstream.green.extensions.openKeyboard
 import com.blockstream.green.extensions.setOnClickListener
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.filters.NumberValueFilter
@@ -159,6 +160,15 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
             while (bindings.size > it.size){
                 binding.recipientContainer.removeViewAt(bindings.size - 1)
                 bindings.removeLastOrNull()
+            }
+        }
+
+        viewModel.transactionError.distinctUntilChanged().observe(viewLifecycleOwner){
+            if(it?.startsWith("id_amount_must_be_at_least_s") == true){
+                lifecycleScope.launch {
+                    bindings.firstOrNull()?.get()?.amountEditText?.requestFocus()
+                    openKeyboard()
+                }
             }
         }
 

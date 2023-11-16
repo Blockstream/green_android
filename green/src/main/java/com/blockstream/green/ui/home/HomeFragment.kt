@@ -55,7 +55,7 @@ class HomeFragment :
                     HomeScreen(viewModel = viewModel, callbacks = HomeScreenCallbacks(
                         onWalletClick = { wallet, isLightningShortcut ->
                             closeDrawer()
-                            viewModel.postEvent(WalletsViewModel.LocalEvents.SelectWallet(wallet = wallet, isLightningShortcut = isLightningShortcut))
+                            viewModel.postEvent(WalletsViewModel.LocalEvents.SelectWallet(greenWallet = wallet, isLightningShortcut = isLightningShortcut))
                         },
                         onWalletRename = {
                             RenameWalletBottomSheetDialogFragment.show(
@@ -68,6 +68,9 @@ class HomeFragment :
                                 it,
                                 childFragmentManager
                             )
+                        },
+                        onLightningShortcutDelete = {
+                             viewModel.postEvent(WalletsViewModel.LocalEvents.RemoveLightningShortcut(it))
                         },
                         onNewWalletClick = {
                             closeDrawer()

@@ -8,8 +8,11 @@ import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import breez_sdk.AesSuccessActionDataResult
 import breez_sdk.SuccessActionProcessed
 import com.blockstream.common.data.ErrorReport
+import com.blockstream.common.data.ExceptionWithErrorReport
+import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.SendTransactionSuccess
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
@@ -89,37 +92,28 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
             }
         } else if(sideEffect is SideEffects.Navigate){
             (sideEffect.data as? SendTransactionSuccess)?.also { sendTransactionSuccess ->
-                val successAction = sendTransactionSuccess.successAction
-                if(successAction != null){
-                    val message = when(successAction){
-                        is SuccessActionProcessed.Aes -> {
-                            "${successAction.data.description}\n\n${successAction.data.plaintext}"
-                        }
-                        is SuccessActionProcessed.Message -> {
-                            successAction.data.message
-                        }
-                        is SuccessActionProcessed.Url -> {
-                            successAction.data.description
-                        }
-                    }
+                if (sendTransactionSuccess.hasMessageOrUrl) {
+                    val message = sendTransactionSuccess.message ?: ""
+
+                    val isUrl = sendTransactionSuccess.url.isNotBlank()
 
                     MaterialAlertDialogBuilder(requireContext())
                         .setTitle(R.string.id_success)
                         .setMessage(getString(R.string.id_message_from_recipient_s, message))
-                        .setPositiveButton(if(successAction is SuccessActionProcessed.Url) R.string.id_open else android.R.string.ok) { _, _ ->
-                            if(successAction is SuccessActionProcessed.Url){
-                                openBrowser(successAction.data.url)
+                        .setPositiveButton(if (isUrl) R.string.id_open else android.R.string.ok) { _, _ ->
+                            if (isUrl) {
+                                openBrowser(sendTransactionSuccess.url ?: "")
                             }
                             navigateBack(sendTransactionSuccess.isSendAll)
                         }.apply {
-                            if(successAction is SuccessActionProcessed.Url){
+                            if (isUrl) {
                                 setNegativeButton(android.R.string.cancel) { _, _ ->
                                     navigateBack(sendTransactionSuccess.isSendAll)
                                 }
                             }
                         }
                         .show()
-                }else{
+                } else {
                     snackbar(R.string.id_transaction_sent)
                     navigateBack(sendTransactionSuccess.isSendAll)
                 }
@@ -200,7 +194,15 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
                         findNavController().popBackStack(R.id.walletOverviewFragment, false)
                     }
                     throwable.message != "id_action_canceled" -> {
-                        errorDialog(throwable = throwable, errorReport = ErrorReport.create(throwable = throwable, network = network, session = session))
+                        errorDialog(
+                            throwable = throwable,
+                            errorReport = (throwable as? ExceptionWithErrorReport)?.errorReport
+                                ?: ErrorReport.create(
+                                    throwable = throwable,
+                                    network = network,
+                                    session = session
+                                )
+                        )
                     }
                 }
             }

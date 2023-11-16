@@ -92,10 +92,7 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, val initAssetId: Stri
                     // Check if singlesig networks are available in this session
                     if ((isBitcoin && session.bitcoinSinglesig != null) || (!isBitcoin && session.liquidSinglesig != null)) {
                         list += listOf(AccountType.BIP84_SEGWIT, AccountType.BIP49_SEGWIT_WRAPPED)
-                        if (isBitcoin && session.supportsLightning() && !session.hasLightning && settingsManager.getApplicationSettings().experimentalFeatures && !session.isTestnet && settingsManager.isLightningEnabled(
-                                countly
-                            )
-                        ) {
+                        if (isBitcoin && session.supportsLightning() && !session.hasLightning && settingsManager.isLightningEnabled() && !session.isTestnet) {
                             list += AccountType.LIGHTNING
                         }
                     }
