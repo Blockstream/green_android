@@ -65,8 +65,7 @@ private fun commonModules(appConfig: AppConfig): List<Module> {
         single {
             val config = InitConfig(
                 datadir = appConfig.gdkDataDir,
-                logLevel = if (appConfig.isDebug) "debug" else "none",
-                enableSinglesigLiquidHWW = true
+                logLevel = if (appConfig.isDebug) "debug" else "none"
             )
             Gdk(
                 settings = get(),

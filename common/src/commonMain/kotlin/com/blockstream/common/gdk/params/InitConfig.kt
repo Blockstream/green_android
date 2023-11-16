@@ -7,8 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class InitConfig constructor(
     @SerialName("datadir") val datadir: String,
-    @SerialName("log_level") val logLevel: String = "none",
-    @SerialName("enable_ss_liquid_hww") val enableSinglesigLiquidHWW: Boolean = true,
+    @SerialName("log_level") val logLevel: String = "none"
 ) : GreenJson<InitConfig>() {
 
     override fun kSerializer() = serializer()

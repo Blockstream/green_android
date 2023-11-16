@@ -26,13 +26,13 @@ ARM_TARBALL="gdk-iphone.tar.gz"
 ARM_SIM_TARBALL="gdk-iphone-sim.tar.gz"
 X86_SIM_TARBALL="gdk-iphone-sim-x86_64.tar.gz"
 # The version of gdk to fetch and its sha256 checksum for integrity checking
-TAGNAME="release_0.68.4"
+TAGNAME="release_0.69.0"
 ARM_URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${ARM_TARBALL}"
 ARM_SIM_URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${ARM_SIM_TARBALL}"
 X86_SIM_URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${X86_SIM_TARBALL}"
-ARM_SHA256="3379599450651b11c8bbfcb001a86a741c0a59cd3411256160141d7378dd2ec4"
-ARM_SIM_SHA256="1d61730efb399339ff84d76df908c56585508d8ad498eec03c3b1a2bb2896339"
-X86_SIM_SHA256="ad03480cd214de2d0dc31fc66627f19c87a23d5976e42d32fcf71f0e001484af"
+ARM_SHA256="78d0bf3baad0669d3e66a300e7641344711fee66cca59787f7062198bf87284d"
+ARM_SIM_SHA256="681a775db437b9adb79f9f86f4dc0563b8abdd9d48588958bdf3a96606eb810c"
+X86_SIM_SHA256="c4a2e025a74adf0a1be8882339c8c3f050fdb53137681df4f71883a981d68d41"
 VALIDATE_CHECKSUM=true
 COMMIT=false
 GCLOUD_URL="https://storage.googleapis.com/green-gdk-builds/gdk-"
