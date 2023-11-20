@@ -5,11 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.extensions.isEmailValid
-import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.createQrBitmap
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.InjectedParam

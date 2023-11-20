@@ -144,6 +144,7 @@ open class WalletSettingsViewModel constructor(
         method: TwoFactorMethod,
         data: String,
         action: TwoFactorSetupAction,
+        isSmsBackup: Boolean,
         twoFactorResolver: DialogTwoFactorResolver
     ) {
         doUserAction({
@@ -154,7 +155,8 @@ open class WalletSettingsViewModel constructor(
                     TwoFactorMethodConfig(
                         confirmed = true,
                         enabled = action != TwoFactorSetupAction.SETUP_EMAIL,
-                        data = data
+                        data = data,
+                        isSmsBackup = isSmsBackup
                     )
                 )
                 .resolve(twoFactorResolver = twoFactorResolver)
@@ -174,6 +176,9 @@ open class WalletSettingsViewModel constructor(
         }, onSuccess = {
             updateTwoFactorConfig()
             postSideEffect(SideEffects.Success())
+            if(isSmsBackup){
+                postSideEffect(SideEffects.Snackbar("id_2fa_call_is_now_enabled"))
+            }
         })
     }
 

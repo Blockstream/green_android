@@ -115,6 +115,11 @@
             android:name="action"
             android:defaultValue="SETUP"
             app:argType="com.blockstream.green.ui.settings.TwoFactorSetupAction" />
+        <argument
+            android:name="isSmsBackup"
+            app:argType="boolean"
+            android:defaultValue="false" />
+
     </fragment>
 
 

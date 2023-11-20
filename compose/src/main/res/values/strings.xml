@@ -1423,4 +1423,7 @@
   <string name="id_jade_will_securely_create_and_transfer">Jade will securely create and transfer a new key to your Green app. Jade will not be needed to authorize lightning transactions, because Green will use this new key for your lightning transactions.\n\nDon\'t worry about any new backups, your existing recovery phrase backup will be sufficient to restore both your funds onchain and on lightning.</string>
   <string name="id_export_lightning_key_to_green">Export Lightning Key to Green</string>
   <string name="id_decoding_error_try_again_by_scanning">Decoding error: try again by scanning the QR code with Jade</string>
+  <string name="id_enable_2fa_call_method">Enable 2FA Call method</string>
+  <string name="id_2fa_call_is_now_enabled">2FA Call is now enabled</string>
+
 </resources>

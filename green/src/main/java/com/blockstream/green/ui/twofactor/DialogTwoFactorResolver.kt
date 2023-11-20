@@ -8,12 +8,15 @@ import androidx.appcompat.app.AlertDialog
 import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.gdk.TwoFactorResolver
 import com.blockstream.common.gdk.data.AuthHandlerStatus
+import com.blockstream.common.gdk.data.Network
+import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.databinding.TwofactorCodeDialogBinding
 import com.blockstream.green.extensions.localized2faMethod
 import com.blockstream.green.extensions.localized2faMethods
 import com.blockstream.green.ui.AppFragment
+import com.blockstream.green.ui.settings.TwoFactorSetupAction
 import com.blockstream.green.utils.openBrowser
 import com.blockstream.green.utils.openNewTicket
 import com.blockstream.green.views.GreenPinViewListener
@@ -65,7 +68,7 @@ class DialogTwoFactorResolver(
         }
     }
 
-    override suspend fun getCode(authHandlerStatus: AuthHandlerStatus): CompletableDeferred<String> {
+    override suspend fun getCode(network: Network, enable2faCallMethod: Boolean, authHandlerStatus: AuthHandlerStatus): CompletableDeferred<String> {
         return withContext(context = Dispatchers.Main) {
             CompletableDeferred<String>().also { deferred ->
                 val dialogBinding = TwofactorCodeDialogBinding.inflate(LayoutInflater.from(context))
@@ -100,7 +103,24 @@ class DialogTwoFactorResolver(
                                 MaterialAlertDialogBuilder(context)
                                     .setTitle(R.string.id_are_you_not_receiving_your_2fa_code)
                                     .setMessage(R.string.id_try_again_using_another_2fa_method)
-                                    .setPositiveButton(R.string.id_try_again, null)
+                                    .apply {
+                                        if(enable2faCallMethod){
+                                            setPositiveButton(R.string.id_enable_2fa_call_method) { _, _ ->
+                                                appFragment.getGreenViewModel()?.greenWalletOrNull?.also {
+                                                    appFragment.navigate(
+                                                        NavGraphDirections.actionGlobalTwoFactorSetupFragment(
+                                                            wallet = it,
+                                                            method = TwoFactorMethod.PHONE,
+                                                            action = TwoFactorSetupAction.SETUP,
+                                                            network = network,
+                                                            isSmsBackup = true
+                                                        )
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                    .setNegativeButton(R.string.id_try_again, null)
                                     .setNeutralButton(R.string.id_contact_support) { _, _ ->
                                         appFragment.also {
                                             it.openNewTicket(

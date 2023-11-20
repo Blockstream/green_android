@@ -14,7 +14,7 @@ import kotlinx.serialization.json.decodeFromJsonElement
 interface TwoFactorResolver {
     suspend fun selectMethod(availableMethods: List<String>): CompletableDeferred<String>
 
-    suspend fun getCode(authHandlerStatus: AuthHandlerStatus): CompletableDeferred<String>
+    suspend fun getCode(network: Network, enable2faCallMethod: Boolean, authHandlerStatus: AuthHandlerStatus): CompletableDeferred<String>
 }
 
 interface HardwareWalletResolver {
@@ -26,6 +26,7 @@ interface BcurResolver {
 }
 
 class AuthHandler constructor(
+    private val session: GdkSession,
     private var gaAuthHandler: GAAuthHandler,
     private val network: Network,
     private val gdkHwWallet: GdkHardwareWallet?,
@@ -89,7 +90,14 @@ class AuthHandler constructor(
                             twoFactorResolver?.also {
                                 try {
                                     resolveCode(runBlocking {
-                                        it.getCode(authHandlerStatus).await()
+                                        it.getCode(
+                                            network = network,
+                                            enable2faCallMethod = session.getTwoFactorConfig(
+                                                network = network,
+                                                useCache = true
+                                            ).enabledMethods.let { it.size == 1 && it.firstOrNull() == "sms" },
+                                            authHandlerStatus = authHandlerStatus
+                                        ).await()
                                     })
                                 } catch (e: Exception) {
                                     throw Exception("id_action_canceled")

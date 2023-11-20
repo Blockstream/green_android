@@ -436,6 +436,7 @@ class GdkSession constructor(
 
     private fun authHandler(network: Network, gaAuthHandler: GAAuthHandler): AuthHandler =
         AuthHandler(
+            session = this,
             gaAuthHandler = gaAuthHandler,
             network = network,
             gdkHwWallet = gdkHwWallet,
