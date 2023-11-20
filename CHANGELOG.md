@@ -3,6 +3,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.19] - 2023-11-20
+
+### Changed
+- Bump GDK to version 0.69
+
+### Added
+- Support Lightning with Jade air-gapped BIP85 mnemonic
+- Support Jade watch-only import by scanning BCUR animated QR codes
+- Enable 2FA call method as an SMS backup
+
+### Fixed
+- Fix amount being calculated incorrectly for locales using comma as decimal separator
+- Various bug and crash fixes
+
 ## [4.0.18] - 2023-11-06
 
 ### Fixed

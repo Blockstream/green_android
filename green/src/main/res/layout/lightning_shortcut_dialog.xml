@@ -52,19 +52,27 @@
         <Button
             android:id="@+id/buttonPositive"
             style="@style/Widget.Green.Button.Big"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="@string/id_yes_create_a_shortcut" />
 
         <Button
             android:id="@+id/buttonNegative"
-            style="@style/Widget.Green.Button.Text.White"
-            android:layout_width="wrap_content"
+            style="@style/Widget.Green.Button.White"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="@{isAddAccount &amp;&amp; !isHw ? @string/id_maybe_later : @string/id_cancel}"
-            tools:text="@string/id_maybe_later" />
+            android:text="@{isAddAccount ? (isHw ? @string/id_no_ill_repeat_the_setup : @string/id_maybe_later) : @string/id_cancel}"
+            tools:text="@string/id_no_ill_repeat_the_setup" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            isVisible="@{isHw}"
+            android:text="@string/id_you_will_need_to_export_the_account"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="@color/color_on_surface_emphasis_medium" />
 
     </LinearLayout>
 </layout>

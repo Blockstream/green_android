@@ -64,8 +64,6 @@ class LoginFragment : AppFragment<LoginFragmentBinding>(
 
     private var biometricPrompt : BiometricPrompt? = null
 
-    override val screenName = "Login"
-
     override fun getBannerAlertView(): GreenAlertView = binding.banner
 
     override fun getGreenViewModel(): GreenViewModel = viewModel

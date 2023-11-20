@@ -410,7 +410,7 @@ class GdkSession constructor(
 
     val starsOrNull: String? get() = "*****".takeIf { hideAmounts }
 
-    private var walletActiveEventInvalidated = false
+    private var walletActiveEventInvalidated = true
 
     private var lightningSdkOrNull: LightningBridge? = null
     val lightningSdk
@@ -702,6 +702,8 @@ class GdkSession constructor(
         _accountTransactionsPagerSharedFlow = mutableMapOf()
 
         _tempAllowedServers.clear()
+
+        walletActiveEventInvalidated = true
 
         val gaSessionToBeDestroyed = gdkSessions.values.toList()
 
@@ -1911,12 +1913,12 @@ class GdkSession constructor(
                     _accountAssetStateFlow.value = accountAndAssets.sortedWith(::sortAccountAssets)
 
                     _accountsAndBalanceUpdatedSharedFlow.emit(Unit)
-
-                    walletActiveEventIfNeeded()
                 }
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
                 countly.recordException(e)
+            } finally {
+                walletActiveEventIfNeeded()
             }
         }
     }
@@ -2449,7 +2451,6 @@ class GdkSession constructor(
     }
 
     private fun walletActiveEventIfNeeded(){
-
         if(walletActiveEventInvalidated) {
             countly.activeWalletEnd(
                 session = this,

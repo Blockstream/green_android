@@ -1425,5 +1425,6 @@
   <string name="id_decoding_error_try_again_by_scanning">Decoding error: try again by scanning the QR code with Jade</string>
   <string name="id_enable_2fa_call_method">Enable 2FA Call method</string>
   <string name="id_2fa_call_is_now_enabled">2FA Call is now enabled</string>
-
+  <string name="id_you_will_need_to_export_the_account">You will need to export the account from Jade at your next login.</string>
+  <string name="id_no_ill_repeat_the_setup">No, I\'ll repeat the setup</string>
 </resources>

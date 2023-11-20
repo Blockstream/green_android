@@ -15,7 +15,7 @@ xcframework:
   when: manual
   artifacts:
     name: "green_xcframework-$CI_COMMIT_SHORT_SHA"
-    expire_in: 10 days
+    expire_in: 4 days
     when: on_success
     paths:
       - common/build/XCFrameworks/*.zip
@@ -40,7 +40,7 @@ production:
   stage: build
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
-    expire_in: 10 days
+    expire_in: 7 days
     when: on_success
     paths:
       - green/build/outputs/apk/productionGoogle/release/*.apk
@@ -61,7 +61,7 @@ production_fdroid:
   when: manual
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
-    expire_in: 10 days
+    expire_in: 7 days
     when: on_success
     paths:
       - green/build/outputs/apk/production/release/*.apk
