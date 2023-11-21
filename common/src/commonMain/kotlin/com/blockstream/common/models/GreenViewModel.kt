@@ -10,6 +10,7 @@ import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.Redact
 import com.blockstream.common.database.Database
 import com.blockstream.common.di.ApplicationScope
@@ -28,7 +29,6 @@ import com.blockstream.common.gdk.device.GdkHardwareWallet
 import com.blockstream.common.gdk.device.HardwareWalletInteraction
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
-import com.blockstream.common.navigation.LogoutReason
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
@@ -133,7 +133,7 @@ abstract class GreenViewModel constructor(
         _bootstrapped = true
         if(greenWalletOrNull != null){
             if(isLoginRequired && !session.isConnected){
-                postSideEffect(SideEffects.Logout(LogoutReason.TIMEOUT))
+                postSideEffect(SideEffects.Logout(session.logoutReason ?: LogoutReason.USER_ACTION))
             }
         }
 
@@ -275,20 +275,21 @@ abstract class GreenViewModel constructor(
                 setDenomination(event.denominatedValue)
             }
             is Events.Logout -> {
-                sessionOrNull?.disconnectAsync()
-                postSideEffect(SideEffects.Logout(event.reason))
-
-                when(event.reason){
-                    LogoutReason.DISCONNECTED -> {
-                        postSideEffect(SideEffects.Snackbar("id_unstable_internet_connection"))
+                sessionOrNull?.disconnectAsync(event.reason)
+                (sessionOrNull?.logoutReason ?: event.reason).also {
+                    postSideEffect(SideEffects.Logout(it))
+                    when(it){
+                        LogoutReason.CONNECTION_DISCONNECTED -> {
+                            postSideEffect(SideEffects.Snackbar("id_unstable_internet_connection"))
+                        }
+                        LogoutReason.AUTO_LOGOUT_TIMEOUT -> {
+                            postSideEffect(SideEffects.Snackbar("id_auto_logout_timeout_expired"))
+                        }
+                        LogoutReason.DEVICE_DISCONNECTED -> {
+                            postSideEffect(SideEffects.Snackbar("id_your_device_was_disconnected"))
+                        }
+                        else -> {}
                     }
-                    LogoutReason.TIMEOUT -> {
-                        postSideEffect(SideEffects.Snackbar("id_auto_logout_timeout_expired"))
-                    }
-                    LogoutReason.DEVICE_DISCONNECTED -> {
-                        postSideEffect(SideEffects.Snackbar("id_your_device_was_disconnected"))
-                    }
-                    else -> {}
                 }
             }
         }

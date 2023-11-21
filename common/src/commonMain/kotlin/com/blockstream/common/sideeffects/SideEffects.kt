@@ -2,10 +2,10 @@ package com.blockstream.common.sideeffects
 
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.ErrorReport
+import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.events.Event
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.Device
-import com.blockstream.common.navigation.LogoutReason
 import com.blockstream.common.navigation.NavigateDestination
 import kotlinx.coroutines.CompletableDeferred
 

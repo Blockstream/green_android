@@ -9,10 +9,10 @@ import androidx.annotation.MenuRes
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.lifecycleScope
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Pricing
 import com.blockstream.common.gdk.params.ReconnectHintParams
-import com.blockstream.common.navigation.LogoutReason
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.databinding.DenominationExchangeDialogBinding
@@ -95,7 +95,7 @@ abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
                 // without being properly initialized and can lead to a crash
                 if (isSessionInitialized) {
                     logger.info { "A logged in session is required, but session is uninitialized" }
-                    getWalletViewModel().logout(LogoutReason.TIMEOUT)
+                    getWalletViewModel().logout(LogoutReason.AUTO_LOGOUT_TIMEOUT)
                 } else {
                     logger.info { "A logged in session is required, but session is not connected" }
                     navigate(NavGraphDirections.actionGlobalLoginFragment(wallet))
@@ -185,7 +185,7 @@ abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
                 // If session is not initialized, avoid getting the ViewModel as can use GreenSession
                 // without being properly initialized and can lead to a crash
                 if (isSessionNetworkInitialized) {
-                    getWalletViewModel().logout(LogoutReason.TIMEOUT)
+                    getWalletViewModel().logout(LogoutReason.AUTO_LOGOUT_TIMEOUT)
                 } else {
                     // Use walletOrNull else wallet will trigger ViewModel initialization
                     walletOrNull?.also {

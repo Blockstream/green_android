@@ -1,6 +1,5 @@
 package com.blockstream.green.ui.settings
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +12,7 @@ import com.blockstream.common.Urls
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.SettingsNotification
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.navigation.LogoutReason
+import com.blockstream.common.data.LogoutReason
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
@@ -30,7 +29,6 @@ import com.blockstream.green.extensions.getNavigationResult
 import com.blockstream.green.extensions.showChoiceDialog
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.gdk.getNetworkIcon
-import com.blockstream.green.ui.dialogs.LightningShortcutDialogFragment
 import com.blockstream.green.ui.items.ActionListItem
 import com.blockstream.green.ui.items.PreferenceListItem
 import com.blockstream.green.ui.items.TitleListItem

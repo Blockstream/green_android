@@ -18,14 +18,13 @@ import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.lightning.isLoading
 import com.blockstream.common.events.Events
-import com.blockstream.common.navigation.LogoutReason
+import com.blockstream.common.data.LogoutReason
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemLightningInfoBinding
 import com.blockstream.green.databinding.ListItemWalletBalanceBinding
 import com.blockstream.green.databinding.WalletOverviewFragmentBinding
 import com.blockstream.green.extensions.clearNavigationResult
 import com.blockstream.green.extensions.getNavigationResult
-import com.blockstream.green.extensions.setOnClickListener
 import com.blockstream.green.extensions.showPopupMenu
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.ui.MainActivity
@@ -76,7 +75,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel

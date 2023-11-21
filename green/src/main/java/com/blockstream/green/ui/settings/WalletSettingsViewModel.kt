@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.database.LoginCredentials
 import com.blockstream.common.extensions.biometricsPinData
 import com.blockstream.common.extensions.createLoginCredentials
@@ -18,7 +19,6 @@ import com.blockstream.common.gdk.data.TwoFactorReset
 import com.blockstream.common.gdk.params.CsvParams
 import com.blockstream.common.gdk.params.EncryptWithPinParams
 import com.blockstream.common.gdk.params.Limits
-import com.blockstream.common.navigation.LogoutReason
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.randomChars
 import com.blockstream.green.data.TwoFactorMethod

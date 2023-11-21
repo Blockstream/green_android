@@ -11,6 +11,7 @@ import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.database.LoginCredentials
 import com.blockstream.common.extensions.hasHistory
@@ -212,6 +213,9 @@ class GdkSession constructor(
 
     private val _multisigBitcoinWatchOnly = MutableStateFlow<String?>(null)
     private val _multisigLiquidWatchOnly = MutableStateFlow<String?>(null)
+
+    var logoutReason: LogoutReason? = null
+        private set
 
     private fun networkEventsStateFlow(network: Network) = _networkEventsStateFlow.getOrPut(network) { MutableStateFlow(null) }
 
@@ -748,9 +752,10 @@ class GdkSession constructor(
         }
     }
 
-    fun disconnectAsync() {
+    fun disconnectAsync(reason: LogoutReason = LogoutReason.USER_ACTION) {
         // Disconnect only if needed
         if(isConnected) {
+            logoutReason = reason
             isConnected = false
 
             scope.launch(context = Dispatchers.IO + logException(countly)) {
@@ -1209,7 +1214,7 @@ class GdkSession constructor(
         device?.deviceState?.onEach {
             // Device went offline
             if(it == DeviceState.DISCONNECTED){
-                disconnectAsync()
+                disconnectAsync(reason = LogoutReason.DEVICE_DISCONNECTED)
             }
         }?.launchIn(scope)
 

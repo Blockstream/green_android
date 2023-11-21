@@ -3,6 +3,7 @@ package com.blockstream.common.managers
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.GASession
 import com.blockstream.common.gdk.Gdk
@@ -69,7 +70,7 @@ class SessionManager constructor(
             } else {
                 _torProxy.value = null
                 _torProxyProgress.value = TorEvent(progress = 100)
-                torNetworkSession.disconnectAsync()
+                torNetworkSession.disconnectAsync(LogoutReason.USER_ACTION)
             }
         }
     }
@@ -118,7 +119,7 @@ class SessionManager constructor(
                     logger.d { "Set timeout after ${sessionTimeout / 1000}..." }
                     timeoutTimers += Timer(sessionTimeout) {
                         logger.d { "Session timeout, disconnecting..." }
-                        session.disconnectAsync()
+                        session.disconnectAsync(reason = LogoutReason.AUTO_LOGOUT_TIMEOUT)
                     }
                 }
             }
@@ -305,7 +306,7 @@ class SessionManager constructor(
     fun disconnectAll(){
         logger.i { "Disconnecting all sessions" }
         getConnectedSessions().onEach {
-            it.disconnectAsync()
+            it.disconnectAsync(LogoutReason.USER_ACTION)
         }
     }
 

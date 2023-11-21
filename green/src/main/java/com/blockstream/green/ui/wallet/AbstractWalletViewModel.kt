@@ -4,13 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.WalletExtras
+import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.Settings
-import com.blockstream.common.events.Events
-import com.blockstream.common.navigation.LogoutReason
 import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.ui.AppViewModelAndroid
@@ -172,7 +172,6 @@ abstract class AbstractWalletViewModel constructor(
     }
 
     fun logout(reason: LogoutReason) {
-        session.disconnectAsync()
         postEvent(Events.Logout(reason = reason))
     }
 

@@ -22,6 +22,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.blockstream.base.ZendeskSdk
 import com.blockstream.common.ScreenView
+import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.extensions.handleException
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.Wally
@@ -29,7 +30,6 @@ import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.navigation.LogoutReason
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.NavGraphDirections

@@ -6,6 +6,7 @@ import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.Redact
 import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.data.data
@@ -512,7 +513,7 @@ class LoginViewModel constructor(
                 val mnemonic = session.getCredentials().mnemonic
 
                 // Disconnect as no longer needed
-                session.disconnectAsync()
+                session.disconnectAsync(LogoutReason.USER_ACTION)
 
                 val walletName = greenWallet.name
 

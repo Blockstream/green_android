@@ -15,6 +15,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.database.Database
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.extensions.logException
@@ -52,7 +53,7 @@ class NotificationManager constructor(
             if (intent.action == ACTION_LOGOUT) {
                 intent.extras?.getString(WALLET_ID)?.also { walletId ->
                     applicationScope.launch(context = logException(countly)) {
-                        sessionManager.getWalletSessionOrNull(walletId)?.disconnectAsync()
+                        sessionManager.getWalletSessionOrNull(walletId)?.disconnectAsync(reason = LogoutReason.USER_ACTION)
                     }
                 }
             }

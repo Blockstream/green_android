@@ -2,7 +2,7 @@ package com.blockstream.common.events
 
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.navigation.LogoutReason
+import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 
