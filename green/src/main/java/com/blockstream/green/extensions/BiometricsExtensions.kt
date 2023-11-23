@@ -11,8 +11,8 @@ import java.security.InvalidAlgorithmParameterException
 
 fun Fragment.authenticateWithBiometrics(callback : AuthenticationCallback, onlyDeviceCredentials: Boolean = false){
     val promptInfo = BiometricPrompt.PromptInfo.Builder()
-        .setTitle(getString(R.string.id_biometrics_authentication))
-        .setDescription(getString(R.string.id_you_have_to_authenticate_using))
+        .setTitle(getString(R.string.id_user_authentication))
+        .setDescription(getString(R.string.id_you_have_to_authenticate_to_unlock_your_device))
         .setConfirmationRequired(true)
         .setAllowedAuthenticators(if (onlyDeviceCredentials) BiometricManager.Authenticators.DEVICE_CREDENTIAL else BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
 

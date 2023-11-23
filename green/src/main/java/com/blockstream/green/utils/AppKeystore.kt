@@ -25,7 +25,7 @@ class AppKeystore(val context: Context): GreenKeystore {
 
     fun isBiometricsAuthenticationRequired(): Boolean {
         try{
-            getBiometricsEncryptionCipher()
+            getEncryptionCipher(BIOMETRICS_KEYSTORE_ALIAS)
         }catch (e: UserNotAuthenticatedException){
             logger.info { "User not Authenticated, probably device was unlocked with Face biometrics" }
             if(isDevelopmentOrDebug) {
@@ -139,10 +139,10 @@ class AppKeystore(val context: Context): GreenKeystore {
      * The returned {@code Cipher} object must be unlocked by {@code BiometricPrompt} before use.
      */
     @Throws(Exception::class)
-    fun getBiometricsEncryptionCipher(): Cipher {
-        if (!keyStoreKeyExists(BIOMETRICS_KEYSTORE_ALIAS) || !isKeyStoreValid(
+    fun getBiometricsEncryptionCipher(recreateKeyIfNeeded: Boolean): Cipher {
+        if ((!keyStoreKeyExists(BIOMETRICS_KEYSTORE_ALIAS) || !isKeyStoreValid(
                 BIOMETRICS_KEYSTORE_ALIAS
-            )) {
+            )) && recreateKeyIfNeeded) {
             deleteFromKeyStore(BIOMETRICS_KEYSTORE_ALIAS)
             initializeKeyStoreKey(BIOMETRICS_KEYSTORE_ALIAS, true)
         }

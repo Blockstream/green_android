@@ -185,7 +185,7 @@ class WatchOnlyCredentialsFragment : AppFragment<WatchOnlyCredentialsFragmentBin
         try {
             biometricPrompt.authenticate(
                 promptInfo.build(),
-                BiometricPrompt.CryptoObject(appKeystore.getBiometricsEncryptionCipher())
+                BiometricPrompt.CryptoObject(appKeystore.getBiometricsEncryptionCipher(recreateKeyIfNeeded = true))
             )
         } catch (e: InvalidAlgorithmParameterException) {
             // At least one biometric must be enrolled

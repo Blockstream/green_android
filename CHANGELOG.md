@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.20] - 2023-11-23
+
+### Fixed
+- Fix keystore key being invalidated when device was unlocked with face biometrics
+
 ## [4.0.19] - 2023-11-20
 
 ### Changed

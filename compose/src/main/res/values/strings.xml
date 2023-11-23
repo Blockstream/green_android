@@ -1427,4 +1427,6 @@
   <string name="id_2fa_call_is_now_enabled">2FA Call is now enabled</string>
   <string name="id_you_will_need_to_export_the_account">You will need to export the account from Jade at your next login.</string>
   <string name="id_no_ill_repeat_the_setup">No, I\'ll repeat the setup</string>
+  <string name="id_user_authentication">User Authentication</string>
+  <string name="id_you_have_to_authenticate_to_unlock_your_device">You have to Authenticate to unlock your device</string>
 </resources>
