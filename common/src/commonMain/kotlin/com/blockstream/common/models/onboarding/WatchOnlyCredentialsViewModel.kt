@@ -210,6 +210,13 @@ class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs): WatchOnlyCredentialsV
                 null
             }
 
+            // Check if wallet already exists
+            database.getWalletWithXpubHashId(
+                xPubHashId = loginData.networkHashId, isTestnet = network.isTestnet, isHardware = false
+            )?.also { wallet ->
+                throw Exception("id_wallet_already_restored_s|${wallet.name}")
+            }
+
             val wallet = GreenWallet.createWallet(
                 name = generateWalletName(settingsManager),
                 xPubHashId = loginData.networkHashId, // Use networkHashId as the watch-only is linked to a specific network
