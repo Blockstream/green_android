@@ -469,4 +469,11 @@ class NetworkTwoFactorAuthenticationFragment :
                 .show()
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+
+        // Update the list in case we did enabled call using sms backup
+        viewModel.updateTwoFactorConfig(network = network)
+    }
 }
