@@ -46,6 +46,7 @@ fun Fragment.openKeyboard() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         view?.windowInsetsController?.show(WindowInsetsCompat.Type.ime())
     }else{
+        @Suppress("DEPRECATION")
         (requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?)?.toggleSoftInputFromWindow(
             view?.applicationWindowToken, InputMethodManager.SHOW_FORCED, 0
         )

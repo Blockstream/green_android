@@ -3,6 +3,7 @@ package com.blockstream.green.ui.bottomsheets
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,9 +29,14 @@ class MenuBottomSheetDialogFragment : AbstractBottomSheetDialogFragment<MenuBott
         binding.title = arguments?.getString(TITLE)
         binding.subtitle = arguments?.getString(SUBTITLE)
 
-
         val itemAdapter = ItemAdapter<GenericItem>()
-            .add(arguments?.getParcelableArrayList<MenuListItem>(MENU_ITEMS) ?: listOf())
+            .add(arguments?.let {
+                BundleCompat.getParcelableArrayList(
+                    it,
+                    MENU_ITEMS,
+                    MenuListItem::class.java
+                )
+            } ?: listOf())
 
         val fastAdapter = FastAdapter.with(itemAdapter)
 

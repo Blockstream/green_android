@@ -164,8 +164,8 @@ android {
         }
     }
     lint {
-        abortOnError=  false
-        disable += listOf("MissingTranslation", "SpUsage")
+        abortOnError = false
+        disable += listOf("MissingTranslation", "SpUsage", "Instantiatable")
         ignoreWarnings = false
     }
 }
@@ -177,6 +177,17 @@ ksp {
 
 kotlin {
     jvmToolchain(17)
+
+    sourceSets {
+        all {
+            languageSettings.apply {
+                optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
+                optIn("kotlin.io.encoding.ExperimentalEncodingApi")
+                optIn("kotlin.ExperimentalUnsignedTypes")
+                optIn("kotlinx.coroutines.FlowPreview")
+            }
+        }
+    }
 }
 
 testlogger {
@@ -202,7 +213,6 @@ dependencies {
     /**  --- Java 8+ API desugaring support ----------------------------------------------------- */
     coreLibraryDesugaring(libs.desugar)
     /** ----------------------------------------------------------------------------------------- */
-
 
     /**  --- Navigation ------------------------------------------------------------------------- */
     implementation(libs.navigation.fragment.ktx)

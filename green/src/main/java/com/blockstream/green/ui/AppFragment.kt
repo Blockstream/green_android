@@ -159,6 +159,7 @@ abstract class AppFragment<T : ViewDataBinding>(
 
         // Prevent DrawerFragment from corrupting the main fragment
         if (this !is DrawerFragment) {
+            @Suppress("DEPRECATION")
             requireActivity().window.setSoftInputMode(if (isAdjustResize) WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE else WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
             updateToolbar()
             countly.screenView(this)

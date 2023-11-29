@@ -13,6 +13,7 @@ import com.blockstream.green.utils.getBitcoinOrLiquidUnit
 import com.blockstream.green.utils.getFiatCurrency
 import com.blockstream.green.utils.toAmountLook
 import com.rickclephas.kmm.viewmodel.coroutineScope
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -21,6 +22,7 @@ import kotlinx.coroutines.runBlocking
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.InjectedParam
 
+@FlowPreview
 @KoinViewModel
 class RequestAmountLabelViewModel constructor(
     @InjectedParam wallet: GreenWallet,

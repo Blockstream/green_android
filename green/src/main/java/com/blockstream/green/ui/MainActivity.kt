@@ -7,13 +7,16 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.util.Base64
+import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.IntentCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.databinding.OnRebindCallback
@@ -33,7 +36,6 @@ import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.PinData
 import com.blockstream.common.managers.SessionManager
-import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
@@ -97,6 +99,12 @@ class MainActivity : AppActivity() {
         get() = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
 
     private var requestNotificationPermission: ActivityResultLauncher<String>? = null
+
+    private val drawerCallback: OnBackPressedCallback = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            closeDrawer()
+        }
+    }
 
     fun askForNotificationPermissionIfNeeded(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -274,6 +282,7 @@ class MainActivity : AppActivity() {
         }.distinctUntilChanged().onEach { showDialog ->
 
             if(showDialog) {
+                @Suppress("DEPRECATION")
                 lifecycleScope.launchWhenResumed {
                     // Delay a bit
                     delay(1.toDuration(DurationUnit.SECONDS))
@@ -301,6 +310,18 @@ class MainActivity : AppActivity() {
                 binding.backgroundWithLines.fadeOut(duration = 250, skipIfAnimated = true)
             }
         }
+
+        binding.drawerLayout.addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
+            override fun onDrawerOpened(drawerView: View) {
+                drawerCallback.isEnabled = true
+            }
+
+            override fun onDrawerClosed(drawerView: View) {
+                drawerCallback.isEnabled = false
+            }
+        })
+
+        onBackPressedDispatcher.addCallback(drawerCallback)
 
         // Set version into the main VM
         activityViewModel.buildVersion.value =
@@ -430,7 +451,7 @@ class MainActivity : AppActivity() {
         }
 
         if(intent?.action == OPEN_WALLET){
-            intent.getParcelableExtra<GreenWallet>(WALLET)?.let { wallet ->
+            IntentCompat.getParcelableExtra(intent, WALLET, GreenWallet::class.java)?.let { wallet ->
                 NavGraphDirections.actionGlobalLoginFragment(
                     wallet = wallet,
                     deviceId = intent.getStringExtra(DEVICE_ID)
@@ -460,15 +481,6 @@ class MainActivity : AppActivity() {
 
     override fun setToolbarVisibility(isVisible: Boolean) {
         binding.appBarLayout.isVisible = isVisible
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        if (isDrawerOpen()) {
-            closeDrawer()
-        } else {
-            super.onBackPressed()
-        }
     }
 
     fun getVisibleFragment() = navHostFragment.childFragmentManager.fragments.firstOrNull()

@@ -3,6 +3,7 @@ package com.blockstream.green.ui.bottomsheets
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,14 +34,14 @@ class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<
 
     override val screenName = "TwoFactorReset"
 
-    override val network by lazy { arguments?.getParcelable<Network>(NETWORK)!! }
+    override val network by lazy { BundleCompat.getParcelable(requireArguments(), NETWORK, Network::class.java)!! }
 
     override fun inflate(layoutInflater: LayoutInflater) = RecyclerBottomSheetBinding.inflate(layoutInflater)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        arguments?.getParcelable<TwoFactorReset>(TWO_FACTOR_RESET)?.let {
+        BundleCompat.getParcelable(requireArguments(), TWO_FACTOR_RESET, TwoFactorReset::class.java)?.let {
             twoFactorReset = it
         } ?: run {
             dismiss()

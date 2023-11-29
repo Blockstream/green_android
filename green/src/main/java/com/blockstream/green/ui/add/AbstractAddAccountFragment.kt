@@ -26,7 +26,7 @@ abstract class AbstractAddAccountFragment<T : ViewDataBinding>(
     open val network: Network? = null
 
     override val title: String?
-        get() = network?.let { (if(it.isBitcoin) getGreenViewModel()?.session?.bitcoin else getGreenViewModel()?.session?.liquid)?.canonicalName }
+        get() = network?.let { (if(it.isBitcoin) getGreenViewModel().session.bitcoin else getGreenViewModel().session.liquid)?.canonicalName }
 
     override val toolbarIcon: Int?
         get() = network?.getNetworkIcon()

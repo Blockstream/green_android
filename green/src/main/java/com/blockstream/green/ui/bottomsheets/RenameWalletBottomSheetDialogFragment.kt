@@ -3,11 +3,12 @@ package com.blockstream.green.ui.bottomsheets
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.cleanup
 import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.events.Events
 import com.blockstream.green.databinding.RenameWalletBottomSheetBinding
 import com.blockstream.green.extensions.openKeyboard
 import com.blockstream.green.ui.AppFragment
@@ -27,7 +28,7 @@ class RenameWalletBottomSheetDialogFragment :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.getParcelable<GreenWallet>(WALLET)?.let {
+        BundleCompat.getParcelable(requireArguments(), WALLET, GreenWallet::class.java)?.let {
             wallet = it
         } ?: run {
             dismiss()

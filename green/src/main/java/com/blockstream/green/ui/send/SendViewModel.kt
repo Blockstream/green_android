@@ -30,6 +30,7 @@ import com.blockstream.green.ui.wallet.AbstractAssetWalletViewModel
 import com.blockstream.green.utils.feeRateWithUnit
 import com.blockstream.green.utils.toAmountLook
 import com.rickclephas.kmm.viewmodel.coroutineScope
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -49,6 +50,7 @@ import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.InjectedParam
 import kotlin.math.absoluteValue
 
+@OptIn(FlowPreview::class)
 @KoinViewModel
 class SendViewModel constructor(
     @InjectedParam wallet: GreenWallet,

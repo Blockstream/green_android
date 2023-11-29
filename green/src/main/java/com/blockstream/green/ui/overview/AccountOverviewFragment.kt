@@ -436,7 +436,7 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
         // Alert cards
         val alertCardsAdapter = ModelAdapter<AlertType, GenericItem> {
             AlertListItem(it).also { alertListItem ->
-                alertListItem.action = { isClose ->
+                alertListItem.action = { _ ->
                     when (alertListItem.alertType) {
                         is AlertType.Reset2FA -> {
                             TwoFactorResetBottomSheetDialogFragment.show(

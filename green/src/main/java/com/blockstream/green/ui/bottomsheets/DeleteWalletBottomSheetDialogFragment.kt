@@ -3,6 +3,7 @@ package com.blockstream.green.ui.bottomsheets
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
@@ -20,7 +21,9 @@ class DeleteWalletBottomSheetDialogFragment : AbstractBottomSheetDialogFragment<
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        arguments?.getParcelable<GreenWallet>(WALLET)?.let {
+        arguments?.let {
+            BundleCompat.getParcelable(it, WALLET, GreenWallet::class.java)
+        }?.let {
             wallet = it
         } ?: run {
             dismiss()

@@ -5,6 +5,7 @@ import android.text.Spanned
 import android.text.method.DigitsKeyListener
 
 
+@Suppress("DEPRECATION")
 class NumberValueFilter(private val digits: Int = 2) : DigitsKeyListener(false, true) {
 
     override fun filter(

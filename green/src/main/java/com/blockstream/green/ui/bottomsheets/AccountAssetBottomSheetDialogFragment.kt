@@ -1,6 +1,7 @@
 package com.blockstream.green.ui.bottomsheets
 
 import android.os.Bundle
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.blockstream.common.gdk.data.Account
@@ -27,7 +28,7 @@ class AccountAssetBottomSheetDialogFragment : FilterBottomSheetDialogFragment(),
     val session
         get() = viewModel.session
 
-    val account: Account? by lazy { arguments?.getParcelable(ACCOUNT) }
+    val account: Account? by lazy { arguments?.let { BundleCompat.getParcelable(it, ACCOUNT, Account::class.java) } }
     val showBalance: Boolean by lazy { arguments?.getBoolean(SHOW_BALANCE, true) ?: true}
     val isRefundSwap: Boolean by lazy { arguments?.getBoolean(IS_REFUND_SWAP, false) ?: false}
     override val withDivider: Boolean = false

@@ -3,15 +3,15 @@ package com.blockstream.common.models.onboarding
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SetupArgs
+import com.blockstream.common.events.Event
 import com.blockstream.common.extensions.createLoginCredentials
 import com.blockstream.common.extensions.title
 import com.blockstream.common.gdk.data.EncryptWithPin
 import com.blockstream.common.gdk.params.EncryptWithPinParams
 import com.blockstream.common.gdk.params.LoginCredentialsParams
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.events.Event
-import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.generateWalletName
 import com.rickclephas.kmm.viewmodel.MutableStateFlow
@@ -208,10 +208,15 @@ class PinViewModel constructor(
                 isRestore = true
             )
 
-
-            val credentials = session.getCredentials()
-            val encryptWithPin: EncryptWithPin =
-                session.encryptWithPin(null, EncryptWithPinParams(pin, credentials))
+            val encryptWithPin: EncryptWithPin = session.getCredentials().let { credentials ->
+                session.encryptWithPin(
+                    network = null,
+                    encryptWithPinParams = EncryptWithPinParams(
+                        pin = pin,
+                        credentials = credentials
+                    )
+                )
+            }
 
             val wallet: GreenWallet
 

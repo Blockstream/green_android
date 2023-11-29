@@ -16,16 +16,18 @@ data class StringHolder constructor(
     val spannedString: Spanned? = null
 ) : com.mikepenz.fastadapter.ui.utils.StringHolder(null), Parcelable {
 
-
     constructor(textString: String?) : this(textString.hashCode().toLong()) {
+        @Suppress("INVISIBLE_SETTER_FROM_DERIVED")
         this.textString = textString
     }
 
     constructor(spannedString: Spanned) : this(spannedString.toString().hashCode().toLong(), spannedString) {
+        @Suppress("INVISIBLE_SETTER_FROM_DERIVED")
         this.textString = spannedString.toString()
     }
 
     constructor(textRes: Int) : this(textRes.toLong()) {
+        @Suppress("INVISIBLE_SETTER_FROM_DERIVED")
         this.textRes = textRes
     }
 

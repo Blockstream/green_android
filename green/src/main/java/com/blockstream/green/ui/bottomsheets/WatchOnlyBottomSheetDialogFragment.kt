@@ -3,6 +3,7 @@ package com.blockstream.green.ui.bottomsheets
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.os.BundleCompat
 import androidx.core.text.trimmedLength
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.FragmentManager
@@ -26,7 +27,7 @@ class WatchOnlyBottomSheetDialogFragment :
         WatchOnlyBottomSheetBinding.inflate(layoutInflater)
 
     override val network: Network
-        get() = requireArguments().getParcelable(NETWORK)!!
+        get() = BundleCompat.getParcelable(requireArguments(), NETWORK, Network::class.java)!!
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

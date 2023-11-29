@@ -36,6 +36,7 @@ fun ByteArray.toHex(): String {
     return out.decodeToString()
 }
 
+@ExperimentalUnsignedTypes
 fun UByteArray.toHex(): String {
     val out = ByteArray(size * 2)
     var i = 0

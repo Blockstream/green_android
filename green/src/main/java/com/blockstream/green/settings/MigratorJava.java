@@ -4,10 +4,8 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-
+import androidx.preference.PreferenceManager;
 import com.blockstream.base.Preferences;
-
 import java.util.Map;
 import java.util.Set;
 
@@ -15,6 +13,7 @@ public class MigratorJava {
 
     // migrate preferences from previous GreenBits app with single network
     static void migratePreferencesFromV2(Context context) {
+        @SuppressWarnings("DEPRECATED")
         final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         final boolean migrated = sharedPreferences.getBoolean(Preferences.MIGRATED_V2_V3,false);
         if (!migrated) {
@@ -43,6 +42,7 @@ public class MigratorJava {
         destinationEditor.apply();
     }
 
+    @SuppressWarnings("unchecked")
     private static SharedPreferences.Editor writePreference(final String key, final Object value, final SharedPreferences.Editor preferences) {
         if (value instanceof Boolean)
             return preferences.putBoolean(key, (Boolean) value);

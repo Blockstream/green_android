@@ -3,6 +3,7 @@ package com.blockstream.green.ui.bottomsheets
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.extensions.cleanup
 import com.blockstream.common.gdk.data.Account
@@ -19,7 +20,7 @@ class RenameAccountBottomSheetDialogFragment : WalletBottomSheetDialogFragment<R
     override val isAdjustResize: Boolean = true
 
     override val accountOrNull: Account?
-        get() = arguments?.getParcelable<Account>(ACCOUNT)
+        get() = BundleCompat.getParcelable(requireArguments(), ACCOUNT, Account::class.java)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

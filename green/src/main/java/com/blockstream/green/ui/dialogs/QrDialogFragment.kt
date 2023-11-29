@@ -5,6 +5,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.FragmentManager
 import com.blockstream.green.databinding.QrDialogBinding
 import mu.KLogging
@@ -21,7 +22,7 @@ class QrDialogFragment : AbstractDialogFragment<QrDialogBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        arguments?.getParcelable<Bitmap>(QR)?.also {
+        BundleCompat.getParcelable(requireArguments(), QR, Bitmap::class.java)?.also {
             binding.qr.setImageDrawable(BitmapDrawable(resources, it).also { bitmap ->
                 bitmap.isFilterBitmap = false
             })

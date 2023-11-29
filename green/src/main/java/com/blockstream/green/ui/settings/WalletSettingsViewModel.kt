@@ -56,9 +56,9 @@ open class WalletSettingsViewModel constructor(
 
     fun networkTwoFactorConfig(network: Network) = networkTwoFactorConfigLiveData(network).value
 
-    val biometricsLiveData = MutableLiveData<LoginCredentials>()
+    val biometricsLiveData = MutableLiveData<LoginCredentials?>()
 
-    val lightningShortcutLiveData = MutableLiveData<LoginCredentials>()
+    val lightningShortcutLiveData = MutableLiveData<LoginCredentials?>()
 
     private val _archivedAccountsLiveData: MutableLiveData<Int> = MutableLiveData(0)
     val archivedAccountsLiveData: LiveData<Int> get() = _archivedAccountsLiveData

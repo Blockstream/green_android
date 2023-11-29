@@ -1,11 +1,13 @@
 package com.blockstream.common.gdk
 
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Transient
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
+@OptIn(ExperimentalSerializationApi::class)
 abstract class GreenJson<T> {
     open fun encodeDefaultsValues() = true
 

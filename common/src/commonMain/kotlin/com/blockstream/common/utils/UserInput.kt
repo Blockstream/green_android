@@ -59,9 +59,9 @@ data class UserInput(
         @Throws(Exception::class)
         private fun parse(
             session: GdkSession,
-            input: String?,
+            input: String,
+            denomination: Denomination,
             assetId: String? = null,
-            denomination: Denomination? = null,
             throws: Boolean = true,
             locale: String? = null
         ): UserInput {
@@ -73,38 +73,34 @@ data class UserInput(
 
             val asset: Asset?
 
-            return (denomination ?: Denomination.default(session)).let { denomination ->
-                when {
-                    !assetId.isPolicyAsset(session) -> { // Asset
-                        asset = session.getAsset(assetId!!) ?: Asset.createEmpty(assetId)
-                        userNumberFormat = userNumberFormat(asset.precision, withDecimalSeparator = false, withGrouping = true, locale = locale)
-                        gdkNumberFormat = gdkNumberFormat(asset.precision)
-                    }
-                    denomination.isFiat -> { // Fiat
-                        asset = null
-                        userNumberFormat = userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = true, locale = locale)
-                        gdkNumberFormat = gdkNumberFormat(decimals = 2, withDecimalSeparator = true)
-                    }
-                    else -> { // Policy Asset
-                        asset = null
-                        unitKey = denomination.denomination
-                        userNumberFormat = userNumberFormat(getDecimals(unitKey), withDecimalSeparator = false, withGrouping = true, locale = locale)
-                        gdkNumberFormat = gdkNumberFormat(getDecimals(unitKey))
-                    }
+            when {
+                !assetId.isPolicyAsset(session) -> { // Asset
+                    asset = session.getAsset(assetId!!) ?: Asset.createEmpty(assetId)
+                    userNumberFormat = userNumberFormat(asset.precision, withDecimalSeparator = false, withGrouping = true, locale = locale)
+                    gdkNumberFormat = gdkNumberFormat(asset.precision)
                 }
+                denomination.isFiat -> { // Fiat
+                    asset = null
+                    userNumberFormat = userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = true, locale = locale)
+                    gdkNumberFormat = gdkNumberFormat(decimals = 2, withDecimalSeparator = true)
+                }
+                else -> { // Policy Asset
+                    asset = null
+                    unitKey = denomination.denomination
+                    userNumberFormat = userNumberFormat(getDecimals(unitKey), withDecimalSeparator = false, withGrouping = true, locale = locale)
+                    gdkNumberFormat = gdkNumberFormat(getDecimals(unitKey))
+                }
+            }
 
-                try{
-                    val input = if(input.isNullOrBlank()) "" else input
+            return try{
+                val parsed = userNumberFormat.parseTo(input, gdkNumberFormat)
 
-                    val parsed = userNumberFormat.parseTo(input, gdkNumberFormat)
-
-                    UserInput(session = session, amount = parsed!!.first, amountAsDouble = parsed.second, denomination = denomination, assetId = assetId, asset = asset)
-                }catch (e: Exception){
-                    if(throws){
-                        throw e
-                    }else{
-                        UserInput(session = session, amount = "", amountAsDouble = 0.0, denomination = denomination, assetId = assetId, asset = asset)
-                    }
+                UserInput(session = session, amount = parsed!!.first, amountAsDouble = parsed.second, denomination = denomination, assetId = assetId, asset = asset)
+            }catch (e: Exception){
+                if(throws){
+                    throw e
+                }else{
+                    UserInput(session = session, amount = "", amountAsDouble = 0.0, denomination = denomination, assetId = assetId, asset = asset)
                 }
             }
         }
@@ -117,7 +113,7 @@ data class UserInput(
             assetId: String? = null,
             locale: String? = null
         ): UserInput {
-            return parse(session = session, input = input, denomination = denomination, assetId = assetId, throws = true, locale = locale)
+            return parse(session = session, input = input?.trim() ?: "", denomination = denomination ?: Denomination.default(session), assetId = assetId, throws = true, locale = locale)
         }
 
         fun parseUserInputSafe(
@@ -127,7 +123,7 @@ data class UserInput(
             assetId: String? = null,
             locale: String? = null
         ): UserInput {
-            return parse(session = session, input = input, denomination = denomination, assetId = assetId, throws = false, locale = locale)
+            return parse(session = session, input = input?.trim() ?: "", denomination = denomination ?: Denomination.default(session), assetId = assetId, throws = false, locale = locale)
         }
     }
 }

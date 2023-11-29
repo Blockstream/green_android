@@ -40,6 +40,7 @@ class HelpBottomSheetDialogFragment: RecyclerBottomSheetDialogFragment() {
             openBrowser(settingsManager.getApplicationSettings(), Urls.HELP_MNEMONIC_NOT_WORKING)
         }
 
+        @Suppress("UNCHECKED_CAST")
         return fastAdapter as FastAdapter<AbstractBindingItem<*>>
     }
 

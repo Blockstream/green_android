@@ -3,6 +3,7 @@ package com.blockstream.green.ui.bottomsheets
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.databinding.SystemMessageBottomSheetBinding
@@ -30,7 +31,9 @@ class SystemMessageBottomSheetDialogFragment :
         binding.message = message
 
         binding.buttonAccept.setOnClickListener {
-            viewModel.ackSystemMessage(requireArguments().getParcelable<Network>(NETWORK)!!, message)
+            BundleCompat.getParcelable(requireArguments(), NETWORK, Network::class.java)?.also {
+                viewModel.ackSystemMessage(it, message)
+            }
         }
 
         binding.buttonClose.setOnClickListener {

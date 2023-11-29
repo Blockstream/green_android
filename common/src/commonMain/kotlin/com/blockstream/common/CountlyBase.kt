@@ -20,6 +20,7 @@ import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.DeviceInterface
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.utils.Loggable
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
@@ -64,6 +65,7 @@ import kotlin.properties.Delegates
      private var _cachedBanners: List<Banner>? = null
      private val _remoteConfigUpdateEvent = MutableSharedFlow<Unit>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
+     @NativeCoroutines
      val remoteConfigUpdateEvent = _remoteConfigUpdateEvent.asSharedFlow()
 
      val countlyProxy: String?

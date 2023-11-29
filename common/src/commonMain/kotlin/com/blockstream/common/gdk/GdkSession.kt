@@ -433,9 +433,9 @@ class GdkSession constructor(
             _walletTotalBalanceSharedFlow.value = walletBalance
         }.launchIn(scope)
 
-        countly.remoteConfigUpdateEvent?.onEach {
+        countly.remoteConfigUpdateEvent.onEach {
             updateEnrichedAssets()
-        }?.launchIn(scope + Dispatchers.IO)
+        }.launchIn(scope + Dispatchers.IO)
     }
 
     private fun authHandler(network: Network, gaAuthHandler: GAAuthHandler): AuthHandler =
@@ -831,12 +831,12 @@ class GdkSession constructor(
         return httpRequest(details)
     }
 
-    override fun httpRequest(data: JsonElement): JsonElement {
+    override fun httpRequest(details: JsonElement): JsonElement {
         if(!isNetworkInitialized){
             prepareHttpRequest()
         }
 
-        val urls = data.jsonObject["urls"]?.jsonArray?.map {
+        val urls = details.jsonObject["urls"]?.jsonArray?.map {
             it.jsonPrimitive.content
         } ?: listOf()
 
@@ -868,7 +868,7 @@ class GdkSession constructor(
         }
 
 
-        return gdk.httpRequest(gdkSession(defaultNetwork), data).also {
+        return gdk.httpRequest(gdkSession(defaultNetwork), details).also {
             if(urls.find { it.contains("/set_pin") } != null){
                 countly.jadeInitialize()
             }
@@ -1884,7 +1884,7 @@ class GdkSession constructor(
                     }
 
                     accounts.value.forEach { account ->
-                        this@GdkSession.accountAssets(account).value.assets?.forEach { (key, value) ->
+                        this@GdkSession.accountAssets(account).value.assets.forEach { (key, value) ->
                             walletAssets[key] = (walletAssets[key] ?: 0) + value
                         }
                     }
@@ -2218,7 +2218,7 @@ class GdkSession constructor(
             } else if (isAsset && convert.assetAmount != null) {
                 val jsonElement = buildJsonObject {
                     put("asset_info", convert.asset!!.toJsonElement())
-                    put(convert.asset?.assetId ?: "", convert.assetAmount)
+                    put(convert.asset.assetId, convert.assetAmount)
                 }
                 gdk.convertAmount(gdkSession(network), convert, jsonElement)
             } else {

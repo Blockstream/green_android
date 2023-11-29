@@ -1429,4 +1429,5 @@
   <string name="id_no_ill_repeat_the_setup">No, I\'ll repeat the setup</string>
   <string name="id_user_authentication">User Authentication</string>
   <string name="id_you_have_to_authenticate_to_unlock_your_device">You have to Authenticate to unlock your device</string>
+  <string name="id_step_s">Step %s</string>
 </resources>

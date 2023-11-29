@@ -29,6 +29,7 @@ class ComingSoonBottomSheetDialogFragment: RecyclerBottomSheetDialogFragment() {
 
         itemAdapter.add(list)
 
+        @Suppress("UNCHECKED_CAST")
         return FastAdapter.with(itemAdapter) as FastAdapter<AbstractBindingItem<*>>
     }
 

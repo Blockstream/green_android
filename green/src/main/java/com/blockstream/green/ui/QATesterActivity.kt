@@ -105,6 +105,7 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
         }
 
         binding.buttonClearGdk.setOnClickListener {
+            @Suppress("DEPRECATION")
             lifecycleScope.launchWhenStarted {
                 logger.info { "Deleting ${applicationContext.filesDir.absolutePath}" }
                 File(applicationContext.filesDir.absolutePath).deleteRecursively()

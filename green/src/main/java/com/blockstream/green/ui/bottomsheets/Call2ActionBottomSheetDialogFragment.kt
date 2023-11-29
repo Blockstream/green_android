@@ -3,6 +3,7 @@ package com.blockstream.green.ui.bottomsheets
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.findNavController
 import com.blockstream.common.data.SetupArgs
@@ -24,7 +25,7 @@ class Call2ActionBottomSheetDialogFragment :
         Call2ActionBottomSheetBinding.inflate(layoutInflater)
 
     override val accountOrNull: Account?
-        get() = requireArguments().getParcelable(ACCOUNT)
+        get() = BundleCompat.getParcelable(requireArguments(), ACCOUNT, Account::class.java)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

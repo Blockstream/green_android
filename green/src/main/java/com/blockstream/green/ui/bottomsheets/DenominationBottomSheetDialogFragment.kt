@@ -3,6 +3,7 @@ package com.blockstream.green.ui.bottomsheets
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,7 +26,7 @@ class DenominationBottomSheetDialogFragment :
     WalletBottomSheetDialogFragment<RecyclerBottomSheetBinding, GreenViewModel>() {
     override val screenName = "Denomination"
 
-    private val denominatedValue by lazy { requireArguments().getParcelable<DenominatedValue>(DENOMINATED_VALUE) ?: DenominatedValue.createDefault(session) }
+    private val denominatedValue by lazy { BundleCompat.getParcelable(requireArguments(), DENOMINATED_VALUE, DenominatedValue::class.java)?: DenominatedValue.createDefault(session) }
 
     override fun inflate(layoutInflater: LayoutInflater) =
         RecyclerBottomSheetBinding.inflate(layoutInflater)

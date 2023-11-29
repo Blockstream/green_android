@@ -173,7 +173,7 @@ fun AccountCardLayoutBinding.bind(
 
     if(account.hasHistory(session)) {
 
-        accountAssets.value.assets?.onEachIndexed { index, asset ->
+        accountAssets.value.assets.onEachIndexed { index, asset ->
             val isAssetWithoutIcon = if (asset.key.isPolicyAsset(session)) {
                 false
             } else {
@@ -217,7 +217,7 @@ fun AccountCardLayoutBinding.bind(
                     .build()
                 imageView.adjustViewBounds = true
                 imageView.scaleType = ImageView.ScaleType.FIT_CENTER
-                imageView.elevation = (accountAssets.value.assets!!.size - index).toFloat()
+                imageView.elevation = (accountAssets.value.assets.size - index).toFloat()
 
                 assetsIcons.addView(imageView)
             }

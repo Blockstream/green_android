@@ -38,11 +38,11 @@ class JadeGuideFragment : AppFragment<JadeGuideFragmentBinding>(
             popBackStack()
         }
 
-        binding.step1.text = "${getString(R.string.id_step)} 1".uppercase()
-        binding.step2.text = "${getString(R.string.id_step)} 2".uppercase()
-        binding.step3.text = "${getString(R.string.id_step)} 3".uppercase()
+        binding.step1.text = getString(R.string.id_step_s, "1").uppercase()
+        binding.step2.text = getString(R.string.id_step_s, "2").uppercase()
+        binding.step3.text = getString(R.string.id_step_s, "3").uppercase()
 
-        listOf(binding.steps1, binding.steps2, binding.steps3).setOnClickListenerIndexed { i, v ->
+        listOf(binding.steps1, binding.steps2, binding.steps3).setOnClickListenerIndexed { i, _ ->
             step = i
             updateUI()
             changeStep()
@@ -87,6 +87,7 @@ class JadeGuideFragment : AppFragment<JadeGuideFragmentBinding>(
 
     private fun changeStep() {
         changeStepJob?.cancel()
+        @Suppress("DEPRECATION")
         changeStepJob = lifecycleScope.launchWhenResumed {
             delay(5.toDuration(DurationUnit.SECONDS))
             step = (step + 1).takeIf { it < 3 } ?: 0

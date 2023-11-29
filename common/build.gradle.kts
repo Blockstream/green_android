@@ -66,11 +66,10 @@ kotlin {
         all {
             languageSettings.apply {
                 optIn("kotlin.RequiresOptIn")
-                optIn("kotlinx.ExperimentalStdlibApi")
                 optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
-                optIn("kotlinx.cinterop.ExperimentalForeignApi")
                 optIn("kotlin.io.encoding.ExperimentalEncodingApi")
                 optIn("kotlin.experimental.ExperimentalObjCName")
+                optIn("kotlinx.coroutines.FlowPreview")
             }
         }
 
@@ -115,8 +114,11 @@ kotlin {
                 implementation(libs.androidx.lifecycle.viewmodel.ktx)
                 implementation(libs.koin.android)
                 implementation(libs.sqldelight.android.driver)
+
+                /**  --- Breez FDroid ----------------------------------------------------------------------- */
                 // Temp fix for FDroid breez dependencies
                 // api(libs.breez.sdk.android)
+                /** ----------------------------------------------------------------------------------------- */
             }
         }
 

@@ -60,6 +60,7 @@ abstract class AbstractBottomSheetDialogFragment<T : ViewDataBinding>: BottomShe
         super.onViewCreated(view, savedInstanceState)
 
         if(isAdjustResize){
+            @Suppress("DEPRECATION")
             dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         }
     }

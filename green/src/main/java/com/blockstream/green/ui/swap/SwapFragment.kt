@@ -29,9 +29,11 @@ import com.blockstream.green.utils.toAmountLook
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.GenericFastItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
+import kotlinx.coroutines.FlowPreview
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
+@FlowPreview
 class SwapFragment : AbstractWalletFragment<SwapFragmentBinding>(
     layout = R.layout.swap_fragment,
     menuRes = 0
@@ -198,8 +200,7 @@ class SwapFragment : AbstractWalletFragment<SwapFragmentBinding>(
                 ) == true
             }
 
-            return adapter
-
+            adapter
         }else{
 
             val adapter = ModelAdapter<String, AssetSmallListItem> {
@@ -214,7 +215,7 @@ class SwapFragment : AbstractWalletFragment<SwapFragmentBinding>(
                 ) == true
             }
 
-            return adapter
+            adapter
         }
     }
 

@@ -50,7 +50,7 @@ class LnUrlWithdrawFragment : AppFragment<LnurlWithdrawFragmentBinding>(
     override fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
         if(sideEffect is SideEffects.Success){
-            dialog(getString(R.string.id_success), getString(R.string.id_s_will_send_you_the_funds_it, requestData.domain() ?: "-")){
+            dialog(getString(R.string.id_success), getString(R.string.id_s_will_send_you_the_funds_it, requestData.domain())){
                 popBackStack()
             }
         }

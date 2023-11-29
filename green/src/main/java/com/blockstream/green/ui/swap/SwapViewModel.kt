@@ -9,7 +9,6 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.assetTicker
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.logException
-import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
 import com.blockstream.common.gdk.TwoFactorResolver
 import com.blockstream.common.gdk.data.AccountType
@@ -31,6 +30,7 @@ import com.blockstream.green.utils.exchangeRate
 import com.blockstream.green.utils.toAmountLook
 import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
@@ -43,6 +43,7 @@ import org.json.JSONObject
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.InjectedParam
 
+@FlowPreview
 @KoinViewModel
 class SwapViewModel constructor(
     @InjectedParam wallet: GreenWallet,
@@ -75,8 +76,8 @@ class SwapViewModel constructor(
             _remoteAssetsLiveData.value = value
         }
 
-    private var _toAssetIdLiveData = MutableLiveData<String>()
-    val toAssetIdLiveData: LiveData<String> get() = _toAssetIdLiveData
+    private var _toAssetIdLiveData = MutableLiveData<String?>()
+    val toAssetIdLiveData: LiveData<String?> get() = _toAssetIdLiveData
 
     var toAssetId
         get() = _toAssetIdLiveData.value
@@ -228,7 +229,7 @@ class SwapViewModel constructor(
 
     private fun updateToAssets() {
         toAssets =
-            ((session.walletAssets.value.assets?.keys ?: emptySet()) + remoteAssets.filterValues { !it.isAmp }.keys).filter { it != utxo?.assetId && it != BTC_POLICY_ASSET }
+            (session.walletAssets.value.assets.keys + remoteAssets.filterValues { !it.isAmp }.keys).filter { it != utxo?.assetId && it != BTC_POLICY_ASSET }
                 .toList()
 
         if (toAssetId.isNullOrBlank() || toAssetId == utxo?.assetId) {
@@ -304,7 +305,7 @@ class SwapViewModel constructor(
         tmp.put("sign_with", JSONArray(listOf("user", "green-backend").toTypedArray()) )
         val json = JsonDeserializer.parseToJsonElement(tmp.toString())
         val updatedTx = JsonDeserializer.decodeFromJsonElement<CreateTransaction>(json).let {
-            if (it is GreenJson<*> && it.keepJsonElement()) {
+            if (it.keepJsonElement()) {
                 it.jsonElement = json
             }
             it

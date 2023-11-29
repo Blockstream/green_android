@@ -13,6 +13,7 @@ import android.hardware.usb.UsbManager
 import android.os.ParcelUuid
 import android.os.SystemClock
 import androidx.core.content.ContextCompat
+import androidx.core.content.IntentCompat
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.jade.JadeBleImpl
@@ -66,7 +67,8 @@ class DeviceManager constructor(
             } else if (UsbManager.ACTION_USB_DEVICE_DETACHED == intent.action) {
                 scanDevices()
             } else if (ACTION_USB_PERMISSION == intent.action) {
-                val device: UsbDevice? = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
+
+                val device: UsbDevice? = IntentCompat.getParcelableExtra(intent, UsbManager.EXTRA_DEVICE, UsbDevice::class.java)
 
                 if (device != null && (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false) || hasPermissions(device))) {
                     device.apply {
@@ -78,8 +80,8 @@ class DeviceManager constructor(
                     onPermissionError?.get()?.invoke(null)
                 }
             }else if (BluetoothDevice.ACTION_BOND_STATE_CHANGED == intent.action){
-                val bondedDevice  = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
-                val prevState  = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, 0)
+                val bondedDevice = IntentCompat.getParcelableExtra(intent, BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
+                val prevState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, 0)
 
                 pendingBleBonding?.let{ pendingBondDevice ->
                     if(pendingBondDevice.bleDevice?.bluetoothDevice?.address == bondedDevice?.address){

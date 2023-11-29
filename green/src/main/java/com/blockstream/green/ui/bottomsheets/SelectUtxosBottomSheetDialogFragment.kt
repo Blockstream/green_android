@@ -3,6 +3,7 @@ package com.blockstream.green.ui.bottomsheets
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,10 +28,9 @@ class SelectUtxosBottomSheetDialogFragment : WalletBottomSheetDialogFragment<Sel
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val account: Account? = arguments?.getParcelable(ACCOUNT)
+        val account: Account? = BundleCompat.getParcelable(requireArguments(), ACCOUNT, Account::class.java)
 
         val utxoAdapter = ItemAdapter<UtxoListItem>()
-
 
         lifecycleScope.launch(context = Dispatchers.IO + logException(countly)){
 

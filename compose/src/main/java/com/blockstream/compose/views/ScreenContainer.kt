@@ -33,7 +33,6 @@ import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.utils.ifTrue
 import com.blockstream.compose.utils.stringResourceId
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -105,7 +104,7 @@ fun ScreenContainerPreview() {
 
                 fun progress() {
                     onProgress.value = true
-                    GlobalScope.launch {
+                    applicationScope.launch {
                         delay(1000L)
                         onProgress.value = false
                     }

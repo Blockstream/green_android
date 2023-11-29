@@ -25,12 +25,12 @@ task("fetchAndroidBinaries") {
     doFirst{
         val jniLibs = project.file("src/main/jniLibs")
         if (!jniLibs.exists()) {
-            println("${jniLibs.absolutePath} does not exist")
+            println("GDK: Binaries in ${jniLibs.absolutePath} does not exist. Executing ./fetch_android_binaries.sh")
             exec {
                 commandLine("./fetch_android_binaries.sh")
             }
-        }else{
-            print("-- Skipped --")
+        } else {
+            println("GDK: Binaries ✔")
         }
     }
     outputs.upToDateWhen { false }

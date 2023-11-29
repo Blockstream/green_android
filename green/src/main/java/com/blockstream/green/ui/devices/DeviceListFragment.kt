@@ -146,6 +146,7 @@ class DeviceListFragment : AbstractDeviceFragment<DeviceListFragmentBinding>(
             return
         }
 
+        @Suppress("DEPRECATION")
         changeStepJob = lifecycleScope.launchWhenResumed {
             delay(5.toDuration(DurationUnit.SECONDS))
 
@@ -181,7 +182,7 @@ class JadePageFragment : Fragment() {
 
         return JadeConnectStepBinding.inflate(layoutInflater).also {
             requireArguments().getInt(PAGE, 0).also { page ->
-                it.step.text = "${getString(R.string.id_step)} ${page + 1}".uppercase()
+                it.step.text = getString(R.string.id_step_s, "${page + 1}").uppercase()
 
                 when (page) {
                     0 -> {

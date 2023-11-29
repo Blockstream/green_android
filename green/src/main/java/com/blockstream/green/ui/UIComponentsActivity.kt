@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.blockstream.green.databinding.UiComponentsBinding
 import com.blockstream.green.utils.isDevelopmentFlavor
-import ly.count.android.sdk.Countly
 import mu.KLogging
 
 
@@ -30,29 +29,6 @@ class UIComponentsActivity : AppCompatActivity() {
         }
 
         binding.toolbar.title = "UI Components"
-
-//        binding.rive.registerListener(object : RiveListener() {
-//            override fun notifyStateChanged(stateMachineName: String, stateName: String) {
-//                logger.info { "$stateMachineName : $stateName" }
-//            }
-//        })
-
-
-        Countly.sharedInstance().also { countly ->
-            countly.feedback().getAvailableFeedbackWidgets { countlyFeedbackWidgets, s ->
-
-//                countly.feedback().getFeedbackUrl(countlyFeedbackWidgets.firstOrNull())?.also {
-//                    logger.info { it }
-//                    binding.webview.loadUrl(it)
-//                }
-
-//                countlyFeedbackWidgets.firstOrNull()?.also {
-//                    countly.feedback().presentFeedbackWidget(it, this, "Close", null)
-//                }
-
-            }
-        }
-
     }
 
     companion object: KLogging()

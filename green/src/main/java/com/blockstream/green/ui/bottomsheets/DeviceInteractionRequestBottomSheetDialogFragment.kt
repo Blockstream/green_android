@@ -3,6 +3,7 @@ package com.blockstream.green.ui.bottomsheets
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.gdk.data.Device
 import com.blockstream.green.databinding.DeviceInteractionRequestBottomSheetBinding
@@ -18,7 +19,7 @@ class DeviceInteractionRequestBottomSheetDialogFragment constructor() : Abstract
 
     override fun inflate(layoutInflater: LayoutInflater) = DeviceInteractionRequestBottomSheetBinding.inflate(layoutInflater)
 
-    private val device by lazy { requireArguments().getParcelable<Device>(DEVICE)}
+    private val device by lazy { BundleCompat.getParcelable(requireArguments(), DEVICE, Device::class.java) }
     private val message by lazy { requireArguments().getString(MESSAGE, null)}
     private val delay by lazy { requireArguments().getLong(DELAY, 0)}
 

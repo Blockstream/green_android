@@ -101,6 +101,7 @@ class AddressesFragment :
             footerAdapter.clear()
 
             if(hasMoreTransactions == true){
+                @Suppress("DEPRECATION")
                 lifecycleScope.launchWhenResumed {
                     delay(200L)
                     endlessRecyclerOnScrollListener.enable()

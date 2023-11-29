@@ -63,7 +63,7 @@ class AccountOverviewViewModel constructor(
         session
             .accountAssets(account)
             .map {
-                it.assets?.takeIf { account.isLiquid && it.size > 1 } ?: mapOf()
+                it.assets.takeIf { account.isLiquid && it.size > 1 } ?: mapOf()
             }
             .onEach { assets ->
                 _assetsLiveData.value = assets

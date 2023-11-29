@@ -163,7 +163,7 @@ class ReceiveViewModel constructor(
                     assetId = lightningAccount.network.policyAsset,
                     denomination = denomination.value?.notFiat(),
                     withUnit = true
-                ) ?: ""
+                )
 
                 inboundLiquidityFiat.value = it.inboundLiquiditySatoshi().toAmountLook(
                     session = session,

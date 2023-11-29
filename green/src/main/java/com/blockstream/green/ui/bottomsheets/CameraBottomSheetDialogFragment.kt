@@ -215,6 +215,7 @@ class CameraBottomSheetDialogFragment : AbstractBottomSheetDialogFragment<Camera
         lifecycleScope.launch(context = Dispatchers.IO) {
             try {
                 val image = if (Build.VERSION.SDK_INT < 28) {
+                    @Suppress("DEPRECATION")
                     MediaStore.Images.Media.getBitmap(requireContext().contentResolver, uri)
                 } else {
                     val source = ImageDecoder.createSource(requireContext().contentResolver, uri)

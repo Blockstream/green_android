@@ -136,7 +136,7 @@ class WatchOnlyFragment :
         }.launchIn(lifecycleScope)
 
         fastAdapter.onClickListener =
-            { _: View?, adapter: IAdapter<GenericItem>, item: GenericItem, position: Int ->
+            { _: View?, adapter: IAdapter<GenericItem>, item: GenericItem, _: Int ->
                 if (adapter == multisigModelAdapter) {
                     viewModel.multisigWatchOnly.value.getOrNull(adapter.getAdapterPosition(item))
                         ?.also {

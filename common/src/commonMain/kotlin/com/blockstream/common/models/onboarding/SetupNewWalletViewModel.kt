@@ -70,8 +70,6 @@ class SetupNewWalletViewModel : SetupNewWalletViewModelAbstract() {
                 countly.hardwareWallet()
                 settingsManager.setDeviceTermsAccepted()
             }
-
-            else -> null
         }
     }
 

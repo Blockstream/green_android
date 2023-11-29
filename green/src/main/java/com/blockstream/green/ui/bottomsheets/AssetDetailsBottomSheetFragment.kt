@@ -3,6 +3,7 @@ package com.blockstream.green.ui.bottomsheets
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.blockstream.common.BTC_POLICY_ASSET
@@ -29,7 +30,7 @@ class AssetDetailsBottomSheetFragment: WalletBottomSheetDialogFragment<AssetDeta
     val assetId by lazy { requireArguments().getString(ASSET_ID) ?: BTC_POLICY_ASSET }
     val asset by lazy { session.getAsset(assetId) }
 
-    override val accountOrNull by lazy { requireArguments().getParcelable<Account?>(ACCOUNT) }
+    override val accountOrNull by lazy { BundleCompat.getParcelable(requireArguments(), ACCOUNT, Account::class.java) }
     override val network by lazy { accountOrNull?.network ?: assetId.networkForAsset(session) }
 
     override fun inflate(layoutInflater: LayoutInflater) = AssetDetailsBottomSheetBinding.inflate(layoutInflater)
@@ -76,7 +77,7 @@ class AssetDetailsBottomSheetFragment: WalletBottomSheetDialogFragment<AssetDeta
         } else {
             session.accountAssets(account)
         }).onEach {
-            look.amount = it.assets?.get(assetId) ?: 0
+            look.amount = it.assets[assetId] ?: 0
             balanceListItem.text = StringHolder(session.starsOrNull ?: look.balance(withUnit = true))
             binding.recycler.adapter?.notifyItemChanged(list.indexOf(balanceListItem))
             fastAdapter.notifyAdapterDataSetChanged()
