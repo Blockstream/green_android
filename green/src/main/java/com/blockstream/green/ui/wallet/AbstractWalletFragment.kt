@@ -75,6 +75,8 @@ abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
     abstract fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?)
 
     final override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         val sessionOrNull = walletOrNull?.let { wallet ->
             sessionManager.getWalletSessionOrCreate(wallet)
         }
@@ -172,30 +174,6 @@ abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
         }
 
         return getWalletViewModel()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        // Recovery screens are reused in onBoarding
-        // where we don't have a session yet.
-        if (isSessionAndWalletRequired()) {
-            if (!isSessionInitialized && walletOrNull?.isHardware == true) {
-                navigate(NavGraphDirections.actionGlobalHomeFragment())
-            } else if (isLoggedInRequired() && !isSessionConnected) {
-                // If session is not initialized, avoid getting the ViewModel as can use GreenSession
-                // without being properly initialized and can lead to a crash
-                if (isSessionNetworkInitialized) {
-                    getWalletViewModel().logout(LogoutReason.AUTO_LOGOUT_TIMEOUT)
-                } else {
-                    // Use walletOrNull else wallet will trigger ViewModel initialization
-                    walletOrNull?.also {
-                        navigate(NavGraphDirections.actionGlobalLoginFragment(it))
-                    } ?: run {
-                        navigate(NavGraphDirections.actionGlobalHomeFragment())
-                    }
-                }
-            }
-        }
     }
 
     override fun onDestroy() {

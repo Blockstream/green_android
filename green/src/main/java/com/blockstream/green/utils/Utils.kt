@@ -113,28 +113,22 @@ fun Fragment.openBrowser(appSettings: ApplicationSettings, url: String) {
 
 
 fun getClipboard(context: Context): String? =
-    (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).let {
+    (context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager)?.let {
         it.primaryClip?.getItemAt(0)?.text?.toString()
     }
 
 fun copyToClipboard(label: String, content: String, context: Context, animateView: View? = null) {
-    (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).let {
+    (context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager)?.also {
         it.setPrimaryClip(ClipData.newPlainText(label, content))
         animateView?.pulse()
     }
 }
 
 fun clearClipboard(context: Context) {
-    (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).let {
+    (context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager)?.also {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             it.clearPrimaryClip()
         }
-    }
-}
-
-fun notImpementedYet(context: Context) {
-    if (isDevelopmentFlavor) {
-        Toast.makeText(context, "Feature not Implemented", Toast.LENGTH_SHORT).show()
     }
 }
 

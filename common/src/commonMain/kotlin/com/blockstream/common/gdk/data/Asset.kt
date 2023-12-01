@@ -26,6 +26,8 @@ data class Asset constructor(
     override fun kSerializer() = serializer()
 
     companion object {
+        val BTC by lazy { createEmpty(BTC_POLICY_ASSET) }
+
         fun createEmpty(assetId: String) = Asset(name = assetId, assetId = assetId, precision = 0)
 
         fun create(assetId: String, session: GdkSession) = session.getAsset(assetId) ?: createEmpty(assetId)

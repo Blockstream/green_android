@@ -447,7 +447,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                         is AlertType.FailedNetworkLogin -> {
                             viewModel.tryFailedNetworks()
                         }
-                        AlertType.EphemeralBip39, AlertType.TestnetWarning -> {}
+                        AlertType.EphemeralBip39, AlertType.TestnetWarning, is AlertType.LspStatus -> {}
                     }
                 }
             }

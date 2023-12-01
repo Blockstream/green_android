@@ -35,18 +35,24 @@ class TransactionDetailsViewModel constructor(
     val transactionNote get() = transactionNoteLiveData.value ?: ""
 
     init {
-        // Update transaction data and create a copy with a stable memo so that we can properly animate
-        combine(
-            session.walletTransactions,
-            session.accountTransactions(account),
-            session.block(account.network)
-        ) { walletTransactions, accountTransactions, _ ->
-            // Be sure to find the correct tx not just by hash but also with the correct type (cross-account transactions)
-            walletTransactions.find { it.txHash == initialTransaction.txHash && it.txType == initialTransaction.txType }
-                ?: accountTransactions.find { it.txHash == initialTransaction.txHash }
-        }.onEach {
-            transactionLiveData.value = stabilizeTransaction(it ?: initialTransaction) to TransactionDetailsLook.create(session, it ?: initialTransaction)
-        }.launchIn(viewModelScope.coroutineScope)
+        if(session.isConnected) {
+            // Update transaction data and create a copy with a stable memo so that we can properly animate
+            combine(
+                session.walletTransactions,
+                session.accountTransactions(account),
+                session.block(account.network)
+            ) { walletTransactions, accountTransactions, _ ->
+                // Be sure to find the correct tx not just by hash but also with the correct type (cross-account transactions)
+                walletTransactions.find { it.txHash == initialTransaction.txHash && it.txType == initialTransaction.txType }
+                    ?: accountTransactions.find { it.txHash == initialTransaction.txHash }
+            }.onEach {
+                transactionLiveData.value =
+                    stabilizeTransaction(it ?: initialTransaction) to TransactionDetailsLook.create(
+                        session,
+                        it ?: initialTransaction
+                    )
+            }.launchIn(viewModelScope.coroutineScope)
+        }
     }
 
     private fun stabilizeTransaction(tx: Transaction): Transaction {

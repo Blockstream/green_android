@@ -43,7 +43,6 @@ class ChooseAccountTypeFragment : AbstractAddAccountFragment<ChooseAccountTypeFr
         parametersOf(args.wallet, args.assetId)
     }
 
-
     override fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
 

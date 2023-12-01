@@ -21,6 +21,8 @@ data class Credentials constructor(
 
     companion object{
 
+        fun empty() = Credentials(mnemonic = "")
+
         fun fromLoginCredentialsParam(loginCredentialsParams: LoginCredentialsParams) : Credentials? {
             return loginCredentialsParams.mnemonic?.let {
                 Credentials(

@@ -1,10 +1,11 @@
 package com.blockstream.common.models.recovery
 
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.events.Event
+import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.Credentials
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.events.Event
 import com.rickclephas.kmm.viewmodel.MutableStateFlow
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,11 +35,13 @@ class RecoveryPhraseViewModel(
     RecoveryPhraseViewModelAbstract(isLightning = isLightning, greenWallet = greenWallet) {
 
     val credentials: Credentials by lazy {
-        credentialsFor2of3 ?: (if (isLightning) {
-            Credentials(mnemonic = session.deriveLightningMnemonic())
-        } else {
-            session.getCredentials()
-        })
+        session.ifConnected {
+            credentialsFor2of3 ?: (if (isLightning) {
+                Credentials(mnemonic = session.deriveLightningMnemonic())
+            } else {
+                session.getCredentials()
+            })
+        } ?: Credentials.empty()
     }
 
     override val mnemonic = MutableStateFlow(viewModelScope, credentials.mnemonic)

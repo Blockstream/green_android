@@ -19,7 +19,6 @@ import com.blockstream.green.ui.items.OverlineTextListItem
 import com.blockstream.green.ui.overview.AccountOverviewFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.StringHolder
-import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.blockstream.green.utils.toAmountLookOrNa
 import com.mikepenz.fastadapter.FastAdapter
@@ -44,11 +43,8 @@ class LightningNodeBottomSheetFragment :
 
         val itemAdapter = FastItemAdapter<GenericItem>()
 
-        val showRecoveryPhrase = ActionListItem(
-            buttonText = StringHolder(R.string.id_show_recovery_phrase),
-        )
-        val closeChannel = ActionListItem(
-            buttonText = StringHolder(R.string.id_close_channel),
+        val buttonActions = ActionListItem(
+            button = StringHolder(R.string.id_show_recovery_phrase)
         )
 
         session.lightningSdk.nodeInfoStateFlow.onEach {
@@ -107,13 +103,9 @@ class LightningNodeBottomSheetFragment :
                 )
             }
 
-            list += showRecoveryPhrase
+            list += buttonActions
 
-            if(isDevelopmentFlavor) {
-                if(it.channelsBalanceSatoshi() > 0){
-                    list += closeChannel
-                }
-            }
+            buttonActions.buttonOutline = if(it.channelsBalanceSatoshi() > 0) StringHolder(R.string.id_close_channel) else StringHolder()
 
             itemAdapter.set(list)
 
@@ -121,14 +113,14 @@ class LightningNodeBottomSheetFragment :
 
         val fastAdapter = FastAdapter.with(itemAdapter)
 
-        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.buttonText }) { button, _, _, item ->
-            if (item == showRecoveryPhrase) {
-                (parentFragment as? AccountOverviewFragment)?.showLightningRecoveryPhrase()
-                dismiss()
-            } else if (item == closeChannel) {
-                (parentFragment as? AccountOverviewFragment)?.viewModel?.closeChannel()
-                (button as? Button)?.isEnabled = false
-            }
+        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.button }) { button, _, _, item ->
+            (parentFragment as? AccountOverviewFragment)?.showLightningRecoveryPhrase()
+            dismiss()
+        }
+
+        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.buttonOutline }) { button, _, _, item ->
+            (parentFragment as? AccountOverviewFragment)?.viewModel?.closeChannel()
+            (button as? Button)?.isEnabled = false
         }
 
         binding.recycler.apply {

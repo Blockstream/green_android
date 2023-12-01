@@ -1430,4 +1430,7 @@
   <string name="id_user_authentication">User Authentication</string>
   <string name="id_you_have_to_authenticate_to_unlock_your_device">You have to Authenticate to unlock your device</string>
   <string name="id_step_s">Step %s</string>
+  <string name="id_some_accounts_can_not_be_logged_in_due_to_network">Some accounts can not be logged in due to network issues. Please try again later.</string>
+  <string name="id_the_lightning_service_is_currently_unavailable_for">The Lightning service is currently unavailable for maintenance, but it will be back soon.</string>
+  <string name="id_the_lightning_service_is_currently_unavailable_we">The Lightning service is currently unavailable. We apologize for the disruption, we are working to bring the service back online.</string>
 </resources>

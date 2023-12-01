@@ -103,15 +103,21 @@ data class AlertListItem constructor(val alertType: AlertType) : AbstractBinding
             }
             is AlertType.FailedNetworkLogin -> {
                 binding.alertView.title = res.getString(R.string.id_warning)
-                binding.alertView.message = "Some accounts can not be logged in due to network issues. Please try again later."
+                binding.alertView.message = res.getString(R.string.id_some_accounts_can_not_be_logged_in_due_to_network)
                 binding.alertView.setMaxLines(0)
                 binding.alertView.closeButton(null)
                 binding.alertView.primaryButton(res.getString(R.string.id_try_again)){
                     action?.invoke(false)
                 }
             }
+            is AlertType.LspStatus -> {
+                binding.alertView.title = res.getString(R.string.id_lightning_account)
+                binding.alertView.message = if(alertType.maintenance) res.getString(R.string.id_the_lightning_service_is_currently_unavailable_for) else res.getString(R.string.id_the_lightning_service_is_currently_unavailable_we)
+                binding.alertView.setMaxLines(0)
+                binding.alertView.closeButton(null)
+                binding.alertView.primaryButton("", null)
+            }
         }
-
     }
 
     override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ListItemAlertBinding {
@@ -127,4 +133,5 @@ sealed class AlertType{
     object EphemeralBip39 : AlertType()
     data class Banner(val banner: com.blockstream.common.data.Banner) : AlertType()
     object FailedNetworkLogin : AlertType()
+    data class LspStatus(val maintenance: Boolean) : AlertType()
 }

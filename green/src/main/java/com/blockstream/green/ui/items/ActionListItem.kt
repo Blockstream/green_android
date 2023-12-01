@@ -10,9 +10,9 @@ import com.mikepenz.fastadapter.binding.AbstractBindingItem
 data class ActionListItem constructor(
     private val title: StringHolder = StringHolder(),
     private val message: StringHolder = StringHolder(),
-    private val button: StringHolder = StringHolder(),
-    private val buttonOutline: StringHolder = StringHolder(),
-    private val buttonText: StringHolder = StringHolder()
+    var button: StringHolder = StringHolder(),
+    var buttonOutline: StringHolder = StringHolder(),
+    var buttonText: StringHolder = StringHolder()
 ) : AbstractBindingItem<ListItemActionBinding>() {
     override val type: Int
         get() = R.id.fastadapter_action_item_id

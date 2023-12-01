@@ -297,7 +297,7 @@ abstract class AppFragment<T : ViewDataBinding>(
                 }
             }
             is SideEffects.Logout -> {
-                getGreenViewModel()?.greenWalletOrNull?.also {
+                getGreenViewModel()?.greenWalletOrNull?.let {
                     // If is ephemeral wallet, prefer going to intro
                     if (it.isEphemeral || it.isHardware || sideEffect.reason == LogoutReason.USER_ACTION) {
                         NavGraphDirections.actionGlobalHomeFragment()
@@ -306,7 +306,14 @@ abstract class AppFragment<T : ViewDataBinding>(
                     }.let { directions ->
                         navigate(directions.actionId, directions.arguments, isLogout = true)
                     }
+
+                    true
+                } ?: run {
+                    NavGraphDirections.actionGlobalHomeFragment().also {
+                        navigate(it.actionId, it.arguments, isLogout = true)
+                    }
                 }
+
             }
         }
     }

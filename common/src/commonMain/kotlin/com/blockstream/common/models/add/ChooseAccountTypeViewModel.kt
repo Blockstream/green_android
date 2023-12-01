@@ -5,6 +5,7 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.hasHistory
+import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Asset
@@ -46,10 +47,10 @@ abstract class ChooseAccountTypeViewModelAbstract(
 
 class ChooseAccountTypeViewModel(greenWallet: GreenWallet, val initAssetId: String? = null) : ChooseAccountTypeViewModelAbstract(greenWallet = greenWallet) {
     override val asset: MutableStateFlow<Asset> =
-        MutableStateFlow(initAssetId?.let { Asset.create(initAssetId, session) } ?: Asset.create(
+        MutableStateFlow(session.ifConnected { initAssetId?.let { Asset.create(initAssetId, session) } ?: Asset.create(
             BTC_POLICY_ASSET,
             session
-        ))
+        ) } ?: Asset.BTC)
     private val _accountTypes: MutableStateFlow<List<AccountTypeLook>> = MutableStateFlow(listOf())
     override val accountTypes: StateFlow<List<AccountTypeLook>> = _accountTypes.asStateFlow()
     override val accountTypeBeingCreated: StateFlow<AccountTypeLook?> = _accountTypeBeingCreated.asStateFlow()
@@ -76,59 +77,65 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, val initAssetId: Stri
     }
 
     init {
-        asset.onEach { asset ->
-            val list = mutableListOf<AccountType>()
-
-            val isAmp = session.enrichedAssets.value[asset.assetId]?.isAmp ?: false
-            val isBitcoin = asset.isBitcoin
-
-            if(isAmp){
-                list += AccountType.AMP_ACCOUNT
-            }else {
-                // Check if singlesig networks are available in this session
-                if ((isBitcoin && session.bitcoinSinglesig != null) || (!isBitcoin && session.liquidSinglesig != null)) {
-                    list += listOf(AccountType.BIP84_SEGWIT, AccountType.BIP49_SEGWIT_WRAPPED)
-                    if (isBitcoin && session.supportsLightning() && !session.hasLightning && settingsManager.getApplicationSettings().experimentalFeatures && !session.isTestnet && settingsManager.isLightningEnabled(countly)) {
-                        list += AccountType.LIGHTNING
-                    }
-                }
-
-                // Check if multisig networks are available in this session
-                if ((isBitcoin && session.bitcoinMultisig != null) || (!isBitcoin && session.liquidMultisig != null)) {
-                    list += AccountType.STANDARD
-
-                    list += if (isBitcoin) {
-                        AccountType.TWO_OF_THREE
-                    } else {
-                        AccountType.AMP_ACCOUNT
-                    }
-                }
-            }
-
-            defaultAccountTypes.value = list.filter {
-                it == AccountType.BIP84_SEGWIT || it == AccountType.STANDARD || it == AccountType.LIGHTNING || (it == AccountType.AMP_ACCOUNT && isAmp)
-            }.map {
-                AccountTypeLook(it)
-            }
-
-            allAccountTypes.value = list.map {
-                AccountTypeLook(it)
-            }
-
-            hasAdvancedOptions.value = allAccountTypes.value.size != defaultAccountTypes.value.size
-        }.launchIn(viewModelScope.coroutineScope)
-
-        combine(allAccountTypes, isShowingAdvancedOptions) { _, showAdvanced ->
-            showAdvanced
-        }.onEach {
-            _accountTypes.value = if (it) {
-                allAccountTypes.value
-            } else {
-                defaultAccountTypes.value
-            }
-        }.launchIn(viewModelScope.coroutineScope)
-
         bootstrap()
+
+        session.ifConnected {
+            asset.onEach { asset ->
+                val list = mutableListOf<AccountType>()
+
+                val isAmp = session.enrichedAssets.value[asset.assetId]?.isAmp ?: false
+                val isBitcoin = asset.isBitcoin
+
+                if (isAmp) {
+                    list += AccountType.AMP_ACCOUNT
+                } else {
+                    // Check if singlesig networks are available in this session
+                    if ((isBitcoin && session.bitcoinSinglesig != null) || (!isBitcoin && session.liquidSinglesig != null)) {
+                        list += listOf(AccountType.BIP84_SEGWIT, AccountType.BIP49_SEGWIT_WRAPPED)
+                        if (isBitcoin && session.supportsLightning() && !session.hasLightning && settingsManager.getApplicationSettings().experimentalFeatures && !session.isTestnet && settingsManager.isLightningEnabled(
+                                countly
+                            )
+                        ) {
+                            list += AccountType.LIGHTNING
+                        }
+                    }
+
+                    // Check if multisig networks are available in this session
+                    if ((isBitcoin && session.bitcoinMultisig != null) || (!isBitcoin && session.liquidMultisig != null)) {
+                        list += AccountType.STANDARD
+
+                        list += if (isBitcoin) {
+                            AccountType.TWO_OF_THREE
+                        } else {
+                            AccountType.AMP_ACCOUNT
+                        }
+                    }
+                }
+
+                defaultAccountTypes.value = list.filter {
+                    it == AccountType.BIP84_SEGWIT || it == AccountType.STANDARD || it == AccountType.LIGHTNING || (it == AccountType.AMP_ACCOUNT && isAmp)
+                }.map {
+                    AccountTypeLook(it)
+                }
+
+                allAccountTypes.value = list.map {
+                    AccountTypeLook(it)
+                }
+
+                hasAdvancedOptions.value =
+                    allAccountTypes.value.size != defaultAccountTypes.value.size
+            }.launchIn(viewModelScope.coroutineScope)
+
+            combine(allAccountTypes, isShowingAdvancedOptions) { _, showAdvanced ->
+                showAdvanced
+            }.onEach {
+                _accountTypes.value = if (it) {
+                    allAccountTypes.value
+                } else {
+                    defaultAccountTypes.value
+                }
+            }.launchIn(viewModelScope.coroutineScope)
+        }
     }
 
     override fun handleEvent(event: Event) {

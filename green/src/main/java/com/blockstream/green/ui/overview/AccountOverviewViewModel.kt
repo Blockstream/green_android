@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.lightningMnemonic
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.Transaction
@@ -46,10 +47,10 @@ class AccountOverviewViewModel constructor(
     val assetsLiveData: LiveData<Map<String, Long>> get() = _assetsLiveData
     val assets: Map<String, Long> get() = _assetsLiveData.value!!
 
-    val policyAsset: Long get() = session.accountAssets(accountValue).value.policyAsset
+    val policyAsset: Long get() = session.ifConnected { session.accountAssets(accountValue).value.policyAsset } ?: 0L
 
     private val _swapInfoStateFlow
-        get() = if(accountValue.isLightning) session.lightningSdk.swapInfoStateFlow else flowOf(listOf())
+        get() = session.ifConnected { accountValue.takeIf { it.isLiquid }.let { session.lightningSdk.swapInfoStateFlow } } ?: flowOf(listOf())
 
     val lightningShortcut = if(wallet.isEphemeral) {
         emptyFlow<Boolean?>()
@@ -60,46 +61,51 @@ class AccountOverviewViewModel constructor(
     }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     init {
-        session
-            .accountAssets(account)
-            .map {
-                it.assets.takeIf { account.isLiquid && it.size > 1 } ?: mapOf()
-            }
-            .onEach { assets ->
-                _assetsLiveData.value = assets
+        bootstrap()
+
+        if(session.isConnected) {
+            session
+                .accountAssets(account)
+                .map {
+                    it.assets.takeIf { account.isLiquid && it.size > 1 } ?: mapOf()
+                }
+                .onEach { assets ->
+                    _assetsLiveData.value = assets
+                }.launchIn(viewModelScope.coroutineScope)
+
+            combine(
+                session.accountTransactions(account),
+                _swapInfoStateFlow
+            ) { transactions, swaps ->
+                swaps.map {
+                    Transaction.fromSwapInfo(account, it.first, it.second)
+                } + transactions
+            }.onEach {
+                _transactionsLiveData.value = it
             }.launchIn(viewModelScope.coroutineScope)
 
-        combine(session.accountTransactions(account), _swapInfoStateFlow) { transactions, swaps ->
-            swaps.map {
-                Transaction.fromSwapInfo(account, it.first, it.second)
-            } + transactions
-        }.onEach {
-            _transactionsLiveData.value = it
-        }.launchIn(viewModelScope.coroutineScope)
+            session.accountTransactionsPager(account).onEach {
+                _transactionsPagerLiveData.value = it
+            }.launchIn(viewModelScope.coroutineScope)
 
-        session.accountTransactionsPager(account).onEach {
-            _transactionsPagerLiveData.value = it
-        }.launchIn(viewModelScope.coroutineScope)
-
-        session.twoFactorReset(network).onEach {
-            _twoFactorStateLiveData.postValue(
-                listOfNotNull(
-                    if (it != null && it.isActive == true) {
-                        if (it.isDisputed == true) {
-                            AlertType.Dispute2FA(network, it)
+            session.twoFactorReset(network).onEach {
+                _twoFactorStateLiveData.postValue(
+                    listOfNotNull(
+                        if (it != null && it.isActive == true) {
+                            if (it.isDisputed == true) {
+                                AlertType.Dispute2FA(network, it)
+                            } else {
+                                AlertType.Reset2FA(network, it)
+                            }
                         } else {
-                            AlertType.Reset2FA(network, it)
+                            null
                         }
-                    } else {
-                        null
-                    }
+                    )
                 )
-            )
-        }.launchIn(viewModelScope.coroutineScope)
+            }.launchIn(viewModelScope.coroutineScope)
 
-        session.getTransactions(account = account, isReset = true, isLoadMore = false)
-
-        bootstrap()
+            session.getTransactions(account = account, isReset = true, isLoadMore = false)
+        }
     }
 
     fun refresh() {

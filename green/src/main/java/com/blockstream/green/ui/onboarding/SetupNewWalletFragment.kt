@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
-import com.blockstream.common.models.onboarding.SetupNewWalletViewModel
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.onboarding.SetupNewWalletViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
@@ -40,7 +40,7 @@ open class SetupNewWalletFragment : AppFragment<SetupNewWalletFragmentBinding>(
             }
 
             is SetupNewWalletViewModel.LocalSideEffects.NavigateUseHardwareDevice -> {
-                navigate(SetupNewWalletFragmentDirections.actionGlobalUseHardwareDeviceFragment())
+                navigate(NavGraphDirections.actionGlobalUseHardwareDeviceFragment())
             }
 
             is SetupNewWalletViewModel.LocalSideEffects.ShowConsent -> {

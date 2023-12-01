@@ -12,6 +12,14 @@ import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.utils.getBitcoinOrLiquidUnit
 
+fun <T : Any> GdkSession.ifConnected(block: () -> T): T? {
+    return if (this.isConnected) {
+        block()
+    } else {
+        null
+    }
+}
+
 fun ByteArray.reverseBytes(): ByteArray {
     for (i in 0 until size / 2) {
         val b = this[i]

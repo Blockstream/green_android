@@ -112,6 +112,7 @@ import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.server
 import com.blockstream.common.utils.toAmountLook
 import com.blockstream.common.utils.toHex
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -129,6 +130,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -148,7 +150,6 @@ import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
 import kotlin.math.absoluteValue
-import kotlin.properties.Delegates
 
 typealias AssetPair = Pair<String, Long>
 
@@ -396,12 +397,12 @@ class GdkSession constructor(
     val networks
         get() = gdk.networks()
 
-    var isConnected : Boolean by Delegates.observable(false) { _, oldValue, newValue ->
-        if(oldValue != newValue){
-            sessionManager.fireConnectionChangeEvent()
-        }
-    }
-        private set
+    private val _isConnectedState = MutableStateFlow(false)
+    @NativeCoroutinesIgnore
+    val isConnectedState = _isConnectedState.asStateFlow()
+    var isConnected
+        get() = isConnectedState.value
+        private set(value) { _isConnectedState.value = value}
 
     var xPubHashId : String? = null
         private set
@@ -416,7 +417,9 @@ class GdkSession constructor(
 
     private var walletActiveEventInvalidated = true
 
-    private var lightningSdkOrNull: LightningBridge? = null
+    var lightningSdkOrNull: LightningBridge? = null
+        private set
+
     val lightningSdk
         get() = lightningSdkOrNull!!
 
@@ -436,6 +439,10 @@ class GdkSession constructor(
         countly.remoteConfigUpdateEvent.onEach {
             updateEnrichedAssets()
         }.launchIn(scope + Dispatchers.IO)
+
+        isConnectedState.drop(1).onEach {
+            sessionManager.fireConnectionChangeEvent()
+        }.launchIn(scope)
     }
 
     private fun authHandler(network: Network, gaAuthHandler: GAAuthHandler): AuthHandler =

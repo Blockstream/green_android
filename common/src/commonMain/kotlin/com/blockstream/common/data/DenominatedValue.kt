@@ -8,6 +8,7 @@ import com.blockstream.common.MBTC_UNIT
 import com.blockstream.common.SATOSHI_UNIT
 import com.blockstream.common.UBTC_UNIT
 import com.blockstream.common.extensions.assetTicker
+import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Balance
 import com.blockstream.common.utils.getBitcoinOrLiquidUnit
@@ -132,7 +133,7 @@ sealed class Denomination(open val denomination: String) : Parcelable {
         }
 
         fun default(session: GdkSession): Denomination {
-            return byUnit((session.getSettings()?.unit ?: BTC_UNIT))
+            return session.ifConnected { byUnit((session.getSettings()?.unit ?: BTC_UNIT)) } ?: BTC
         }
 
         fun defaultOrFiat(session: GdkSession, isFiat: Boolean): Denomination {

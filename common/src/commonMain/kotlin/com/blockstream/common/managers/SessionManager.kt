@@ -173,18 +173,15 @@ class SessionManager constructor(
         return getWalletSessionOrNull(wallet.id) ?: createSession().also {
             if(wallet.isEphemeral){
                 it.setEphemeralWallet(wallet)
-            }else{
-                walletSessions[wallet.id] = it
             }
+
+            walletSessions[wallet.id] = it
         }
     }
 
     fun getWalletSessionOrOnboarding(wallet: GreenWallet?): GdkSession =
-        wallet?.let { getWalletSessionOrNull(it) } ?: run {
-            (onBoardingSession ?: createSession().also {
-                onBoardingSession = it
-            })
-        }
+        wallet?.let { getWalletSessionOrNull(it) } ?: run { getOnBoardingSession() }
+
 
     fun getWalletSessionOrNull(walletId: String): GdkSession? {
         return walletSessions[walletId] ?: gdkSessions.find { it.ephemeralWallet?.id == walletId }?.let {
@@ -238,13 +235,7 @@ class SessionManager constructor(
     }
 
     // OnBoardingSession waits patiently to be upgraded to a proper wallet session
-    fun getOnBoardingSession(wallet: GreenWallet? = null): GdkSession {
-        wallet?.let {
-            getWalletSessionOrNull(wallet)?.let {
-                return it
-            }
-        }
-
+    fun getOnBoardingSession(): GdkSession {
         // Create a new session if doesn't exists
         return (onBoardingSession ?: createSession().also {
             onBoardingSession = it

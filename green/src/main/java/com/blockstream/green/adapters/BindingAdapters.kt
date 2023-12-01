@@ -125,8 +125,8 @@ fun setTextResource(textView: TextView, @StringRes resource: Int) {
 }
 
 @BindingAdapter("idText")
-fun setIdText(textView: TextView, idText: String) {
-    textView.text = textView.context.stringFromIdentifierOrNull(idText) ?: idText
+fun setIdText(textView: TextView, idText: String?) {
+    textView.text = idText?.let { textView.context.stringFromIdentifierOrNull(idText) ?: idText } ?: ""
 }
 
 @BindingAdapter("fromHtml")

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.data.Network
@@ -89,7 +90,7 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
 
         binding.buttonDisconnectAll.setOnClickListener {
             for(session in sessionManager.getConnectedSessions()){
-                session.disconnectAsync()
+                session.disconnectAsync(LogoutReason.AUTO_LOGOUT_TIMEOUT)
             }
 
             Snackbar.make(binding.coordinator, "All sessions was disconnected", Snackbar.LENGTH_SHORT).show()
