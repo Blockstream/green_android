@@ -910,7 +910,7 @@ class GdkSession constructor(
         lightningSdkOrNull = lightningManager.getLightningBridge(workingDir)
     }
 
-    fun initLightningIfNeeded(mnemonic: String?) {
+    suspend fun initLightningIfNeeded(mnemonic: String?) {
 
         if (lightning != null) {
             if(lightningSdkOrNull == null && supportsLightning()){
@@ -1401,7 +1401,7 @@ class GdkSession constructor(
                     val job = scope.async {
                         try {
                             // Connect SDK
-                            connectToGreenlight(mnemonic = lightningMnemonic, checkCredentials = isRestore || isSmartDiscovery)
+                            connectToGreenlight(mnemonic = lightningMnemonic, checkCredentials = isRestore || isSmartDiscovery, quickResponse = isRestore)
 
                             if(isRestore) {
                                 hasLightning = lightningSdk.isConnected
@@ -1445,12 +1445,17 @@ class GdkSession constructor(
         }
     }
 
-    private fun connectToGreenlight(mnemonic: String, checkCredentials: Boolean = false){
+    private suspend fun connectToGreenlight(mnemonic: String, checkCredentials: Boolean = false, quickResponse: Boolean = false){
         Logger.i { "Login into ${lightning?.id}" }
 
         countly.loginLightningStart()
 
-        hasLightning = lightningSdk.connectToGreenlight(mnemonic, checkCredentials)
+        lightningSdk.connectToGreenlight(mnemonic, checkCredentials, quickResponse).also {
+            hasLightning = it == true
+            if (it == null) {
+                _failedNetworksStateFlow.value = _failedNetworksStateFlow.value + listOfNotNull(lightning)
+            }
+        }
 
         countly.loginLightningStop()
 

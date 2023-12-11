@@ -34,6 +34,7 @@ import breez_sdk.RefundRequest
 import breez_sdk.RefundResponse
 import breez_sdk.ReportIssueRequest
 import breez_sdk.ReportPaymentFailureDetails
+import breez_sdk.SdkException
 import breez_sdk.SendPaymentRequest
 import breez_sdk.SendPaymentResponse
 import breez_sdk.SwapInfo
@@ -55,6 +56,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import kotlinx.datetime.Clock
 import okio.Path.Companion.toPath
 
@@ -132,22 +134,24 @@ class LightningBridge constructor(
         }
     }
 
-    fun connectToGreenlight(mnemonic: String, checkCredentials: Boolean): Boolean {
+    suspend fun connectToGreenlight(mnemonic: String, checkCredentials: Boolean, quickResponse: Boolean = false): Boolean? {
         val partnerCredentials = if (checkCredentials) null else greenlightKeys.toGreenlightCredentials()
-        return start(mnemonic, partnerCredentials)
+        return start(mnemonic, partnerCredentials, quickResponse)
     }
 
-    private fun start(mnemonic: String, partnerCredentials: GreenlightCredentials?): Boolean {
+    private suspend fun start(mnemonic: String, partnerCredentials: GreenlightCredentials?, quickResponse: Boolean = false): Boolean? {
         if (breezSdkOrNull != null) {
             return true
         }
 
         try{
-            breezSdkOrNull = connect(
-                config = createConfig(partnerCredentials),
-                seed = mnemonicToSeed(mnemonic),
-                listener = this
-            )
+            breezSdkOrNull = withTimeout(if(quickResponse) 5000L else 30000L) {
+                connect(
+                    config = createConfig(partnerCredentials),
+                    seed = mnemonicToSeed(mnemonic),
+                    listener = this@LightningBridge
+                )
+            }
 
             appGreenlightCredentials = greenlightKeys.toGreenlightCredentials()?.let {
                 AppGreenlightCredentials.fromGreenlightCredentials(
@@ -162,10 +166,21 @@ class LightningBridge constructor(
             updateLspInformation()
 
             return true
-        }catch (e: Exception){
+        } catch (e: SdkException) {
             e.printStackTrace()
+
+            // SdkException for not registered node
+            // Failed to initialize the SDK: Failed to connect to Greenlight: status: Internal,
+            // message: "Unable to register node: not authorized: an invite code or a partner certificate is require to register a new node (see https://bit.ly/glinvites for details"
+            return if(e.message?.lowercase()?.contains("register node") == true) {
+                false
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return null
         }
-        return false
     }
 
     private fun updateLspInformation() {
