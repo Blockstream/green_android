@@ -12,7 +12,7 @@ import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.utils.getBitcoinOrLiquidUnit
 
-fun <T : Any> GdkSession.ifConnected(block: () -> T): T? {
+fun <T : Any> GdkSession.ifConnected(block: () -> T?): T? {
     return if (this.isConnected) {
         block()
     } else {

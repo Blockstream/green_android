@@ -50,7 +50,9 @@ class AccountOverviewViewModel constructor(
     val policyAsset: Long get() = session.ifConnected { session.accountAssets(accountValue).value.policyAsset } ?: 0L
 
     private val _swapInfoStateFlow
-        get() = session.ifConnected { accountValue.takeIf { it.isLiquid }.let { session.lightningSdk.swapInfoStateFlow } } ?: flowOf(listOf())
+        get() = session.takeIf { accountValue.isLightning }?.ifConnected {
+            session.lightningSdkOrNull?.swapInfoStateFlow
+        } ?: flowOf(listOf())
 
     val lightningShortcut = if(wallet.isEphemeral) {
         emptyFlow<Boolean?>()
