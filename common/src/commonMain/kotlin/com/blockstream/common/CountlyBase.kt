@@ -40,7 +40,6 @@ import kotlin.properties.Delegates
      private val settingsManager: SettingsManager,
      private val database: Database,
  ) {
-
      abstract fun updateRemoteConfig()
      abstract fun updateOffset()
      abstract fun updateDeviceId()
@@ -58,6 +57,8 @@ import kotlin.properties.Delegates
      abstract fun getRemoteConfigValueAsBoolean(key: String): Boolean?
      abstract fun getRemoteConfigValueAsNumber(key: String): Long?
      abstract fun recordException(throwable: Throwable)
+     abstract fun recordFeedback(rating: Int, email: String?, comment :String)
+
 
      private var _walletCount = 0
      private var _torProxy: String? = null
@@ -67,6 +68,9 @@ import kotlin.properties.Delegates
 
      @NativeCoroutines
      val remoteConfigUpdateEvent = _remoteConfigUpdateEvent.asSharedFlow()
+
+     var exceptionCounter = 0L
+         protected set
 
      val countlyProxy: String?
          get() {

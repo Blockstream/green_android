@@ -85,6 +85,20 @@ android {
             manifestPlaceholders["enableQATester"] = true
         }
 
+        // Migrate production to full featured version of the app after FDroid updates their build scripts
+        create("production") {
+            applicationId = "com.greenaddress.greenbits_android_wallet"
+            versionNameSuffix = appendGdkCommitHash(rootProject, false)
+            resValue("string", "app_name", "Green")
+            resValue("string", "application_id", applicationId!!)
+            resValue("bool", "feature_lightning", "false")
+            resValue("bool", "feature_analytics", "false")
+            resValue("bool", "feature_rate_google_play", "false")
+            manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher"
+            manifestPlaceholders["appIconRound"] = "@mipmap/ic_launcher_round"
+            manifestPlaceholders["enableQATester"] = false
+        }
+
         create("productionGoogle") {
             applicationId = "com.greenaddress.greenbits_android_wallet"
             resValue("string", "app_name", "Green")
@@ -97,7 +111,7 @@ android {
             manifestPlaceholders["enableQATester"] = false
         }
 
-        create("production") {
+        create("productionFDroid") {
             applicationId = "com.greenaddress.greenbits_android_wallet"
             versionNameSuffix = appendGdkCommitHash(rootProject, false)
             resValue("string", "app_name", "Green")
@@ -195,8 +209,9 @@ testlogger {
 }
 
 val developmentImplementation by configurations
-val productionGoogleImplementation by configurations
 val productionImplementation by configurations
+val productionGoogleImplementation by configurations
+val productionFDroidImplementation by configurations
 
 dependencies {
     /**  --- Modules ---------------------------------------------------------------------------- */
@@ -206,8 +221,9 @@ dependencies {
     implementation(project(":jade"))
 
     developmentImplementation(project(":gms"))
+    productionImplementation(project(":no-gms")) // temp F-Droid flavor
     productionGoogleImplementation(project(":gms"))
-    productionImplementation(project(":no-gms")) // F-Droid
+    productionFDroidImplementation(project(":no-gms")) // F-Droid
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Java 8+ API desugaring support ----------------------------------------------------- */
@@ -271,11 +287,14 @@ dependencies {
     developmentImplementation(libs.beagle.ui.drawer)
     developmentImplementation(libs.beagle.log.crash)
 
+    productionImplementation(libs.beagle.noop)
+    productionImplementation(libs.beagle.log.crash.noop)
+
     productionGoogleImplementation(libs.beagle.noop)
     productionGoogleImplementation(libs.beagle.log.crash.noop)
 
-    productionImplementation(libs.beagle.noop)
-    productionImplementation(libs.beagle.log.crash.noop)
+    productionFDroidImplementation(libs.beagle.noop)
+    productionFDroidImplementation(libs.beagle.log.crash.noop)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Slide To Act ----------------------------------------------------------------------- */

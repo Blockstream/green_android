@@ -5,14 +5,19 @@ package com.blockstream.green.di
 import android.content.Context
 import androidx.preference.PreferenceManager
 import co.touchlab.kermit.Logger
+import com.blockstream.common.CountlyBase
 import com.blockstream.common.data.AppConfig
 import com.blockstream.common.data.AppInfo
 import com.blockstream.common.di.initKoinAndroid
 import com.blockstream.gms.di.gmsModule
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
+import com.blockstream.green.data.Countly
+import com.blockstream.green.data.CountlyAndroid
+import com.blockstream.green.data.CountlyNoOp
 import com.blockstream.green.utils.isDevelopmentFlavor
 import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.binds
 import org.koin.dsl.module
 import org.koin.ksp.generated.com_blockstream_green_di_AndroidModule
 
@@ -44,6 +49,13 @@ fun startKoin(context: Context) {
             single {
                 PreferenceManager.getDefaultSharedPreferences(androidContext())
             }
+            single {
+                if (context.resources.getBoolean(R.bool.feature_analytics)) {
+                    Countly(get(), get(), get(), get(), get(), get())
+                } else {
+                    CountlyNoOp(get(), get(), get(), get())
+                }
+            } binds (arrayOf(CountlyBase::class, CountlyAndroid::class))
         },
         com_blockstream_green_di_AndroidModule,
         databaseModule,

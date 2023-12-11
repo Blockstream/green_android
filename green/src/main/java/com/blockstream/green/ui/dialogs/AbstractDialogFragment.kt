@@ -10,7 +10,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.ScreenView
-import com.blockstream.green.data.Countly
+import com.blockstream.green.data.CountlyAndroid
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import mu.KLogging
@@ -18,7 +18,7 @@ import org.koin.android.ext.android.inject
 
 // Based on https://dev.to/bhullnatik/how-to-use-material-dialogs-with-dialogfragment-28i1
 abstract class AbstractDialogFragment<T : ViewDataBinding> : DialogFragment(), ScreenView {
-    protected val countly: Countly by inject()
+    protected val countly: CountlyAndroid by inject()
 
     private var bindingOrNull: T? = null
     protected val binding: T get() = bindingOrNull!!

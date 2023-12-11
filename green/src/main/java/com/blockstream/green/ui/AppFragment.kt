@@ -34,7 +34,7 @@ import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.data.BannerView
-import com.blockstream.green.data.Countly
+import com.blockstream.green.data.CountlyAndroid
 import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.errorSnackbar
 import com.blockstream.green.extensions.snackbar
@@ -77,7 +77,7 @@ abstract class AppFragment<T : ViewDataBinding>(
 
     internal lateinit var binding: T
 
-    val countly: Countly by inject()
+    val countly: CountlyAndroid by inject()
 
     protected val gdk: Gdk by inject()
 

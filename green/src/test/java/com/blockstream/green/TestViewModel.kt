@@ -7,7 +7,6 @@ import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.green.data.Countly
 import com.blockstream.green.ui.AppViewModelAndroid
 import io.mockk.every
 import io.mockk.mockk
@@ -43,7 +42,7 @@ open class TestViewModel<VM : GreenViewModel>: KoinTest {
     protected lateinit var gdkSession: GdkSession
 
     @Mock
-    protected lateinit var countly: Countly
+    protected lateinit var countly: CountlyBase
 
     private val testDispatcher = UnconfinedTestDispatcher()
     @Before

@@ -40,7 +40,7 @@ import com.blockstream.green.BuildConfig
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.data.AppEvent
-import com.blockstream.green.data.Countly
+import com.blockstream.green.data.CountlyAndroid
 import com.blockstream.green.databinding.MainActivityBinding
 import com.blockstream.green.extensions.AuthenticationCallback
 import com.blockstream.green.extensions.navigate
@@ -80,7 +80,7 @@ class MainActivity : AppActivity() {
 
     private val gdk: Gdk by inject()
 
-    private val countly: Countly by inject()
+    private val countly: CountlyAndroid by inject()
 
     private val notificationManager: NotificationManager by inject()
 

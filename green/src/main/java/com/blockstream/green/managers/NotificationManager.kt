@@ -24,7 +24,7 @@ import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
-import com.blockstream.green.data.Countly
+import com.blockstream.green.data.CountlyAndroid
 import com.blockstream.green.gdk.getNetworkColor
 import com.blockstream.green.gdk.getWallet
 import com.blockstream.green.ui.MainActivity
@@ -42,7 +42,7 @@ class NotificationManager constructor(
     private val sessionManager: SessionManager,
     private val settingsManager: SettingsManager,
     private val database: Database,
-    private val countly: Countly
+    private val countly: CountlyAndroid
 ) : DefaultLifecycleObserver {
     private var scope: CoroutineScope = CoroutineScope(SupervisorJob())
 

@@ -58,6 +58,9 @@ case $key in
     -d | --development)
       FLAVOR="development"
       shift ;;
+    -f | --fdroid)
+      FLAVOR="fdroid"
+      shift ;;
     -b | --branch )
       shift
       BRANCH=("$1")
@@ -79,6 +82,8 @@ uninstall(){
   echo "Uninstalling.."
   if [[ $FLAVOR == "production" ]]; then
     ./gradlew uninstallProductionDebug
+  elif [[ $FLAVOR == "fdroid" ]]; then
+    ./gradlew uninstallProductionFDroidDebug
   else
     ./gradlew uninstallDevelopmentDebug
   fi
@@ -87,6 +92,8 @@ uninstall(){
 install(){
   if [[ $FLAVOR == "production" ]]; then
     ./gradlew installProductionDebug
+  elif [[ $FLAVOR == "fdroid" ]]; then
+    ./gradlew installProductionFDroidDebug
   else
     ./gradlew installDevelopmentDebug
   fi
@@ -121,6 +128,17 @@ gdk(){
   fi
 }
 
+info(){
+
+  echo -e "\n--------------------------------------------------------"
+  echo "Flavor:         $FLAVOR"
+  echo "Branch:         `git branch --show-current`"
+  echo "Commit Hash:    `git rev-parse HEAD`"
+  echo -e "--------------------------------------------------------\n"
+}
+
+info
+
 # --- Execution
 if [[ $FLAVOR == "development" ]]; then
     PACKAGE="$PACKAGE.dev"
@@ -141,7 +159,4 @@ fi
 install
 launch $ADD_WALLET
 
-echo "--------------------------------------------------------"
-echo "Branch:         `git branch --show-current`"
-echo "Commit Hash:    `git rev-parse HEAD`"
-echo "--------------------------------------------------------"
+info

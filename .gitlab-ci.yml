@@ -64,7 +64,7 @@ production_fdroid:
     expire_in: 7 days
     when: on_success
     paths:
-      - green/build/outputs/apk/production/release/*.apk
+      - green/build/outputs/apk/productionFDroid/release/*.apk
   tags:
     - ga
   variables:
@@ -72,7 +72,7 @@ production_fdroid:
   script:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
-    - ./gradlew assembleProductionRelease
+    - ./gradlew assembleProductionFDroidRelease
 
 
 development:

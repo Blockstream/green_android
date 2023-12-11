@@ -3,8 +3,7 @@ package com.blockstream.green.utils
 import android.view.LayoutInflater
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.R
-import com.blockstream.green.data.Countly
-import com.blockstream.green.databinding.DialogErrorReportBinding
+import com.blockstream.green.data.CountlyAndroid
 import com.blockstream.green.databinding.DialogFeedbackBinding
 import com.blockstream.green.extensions.isEmailValid
 import com.blockstream.green.extensions.snackbar
@@ -18,7 +17,7 @@ import kotlinx.datetime.monthsUntil
 object AppReviewHelper {
     fun shouldAskForReview(
         settingsManager: SettingsManager,
-        countly: Countly
+        countly: CountlyAndroid
     ): Boolean {
         // Feature is not enabled
         if(!settingsManager.storeRateEnabled){

@@ -13,7 +13,7 @@ import com.blockstream.common.gdk.data.NetworkEvent
 import com.blockstream.common.gdk.data.Notification
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
-import com.blockstream.green.data.Countly
+import com.blockstream.green.data.CountlyAndroid
 import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.QaTesterActivityBinding
 import com.blockstream.green.ui.bottomsheets.FilterBottomSheetDialogFragment
@@ -45,7 +45,7 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
 
     private val applicationScope: ApplicationScope by inject()
 
-    private val countly: Countly by inject()
+    private val countly: CountlyAndroid by inject()
 
     private val settingsManager: SettingsManager by inject()
 

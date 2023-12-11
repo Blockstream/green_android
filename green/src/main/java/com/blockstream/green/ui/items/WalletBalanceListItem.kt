@@ -17,7 +17,7 @@ import com.blockstream.common.data.Denomination
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.green.R
-import com.blockstream.green.data.Countly
+import com.blockstream.green.data.CountlyAndroid
 import com.blockstream.green.databinding.ListItemWalletBalanceBinding
 import com.blockstream.green.gdk.getAssetDrawableOrNull
 import com.blockstream.green.gdk.getAssetIcon
@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mu.KLogging
 
-data class WalletBalanceListItem constructor(val session: GdkSession, val countly: Countly) :
+data class WalletBalanceListItem constructor(val session: GdkSession, val countly: CountlyAndroid) :
     AbstractBindingItem<ListItemWalletBalanceBinding>() {
     override val type: Int
         get() = R.id.fastadapter_wallet_balance_item_id

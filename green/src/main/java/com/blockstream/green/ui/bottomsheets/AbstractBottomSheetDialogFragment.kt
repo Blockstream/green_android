@@ -10,7 +10,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.ScreenView
-import com.blockstream.green.data.Countly
+import com.blockstream.green.data.CountlyAndroid
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -20,7 +20,7 @@ import org.koin.android.ext.android.inject
 
 abstract class AbstractBottomSheetDialogFragment<T : ViewDataBinding>: BottomSheetDialogFragment(),
     ScreenView {
-    protected val countly: Countly by inject()
+    protected val countly: CountlyAndroid by inject()
 
     private val disposables = CompositeDisposable()
 

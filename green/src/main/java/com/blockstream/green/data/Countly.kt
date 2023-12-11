@@ -8,21 +8,19 @@ import androidx.core.content.edit
 import androidx.fragment.app.FragmentManager
 import com.android.installreferrer.api.InstallReferrerClient
 import com.android.installreferrer.api.InstallReferrerStateListener
-import com.blockstream.common.CountlyBase
 import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.CountlyWidget
 import com.blockstream.common.database.Database
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
 import com.blockstream.common.managers.SettingsManager
+import com.blockstream.common.utils.Loggable
 import com.blockstream.green.ui.AppActivity
 import com.blockstream.green.ui.dialogs.CountlyNpsDialogFragment
 import com.blockstream.green.ui.dialogs.CountlySurveyDialogFragment
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.blockstream.green.utils.isProductionFlavor
 import com.blockstream.green.views.GreenAlertView
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import ly.count.android.sdk.Countly
@@ -38,11 +36,8 @@ import ly.count.android.sdk.ModuleRemoteConfig
 import ly.count.android.sdk.ModuleRequestQueue
 import ly.count.android.sdk.ModuleUserProfile
 import ly.count.android.sdk.ModuleViews
-import mu.NamedKLogging
-import org.koin.core.annotation.Single
 import java.net.URLDecoder
 
-@Single
 class Countly constructor(
     private val context: Context,
     private val sharedPreferences: SharedPreferences,
@@ -50,7 +45,7 @@ class Countly constructor(
     private val applicationScope: ApplicationScope,
     private val settingsManager: SettingsManager,
     private val database: Database,
-): CountlyBase(appInfo, applicationScope, settingsManager, database) {
+): CountlyAndroid(appInfo, applicationScope, settingsManager, database) {
 
     private val _requestQueue: ModuleRequestQueue.RequestQueue
     private val _feedback: ModuleFeedback.Feedback
@@ -87,7 +82,7 @@ class Countly constructor(
             // Set Device ID
             it.setDeviceId(getDeviceId())
             it.RemoteConfigRegisterGlobalCallback { _, error, _, _ ->
-                logger.info { if (error.isNullOrBlank()) "Remote Config Completed" else "Remote Config error: $error" }
+                logger.i { if (error.isNullOrBlank()) "Remote Config Completed" else "Remote Config error: $error" }
 
                 if(error.isNullOrBlank()){
                     remoteConfigUpdated()
@@ -124,10 +119,8 @@ class Countly constructor(
         initBase()
     }
 
-    var exceptionCounter = 0L
-        private set
-
     init {
+        logger.i { "Countly init. A privacy-first, user opt-in version of Countly." }
         // Create Feature groups
         _consent.createFeatureGroup(ANALYTICS_GROUP, consentRequiredGroup)
 
@@ -142,18 +135,20 @@ class Countly constructor(
             }
         }
 
+        Countly.applicationOnCreate()
+
         updateFeedbackWidget()
     }
 
-    fun onStart(activity: AppActivity) {
+    override fun onStart(activity: AppActivity) {
         countly.onStart(activity)
     }
 
-    fun onStop() {
+    override fun onStop() {
         countly.onStop()
     }
 
-    fun onConfigurationChanged(newConfig: Configuration) {
+    override fun onConfigurationChanged(newConfig: Configuration) {
         countly.onConfigurationChanged(newConfig)
     }
 
@@ -205,17 +200,13 @@ class Countly constructor(
         _apm.endTrace(key, mutableMapOf())
     }
 
-    private val _feedbackWidgetStateFlow = MutableStateFlow<CountlyFeedbackWidget?>(null)
-    val feedbackWidgetStateFlow get() = _feedbackWidgetStateFlow.asStateFlow()
-    val feedbackWidget get() = _feedbackWidgetStateFlow.value
-
-    fun sendFeedbackWidgetData(widget: CountlyFeedbackWidget, data: Map<String, Any>?){
+    override fun sendFeedbackWidgetData(widget: CountlyFeedbackWidget, data: Map<String, Any>?){
         _feedback.reportFeedbackWidgetManually(widget, null, data)
         // can't use updateFeedback() as the data are sent async
         _feedbackWidgetStateFlow.value = null
     }
 
-    fun getFeedbackWidgetData(widget: CountlyFeedbackWidget, callback: (CountlyWidget?) -> Unit){
+    override fun getFeedbackWidgetData(widget: CountlyFeedbackWidget, callback: (CountlyWidget?) -> Unit){
         countly.feedback().getFeedbackWidgetData(widget) { data, _ ->
             try{
                 callback.invoke(JsonDeserializer.decodeFromString<CountlyWidget>(data.toString()).also {
@@ -225,7 +216,7 @@ class Countly constructor(
                 // Set it to null to hide it from UI, this way user can know that this is a temporary FAB
                 _feedbackWidgetStateFlow.value = null
             }catch (e: Exception){
-                logger.info { data.toString() }
+                logger.i { data.toString() }
                 e.printStackTrace()
                 callback.invoke(null)
             }
@@ -238,8 +229,8 @@ class Countly constructor(
         }
     }
 
-    fun showFeedbackWidget(supportFragmentManager: FragmentManager) {
-        feedbackWidget?.type.also { type ->
+    override fun showFeedbackWidget(supportFragmentManager: FragmentManager) {
+        (feedbackWidget as? CountlyFeedbackWidget)?.type.also { type ->
             if(type == ModuleFeedback.FeedbackWidgetType.nps){
                 CountlyNpsDialogFragment.show(supportFragmentManager)
             }else if(type == ModuleFeedback.FeedbackWidgetType.survey){
@@ -267,7 +258,7 @@ class Countly constructor(
                                     "UTF-8"
                                 )
 
-                                logger.info { "Referrer: $referrer" }
+                                logger.i { "Referrer: $referrer" }
 
                                 val parts = referrer.split("&")
 
@@ -332,9 +323,6 @@ class Countly constructor(
         _requestQueue.proxy = proxyUrl
     }
 
-    fun applicationOnCreate(){
-        Countly.applicationOnCreate()
-    }
 
     override fun recordException(throwable: Throwable) {
         if(!skipExceptionRecording.contains(throwable.message)) {
@@ -350,7 +338,7 @@ class Countly constructor(
         countly.ratings().recordRatingWidgetWithID(RATING_WIDGET_ID, rating, null, comment, false)
     }
 
-    fun recordFeedback(rating: Int, email: String?, comment :String){
+    override fun recordFeedback(rating: Int, email: String?, comment :String){
         countly.ratings().recordRatingWidgetWithID(RATING_WIDGET_ID, rating, email.takeIf { !it.isNullOrBlank() }, comment, !email.isNullOrBlank())
     }
 
@@ -370,7 +358,7 @@ class Countly constructor(
         return _remoteConfig.getValue(key).value as? Boolean
     }
 
-    companion object : NamedKLogging("AppCountly") {
+    companion object : Loggable() {
 
         val consentRequiredGroup = arrayOf(
             Countly.CountlyFeatureNames.sessions,

@@ -11,8 +11,8 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.blockstream.base.ZendeskSdk
+import com.blockstream.common.CountlyBase
 import com.blockstream.common.managers.LifecycleManager
-import com.blockstream.green.data.Countly
 import com.blockstream.green.di.startKoin
 import com.blockstream.green.lifecycle.ActivityLifecycle
 import com.blockstream.green.settings.AndroidMigrator
@@ -28,8 +28,6 @@ class GreenApplication : Application() {
     private val androidMigrator: AndroidMigrator by inject()
 
     private val activityLifecycle: ActivityLifecycle by inject()
-
-    private val countly: Countly by inject()
 
     private val zendeskSdk: ZendeskSdk by inject()
 
@@ -56,8 +54,6 @@ class GreenApplication : Application() {
         HandroidLoggerAdapter.DEBUG = BuildConfig.DEBUG
         HandroidLoggerAdapter.ANDROID_API_LEVEL = Build.VERSION.SDK_INT
         HandroidLoggerAdapter.APP_NAME = "Green"
-
-        countly.applicationOnCreate()
 
         androidMigrator.migrate()
 
