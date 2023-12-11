@@ -29,14 +29,14 @@ abstract class RecoveryPhraseViewModelAbstract(val isLightning: Boolean, greenWa
 
 class RecoveryPhraseViewModel(
     isLightning: Boolean,
-    credentialsFor2of3: Credentials?,
+    providedCredentials: Credentials?,
     greenWallet: GreenWallet?
 ) :
     RecoveryPhraseViewModelAbstract(isLightning = isLightning, greenWallet = greenWallet) {
 
     val credentials: Credentials by lazy {
-        session.ifConnected {
-            credentialsFor2of3 ?: (if (isLightning) {
+        providedCredentials ?: session.ifConnected {
+            (if (isLightning) {
                 Credentials(mnemonic = session.deriveLightningMnemonic())
             } else {
                 session.getCredentials()
