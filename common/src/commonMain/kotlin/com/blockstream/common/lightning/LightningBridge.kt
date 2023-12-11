@@ -113,7 +113,7 @@ class LightningBridge constructor(
 
         val nodeConfig = NodeConfig.Greenlight(config = GreenlightNodeConfig(partnerCredentials = partnerCredentials, inviteCode = null))
 
-        return defaultConfig(EnvironmentType.PRODUCTION, greenlightKeys.apiKey, nodeConfig).also {
+        return defaultConfig(EnvironmentType.PRODUCTION, greenlightKeys.breezApiKey, nodeConfig).also {
             it.workingDir = workingDir
         }
     }

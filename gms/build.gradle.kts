@@ -1,5 +1,3 @@
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
-
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinAndroid)
@@ -12,10 +10,6 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.androidMinSdk.get().toInt()
-
-        val zendeskClientId = System.getenv("ZENDESK_CLIENT_ID") ?: gradleLocalProperties(rootDir).getProperty("zendesk.clientId", "")
-
-        buildConfigField("String", "ZENDESK_CLIENT_ID", "\"${zendeskClientId}\"")
 
         consumerProguardFiles("consumer-rules.pro")
     }

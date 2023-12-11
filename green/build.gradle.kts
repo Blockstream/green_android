@@ -47,14 +47,6 @@ android {
         setProperty("archivesBaseName", "BlockstreamGreen-v$versionName")
         proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 
-        val breezApiKey = System.getenv("BREEZ_API_KEY") ?: gradleLocalProperties(rootDir).getProperty("breez.apikey", "")
-        val greenlightCertificate = System.getenv("GREENLIGHT_DEVICE_CERT") ?: gradleLocalProperties(rootDir).getProperty("greenlight.cert", "")
-        val greenlightKey = System.getenv("GREENLIGHT_DEVICE_KEY") ?: gradleLocalProperties(rootDir).getProperty("greenlight.key", "")
-
-        buildConfigField("String", "BREEZ_API_KEY", "\"${breezApiKey}\"")
-        buildConfigField("String", "GREENLIGHT_DEVICE_CERT", "\"${greenlightCertificate}\"")
-        buildConfigField("String", "GREENLIGHT_DEVICE_KEY", "\"${greenlightKey}\"")
-
         testApplicationId = "com.blockstream.green.test"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -337,6 +329,24 @@ fun appendGdkCommitHash(project: Project, enableGitSubmodule: Boolean): String{
 task("verifyDependencies", GradleBuild::class) {
     tasks = listOf("lintDevelopmentRelease", "assembleProductionRelease")
 }
+
+task("appSecrets") {
+    doFirst {
+        val appSecrets = project.file("src/main/res/raw/app_secrets.txt")
+        if (appSecrets.exists()) {
+            println("AppSecrets: ✔")
+        } else {
+            println("AppSecrets: Create new file")
+            (System.getenv("APP_SECRETS")
+                ?: gradleLocalProperties(rootDir).getProperty("appSecrets", "")).also {
+                appSecrets.writeText(it)
+            }
+        }
+    }
+    outputs.upToDateWhen { false }
+}
+
+tasks.getByName("preBuild").dependsOn(tasks.getByName("appSecrets"))
 
 class RoomSchemaArgProvider(
     @get:InputDirectory

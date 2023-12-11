@@ -26,6 +26,7 @@ gdk/src/main/java/com/blockstream/libwally/Wally.java
 keystore.properties
 gdk_commit
 local.keystore
+green/src/main/res/raw/app_secrets.txt
 
 common/src/include
 common/src/libs

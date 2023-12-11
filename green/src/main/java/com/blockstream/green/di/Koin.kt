@@ -8,6 +8,7 @@ import co.touchlab.kermit.Logger
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.data.AppConfig
 import com.blockstream.common.data.AppInfo
+import com.blockstream.common.data.AppSecrets
 import com.blockstream.common.di.initKoinAndroid
 import com.blockstream.gms.di.gmsModule
 import com.blockstream.green.BuildConfig
@@ -23,14 +24,16 @@ import org.koin.ksp.generated.com_blockstream_green_di_AndroidModule
 
 fun startKoin(context: Context) {
 
-    val appConfig = AppConfig(
+    val appSecrets: AppSecrets? =
+        context.resources.openRawResource(R.raw.app_secrets).bufferedReader()
+            .use { AppSecrets.fromText(it.readText()) }
+
+    val appConfig = AppConfig.default(
         isDebug = BuildConfig.DEBUG,
         gdkDataDir = context.filesDir.absolutePath,
-        greenlightApiKey = BuildConfig.BREEZ_API_KEY,
-        greenlightKey = BuildConfig.GREENLIGHT_DEVICE_KEY,
-        greenlightCert = BuildConfig.GREENLIGHT_DEVICE_CERT,
+        appSecrets = appSecrets,
         analyticsFeatureEnabled = context.resources.getBoolean(R.bool.feature_analytics),
-        lightningFeatureEnabled = context.resources.getBoolean(R.bool.feature_lightning) && BuildConfig.BREEZ_API_KEY.isNotBlank(),
+        lightningFeatureEnabled = context.resources.getBoolean(R.bool.feature_lightning),
         storeRateEnabled = context.resources.getBoolean(R.bool.feature_rate_google_play)
     )
 

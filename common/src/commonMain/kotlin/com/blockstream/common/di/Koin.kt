@@ -48,6 +48,9 @@ fun initKoin(appConfig: AppConfig, vararg appModules: Module): KoinApplication {
 @OptIn(ExperimentalUnsignedTypes::class)
 private fun commonModules(appConfig: AppConfig): List<Module> {
     return listOf(module {
+        single {
+            appConfig
+        }
         single<ApplicationScope> {
             MainScope()
         }
@@ -74,7 +77,7 @@ private fun commonModules(appConfig: AppConfig): List<Module> {
         }
         single {
             val greenlightKeys = GreenlightKeys(
-                apiKey = appConfig.greenlightApiKey?.let { base64 ->
+                breezApiKey = appConfig.breezApiKey?.let { base64 ->
                     Base64.decode(base64).commonToUtf8String()
                 } ?: "",
                 deviceKey = appConfig.greenlightKey?.takeIf { it.isNotBlank() }?.let {

@@ -4,7 +4,7 @@ import breez_sdk.GreenlightCredentials
 
 
 data class GreenlightKeys(
-    val apiKey: String,
+    val breezApiKey: String,
     val deviceKey: List<UByte>?,
     val deviceCert: List<UByte>?
 ) {
