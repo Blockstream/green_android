@@ -1438,4 +1438,9 @@
   <string name="id_message_frequency_varies_according_to_the_number">Message frequency varies according to the number of 2FA SMS requests you make.</string>
   <string name="id_for_help_visit_help_blockstream_com">For help visit help.blockstream.com\nTo unsubscribe turn off SMS 2FA from the app.\nStandard messages and data rates may apply.</string>
   <string name="id_help_blockstream_com">help.blockstream.com</string>
+  <string name="id_failed">Failed</string>
+  <string name="id_initiate_refund">Initiate Refund</string>
+  <string name="id_fee_rate_must_be_at_most_s">Fee rate must be at most %s satoshi/vbyte.</string>
+  <string name="id_amount_to_be_refunded">Amount to be refunded</string>
+  <string name="id_receive_on">Receive on</string>
 </resources>

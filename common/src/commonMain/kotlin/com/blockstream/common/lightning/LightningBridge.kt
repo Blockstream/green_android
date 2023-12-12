@@ -26,6 +26,10 @@ import breez_sdk.OpenChannelFeeRequest
 import breez_sdk.OpenChannelFeeResponse
 import breez_sdk.OpeningFeeParams
 import breez_sdk.Payment
+import breez_sdk.PrepareRefundRequest
+import breez_sdk.PrepareRefundResponse
+import breez_sdk.PrepareSweepRequest
+import breez_sdk.PrepareSweepResponse
 import breez_sdk.ReceiveOnchainRequest
 import breez_sdk.ReceivePaymentRequest
 import breez_sdk.ReceivePaymentResponse
@@ -322,7 +326,9 @@ class LightningBridge constructor(
             it to false
         } + (breezSdkOrNull?.listRefundables()?.map {
             it to true
-        } ?: emptyList()))
+        } ?: emptyList())).also {
+            logger.d { "updateSwapInfo $it" }
+        }
     }
 
     private fun serviceHealthCheck() = try {
@@ -339,6 +345,35 @@ class LightningBridge constructor(
             breezSdk.reportIssue(report)
         } catch (e: Exception){
           e.printStackTrace()
+        }
+    }
+
+    fun prepareRefund(swapAddress: String, toAddress: String, satPerVbyte: UInt?): PrepareRefundResponse {
+        return try {
+            breezSdk.prepareRefund(
+                PrepareRefundRequest(
+                    swapAddress = swapAddress,
+                    toAddress = toAddress,
+                    satPerVbyte = satPerVbyte ?: breezSdk.recommendedFees().economyFee.toUInt()
+                )
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            throw exceptionWithNodeId(e)
+        }
+    }
+
+    fun prepareSweep(toAddress: String, satPerVbyte: UInt?): PrepareSweepResponse {
+        return try {
+            breezSdk.prepareSweep(
+                PrepareSweepRequest(
+                    toAddress = toAddress,
+                    satPerVbyte = satPerVbyte?.toULong() ?: breezSdk.recommendedFees().economyFee
+                )
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            throw exceptionWithNodeId(e)
         }
     }
 

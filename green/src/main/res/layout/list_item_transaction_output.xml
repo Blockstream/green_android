@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginBottom="2dp"
-        android:text="@{isChange ? @string/id_change : amount &lt; 0L ? (address != null ? @string/id_sent_to : @string/id_sent) : (address != null ? @string/id_received_on: @string/id_received)}"
+        android:text="@{isChange ? @string/id_change : amount &lt; 0L ? (address != null ? @string/id_sent_to : @string/id_sent) : (address != null ? @string/id_received_on : @string/id_received)}"
         tools:text="@string/id_sent_to"
         style="@style/TextAppearance.Green.Overline" />
 
@@ -56,11 +56,11 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceBodySmall"
                 android:text="@{address}"
-                android:ellipsize="end"
+                android:textIsSelectable="true"
                 isVisible="@{address != null}"
                 android:fontFamily="@font/monospace"
                 android:layout_marginBottom="8dp"
-                tools:text="33ttwPQbgNkKvQbW8KaVp3tDNaxa3f1MAA" />
+                tools:text="33ttwPQbgNkKvQbW8KaVp3tDNaxa3f1MAA33ttwPQbgNkKvQbW8KaVp3tDNaxa3f1MAA" />
 
             <include
                 android:id="@+id/amountView"

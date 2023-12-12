@@ -587,18 +587,8 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                     )
                 }
                 is TransactionListItem -> {
-                    if(item.tx.isLightningSwap){
-                        if(item.tx.isRefundableSwap){
-                            navigate(
-                                WalletOverviewFragmentDirections.actionWalletOverviewFragmentToRecoverFundsFragment(
-                                    wallet = wallet,
-                                    address = item.tx.inputs.first().address ?: "",
-                                    amount = item.tx.satoshiPolicyAsset
-                                )
-                            )
-                        }else{
-                            snackbar(R.string.id_swap_is_in_progress)
-                        }
+                    if(item.tx.isLightningSwap && !item.tx.isRefundableSwap){
+                        snackbar(R.string.id_swap_is_in_progress)
                     }else if(!item.tx.isLoadingTransaction) {
                         navigate(
                             WalletOverviewFragmentDirections.actionWalletOverviewFragmentToTransactionDetailsFragment(

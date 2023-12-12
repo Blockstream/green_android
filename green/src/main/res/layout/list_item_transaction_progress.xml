@@ -38,6 +38,9 @@
             name="spvFailed"
             type="Boolean" />
 
+        <variable
+            name="isRefundableSwap"
+            type="Boolean" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -78,7 +81,7 @@
                 <com.google.android.material.progressindicator.CircularProgressIndicator
                     android:id="@+id/progress"
                     indeterminate="@{confirmations == 0 || (confirmations >= confirmationsRequired &amp;&amp; spvInProgress) || tx.pendingCloseChannel}"
-                    isInvisible="@{spvFailed}"
+                    isInvisible="@{spvFailed || isRefundableSwap}"
                     progress="@{Math.min(confirmations, confirmationsRequired)}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -93,8 +96,22 @@
                     tools:progress="75" />
 
                 <ImageView
+                    android:id="@+id/failed"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="10dp"
+                    android:src="@drawable/ic_x_circle"
+                    isVisible="@{isRefundableSwap}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/error" />
+
+                <ImageView
                     android:id="@+id/tick"
-                    isVisible="@{confirmations >= confirmationsRequired &amp;&amp; spvEnabled == false &amp;&amp; !tx.pendingCloseChannel}"
+                    isVisible="@{confirmations >= confirmationsRequired &amp;&amp; spvEnabled == false &amp;&amp; !tx.pendingCloseChannel &amp;&amp; !isRefundableSwap}"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_progress_check"
@@ -110,7 +127,7 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:src="@drawable/ic_spv_in_progress"
-                    isVisible="@{confirmations >= confirmationsRequired &amp;&amp; spvEnabled}"
+                    isVisible="@{confirmations >= confirmationsRequired &amp;&amp; spvEnabled &amp;&amp; isRefundableSwap}"
                     app:layout_constraintBottom_toBottomOf="@+id/progress"
                     app:layout_constraintEnd_toEndOf="@+id/progress"
                     app:layout_constraintStart_toStartOf="@+id/progress"

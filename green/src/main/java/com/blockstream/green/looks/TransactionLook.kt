@@ -64,7 +64,7 @@ class TransactionLook constructor(val tx: Transaction, val session: GdkSession):
         binding: TransactionAssetLayoutBinding
     ) {
         tx.assets.getOrNull(index)?.also { asset ->
-            binding.directionColor = asset.second.getDirectionColor(binding.root.context)
+            binding.directionColor = asset.second.getDirectionColor(binding.root.context, isFailed = tx.isRefundableSwap)
 
             binding.index = index
             binding.type = tx.txType
@@ -100,7 +100,7 @@ class TransactionLook constructor(val tx: Transaction, val session: GdkSession):
 
     override fun setTransactionUtxoToBinding(scope: CoroutineScope, index: Int, binding: TransactionUtxoLayoutBinding) {
         getUtxoView(index)?.also { txOutput ->
-            binding.directionColor = txOutput.satoshi.getDirectionColor(binding.root.context)
+            binding.directionColor = txOutput.satoshi.getDirectionColor(binding.root.context, isFailed = tx.isRefundableSwap)
 
             binding.amount = ""
             binding.fiat = ""

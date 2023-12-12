@@ -3,9 +3,9 @@ package com.blockstream.green.ui.items
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemTransactionOutputBinding
-import com.blockstream.common.gdk.GdkSession
 import com.blockstream.green.looks.ITransactionLook
 import com.blockstream.green.utils.toPixels
 import kotlinx.coroutines.CoroutineScope
@@ -43,14 +43,9 @@ data class TransactionUtxoListItem constructor(
             binding.card.strokeColor = ContextCompat.getColor(binding.root.context, R.color.color_on_surface_divider)
         }
         look.setTransactionUtxoToBinding(scope, index, binding.amountView)
-
-        binding.addressTextView.maxLines = if(look.network.isLightning) 1 else Int.MAX_VALUE
-
-        // make address,amount & fee selectable
-        if(!look.network.isLightning) {
-            binding.addressTextView.setTextIsSelectable(true)
-        }
+        
         binding.amountView.amountTextView.setTextIsSelectable(true)
+        binding.addressTextView.setTextIsSelectable(true)
         binding.amountView.fiatTextView.setTextIsSelectable(true)
     }
 

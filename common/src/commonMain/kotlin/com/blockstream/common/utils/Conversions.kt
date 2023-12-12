@@ -84,11 +84,11 @@ fun userNumberFormat(decimals: Int,
     isGroupingUsed = withGrouping
 }
 
-fun CreateTransaction.feeRateWithUnit(): String? {
-    return feeRate?.feeRateWithUnit()
+fun CreateTransaction.feeRateKBWithUnit(): String? {
+    return feeRate?.feeRateKBWithUnit()
 }
 
-fun Long.feeRateWithUnit(): String {
+fun Long.feeRateKBWithUnit(): String {
     val feePerByte = this / 1000.0
     return userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = true, withMinimumDigits = true).format(feePerByte).let {
         "$it sats / vbyte"

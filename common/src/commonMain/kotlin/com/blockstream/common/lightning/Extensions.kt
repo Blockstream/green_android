@@ -176,7 +176,7 @@ fun Transaction.Companion.fromSwapInfo(account: Account, swapInfo: SwapInfo, isR
         blockHeight = if(isRefundableSwap) Long.MAX_VALUE else 0,
         canCPFP = false,
         canRBF = false,
-        createdAtTs = swapInfo.createdAt,
+        createdAtTs = swapInfo.createdAt.let { if(it > 0) it * 1_000_000 else 0 },
         inputs = listOf(
             InputOutput(
                 address = swapInfo.bitcoinAddress
@@ -188,7 +188,7 @@ fun Transaction.Companion.fromSwapInfo(account: Account, swapInfo: SwapInfo, isR
         memo = "",
         rbfOptin = false,
         spvVerified = "",
-        txHash = swapInfo.paymentHash.toString(),
+        txHash = swapInfo.refundTxIds.firstOrNull() ?: "",
         type = Transaction.Type.MIXED.gdkType,
         satoshi = mapOf(BTC_POLICY_ASSET to swapInfo.confirmedSats.toLong() + (if(isRefundableSwap) 0 else swapInfo.unconfirmedSats.toLong())),
         isLightningSwap = true,

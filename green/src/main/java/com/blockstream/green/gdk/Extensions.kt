@@ -75,7 +75,8 @@ fun Network.getNetworkIcon(): Int{
     return id.getNetworkIcon()
 }
 
-fun Long?.getDirectionColor(context: Context): Int = ContextCompat.getColor(context, if ((this ?: 0) < 0) R.color.white else R.color.brand_green)
+fun Long?.getDirectionColor(context: Context, isFailed: Boolean = false): Int =
+    ContextCompat.getColor(context, if(isFailed) R.color.error else if ((this ?: 0) < 0) R.color.white else R.color.brand_green)
 
 
 fun String.getNetworkIcon(): Int{

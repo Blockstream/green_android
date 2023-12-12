@@ -33,7 +33,6 @@ data class TransactionDetailsLook(
                 transactionUtxos =  TransactionUtxo.create(session = session, transaction = transaction),
                 networkFeeLook = NetworkFeeLook.create(session = session, transaction = transaction),
                 transactionStatusLook = TransactionStatusLook.create(session = session, transaction = transaction),
-
             )
         }
     }

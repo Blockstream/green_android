@@ -28,10 +28,11 @@ data class TransactionProgressListItem constructor(
 
     override fun bindView(binding: ListItemTransactionProgressBinding, payloads: List<Any>) {
         binding.tx = transaction
-        binding.date = transaction.createdAt().formatMediumWithTime()
+        binding.date = if(transaction.createdAtTs == 0L) "-" else transaction.createdAt().formatMediumWithTime()
         binding.confirmations = transactionStatusLook.confirmations
         binding.confirmationsRequired = transactionStatusLook.confirmationsRequired
         binding.canRBF = transactionStatusLook.canRBF
+        binding.isRefundableSwap = transactionStatusLook.isRefundableSwap
 
         val spv = transaction.spv
 

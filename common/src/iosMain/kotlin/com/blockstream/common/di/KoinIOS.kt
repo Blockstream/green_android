@@ -87,7 +87,6 @@ fun initKoinIos(
                 override fun recordFeedback(rating: Int, email: String?, comment: String) {
 
                 }
-
             }
         }
         single {

@@ -9,11 +9,16 @@ data class TransactionStatusLook(
     val confirmationsRequired: Int,
     val spv: Transaction.SPVResult,
     val isPendingCloseChannel: Boolean,
+    val isRefundableSwap: Boolean,
     val canRBF: Boolean,
 ) {
 
     val statusText
         get() = when {
+            isRefundableSwap -> {
+                "id_failed"
+            }
+
             confirmations == 0 -> {
                 "id_unconfirmed"
             }
@@ -46,7 +51,7 @@ data class TransactionStatusLook(
     val statusColor
         get() = if (confirmations < confirmationsRequired || spv.inProgressOrUnconfirmed()) {
             Color.LOW
-        } else if (spv == Transaction.SPVResult.NotVerified) {
+        } else if (isRefundableSwap || spv == Transaction.SPVResult.NotVerified) {
             Color.RED
         } else if (spv == Transaction.SPVResult.NotLongest) {
             Color.ORANGE
@@ -62,6 +67,7 @@ data class TransactionStatusLook(
                 confirmationsRequired = transaction.network.confirmationsRequired,
                 spv = transaction.spv,
                 isPendingCloseChannel = transaction.isPendingCloseChannel,
+                isRefundableSwap = transaction.isRefundableSwap,
                 canRBF = transaction.canRBF && !transaction.isIn && !session.isWatchOnly
             )
         }

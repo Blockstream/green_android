@@ -505,6 +505,9 @@
         <action
             android:id="@+id/action_transactionDetailsFragment_to_accountOverviewFragment"
             app:destination="@id/accountOverviewFragment" />
+        <action
+            android:id="@+id/action_transactionDetailsFragment_to_recoverFundsFragment"
+            app:destination="@id/recoverFundsFragment" />
     </fragment>
     <fragment
         android:id="@+id/sendFragment"

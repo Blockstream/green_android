@@ -28,11 +28,11 @@
 
 
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:orientation="vertical"
-                isVisible="@{vm.isRefund}"
                 app:layout_constraintTop_toBottomOf="@+id/addressLinearLayout">
 
                 <TextView
@@ -57,16 +57,16 @@
                             android:id="@+id/initialAddressTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginStart="16dp"
                             android:layout_marginTop="16dp"
                             android:layout_marginEnd="16dp"
                             android:layout_marginBottom="16dp"
-                            android:textColor="@color/color_on_surface_emphasis_low"
-                            android:lines="1"
+                            android:layout_weight="1"
                             android:ellipsize="middle"
+                            android:lines="1"
                             android:singleLine="true"
                             android:text="@{vm.onChainAddress}"
+                            android:textColor="@color/color_on_surface_emphasis_low"
                             tools:text="12341231312312313131231231231231231231231231" />
 
                     </LinearLayout>
@@ -76,10 +76,10 @@
             </LinearLayout>
 
             <LinearLayout
+                layoutMarginBottom="@{vm.hasBitcoinAccount ? @dimen/dp0 : @dimen/dp16}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                layoutMarginBottom="@{vm.hasBitcoinAccount ? @dimen/dp0 : @dimen/dp16}">
+                android:orientation="vertical">
 
                 <TextView
                     style="@style/TextAppearance.Green.Overline"
@@ -87,7 +87,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:layout_marginBottom="2dp"
-                    android:text="@string/id_receive" />
+                    android:text="@string/id_receive_on" />
 
                 <FrameLayout
                     android:layout_width="match_parent"
@@ -190,17 +190,17 @@
 
                 <com.google.android.material.button.MaterialButtonToggleGroup
                     android:id="@+id/showAddressToggle"
+                    isVisible="@{vm.hasBitcoinAccount}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    isVisible="@{vm.hasBitcoinAccount}">
+                    android:layout_gravity="end">
 
                     <Button
                         android:id="@+id/buttonShowAddress"
                         style="@style/Widget.Green.Button.Outlined.Tiny"
-                        android:enabled="@{!vm.onProgress}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:enabled="@{!vm.onProgress}"
                         android:text="@string/id_show_address" />
 
                 </com.google.android.material.button.MaterialButtonToggleGroup>
@@ -208,11 +208,11 @@
             </LinearLayout>
 
             <LinearLayout
+                isVisible="@{vm.amount != null}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:orientation="vertical"
-                isVisible="@{vm.amount != null}"
                 app:layout_constraintTop_toBottomOf="@+id/addressLinearLayout">
 
                 <TextView
@@ -288,102 +288,209 @@
                             isInvisible="@{vm.feeAmountRate.empty}"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:layout_marginEnd="16dp"
                             android:includeFontPadding="false"
                             android:text="@{`(`+vm.feeAmountRate+`)`}"
                             android:textAppearance="?attr/textAppearanceBodySmall"
                             android:textColor="@color/color_on_surface_emphasis_medium"
-                            android:textSize="11sp"
-                            app:layout_constraintEnd_toEndOf="parent"
+                            android:textSize="11dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="16dp"
+                            app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             tools:text="(1.00 satoshi / vbyte)" />
 
+                        <TextView
+                            android:id="@+id/feeAmount"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginEnd="8dp"
+                            android:includeFontPadding="false"
+                            android:text="@{vm.fee}"
+                            android:textAlignment="textEnd"
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                            app:layout_constraintEnd_toStartOf="@+id/buttonEditFee"
+                            app:layout_constraintStart_toEndOf="@+id/feeRate"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:text="0.00000001 BTC" />
+
+                        <TextView
+                            android:id="@+id/feeAmountFiat"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="1dp"
+                            android:text="@{vm.feeFiat}"
+                            android:textAlignment="textEnd"
+                            android:includeFontPadding="false"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            app:layout_constraintEnd_toEndOf="@+id/feeAmount"
+                            app:layout_constraintStart_toEndOf="@+id/feeRate"
+                            app:layout_constraintTop_toBottomOf="@+id/feeAmount"
+                            tools:text="1.00 USD" />
+
+                        <ImageButton
+                            android:id="@+id/buttonEditFee"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_marginEnd="8dp"
+                            android:adjustViewBounds="true"
+                            android:background="@android:color/transparent"
+                            android:paddingTop="4dp"
+                            android:paddingBottom="4dp"
+                            android:scaleType="centerInside"
+                            android:src="@drawable/ic_pencil_simple_line"
+                            app:layout_constraintBottom_toBottomOf="@+id/feeAmountFiat"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/feeAmount" />
+
+                        <androidx.constraintlayout.widget.Barrier
+                            android:id="@+id/barrier"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:barrierDirection="bottom"
+                            app:barrierAllowsGoneWidgets="false"
+                            app:constraint_referenced_ids="feeRate,feeAmountFiat" />
+
                         <com.google.android.material.slider.Slider
                             android:id="@+id/feeSlider"
+                            slider="@={vm.feeSlider}"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
                             android:layout_marginEnd="16dp"
-                            android:layout_marginBottom="12dp"
+                            android:layout_marginBottom="16dp"
                             android:contentDescription="@string/id_fee"
                             android:stepSize="1"
-                            slider="@={vm.feeSlider}"
                             android:valueFrom="0"
-                            android:valueTo="3"
+                            android:valueTo="4"
                             app:labelBehavior="floating"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/feeRate"
+                            app:layout_constraintTop_toBottomOf="@+id/barrier"
                             app:tickVisible="true" />
 
-                        <androidx.constraintlayout.widget.Guideline
-                            android:id="@+id/guidelineSlow"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            app:layout_constraintGuide_percent="0.33" />
-
-                        <androidx.constraintlayout.widget.Guideline
-                            android:id="@+id/guidelineMedium"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            app:layout_constraintGuide_percent="0.66" />
 
                         <ImageView
+                            android:id="@+id/imageViewEdit5"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="6dp"
                             android:adjustViewBounds="true"
                             android:src="@drawable/ic_baseline_keyboard_double_arrow_right_18"
-                            app:layout_constraintBottom_toBottomOf="@+id/imageView6"
+                            app:layout_constraintBottom_toBottomOf="@+id/imageViewEdit"
                             app:layout_constraintEnd_toEndOf="@+id/feeSlider"
-                            app:layout_constraintTop_toTopOf="@+id/imageView6"
+                            app:layout_constraintStart_toEndOf="@+id/imageViewEdit3"
                             app:tint="@color/brand_green" />
 
+
                         <ImageView
-                            android:id="@+id/imageView6"
+                            android:id="@+id/imageViewEdit3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="-1dp"
                             android:adjustViewBounds="true"
                             android:alpha="0.7"
                             android:src="@drawable/ic_baseline_keyboard_arrow_right_18"
-                            app:layout_constraintBottom_toBottomOf="@+id/imageView5"
-                            app:layout_constraintEnd_toStartOf="@+id/guidelineMedium"
-                            app:layout_constraintTop_toTopOf="@+id/imageView5"
+                            app:layout_constraintBottom_toBottomOf="@+id/imageViewEdit"
+                            app:layout_constraintEnd_toStartOf="@+id/imageViewEdit5"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintStart_toEndOf="@+id/imageViewEdit2"
                             app:tint="@color/brand_green" />
 
                         <ImageView
-                            android:id="@+id/imageView5"
+                            android:id="@+id/imageViewEdit2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="4dp"
-                            android:layout_marginBottom="-5dp"
                             android:adjustViewBounds="true"
                             android:alpha="0.5"
                             android:src="@drawable/ic_baseline_keyboard_arrow_right_18"
-                            app:layout_constraintBottom_toBottomOf="@+id/feeSlider"
-                            app:layout_constraintStart_toStartOf="@+id/guidelineSlow"
+                            app:layout_constraintBottom_toBottomOf="@+id/imageViewEdit"
+                            app:layout_constraintEnd_toStartOf="@+id/imageViewEdit3"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintStart_toEndOf="@+id/imageViewEdit1"
                             app:tint="@color/brand_green" />
 
                         <ImageView
+                            android:id="@+id/imageViewEdit1"
                             android:layout_width="18dp"
                             android:layout_height="18dp"
-                            android:layout_marginStart="7dp"
                             android:adjustViewBounds="true"
                             android:alpha="0.3"
                             android:src="@drawable/ic_baseline_keyboard_arrow_right_18"
-                            app:layout_constraintBottom_toBottomOf="@+id/imageView5"
+                            app:layout_constraintBottom_toBottomOf="@+id/imageViewEdit"
+                            app:layout_constraintEnd_toStartOf="@+id/imageViewEdit2"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintStart_toEndOf="@+id/imageViewEdit"
+                            app:tint="@color/brand_green" />
+
+                        <ImageView
+                            android:id="@+id/imageViewEdit"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_marginStart="6dp"
+                            android:layout_marginBottom="-8dp"
+                            android:adjustViewBounds="true"
+                            android:alpha="0.5"
+                            android:src="@drawable/ic_pencil_simple_line"
+                            app:layout_constraintBottom_toBottomOf="@+id/feeSlider"
+                            app:layout_constraintEnd_toStartOf="@+id/imageViewEdit1"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintHorizontal_chainStyle="spread_inside"
+                            app:layout_constraintStart_toEndOf="@+id/feeSlider"
                             app:layout_constraintStart_toStartOf="@+id/feeSlider"
-                            app:layout_constraintTop_toTopOf="@+id/imageView5"
                             app:tint="@color/brand_green" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                gdkError="@{vm.error}"
+                android:layout_marginTop="24dp"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="@color/error"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="24dp"
+                isVisible="@{vm.amountToBeRefunded != null &amp;&amp; vm.error == null}">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/id_amount_to_be_refunded"
+                    android:textAppearance="?attr/textAppearanceLabelLarge"
+                    android:textColor="@color/color_on_surface_emphasis_low"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@{vm.amountToBeRefunded}"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="@color/color_on_surface_emphasis_high"
+                        tools:text="0,123 BTC" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{vm.amountToBeRefundedFiat}"
+                        android:textAppearance="?attr/textAppearanceTitleSmall"
+                        android:textColor="@color/color_on_surface_emphasis_low"
+                        tools:text="24,63 USD" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
@@ -397,12 +504,12 @@
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="24dp"
-            android:enabled="@{!vm.onProgress &amp;&amp; !vm.address.empty}"
+            android:enabled="@{!vm.onProgress &amp;&amp; !vm.address.empty &amp;&amp; !vm.feeAmountRate.empty &amp;&amp; vm.error == null}"
             android:text="@{vm.isRefund ? @string/id_confirm_refund : @string/id_confirm}"
-            tools:text="@string/id_confirm_refund"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="@string/id_confirm_refund" />
 
 
         <com.google.android.material.progressindicator.LinearProgressIndicator

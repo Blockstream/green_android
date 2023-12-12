@@ -11,8 +11,18 @@ import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.utils.getBitcoinOrLiquidUnit
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 
 fun <T : Any> GdkSession.ifConnected(block: () -> T?): T? {
+    return if (this.isConnected) {
+        block()
+    } else {
+        null
+    }
+}
+
+@NativeCoroutinesIgnore
+suspend fun <T : Any> GdkSession.ifConnectedSuspend(block: suspend () -> T?): T? {
     return if (this.isConnected) {
         block()
     } else {

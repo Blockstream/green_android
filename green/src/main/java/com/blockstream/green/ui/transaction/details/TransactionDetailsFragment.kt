@@ -16,6 +16,8 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.views.TransactionDetailsLook
 import com.blockstream.green.R
 import com.blockstream.green.databinding.BaseRecyclerViewBinding
+import com.blockstream.green.databinding.ListItemActionBinding
+import com.blockstream.green.databinding.ListItemButtonActionBinding
 import com.blockstream.green.databinding.ListItemOverlineTextBinding
 import com.blockstream.green.databinding.ListItemTransactionHashBinding
 import com.blockstream.green.databinding.ListItemTransactionNoteBinding
@@ -30,6 +32,7 @@ import com.blockstream.green.ui.bottomsheets.AssetDetailsBottomSheetFragment
 import com.blockstream.green.ui.bottomsheets.MenuBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.MenuDataProvider
 import com.blockstream.green.ui.bottomsheets.NoteBottomSheetDialogFragment
+import com.blockstream.green.ui.items.ActionListItem
 import com.blockstream.green.ui.items.MenuListItem
 import com.blockstream.green.ui.items.NoteListItem
 import com.blockstream.green.ui.items.OverlineTextListItem
@@ -178,11 +181,28 @@ class TransactionDetailsFragment : AbstractAccountWalletFragment<BaseRecyclerVie
             }
         }
 
+        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.button }) { _, _, _, binding ->
+            navigate(
+                TransactionDetailsFragmentDirections.actionTransactionDetailsFragmentToRecoverFundsFragment(
+                    wallet = wallet,
+                    address = args.transaction.inputs.first().address ?: "",
+                    amount = args.transaction.satoshiPolicyAsset
+                )
+            )
+
+        }
+
         fastAdapter.onClickListener = { _, _, item: GenericItem, _: Int ->
             when (item) {
                 is TransactionUtxoListItem -> {
-                    item.txOutput?.assetId?.also {
-                        AssetDetailsBottomSheetFragment.show(assetId = it, account = account, childFragmentManager)
+                    if(network.isLiquid) {
+                        item.txOutput?.assetId?.also {
+                            AssetDetailsBottomSheetFragment.show(
+                                assetId = it,
+                                account = account,
+                                childFragmentManager
+                            )
+                        }
                     }
                 }
             }
@@ -287,6 +307,10 @@ class TransactionDetailsFragment : AbstractAccountWalletFragment<BaseRecyclerVie
                 text = StringHolder(it.first),
                 url = it.second
             )
+        }
+
+        if(transaction.isRefundableSwap){
+            list += ActionListItem(button = StringHolder(R.string.id_initiate_refund))
         }
 
         transaction.plaintext?.also {

@@ -105,13 +105,13 @@ data class Transaction(
 
     @IgnoredOnParcel
     val utxoViews : List<UtxoView> by lazy {
-        if(account.isLightning){
+        if (account.isLightning) {
             return@lazy listOf(
                 UtxoView(
-                assetId = BTC_POLICY_ASSET,
-                satoshi = satoshi[BTC_POLICY_ASSET],
-                isChange = false
-            )
+                    address = inputs.firstOrNull()?.address,
+                    satoshi = satoshi[BTC_POLICY_ASSET],
+                    isChange = false
+                )
             )
         }
         if(txType == Type.OUT && network.isLiquid){
