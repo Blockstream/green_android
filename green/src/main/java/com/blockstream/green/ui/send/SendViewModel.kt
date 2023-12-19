@@ -115,7 +115,7 @@ class SendViewModel constructor(
 
             // Set initial fee slider value
             if(feeSlider.value == null){
-                feeSlider.value = SliderHighIndex.toFloat()
+                feeSlider.value = SliderLowIndex.toFloat()
             }
 
             session.getSettings(network)?.let {
@@ -206,7 +206,7 @@ class SendViewModel constructor(
             // skip if custom fee is selected
             if (feeSlider.value?.toInt() != SliderCustomIndex) {
                 // update based on current slider selection
-                feeRate = feeEstimation?.getOrNull(FeeBlockTarget[3 - (feeSlider.value ?: SliderHighIndex).toInt()])
+                feeRate = feeEstimation?.getOrNull(FeeBlockTarget[3 - (feeSlider.value ?: SliderLowIndex).toInt()])
 
                 // Update fee
                 checkTransaction()
@@ -612,7 +612,7 @@ class SendViewModel constructor(
 
     companion object : KLogging() {
         const val SliderCustomIndex = 0
-        const val SliderHighIndex = 3
+        const val SliderLowIndex = 1
     }
 
     suspend fun getAmountToConvert(): String{

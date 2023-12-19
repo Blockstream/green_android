@@ -21,7 +21,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -87,7 +86,7 @@ class SessionManager constructor(
 
     private var timeoutTimers = mutableListOf<Timer>()
 
-    val pendingUri: Channel<String?> = Channel(capacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    val pendingUri: MutableStateFlow<String?> = MutableStateFlow(null)
 
     private val _connectionChangeEvent = MutableSharedFlow<Unit>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST).also {
         // Set initial value

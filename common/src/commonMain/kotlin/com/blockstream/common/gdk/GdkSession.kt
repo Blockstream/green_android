@@ -702,7 +702,8 @@ class GdkSession constructor(
         _multisigBitcoinWatchOnly.value = null
         _multisigLiquidWatchOnly.value = null
 
-        _accountEmptiedEvent = null
+        // Clear HW derived lightning mnemonic
+        _derivedHwLightningMnemonic = null
 
         // Clear Cache
         _twoFactorConfigCache = mutableMapOf()
@@ -726,6 +727,7 @@ class GdkSession constructor(
         _tempAllowedServers.clear()
 
         _walletActiveEventInvalidated = true
+        _accountEmptiedEvent = null
 
         val gaSessionToBeDestroyed = gdkSessions.values.toList()
 
@@ -894,6 +896,10 @@ class GdkSession constructor(
     }
 
     private fun initLightningSdk(lightningMnemonic: String?) {
+        if(isHardwareWallet){
+            _derivedHwLightningMnemonic = lightningMnemonic
+        }
+
         val lightningLoginData = getWalletIdentifier(
             network = defaultNetwork,
             loginCredentialsParams = lightningMnemonic?.let { LoginCredentialsParams(mnemonic = it) },
@@ -1614,9 +1620,10 @@ class GdkSession constructor(
         return authHandler(network, gdk.getCredentials(gdkSession(network), params)).result()
     }
 
+    private var _derivedHwLightningMnemonic: String? = null
     fun deriveLightningMnemonic(credentials: Credentials? = null): String {
         if (isHardwareWallet && credentials == null) {
-            throw Exception("HWW can't derive lightning mnemonic")
+            return _derivedHwLightningMnemonic ?: throw Exception("HWW can't derive lightning mnemonic")
         }
 
         return (credentials ?: getCredentials()).let{
@@ -1864,9 +1871,11 @@ class GdkSession constructor(
         lightningSdkOrNull?.sync()
     }
 
-    private fun getLightningTransactions() = Transactions(transactions = lightningSdk.getTransactions()?.map {
+    private fun getLightningTransactions() = lightningSdkOrNull?.getTransactions()?.map {
         Transaction.fromPayment(it)
-    } ?: listOf(Transaction.LoadingTransaction))
+    }.let {
+        Transactions(transactions = it ?: listOf(Transaction.LoadingTransaction))
+    }
 
     private val accountsAndBalancesMutex = Mutex()
     fun updateAccountsAndBalances(
@@ -2117,7 +2126,7 @@ class GdkSession constructor(
 
     fun getBalance(account: Account, confirmations: Int = 0, cacheAssets: Boolean = false): Assets {
         val assets: LinkedHashMap<String, Long>? = if(account.isLightning) {
-            lightningSdk.balance()?.let { linkedMapOf(BTC_POLICY_ASSET to it) }
+            lightningSdkOrNull?.balance()?.let { linkedMapOf(BTC_POLICY_ASSET to it) }
         } else {
             authHandler(
                 account.network, gdk.getBalance(

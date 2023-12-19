@@ -50,6 +50,7 @@ import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -137,8 +138,9 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
         }
 
         // Handle pending URI (BIP-21 or lightning)
-        sessionManager.pendingUri.consumeAsFlow().filterNotNull().onEach {
+        sessionManager.pendingUri.filterNotNull().onEach {
             viewModel.setUri(it)
+            sessionManager.pendingUri.value = null
             snackbar(R.string.id_address_was_filled_by_a_payment)
         }.launchIn(lifecycleScope)
 

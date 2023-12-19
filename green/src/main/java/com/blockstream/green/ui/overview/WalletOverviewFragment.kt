@@ -75,6 +75,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -152,8 +153,9 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
         }
 
         // Handle pending URI (BIP-21 or lightning)
-        sessionManager.pendingUri.consumeAsFlow().filterNotNull().onEach {
+        sessionManager.pendingUri.filterNotNull().onEach {
             handleUserInput(it, false)
+            sessionManager.pendingUri.value = null
         }.launchIn(lifecycleScope)
 
         binding.vm = viewModel

@@ -230,7 +230,7 @@ class Countly constructor(
     }
 
     override fun showFeedbackWidget(supportFragmentManager: FragmentManager) {
-        (feedbackWidget as? CountlyFeedbackWidget)?.type.also { type ->
+        feedbackWidget?.type.also { type ->
             if(type == ModuleFeedback.FeedbackWidgetType.nps){
                 CountlyNpsDialogFragment.show(supportFragmentManager)
             }else if(type == ModuleFeedback.FeedbackWidgetType.survey){

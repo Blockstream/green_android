@@ -3,6 +3,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.22] - 2023-12-19
+
+### Changed
+- Add a NoCountly no-op class to FDroid build
+- Updated project dependencies
+- Bump Breez to version 0.2.12
+
+### Fixed
+- Fix emergency recovery phrase restore
+- Fix Account Overview crash
+
 ## [4.0.21] - 2023-12-06
 
 ### Fixed

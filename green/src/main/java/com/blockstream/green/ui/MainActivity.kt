@@ -436,8 +436,7 @@ class MainActivity : AppActivity() {
     private fun handleIntent(intent: Intent?) {
         // Handle Uri (BIP-21 or lightning)
         intent?.data?.let {
-
-            sessionManager.pendingUri.trySend(it.toString())
+            sessionManager.pendingUri.value = it.toString()
 
             if(navController.currentDestination?.id == R.id.homeFragment) {
                 Snackbar.make(
@@ -445,7 +444,7 @@ class MainActivity : AppActivity() {
                     R.string.id_you_have_clicked_a_payment_uri,
                     Snackbar.LENGTH_LONG
                 ).setAction(R.string.id_cancel) {
-                    sessionManager.pendingUri.trySend(null)
+                    sessionManager.pendingUri.value = null
                 }.show()
             }
         }
