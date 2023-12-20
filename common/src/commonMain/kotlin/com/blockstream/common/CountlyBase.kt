@@ -272,13 +272,35 @@ import kotlin.properties.Delegates
              }
 
      fun accountSegmentation(session: GdkSession, account: Account?): HashMap<String, Any> =
-         sessionSegmentation(session)
-             .also { segmentation ->
+         accountSegmentation(segmentation = sessionSegmentation(session), account = account)
+
+     fun accountSegmentation(
+         segmentation: HashMap<String, Any>,
+         account: Account?
+     ): HashMap<String, Any> =
+         segmentation
+             .also {
                  account?.also { account ->
                      segmentation[PARAM_ACCOUNT_TYPE] = account.type.gdkType
                      segmentation[PARAM_ACCOUNT_NETWORK] = account.countlyId
                  }
              }
+
+     fun walletSegmentation(
+         session: GdkSession,
+         walletHasFunds: Boolean,
+         accountsFunded: Int,
+         accounts: List<Account>
+     ): HashMap<String, Any> {
+         return sessionSegmentation(session).also { segmentation ->
+
+             segmentation[PARAM_WALLET_FUNDED] = walletHasFunds
+             segmentation[PARAM_ACCOUNTS_FUNDED] = accountsFunded // number of funded accounts
+
+             segmentation[PARAM_ACCOUNTS] = accounts.size
+             segmentation[PARAM_ACCOUNTS_TYPES] = accounts.map { it.type.gdkType }.toSet().sorted().joinToString(",")
+         }
+     }
 
      private fun apmEvent(event: Events): String{
          return if(settingsManager.appSettings.tor){
@@ -320,14 +342,12 @@ import kotlin.properties.Delegates
          traceEnd(apmEvent(Events.WALLET_ACTIVE))
          eventEnd(
              Events.WALLET_ACTIVE.toString(),
-             sessionSegmentation(session).also { segmentation ->
-
-                 segmentation[PARAM_WALLET_FUNDED] = walletHasFunds
-                 segmentation[PARAM_ACCOUNTS_FUNDED] = accountsFunded // number of funded accounts
-
-                 segmentation[PARAM_ACCOUNTS] = accounts.size
-                 segmentation[PARAM_ACCOUNTS_TYPES] = accounts.map { it.type.gdkType }.toSet().sorted().joinToString(",")
-             }
+             walletSegmentation(
+                 session = session,
+                 walletHasFunds = walletHasFunds,
+                 accountsFunded = accountsFunded,
+                 accounts = accounts
+             )
          )
      }
 
@@ -433,6 +453,23 @@ import kotlin.properties.Delegates
          )
      }
 
+     fun accountEmptied(session: GdkSession,
+                        walletHasFunds: Boolean,
+                        accountsFunded: Int,
+                        accounts: List<Account>,
+                        account: Account?) {
+         eventRecord(Events.ACCOUNT_EMPTIED.toString(),
+             accountSegmentation(
+                 segmentation = walletSegmentation(
+                     session = session,
+                     walletHasFunds = walletHasFunds,
+                     accountsFunded = accountsFunded,
+                     accounts = accounts
+                 ), account = account
+             )
+         )
+     }
+
      fun assetChange(session: GdkSession) {
          eventRecord(Events.ASSET_CHANGE.toString(),
              sessionSegmentation(session = session))
@@ -448,6 +485,16 @@ import kotlin.properties.Delegates
              Events.ACCOUNT_CREATE.toString(),
              accountSegmentation(session, account = account)
          )
+     }
+
+     fun hideAmount(session: GdkSession) {
+         eventRecord(Events.HIDE_AMOUNT.toString(),
+             sessionSegmentation(session = session))
+     }
+
+     fun preferredUnits(session: GdkSession) {
+         eventRecord(Events.PREFERRED_UNITS.toString(),
+             sessionSegmentation(session = session))
      }
 
      fun balanceConvert(session: GdkSession) {
@@ -665,6 +712,10 @@ import kotlin.properties.Delegates
          ACCOUNT_SELECT("account_select"),
          ACCOUNT_CREATE("account_create"),
          ACCOUNT_RENAME("account_rename"),
+         ACCOUNT_EMPTIED("account_emptied"),
+
+         HIDE_AMOUNT("hide_amount"),
+         PREFERRED_UNITS("preferred_units"),
 
          BALANCE_CONVERT("balance_convert"),
          ASSET_CHANGE("asset_change"),

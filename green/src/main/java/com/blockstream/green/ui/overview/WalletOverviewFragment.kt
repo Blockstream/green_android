@@ -551,6 +551,10 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                     )
                 }
             )
+
+            if (settingsManager.appSettings.hideAmounts) {
+                countly.hideAmount(session)
+            }
         }
 
         fastAdapter.addClickListener<ListItemWalletBalanceBinding, GenericItem>({ binding -> binding.assetsIcons }) { _, _, _, _ ->
@@ -563,6 +567,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                 walletBalanceListItem.reset(viewModel.balanceDenomination.value)
                 fastAdapter.notifyAdapterDataSetChanged()
             }
+            countly.preferredUnits(session)
         }
 
         fastAdapter.addClickListener<ListItemWalletBalanceBinding, GenericItem>({ binding -> binding.assetsTextView }) { _, _, _, _ ->

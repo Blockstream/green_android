@@ -67,7 +67,7 @@ class SendConfirmViewModel constructor(
                     session.broadcastTransaction(network, signedTransaction.transaction ?: "")
                 } else {
                     session.sendTransaction(
-                        network = network,
+                        account = accountValue,
                         signedTransaction = signedTransaction,
                         twoFactorResolver = twoFactorResolver
                     )
@@ -88,6 +88,7 @@ class SendConfirmViewModel constructor(
                     transactionSegmentation = transactionSegmentation,
                     withMemo = transactionNote.isNotBlank()
                 )
+
                 postSideEffect(SideEffects.Navigate(it))
             }else{
                 onProgressAndroid.value = false

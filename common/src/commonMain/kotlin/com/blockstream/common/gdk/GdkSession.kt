@@ -417,7 +417,8 @@ class GdkSession constructor(
 
     val starsOrNull: String? get() = "*****".takeIf { hideAmounts }
 
-    private var walletActiveEventInvalidated = true
+    private var _accountEmptiedEvent: Account? = null
+    private var _walletActiveEventInvalidated = true
 
     var lightningSdkOrNull: LightningBridge? = null
         private set
@@ -701,6 +702,8 @@ class GdkSession constructor(
         _multisigBitcoinWatchOnly.value = null
         _multisigLiquidWatchOnly.value = null
 
+        _accountEmptiedEvent = null
+
         // Clear Cache
         _twoFactorConfigCache = mutableMapOf()
 
@@ -722,7 +725,7 @@ class GdkSession constructor(
 
         _tempAllowedServers.clear()
 
-        walletActiveEventInvalidated = true
+        _walletActiveEventInvalidated = true
 
         val gaSessionToBeDestroyed = gdkSessions.values.toList()
 
@@ -1219,7 +1222,7 @@ class GdkSession constructor(
         this.device = device
 
         blockNotificationHandling = true
-        walletActiveEventInvalidated = true
+        _walletActiveEventInvalidated = true
 
         val connectedNetworks = connect(
             network = prominentNetwork,
@@ -1671,7 +1674,7 @@ class GdkSession constructor(
                     it.networkInjected = network
                 }
         }.also {
-            walletActiveEventInvalidated = true
+            _walletActiveEventInvalidated = true
 
             // Update account list
             updateAccounts()
@@ -1938,6 +1941,7 @@ class GdkSession constructor(
                 e.printStackTrace()
                 countly.recordException(e)
             } finally {
+                accountEmptiedEventIfNeeded()
                 walletActiveEventIfNeeded()
             }
         }
@@ -2412,18 +2416,22 @@ class GdkSession constructor(
             gdkSession(network),
             transaction
         )
-    )
+    ).also {
+        _walletActiveEventInvalidated = true
+    }
 
     fun sendTransaction(
-        network: Network,
+        account: Account,
         signedTransaction: CreateTransaction,
         twoFactorResolver: TwoFactorResolver
-    ): SendTransactionSuccess = if (network.isLightning) {
+    ): SendTransactionSuccess = if (account.network.isLightning) {
         val invoiceOrLnUrl = signedTransaction.addressees.first().address
         val satoshi = signedTransaction.addressees.first().satoshi?.absoluteValue ?: 0L
         val comment = signedTransaction.memo
 
         Logger.d { "invoiceOrLnUrl: $invoiceOrLnUrl satoshi: $satoshi comment: $comment " }
+
+        _walletActiveEventInvalidated = true
 
         when (val inputType = lightningSdk.parseBoltOrLNUrlAndCache(invoiceOrLnUrl)) {
             is InputType.Bolt11 -> {
@@ -2447,7 +2455,7 @@ class GdkSession constructor(
                         ErrorReport.create(
                             throwable = e,
                             paymentHash = inputType.invoice.paymentHash,
-                            network = network,
+                            network = account.network,
                             session = this
                         )
                     )
@@ -2474,7 +2482,7 @@ class GdkSession constructor(
                                 ErrorReport.create(
                                     throwable = exception,
                                     paymentHash = it.data.paymentHash,
-                                    network = network,
+                                    network = account.network,
                                     session = this
                                 )
                             )
@@ -2487,22 +2495,40 @@ class GdkSession constructor(
                 throw Exception("id_invalid")
             }
         }
-    }else{
+    } else {
         authHandler(
-            network,
-            gdk.sendTransaction(gdkSession(network), transaction = signedTransaction.jsonElement!!)
-        ).result<SendTransactionSuccess>(twoFactorResolver = twoFactorResolver)
+            account.network,
+            gdk.sendTransaction(gdkSession(account.network), transaction = signedTransaction.jsonElement!!)
+        ).result<SendTransactionSuccess>(twoFactorResolver = twoFactorResolver).also {
+            if(signedTransaction.isSendAll){
+                _accountEmptiedEvent = account
+            }
+        }
+    }
+
+    private fun accountEmptiedEventIfNeeded() {
+        _accountEmptiedEvent?.also { account ->
+            countly.accountEmptied(
+                session = this@GdkSession,
+                walletHasFunds = walletAssets.value.hasFunds,
+                accountsFunded = _accountAssetsFlow.values.map { it.value.hasFunds }
+                    .count { it },
+                accounts = this@GdkSession.accounts.value,
+                account = account
+            )
+            _accountEmptiedEvent = null
+        }
     }
 
     private fun walletActiveEventIfNeeded(){
-        if(walletActiveEventInvalidated) {
+        if(_walletActiveEventInvalidated) {
             countly.activeWalletEnd(
                 session = this,
                 walletHasFunds = walletAssets.value.hasFunds,
                 accountsFunded = _accountAssetsFlow.values.map { it.value.hasFunds }.count { it },
                 accounts = this.accounts.value
             )
-            walletActiveEventInvalidated = false
+            _walletActiveEventInvalidated = false
         }
     }
 
