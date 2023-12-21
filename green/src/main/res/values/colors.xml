@@ -27,6 +27,12 @@
     <color name="md_theme_dark_background_variant">#0E1016</color>
     <color name="md_theme_dark_onBackground">#ffffff</color>
 
+    <color name="md_theme_dark_surface_container_low">#222226</color>
+    <color name="md_theme_dark_surface_container_lowest">#222226</color> <!--  bottom sheet  -->
+    <color name="md_theme_dark_surface_container">#37373d</color> <!--  auto complete  -->
+    <color name="md_theme_dark_surface_container_high">#222226</color> <!--  dialogs  -->
+    <color name="md_theme_dark_surface_container_highest">#222226</color> <!--  cards  -->
+
     <color name="md_theme_dark_surface">#222226</color>
     <color name="md_theme_dark_onSurface">#ffffff</color>
     <color name="md_theme_dark_surfaceVariant">#222226</color> <!--  card, text fields  -->
