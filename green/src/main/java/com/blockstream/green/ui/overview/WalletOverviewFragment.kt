@@ -378,7 +378,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                     }
 
                     override fun longClickListener(view: View, position: Int) {
-                        if(session.isLightningShortcut) return
+                        if(session.isLightningShortcut || session.isWatchOnly) return
                         val account = viewModel.accounts[position]
 
                         val menu = if(account.isLightning) R.menu.menu_account_remove else if (viewModel.accounts.size == 1) R.menu.menu_account else R.menu.menu_account_archive
