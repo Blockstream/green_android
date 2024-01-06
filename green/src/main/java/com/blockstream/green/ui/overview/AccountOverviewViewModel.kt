@@ -146,12 +146,4 @@ class AccountOverviewViewModel constructor(
 
         })
     }
-
-    fun closeChannel(){
-        doUserAction({
-            session.lightningSdk.closeLspChannels()
-        }, onSuccess = {
-            postSideEffect(SideEffects.Dialog("id_close_channel", "id_channel_closure_initiated_you"))
-        })
-    }
 }

@@ -105,7 +105,7 @@ class LightningNodeBottomSheetFragment :
 
             list += buttonActions
 
-            buttonActions.buttonOutline = if(it.channelsBalanceSatoshi() > 0) StringHolder(R.string.id_close_channel) else StringHolder()
+//            buttonActions.buttonOutline = if(it.channelsBalanceSatoshi() > 0) StringHolder(R.string.id_close_channel) else StringHolder()
 
             itemAdapter.set(list)
 
@@ -119,7 +119,6 @@ class LightningNodeBottomSheetFragment :
         }
 
         fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.buttonOutline }) { button, _, _, _ ->
-            (parentFragment as? AccountOverviewFragment)?.viewModel?.closeChannel()
             (button as? Button)?.isEnabled = false
         }
 
