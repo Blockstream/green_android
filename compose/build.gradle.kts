@@ -30,23 +30,29 @@ kotlin {
 }
 
 dependencies {
+    /**  --- Modules ---------------------------------------------------------------------------- */
     implementation(project(":common"))
+    /** ----------------------------------------------------------------------------------------- */
 
+    /**  --- Compose ---------------------------------------------------------------------------- */
     implementation(platform(libs.compose.bom))
     androidTestImplementation(platform(libs.compose.bom))
-
-    implementation(libs.compose.material3)
 
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     implementation(libs.compose.ui.tooling.preview)
-    debugImplementation(libs.compose.ui.tooling)
-    debugImplementation(libs.compose.ui.test.manifest)
-
     implementation(libs.androidx.activity.compose)
 
-    /**  --- QR Scanner ------------------------------------------------------------------------- */
-    implementation(libs.zxing.core) // API <= 24 compatibility
+    debugImplementation(libs.compose.ui.tooling)
+    debugImplementation(libs.compose.ui.test.manifest)
+    /** ----------------------------------------------------------------------------------------- */
+
+    /**  --- Material --------------------------------------------------------------------------- */
+    implementation(libs.compose.material3)
+    /** ----------------------------------------------------------------------------------------- */
+
+    /**  --- Compose QR Code -------------------------------------------------------------------- */
+    implementation(libs.compose.qr.code)
     /** ----------------------------------------------------------------------------------------- */
 }

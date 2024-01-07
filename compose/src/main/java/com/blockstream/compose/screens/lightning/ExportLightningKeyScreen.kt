@@ -4,7 +4,6 @@ package com.blockstream.compose.screens.lightning
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.aspectRatio
@@ -24,7 +23,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,8 +37,8 @@ import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.headlineLarge
-import com.blockstream.compose.utils.rememberQrBitmapPainter
 import com.blockstream.compose.views.ScreenContainer
+import com.lightspark.composeqr.QrCodeView
 
 @Composable
 fun ExportLightningKeyScreen(
@@ -57,9 +55,8 @@ fun ExportLightningKeyScreen(
             )
 
             val qrCode by viewModel.bcurPart.collectAsState()
-            val qrPainter = qrCode?.let { rememberQrBitmapPainter(it) }
 
-            if (isFullscreen && qrPainter != null) {
+            if (isFullscreen) {
                 Dialog(
                     onDismissRequest = { isFullscreen = false },
                     properties = DialogProperties(
@@ -73,20 +70,17 @@ fun ExportLightningKeyScreen(
                         ),
                         modifier = Modifier
                             .aspectRatio(1f)
-                            .padding(8.dp)
                             .fillMaxWidth()
                             .fillMaxHeight()
                             .clickable { isFullscreen = false }
                     ) {
-                        Image(
-                            painter = qrPainter,
-                            contentDescription = null,
-                            contentScale = ContentScale.FillBounds,
+                        QrCodeView(
+                            data = qrCode ?: "",
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .fillMaxHeight(),
+                                .fillMaxHeight()
+                                .padding(12.dp)
                         )
-
                     }
                 }
             }
@@ -110,16 +104,13 @@ fun ExportLightningKeyScreen(
                         },
                     )
             ) {
-                qrPainter?.also {
-                    Image(
-                        painter = it,
-                        contentDescription = null,
-                        contentScale = ContentScale.FillBounds,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight(),
-                    )
-                }
+                QrCodeView(
+                    data = qrCode ?: "",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .padding(12.dp)
+                )
             }
 
             GreenButton(
@@ -134,7 +125,7 @@ fun ExportLightningKeyScreen(
 }
 
 @Composable
-@Preview
+@Preview(widthDp = 400, heightDp = 600)
 fun ExportLightningKeyScreenPreview() {
     GreenTheme {
         ExportLightningKeyScreen(ExportLightningKeyViewModelPreview.preview())

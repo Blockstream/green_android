@@ -5,11 +5,11 @@ kotlinx-coroutines = "1.7.3"
 kotlinx-datetime = "0.4.1"
 kotlinx-serialization = "1.6.2"
 kotlin-ksp = "1.9.21-1.0.15"
-android-gradle-plugin = "8.2.0"
+android-gradle-plugin = "8.2.1"
 atomicfu = "0.23.1"
 androidCompileSdk = "34"
 androidTargetSdk = "34"
-androidMinSdk = "23"
+androidMinSdk = "24"
 buildTools = "34.0.0"
 breez = "0.2.12"
 activity-ktx = "1.8.2"
@@ -68,7 +68,7 @@ usb-serial = "6.0.6"
 uuid = "0.8.1"
 desugar = "2.0.4"
 viewpager2 = "1.1.0-beta02"
-zxing-core = "3.3.3" # API <= 24 compatibility
+composeQrCode = "1.0.1"
 zxing-android-embedded = "4.3.0"
 kmp-nativecoroutines = "1.0.0-ALPHA-22"
 compose-bom = "2023.10.01"
@@ -78,6 +78,7 @@ activity-compose = "1.8.2"
 
 [libraries]
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+compose-qr-code = { module = "com.lightspark:compose-qr-code", version.ref = "composeQrCode" }
 desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar" }
 sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
@@ -174,7 +175,6 @@ stately-concurrent-collections = { module = "co.touchlab:stately-concurrent-coll
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 usb-serial = { module = "com.github.felHR85:UsbSerial", version.ref = "usb-serial" }
 uuid = { module = "com.benasher44:uuid", version.ref = "uuid" }
-zxing-core = { module = "com.google.zxing:core", version.ref = "zxing-core" }
 zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxing-android-embedded" }
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
 compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }

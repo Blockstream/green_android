@@ -130,7 +130,7 @@ class ExportLightningKeyViewModel(greenWallet: GreenWallet) :
 class ExportLightningKeyViewModelPreview(greenWallet: GreenWallet) :
     ExportLightningKeyViewModelAbstract(greenWallet) {
 
-    override val bcurPart: StateFlow<String?> = MutableStateFlow(randomChars(32))
+    override val bcurPart: StateFlow<String?> = MutableStateFlow(randomChars(128))
 
     companion object {
         fun preview() = ExportLightningKeyViewModelPreview(
