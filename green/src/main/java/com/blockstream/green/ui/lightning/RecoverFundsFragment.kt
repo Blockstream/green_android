@@ -17,7 +17,6 @@ import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.RecoverFundsFragmentBinding
 import com.blockstream.green.extensions.bind
 import com.blockstream.green.extensions.clearNavigationResult
-import com.blockstream.green.extensions.copyToClipboard
 import com.blockstream.green.extensions.dialog
 import com.blockstream.green.extensions.endIconCustomMode
 import com.blockstream.green.extensions.getNavigationResult
@@ -44,7 +43,7 @@ class RecoverFundsFragment : AppFragment<RecoverFundsFragmentBinding>(
     val args: RecoverFundsFragmentArgs by navArgs()
 
     override val title: String
-        get() = getString(if (viewModel.isRefund) R.string.id_refund else R.string.id_sweep)
+        get() = getString(if (viewModel.isRefund) R.string.id_refund else if(viewModel.isSendAll) R.string.id_empty_lightning_account else R.string.id_sweep)
 
     override val subtitle: String
         get() = viewModel.greenWallet.name
@@ -55,6 +54,7 @@ class RecoverFundsFragment : AppFragment<RecoverFundsFragmentBinding>(
     val viewModel: RecoverFundsViewModel by viewModel {
         parametersOf(
             args.wallet,
+            args.isSendAll,
             args.address,
             args.amount
         )
@@ -148,15 +148,6 @@ class RecoverFundsFragment : AppFragment<RecoverFundsFragmentBinding>(
 
         binding.showAddressToggle.addOnButtonCheckedListener { _, _, isChecked ->
             viewModel.showManualAddress.value = isChecked
-        }
-
-        binding.initialAddress.setOnClickListener {
-            copyToClipboard(
-                label = "Address",
-                content = args.address ?: "",
-                animateView = binding.initialAddressTextView,
-                showCopyNotification = true
-            )
         }
 
         binding.buttonEditFee.setOnClickListener {

@@ -22,58 +22,10 @@
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:orientation="vertical"
+            isInvisible="@{vm.onProgress &amp;&amp; vm.showLightningAnimation}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
-
-
-            <LinearLayout
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@+id/addressLinearLayout">
-
-                <TextView
-                    style="@style/TextAppearance.Green.Overline"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginBottom="2dp"
-                    android:text="@string/id_original_swap_address" />
-
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/initialAddress"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/initialAddressTextView"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginTop="16dp"
-                            android:layout_marginEnd="16dp"
-                            android:layout_marginBottom="16dp"
-                            android:layout_weight="1"
-                            android:ellipsize="middle"
-                            android:lines="1"
-                            android:singleLine="true"
-                            android:text="@{vm.onChainAddress}"
-                            android:textColor="@color/color_on_surface_emphasis_low"
-                            tools:text="12341231312312313131231231231231231231231231" />
-
-                    </LinearLayout>
-
-                </com.google.android.material.card.MaterialCardView>
-
-            </LinearLayout>
 
             <LinearLayout
                 layoutMarginBottom="@{vm.hasBitcoinAccount ? @dimen/dp0 : @dimen/dp16}"
@@ -450,6 +402,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 gdkError="@{vm.error}"
+                tools:text="Error"
                 android:layout_marginTop="24dp"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textColor="@color/error"/>
@@ -504,12 +457,57 @@
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="24dp"
-            android:enabled="@{!vm.onProgress &amp;&amp; !vm.address.empty &amp;&amp; !vm.feeAmountRate.empty &amp;&amp; vm.error == null}"
+            android:enabled="@{vm.buttonEnabled}"
             android:text="@{vm.isRefund ? @string/id_confirm_refund : @string/id_confirm}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:text="@string/id_confirm_refund" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/lightningLoader"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="32dp"
+            android:visibility="gone"
+            isVisible="@{vm.onProgress &amp;&amp; vm.showLightningAnimation}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="300dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="64dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="32dp"
+                android:orientation="vertical">
+
+                <app.rive.runtime.kotlin.RiveAnimationView
+                    android:id="@+id/rive"
+                    isVisible="@{vm.onProgress &amp;&amp; vm.showLightningAnimation}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:riveResource="@raw/lightning_transaction" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/id_this_might_take_up_to_a"
+                    android:textColor="@color/color_on_surface_emphasis_medium"
+                    android:textAlignment="center"
+                    android:layout_marginTop="8dp"
+                    style="?attr/textAppearanceBodyMedium"/>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
 
         <com.google.android.material.progressindicator.LinearProgressIndicator

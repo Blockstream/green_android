@@ -20,6 +20,7 @@ import breez_sdk.LnUrlWithdrawRequest
 import breez_sdk.LnUrlWithdrawRequestData
 import breez_sdk.LnUrlWithdrawResult
 import breez_sdk.LspInformation
+import breez_sdk.MaxReverseSwapAmountResponse
 import breez_sdk.NodeConfig
 import breez_sdk.NodeState
 import breez_sdk.OpenChannelFeeRequest
@@ -38,7 +39,13 @@ import breez_sdk.RefundRequest
 import breez_sdk.RefundResponse
 import breez_sdk.ReportIssueRequest
 import breez_sdk.ReportPaymentFailureDetails
+import breez_sdk.ReverseSwapFeesRequest
+import breez_sdk.ReverseSwapInfo
+import breez_sdk.ReverseSwapPairInfo
+import breez_sdk.ReverseSwapStatus
 import breez_sdk.SdkException
+import breez_sdk.SendOnchainRequest
+import breez_sdk.SendOnchainResponse
 import breez_sdk.SendPaymentRequest
 import breez_sdk.SendPaymentResponse
 import breez_sdk.SwapInfo
@@ -52,6 +59,7 @@ import breez_sdk.parseInvoice
 import co.touchlab.kermit.Logger
 import com.blockstream.common.platformFileSystem
 import com.blockstream.common.utils.Loggable
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.BufferOverflow
@@ -111,9 +119,13 @@ class LightningBridge constructor(
         get() = _lspInfoStateFlow.asStateFlow()
 
     private val _swapInfoStateFlow = MutableStateFlow<List<Pair<SwapInfo, Boolean>>>(listOf())
+    private val _reverseSwapInfoStateFlow = MutableStateFlow<List<ReverseSwapInfo>>(listOf())
 
     val swapInfoStateFlow
         get() = _swapInfoStateFlow.asStateFlow()
+
+    val reverseSwapInfoStateFlow
+        get() = _reverseSwapInfoStateFlow.asStateFlow()
 
     private fun createConfig(partnerCredentials: GreenlightCredentials?): Config {
 
@@ -266,18 +278,21 @@ class LightningBridge constructor(
     }
 
     fun getTransactions(): List<Payment>? {
-        if(breezSdkOrNull == null){
+        if (breezSdkOrNull == null) {
             return null
         }
 
-        return try{
+        return try {
             // Update swap transactions
             updateSwapInfo()
+
+            // Update reverse swap transactions
+            updateReverseSwapInfo()
 
             breezSdkOrNull?.listPayments(
                 ListPaymentsRequest()
             )
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             null
         }
@@ -329,6 +344,14 @@ class LightningBridge constructor(
         } ?: emptyList())).also {
             logger.d { "updateSwapInfo $it" }
         }
+    }
+
+    private fun updateReverseSwapInfo(){
+        _reverseSwapInfoStateFlow.value = breezSdkOrNull?.inProgressReverseSwaps().also {
+            it?.also {
+                logger.d { it.joinToString { it.toString() } }
+            }
+        }?.filter { it.status == ReverseSwapStatus.INITIAL || it.status == ReverseSwapStatus.IN_PROGRESS } ?: emptyList()
     }
 
     private fun serviceHealthCheck() = try {
@@ -410,8 +433,41 @@ class LightningBridge constructor(
         }
     }
 
+    @NativeCoroutinesIgnore
     suspend fun recommendedFees(): RecommendedFees = withContext(context = Dispatchers.IO) {
         breezSdk.recommendedFees()
+    }
+
+    fun maxReverseSwapAmount(): MaxReverseSwapAmountResponse {
+        return breezSdk.maxReverseSwapAmount().also {
+            logger.d { "maxReverseSwapAmount: $it" }
+        }
+    }
+
+    fun fetchReverseSwapFees(req: ReverseSwapFeesRequest): ReverseSwapPairInfo {
+        return breezSdk.fetchReverseSwapFees(req).also {
+                logger.d { "fetchReverseSwapFees: $it" }
+            }
+    }
+
+    fun sendOnchain(address: String, satPerVbyte: UInt?): SendOnchainResponse {
+        return try {
+            val amount = maxReverseSwapAmount().totalSat
+            val fee = breezSdk.fetchReverseSwapFees(ReverseSwapFeesRequest(sendAmountSat = amount))
+
+            breezSdk.sendOnchain(
+                SendOnchainRequest(
+                    amountSat = amount,
+                    onchainRecipientAddress = address,
+                    pairHash = fee.feesHash,
+                    satPerVbyte = satPerVbyte ?: breezSdk.recommendedFees().economyFee.toUInt()
+                )
+            )
+        } catch (e: Exception) {
+            throw exceptionWithNodeId(e)
+        } finally {
+            updateReverseSwapInfo()
+        }
     }
 
     fun sendPayment(bolt11: String, satoshi: Long?): SendPaymentResponse {

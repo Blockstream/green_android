@@ -40,14 +40,18 @@ import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -69,6 +73,8 @@ abstract class GreenViewModel constructor(
     protected val applicationScope: ApplicationScope by inject()
     protected val greenKeystore: GreenKeystore by inject()
 
+    private val isPreview by lazy { this::class.simpleName?.contains("Preview") == true }
+
     private val _event: MutableSharedFlow<Event> = MutableSharedFlow()
     private val _sideEffect: Channel<SideEffect> = Channel()
 
@@ -80,6 +86,16 @@ abstract class GreenViewModel constructor(
 
     @NativeCoroutinesState
     val onProgressDescription = MutableStateFlow<String?>(viewModelScope, null)
+
+    // Main action validation
+    internal val _isValid = MutableStateFlow(viewModelScope, isPreview)
+    //@NativeCoroutinesState
+    //val isValid = _isValid.asStateFlow()
+
+    // Main button enabled flag
+    private val _buttonEnabled = MutableStateFlow(viewModelScope, isPreview)
+    @NativeCoroutinesState
+    val buttonEnabled = _buttonEnabled.asStateFlow()
 
     override fun screenName(): String? = null
     override fun segmentation(): HashMap<String, Any>? = null
@@ -153,6 +169,12 @@ abstract class GreenViewModel constructor(
         if(sessionOrNull?.isConnected == true){
             listenForNetworksEvents()
         }
+
+        combine(_isValid, onProgress) { isValid, onProgress ->
+            isValid && !onProgress
+        }.onEach {
+            _buttonEnabled.value = it
+        }.launchIn(viewModelScope.coroutineScope)
 
         initBanner()
     }
@@ -321,8 +343,8 @@ abstract class GreenViewModel constructor(
             }
             postSideEffect(SideEffects.ErrorDialog(it, errorReport = errorReport(it)))
         }
-    ) {
-        viewModelScope.coroutineScope.launch {
+    ): Job {
+        return viewModelScope.coroutineScope.launch {
             try {
                 preAction?.invoke()
 
@@ -335,13 +357,17 @@ abstract class GreenViewModel constructor(
                         }
                     }
                 }.also {
-                    postAction?.invoke(null)
-                    onSuccess.invoke(it)
+                    if (this.isActive) {
+                        postAction?.invoke(null)
+                        onSuccess.invoke(it)
+                    }
                 }
             } catch (e: Exception) {
-                countly.recordException(e)
-                postAction?.invoke(e)
-                onError.invoke(e)
+                if (this.isActive) {
+                    countly.recordException(e)
+                    postAction?.invoke(e)
+                    onError.invoke(e)
+                }
             }
         }
     }

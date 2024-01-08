@@ -1443,4 +1443,6 @@
   <string name="id_fee_rate_must_be_at_most_s">Fee rate must be at most %s satoshi/vbyte.</string>
   <string name="id_amount_to_be_refunded">Amount to be refunded</string>
   <string name="id_receive_on">Receive on</string>
+  <string name="id_empty_lightning_account">Empty Lightning Account</string>
+  <string name="id_you_can_empty_your_lightning_account_when">You can empty your Lightning account when its balance is at least %s sats, as the process requires an onchain transaction. If your balance is low you should rather send out your funds to another lightning wallet.</string>
 </resources>

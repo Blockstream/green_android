@@ -58,7 +58,7 @@ val viewModels = module {
     viewModelOf(::Account2of3ViewModel)
     viewModel {
         // https://github.com/InsertKoinIO/koin/issues/1352
-        RecoverFundsViewModel(get(), getOrNull(), get())
+        RecoverFundsViewModel(get(), get(), getOrNull(), get())
     }
     viewModel {
         // https://github.com/InsertKoinIO/koin/issues/1352

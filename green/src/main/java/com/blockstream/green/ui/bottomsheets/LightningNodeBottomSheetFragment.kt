@@ -3,7 +3,6 @@ package com.blockstream.green.ui.bottomsheets
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.Button
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.blockstream.common.lightning.channelsBalanceSatoshi
@@ -105,7 +104,7 @@ class LightningNodeBottomSheetFragment :
 
             list += buttonActions
 
-//            buttonActions.buttonOutline = if(it.channelsBalanceSatoshi() > 0) StringHolder(R.string.id_close_channel) else StringHolder()
+            buttonActions.buttonOutline = if(isDevelopmentOrDebug && it.channelsBalanceSatoshi() > 0) StringHolder(R.string.id_empty_lightning_account) else StringHolder()
 
             itemAdapter.set(list)
 
@@ -118,8 +117,9 @@ class LightningNodeBottomSheetFragment :
             dismiss()
         }
 
-        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.buttonOutline }) { button, _, _, _ ->
-            (button as? Button)?.isEnabled = false
+        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.buttonOutline }) { _, _, _, _ ->
+            (parentFragment as? AccountOverviewFragment)?.showEmptyLightningAccount()
+            dismiss()
         }
 
         binding.recycler.apply {

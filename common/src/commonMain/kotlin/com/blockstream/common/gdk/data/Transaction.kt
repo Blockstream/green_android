@@ -34,6 +34,7 @@ data class Transaction(
     @SerialName("url") val url: Pair<String,String>? = null,
     @SerialName("isPendingCloseChannel") val isPendingCloseChannel: Boolean = false,
     @SerialName("isLightningSwap") val isLightningSwap: Boolean = false,
+    @SerialName("isLightningReverseSwap") val isLightningReverseSwap: Boolean = false,
     @SerialName("isInProgressSwap") val isInProgressSwap: Boolean = false,
     @SerialName("isRefundableSwap") val isRefundableSwap: Boolean = false
 ) : GreenJson<Transaction>(), Parcelable {

@@ -181,7 +181,7 @@ class TransactionDetailsFragment : AbstractAccountWalletFragment<BaseRecyclerVie
             }
         }
 
-        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.button }) { _, _, _, binding ->
+        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.button }) { _, _, _, _ ->
             navigate(
                 TransactionDetailsFragmentDirections.actionTransactionDetailsFragmentToRecoverFundsFragment(
                     wallet = wallet,

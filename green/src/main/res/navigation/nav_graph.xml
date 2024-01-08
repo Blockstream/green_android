@@ -699,14 +699,18 @@
             android:name="wallet"
             app:argType="com.blockstream.common.data.GreenWallet" />
         <argument
+            android:name="isSendAll"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <argument
             android:name="address"
             app:argType="string"
             app:nullable="true"
             android:defaultValue="@null" />
-
         <argument
             android:name="amount"
-            app:argType="long" />
+            app:argType="long"
+            android:defaultValue="0L"/>
     </fragment>
     <fragment
         android:id="@+id/lnUrlWithdrawFragment"

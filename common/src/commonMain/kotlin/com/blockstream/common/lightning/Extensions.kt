@@ -12,6 +12,7 @@ import breez_sdk.Payment
 import breez_sdk.PaymentDetails
 import breez_sdk.PaymentStatus
 import breez_sdk.PaymentType
+import breez_sdk.ReverseSwapInfo
 import breez_sdk.SuccessActionProcessed
 import breez_sdk.SwapInfo
 import com.blockstream.common.BTC_POLICY_ASSET
@@ -194,6 +195,29 @@ fun Transaction.Companion.fromSwapInfo(account: Account, swapInfo: SwapInfo, isR
         isLightningSwap = true,
         isInProgressSwap = swapInfo.confirmedSats.toLong() > 0 && !isRefundableSwap,
         isRefundableSwap = isRefundableSwap
+    )
+}
+
+fun Transaction.Companion.fromReverseSwapInfo(account: Account, reverseSwapInfo: ReverseSwapInfo): Transaction {
+    return Transaction(
+        accountInjected = account,
+        blockHeight = 0,
+        canCPFP = false,
+        canRBF = false,
+        createdAtTs = 0,
+        inputs = listOf(),
+        outputs = listOf(),
+        fee = 0,
+        feeRate = 0,
+        memo = "",
+        rbfOptin = false,
+        spvVerified = "",
+        txHash = "",
+        type = Transaction.Type.OUT.gdkType,
+        satoshi = mapOf(BTC_POLICY_ASSET to reverseSwapInfo.onchainAmountSat.toLong()),
+        isLightningSwap = true,
+        isLightningReverseSwap = true,
+        isInProgressSwap = true,
     )
 }
 

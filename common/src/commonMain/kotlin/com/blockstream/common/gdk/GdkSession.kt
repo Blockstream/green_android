@@ -100,6 +100,7 @@ import com.blockstream.common.lightning.expireIn
 import com.blockstream.common.lightning.fromInvoice
 import com.blockstream.common.lightning.fromLnUrlPay
 import com.blockstream.common.lightning.fromPayment
+import com.blockstream.common.lightning.fromReverseSwapInfo
 import com.blockstream.common.lightning.fromSwapInfo
 import com.blockstream.common.lightning.isExpired
 import com.blockstream.common.lightning.maxSendableSatoshi
@@ -2049,6 +2050,8 @@ class GdkSession constructor(
                     if(hasLightning){
                         walletTransactions = lightningSdk.swapInfoStateFlow.value.map {
                             Transaction.fromSwapInfo(lightningAccount, it.first, it.second)
+                        } + lightningSdk.reverseSwapInfoStateFlow.value.map {
+                            Transaction.fromReverseSwapInfo(lightningAccount, it)
                         } + walletTransactions
                     }
 
@@ -2533,6 +2536,10 @@ class GdkSession constructor(
             )
             _accountEmptiedEvent = null
         }
+    }
+
+    fun emptyLightningAccount(){
+        _accountEmptiedEvent = _lightningAccount
     }
 
     private fun walletActiveEventIfNeeded(){

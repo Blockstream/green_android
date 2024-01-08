@@ -614,6 +614,15 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
         )
     }
 
+    fun showEmptyLightningAccount(){
+        navigate(
+            AccountOverviewFragmentDirections.actionAccountOverviewFragmentToRecoverFundsFragment(
+                wallet = wallet,
+                isSendAll = true
+            )
+        )
+    }
+
     override fun openProposal(link: String) {
         //
     }
