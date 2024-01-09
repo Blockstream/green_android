@@ -304,7 +304,7 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
         viewModel.accountAsset.filterNotNull().onEach {
             AccountsListItem(
                 session = session,
-                accounts = listOf(viewModel.accountValue),
+                accounts = listOf(it.account),
                 showArrow = false,
                 show2faActivation = false,
                 showCopy = account.isAmp,

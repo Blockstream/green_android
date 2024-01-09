@@ -10,7 +10,7 @@ androidCompileSdk = "34"
 androidTargetSdk = "34"
 androidMinSdk = "24"
 buildTools = "34.0.0"
-breez = "0.3.6"
+breez = "0.3.8"
 activity-ktx = "1.8.2"
 androidx-junit = "1.1.5"
 annotation = "1.7.1"
@@ -58,6 +58,7 @@ slf4j = "2.0.4"
 slidetoact = "0.10.0"
 startup-runtime = "1.1.1"
 uriKmp = "0.0.16"
+workRuntimeKtx = "2.9.0"
 zendesk = "5.2.0"
 essenty = "1.3.0"
 stately = "2.0.6"
@@ -79,9 +80,12 @@ compose-constraint = "1.0.1"
 compose-multiplatform = "1.6.0"
 activity-compose = "1.8.2"
 voyager = "1.1.0-alpha03"
+google-services = "4.4.1"
+firebase-bom = "32.7.4"
 
 [libraries]
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 compose-qr-code = { module = "com.lightspark:compose-qr-code", version.ref = "composeQrCode" }
 desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar" }
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
@@ -107,6 +111,8 @@ androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefre
 androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
 breez-sdk-kmp = { module = "technology.breez:breez-sdk-kmp", version.ref = "breez" }
 breez-sdk-android = { module = "com.github.breez:breez-sdk", version.ref = "breez" } # Used for FDroid
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
 sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
 sqldelight-sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 sqldelight-coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
@@ -207,3 +213,4 @@ google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ks
 app-cash-sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 kmp-nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version.ref = "kmp-nativecoroutines" }
 kotlinParcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+googleServices = { id = "com.google.gms.google-services", version.ref = "google-services" }

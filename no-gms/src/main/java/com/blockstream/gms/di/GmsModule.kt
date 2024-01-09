@@ -2,6 +2,7 @@ package com.blockstream.gms.di
 
 import com.blockstream.base.AppReview
 import com.blockstream.common.ZendeskSdk
+import com.blockstream.base.Firebase
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
 import org.koin.dsl.module
@@ -16,5 +17,8 @@ val gmsModule = module {
     }
     single {
         ZendeskSdk()
+    }
+    single {
+        Firebase()
     }
 }

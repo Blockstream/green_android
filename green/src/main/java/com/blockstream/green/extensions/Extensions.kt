@@ -6,7 +6,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.text.Html
 import android.text.Spanned
 import android.text.TextUtils
@@ -133,12 +132,7 @@ fun MutableLiveData<Boolean>.boolean() : Boolean = value ?: false
 fun MutableLiveData<Boolean>.toggle() : Boolean = (value?.let { !it } ?: false).also { this.value = it }
 
 fun String.fromHtml(): Spanned {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        Html.fromHtml(this, Html.FROM_HTML_MODE_COMPACT)
-    } else {
-        @Suppress("DEPRECATION")
-        Html.fromHtml(this)
-    }
+    return Html.fromHtml(this, Html.FROM_HTML_MODE_COMPACT)
 }
 
 inline fun <reified T: Enum<T>> T.next(): T {

@@ -130,6 +130,7 @@ kotlin {
             api(libs.koin.android)
             api(libs.androidx.biometric)
 
+
             /**  --- Breez FDroid ----------------------------------------------------------------------- */
             // Temp fix for FDroid breez dependencies
             // api(libs.breez.sdk.android)

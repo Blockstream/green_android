@@ -3,6 +3,7 @@ package com.blockstream.common.lightning
 import breez_sdk.BlockingBreezServices
 import breez_sdk.BreezEvent
 import breez_sdk.Config
+import breez_sdk.ConfigureNodeRequest
 import breez_sdk.EnvironmentType
 import breez_sdk.EventListener
 import breez_sdk.GreenlightCredentials
@@ -10,7 +11,6 @@ import breez_sdk.GreenlightNodeConfig
 import breez_sdk.HealthCheckStatus
 import breez_sdk.InputType
 import breez_sdk.ListPaymentsRequest
-import breez_sdk.LnInvoice
 import breez_sdk.LnUrlAuthRequestData
 import breez_sdk.LnUrlCallbackStatus
 import breez_sdk.LnUrlPayRequest
@@ -55,9 +55,11 @@ import breez_sdk.connect
 import breez_sdk.defaultConfig
 import breez_sdk.mnemonicToSeed
 import breez_sdk.parseInput
-import breez_sdk.parseInvoice
 import co.touchlab.kermit.Logger
+import com.blockstream.common.data.AppInfo
+import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.platformFileSystem
+import com.blockstream.common.platformName
 import com.blockstream.common.utils.Loggable
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import kotlinx.coroutines.Dispatchers
@@ -73,8 +75,11 @@ import kotlinx.datetime.Clock
 import okio.Path.Companion.toPath
 
 class LightningBridge constructor(
+    private val appInfo: AppInfo,
     val workingDir: String,
-    val greenlightKeys: GreenlightKeys,
+    private val greenlightKeys: GreenlightKeys,
+    private val firebase: FcmCommon,
+    private val lightningManager: LightningManager,
 ) : EventListener {
 
     private var breezSdkOrNull: BlockingBreezServices? = null
@@ -97,7 +102,7 @@ class LightningBridge constructor(
             maxSinglePaymentAmountMsat = 0u,
             maxChanReserveMsats = 0u,
             connectedPeers = listOf(),
-            inboundLiquidityMsats = 0u
+            inboundLiquidityMsats = 0u,
         )
     )
 
@@ -151,17 +156,15 @@ class LightningBridge constructor(
         }
     }
 
-    suspend fun connectToGreenlight(mnemonic: String, checkCredentials: Boolean, quickResponse: Boolean = false): Boolean? {
-        val partnerCredentials = if (checkCredentials) null else greenlightKeys.toGreenlightCredentials()
-        return start(mnemonic, partnerCredentials, quickResponse)
-    }
-
-    private suspend fun start(mnemonic: String, partnerCredentials: GreenlightCredentials?, quickResponse: Boolean = false): Boolean? {
+    @NativeCoroutinesIgnore
+    suspend fun connectToGreenlight(mnemonic: String, parentXpubHashId: String? = null, checkCredentials: Boolean = false, quickResponse: Boolean = false): Boolean? {
         if (breezSdkOrNull != null) {
             return true
         }
 
-        try{
+        val partnerCredentials = if (checkCredentials) null else greenlightKeys.toGreenlightCredentials()
+
+        try {
             breezSdkOrNull = withTimeout(if(quickResponse) 5000L else 30000L) {
                 connect(
                     config = createConfig(partnerCredentials),
@@ -177,6 +180,8 @@ class LightningBridge constructor(
             }
 
             isConnected = true
+
+            parentXpubHashId?.also { registerNotifications(it) }
 
             updateNodeInfo()
 
@@ -197,6 +202,17 @@ class LightningBridge constructor(
         } catch (e: Exception) {
             e.printStackTrace()
             return null
+        }
+    }
+
+    private fun registerNotifications(xpubHashId: String){
+        firebase.token?.also { token ->
+            (if(appInfo.isDevelopment) GREEN_NOTIFY_DEVELOPMENT else GREEN_NOTIFY_PRODUCTION).let { backend ->
+                "$backend/api/v1/notify?platform=${platformName()}&token=$token&app_data=$xpubHashId"
+            }.also { url ->
+                logger.d { "Registering webhook for wallet($xpubHashId) as $url" }
+                breezSdkOrNull?.registerWebhook(url)
+            }
         }
     }
 
@@ -234,22 +250,9 @@ class LightningBridge constructor(
 
         return try {
             updateNodeInfo().channelsBalanceSatoshi().also {
-                Logger.d { "Balance: ${it}" }
+                Logger.d { "Balance: $it" }
             }
         }catch (e: Exception){
-            e.printStackTrace()
-            null
-        }
-    }
-
-    fun parseBolt11(bolt11: String): LnInvoice? {
-        return try {
-            if (bolt11.isNotBlank()) {
-                parseInvoice(bolt11)
-            } else {
-                null
-            }
-        } catch (e: Exception) {
             e.printStackTrace()
             null
         }
@@ -517,6 +520,15 @@ class LightningBridge constructor(
         }
     }
 
+    fun setCloseToAddress(closeToAddress: String) {
+        logger.i { "Setting closeToAddress" }
+        try {
+            breezSdk.configureNode(ConfigureNodeRequest(closeToAddress = closeToAddress))
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     fun stop() {
         try {
             breezSdkOrNull?.disconnect()
@@ -534,5 +546,12 @@ class LightningBridge constructor(
     private fun exceptionWithNodeId(exception: Exception) =
         Exception("${exception.message}\nNodeId: ${_nodeInfoStateFlow.value.id}\nTimestamp: ${Clock.System.now().epochSeconds}", exception.cause)
 
-    companion object: Loggable()
+    fun release(){
+        lightningManager.release(this)
+    }
+
+    companion object: Loggable() {
+        const val GREEN_NOTIFY_PRODUCTION = "https://green-notify.blockstream.com"
+        const val GREEN_NOTIFY_DEVELOPMENT = "https://green-notify.dev.blockstream.com"
+    }
 }

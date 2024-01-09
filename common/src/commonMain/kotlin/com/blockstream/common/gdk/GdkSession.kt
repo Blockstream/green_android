@@ -681,6 +681,7 @@ class GdkSession constructor(
 
     fun disconnect() {
         _isConnectedState.value = false
+        xPubHashId = null
 
         authenticationRequired.clear()
 
@@ -741,9 +742,7 @@ class GdkSession constructor(
         lightning = null
         _lightningAccount = null
 
-        lightningSdkOrNull?.also {
-            lightningManager.release(it)
-        }
+        lightningSdkOrNull?.release()
         lightningSdkOrNull = null
 
         // Stop all jobs
@@ -908,8 +907,7 @@ class GdkSession constructor(
             hwInteraction = null
         )
 
-        val workingDir = "${gdk.dataDir}/breezSdk/${lightningLoginData.walletHashId}/0"
-        lightningSdkOrNull = lightningManager.getLightningBridge(workingDir)
+        lightningSdkOrNull = lightningManager.getLightningBridge(lightningLoginData)
     }
 
     @NativeCoroutinesIgnore
@@ -922,7 +920,7 @@ class GdkSession constructor(
             }
 
             if (!hasLightning) {
-                connectToGreenlight(mnemonic = mnemonic ?: deriveLightningMnemonic(), checkCredentials = false)
+                connectToGreenlight(mnemonic = mnemonic ?: deriveLightningMnemonic())
 
                 if(!hasLightning){
                     throw Exception("Something went wrong while initiating your Lightning account")
@@ -1408,8 +1406,14 @@ class GdkSession constructor(
                     // Make it async to speed up login process
                     val job = scope.async {
                         try {
+                            val xPubHashId = if(isLightningShortcut) wallet?.xPubHashId else getWalletIdentifier(
+                                network = prominentNetwork,
+                                loginCredentialsParams = loginCredentialsParams,
+                                hwInteraction = hwInteraction
+                            ).xpubHashId
+
                             // Connect SDK
-                            connectToGreenlight(mnemonic = lightningMnemonic, checkCredentials = isRestore || isSmartDiscovery, quickResponse = isRestore)
+                            connectToGreenlight(mnemonic = lightningMnemonic, parentXpubHashId = xPubHashId, checkCredentials = isRestore || isSmartDiscovery, quickResponse = isRestore)
 
                             if(isRestore) {
                                 hasLightning = lightningSdk.isConnected
@@ -1424,7 +1428,7 @@ class GdkSession constructor(
                     }
 
                     // If restore, await for the login to be completed to be able to store credentials
-                    if(isRestore){
+                    if (isRestore) {
                         job.await()
                     }
                 }
@@ -1453,12 +1457,17 @@ class GdkSession constructor(
         }
     }
 
-    private suspend fun connectToGreenlight(mnemonic: String, checkCredentials: Boolean = false, quickResponse: Boolean = false){
+    private suspend fun connectToGreenlight(
+        mnemonic: String,
+        parentXpubHashId: String? = null,
+        checkCredentials: Boolean = false,
+        quickResponse: Boolean = false
+    ) {
         Logger.i { "Login into ${lightning?.id}" }
 
         countly.loginLightningStart()
 
-        lightningSdk.connectToGreenlight(mnemonic, checkCredentials, quickResponse).also {
+        lightningSdk.connectToGreenlight(mnemonic, parentXpubHashId ?: xPubHashId.takeIf { !isLightningShortcut }, checkCredentials, quickResponse).also {
             hasLightning = it == true
             if (it == null) {
                 _failedNetworksStateFlow.value = _failedNetworksStateFlow.value + listOfNotNull(lightning)
@@ -1493,13 +1502,13 @@ class GdkSession constructor(
     }
 
     private suspend fun onLoginSuccess(
-        loginData: LoginData?,
+        loginData: LoginData,
         initNetwork: String?,
         initAccount: Long?,
         initializeSession: Boolean
     ) {
         _isConnectedState.value = true
-        xPubHashId = if(isWatchOnly) loginData?.networkHashId else loginData?.walletHashId
+        xPubHashId = if(isWatchOnly) loginData.networkHashId else loginData.xpubHashId
 
         if(initializeSession) {
             countly.activeWalletStart()
@@ -1629,7 +1638,6 @@ class GdkSession constructor(
 
     fun getCredentials(params: CredentialsParams = CredentialsParams()): Credentials {
         val network = defaultNetwork.takeIf { hasActiveNetwork(defaultNetwork) } ?: activeSessions.first()
-
         return authHandler(network, gdk.getCredentials(gdkSession(network), params)).result()
     }
 
@@ -2248,7 +2256,7 @@ class GdkSession constructor(
             _allAccountsStateFlow.value = fetchedAccounts
             fetchedAccounts.filter { !it.hidden }.also {
                 _accountsStateFlow.value = it
-                _zeroAccounts.value = it.isEmpty()
+                _zeroAccounts.value = it.isEmpty() && failedNetworks.value.isEmpty()
             }
 
             // Update active account to get fresh data, also prevent it from being archived and active

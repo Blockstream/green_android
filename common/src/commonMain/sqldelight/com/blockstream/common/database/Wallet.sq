@@ -37,6 +37,9 @@ VALUES (?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?);
 getWallet:
 SELECT * FROM wallet WHERE id = ?;
 
+getMainnetWalletWithXpubHashId:
+SELECT * FROM wallet WHERE xpub_hash_id = ? AND is_testnet = 0;
+
 getWalletWithXpubHashId:
 SELECT * FROM wallet WHERE xpub_hash_id = ? AND is_testnet = ? AND is_hardware = ?;
 

@@ -39,6 +39,7 @@ import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.PinData
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.Loggable
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
@@ -438,11 +439,12 @@ class MainActivity : AppActivity() {
             }
         }
 
-        if(intent?.action == OPEN_WALLET){
+        if (intent?.action == OPEN_WALLET) {
             IntentCompat.getParcelableExtra(intent, WALLET, GreenWallet::class.java)?.let { wallet ->
                 NavGraphDirections.actionGlobalLoginFragment(
                     wallet = wallet,
-                    deviceId = intent.getStringExtra(DEVICE_ID)
+                    deviceId = intent.getStringExtra(DEVICE_ID),
+                    isLightningShortcut = intent.getBooleanExtra(IS_LIGHTNING, false)
                 ).let {
                     navigate(navController, resId = it.actionId, args = it.arguments)
                 }
@@ -473,8 +475,9 @@ class MainActivity : AppActivity() {
 
     fun getVisibleFragment() = navHostFragment.childFragmentManager.fragments.firstOrNull()
 
-    companion object: KLogging() {
+    companion object: Loggable() {
         const val OPEN_WALLET = "OPEN_WALLET"
+        const val IS_LIGHTNING = "IS_LIGHTNING"
         const val WALLET = "WALLET"
         const val DEVICE_ID = "DEVICE_ID"
 

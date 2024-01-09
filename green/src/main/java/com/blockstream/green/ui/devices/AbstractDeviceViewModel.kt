@@ -69,7 +69,7 @@ abstract class AbstractDeviceViewModel constructor(
             network = network, // xPub generation is network agnostic
             gdkHwWallet = device.gdkHardwareWallet,
             hwInteraction = this
-        ).walletHashId
+        ).xpubHashId
     }
 
     override fun showError(err: String) {

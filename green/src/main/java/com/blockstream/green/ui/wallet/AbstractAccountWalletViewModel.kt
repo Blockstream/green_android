@@ -6,14 +6,14 @@ import com.blockstream.common.gdk.data.AccountAsset
 import mu.KLogging
 
 
-abstract class AbstractAccountWalletViewModel constructor(
+abstract class AbstractAccountWalletViewModel(
     wallet: GreenWallet,
     initAccountAsset: AccountAsset
 ) : AbstractWalletViewModel(wallet, accountAssetOrNull = initAccountAsset) {
 
     val network
         get() = account.network
-    
+
     open val accountValue: Account
         get() = accountAsset.value!!.account
 

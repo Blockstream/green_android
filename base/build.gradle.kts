@@ -47,6 +47,7 @@ dependencies {
     api(libs.installreferrer)
     api(libs.androidx.startup.runtime)
     api(libs.compose.material3)
+    api(libs.androidx.work.runtime.ktx)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Lifecycle -------------------------------------------------------------------------- */

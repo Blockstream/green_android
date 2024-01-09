@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "923424916597",
+    "project_id": "blockstream-green-4cc1e",
+    "storage_bucket": "blockstream-green-4cc1e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:923424916597:android:22dee2f5f869a92cc6243c",
+        "android_client_info": {
+          "package_name": "com.greenaddress.greenbits_android_wallet.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "923424916597-7hklg0ancgs48tspohbp02nvpnb8r76t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDq-Q4bxiYUACbXlrdL1ScWY5CdzuWSt6k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "923424916597-7hklg0ancgs48tspohbp02nvpnb8r76t.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "923424916597-qdj4ou64uvt3v8dg27lsf5bektr3ht5k.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.blockstream.greenqt"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

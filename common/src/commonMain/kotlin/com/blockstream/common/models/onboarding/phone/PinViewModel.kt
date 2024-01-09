@@ -102,7 +102,7 @@ class PinViewModel constructor(
             ).also {
                 if (greenWalletOrNull == null) {
                     // Check if wallet already exists
-                    it.walletHashId.also { walletHashId ->
+                    it.xpubHashId.also { walletHashId ->
                         database.getWalletWithXpubHashId(
                             xPubHashId = walletHashId, isTestnet = isTestnet, isHardware = false
                         )?.also { wallet ->
@@ -111,7 +111,7 @@ class PinViewModel constructor(
                     }
                 } else {
                     // check if walletHashId is the same (also use networkHashId for backwards compatibility)
-                    if (greenWallet.xPubHashId.isNotBlank() && (greenWallet.xPubHashId != it.walletHashId && greenWallet.xPubHashId != it.networkHashId)) {
+                    if (greenWallet.xPubHashId.isNotBlank() && (greenWallet.xPubHashId != it.xpubHashId && greenWallet.xPubHashId != it.networkHashId)) {
                         throw Exception("id_the_recovery_phrase_doesnt")
                     }
                 }
@@ -156,7 +156,7 @@ class PinViewModel constructor(
 
             val wallet = GreenWallet.createWallet(
                 name = generateWalletName(settingsManager),
-                xPubHashId = loginData.walletHashId,
+                xPubHashId = loginData.xpubHashId,
                 activeNetwork = session.activeAccount.value?.networkId
                     ?: session.defaultNetwork.network,
                 activeAccount = session.activeAccount.value?.pointer ?: 0,

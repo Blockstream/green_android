@@ -5,11 +5,13 @@ package com.blockstream.green.di
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.hardware.usb.UsbManager
+import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.managers.DeviceManager
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.GreenApplication
 import com.blockstream.green.R
 import com.blockstream.green.devices.DeviceManagerAndroid
+import com.blockstream.green.managers.FcmAndroid
 import com.blockstream.green.managers.NotificationManager
 import com.blockstream.green.utils.isDebug
 import com.blockstream.green.utils.isDevelopmentOrDebug
@@ -42,7 +44,6 @@ val greenModules = module {
             get(),
             get(),
             get(),
-            get(),
             get()
         )
     }
@@ -55,6 +56,9 @@ val greenModules = module {
             get()
         )
     } binds (arrayOf(DeviceManager::class, DeviceManagerAndroid::class))
+    single {
+         FcmAndroid(androidContext(), get())
+    } binds(arrayOf(FcmCommon::class))
     single {
         androidContext().getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
     }

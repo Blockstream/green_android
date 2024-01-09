@@ -104,7 +104,8 @@ private fun commonModules(appConfig: AppConfig): List<Module> {
                         .toList()
                 }
             )
-            LightningManager(get(), greenlightKeys)
+
+            LightningManager(greenlightKeys, get(), get(), get(), get())
         }
 
         val minSeverity = if (appConfig.isDebug) Severity.Debug else Severity.Info

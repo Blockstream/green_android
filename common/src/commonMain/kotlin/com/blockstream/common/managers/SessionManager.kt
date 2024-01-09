@@ -13,9 +13,12 @@ import com.blockstream.common.gdk.Wally
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.TorEvent
 import com.blockstream.common.gdk.device.DeviceInterface
+import com.blockstream.common.gdk.params.LoginCredentialsParams
+import com.blockstream.common.lightning.LightningBridge
 import com.blockstream.common.lightning.LightningManager
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.Timer
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -269,6 +272,16 @@ class SessionManager constructor(
         gdkSessions.add(session)
 
         return session
+    }
+
+    @NativeCoroutinesIgnore
+    suspend fun getLightningBridge(mnemonic: String, isTestnet: Boolean): LightningBridge {
+        val lightningLoginData = httpRequestProvider.getWalletIdentifier(
+            network = httpRequestProvider.networks.bitcoinElectrum(isTestnet),
+            loginCredentialsParams = LoginCredentialsParams(mnemonic = mnemonic),
+        )
+
+        return lightningManager.getLightningBridge(lightningLoginData)
     }
 
     private fun startTorNetworkSessionIfNeeded() {

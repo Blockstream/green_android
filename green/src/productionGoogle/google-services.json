@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "10959410224",
+    "project_id": "blockstream-green-production",
+    "storage_bucket": "blockstream-green-production.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:10959410224:android:0a3062e7d617c98e1089f5",
+        "android_client_info": {
+          "package_name": "com.greenaddress.greenbits_android_wallet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBuXiDrpTNoQl6ObYgxrmbxtoiY22ne-w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

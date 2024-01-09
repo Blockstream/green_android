@@ -3,7 +3,11 @@ package com.blockstream.common.lightning
 import breez_sdk.LogEntry
 import breez_sdk.LogStream
 import breez_sdk.setLogStream
+import com.blockstream.common.data.AppInfo
 import com.blockstream.common.di.ApplicationScope
+import com.blockstream.common.fcm.FcmCommon
+import com.blockstream.common.gdk.Gdk
+import com.blockstream.common.gdk.data.LoginData
 import com.blockstream.common.utils.Loggable
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import kotlinx.coroutines.launch
@@ -11,7 +15,13 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Clock
 
-class LightningManager constructor(private val scope: ApplicationScope, private val greenlightKeys: GreenlightKeys) {
+class LightningManager constructor(
+    private val greenlightKeys: GreenlightKeys,
+    private val appInfo: AppInfo,
+    private val scope: ApplicationScope,
+    private val gdk: Gdk,
+    val firebase: FcmCommon,
+) {
     private val bridges = mutableMapOf<String, LightningBridge>()
     private val references = mutableMapOf<LightningBridge, Int>()
 
@@ -34,16 +44,19 @@ class LightningManager constructor(private val scope: ApplicationScope, private 
     }
 
     @NativeCoroutinesIgnore
-    suspend fun getLightningBridge(
-        file: String
-    ): LightningBridge {
+    suspend fun getLightningBridge(loginData: LoginData): LightningBridge {
+        val file = "${gdk.dataDir}/breezSdk/${loginData.xpubHashId}/0"
+
         return mutex.withLock {
             (bridges.getOrPut(file) {
                 logger.i { "Creating a new LightningBridge $file" }
 
                 LightningBridge(
+                    appInfo = appInfo,
                     workingDir = file,
-                    greenlightKeys = greenlightKeys
+                    greenlightKeys = greenlightKeys,
+                    firebase = firebase,
+                    lightningManager = this
                 )
             }).also { bridge ->
                 references[bridge] = (references[bridge] ?: 0) + 1
@@ -71,5 +84,5 @@ class LightningManager constructor(private val scope: ApplicationScope, private 
         }
     }
 
-    companion object: Loggable()
+    companion object : Loggable()
 }

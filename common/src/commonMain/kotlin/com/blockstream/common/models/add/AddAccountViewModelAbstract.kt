@@ -17,6 +17,7 @@ import com.blockstream.common.gdk.params.SubAccountParams
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.Loggable
 import com.blockstream.common.views.AccountTypeLook
 import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -81,6 +82,17 @@ abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet) :
                         )
 
                         database.replaceLoginCredential(loginCredentials)
+                    }
+                }
+
+
+                if (appInfo.isDevelopmentOrDebug) {
+                    logger.i { "Development/Debug feature setCloseToAddress" }
+                    session.accounts.value.filter { it.isBitcoin }.let { accounts ->
+                        accounts.find { it.type == AccountType.BIP84_SEGWIT }
+                            ?: accounts.find { it.type == AccountType.BIP49_SEGWIT_WRAPPED }
+                    }?.also {
+                        session.lightningSdk.setCloseToAddress(session.getReceiveAddress(it).address)
                     }
                 }
 
@@ -182,4 +194,6 @@ abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet) :
             _enableLightningShortcut()
         }
     }
+
+    companion object: Loggable()
 }

@@ -3,9 +3,11 @@
 package com.blockstream.gms.di
 
 import com.blockstream.base.AppReview
+import com.blockstream.base.Firebase
 import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.data.AppConfig
 import com.blockstream.gms.AppReviewImpl
+import com.blockstream.gms.FirebaseImpl
 import com.blockstream.gms.ZendeskSdkAndroid
 import com.google.android.play.core.review.ReviewManagerFactory
 import okio.internal.commonToUtf8String
@@ -32,4 +34,8 @@ val gmsModule = module {
         } ?: ""
         ZendeskSdkAndroid(get(), apiKey)
     } binds(arrayOf(ZendeskSdk::class))
+
+    single {
+        FirebaseImpl(get())
+    } binds(arrayOf(Firebase::class))
 }

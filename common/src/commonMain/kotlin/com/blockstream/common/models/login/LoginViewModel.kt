@@ -684,14 +684,14 @@ class LoginViewModel constructor(
                 )
 
                 // Check if there is already a BIP39 ephemeral wallet
-                val pair = sessionManager.getEphemeralWalletSession(loginData.walletHashId)?.let {
+                val pair = sessionManager.getEphemeralWalletSession(loginData.xpubHashId)?.let {
                     // Disconnect the no longer needed session
                     ephemeralSession.disconnectAsync()
 
                     // Return the previous connected BIP39 ephemeral session
                     it.ephemeralWallet!! to it
                 } ?: run {
-                    ephemeralWallet = ephemeralWallet.copy(wallet = ephemeralWallet.wallet.copy(xpub_hash_id = loginData.walletHashId))
+                    ephemeralWallet = ephemeralWallet.copy(wallet = ephemeralWallet.wallet.copy(xpub_hash_id = loginData.xpubHashId))
 
                     // Return the ephemeral wallet
                     ephemeralWallet to ephemeralSession

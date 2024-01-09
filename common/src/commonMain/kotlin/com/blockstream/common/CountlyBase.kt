@@ -5,8 +5,8 @@ import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.ApplicationSettings
 import com.blockstream.common.data.Banner
-import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.CountlyAsset
+import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.database.Database
@@ -34,7 +34,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonArray
 import kotlin.properties.Delegates
 
- abstract class CountlyBase(
+abstract class CountlyBase(
      private val appInfo: AppInfo,
      private val applicationScope: ApplicationScope,
      private val settingsManager: SettingsManager,
@@ -607,8 +607,11 @@ import kotlin.properties.Delegates
          traceEnd(apmEvent(Events.FAILED_TRANSACTION))
          eventEnd(
                  Events.FAILED_TRANSACTION.toString(),
-                 transactionSegmentation(session, account, transactionSegmentation).also {
-                     it[PARAM_ERROR] = error.message ?: "error"
+                 transactionSegmentation(session, account, transactionSegmentation).also { map ->
+                     map[PARAM_ERROR] = error.message ?: "error"
+                     session.lightningSdkOrNull?.nodeInfoStateFlow?.value?.id.takeIf { account.isLightning }?.also {
+                         map[PARAM_NODE_ID] = it
+                     }
                  }
          )
      }
@@ -767,6 +770,7 @@ import kotlin.properties.Delegates
          const val PARAM_FIRMWARE = "firmware"
          const val PARAM_CONNECTION = "connection"
          const val PARAM_ERROR = "error"
+         const val PARAM_NODE_ID = "NODE_ID"
          const val PARAM_FLOW = "flow"
          const val PARAM_EPHEMERAL_BIP39 = "ephemeral_bip39"
          const val PARAM_MAINNET = "mainnet"

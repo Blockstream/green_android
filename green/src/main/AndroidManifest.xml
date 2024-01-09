@@ -65,9 +65,25 @@
         android:enableOnBackInvokedCallback="false"
         android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="tiramisu">
-
         <!--        Disable Predictive Back until this is fixed-->
         <!--        https://issuetracker.google.com/issues/271303558 -->
+
+        <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
+        <meta-data android:name="google_analytics_adid_collection_enabled" android:value="false" />
+
+        <!-- Set custom default icon. This is used when no icon is set for incoming notification messages.
+             See README(https://goo.gl/l4GJaQ) for more. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_green" />
+        <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/md_theme_dark_primary" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" />
 
         <!--In v4 we have to change launch mode to singleTask-->
         <!--Setting launchMode="singleTask" prevents Android,-->

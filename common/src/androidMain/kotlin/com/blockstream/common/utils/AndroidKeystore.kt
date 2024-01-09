@@ -102,9 +102,7 @@ class AndroidKeystore(val context: Context) : GreenKeystore {
                 builder.setUserAuthenticationValidityDurationSeconds(-1)
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                builder.setInvalidatedByBiometricEnrollment(true)
-            }
+            builder.setInvalidatedByBiometricEnrollment(true)
         }
 
         keyGenerator.init(builder.build())

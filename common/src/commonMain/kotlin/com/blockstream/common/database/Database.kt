@@ -69,6 +69,14 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
             }
         }
 
+    suspend fun getMainnetWalletWithXpubHashId(
+        xPubHashId: String,
+    ): GreenWallet? = io {
+        db.walletQueries.getMainnetWalletWithXpubHashId(
+            xPubHashId
+        ).executeAsOneOrNull()?.toGreenWallet()
+    }
+
     suspend fun getWalletWithXpubHashId(
         xPubHashId: String,
         isTestnet: Boolean,
@@ -186,13 +194,16 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
         db.loginCredentialsQueries.getLoginCredentials(wallet_id = id).executeAsList()
     }
 
+    suspend fun getLoginCredential(id: String, credentialType: CredentialType) = io {
+        db.loginCredentialsQueries.getLoginCredential(wallet_id = id, credential_type = credentialType).executeAsOneOrNull()
+    }
+
     fun getLoginCredentialsFlow(id: String) =
         db.loginCredentialsQueries.getLoginCredentials(wallet_id = id).asFlow().map {
             io {
                 it.executeAsList()
             }
         }
-
 
     suspend fun replaceLoginCredential(loginCredentials: LoginCredentials) = io {
         db.loginCredentialsQueries.replaceLoginCredential(

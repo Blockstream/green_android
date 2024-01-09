@@ -14,6 +14,7 @@ plugins {
     id("kotlin-kapt") // until @BindingAdapter supports KSP
     id("androidx.navigation.safeargs.kotlin")
     id("com.adarshr.test-logger") version "3.2.0"
+    alias(libs.plugins.googleServices)
 }
 
 // https://developer.android.com/studio/publish/app-signing#secure-key
@@ -52,7 +53,7 @@ android {
 
     signingConfigs {
         create("release") {
-            var keystoreFile = (keystoreProperties["storeFile"] as? String)?.takeIf { it.isNotBlank() }?.let { rootProject.file(it) }
+            val keystoreFile = (keystoreProperties["storeFile"] as? String)?.takeIf { it.isNotBlank() }?.let { rootProject.file(it) }
             keyAlias = keystoreProperties["keyAlias"] as? String
             keyPassword = keystoreProperties["keyPassword"] as? String
             storeFile = if(keystoreFile != null && keystoreFile.exists() ) keystoreFile else null
@@ -62,7 +63,6 @@ android {
 
     flavorDimensions += listOf("normal")
     productFlavors {
-
         create("development") {
             applicationId = "com.greenaddress.greenbits_android_wallet.dev"
             versionNameSuffix  = "-dev" + appendGdkCommitHash(rootProject, true)
@@ -74,20 +74,6 @@ android {
             manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher_dev"
             manifestPlaceholders["appIconRound"] = "@mipmap/ic_launcher_dev_round"
             manifestPlaceholders["enableQATester"] = true
-        }
-
-        // Migrate production to full featured version of the app after FDroid updates their build scripts
-        create("production") {
-            applicationId = "com.greenaddress.greenbits_android_wallet"
-            versionNameSuffix = appendGdkCommitHash(rootProject, false)
-            resValue("string", "app_name", "Green")
-            resValue("string", "application_id", applicationId!!)
-            resValue("bool", "feature_lightning", "false")
-            resValue("bool", "feature_analytics", "false")
-            resValue("bool", "feature_rate_google_play", "false")
-            manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher"
-            manifestPlaceholders["appIconRound"] = "@mipmap/ic_launcher_round"
-            manifestPlaceholders["enableQATester"] = false
         }
 
         create("productionGoogle") {
@@ -116,17 +102,10 @@ android {
         }
     }
     applicationVariants.all {
-        outputs.forEach { output ->
-            (output as ApkVariantOutputImpl).versionCodeOverride = 22000000 + (android.defaultConfig.versionCode ?: 0)
+        outputs.all {
+            (this as ApkVariantOutputImpl).versionCodeOverride = 22000000 + (android.defaultConfig.versionCode ?: 0)
         }
     }
-
-    applicationVariants.forEach { variant ->
-        variant.sourceSets.forEach { sourceSet ->
-            sourceSet.kotlinDirectories += file("build/generated/ksp/${variant.name}/kotlin")
-        }
-    }
-
     buildFeatures {
         compose = true
         dataBinding = true
@@ -199,7 +178,6 @@ testlogger {
 }
 
 val developmentImplementation by configurations
-val productionImplementation by configurations
 val productionGoogleImplementation by configurations
 val productionFDroidImplementation by configurations
 
@@ -211,7 +189,6 @@ dependencies {
     implementation(project(":jade"))
 
     developmentImplementation(project(":gms"))
-    productionImplementation(project(":no-gms")) // temp F-Droid flavor
     productionGoogleImplementation(project(":gms"))
     productionFDroidImplementation(project(":no-gms")) // F-Droid
     /** ----------------------------------------------------------------------------------------- */
@@ -272,9 +249,6 @@ dependencies {
     /**  --- Beagle  ---------------------------------------------------------------------------- */
     developmentImplementation(libs.beagle.ui.drawer)
     developmentImplementation(libs.beagle.log.crash)
-
-    productionImplementation(libs.beagle.noop)
-    productionImplementation(libs.beagle.log.crash.noop)
 
     productionGoogleImplementation(libs.beagle.noop)
     productionGoogleImplementation(libs.beagle.log.crash.noop)
@@ -342,6 +316,15 @@ task("useBlockstreamKeys") {
 }
 
 tasks.getByName("preBuild").dependsOn(tasks.getByName("appKeys"))
+
+// Disable Google Services Plugin for FDroid flavor
+afterEvaluate {
+    tasks.matching {
+        it.name.contains("FDroid") && it.name.contains("GoogleServices")
+    }.all {
+        enabled = false
+    }
+}
 
 class RoomSchemaArgProvider(
     @get:InputDirectory
