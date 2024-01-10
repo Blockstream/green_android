@@ -9,7 +9,6 @@ buildscript {
         classpath(libs.kotlin.gradle.plugin)
         classpath(libs.kotlin.serialization)
         classpath(libs.navigation.safe.args.gradle.plugin)
-        classpath(libs.atomicfu.gradle.plugin)
     }
 }
 

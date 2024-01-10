@@ -12,8 +12,6 @@ plugins {
     alias(libs.plugins.app.cash.sqldelight)
 }
 
-apply(plugin = "kotlinx-atomicfu")
-
 sqldelight {
     databases {
         create("GreenDB") {

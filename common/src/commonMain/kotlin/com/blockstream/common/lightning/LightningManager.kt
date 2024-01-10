@@ -1,72 +1,55 @@
-
-
 package com.blockstream.common.lightning
 
-import co.touchlab.kermit.Logger
-import co.touchlab.stately.collections.ConcurrentMutableMap
-import kotlinx.atomicfu.AtomicRef
-import kotlinx.atomicfu.atomic
-import kotlinx.atomicfu.locks.SynchronizedObject
-import kotlinx.atomicfu.locks.synchronized
-import kotlinx.atomicfu.update
-import kotlinx.atomicfu.updateAndGet
+import com.blockstream.common.di.ApplicationScope
+import com.blockstream.common.utils.Loggable
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
-class LightningManager(private val greenlightKeys: GreenlightKeys): SynchronizedObject() {
-    private val bridges = ConcurrentMutableMap<String, LightningBridge>()
-    private val references = ConcurrentMutableMap<LightningBridge, AtomicRef<Int>>()
+class LightningManager(private val scope: ApplicationScope, private val greenlightKeys: GreenlightKeys) {
+    private val bridges = mutableMapOf<String, LightningBridge>()
+    private val references = mutableMapOf<LightningBridge, Int>()
 
-    private val isKeepAliveEnabled = atomic<Boolean>(false)
+    private val mutex = Mutex()
 
-    fun getLightningBridge(
+    @NativeCoroutinesIgnore
+    suspend fun getLightningBridge(
         file: String
     ): LightningBridge {
-        return synchronized(this) {
+        return mutex.withLock {
             (bridges.getOrPut(file) {
-                Logger.i { "Creating a new LightningBridge $file" }
+                logger.i { "Creating a new LightningBridge $file" }
 
                 LightningBridge(
                     workingDir = file,
                     greenlightKeys = greenlightKeys
-                ).also {
-                    references[it] = atomic<Int>(0)
-                }
+                )
             }).also { bridge ->
-                references[bridge]?.update { it + 1 }
+                references[bridge] = (references[bridge] ?: 0) + 1
             }
         }
     }
 
     fun release(lightningBridge: LightningBridge) {
-        Logger.i { "Release LightningBridge" }
-        references[lightningBridge]?.update { it - 1 }
-        gc(lightningBridge)
-    }
+        scope.launch {
+            mutex.withLock {
+                logger.i { "Release LightningBridge" }
 
-    fun setKeepAlive(keepAlive: Boolean) {
-        Logger.i { "setKeepAlive $keepAlive" }
-        isKeepAliveEnabled.value = keepAlive
+                val reference = ((references[lightningBridge] ?: 1) - 1).also {
+                    references[lightningBridge] = it
+                }
 
-        if (!keepAlive) {
-            references.keys.forEach {
-                gc(it)
+                if (reference < 1) {
+                    logger.i { "Stopping LightningBridge" }
+                    // Remove
+                    bridges.remove(lightningBridge.workingDir)
+                    // Stop
+                    lightningBridge.stop()
+                }
             }
         }
     }
 
-    private fun gc(lightningBridge: LightningBridge) {
-        if (!isKeepAliveEnabled.value) {
-            // Avoid calling decrementAndGet() inside if statement as it may not be called if there are other boolean calls
-            val reference = references[lightningBridge]?.updateAndGet {
-                it - 1
-            } ?: 0
-
-            if (reference < 0) {
-                Logger.i { "Stopping LightningBridge" }
-                // Remove
-                bridges.remove(lightningBridge.workingDir)
-                // Stop
-                lightningBridge.stop()
-            }
-        }
-    }
+    companion object: Loggable()
 }

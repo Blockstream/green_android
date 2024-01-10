@@ -21,6 +21,8 @@ abstract class AppSettingsViewModelAbstract() :
 
     abstract val analyticsFeatureEnabled:Boolean
 
+    abstract val experimentalFeatureEnabled:Boolean
+
     @NativeCoroutinesState
     abstract val enhancedPrivacyEnabled: MutableStateFlow<Boolean>
 
@@ -96,6 +98,8 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
     private var appSettings: ApplicationSettings = settingsManager.getApplicationSettings()
 
     override val analyticsFeatureEnabled = settingsManager.analyticsFeatureEnabled
+
+    override val experimentalFeatureEnabled = settingsManager.lightningFeatureEnabled
 
     @NativeCoroutinesState
     override val enhancedPrivacyEnabled = MutableStateFlow(viewModelScope, appSettings.enhancedPrivacy)

@@ -895,7 +895,7 @@ class GdkSession constructor(
         }
     }
 
-    private fun initLightningSdk(lightningMnemonic: String?) {
+    private suspend fun initLightningSdk(lightningMnemonic: String?) {
         if(isHardwareWallet){
             _derivedHwLightningMnemonic = lightningMnemonic
         }
@@ -910,6 +910,7 @@ class GdkSession constructor(
         lightningSdkOrNull = lightningManager.getLightningBridge(workingDir)
     }
 
+    @NativeCoroutinesIgnore
     suspend fun initLightningIfNeeded(mnemonic: String?) {
 
         if (lightning != null) {
@@ -2019,26 +2020,26 @@ class GdkSession constructor(
                 walletTransactionsMutex.withLock {
                     // Clear walletTransactions to avoid keeping archived accounts
                     if (updateForAccounts == null && updateForNetwork == null) {
-                        this@GdkSession._walletTransactions.clear()
+                        _walletTransactions.clear()
                     }
 
-                    this@GdkSession.allAccounts.value
+                    allAccounts.value
                         .filter { account ->
                             ((updateForNetwork == null && updateForAccounts == null) || updateForAccounts?.find { account.id == it.id } != null || account.network == updateForNetwork)
                         }
                         .onEach { account ->
                             if(account.hidden){
                                 // Clear transactions
-                                this@GdkSession._walletTransactions.remove(account.id)
+                                _walletTransactions.remove(account.id)
                             }else {
-                                this@GdkSession._walletTransactions[account.id] = getTransactions(
+                                _walletTransactions[account.id] = getTransactions(
                                     account,
                                     TransactionParams(subaccount = account.pointer, limit = WALLET_OVERVIEW_TRANSACTIONS)
                                 ).transactions
                             }
                         }
 
-                    var walletTransactions = this@GdkSession._walletTransactions.values.flatten()
+                    var walletTransactions = _walletTransactions.values.flatten()
 
                     walletTransactions = walletTransactions.sortedWith(::sortTransactions).let {
                         it.subList(0, it.size.coerceAtMost(WALLET_OVERVIEW_TRANSACTIONS))

@@ -214,9 +214,15 @@ class LightningBridge constructor(
         if(breezSdkOrNull == null){
             return null
         }
-        return updateNodeInfo().also {
-            Logger.d { "Balance: ${it.channelsBalanceSatoshi()}" }
-        }.channelsBalanceSatoshi()
+
+        return try {
+            updateNodeInfo().channelsBalanceSatoshi().also {
+                Logger.d { "Balance: ${it}" }
+            }
+        }catch (e: Exception){
+            e.printStackTrace()
+            null
+        }
     }
 
     fun parseBolt11(bolt11: String): LnInvoice? {
@@ -260,12 +266,17 @@ class LightningBridge constructor(
             return null
         }
 
-        // Update swap transactions
-        updateSwapInfo()
+        return try{
+            // Update swap transactions
+            updateSwapInfo()
 
-        return breezSdkOrNull?.listPayments(
-            ListPaymentsRequest()
-        )
+            breezSdkOrNull?.listPayments(
+                ListPaymentsRequest()
+            )
+        }catch (e: Exception){
+            e.printStackTrace()
+            null
+        }
     }
 
     fun openChannelFee(satoshi: Long): OpenChannelFeeResponse? {
@@ -323,8 +334,12 @@ class LightningBridge constructor(
     }
 
     fun reportIssue(paymentHash: String){
-        val report = ReportIssueRequest.PaymentFailure(ReportPaymentFailureDetails(paymentHash, null))
-        breezSdk.reportIssue(report)
+        try {
+            val report = ReportIssueRequest.PaymentFailure(ReportPaymentFailureDetails(paymentHash, null))
+            breezSdk.reportIssue(report)
+        } catch (e: Exception){
+          e.printStackTrace()
+        }
     }
 
     fun refund(swapAddress: String, toAddress: String, satPerVbyte: UInt?): RefundResponse {
@@ -408,27 +423,6 @@ class LightningBridge constructor(
         } catch (e: Exception) {
             throw exceptionWithNodeId(e)
         }
-    }
-
-    fun listLisps(): List<LspInformation> {
-        return breezSdk.listLsps()
-    }
-
-    fun connectLsp(id: String) {
-        breezSdk.connectLsp(lspId = id)
-    }
-
-    fun lspId(): String? {
-        return breezSdk.lspId()
-    }
-
-    fun fetchLspInfo(id: String): LspInformation? {
-        return breezSdkOrNull?.fetchLspInfo(id)
-    }
-
-    fun closeLspChannels(){
-        breezSdkOrNull?.closeLspChannels()
-        updateNodeInfo()
     }
 
     fun stop() {
