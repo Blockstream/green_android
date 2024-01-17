@@ -58,7 +58,6 @@ class SignMessageBottomSheetDialogFragment :
         viewModel.signMessage(address, binding.message ?: ""){
             binding.signature = it
         }
-
     }
 
     companion object : KLogging() {

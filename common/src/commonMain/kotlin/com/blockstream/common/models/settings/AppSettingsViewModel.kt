@@ -249,6 +249,7 @@ class AppSettingsViewModelPreview(val initValue: Boolean = false) : AppSettingsV
     }
 
     override val analyticsFeatureEnabled: Boolean = true
+    override val experimentalFeatureEnabled: Boolean = true
     override val enhancedPrivacyEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
     override val screenLockInSeconds: MutableStateFlow<ScreenLockSetting> = MutableStateFlow(viewModelScope, ScreenLockSetting.LOCK_IMMEDIATELY)
     override val torEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)

@@ -28,7 +28,7 @@ data class AddressListItem constructor(
         binding.index = "#${index}"
         binding.address = address.address
         binding.txCount = "${address.txCount ?: 0}"
-        binding.canSign = network.isSinglesig
+        binding.canSign = network.canSignMessage
     }
 
     override fun createBinding(

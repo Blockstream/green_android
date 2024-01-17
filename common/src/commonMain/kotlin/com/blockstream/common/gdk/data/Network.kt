@@ -85,6 +85,9 @@ data class Network(
             id
         }
 
+    val canSignMessage
+        get() = isSinglesig && !isLiquid
+
     @IgnoredOnParcel
     val defaultFee by lazy {
         if (isLiquid) 100L else 1000L
