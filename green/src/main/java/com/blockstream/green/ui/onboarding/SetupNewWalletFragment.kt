@@ -75,8 +75,8 @@ open class SetupNewWalletFragment : AppFragment<SetupNewWalletFragmentBinding>(
         binding.terms.linksClickable = true
         binding.terms.isClickable = true
         binding.terms.text = requireContext().linkedText(
-            R.string.id_i_agree_to_the_terms_of_service,
-            listOf(
+            text = R.string.id_i_agree_to_the_terms_of_service,
+            links = listOf(
                 R.string.id_terms_of_service to object : ClickableSpan() {
                     override fun onClick(widget: View) {
                         viewModel.postEvent(SetupNewWalletViewModel.LocalEvents.ClickTermsOfService())

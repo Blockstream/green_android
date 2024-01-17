@@ -75,20 +75,20 @@
 
     <style name="TextAppearance.Green.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
         <item name="android:textSize">16dp</item>
-        <item name="lineHeight">20dp</item>
-        <item name="android:lineHeight" tools:targetApi="p">20dp</item>
+        <item name="lineHeight">24dp</item>
+        <item name="android:lineHeight" tools:targetApi="p">24dp</item>
     </style>
 
     <style name="TextAppearance.Green.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
         <item name="android:textSize">14dp</item>
-        <item name="lineHeight">16dp</item>
-        <item name="android:lineHeight" tools:targetApi="p">16dp</item>
+        <item name="lineHeight">18dp</item>
+        <item name="android:lineHeight" tools:targetApi="p">18dp</item>
     </style>
 
     <style name="TextAppearance.Green.BodySmall" parent="TextAppearance.Material3.BodySmall">
         <item name="android:textSize">11dp</item>
-        <item name="lineHeight">12dp</item>
-        <item name="android:lineHeight" tools:targetApi="p">12dp</item>
+        <item name="lineHeight">13dp</item>
+        <item name="android:lineHeight" tools:targetApi="p">13dp</item>
     </style>
 
     <style name="TextAppearance.Green.LabelLarge" parent="TextAppearance.Material3.LabelLarge">

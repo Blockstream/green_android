@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="com.blockstream.green.ui.settings.TwoFactorSetupAction"/>
+
+        <import type="com.blockstream.green.ui.settings.TwoFactorSetupAction" />
         <import type="com.blockstream.green.data.TwoFactorMethod" />
 
         <variable
@@ -34,7 +35,7 @@
             android:layout_marginTop="32dp"
             android:layout_marginEnd="24dp"
             android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@+id/buttonContinue"
+            app:layout_constraintBottom_toTopOf="@+id/smsWrap"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -43,10 +44,12 @@
                 isVisible="@{vm.method != TwoFactorMethod.AUTHENTICATOR}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="32dp"
                 android:text="@{message}"
+                android:textAlignment="center"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
-                tools:text="Please provide your phone." />
+                android:textColor="@color/color_on_surface_emphasis_medium"
+                tools:text="@string/id_insert_your_email_to_receive" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 isVisible="@{vm.method == TwoFactorMethod.SMS || vm.method == TwoFactorMethod.PHONE || vm.method == TwoFactorMethod.TELEGRAM}"
@@ -56,7 +59,7 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/countryTextInputLayout"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
-                    android:layout_width="130dp"
+                    android:layout_width="140dp"
                     android:layout_height="wrap_content"
                     android:hint="@string/id_country"
                     app:endIconDrawable="@drawable/ic_baseline_arrow_drop_down_24"
@@ -69,8 +72,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:editable="false"
-                        android:inputType="none"
                         android:imeOptions="actionNext"
+                        android:inputType="none"
                         android:text="@={vm.country}"
                         tools:ignore="Deprecated" />
 
@@ -114,96 +117,133 @@
                     android:id="@+id/emailEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textWebEmailAddress"
-                    android:text="@={vm.email}"
                     android:imeOptions="actionDone"
-                    />
+                    android:inputType="textWebEmailAddress"
+                    android:text="@={vm.email}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <androidx.core.widget.NestedScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:id="@+id/scrollView"
                 isVisible="@{vm.method == TwoFactorMethod.AUTHENTICATOR}"
-                android:id="@+id/scrollView">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <LinearLayout
-                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textAlignment="center"
-                        android:textAppearance="?attr/textAppearanceBodyMedium"
                         android:layout_marginBottom="24dp"
+                        android:gravity="center"
                         android:text="@string/id_scan_the_qr_code_with_an"
-                        android:gravity="center" />
+                        android:textAlignment="center"
+                        android:textAppearance="?attr/textAppearanceBodyMedium" />
 
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:cardBackgroundColor="@color/white"
-                        android:layout_gravity="center_horizontal">
+                        android:layout_gravity="center_horizontal"
+                        app:cardBackgroundColor="@color/white">
 
                         <ImageView
                             android:id="@+id/authenticatorQR"
                             android:layout_width="170dp"
                             android:layout_height="170dp"
-                            android:contentDescription="@string/id_authenticator_qr_code"
                             android:layout_margin="8dp"
-                            />
+                            android:contentDescription="@string/id_authenticator_qr_code" />
 
                     </com.google.android.material.card.MaterialCardView>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/id_the_recovery_key_below_will_not"
-                        android:gravity="center"
-                        android:textAppearance="?attr/textAppearanceLabelMedium"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="24dp"
-                        />
+                        android:gravity="center"
+                        android:text="@string/id_the_recovery_key_below_will_not"
+                        android:textAppearance="?attr/textAppearanceLabelMedium" />
 
                     <TextView
                         android:id="@+id/authenticatorCode"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:layout_marginTop="16dp"
                         android:breakStrategy="balanced"
                         android:drawablePadding="8dp"
+                        android:text="@{vm.authenticatorCode}"
                         android:textAlignment="center"
                         android:textColor="@color/brand_green"
                         android:textSize="13dp"
-                        android:text="@{vm.authenticatorCode}"
-                        android:layout_marginTop="16dp"
                         android:textStyle="bold"
                         app:drawableEndCompat="@drawable/ic_copy"
                         app:drawableTint="@color/color_on_surface_emphasis_low"
                         tools:text="fafadfafasdfaiiiiii" />
 
                 </LinearLayout>
+
+
             </androidx.core.widget.NestedScrollView>
+
+            <Button
+                android:id="@+id/buttonContinue"
+                isGone="@{vm.action == TwoFactorSetupAction.CANCEL}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="24dp"
+                style="@style/Widget.Green.Button.Big"
+                android:enabled="@{!vm.onProgressAndroid &amp;&amp; vm.isValid}"
+                android:text="@{button}" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-
-        <Button
-            android:id="@+id/buttonContinue"
-            android:layout_width="0dp"
+        <com.blockstream.green.views.GappedLinearLayout
+            android:id="@+id/smsWrap"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="16dp"
-            android:enabled="@{!vm.onProgressAndroid &amp;&amp; vm.isValid}"
-            android:text="@{button}"
-            isGone="@{vm.action == TwoFactorSetupAction.CANCEL}"
-            app:layout_constraintBottom_toTopOf="@+id/progress"
+            app:gap="16dp"
+            isVisible="@{vm.method == TwoFactorMethod.SMS}"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent">
 
+            <TextView
+                android:id="@+id/text1"
+                android:textColor="@color/color_on_surface_emphasis_medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:text="@string/id_by_continuing_you_agree_to_blockstream_s"
+                android:textAlignment="center" />
+
+            <TextView
+                android:id="@+id/text2"
+                android:textColor="@color/color_on_surface_emphasis_medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:text="@string/id_message_frequency_varies_according_to_the_number"
+                android:textAlignment="center" />
+
+            <TextView
+                android:id="@+id/text3"
+                android:textColor="@color/color_on_surface_emphasis_medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:text="@string/id_for_help_visit_help_blockstream_com"
+                android:textAlignment="center" />
+
+        </com.blockstream.green.views.GappedLinearLayout>
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/progress"

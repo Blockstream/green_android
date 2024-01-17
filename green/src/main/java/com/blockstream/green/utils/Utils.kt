@@ -5,12 +5,14 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
 import android.text.Spannable
 import android.text.Spanned
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.view.View
 import android.widget.Toast
@@ -249,12 +251,12 @@ fun Context.underlineText(text: String): Spanned {
     }.toSpanned()
 }
 
-fun Context.linkedText(whiteText: Int, links: List<Pair<Int, ClickableSpan>>): Spanned {
-    val whiteString = getString(whiteText)
+fun Context.linkedText(text: Int, color: Int = R.color.white, links: List<Pair<Int, ClickableSpan>>): Spanned {
+    val whiteString = getString(text)
 
     return try {
         buildSpannedString {
-            color(ContextCompat.getColor(this@linkedText, R.color.white)) {
+            color(ContextCompat.getColor(this@linkedText, color)) {
                 append(whiteString)
             }
 
@@ -262,7 +264,8 @@ fun Context.linkedText(whiteText: Int, links: List<Pair<Int, ClickableSpan>>): S
                 val text = getString(link.first).lowercase()
                 val start = whiteString.lowercase().indexOf(text)
 
-                listOf(
+                listOfNotNull(
+                    StyleSpan(Typeface.BOLD),
                     ForegroundColorSpan(
                         ContextCompat.getColor(
                             this@linkedText,

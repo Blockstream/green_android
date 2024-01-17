@@ -38,8 +38,6 @@ open class WalletSettingsViewModel constructor(
     @InjectedParam wallet: GreenWallet
 ) : AbstractWalletViewModel(wallet) {
     private var _networkSettingsLiveData = mutableMapOf<Network, MutableLiveData<Settings>>()
-    val networkSettingsLiveData
-        get() = _networkSettingsLiveData
 
     fun networkSettingsLiveData(network: Network) =
         _networkSettingsLiveData.getOrPut(network) { MutableLiveData<Settings>() }

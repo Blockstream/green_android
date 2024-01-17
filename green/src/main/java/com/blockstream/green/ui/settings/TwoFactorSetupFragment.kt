@@ -2,11 +2,14 @@ package com.blockstream.green.ui.settings
 
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.view.View
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.data.Countries.Countries
 import com.blockstream.common.data.Country
 import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.models.onboarding.SetupNewWalletViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
@@ -27,6 +30,7 @@ import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.copyToClipboard
+import com.blockstream.green.utils.linkedText
 import com.blockstream.green.utils.pulse
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.GenericFastItemAdapter
@@ -43,7 +47,7 @@ class TwoFactorSetupFragment : AbstractWalletFragment<TwofactorSetupFragmentBind
     val args: TwoFactorSetupFragmentArgs by navArgs()
     override val walletOrNull by lazy { args.wallet }
 
-    override val screenName by lazy{
+    override val screenName by lazy {
         when (args.action) {
             TwoFactorSetupAction.SETUP, TwoFactorSetupAction.SETUP_EMAIL -> {
                 "Setup"
@@ -70,8 +74,6 @@ class TwoFactorSetupFragment : AbstractWalletFragment<TwofactorSetupFragmentBind
             network = network,
             twoFactorMethod = args.method.gdkType
         ) else null
-
-    override val isAdjustResize: Boolean = true
 
     val network: Network by lazy { args.network }
 
@@ -124,6 +126,41 @@ class TwoFactorSetupFragment : AbstractWalletFragment<TwofactorSetupFragmentBind
         val action = args.action
 
         binding.vm = viewModel
+
+        binding.text1.movementMethod = LinkMovementMethod.getInstance()
+        binding.text1.linksClickable = true
+        binding.text1.isClickable = true
+        binding.text1.text = requireContext().linkedText(
+            text = R.string.id_by_continuing_you_agree_to_blockstream_s,
+            color = R.color.color_on_surface_emphasis_medium,
+            links = listOf(
+                R.string.id_tos to object : ClickableSpan() {
+                    override fun onClick(widget: View) {
+                        viewModel.postEvent(TwoFactorSetupViewModel.LocalEvents.ClickTermsOfService())
+                    }
+                },
+                R.string.id_privacy_policy to object : ClickableSpan() {
+                    override fun onClick(widget: View) {
+                        viewModel.postEvent(TwoFactorSetupViewModel.LocalEvents.ClickPrivacyPolicy())
+                    }
+                }
+            )
+        )
+
+        binding.text3.movementMethod = LinkMovementMethod.getInstance()
+        binding.text3.linksClickable = true
+        binding.text3.isClickable = true
+        binding.text3.text = requireContext().linkedText(
+            text = R.string.id_for_help_visit_help_blockstream_com,
+            color = R.color.color_on_surface_emphasis_medium,
+            links = listOf(
+                R.string.id_help_blockstream_com to object : ClickableSpan() {
+                    override fun onClick(widget: View) {
+                        viewModel.postEvent(TwoFactorSetupViewModel.LocalEvents.ClickHelp())
+                    }
+                }
+            )
+        )
         
         when(action){
             TwoFactorSetupAction.SETUP -> {

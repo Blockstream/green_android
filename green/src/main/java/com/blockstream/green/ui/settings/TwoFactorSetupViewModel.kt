@@ -4,7 +4,9 @@ import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import com.blockstream.common.Urls
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.extensions.isEmailValid
@@ -43,6 +45,12 @@ class TwoFactorSetupViewModel constructor(
             addSource(phoneNumber, block)
             addSource(email, block)
         }
+    }
+
+    class LocalEvents {
+        class ClickTermsOfService : Events.OpenBrowser(Urls.TERMS_OF_SERVICE)
+        class ClickPrivacyPolicy : Events.OpenBrowser(Urls.PRIVACY_POLICY)
+        class ClickHelp : Events.OpenBrowser(Urls.HELP_CENTER)
     }
 
     init {
