@@ -8,16 +8,16 @@ import okio.internal.commonToUtf8String
 import kotlin.io.encoding.Base64
 
 @Serializable
-data class AppSecrets(
+data class AppKeys(
     @SerialName("breez_api_key") val breezApiKey: String?,
     @SerialName("greenlight_key") val greenlightKey: String?,
     @SerialName("greenlight_cert") val greenlightCert: String?,
     @SerialName("zendesk_client_id") val zendeskClientId: String?,
-) : GreenJson<AppSecrets>() {
+) : GreenJson<AppKeys>() {
     override fun kSerializer() = serializer()
 
     companion object {
-        fun fromText(text: String): AppSecrets? = text.takeIf { it.isNotBlank() }?.let {
+        fun fromText(text: String): AppKeys? = text.takeIf { it.isNotBlank() }?.let {
             try {
                 json.decodeFromString(Base64.decode(it).commonToUtf8String())
             } catch (e: Exception) {

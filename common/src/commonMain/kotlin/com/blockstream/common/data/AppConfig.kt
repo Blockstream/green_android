@@ -15,7 +15,7 @@ data class AppConfig constructor(
         fun default(
             isDebug: Boolean,
             gdkDataDir: String,
-            appSecrets: AppSecrets?,
+            appKeys: AppKeys?,
             analyticsFeatureEnabled: Boolean,
             lightningFeatureEnabled: Boolean,
             storeRateEnabled: Boolean
@@ -23,10 +23,10 @@ data class AppConfig constructor(
             return AppConfig(
                 isDebug = isDebug,
                 gdkDataDir = gdkDataDir,
-                breezApiKey = appSecrets?.breezApiKey,
-                greenlightKey = appSecrets?.greenlightKey,
-                greenlightCert = appSecrets?.greenlightCert,
-                zendeskClientId = appSecrets?.zendeskClientId,
+                breezApiKey = appKeys?.breezApiKey,
+                greenlightKey = appKeys?.greenlightKey,
+                greenlightCert = appKeys?.greenlightCert,
+                zendeskClientId = appKeys?.zendeskClientId,
                 analyticsFeatureEnabled = analyticsFeatureEnabled,
                 lightningFeatureEnabled = lightningFeatureEnabled,
                 storeRateEnabled = storeRateEnabled

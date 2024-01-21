@@ -51,6 +51,7 @@ production:
   script:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
+    - ./gradlew useBlockstreamKeys
     - ./gradlew assembleProductionGoogleRelease
 
 production_fdroid:
@@ -72,6 +73,7 @@ production_fdroid:
   script:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
+    - ./gradlew useBlockstreamKeys
     - ./gradlew assembleProductionFDroidRelease
 
 
@@ -94,6 +96,7 @@ development:
   script:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
+    - ./gradlew useBlockstreamKeys
     - ./gradlew assembleDevelopmentRelease
 
 production_debug:
@@ -115,6 +118,7 @@ production_debug:
   script:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
+    - ./gradlew useBlockstreamKeys
     - ./gradlew assembleProductionGoogleDebug
 
 gdk_commit:
@@ -138,6 +142,7 @@ gdk_commit:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
     - ./gdk/fetch_android_binaries.sh -c $GDK_COMMIT
+    - ./gradlew useBlockstreamKeys
     - ./gradlew assembleProductionGoogleRelease
 
 #####################################
@@ -163,6 +168,7 @@ build_google_play:
   script:
     - cd $CI_PROJECT_DIR
     - ./gradlew lintProductionGoogleRelease
+    - ./gradlew useBlockstreamKeys
     - ./gradlew assembleProductionGoogleRelease
 
 build_osx:
@@ -174,6 +180,7 @@ build_osx:
     GIT_SUBMODULE_STRATEGY: recursive
   script:
     - cd $CI_PROJECT_DIR
+    - ./gradlew useBlockstreamKeys
     - ./gradlew assembleProductionGoogleRelease
 
 #####################################
@@ -192,6 +199,7 @@ unit_tests:
   script:
     - cd $CI_PROJECT_DIR
     - ./gradlew lintProductionGoogleRelease
+    - ./gradlew useBlockstreamKeys
     - ./gradlew test
 
 #####################################

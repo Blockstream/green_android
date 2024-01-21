@@ -1,7 +1,6 @@
 
 import com.adarshr.gradle.testlogger.theme.ThemeType
 import com.android.build.gradle.internal.api.*
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import org.codehaus.groovy.runtime.ProcessGroovyMethods
 import java.io.FileInputStream
 import java.util.*
@@ -329,23 +328,28 @@ task("verifyDependencies", GradleBuild::class) {
     tasks = listOf("lintDevelopmentRelease", "assembleProductionRelease")
 }
 
-task("appSecrets") {
+task("appKeys") {
     doFirst {
-        val appSecrets = project.file("src/main/res/raw/app_secrets.txt")
-        if (appSecrets.exists()) {
-            println("AppSecrets: ✔")
+        val appKeys = project.file("src/main/res/raw/app_keys.txt")
+        if (appKeys.exists()) {
+            println("AppKeys: ✔")
         } else {
-            println("AppSecrets: Create new file")
-            (System.getenv("APP_SECRETS")
-                ?: gradleLocalProperties(rootDir).getProperty("appSecrets", "")).also {
-                appSecrets.writeText(it)
-            }
+            println("AppKeys: Use empty key file")
+            appKeys.createNewFile()
         }
     }
     outputs.upToDateWhen { false }
 }
 
-tasks.getByName("preBuild").dependsOn(tasks.getByName("appSecrets"))
+task("useBlockstreamKeys") {
+    doLast {
+        println("AppKeys: Use Blockstream Keys")
+        rootProject.file("contrib/blockstream_keys.txt")
+            .copyTo(project.file("src/main/res/raw/app_keys.txt"), overwrite = true)
+    }
+}
+
+tasks.getByName("preBuild").dependsOn(tasks.getByName("appKeys"))
 
 class RoomSchemaArgProvider(
     @get:InputDirectory
