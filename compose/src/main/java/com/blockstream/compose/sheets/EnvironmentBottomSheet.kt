@@ -2,20 +2,20 @@ package com.blockstream.compose.sheets
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.compose.R
+import com.blockstream.compose.navigation.resultKey
+import com.blockstream.compose.navigation.setNavigationResult
 
 
-@Parcelize
-class EnvironmentBottomSheet(val onEnvironment: (isTestnet: Boolean?) -> Unit) : BottomScreen() {
+object EnvironmentBottomSheet : BottomScreen() {
     @Composable
     override fun Content() {
         MenuBottomSheetView(title = stringResource(R.string.id_select_network), entries = listOf(
             MenuEntry(title = "Mainnet", iconRes = R.drawable.currency_btc) {
-                onEnvironment.invoke(true)
+                setNavigationResult(resultKey, false)
             },
             MenuEntry(title = "Testnet", iconRes = R.drawable.flask) {
-                onEnvironment.invoke(false)
+                setNavigationResult(resultKey, true)
             }
         ), onDismissRequest = onDismissRequest())
     }

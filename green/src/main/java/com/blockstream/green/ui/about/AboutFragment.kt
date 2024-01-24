@@ -6,7 +6,9 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.blockstream.common.models.about.*
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.compose.AppFragmentBridge
 import com.blockstream.compose.screens.about.AboutScreen
+import com.blockstream.compose.sheets.BottomSheetNavigatorM3
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ComposeViewBinding
@@ -32,17 +34,10 @@ class AboutFragment : AppFragment<ComposeViewBinding>(R.layout.compose_view, men
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
             )
             setContent {
-                GreenTheme {
+                AppFragmentBridge {
                     AboutScreen(viewModel = viewModel)
                 }
             }
-        }
-    }
-
-    override fun handleSideEffect(sideEffect: SideEffect) {
-        super.handleSideEffect(sideEffect)
-        if (sideEffect is SideEffects.OpenDialog) {
-            AppReviewHelper.showFeedback(this)
         }
     }
 }

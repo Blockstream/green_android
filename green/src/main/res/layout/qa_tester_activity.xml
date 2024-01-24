@@ -96,7 +96,7 @@
                         android:layout_height="wrap_content"
                         android:checked="@={qaTester.assetsFetchDisabled}"
                         app:captionText="Disable Assets metadata &amp; icons fetching"
-                        app:icon="@drawable/ic_unknown"
+                        app:icon="@drawable/unknown"
                         app:titleText="Disable Assets fetching" />
 
                     <com.google.android.material.divider.MaterialDivider

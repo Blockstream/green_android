@@ -18,6 +18,7 @@ import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Device
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.managers.SessionManager
+import com.blockstream.compose.extensions.getNetworkIcon
 import com.blockstream.green.R
 import com.blockstream.green.extensions.toBitmap
 import com.blockstream.green.extensions.toBitmapDrawable
@@ -36,7 +37,7 @@ suspend fun GdkSession.getWallet(database: Database, sessionManager: SessionMana
 }
 
 fun GdkSession.getAssetDrawableOrDefault(context: Context, assetId: String): Drawable {
-    return getAssetDrawableOrNull(context, assetId) ?: context.getDrawable(R.drawable.ic_unknown)!!
+    return getAssetDrawableOrNull(context, assetId) ?: context.getDrawable(R.drawable.unknown)!!
 }
 
 fun AccountType?.titleRes(): Int = when (this) {
@@ -81,12 +82,12 @@ fun Long?.getDirectionColor(context: Context, isFailed: Boolean = false): Int =
 
 
 fun String.getNetworkIcon(): Int{
-    if (Network.isBitcoinMainnet(this)) return R.drawable.ic_bitcoin
-    if (Network.isLiquidMainnet(this)) return R.drawable.ic_liquid
-    if (Network.isBitcoinTestnet(this)) return R.drawable.ic_bitcoin_testnet
-    if (Network.isLiquidTestnet(this)) return R.drawable.ic_liquid_testnet
-    if (Network.isLightningMainnet(this)) return R.drawable.ic_bitcoin_lightning
-    return R.drawable.ic_unknown
+    if (Network.isBitcoinMainnet(this)) return R.drawable.bitcoin
+    if (Network.isLiquidMainnet(this)) return R.drawable.liquid
+    if (Network.isBitcoinTestnet(this)) return R.drawable.bitcoin_testnet
+    if (Network.isLiquidTestnet(this)) return R.drawable.liquid_testnet
+    if (Network.isLightningMainnet(this)) return R.drawable.bitcoin_lightning
+    return R.drawable.unknown
 }
 
 fun String.getNetworkColor(): Int = when {
@@ -108,7 +109,7 @@ fun Account.getAccountColor(context: Context): Int = when {
 
 fun EnrichedAsset.getAssetIcon(context: Context, session: GdkSession, isLightning: Boolean = false): Drawable {
     return session.liquid?.takeIf { isAnyAsset }?.let {
-        (if(session.isTestnet) R.drawable.ic_unknown else  if(isAmp) R.drawable.ic_amp_asset else R.drawable.ic_liquid_asset).let {
+        (if(session.isTestnet) R.drawable.unknown else  if(isAmp) R.drawable.ic_amp_asset else R.drawable.ic_liquid_asset).let {
             ContextCompat.getDrawable(context, it)!!
         }
     } ?: assetId.getAssetIcon(context, session, isLightning)
@@ -121,28 +122,28 @@ fun String?.getAssetIcon(context: Context, session: GdkSession, isLightning: Boo
             if (this == null || this == BTC_POLICY_ASSET) {
                 if(isLightning){
                     if (session.isMainnet) {
-                        R.drawable.ic_bitcoin_lightning
+                        R.drawable.bitcoin_lightning
                     } else {
-                        R.drawable.ic_bitcoin_lightning_testnet
+                        R.drawable.bitcoin_lightning_testnet
                     }
                 }else{
                     if (session.isMainnet) {
-                        R.drawable.ic_bitcoin
+                        R.drawable.bitcoin
                     } else {
-                        R.drawable.ic_bitcoin_testnet
+                        R.drawable.bitcoin_testnet
                     }
                 }
             } else {
                 if (session.isMainnet) {
-                    R.drawable.ic_liquid
+                    R.drawable.liquid
                 } else {
-                    R.drawable.ic_liquid_testnet
+                    R.drawable.liquid_testnet
                 }
             }
         )!!
     } else {
         session.liquid?.let { session.getAssetDrawableOrDefault(context,this) }
-            ?: ContextCompat.getDrawable(context, R.drawable.ic_unknown)!!
+            ?: ContextCompat.getDrawable(context, R.drawable.unknown)!!
     }
 }
 

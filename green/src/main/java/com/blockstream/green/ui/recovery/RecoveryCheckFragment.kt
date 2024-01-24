@@ -2,7 +2,7 @@ package com.blockstream.green.ui.recovery
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -11,22 +11,26 @@ import com.blockstream.common.models.recovery.RecoveryCheckViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.compose.AppFragmentBridge
+import com.blockstream.compose.screens.recovery.RecoveryCheckScreen
 import com.blockstream.green.R
-import com.blockstream.green.databinding.RecoveryCheckFragmentBinding
+import com.blockstream.green.databinding.ComposeViewBinding
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.gdk.getNetworkIcon
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.utils.isDevelopmentFlavor
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class RecoveryCheckFragment : AppFragment<RecoveryCheckFragmentBinding>(
-    layout = R.layout.recovery_check_fragment,
-    menuRes = 0
+class RecoveryCheckFragment : AppFragment<ComposeViewBinding>(
+    layout = R.layout.compose_view
 ) {
     private val args: RecoveryCheckFragmentArgs by navArgs()
 
     private val networkOrNull by lazy { args.args.network }
+
+    override val sideEffectsHandledByAppFragment: Boolean = false
+
+    override val useCompose: Boolean = true
 
     override val title: String
         get() = networkOrNull?.canonicalName ?: ""
@@ -81,11 +85,15 @@ class RecoveryCheckFragment : AppFragment<RecoveryCheckFragmentBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.vm = viewModel
-        binding.isDevelopmentFlavor = isDevelopmentFlavor
-
-        binding.clickListener = View.OnClickListener { button ->
-            viewModel.postEvent(RecoveryCheckViewModel.LocalEvents.SelectWord((button as Button).text.toString()))
+        binding.composeView.apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            )
+            setContent {
+                AppFragmentBridge {
+                    RecoveryCheckScreen(viewModel = viewModel)
+                }
+            }
         }
     }
 }

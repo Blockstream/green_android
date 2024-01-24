@@ -1,8 +1,10 @@
 package com.blockstream.common.models.overview
 
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.NavData
 import com.blockstream.common.events.Event
 import com.blockstream.common.extensions.ifConnected
+import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.gdk.data.Assets
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.gdk.device.DeviceResolver
@@ -12,7 +14,9 @@ import com.rickclephas.kmm.viewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 
 abstract class WalletOverviewViewModelAbstract(
     greenWallet: GreenWallet
@@ -53,6 +57,22 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) : WalletOverviewViewMode
     }
 
     init {
+
+
+        greenWalletFlow.filterNotNull().onEach {
+            _navData.value = NavData(
+                title = it.name
+            )
+
+//            menu = listOfNotNull(MenuEntry(
+//                title = stringResource(R.string.id_logout),
+//                iconRes = R.drawable.sign_out
+//            ) {
+//                viewModel.postEvent(Events.Logout(reason = LogoutReason.USER_ACTION))
+//            }
+
+        }.launchIn(this)
+
         bootstrap()
     }
 

@@ -2,24 +2,26 @@ package com.blockstream.green.ui.recovery
 
 import android.os.Bundle
 import android.view.View
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.navigation.fragment.navArgs
-import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.recovery.RecoveryWordsViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.compose.AppFragmentBridge
+import com.blockstream.compose.screens.recovery.RecoveryWordsScreen
+import com.blockstream.compose.sheets.BottomSheetNavigatorM3
+import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.green.R
-import com.blockstream.green.databinding.RecoveryWordsFragmentBinding
+import com.blockstream.green.databinding.ComposeViewBinding
 import com.blockstream.green.gdk.getNetworkIcon
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.utils.greenText
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class RecoveryWordsFragment : AppFragment<RecoveryWordsFragmentBinding>(
-    layout = R.layout.recovery_words_fragment,
-    menuRes = 0
+class RecoveryWordsFragment : AppFragment<ComposeViewBinding>(
+    layout = R.layout.compose_view
 ) {
     private val args: RecoveryWordsFragmentArgs by navArgs()
 
@@ -35,20 +37,13 @@ class RecoveryWordsFragment : AppFragment<RecoveryWordsFragmentBinding>(
         parametersOf(args.args)
     }
 
+    override val sideEffectsHandledByAppFragment: Boolean = false
+
+    override val useCompose: Boolean = true
+
     // If wallet is null, WalletFragment will give the viewModel to AppFragment, guard this behavior and return null
     override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        binding.vm = viewModel
-
-        binding.title.text = greenText(R.string.id_write_down_your_recovery_phrase, R.string.id_recovery_phrase, R.string.id_correct_order)
-
-        binding.buttonNext.setOnClickListener {
-            viewModel.postEvent(Events.Continue)
-        }
-    }
 
     override fun handleSideEffect(sideEffect: SideEffect) {
         if (sideEffect is SideEffects.NavigateTo) {
@@ -69,6 +64,21 @@ class RecoveryWordsFragment : AppFragment<RecoveryWordsFragmentBinding>(
             }
         } else {
             super.handleSideEffect(sideEffect)
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.composeView.apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            )
+            setContent {
+                AppFragmentBridge {
+                    RecoveryWordsScreen(viewModel = viewModel)
+                }
+            }
         }
     }
 }

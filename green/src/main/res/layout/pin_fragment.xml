@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="com.blockstream.common.models.onboarding.PinViewModel" />
+            type="com.blockstream.common.models.onboarding.phone.PinViewModel" />
 
         <variable
             name="isPinVerified"

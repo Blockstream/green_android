@@ -1,9 +1,9 @@
 
 import com.adarshr.gradle.testlogger.theme.ThemeType
-import com.android.build.gradle.internal.api.*
+import com.android.build.gradle.internal.api.ApkVariantOutputImpl
 import org.codehaus.groovy.runtime.ProcessGroovyMethods
 import java.io.FileInputStream
-import java.util.*
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.androidApplication)
@@ -233,9 +233,6 @@ dependencies {
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Koin   ----------------------------------------------------------------------------- */
-    implementation(libs.koin.core)
-    implementation(libs.koin.android)
-    implementation(libs.koin.annotations)
     ksp(libs.koin.ksp.compiler)
 
     // For instrumentation tests

@@ -4,6 +4,7 @@ package com.blockstream.common.gdk
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Transient
+import kotlinx.serialization.cbor.Cbor
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
@@ -34,6 +35,15 @@ abstract class GreenJson<T> {
     }
 
     fun toJson() = toString()
+
+    @Suppress("UNCHECKED_CAST")
+    fun toCbor() = Cbor {
+        encodeDefaults = encodeDefaultsValues()
+        ignoreUnknownKeys = true
+    }.encodeToByteArray(kSerializer(), this as T)
+
+    @ExperimentalStdlibApi
+    fun toCborHex() = toCbor().toHexString()
 
     fun toJsonElement(): JsonElement {
         @Suppress("UNCHECKED_CAST")

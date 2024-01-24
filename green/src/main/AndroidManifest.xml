@@ -67,7 +67,7 @@
         tools:targetApi="tiramisu">
 
         <!--        Disable Predictive Back until this is fixed-->
-        <!--        https://issuetracker.google.com/issues/271303558-->
+        <!--        https://issuetracker.google.com/issues/271303558 -->
 
         <!--In v4 we have to change launch mode to singleTask-->
         <!--Setting launchMode="singleTask" prevents Android,-->

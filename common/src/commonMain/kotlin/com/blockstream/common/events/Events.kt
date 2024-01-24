@@ -1,9 +1,11 @@
 package com.blockstream.common.events
 
 import com.blockstream.common.data.DenominatedValue
+import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.navigation.NavigateDestination
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
@@ -22,16 +24,22 @@ class Events : Event {
     object SetupNewWallet : NavigateTo(NavigateDestinations.SetupNewWallet)
     object About : NavigateTo(NavigateDestinations.About)
     object AppSettings : NavigateTo(NavigateDestinations.AppSettings)
+    data class ShowRenameWallet(val greenWallet: GreenWallet) : NavigateTo(NavigateDestinations.RenameWallet(greenWallet))
+    data class ShowDeleteWallet(val greenWallet: GreenWallet) : NavigateTo(NavigateDestinations.DeleteWallet(greenWallet))
+    data class Bip39Passphrase(val greenWallet: GreenWallet, val passphrase: String) : NavigateTo(NavigateDestinations.Bip39Passphrase(greenWallet, passphrase))
+
     object Continue : Event
     object BannerDismiss : Event
     object BannerAction : Event
     object SelectDenomination : Event
-    data class SetDenomination(val denominatedValue: DenominatedValue) : Event
+    data class SetDenominatedValue(val denominatedValue: DenominatedValue) : Event
     data class RenameWallet(val wallet: GreenWallet, val name: String) : Event
     data class DeleteWallet(val wallet: GreenWallet) : Event
     data class Logout(val reason: LogoutReason) : Event
     class DeviceRequestResponse(val data: String?): Event
     class ArchiveAccount(val account: Account): Event
     class UnArchiveAccount(val account: Account): Event
-
+    class SetAccountAsset(val accountAsset: AccountAsset): Event
+    class SetBarcodeScannerResult(val scannedText : String): Event
+    class SubmitErrorReport(val email : String, val message: String, val errorReport: ErrorReport): Event
 }

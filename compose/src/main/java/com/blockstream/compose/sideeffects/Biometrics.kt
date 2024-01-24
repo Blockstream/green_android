@@ -13,8 +13,10 @@ import androidx.fragment.app.FragmentActivity
 import com.blockstream.common.database.LoginCredentials
 import com.blockstream.common.models.login.LoginViewModel
 import com.blockstream.common.models.login.LoginViewModelAbstract
-import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.models.onboarding.watchonly.WatchOnlyCredentialsViewModel
+import com.blockstream.common.models.onboarding.watchonly.WatchOnlyCredentialsViewModelAbstract
 import com.blockstream.common.utils.AndroidKeystore
+import com.blockstream.common.utils.Loggable
 import com.blockstream.compose.R
 import com.blockstream.compose.extensions.showErrorSnackbar
 import kotlinx.coroutines.CoroutineScope
@@ -23,14 +25,14 @@ import java.security.InvalidAlgorithmParameterException
 import java.security.UnrecoverableKeyException
 
 @Stable
-class BiometricsState constructor(
+data class BiometricsState constructor(
     val context: Context,
     val coroutineScope: CoroutineScope,
     val snackbarHostState: SnackbarHostState,
     val dialogState: DialogState,
-     val androidKeystore: AndroidKeystore
+    val androidKeystore: AndroidKeystore
 ) {
-    private var biometricPrompt : BiometricPrompt? = null
+    var activeBiometricPrompt : BiometricPrompt? = null
 
     private val executor = ContextCompat.getMainExecutor(context)
 
@@ -41,7 +43,7 @@ class BiometricsState constructor(
             .setConfirmationRequired(true)
             .setAllowedAuthenticators(if (onlyDeviceCredentials) BiometricManager.Authenticators.DEVICE_CREDENTIAL else BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
 
-        val biometricPrompt = BiometricPrompt(
+        activeBiometricPrompt = BiometricPrompt(
             context as FragmentActivity,
             executor,
             object : BiometricPrompt.AuthenticationCallback() {
@@ -56,8 +58,8 @@ class BiometricsState constructor(
             })
 
         try {
-            biometricPrompt.authenticate(promptInfo.build())
-        }catch (e: InvalidAlgorithmParameterException){
+            activeBiometricPrompt?.authenticate(promptInfo.build())
+        } catch (e: InvalidAlgorithmParameterException){
             // At least one biometric must be enrolled
             coroutineScope.launch {
                 dialogState.openDialog(OpenDialogData(message = context.getString(R.string.id_please_activate_at_least_one)))
@@ -70,13 +72,14 @@ class BiometricsState constructor(
     }
 
     fun launchBiometricPrompt(loginCredentials: LoginCredentials, viewModel: LoginViewModelAbstract, onlyDeviceCredentials: Boolean = false) {
-        biometricPrompt?.cancelAuthentication()
+        activeBiometricPrompt?.cancelAuthentication()
 
         val isV4Authentication = loginCredentials.keystore.isNullOrBlank()
 
         if(isV4Authentication && androidKeystore.isBiometricsAuthenticationRequired()){
-            authenticateWithBiometrics(object : AuthenticationCallback(context = context, coroutineScope = coroutineScope, snackbarHostState = snackbarHostState) {
+            authenticateWithBiometrics(object : AuthenticationCallback(state = this@BiometricsState) {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    super.onAuthenticationSucceeded(result)
                     // authenticateUserIfRequired = false prevent eternal loops
                     launchBiometricPrompt(loginCredentials = loginCredentials, viewModel = viewModel, onlyDeviceCredentials = true)
                 }
@@ -103,11 +106,12 @@ class BiometricsState constructor(
                 }
             }
 
-            biometricPrompt = BiometricPrompt(
+            activeBiometricPrompt = BiometricPrompt(
                 context as FragmentActivity,
                 ContextCompat.getMainExecutor(context),
-                object : AuthenticationCallback(context = context, coroutineScope = coroutineScope, snackbarHostState = snackbarHostState) {
+                object : AuthenticationCallback(state = this@BiometricsState) {
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                        super.onAuthenticationSucceeded(result)
                         if (isV4Authentication) {
                             result.cryptoObject?.cipher?.let {
                                 viewModel.postEvent(LoginViewModel.LocalEvents.LoginWithBiometrics(it, loginCredentials))
@@ -134,7 +138,7 @@ class BiometricsState constructor(
 
                 // v4 uses a default keystore and a crypto object
                 if(isV4Authentication){
-                    biometricPrompt?.authenticate(
+                    activeBiometricPrompt?.authenticate(
                         promptInfo.build(),
                         BiometricPrompt.CryptoObject(
                             androidKeystore.getBiometricsDecryptionCipher(
@@ -144,18 +148,28 @@ class BiometricsState constructor(
                     )
                 }else{
                     // v3 required only for user to be Authenticated
-                    biometricPrompt?.authenticate(promptInfo.build())
+                    activeBiometricPrompt?.authenticate(promptInfo.build())
                 }
 
             } catch (e: KeyPermanentlyInvalidatedException) {
                 coroutineScope.launch {
-                    snackbarHostState.showErrorSnackbar(e)
+                    snackbarHostState.showErrorSnackbar(
+                        context = context,
+                        dialogState = dialogState,
+                        viewModel = viewModel,
+                        error = e
+                    )
                 }
                 // Remove invalidated login credentials
                 viewModel.postEvent(LoginViewModel.LocalEvents.DeleteLoginCredentials(loginCredentials))
             } catch (e: UnrecoverableKeyException) {
                 coroutineScope.launch {
-                    snackbarHostState.showErrorSnackbar(e)
+                    snackbarHostState.showErrorSnackbar(
+                        context = context,
+                        dialogState = dialogState,
+                        viewModel = viewModel,
+                        error = e
+                    )
                 }
                 // Remove invalidated login credentials
                 viewModel.postEvent(LoginViewModel.LocalEvents.DeleteLoginCredentials(loginCredentials))
@@ -167,8 +181,68 @@ class BiometricsState constructor(
         }
     }
 
+    fun getBiometricsCipher(viewModel: WatchOnlyCredentialsViewModelAbstract, onlyDeviceCredentials: Boolean = false) {
+
+        if (androidKeystore.isBiometricsAuthenticationRequired()) {
+            authenticateWithBiometrics(object : AuthenticationCallback(state = this@BiometricsState) {
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    super.onAuthenticationSucceeded(result)
+                    getBiometricsCipher(viewModel = viewModel, onlyDeviceCredentials = true)
+                }
+            }, onlyDeviceCredentials = onlyDeviceCredentials)
+            return
+        }
+
+        val promptInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle(context.getString(R.string.id_login_with_biometrics))
+            .setDescription(context.getString(R.string.id_green_uses_biometric))
+            .setNegativeButtonText(context.getString(R.string.id_cancel))
+            .setConfirmationRequired(true)
+            .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
+
+        val biometricPrompt = BiometricPrompt(
+            context as FragmentActivity,
+            ContextCompat.getMainExecutor(context),
+            object : AuthenticationCallback(state = this@BiometricsState) {
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    super.onAuthenticationSucceeded(result)
+                    result.cryptoObject?.cipher?.also {
+                        viewModel.postEvent(WatchOnlyCredentialsViewModel.LocalEvents.ProvideCipher(platformCipher = it))
+                    } ?: kotlin.run {
+                        viewModel.postEvent(WatchOnlyCredentialsViewModel.LocalEvents.ProvideCipher(exception = Exception("No Cipher Provided")))
+                    }
+                }
+
+                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                    (if (errorCode == BiometricPrompt.ERROR_USER_CANCELED || errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON || errorCode == BiometricPrompt.ERROR_CANCELED) {
+                        Exception("id_action_canceled")
+                    } else {
+                        Exception(context.getString(R.string.id_authentication_error_s, "$errorCode $errString"))
+                    }).also {
+                        viewModel.postEvent(WatchOnlyCredentialsViewModel.LocalEvents.ProvideCipher(exception = it))
+                    }
+                }
+            })
+
+        try {
+            biometricPrompt.authenticate(
+                promptInfo.build(),
+                BiometricPrompt.CryptoObject(androidKeystore.getBiometricsEncryptionCipher(recreateKeyIfNeeded = true))
+            )
+        } catch (e: InvalidAlgorithmParameterException){
+            // At least one biometric must be enrolled
+            coroutineScope.launch {
+                dialogState.openDialog(OpenDialogData(message = context.getString(R.string.id_please_activate_at_least_one)))
+            }
+        } catch (e: Exception) {
+            coroutineScope.launch {
+                dialogState.openErrorDialog(e)
+            }
+        }
+    }
+
     fun launchUserPresencePromptForLightningShortcut(viewModel: LoginViewModelAbstract) {
-        biometricPrompt?.cancelAuthentication()
+        activeBiometricPrompt?.cancelAuthentication()
 
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle(context.getString(R.string.id_authenticate))
@@ -180,10 +254,10 @@ class BiometricsState constructor(
             promptInfo.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
         }
 
-        biometricPrompt = BiometricPrompt(
+        activeBiometricPrompt = BiometricPrompt(
             context as FragmentActivity,
             ContextCompat.getMainExecutor(context),
-            object : AuthenticationCallback(context = context, coroutineScope = coroutineScope, snackbarHostState = snackbarHostState) {
+            object : AuthenticationCallback(state = this@BiometricsState) {
                 override fun onAuthenticationError(
                     errorCode: Int,
                     errString: CharSequence
@@ -197,13 +271,14 @@ class BiometricsState constructor(
                 }
 
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    super.onAuthenticationSucceeded(result)
                     viewModel.postEvent(LoginViewModel.LocalEvents.LoginLightningShortcut(true))
                 }
             })
 
         try {
             // Ask for user presence
-            biometricPrompt?.authenticate(promptInfo.build())
+            activeBiometricPrompt?.authenticate(promptInfo.build())
         } catch (e: Exception) {
             coroutineScope.launch {
                 dialogState.openErrorDialog(e) {
@@ -216,12 +291,13 @@ class BiometricsState constructor(
     }
 
     fun launchUserPresencePrompt(
+        title: String,
         authenticated: (authenticated: Boolean) -> Unit
     ) {
-        biometricPrompt?.cancelAuthentication()
+        activeBiometricPrompt?.cancelAuthentication()
 
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle(context.getString(R.string.id_authenticate_to_view_the))
+            .setTitle(title)
             .setConfirmationRequired(true)
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
@@ -230,10 +306,10 @@ class BiometricsState constructor(
             promptInfo.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
         }
 
-        biometricPrompt = BiometricPrompt(
+        activeBiometricPrompt = BiometricPrompt(
             context as FragmentActivity,
             ContextCompat.getMainExecutor(context),
-            object : AuthenticationCallback(context = context, coroutineScope = coroutineScope, snackbarHostState = snackbarHostState) {
+            object : AuthenticationCallback(state = this@BiometricsState) {
                 override fun onAuthenticationError(
                     errorCode: Int,
                     errString: CharSequence
@@ -247,13 +323,14 @@ class BiometricsState constructor(
                 }
 
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    super.onAuthenticationSucceeded(result)
                     authenticated.invoke(true)
                 }
             })
 
         try {
             // Ask for user presence
-            biometricPrompt?.authenticate(promptInfo.build())
+            activeBiometricPrompt?.authenticate(promptInfo.build())
         } catch (e: Exception) {
             coroutineScope.launch {
                 dialogState.openErrorDialog(e) {
@@ -266,22 +343,34 @@ class BiometricsState constructor(
     }
 }
 
-open class AuthenticationCallback constructor(val context: Context, val coroutineScope: CoroutineScope, val snackbarHostState: SnackbarHostState) : BiometricPrompt.AuthenticationCallback() {
+open class AuthenticationCallback constructor(val state: BiometricsState) : BiometricPrompt.AuthenticationCallback() {
 
     override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+        logger.d { "onAuthenticationError $errorCode:$errString" }
         if (errorCode == BiometricPrompt.ERROR_USER_CANCELED || errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON || errorCode == BiometricPrompt.ERROR_CANCELED) {
             // This is errorCode OK, no need to handle it
         } else {
             // TODO INVALIDATE ALL BIOMETRIC LOGIN CREDENTIALS
-            coroutineScope.launch {
-                snackbarHostState.showSnackbar(message = context.getString(R.string.id_authentication_error_s, "$errorCode $errString"))
+            state.coroutineScope.launch {
+                state.snackbarHostState.showSnackbar(message = state.context.getString(R.string.id_authentication_error_s, "$errorCode $errString"))
             }
         }
+        state.activeBiometricPrompt = null
     }
 
     override fun onAuthenticationFailed() {
-        coroutineScope.launch {
-            snackbarHostState.showSnackbar(message = context.getString(R.string.id_authentication_failed))
+        logger.d { "onAuthenticationFailed" }
+        state.coroutineScope.launch {
+            state.snackbarHostState.showSnackbar(message = state.context.getString(R.string.id_authentication_failed))
         }
+        state.activeBiometricPrompt = null
     }
+
+    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+        logger.d { "onAuthenticationSucceeded" }
+        super.onAuthenticationSucceeded(result)
+        state.activeBiometricPrompt = null
+    }
+
+    companion object : Loggable()
 }

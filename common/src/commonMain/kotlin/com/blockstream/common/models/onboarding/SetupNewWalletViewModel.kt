@@ -1,49 +1,24 @@
 package com.blockstream.common.models.onboarding
 
-import com.blockstream.common.Urls
 import com.blockstream.common.events.Event
-import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.rickclephas.kmm.viewmodel.MutableStateFlow
-import com.rickclephas.kmm.viewmodel.coroutineScope
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 
 abstract class SetupNewWalletViewModelAbstract() : GreenViewModel() {
     override fun screenName(): String = "SetupNewWallet"
-
-    @NativeCoroutinesState
-    abstract val termsOfServiceIsChecked: MutableStateFlow<Boolean>
 }
 
 class SetupNewWalletViewModel : SetupNewWalletViewModelAbstract() {
 
     class LocalEvents {
-        class ClickTermsOfService : Events.OpenBrowser(Urls.TERMS_OF_SERVICE)
-        class ClickPrivacyPolicy : Events.OpenBrowser(Urls.PRIVACY_POLICY)
-        object ClickAddWallet : Event
-        object ClickUseHardwareDevice : Event
+        object ClickOnThisDevice : Event
+        object ClickOnHardwareWallet : Event
+        object WatchOnly : Event
     }
 
-    class LocalSideEffects {
-        class ShowConsent(sideEffect: SideEffect): SideEffects.SideEffectEvent(Events.EventSideEffect(sideEffect))
-    }
-
-    @NativeCoroutinesState
-    override val termsOfServiceIsChecked =
-        MutableStateFlow(viewModelScope, settingsManager.isDeviceTermsAccepted())
 
     init {
-        // If you have already agreed, check by default
-        viewModelScope.coroutineScope.launch {
-            termsOfServiceIsChecked.value =
-                settingsManager.isDeviceTermsAccepted() || database.walletsExists()
-        }
-
         bootstrap()
     }
 
@@ -51,37 +26,27 @@ class SetupNewWalletViewModel : SetupNewWalletViewModelAbstract() {
         super.handleEvent(event)
 
         when (event) {
-            is LocalEvents.ClickAddWallet -> {
-                if (shouldShowConsentDialog()) {
-                    postSideEffect(LocalSideEffects.ShowConsent(SideEffects.NavigateTo(NavigateDestinations.AddWallet)))
-                } else {
-                    postSideEffect(SideEffects.NavigateTo(NavigateDestinations.AddWallet))
-                }
+            is LocalEvents.ClickOnThisDevice -> {
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.AddWallet))
                 countly.addWallet()
             }
 
-            is LocalEvents.ClickUseHardwareDevice -> {
-                if (shouldShowConsentDialog()) {
-                    postSideEffect(LocalSideEffects.ShowConsent(SideEffects.NavigateTo(NavigateDestinations.UseHardwareDevice)))
-                } else {
-                    postSideEffect(SideEffects.NavigateTo(NavigateDestinations.UseHardwareDevice))
-                }
+            is LocalEvents.ClickOnHardwareWallet -> {
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.UseHardwareDevice))
                 countly.hardwareWallet()
-                settingsManager.setDeviceTermsAccepted()
+            }
+
+            is LocalEvents.WatchOnly -> {
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.NewWatchOnlyWallet))
+                countly.watchOnlyWallet()
             }
         }
     }
-
-    private fun shouldShowConsentDialog(): Boolean {
-        return settingsManager.analyticsFeatureEnabled && (!settingsManager.isAskedAboutAnalyticsConsent() && !settingsManager.getApplicationSettings().analytics)
-    }
 }
 
-class SetupNewWalletViewModelPreview(termsOfServiceIsChecked: Boolean) : SetupNewWalletViewModelAbstract() {
-
-    override val termsOfServiceIsChecked = MutableStateFlow(viewModelScope, termsOfServiceIsChecked)
+class SetupNewWalletViewModelPreview() : SetupNewWalletViewModelAbstract() {
 
     companion object {
-        fun preview() = SetupNewWalletViewModelPreview(false)
+        fun preview() = SetupNewWalletViewModelPreview()
     }
 }

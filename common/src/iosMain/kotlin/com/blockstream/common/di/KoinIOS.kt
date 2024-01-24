@@ -2,6 +2,7 @@ package com.blockstream.common.di
 
 import co.touchlab.kermit.Logger
 import com.blockstream.common.CountlyBase
+import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.crypto.PlatformCipher
 import com.blockstream.common.data.AppConfig
@@ -119,6 +120,9 @@ fun initKoinIos(
                 }
 
             }
+        }
+        single {
+            ZendeskSdk()
         }
         single { doOnStartup }
     }

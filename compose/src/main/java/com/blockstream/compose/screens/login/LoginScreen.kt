@@ -11,6 +11,9 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,9 +32,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,42 +51,47 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.Credentials
 import com.blockstream.common.models.login.LoginViewModel
 import com.blockstream.common.models.login.LoginViewModelAbstract
 import com.blockstream.common.models.login.LoginViewModelPreview
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.AndroidKeystore
+import com.blockstream.compose.GreenPreview
+import com.blockstream.compose.LocalDialog
 import com.blockstream.compose.LocalSnackbar
 import com.blockstream.compose.R
 import com.blockstream.compose.components.AppSettingsButton
 import com.blockstream.compose.components.BiometricsButton
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.GreenSpacer
-import com.blockstream.compose.components.MenuEntry
+import com.blockstream.compose.extensions.icon
+import com.blockstream.compose.extensions.onValueChange
+import com.blockstream.compose.navigation.getNavigationResult
+import com.blockstream.compose.navigation.resultKey
 import com.blockstream.compose.screens.settings.AppSettingsScreen
+import com.blockstream.compose.sheets.Bip39PassphraseBottomSheet
 import com.blockstream.compose.sheets.BottomSheetNavigatorM3
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
 import com.blockstream.compose.sheets.WalletDeleteBottomSheet
-import com.blockstream.compose.sheets.Bip39PassphraseBottomSheet
+import com.blockstream.compose.sheets.WalletRenameBottomSheet
 import com.blockstream.compose.sideeffects.BiometricsState
-import com.blockstream.compose.sideeffects.DialogHost
-import com.blockstream.compose.sideeffects.DialogState
 import com.blockstream.compose.theme.GreenTheme
+import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.headlineMedium
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium
-import com.blockstream.compose.theme.titleSmall
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.AppBarData
-import com.blockstream.common.utils.AndroidKeystore
-import com.blockstream.compose.components.GreenRow
-import com.blockstream.compose.extensions.onValueChange
-import com.blockstream.compose.sheets.WalletRenameBottomSheet
+import com.blockstream.compose.theme.labelSmall
 import com.blockstream.compose.theme.lightning
 import com.blockstream.compose.theme.titleLarge
+import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
+import com.blockstream.compose.utils.AlphaPulse
+import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.views.BannerView
 import com.blockstream.compose.views.PinView
@@ -99,80 +110,16 @@ data class LoginScreen(
     val greenWallet: GreenWallet,
     val isLightningShortcut: Boolean,
     val autoLoginWallet: Boolean,
-//    val device: DeviceInterface? = null
+    val deviceId: String? = null
 ) : Screen, Parcelable {
     @Composable
     override fun Content() {
         val viewModel = getScreenModel<LoginViewModel>() {
-            parametersOf(greenWallet, isLightningShortcut, autoLoginWallet, null) // device
+            parametersOf(greenWallet, isLightningShortcut, autoLoginWallet, deviceId)
         }
 
-        val context = LocalContext.current
-        val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
-
-        val walletName by viewModel.walletName.collectAsStateWithLifecycle()
-        val passwordCredentials by viewModel.passwordCredentials.collectAsStateWithLifecycle()
-        val pinCredentials by viewModel.pinCredentials.collectAsStateWithLifecycle()
-
-        fun bip39Passphrase() {
-            bottomSheetNavigator.show(
-                Bip39PassphraseBottomSheet(
-                    viewModel.greenWallet, viewModel.bip39Passphrase.value
-                ) { passphrase ->
-                    viewModel.postEvent(
-                        LoginViewModel.LocalEvents.Bip39Passphrase(passphrase, null)
-                    )
-                }
-            )
-        }
-
-        val navigator = LocalNavigator.current
-
-
-        AppBar {
-            val check1 = !viewModel.isLightningShortcut && !viewModel.greenWallet.isHardware
-            val check2 = check1 && !viewModel.greenWallet.isWatchOnly
-
-            AppBarData(
-                title = walletName, subtitle = if (viewModel.isLightningShortcut) context.getString(
-                    R.string.id_lightning_account
-                ) else null, menu = listOfNotNull(
-                    MenuEntry(
-                        title = context.getString(R.string.id_help),
-                        iconRes = R.drawable.question,
-                        showAsAction = true
-                    ) {
-                        viewModel.postEvent(LoginViewModel.LocalEvents.ClickHelp)
-                    }.takeIf { check2 && pinCredentials.isEmpty() && passwordCredentials.isEmpty() },
-                    MenuEntry(
-                        title = context.getString(R.string.id_bip39_passphrase_login),
-                        iconRes = R.drawable.password
-                    ) {
-                        bip39Passphrase()
-                    }.takeIf { check2 && (pinCredentials.isNotEmpty() || passwordCredentials.isNotEmpty()) },
-                    MenuEntry(
-                        title = context.getString(R.string.id_show_recovery_phrase),
-                        iconRes = R.drawable.key
-                    ) {
-                        viewModel.postEvent(LoginViewModel.LocalEvents.EmergencyRecovery(true))
-                    }.takeIf { check2 && (pinCredentials.isNotEmpty() || passwordCredentials.isNotEmpty()) },
-                    MenuEntry(
-                        title = context.getString(R.string.id_rename_wallet),
-                        iconRes = R.drawable.text_aa
-                    ) {
-                        bottomSheetNavigator.show(WalletRenameBottomSheet(viewModel.greenWallet))
-                    }.takeIf { check1 },
-
-                    MenuEntry(
-                        title = context.getString(R.string.id_remove_wallet),
-                        iconRes = R.drawable.trash
-                    ) {
-                        bottomSheetNavigator.show(WalletDeleteBottomSheet(viewModel.greenWallet))
-                    }.takeIf { check1 },
-
-                    )
-            )
-        }
+        val navData by viewModel.navData.collectAsStateWithLifecycle()
+        AppBar(navData)
 
         LoginScreen(viewModel = viewModel)
     }
@@ -189,44 +136,56 @@ fun LoginScreen(
     val navigator = LocalNavigator.current
     val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
 
-
     val pinCredentials by viewModel.pinCredentials.collectAsStateWithLifecycle()
     val passwordCredentials by viewModel.passwordCredentials.collectAsStateWithLifecycle()
 
+    getNavigationResult<String>(Bip39PassphraseBottomSheet::class.resultKey).value?.also {
+        viewModel.postEvent(
+            LoginViewModel.LocalEvents.Bip39Passphrase(it, null)
+        )
+    }
+
     fun bip39Passphrase() {
-        bottomSheetNavigator.show(
-            Bip39PassphraseBottomSheet(
-                viewModel.greenWallet, viewModel.bip39Passphrase.value
-            ) { passphrase ->
-                viewModel.postEvent(
-                    LoginViewModel.LocalEvents.Bip39Passphrase(passphrase, null)
-                )
-            }
+        viewModel.postEvent(
+            Events.Bip39Passphrase(
+                viewModel.greenWallet,
+                viewModel.bip39Passphrase.value
+            )
         )
     }
 
     val context = LocalContext.current
     val snackbar = LocalSnackbar.current
     val scope = rememberCoroutineScope()
+    val dialog = LocalDialog.current
     // LocalInspectionMode is true in preview
     val androidKeystore: AndroidKeystore =
         if (LocalInspectionMode.current) AndroidKeystore(context) else koinInject()
-
-    val dialogState = remember { DialogState(context) }
-    DialogHost(state = dialogState)
 
     val biometricsState = remember {
         BiometricsState(
             context = context,
             coroutineScope = scope,
             snackbarHostState = snackbar,
-            dialogState = dialogState,
+            dialogState = dialog,
             androidKeystore = androidKeystore
         )
     }
 
     HandleSideEffect(viewModel) {
         when (it) {
+            is LoginViewModel.LocalSideEffects.LaunchWalletRename -> {
+                bottomSheetNavigator.show(WalletRenameBottomSheet(it.greenWallet))
+            }
+
+            is LoginViewModel.LocalSideEffects.LaunchWalletDelete -> {
+                bottomSheetNavigator.show(WalletDeleteBottomSheet(it.greenWallet))
+            }
+
+            is LoginViewModel.LocalSideEffects.LaunchBip39Passphrase -> {
+                bip39Passphrase()
+            }
+
             is LoginViewModel.LocalSideEffects.LaunchBiometrics -> {
                 biometricsState.launchBiometricPrompt(it.loginCredentials, viewModel = viewModel)
             }
@@ -271,18 +230,70 @@ fun LoginScreen(
     ) {
 
         if (onProgress) {
-            GreenColumn(
+            Column(
                 modifier = Modifier.align(Alignment.Center),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .size(120.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    trackColor = MaterialTheme.colorScheme.secondary,
+                val applicationSettings by viewModel.applicationSettings.collectAsStateWithLifecycle()
+                val tor by viewModel.tor.collectAsStateWithLifecycle()
+
+                val isLogging = tor.progress == 100 || !applicationSettings.tor
+                Box {
+                    if (isLogging) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(120.dp),
+                            color = MaterialTheme.colorScheme.secondary,
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        )
+                    } else {
+                        CircularProgressIndicator(
+                            progress = {
+                                tor.progress.toFloat()
+                            },
+                            modifier = Modifier
+                                .size(120.dp),
+                            color = MaterialTheme.colorScheme.secondary,
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        )
+                    }
+
+                    viewModel.device?.also {
+                        Image(
+                            painter = painterResource(id = it.icon()),
+                            contentDescription = it.deviceBrand.toString(),
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .size(72.dp)
+                        )
+                    }
+                }
+
+                GreenSpacer(32)
+
+                Text(
+                    text = stringResource(if (isLogging) R.string.id_logging_in else R.string.id_connecting_through_tor),
+                    style = titleLarge,
                 )
 
-                Text(text = stringResource(R.string.id_logging_in), style = labelLarge)
+                if (applicationSettings.tor) {
+                    GreenSpacer(16)
+                    AlphaPulse {
+                        Image(
+                            painter = painterResource(id = R.drawable.tor),
+                            contentDescription = "Tor"
+                        )
+                    }
+                }
+
+                applicationSettings.proxyUrl.takeIf { it.isNotBlank() }?.also {
+                    GreenSpacer(4)
+                    Text(
+                        text = applicationSettings.proxyUrl ?: "proxy Url",
+                        style = bodySmall,
+                        color = whiteMedium
+                    )
+                }
             }
         }
 
@@ -347,7 +358,7 @@ fun LoginScreen(
                 BannerView(viewModel)
             }
 
-            if(viewModel.greenWallet.isWatchOnly) {
+            if (viewModel.greenWallet.isWatchOnly) {
                 if (!onProgress) {
                     Box(
                         contentAlignment = Alignment.BottomCenter,
@@ -383,7 +394,7 @@ fun LoginScreen(
                             )
 
                             val showWatchOnlyUsername by viewModel.showWatchOnlyUsername.collectAsStateWithLifecycle()
-                            if(showWatchOnlyUsername) {
+                            if (showWatchOnlyUsername) {
                                 val watchOnlyUsername by viewModel.watchOnlyUsername.collectAsStateWithLifecycle()
                                 TextField(
                                     value = watchOnlyUsername,
@@ -397,6 +408,7 @@ fun LoginScreen(
                             }
 
                             val showWatchOnlyPassword by viewModel.showWatchOnlyPassword.collectAsStateWithLifecycle()
+                            val focusManager = LocalFocusManager.current
                             if (showWatchOnlyPassword) {
                                 val watchOnlyPassword by viewModel.watchOnlyPassword.collectAsStateWithLifecycle()
                                 var passwordVisibility: Boolean by remember { mutableStateOf(false) }
@@ -408,6 +420,16 @@ fun LoginScreen(
                                     modifier = Modifier
                                         .fillMaxWidth(),
                                     singleLine = true,
+                                    keyboardOptions = KeyboardOptions.Default.copy(
+                                        autoCorrect = false,
+                                        keyboardType = KeyboardType.Password,
+                                        imeAction = ImeAction.Done
+                                    ),
+                                    keyboardActions = KeyboardActions(
+                                        onDone = {
+                                            focusManager.clearFocus()
+                                        }
+                                    ),
                                     trailingIcon = {
                                         IconButton(onClick = {
                                             passwordVisibility = !passwordVisibility
@@ -567,7 +589,7 @@ fun LoginScreen(
                 if (!onProgress) {
                     AppSettingsButton {
                         callbacks.onAppSettingsClick()
-                        navigator?.push(AppSettingsScreen())
+                        navigator?.push(AppSettingsScreen)
                     }
                 }
             }
@@ -576,38 +598,32 @@ fun LoginScreen(
     }
 }
 
-//@Composable
-//@Preview
-//fun LoginScreenPreview() {
-//    GreenTheme {
-//        BottomSheetNavigatorM3 {
-//            LoginScreen(viewModel = LoginViewModelPreview.previewWithPin().also {
-//                it.onProgress.value = false
-//            })
-//        }
-//    }
-//}
+@Composable
+@Preview
+fun LoginScreenPreview() {
+    GreenPreview {
+        LoginScreen(viewModel = LoginViewModelPreview.previewWithPin().also {
+            it.onProgress.value = true
+        })
+    }
+}
 
 @Composable
 @Preview
 fun LoginScreenPreview2() {
-    GreenTheme {
-        BottomSheetNavigatorM3 {
-            LoginScreen(viewModel = LoginViewModelPreview.previewWatchOnly().also {
-                it.onProgress.value = false
-            })
-        }
+    GreenPreview {
+        LoginScreen(viewModel = LoginViewModelPreview.previewWatchOnly().also {
+            it.onProgress.value = false
+        })
     }
 }
 
 @Composable
 @Preview
 fun LoginScreenPreview3() {
-    GreenTheme {
-        BottomSheetNavigatorM3 {
-            LoginScreen(viewModel = LoginViewModelPreview.previewWithLightningShortcut().also {
-                it.onProgress.value = false
-            })
-        }
+    GreenPreview {
+        LoginScreen(viewModel = LoginViewModelPreview.previewWithLightningShortcut().also {
+            it.onProgress.value = false
+        })
     }
 }

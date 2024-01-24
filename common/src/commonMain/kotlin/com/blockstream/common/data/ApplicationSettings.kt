@@ -96,7 +96,7 @@ data class ApplicationSettings constructor(
             try{
                 return ApplicationSettings(
                     enhancedPrivacy = settings.getBoolean(ENHANCED_PRIVACY, false),
-                    screenLockInSeconds = settings.getInt(SCREEN_LOCK_IN_SECONDS, -1),
+                    screenLockInSeconds = settings.getInt(SCREEN_LOCK_IN_SECONDS, 0),
                     testnet = settings.getBoolean(TESTNET, false),
                     proxyUrl = settings.getStringOrNull(PROXY_URL),
                     tor = settings.getBoolean(TOR, false),

@@ -2,7 +2,6 @@ package com.blockstream.compose.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.stack.Stack
@@ -13,25 +12,31 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.LocalAppCoroutine
+import com.blockstream.compose.LocalDialog
 import com.blockstream.compose.LocalSnackbar
+import com.blockstream.compose.extensions.showErrorSnackbar
+import com.blockstream.compose.navigation.pushUnique
 import com.blockstream.compose.screens.HomeScreen
 import com.blockstream.compose.screens.about.AboutScreen
 import com.blockstream.compose.screens.login.LoginScreen
-import com.blockstream.compose.screens.onboarding.AddWalletScreen
-import com.blockstream.compose.screens.onboarding.EnterRecoveryPhraseScreen
-import com.blockstream.compose.screens.onboarding.PinScreen
 import com.blockstream.compose.screens.onboarding.SetupNewWalletScreen
+import com.blockstream.compose.screens.onboarding.hardware.UseHardwareDeviceScreen
+import com.blockstream.compose.screens.onboarding.phone.AddWalletScreen
+import com.blockstream.compose.screens.onboarding.phone.EnterRecoveryPhraseScreen
+import com.blockstream.compose.screens.onboarding.phone.PinScreen
+import com.blockstream.compose.screens.onboarding.watchonly.WatchOnlyPolicyScreen
 import com.blockstream.compose.screens.overview.WalletOverviewScreen
 import com.blockstream.compose.screens.recovery.RecoveryCheckScreen
 import com.blockstream.compose.screens.recovery.RecoveryIntroScreen
 import com.blockstream.compose.screens.recovery.RecoveryPhraseScreen
 import com.blockstream.compose.screens.recovery.RecoveryWordsScreen
 import com.blockstream.compose.screens.settings.AppSettingsScreen
-import com.blockstream.compose.sideeffects.DialogHost
-import com.blockstream.compose.sideeffects.DialogState
-import com.blockstream.compose.sideeffects.OpenBrowserHost
-import com.blockstream.compose.sideeffects.OpenBrowserState
+import com.blockstream.compose.sheets.Bip39PassphraseBottomSheet
+import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
+import com.blockstream.compose.sheets.WalletDeleteBottomSheet
+import com.blockstream.compose.sheets.WalletRenameBottomSheet
 import com.blockstream.compose.sideeffects.OpenDialogData
+import com.blockstream.compose.sideeffects.openBrowser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -49,14 +54,9 @@ fun <Item : Screen> Stack<Item>.pushOrReplace(item: Item) {
 fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEffect: SideEffect) -> Unit = {}) {
     val snackbar = LocalSnackbar.current
     val navigator = LocalNavigator.current
+    val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
     val context = LocalContext.current
-
-    val openBrowserState = remember { OpenBrowserState() }
-    OpenBrowserHost(state = openBrowserState)
-
-    val dialogState = remember { DialogState(context = context) }
-    DialogHost(state = dialogState)
-
+    val dialog = LocalDialog.current
     val appCoroutine = LocalAppCoroutine.current
 
     LaunchedEffect(Unit) {
@@ -65,26 +65,17 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                 viewModel.sideEffectReEmitted.emit(it)
             }
 
+            handler.invoke(this, it)
+
             when (it) {
                 is SideEffects.OpenBrowser -> {
                     appCoroutine.launch {
-                        openBrowserState.openBrowser(
-                            context,
-                            viewModel.settingsManager.appSettings.tor,
-                            it.url
+                        openBrowser(
+                            context = context,
+                            dialogState = dialog,
+                            isTor = viewModel.settingsManager.appSettings.tor,
+                            url = it.url
                         )
-                    }
-                }
-
-                is SideEffects.Dialog -> {
-                    appCoroutine.launch {
-                        dialogState.openDialog(OpenDialogData(stringResourceIdOrNull(context, it.title), stringResourceId(context, it.message)))
-                    }
-                }
-
-                is SideEffects.ErrorDialog -> {
-                    appCoroutine.launch {
-                        dialogState.openErrorDialog(it.error, it.errorReport)
                     }
                 }
 
@@ -94,11 +85,63 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                     }
                 }
 
+                is SideEffects.ErrorSnackbar -> {
+                    appCoroutine.launch {
+                        snackbar.showErrorSnackbar(
+                            context = context,
+                            dialogState = dialog,
+                            viewModel = viewModel,
+                            error = it.error,
+                            errorReport = it.errorReport
+                        )
+                    }
+                }
+
+                is SideEffects.Dialog -> {
+                    appCoroutine.launch {
+                        dialog.openDialog(OpenDialogData(stringResourceIdOrNull(context, it.title), stringResourceId(context, it.message)))
+                    }
+                }
+
+                is SideEffects.ErrorDialog -> {
+                    appCoroutine.launch {
+                        dialog.openErrorDialog(it.error, it.errorReport, onErrorReport = { errorReport ->
+                            appCoroutine.launch {
+                                dialog.openErrorReportDialog(
+                                    errorReport = errorReport,
+                                    viewModel = viewModel,
+                                    onSubmitErrorReport = { submitErrorReport ->
+                                        viewModel.postEvent(submitErrorReport)
+                                    }
+                                )
+                            }
+                        })
+                    }
+                }
+
                 is SideEffects.NavigateBack -> {
-                    if (it.error == null) {
-                        navigator?.pop()
-                    } else {
-                        // TODO
+                    // Check if Navigator exists, else is handled by AppFragment for now
+                    if(navigator != null) {
+                        val error = it.error
+                        if (error == null) {
+                            navigator.pop()
+                        } else {
+                            appCoroutine.launch {
+                                dialog.openErrorDialog(error, it.errorReport, onErrorReport = { errorReport ->
+                                    appCoroutine.launch {
+                                        dialog.openErrorReportDialog(
+                                            errorReport = errorReport,
+                                            viewModel = viewModel,
+                                            onSubmitErrorReport = { submitErrorReport ->
+                                                viewModel.postEvent(submitErrorReport)
+                                            }
+                                        )
+                                    }
+                                }) {
+                                    navigator.pop()
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -113,10 +156,10 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
 
                 is SideEffects.Logout -> {
 
-                    viewModel.greenWallet.also { greenWallet ->
-                        if(greenWallet.isEphemeral || greenWallet.isHardware || it.reason == LogoutReason.USER_ACTION){
-                            navigator?.replaceAll(HomeScreen())
-                        }else{
+                    viewModel.greenWalletOrNull?.let { greenWallet ->
+                        if (greenWallet.isEphemeral || greenWallet.isHardware || it.reason == LogoutReason.USER_ACTION) {
+                            navigator?.replaceAll(HomeScreen)
+                        } else {
                             navigator?.replaceAll(
                                 LoginScreen(
                                     greenWallet = greenWallet,
@@ -125,15 +168,34 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                                 )
                             )
                         }
+                    } ?: run {
+                        navigator?.replaceAll(HomeScreen)
                     }
-
-                    navigator?.replaceAll(HomeScreen())
                 }
 
                 is SideEffects.NavigateTo -> {
                     val destination = it.destination
 
                     when(destination) {
+                        
+                        is NavigateDestinations.RenameWallet -> {
+                            bottomSheetNavigator.show(WalletRenameBottomSheet(destination.greenWallet))
+
+                        }
+
+                        is NavigateDestinations.DeleteWallet -> {
+                            bottomSheetNavigator.show(WalletDeleteBottomSheet(destination.greenWallet))
+                        }
+
+                        is NavigateDestinations.Bip39Passphrase -> {
+                            bottomSheetNavigator.show(
+                                Bip39PassphraseBottomSheet(
+                                    greenWallet = destination.greenWallet,
+                                    passphrase = destination.passphrase
+                                )
+                            )
+                        }
+
                         is NavigateDestinations.WalletOverview -> {
                             navigator?.replaceAll(
                                 WalletOverviewScreen(
@@ -172,31 +234,43 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                         }
 
                         is NavigateDestinations.AppSettings -> {
-                            navigator?.push(
-                                AppSettingsScreen()
+                            navigator?.pushUnique(
+                                AppSettingsScreen
                             )
                         }
 
                         is NavigateDestinations.About -> {
-                            navigator?.push(
-                                AboutScreen()
+                            navigator?.pushUnique(
+                                AboutScreen
                             )
                         }
 
                         is NavigateDestinations.SetupNewWallet -> {
-                            navigator?.push(
-                                SetupNewWalletScreen()
+                            navigator?.pushUnique(
+                                SetupNewWalletScreen
                             )
                         }
 
                         is NavigateDestinations.AddWallet -> {
-                            navigator?.push(
-                                AddWalletScreen()
+                            navigator?.pushUnique(
+                                AddWalletScreen
+                            )
+                        }
+
+                        is NavigateDestinations.UseHardwareDevice -> {
+                            navigator?.pushUnique(
+                                UseHardwareDeviceScreen
+                            )
+                        }
+
+                        is NavigateDestinations.NewWatchOnlyWallet -> {
+                            navigator?.pushUnique(
+                                WatchOnlyPolicyScreen
                             )
                         }
 
                         is NavigateDestinations.RecoveryIntro -> {
-                            navigator?.push(
+                            navigator?.pushUnique(
                                 RecoveryIntroScreen(destination.args)
                             )
                         }
@@ -243,10 +317,6 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                             )
                         }
                     }
-                }
-
-                else -> {
-                    handler.invoke(this, it)
                 }
             }
         }.collect()

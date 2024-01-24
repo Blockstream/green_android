@@ -17,6 +17,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -24,7 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.blockstream.compose.R
-import com.blockstream.compose.theme.GreenTheme
+import com.blockstream.compose.theme.GreenThemePreview
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium
@@ -45,7 +46,7 @@ enum class GreenButtonColor {
 
 
 @Composable
-private fun GreenButtonText(text: String, textStyle: TextStyle){
+private fun GreenButtonText(text: String, textStyle: TextStyle) {
     Text(text, style = textStyle, maxLines = 1, overflow = TextOverflow.Ellipsis)
 }
 
@@ -66,20 +67,21 @@ fun GreenButton(
                 .height(30.dp)
                 .then(modifier)
         }
+
         GreenButtonSize.TINY -> {
             Modifier
                 .height(20.dp)
                 .then(modifier)
         }
+
         GreenButtonSize.BIG -> {
             Modifier
                 .height(50.dp)
                 .then(modifier)
         }
+
         else -> {
-            Modifier
-                .height(40.dp)
-                .then(modifier)
+            modifier
         }
     }
 
@@ -87,6 +89,7 @@ fun GreenButton(
         GreenButtonSize.SMALL, GreenButtonSize.TINY -> {
             PaddingValues(horizontal = 8.dp, vertical = 0.dp)
         }
+
         else -> {
             ButtonDefaults.ContentPadding
         }
@@ -96,9 +99,11 @@ fun GreenButton(
         GreenButtonSize.SMALL -> {
             labelMedium
         }
+
         GreenButtonSize.TINY -> {
             labelSmall
         }
+
         else -> {
             labelLarge
         }
@@ -194,51 +199,64 @@ fun GreenButton(
 }
 
 @Composable
-fun HelpButton(onClick: () -> Unit) {
-    TextButton(onClick = onClick) {
+fun IconButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    icon: Painter,
+    color: Color = green,
+    onClick: () -> Unit
+) {
+    TextButton(modifier = Modifier.then(modifier), onClick = onClick) {
         GreenRow(padding = 0, space = 6) {
             Icon(
-                painter = painterResource(id = R.drawable.question),
+                painter = icon,
                 contentDescription = null,
-                tint = whiteMedium,
+                tint = color,
                 modifier = Modifier.size(20.dp)
             )
 
-            Text(text = stringResource(id = R.string.id_help), style = labelMedium, color = whiteMedium)
+            Text(text = text, style = labelMedium, color = color)
         }
     }
 }
 
 @Composable
-fun PasteButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
-    TextButton(modifier = Modifier.then(modifier), onClick = onClick) {
-        GreenRow(padding = 0, space = 6) {
-            Icon(
-                painter = painterResource(id = R.drawable.clipboard_text),
-                contentDescription = null,
-                tint = green,
-                modifier = Modifier.size(20.dp)
-            )
+fun HelpButton(onClick: () -> Unit) {
+    IconButton(
+        text = stringResource(id = R.string.id_help),
+        icon = painterResource(id = R.drawable.question),
+        color = whiteMedium,
+        onClick = onClick
+    )
+}
 
-            Text(text = stringResource(id = R.string.id_paste), style = labelMedium, color = green)
-        }
-    }
+@Composable
+fun PasteButton(onClick: () -> Unit) {
+    IconButton(
+        text = stringResource(id = R.string.id_paste),
+        icon = painterResource(id = R.drawable.clipboard_text),
+        onClick = onClick
+    )
 }
 
 @Composable
 fun ScanQrButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
-    TextButton(modifier = Modifier.then(modifier), onClick = onClick) {
-        GreenRow(padding = 0, space = 6) {
-            Icon(
-                painter = painterResource(id = R.drawable.qr_code),
-                contentDescription = null,
-                tint = green,
-                modifier = Modifier.size(20.dp)
-            )
+    IconButton(
+        modifier = modifier,
+        text = stringResource(id = R.string.id_scan_qr_code),
+        icon = painterResource(id = R.drawable.qr_code),
+        onClick = onClick
+    )
+}
 
-            Text(text = stringResource(id = R.string.id_scan_qr_code), style = labelMedium, color = green)
-        }
-    }
+@Composable
+fun ZoomButton(onClick: () -> Unit) {
+    IconButton(
+        text = stringResource(id = R.string.id_increase_qr_size),
+        icon = painterResource(id = R.drawable.magnifying_glass_plus),
+        color = whiteMedium,
+        onClick = onClick
+    )
 }
 
 @Composable
@@ -246,38 +264,22 @@ fun LearnMoreButton(
     color: Color = green,
     onClick: () -> Unit
 ) {
-    TextButton(onClick = onClick) {
-        GreenRow(padding = 0, space = 8) {
-            Text(
-                text = stringResource(id = R.string.id_learn_more),
-                style = labelMedium,
-                color = color
-            )
-
-            Icon(
-                painter = painterResource(id = R.drawable.arrow_square_out),
-                contentDescription = null,
-                tint = color,
-                modifier = Modifier.size(18.dp)
-            )
-        }
-    }
+    IconButton(
+        text = stringResource(id = R.string.id_learn_more),
+        icon = painterResource(id = R.drawable.arrow_square_out),
+        color = color,
+        onClick = onClick
+    )
 }
 
 @Composable
 fun AboutButton(onClick: () -> Unit) {
-    TextButton(onClick = onClick) {
-        GreenRow(padding = 0, space = 6) {
-            Icon(
-                painter = painterResource(id = R.drawable.green_shield),
-                contentDescription = null,
-                tint = whiteMedium,
-                modifier = Modifier.size(20.dp)
-            )
-
-            Text(text = stringResource(id = R.string.id_about), style = labelMedium, color = whiteMedium)
-        }
-    }
+    IconButton(
+        text = stringResource(id = R.string.id_about),
+        icon = painterResource(id = R.drawable.green_shield),
+        color = whiteMedium,
+        onClick = onClick
+    )
 }
 
 @Composable
@@ -305,7 +307,7 @@ fun AppSettingsButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
 @Composable
 @Preview
 fun GreenButtonPreview() {
-    GreenTheme {
+    GreenThemePreview {
         GreenColumn(
             space = 8,
             modifier = Modifier.verticalScroll(rememberScrollState())
@@ -326,6 +328,10 @@ fun GreenButtonPreview() {
                 AboutButton { }
                 AppSettingsButton { }
                 HelpButton { }
+            }
+
+            GreenRow(padding = 0) {
+                ZoomButton { }
             }
 
             HorizontalDivider()

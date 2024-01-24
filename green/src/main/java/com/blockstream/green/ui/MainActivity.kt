@@ -246,7 +246,7 @@ class MainActivity : AppActivity() {
         navController = navHostFragment.navController
 
         appBarConfiguration = AppBarConfiguration(
-            topLevelDestinationIds = setOf(R.id.walletOverviewFragment, R.id.loginFragment, R.id.homeFragment, R.id.introSetupNewWalletFragment),
+            topLevelDestinationIds = setOf(R.id.walletOverviewFragment, R.id.loginFragment, R.id.homeFragment, R.id.onboardingTermsFragment),
             drawerLayout = binding.drawerLayout,
             fallbackOnNavigateUpListener = ::onSupportNavigateUp
         )
@@ -261,18 +261,6 @@ class MainActivity : AppActivity() {
                 NavigationUI.navigateUp(navController, appBarConfiguration)
             }
         }
-
-        // No longer needed
-//        binding.toolbar.setLogoClickListener {
-//            getVisibleFragment()?.let { fragment ->
-//                // Except LoginFragment as we don't want concurrent login requests to happen
-//                if(fragment is WalletFragment<*> && fragment !is LoginFragment){
-//                    fragment.session.device?.let {
-//                        DeviceInfoBottomSheetDialogFragment.show(it.id, navHostFragment.childFragmentManager)
-//                    }
-//                }
-//            }
-//        }
 
         binding.buttonUnlock.setOnClickListener {
             showUnlockPrompt()
@@ -305,7 +293,7 @@ class MainActivity : AppActivity() {
             // Make sure the app bar layout is visible between navigation (only SetPin & WalletOverview hides it)
             setToolbarVisibility(true)
 
-            if (destination.id == R.id.introSetupNewWalletFragment || destination.id == R.id.setupNewWalletFragment || destination.id == R.id.deviceListFragment || destination.id == R.id.deviceScanFragment) {
+            if (destination.id == R.id.onboardingTermsFragment || destination.id == R.id.setupNewWalletFragment || destination.id == R.id.deviceListFragment || destination.id == R.id.deviceScanFragment) {
                 binding.backgroundWithLines.fadeIn(duration = 500, skipIfAnimated = true)
             } else {
                 binding.backgroundWithLines.fadeOut(duration = 250, skipIfAnimated = true)

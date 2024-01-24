@@ -181,7 +181,6 @@ class SessionManager constructor(
     fun getWalletSessionOrOnboarding(wallet: GreenWallet?): GdkSession =
         wallet?.let { getWalletSessionOrNull(it) } ?: run { getOnBoardingSession() }
 
-
     fun getWalletSessionOrNull(walletId: String): GdkSession? {
         return walletSessions[walletId] ?: gdkSessions.find { it.ephemeralWallet?.id == walletId }?.let {
             return it

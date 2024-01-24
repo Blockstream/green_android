@@ -80,6 +80,7 @@ kotlin {
                 api(libs.kotlinx.coroutines.core)
                 api(libs.kotlinx.serialization.core)
                 api(libs.kotlinx.serialization.json)
+                api(libs.kotlinx.serialization.cbor)
                 api(libs.kotlinx.datetime)
                 /** ----------------------------------------------------------------------------------------- */
 
@@ -103,6 +104,7 @@ kotlin {
                 api(libs.sqldelight.coroutines.extensions)
                 api(libs.kmm.viewmodel)
                 api(libs.stately.concurrent.collections)
+                api(libs.uri.kmp)
                 api(libs.uuid)
                 api(libs.multiplatform.settings)
                 api(libs.okio) // Filesystem
@@ -128,8 +130,9 @@ kotlin {
         androidMain.dependencies {
             implementation(project(":gdk"))
             implementation(libs.androidx.lifecycle.viewmodel.ktx)
-            implementation(libs.koin.android)
             implementation(libs.sqldelight.android.driver)
+            api(libs.koin.android)
+            api(libs.androidx.biometric)
 
             /**  --- Breez FDroid ----------------------------------------------------------------------- */
             // Temp fix for FDroid breez dependencies

@@ -40,7 +40,6 @@ dependencies {
     api(libs.material)
     api(libs.androidx.constraintlayout)
     api(libs.androidx.swiperefreshlayout)
-    api(libs.androidx.biometric)
     api(libs.androidx.preference.ktx)
     api(libs.androidx.browser)
     api(libs.androidx.recyclerview)

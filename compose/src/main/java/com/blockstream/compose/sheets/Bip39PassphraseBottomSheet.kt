@@ -2,6 +2,8 @@ package com.blockstream.compose.sheets
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -14,22 +16,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.koin.getScreenModel
+import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.login.Bip39PassphraseViewModel
 import com.blockstream.common.models.login.Bip39PassphraseViewModelAbstract
 import com.blockstream.common.models.login.Bip39PassphraseViewModelPreview
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
@@ -37,9 +43,11 @@ import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.LearnMoreButton
 import com.blockstream.compose.extensions.onValueChange
-import com.blockstream.compose.theme.GreenTheme
+import com.blockstream.compose.navigation.resultKey
+import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.TextInputPassword
 import com.blockstream.compose.views.GreenBottomSheet
 import org.koin.core.parameter.parametersOf
 
@@ -47,9 +55,8 @@ import org.koin.core.parameter.parametersOf
 @Parcelize
 data class Bip39PassphraseBottomSheet(
     val greenWallet: GreenWallet,
-    val passphrase: String,
-    val setBip39Passphrase: (passphrase: String) -> Unit = { }
-) : BottomScreen() {
+    val passphrase: String
+) : BottomScreen(), Parcelable {
     @Composable
     override fun Content() {
         val viewModel = getScreenModel<Bip39PassphraseViewModel> {
@@ -59,7 +66,7 @@ data class Bip39PassphraseBottomSheet(
         Bip39PassphraseBottomSheet(
             viewModel = viewModel,
             sheetState = sheetState(skipPartiallyExpanded = true),
-            setBip39Passphrase = setBip39Passphrase,
+            setBip39Passphrase = { setNavigationResult(resultKey, it) },
             onDismissRequest = onDismissRequest()
         )
     }
@@ -75,7 +82,7 @@ fun Bip39PassphraseBottomSheet(
 ) {
 
     HandleSideEffect(viewModel = viewModel) {
-        if(it is Bip39PassphraseViewModel.LocalSideEffects.SetBip39Passphrase){
+        if (it is Bip39PassphraseViewModel.LocalSideEffects.SetBip39Passphrase) {
             setBip39Passphrase(it.passphrase)
         }
     }
@@ -88,13 +95,24 @@ fun Bip39PassphraseBottomSheet(
     ) {
 
         val passphrase by viewModel.passphrase.collectAsStateWithLifecycle()
-        var passwordVisibility: Boolean by remember { mutableStateOf(false) }
+        val passwordVisibility = remember { mutableStateOf(false) }
+        val focusManager = LocalFocusManager.current
         TextField(
             value = passphrase,
-            visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+            visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation(),
             onValueChange = viewModel.passphrase.onValueChange(),
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                autoCorrect = false,
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            ),
             label = { Text(stringResource(id = R.string.id_passphrase)) },
             supportingText = {
                 Text(
@@ -104,14 +122,7 @@ fun Bip39PassphraseBottomSheet(
                 )
             },
             trailingIcon = {
-                IconButton(onClick = {
-                    passwordVisibility = !passwordVisibility
-                }) {
-                    Icon(
-                        painter = painterResource(id = if (passwordVisibility) R.drawable.eye_slash else R.drawable.eye),
-                        contentDescription = "password visibility",
-                    )
-                }
+                TextInputPassword(passwordVisibility)
             }
         )
 
@@ -165,24 +176,10 @@ fun Bip39PassphraseBottomSheet(
 @Composable
 @Preview
 fun Bip39PassphraseSheetPreview() {
-    GreenTheme {
-        GreenColumn {
-            var showBottomSheet by remember { mutableStateOf(true) }
-
-            GreenButton(text = "Show BottomSheet") {
-                showBottomSheet = true
-            }
-
-            Text("Bip39PassphraseSheet")
-
-            if (showBottomSheet) {
-                Bip39PassphraseBottomSheet(
-                    viewModel = Bip39PassphraseViewModelPreview.preview(),
-                    onDismissRequest = {
-                        showBottomSheet = false
-                    }
-                )
-            }
-        }
+    GreenPreview {
+        Bip39PassphraseBottomSheet(
+            viewModel = Bip39PassphraseViewModelPreview.preview(),
+            onDismissRequest = { }
+        )
     }
 }

@@ -9,6 +9,7 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.lightningMnemonic
 import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.lightning.fromSwapInfo
 import com.blockstream.common.sideeffects.SideEffects
@@ -30,7 +31,7 @@ import org.koin.core.annotation.InjectedParam
 class AccountOverviewViewModel constructor(
     @InjectedParam initWallet: GreenWallet,
     @InjectedParam account: Account,
-) : AbstractAccountWalletViewModel(initWallet, account) {
+) : AbstractAccountWalletViewModel(initWallet, AccountAsset.fromAccount(account)) {
     val isWatchOnly: LiveData<Boolean> = MutableLiveData(wallet.isWatchOnly)
 
     private val _twoFactorStateLiveData: MutableLiveData<List<AlertType>> = MutableLiveData()
@@ -48,10 +49,10 @@ class AccountOverviewViewModel constructor(
     val assetsLiveData: LiveData<Map<EnrichedAsset, Long>> get() = _assetsLiveData
     val assets: Map<EnrichedAsset, Long> get() = _assetsLiveData.value!!
 
-    val policyAsset: Long get() = session.ifConnected { session.accountAssets(accountValue).value.policyAsset } ?: 0L
+    val policyAsset: Long get() = session.ifConnected { session.accountAssets(account).value.policyAsset } ?: 0L
 
     private val _swapInfoStateFlow
-        get() = session.takeIf { accountValue.isLightning }?.ifConnected {
+        get() = session.takeIf { account.isLightning }?.ifConnected {
             session.lightningSdkOrNull?.swapInfoStateFlow
         } ?: flowOf(listOf())
 
@@ -114,22 +115,22 @@ class AccountOverviewViewModel constructor(
     }
 
     fun refresh() {
-        session.refresh(accountValue)
+        session.refresh(account)
     }
 
     fun loadMoreTransactions() {
         logger.info { "loadMoreTransactions" }
-        session.getTransactions(account = accountValue, isReset = false, isLoadMore = true)
+        session.getTransactions(account = account, isReset = false, isLoadMore = true)
     }
 
     fun archiveAccount() {
-        super.updateAccountVisibility(accountValue, true){
+        super.updateAccountVisibility(account, true){
             postSideEffect(SideEffects.Navigate(WalletOverviewFragment.ACCOUNT_ARCHIVED))
         }
     }
 
     fun removeAccount() {
-        super.removeAccount(accountValue){
+        super.removeAccount(account){
             postSideEffect(SideEffects.NavigateToRoot)
         }
     }

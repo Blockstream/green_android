@@ -23,13 +23,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.theme.GreenTheme
-import com.blockstream.compose.theme.bodySmall
+import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.ifTrue
+import kotlinx.coroutines.CoroutineScope
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,6 +42,7 @@ fun GreenBottomSheet(
     viewModel: GreenViewModel? = null,
     withHorizontalPadding: Boolean = true,
     sheetState: SheetState = rememberModalBottomSheetState(),
+    sideEffectHandler: CoroutineScope.(sideEffect: SideEffect) -> Unit = {},
     onDismissRequest: () -> Unit,
     content: @Composable () -> Unit
 ) {
@@ -49,6 +52,7 @@ fun GreenBottomSheet(
             if (it is SideEffects.Dismiss) {
                 onDismissRequest()
             }
+            sideEffectHandler.invoke(this, it)
         }
     }
 
@@ -85,7 +89,7 @@ fun GreenBottomSheet(
                     if (subtitle?.isNotBlank() == true) {
                         Text(
                             text = subtitle,
-                            style = bodySmall,
+                            style = bodyMedium,
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
                         )
@@ -106,7 +110,7 @@ fun GreenBottomSheetPreview() {
         Text("WalletRenameBottomSheet")
 
         var showBottomSheet by remember { mutableStateOf(true) }
-        GreenBottomSheet(title = "Wallet Name", subtitle = "Change your wallet name", onDismissRequest = {
+        GreenBottomSheet(title = "Wallet Name", subtitle = "Change your wallet name", viewModel = null, onDismissRequest = {
             showBottomSheet = false
         }) {
             Text(text = "OK")

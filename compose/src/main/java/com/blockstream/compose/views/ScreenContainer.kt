@@ -104,8 +104,8 @@ fun ScreenContainer(
                     CircularProgressIndicator(
                         modifier = Modifier
                             .size(120.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        trackColor = MaterialTheme.colorScheme.secondary,
+                        color = MaterialTheme.colorScheme.secondary,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
                     )
                 }
 

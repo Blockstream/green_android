@@ -3,6 +3,7 @@ package com.blockstream.common.sideeffects
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.LogoutReason
+import com.blockstream.common.data.Redact
 import com.blockstream.common.events.Event
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.Device
@@ -22,6 +23,7 @@ class SideEffects : SideEffect {
     data class ErrorDialog(val error: Throwable, val errorReport: ErrorReport? = null) : SideEffect
     data class OpenDenominationDialog(val denominatedValue: DenominatedValue): SideEffect
     data class Success(val data: Any? = null) : SideEffect
+    data class Mnemonic(val mnemonic: String) : SideEffect, Redact
     data class Navigate(val data: Any? = null) : SideEffect
     data class NavigateTo(val destination: NavigateDestination) : SideEffect
     data class NavigateBack(val error: Throwable? = null, val errorReport: ErrorReport? = null, val title: String? = null) :
@@ -29,7 +31,7 @@ class SideEffects : SideEffect {
     object NavigateToRoot : SideEffect
     data class Logout(val reason: LogoutReason) : SideEffect
     object WalletDelete : SideEffect
-    data class CopyToClipboard(val value: String, val message: String?) : SideEffect
+    data class CopyToClipboard(val value: String, val message: String?, val label: String? = null) : SideEffect
     data class AccountArchived(val account: Account) : SideEffect
     data class AccountUnarchived(val account: Account) : SideEffect
     data class UrlWarning(val urls: List<String>): SideEffect

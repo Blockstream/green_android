@@ -76,7 +76,7 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
 
     override fun getBannerAlertView(): GreenAlertView = binding.banner
 
-    override fun getAccountWalletViewModel() = viewModel
+    override fun getWalletViewModel() = viewModel
 
     private val transactionOrNull get() = session.pendingTransaction?.second
     private val transaction get() = transactionOrNull!!

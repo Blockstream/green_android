@@ -8,6 +8,8 @@ import com.blockstream.common.data.DataState
 import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
+import com.blockstream.common.data.NavAction
+import com.blockstream.common.data.NavData
 import com.blockstream.common.data.Redact
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.data.WatchOnlyCredentials
@@ -20,6 +22,7 @@ import com.blockstream.common.extensions.biometricsPinData
 import com.blockstream.common.extensions.biometricsWatchOnlyCredentials
 import com.blockstream.common.extensions.isConnectionError
 import com.blockstream.common.extensions.isNotAuthorized
+import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.lightningCredentials
 import com.blockstream.common.extensions.lightningMnemonic
 import com.blockstream.common.extensions.logException
@@ -34,6 +37,7 @@ import com.blockstream.common.gdk.device.DeviceInterface
 import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.gdk.params.LoginCredentialsParams
 import com.blockstream.common.lightning.AppGreenlightCredentials
+import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
@@ -52,14 +56,14 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.koin.core.component.inject
 import kotlin.io.encoding.Base64
 
 abstract class LoginViewModelAbstract(
     greenWallet: GreenWallet,
-    val isLightningShortcut: Boolean = false,
-    val device: DeviceInterface? = null
-) :
-    GreenViewModel(greenWalletOrNull = greenWallet) {
+    val isLightningShortcut: Boolean = false
+) : GreenViewModel(greenWalletOrNull = greenWallet) {
+    abstract val device: DeviceInterface?
 
     override fun screenName(): String = "Login"
 
@@ -101,16 +105,17 @@ abstract class LoginViewModelAbstract(
     abstract val lightningCredentials: StateFlow<DataState<LoginCredentials>>
     @NativeCoroutinesState
     abstract val lightningMnemonic: StateFlow<DataState<LoginCredentials>>
-
-
 }
 
 class LoginViewModel constructor(
     greenWallet: GreenWallet,
     isLightningShortcut: Boolean,
-    device: DeviceInterface? = null,
+    deviceId: String?,
     val autoLoginWallet: Boolean
-) : LoginViewModelAbstract(greenWallet = greenWallet, isLightningShortcut = isLightningShortcut, device = device) {
+) : LoginViewModelAbstract(greenWallet = greenWallet, isLightningShortcut = isLightningShortcut) {
+    private val deviceManager : DeviceManager by inject()
+    override val device: DeviceInterface?
+
     override val isLoginRequired: Boolean = false
 
     @NativeCoroutinesState
@@ -194,6 +199,9 @@ class LoginViewModel constructor(
     }
 
     class LocalSideEffects {
+        class LaunchWalletRename(val greenWallet: GreenWallet): SideEffect
+        class LaunchWalletDelete(val greenWallet: GreenWallet): SideEffect
+        object LaunchBip39Passphrase: SideEffect
         class LaunchBiometrics(val loginCredentials: LoginCredentials): SideEffect
         object LaunchUserPresenceForLightning : SideEffect
         object AskBip39Passphrase : SideEffect
@@ -202,9 +210,15 @@ class LoginViewModel constructor(
 
     init {
 
-        if(session.isConnected && !isLightningShortcut){
+        device = deviceId?.let { deviceManager.getDevice(it) ?: run {
+            postSideEffect(SideEffects.ErrorDialog(Exception("Device wasn't found")))
+            postSideEffect(SideEffects.Logout(LogoutReason.DEVICE_DISCONNECTED))
+            null
+        }}
+
+        if (session.isConnected && !isLightningShortcut){
             postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(greenWallet)))
-        }else{
+        } else {
             if (greenWallet.askForBip39Passphrase) {
                 postSideEffect(LocalSideEffects.AskBip39Passphrase)
             }
@@ -213,6 +227,8 @@ class LoginViewModel constructor(
                 loginWithDevice()
             }
 
+
+            var handleFirstTime = true
             // Beware as this will fire new values if eg. you change a login credential
             database.getLoginCredentialsFlow(greenWallet.id).onEach {
                 _biometricsCredentials.value = DataState.successOrEmpty(it.biometricsPinData)
@@ -222,22 +238,30 @@ class LoginViewModel constructor(
                 _lightningCredentials.value = DataState.successOrEmpty(it.lightningCredentials)
                 _lightningMnemonic.value = DataState.successOrEmpty(it.lightningMnemonic)
 
-                val biometricsBasedCredentials = (it.biometricsPinData ?: it.biometricsWatchOnlyCredentials)
-
-                if((autoLoginWallet || isLightningShortcut) && !_initialAction.value && !greenWallet.askForBip39Passphrase){
-                    if(autoLoginWallet) {
-                        biometricsBasedCredentials?.let { biometricsCredentials ->
-                            postSideEffect(LocalSideEffects.LaunchBiometrics(biometricsCredentials))
-                        }
-                    }else if(isLightningShortcut) {
-                        // Ask for user presence if biometrics can be used and the parent session is not connected
-                        if(greenKeystore.canUseBiometrics() && !session.isConnected){
-                            postSideEffect(LocalSideEffects.LaunchUserPresenceForLightning)
-                        }else{
-                            lightningShortcutLogin(greenWallet.lightningShortcutWallet())
+                if (handleFirstTime) {
+                    val biometricsBasedCredentials =
+                        (it.biometricsPinData ?: it.biometricsWatchOnlyCredentials)
+                    if ((autoLoginWallet || isLightningShortcut) && !_initialAction.value && !greenWallet.askForBip39Passphrase) {
+                        if (autoLoginWallet) {
+                            biometricsBasedCredentials?.let { biometricsCredentials ->
+                                postSideEffect(
+                                    LocalSideEffects.LaunchBiometrics(
+                                        biometricsCredentials
+                                    )
+                                )
+                            }
+                        } else if (isLightningShortcut) {
+                            // Ask for user presence if biometrics can be used and the parent session is not connected
+                            if (greenKeystore.canUseBiometrics() && !session.isConnected) {
+                                postSideEffect(LocalSideEffects.LaunchUserPresenceForLightning)
+                            } else {
+                                lightningShortcutLogin(greenWallet.lightningShortcutWallet())
+                            }
                         }
                     }
+                    handleFirstTime = false
                 }
+
             }.launchIn(viewModelScope.coroutineScope)
 
             pinCredentials.onEach { dataState ->
@@ -255,6 +279,59 @@ class LoginViewModel constructor(
 
             }.launchIn(viewModelScope.coroutineScope)
         }
+
+        val check1 = !isLightningShortcut && !greenWallet.isHardware
+        val check2 = check1 && !greenWallet.isWatchOnly
+
+        combine(greenWalletFlow.filterNotNull(), pinCredentials) { w, _ ->
+            w
+        }.onEach {
+            _navData.value = NavData(
+                title = it.name,
+                subtitle = if (isLightningShortcut) "id_lightning_account" else null,
+                actions = listOfNotNull(
+                    NavAction(
+                        title = "id_help",
+                        icon = "question",
+                        isMenuEntry = true,
+
+                        ) {
+                        postEvent(LocalEvents.ClickHelp)
+                    }.takeIf { check2 && pinCredentials.isEmpty() && passwordCredentials.isEmpty() },
+                    NavAction(
+                        title = "id_bip39_passphrase_login",
+                        icon = "password",
+                        isMenuEntry = true,
+                    ) {
+                        postSideEffect(LocalSideEffects.LaunchBip39Passphrase)
+                    }.takeIf { check2 && (pinCredentials.value.isNotEmpty() || passwordCredentials.value.isNotEmpty()) },
+                    NavAction(
+                        title = "id_show_recovery_phrase",
+                        icon = "key",
+                        isMenuEntry = true,
+                    ) {
+                        postEvent(LocalEvents.EmergencyRecovery(true))
+                    }.takeIf { check2 && (pinCredentials.value.isNotEmpty() || passwordCredentials.value.isNotEmpty()) },
+                    NavAction(
+                        title = "id_rename_wallet",
+                        icon = "text_aa",
+                        isMenuEntry = true,
+                    ) {
+                        postSideEffect(LocalSideEffects.LaunchWalletRename(it))
+                    }.takeIf { check1 },
+
+                    NavAction(
+                        title = "id_remove_wallet",
+                        icon = "trash",
+                        isMenuEntry = true,
+                    ) {
+                        postSideEffect(LocalSideEffects.LaunchWalletDelete(it))
+                    }.takeIf { check1 },
+
+                    )
+            )
+
+        }.launchIn(this)
 
         bootstrap()
     }
@@ -335,6 +412,7 @@ class LoginViewModel constructor(
             }
         }
 
+        // and is always ask
         if(!_initialAction.value){
             biometricsCredentials.data()?.let { biometricsCredentials ->
                 postSideEffect(LocalSideEffects.LaunchBiometrics(biometricsCredentials))
@@ -736,6 +814,7 @@ class LoginViewModelPreview(
     isWatchOnly: Boolean = false,
     isLightningShortcut: Boolean = false
 ) : LoginViewModelAbstract(greenWallet = greenWallet, isLightningShortcut = isLightningShortcut) {
+    override val device: DeviceInterface? = null
     override val walletName: StateFlow<String> = MutableStateFlow(viewModelScope, "Name")
     override val bip39Passphrase: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
     override val watchOnlyUsername: MutableStateFlow<String> = MutableStateFlow(viewModelScope, if(isWatchOnly) "username" else "")

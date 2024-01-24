@@ -14,11 +14,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import cafe.adriel.voyager.koin.getScreenModel
+import com.arkivanov.essenty.parcelable.Parcelable
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.wallet.WalletDeleteViewModel
 import com.blockstream.common.models.wallet.WalletDeleteViewModelAbstract
 import com.blockstream.common.models.wallet.WalletDeleteViewModelPreview
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
@@ -32,7 +34,7 @@ import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Parcelize
-data class WalletDeleteBottomSheet(val greenWallet: GreenWallet) : BottomScreen() {
+data class WalletDeleteBottomSheet(val greenWallet: GreenWallet) : BottomScreen(), Parcelable {
     @Composable
     override fun Content() {
         val viewModel = getScreenModel<WalletDeleteViewModel>{
@@ -89,7 +91,7 @@ fun WalletDeleteBottomSheet(
 @Composable
 @Preview
 fun WalletDeleteBottomSheetPreview() {
-    GreenTheme {
+    GreenPreview {
         GreenColumn {
             var showBottomSheet by remember { mutableStateOf(true) }
 

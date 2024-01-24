@@ -3,10 +3,10 @@
 package com.blockstream.gms.di
 
 import com.blockstream.base.AppReview
-import com.blockstream.base.ZendeskSdk
+import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.data.AppConfig
 import com.blockstream.gms.AppReviewImpl
-import com.blockstream.gms.ZendeskSdkImpl
+import com.blockstream.gms.ZendeskSdkAndroid
 import com.google.android.play.core.review.ReviewManagerFactory
 import okio.internal.commonToUtf8String
 import org.koin.core.annotation.ComponentScan
@@ -30,6 +30,6 @@ val gmsModule = module {
         val apiKey = get<AppConfig>().zendeskClientId?.let { base64 ->
             Base64.decode(base64).commonToUtf8String()
         } ?: ""
-        ZendeskSdkImpl(get(), apiKey)
+        ZendeskSdkAndroid(get(), apiKey)
     } binds(arrayOf(ZendeskSdk::class))
 }

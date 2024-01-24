@@ -10,8 +10,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
-import com.blockstream.base.ZendeskSdk
-import com.blockstream.common.CountlyBase
+import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.managers.LifecycleManager
 import com.blockstream.green.di.startKoin
 import com.blockstream.green.lifecycle.ActivityLifecycle

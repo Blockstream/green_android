@@ -3,6 +3,7 @@ package com.blockstream.common.models.add
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.Redact
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
@@ -67,6 +68,7 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: EnrichedAs
         data class SetAsset(val asset: EnrichedAsset) : Event
         data class ChooseAccountType(val accountType: AccountType) : Event
         data class CreateAccount(val accountType: AccountType) : Event
+        data class CreateLightningAccount(val lightningMnemonic: String) : Event, Redact
     }
 
     class LocalSideEffects {
@@ -156,8 +158,15 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: EnrichedAs
                     accountType = event.accountType,
                     accountName = event.accountType.toString(),
                     network = networkForAccountType(event.accountType, asset.value),
-                    null,
-                    null
+                )
+            }
+
+            is LocalEvents.CreateLightningAccount -> {
+                createAccount(
+                    accountType = AccountType.LIGHTNING,
+                    accountName = AccountType.LIGHTNING.toString(),
+                    network = networkForAccountType(AccountType.LIGHTNING, EnrichedAsset.Emtpy),
+                    mnemonic = event.lightningMnemonic,
                 )
             }
         }

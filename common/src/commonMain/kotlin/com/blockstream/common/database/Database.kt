@@ -146,6 +146,12 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
         db.walletQueries.walletsExists().executeAsOne()
     }
 
+    fun walletsExistsFlow(): Flow<Boolean> = db.walletQueries.walletsExists().asFlow().map {
+        io {
+            it.executeAsOne()
+        }
+    }
+
     suspend fun getWallets(isHardware: Boolean) : List<GreenWallet> = io {
         db.walletQueries.getWallets(is_hardware = isHardware).executeAsList().map { it.toGreenWallet() }
     }

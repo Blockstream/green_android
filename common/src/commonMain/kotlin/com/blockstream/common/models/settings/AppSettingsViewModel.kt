@@ -1,6 +1,7 @@
 package com.blockstream.common.models.settings
 
 import com.blockstream.common.data.ApplicationSettings
+import com.blockstream.common.data.NavData
 import com.blockstream.common.data.ScreenLockSetting
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
@@ -8,6 +9,7 @@ import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.Loggable
 import com.rickclephas.kmm.viewmodel.MutableStateFlow
 import com.rickclephas.kmm.viewmodel.coroutineScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
@@ -166,7 +168,6 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         object OnBack: Event
         object Save: Event
         object Cancel: Event
-        class InvitationCode(val code: String): Event
     }
 
     class LocalSideEffects {
@@ -175,6 +176,16 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
     }
 
     init {
+
+        _navData.value = NavData(title = "id_app_settings", onBackPressed = {
+            if(areSettingsDirty()){
+                postEvent(LocalEvents.OnBack)
+                false
+            } else {
+                true
+            }
+        })
+
         spvEnabled.onEach {
             if (!it && multiServerValidationEnabled.value) {
                 multiServerValidationEnabled.value = false
@@ -197,10 +208,6 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
             is LocalEvents.Save -> {
                 settingsManager.saveApplicationSettings(getSettings())
                 postSideEffect(SideEffects.NavigateBack())
-            }
-
-            is LocalEvents.InvitationCode -> {
-                invitationCode(event.code)
             }
 
             is LocalEvents.Cancel -> {
@@ -241,27 +248,11 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         spvTestnetLiquidElectrumServer = spvTestnetLiquidElectrumServer.value.takeIf { spvEnabled.value },
     )
 
-    fun areSettingsDirty(): Boolean {
+    private fun areSettingsDirty(): Boolean {
         return getSettings() != appSettings
     }
 
-    private fun invitationCode(userCode: String){
-        try {
-            /* Example
-            countly.getRemoteConfigValueAsJsonArray("feature_lightning_codes")
-                ?.mapNotNull { jsonElement ->
-                    jsonElement.jsonPrimitive.contentOrNull?.takeIf { it.isNotBlank() }
-                }?.any { code ->
-                    code == userCode
-                }?.also {
-
-                }
-             */
-        } catch (e: Exception) {
-            e.printStackTrace()
-            postSideEffect(SideEffects.ErrorDialog(Exception("id_something_went_wrong")))
-        }
-    }
+    companion object: Loggable()
 }
 
 class AppSettingsViewModelPreview(val initValue: Boolean = false) : AppSettingsViewModelAbstract() {

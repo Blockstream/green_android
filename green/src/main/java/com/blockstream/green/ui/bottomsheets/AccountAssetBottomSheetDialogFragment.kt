@@ -22,7 +22,7 @@ class AccountAssetBottomSheetDialogFragment : FilterBottomSheetDialogFragment(),
 
     @Suppress("UNCHECKED_CAST")
     internal val viewModel: GreenViewModel by lazy {
-        (requireParentFragment() as? AppFragment<*>)?.getGreenViewModel() ?: (requireParentFragment() as AbstractWalletFragment<*>).getWalletViewModel()
+        (requireParentFragment() as? AppFragment<*>)?.getGreenViewModel() ?: (requireParentFragment() as AbstractWalletFragment<*>).getWalletViewModel()!!
     }
 
     override val withSearch: Boolean = true

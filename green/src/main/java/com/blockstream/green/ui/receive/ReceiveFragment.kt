@@ -8,6 +8,7 @@ import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
 import android.text.TextUtils
+import android.text.format.DateUtils
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -16,25 +17,23 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import breez_sdk.LnInvoice
-import com.blockstream.common.AddressType
-import com.blockstream.common.MediaType
 import com.blockstream.common.Urls
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.EnrichedAsset
-import com.blockstream.common.data.ErrorReport
+import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.lightning.amountSatoshi
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.receive.ReceiveViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.UserInput
 import com.blockstream.green.R
 import com.blockstream.green.databinding.AccountAssetLayoutBinding
 import com.blockstream.green.databinding.ReceiveFragmentBinding
-import com.blockstream.green.extensions.boolean
 import com.blockstream.green.extensions.clearNavigationResult
 import com.blockstream.green.extensions.dialog
 import com.blockstream.green.extensions.errorDialog
-import com.blockstream.green.extensions.expireInAsDate
 import com.blockstream.green.extensions.getNavigationResult
 import com.blockstream.green.extensions.hideKeyboard
 import com.blockstream.green.extensions.setOnClickListener
@@ -45,6 +44,7 @@ import com.blockstream.green.extensions.toast
 import com.blockstream.green.ui.add.AbstractAddAccountFragment
 import com.blockstream.green.ui.bottomsheets.ChooseAssetAccountListener
 import com.blockstream.green.ui.bottomsheets.DenominationBottomSheetDialogFragment
+import com.blockstream.green.ui.bottomsheets.DeviceInteractionRequestBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.MenuBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.MenuDataProvider
 import com.blockstream.green.ui.bottomsheets.NoteBottomSheetDialogFragment
@@ -55,7 +55,7 @@ import com.blockstream.green.ui.items.MenuListItem
 import com.blockstream.green.ui.wallet.AbstractAssetWalletFragment
 import com.blockstream.green.utils.AmountTextWatcher
 import com.blockstream.green.utils.StringHolder
-import com.blockstream.green.utils.copyToClipboard
+import com.blockstream.green.utils.createQrBitmap
 import com.blockstream.green.utils.formatFullWithTime
 import com.blockstream.green.utils.getClipboard
 import com.blockstream.green.utils.openBrowser
@@ -64,13 +64,17 @@ import com.blockstream.green.utils.rotate
 import com.blockstream.green.utils.toAmountLook
 import com.blockstream.green.views.GreenAlertView
 import com.mikepenz.fastadapter.GenericItem
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import java.io.File
 import java.io.FileOutputStream
+import java.util.Date
 
 class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
     layout = R.layout.receive_fragment,
@@ -78,8 +82,6 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
 ), MenuDataProvider, ChooseAssetAccountListener {
     val args: ReceiveFragmentArgs by navArgs()
     override val walletOrNull by lazy { args.wallet }
-
-    override val screenName = "Receive"
 
     override val showBalance: Boolean = false
     override val showChooseAssetAccount: Boolean = true
@@ -96,12 +98,12 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
         get() = if (isSessionNetworkInitialized) wallet.name else null
 
     val viewModel: ReceiveViewModel by viewModel {
-        parametersOf(args.wallet, args.accountAsset)
+        parametersOf(args.accountAsset, args.wallet)
     }
 
-    override fun getBannerAlertView(): GreenAlertView = binding.banner
+    override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override fun getAccountWalletViewModel() = viewModel
+    override fun getBannerAlertView(): GreenAlertView = binding.banner
 
     private val onBackCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
@@ -112,30 +114,50 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
 
     override fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
-        if(sideEffect is SideEffects.Success){
-            (sideEffect.data as? LnInvoice)?.also { paidInvoice ->
-                lifecycleScope.launch {
-                    val amount = (paidInvoice.amountSatoshi() ?: 0).toAmountLook(
-                        session = session,
-                        withUnit = true,
-                        withGrouping = true
-                    )
 
-                    hideKeyboard()
+        when (sideEffect) {
+            is ReceiveViewModel.LocalSideEffects.VerifiedOnDevice -> {
+                DeviceInteractionRequestBottomSheetDialogFragment.closeAll(childFragmentManager)
+            }
 
-                    // Move it as a side effect in VM
-                    dialog(getString(R.string.id_funds_received), getString(R.string.id_you_have_just_received_s, amount), R.drawable.ic_lightning_fill)
+            is ReceiveViewModel.LocalSideEffects.VerifyOnDevice -> {
+                VerifyAddressBottomSheetDialogFragment.show(address = sideEffect.address , fragmentManager = childFragmentManager)
+            }
+
+            is ReceiveViewModel.LocalSideEffects.ShareAddress -> {
+               share(sideEffect.address)
+            }
+
+            is ReceiveViewModel.LocalSideEffects.ShareQR -> {
+                createQRImageAndShare(sideEffect.address)
+            }
+
+            is SideEffects.Success -> {
+                (sideEffect.data as? LnInvoice)?.also { paidInvoice ->
+                    lifecycleScope.launch {
+                        val amount = (paidInvoice.amountSatoshi() ?: 0).toAmountLook(
+                            session = session,
+                            withUnit = true,
+                            withGrouping = true
+                        )
+
+                        hideKeyboard()
+
+                        // Move it as a side effect in VM
+                        dialog(getString(R.string.id_funds_received), getString(R.string.id_you_have_just_received_s, amount), R.drawable.ic_lightning_fill)
+                    }
                 }
             }
         }
     }
+
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         super.onViewCreatedGuarded(view, savedInstanceState)
 
         getNavigationResult<AccountAsset>(AbstractAddAccountFragment.SET_ACCOUNT)?.observe(viewLifecycleOwner) {
             it?.let {
-                viewModel.accountAssetValue = it
+                viewModel.postEvent(Events.SetAccountAsset(it))
                 clearNavigationResult(AbstractAddAccountFragment.SET_ACCOUNT)
             }
         }
@@ -143,22 +165,6 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
         binding.vm = viewModel
 
         AmountTextWatcher.watch(binding.amountEditText)
-
-        binding.address.setOnClickListener {
-            copyToClipboard(
-                "Address",
-                binding.address.text.toString(),
-                requireContext(),
-                animateView = binding.address
-            )
-            snackbar(R.string.id_address_copied_to_clipboard)
-            countly.receiveAddress(
-                addressType = if (viewModel.isAddressUri.value == true) AddressType.URI else AddressType.ADDRESS,
-                mediaType = MediaType.TEXT,
-                account = account,
-                session = session
-            )
-        }
 
         binding.buttonShare.setOnClickListener {
             MenuBottomSheetDialogFragment.show(
@@ -191,9 +197,9 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
         }
 
         binding.buttonNewAddress.setOnClickListener {
-            if (viewModel.onProgress.value == false) {
-                viewModel.generateAddress()
+            if (!viewModel.onProgress.value) {
                 binding.buttonNewAddress.rotate()
+                viewModel.postEvent(ReceiveViewModel.LocalEvents.GenerateNewAddress)
             } else {
                 showWaitingToast()
             }
@@ -203,22 +209,25 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
             RequestAmountLabelBottomSheetDialogFragment.show(childFragmentManager)
         }
 
-        binding.addressQrWrap.setOnClickListener {
-            copyToClipboard("Address", binding.address.text.toString(), requireContext())
-            snackbar(R.string.id_address_copied_to_clipboard)
+        binding.address.setOnClickListener {
+            viewModel.postEvent(ReceiveViewModel.LocalEvents.CopyAddress)
             it.pulse()
+        }
 
-            countly.receiveAddress(
-                addressType = if (viewModel.isAddressUri.value == true) AddressType.URI else AddressType.ADDRESS,
-                mediaType = MediaType.TEXT,
-                account = account,
-                session = session
-            )
+        binding.addressQrWrap.setOnClickListener {
+            viewModel.postEvent(ReceiveViewModel.LocalEvents.CopyAddress)
+            it.pulse()
         }
 
         binding.addressQrWrap.setOnLongClickListener {
-            viewModel.addressQRBitmap.value?.also {
-                QrDialogFragment.show(it, childFragmentManager)
+            viewModel.receiveAddress.value?.let {
+                lifecycleScope.launch {
+                    withContext(context = Dispatchers.IO) {
+                        createQrBitmap(it)
+                    }?.also {
+                        QrDialogFragment.show(it, childFragmentManager)
+                    }
+                }
             }
 
             true
@@ -229,24 +238,21 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
         }
 
         binding.buttonVerify.setOnClickListener {
-            VerifyAddressBottomSheetDialogFragment.show(address = viewModel.addressAsString , fragmentManager = childFragmentManager)
+            viewModel.postEvent(ReceiveViewModel.LocalEvents.VerifyOnDevice)
+        }
 
-            if (viewModel.onProgress.value == false) {
-                viewModel.validateAddressInDevice()
+        viewModel.receiveAddress.onEach {
+            if (it != null) {
+                binding.addressQR.setImageDrawable(
+                    BitmapDrawable(
+                        resources,
+                        withContext(context = Dispatchers.IO) { createQrBitmap(it) }).also { bitmap ->
+                        bitmap.isFilterBitmap = false
+                    })
+            } else {
+                binding.addressQR.setImageDrawable(null)
             }
-        }
-
-        viewModel.onError.observe(viewLifecycleOwner) {
-            it?.getContentIfNotHandledOrReturnNull()?.let { throwable ->
-                errorDialog(throwable = throwable, errorReport = ErrorReport.create(throwable = throwable, network = network, session = session))
-            }
-        }
-
-        viewModel.addressQRBitmap.observe(viewLifecycleOwner) {
-            binding.addressQR.setImageDrawable(BitmapDrawable(resources, it).also { bitmap ->
-                bitmap.isFilterBitmap = false
-            })
-        }
+        }.launchIn(lifecycleScope)
 
         viewModel.onProgress.onEach {
             // On HWWallet Block going back until address is generated
@@ -254,12 +260,12 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
             invalidateMenu()
         }.launchIn(lifecycleScope)
 
-        viewModel.accountLiveData.observe(viewLifecycleOwner){
+        viewModel.accountAsset.onEach {
             invalidateMenu()
-        }
+        }.launchIn(lifecycleScope)
 
         binding.buttonConfirm.setOnClickListener {
-            viewModel.createLightningInvoice()
+            viewModel.postEvent(ReceiveViewModel.LocalEvents.CreateInvoice)
             hideKeyboard()
         }
 
@@ -269,14 +275,14 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
                     session,
                     viewModel.amount.value,
                     assetId = session.lightning?.policyAsset,
-                    denomination = viewModel.denomination.value!!
+                    denomination = viewModel.denomination.value
 
                 ).getBalance().also {
                     DenominationBottomSheetDialogFragment.show(
                         denominatedValue = DenominatedValue(
                             balance = it,
                             assetId = session.lightning?.policyAsset,
-                            denomination = viewModel.denomination.value!!
+                            denomination = viewModel.denomination.value
                         ),
                         childFragmentManager)
                 }
@@ -284,12 +290,11 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
         }
 
         binding.buttonEditAmount.setOnClickListener {
-            viewModel.addressUri.value = ""
-            viewModel.lightningInvoice.value = null
+            viewModel.postEvent(ReceiveViewModel.LocalEvents.ClearLightningInvoice)
         }
 
         binding.buttonAmountPaste.setOnClickListener {
-            viewModel.amount.value = getClipboard(requireContext())
+            viewModel.amount.value = getClipboard(requireContext()) ?: ""
         }
 
         binding.buttonAmountClear.setOnClickListener {
@@ -297,22 +302,25 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
         }
 
         binding.invoiceExpiration.setOnClickListener {
-            viewModel.lightningInvoice.value?.also {
-                snackbar(it.expireInAsDate().formatFullWithTime())
+            viewModel.invoiceExpirationTimestamp.value?.also {
+                 snackbar(Date(it).formatFullWithTime())
             }
         }
 
+        viewModel.invoiceExpirationTimestamp.filterNotNull().onEach {
+            binding.invoiceExpiration.text = DateUtils.getRelativeTimeSpanString(
+                it,
+                System.currentTimeMillis(),
+                DateUtils.SECOND_IN_MILLIS
+            ).toString()
+        }.launchIn(lifecycleScope)
+
         binding.buttonLearnMore.setOnClickListener {
-            openBrowser(Urls.HELP_RECEIVE_FEES)
+            viewModel.postEvent(ReceiveViewModel.LocalEvents.ClickFundingFeesLearnMore)
         }
 
         binding.buttonOnChainToggle.setOnClickListener {
-            if(viewModel.showOnchainAddress.boolean()){
-                viewModel.showOnchainAddress.value = false
-            }else{
-                viewModel.createOnchain()
-            }
-
+            viewModel.postEvent(ReceiveViewModel.LocalEvents.ToggleLightning)
             hideKeyboard()
         }
 
@@ -329,9 +337,8 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
         }
     }
 
-    private fun createQRImageAndShare() {
-        viewModel.addressQRBitmap.value?.let { qrBitmap ->
-
+    private fun createQRImageAndShare(address: String) {
+        createQrBitmap(address)?.also { qrBitmap ->
             try {
                 val extraTextHeight = 80
                 val imageSize = 600
@@ -359,11 +366,10 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
                 textPaint.isAntiAlias = true
                 textPaint.textSize = 16.0f
 
-                val text = viewModel.addressUri.value ?: ""
                 val staticLayout = StaticLayout.Builder.obtain(
-                    text,
+                    address,
                     0,
-                    text.length,
+                    address.length,
                     textPaint,
                     imageSize - (padding * 2)
                 )
@@ -425,19 +431,7 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
 
     override fun menuItemClicked(requestCode: Int, item: GenericItem, position: Int) {
         if (requestCode == 1) {
-            countly.receiveAddress(
-                addressType = if (viewModel.isAddressUri.value == true) AddressType.URI else AddressType.ADDRESS,
-                mediaType = if (position == 0) MediaType.TEXT else MediaType.IMAGE,
-                isShare = true,
-                account = account,
-                session = session
-            )
-
-            if (position == 0) {
-                share(binding.address.text.toString())
-            } else {
-                createQRImageAndShare()
-            }
+            viewModel.postEvent(if (position == 0) ReceiveViewModel.LocalEvents.ShareAddress else ReceiveViewModel.LocalEvents.ShareQR) //
         } else if (requestCode == 2 && item is MenuListItem) {
 
             when (item.id) {
@@ -456,7 +450,7 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
                     navigate(
                         ReceiveFragmentDirections.actionReceiveFragmentToSendFragment(
                             wallet = wallet,
-                            accountAsset = viewModel.accountAssetValue,
+                            accountAsset = viewModel.accountAsset.value!!,
                             isSweep = true
                         )
                     )

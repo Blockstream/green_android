@@ -10,6 +10,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.lifecycleScope
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
+import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Pricing
 import com.blockstream.common.gdk.params.ReconnectHintParams
@@ -55,7 +56,7 @@ abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
         get() = isSessionNetworkInitialized && session.isConnected
 
     val wallet: GreenWallet
-        get() = getWalletViewModel().wallet
+        get() = getGreenViewModel()!!.greenWallet
 
     override fun updateToolbar() {
         super.updateToolbar()
@@ -97,7 +98,8 @@ abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
                 // without being properly initialized and can lead to a crash
                 if (isSessionInitialized) {
                     logger.info { "A logged in session is required, but session is uninitialized" }
-                    getWalletViewModel().logout(LogoutReason.AUTO_LOGOUT_TIMEOUT)
+                    getGreenViewModel()?.postEvent(Events.Logout(reason = LogoutReason.AUTO_LOGOUT_TIMEOUT))
+
                 } else {
                     logger.info { "A logged in session is required, but session is not connected" }
                     navigate(NavGraphDirections.actionGlobalLoginFragment(wallet))
@@ -109,11 +111,11 @@ abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
             // Check if we have a disconnect event eg. the Notification button
             sessionManager.connectionChangeEvent.onEach {
                 if(isLoggedInRequired() && !session.isConnected){
-                    getWalletViewModel().logout(LogoutReason.USER_ACTION)
+                    getGreenViewModel()?.postEvent(Events.Logout(LogoutReason.USER_ACTION))
                 }
             }.launchIn(lifecycleScope)
 
-            getWalletViewModel().let {
+            getWalletViewModel()?.let {
 
                 it.onReconnectEvent.observe(viewLifecycleOwner) { event ->
                     event.getContentIfNotHandledOrReturnNull()?.let{ time ->
@@ -165,7 +167,7 @@ abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
     open fun isLoggedInRequired(): Boolean = true
     open fun isSessionAndWalletRequired(): Boolean = true
 
-    abstract fun getWalletViewModel(): AbstractWalletViewModel
+    open fun getWalletViewModel(): AbstractWalletViewModel? = null
 
     override fun getAppViewModel() : AppViewModelAndroid? {
         // Prevent initializing WalletViewModel if session is not initialized
@@ -271,7 +273,7 @@ abstract class AbstractWalletFragment<T : ViewDataBinding> constructor(
                 .setTitle(R.string.id_denomination__exchange_rate)
                 .setView(dialogBinding.root)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
-                    getWalletViewModel().saveGlobalSettings(settings.copy(unit = selectedUnit, pricing = selectedPricing), onSuccess)
+                    getWalletViewModel()?.saveGlobalSettings(settings.copy(unit = selectedUnit, pricing = selectedPricing), onSuccess)
                 }
                 .setNegativeButton(android.R.string.cancel, null)
                 .show()

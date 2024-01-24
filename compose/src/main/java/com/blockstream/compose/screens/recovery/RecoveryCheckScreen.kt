@@ -13,6 +13,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.getScreenModel
@@ -31,6 +33,7 @@ import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.models.recovery.RecoveryCheckViewModel
 import com.blockstream.common.models.recovery.RecoveryCheckViewModelAbstract
 import com.blockstream.common.models.recovery.RecoveryCheckViewModelPreview
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
@@ -38,8 +41,6 @@ import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.extensions.colorText
-import com.blockstream.compose.sheets.BottomSheetNavigatorM3
-import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.displaySmall
@@ -63,7 +64,9 @@ data class RecoveryCheckScreen(val setupArgs: SetupArgs) : Screen, Parcelable {
             parametersOf(setupArgs)
         }
 
-        AppBar()
+        val navData by viewModel.navData.collectAsStateWithLifecycle()
+
+        AppBar(navData)
 
         RecoveryCheckScreen(viewModel = viewModel)
     }
@@ -194,9 +197,7 @@ fun RecoveryCheckScreen(
 @Composable
 @Preview
 fun RecoveryCheckScreenPreview() {
-    GreenTheme {
-        BottomSheetNavigatorM3 {
-            RecoveryCheckScreen(viewModel = RecoveryCheckViewModelPreview.preview())
-        }
+    GreenPreview {
+        RecoveryCheckScreen(viewModel = RecoveryCheckViewModelPreview.preview())
     }
 }

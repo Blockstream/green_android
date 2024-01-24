@@ -4,14 +4,17 @@ import cafe.adriel.voyager.core.model.ScreenModel
 import co.touchlab.kermit.Logger
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.ViewModelView
+import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.Banner
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.DenominatedValue
+import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
+import com.blockstream.common.data.NavData
 import com.blockstream.common.data.Redact
 import com.blockstream.common.database.Database
 import com.blockstream.common.di.ApplicationScope
@@ -20,6 +23,7 @@ import com.blockstream.common.events.EventWithSideEffect
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.cleanup
 import com.blockstream.common.extensions.createLoginCredentials
+import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.GdkSession
@@ -37,6 +41,7 @@ import com.rickclephas.kmm.viewmodel.KMMViewModel
 import com.rickclephas.kmm.viewmodel.MutableStateFlow
 import com.rickclephas.kmm.viewmodel.coroutineScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -46,6 +51,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
@@ -61,18 +67,18 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.native.ObjCName
 
-
 abstract class GreenViewModel constructor(
     val greenWalletOrNull: GreenWallet? = null,
     accountAssetOrNull: AccountAsset? = null,
 ) : ScreenModel, KMMViewModel(), KoinComponent, ViewModelView, HardwareWalletInteraction {
-    protected val appInfo: AppInfo by inject()
+    val appInfo: AppInfo by inject()
     protected val database: Database by inject()
     protected val countly: CountlyBase by inject()
     protected val sessionManager: SessionManager by inject()
     val settingsManager: SettingsManager by inject()
     protected val applicationScope: ApplicationScope by inject()
     protected val greenKeystore: GreenKeystore by inject()
+    val zendeskSdk: ZendeskSdk by inject()
 
     private val isPreview by lazy { this::class.simpleName?.contains("Preview") == true }
 
@@ -80,16 +86,25 @@ abstract class GreenViewModel constructor(
     private val _sideEffect: Channel<SideEffect> = Channel()
     // Check with Don't Keep activities if the logout event is persisted
 
+    // Helper method to force the use of MutableStateFlow(viewModelScope)
+    @NativeCoroutinesIgnore
+    protected fun <T> MutableStateFlow(value: T) = MutableStateFlow(viewModelScope, value)
+
     @NativeCoroutines
     val sideEffect = _sideEffect.receiveAsFlow()
 
+    @NativeCoroutines
     val sideEffectReEmitted: MutableSharedFlow<SideEffect> = MutableSharedFlow()
 
     @NativeCoroutinesState
     val onProgress = MutableStateFlow(viewModelScope, false)
 
     @NativeCoroutinesState
-    val onProgressDescription = MutableStateFlow<String?>(viewModelScope, null)
+    val onProgressDescription = MutableStateFlow<String?>(null)
+
+    protected val _navData = MutableStateFlow(NavData())
+    @NativeCoroutinesState
+    val navData = _navData.asStateFlow()
 
     // Main action validation
     internal val _isValid = MutableStateFlow(viewModelScope, isPreview)
@@ -97,7 +112,7 @@ abstract class GreenViewModel constructor(
     //val isValid = _isValid.asStateFlow()
 
     // Main button enabled flag
-    private val _buttonEnabled = MutableStateFlow(viewModelScope, isPreview)
+    private val _buttonEnabled = MutableStateFlow(isPreview)
     @NativeCoroutinesState
     val buttonEnabled = _buttonEnabled.asStateFlow()
 
@@ -138,8 +153,16 @@ abstract class GreenViewModel constructor(
         }
     }
 
+
+    protected val _denomination by lazy {
+        MutableStateFlow<Denomination>(sessionOrNull?.ifConnected { Denomination.default(session) } ?: Denomination.BTC)
+    }
+
+    @NativeCoroutinesState
+    val denomination: StateFlow<Denomination> by lazy { _denomination.asStateFlow() }
+
     @NativeCoroutines
-    val banner: MutableStateFlow<Banner?> = MutableStateFlow(viewModelScope, null)
+    val banner: MutableStateFlow<Banner?> = MutableStateFlow(null)
     val closedBanners = mutableListOf<Banner>()
 
     private var _deviceRequest: CompletableDeferred<String>? = null
@@ -208,7 +231,7 @@ abstract class GreenViewModel constructor(
         }
 
         if(event is Redact){
-            if(appInfo.isDevelopmentOrDebug){
+            if(appInfo.isDebug){
                 Logger.d { "postEvent: Redacted(${event::class.simpleName}) Debug: $event" }
             }else{
                 Logger.d { "postEvent: Redacted(${event::class.simpleName})" }
@@ -222,7 +245,7 @@ abstract class GreenViewModel constructor(
 
     protected fun postSideEffect(sideEffect: SideEffect) {
         if (sideEffect is Redact) {
-            if(appInfo.isDevelopmentOrDebug){
+            if(appInfo.isDebug){
                 Logger.d { "postSideEffect: Redacted(${sideEffect::class.simpleName}) Debug: $sideEffect" }
             }else{
                 Logger.d { "postSideEffect: Redacted(${sideEffect::class.simpleName})" }
@@ -269,6 +292,9 @@ abstract class GreenViewModel constructor(
 
     open fun handleEvent(event: Event) {
         when(event){
+            is Events.SetAccountAsset -> {
+                accountAsset.value = event.accountAsset
+            }
             is Events.ArchiveAccount -> {
                 updateAccount(account = event.account, isHidden = true)
             }
@@ -323,12 +349,27 @@ abstract class GreenViewModel constructor(
                     }
                 }
             }
-            is Events.SetDenomination -> {
-                setDenomination(event.denominatedValue)
+            is Events.SetDenominatedValue -> {
+                setDenominatedValue(event.denominatedValue)
             }
             is Events.Logout -> {
                 logoutSideEffect(event.reason)
                 sessionOrNull?.disconnectAsync(event.reason)
+            }
+            is Events.SubmitErrorReport -> {
+                val subject = screenName()?.let { "Android Issue in $it" } ?: "Android Error Report"
+                zendeskSdk.submitNewTicket(
+                    subject = subject,
+                    email = event.email,
+                    message = event.message,
+                    errorReport = event.errorReport
+                )
+
+                if(event.errorReport.paymentHash.isNotBlank()) {
+                    sessionOrNull?.takeIf { it.isConnected }?.also {
+                        it.reportLightningError(event.errorReport.paymentHash ?: "")
+                    }
+                }
             }
         }
     }
@@ -429,22 +470,22 @@ abstract class GreenViewModel constructor(
         }
     }
 
-    protected suspend fun _enableLightningShortcut(lightningMnemonic: String? = null) {
+    protected suspend fun _enableLightningShortcut() {
         sessionOrNull?.also { session ->
-            val encryptedData = (lightningMnemonic ?: session.deriveLightningMnemonic()).let {
-                greenKeystore.encryptData(it.encodeToByteArray())
+            val encryptedData = withContext(context = Dispatchers.IO) {
+                session.deriveLightningMnemonic().let {
+                    greenKeystore.encryptData(it.encodeToByteArray())
+                }
             }
 
-            greenWalletOrNull?.also { wallet ->
-                database.replaceLoginCredential(
-                    createLoginCredentials(
-                        walletId = wallet.id,
-                        network = session.lightning!!.id,
-                        credentialType = CredentialType.LIGHTNING_MNEMONIC,
-                        encryptedData = encryptedData
-                    )
+            database.replaceLoginCredential(
+                createLoginCredentials(
+                    walletId = greenWallet.id,
+                    network = session.lightning!!.id,
+                    credentialType = CredentialType.LIGHTNING_MNEMONIC,
+                    encryptedData = encryptedData
                 )
-            }
+            )
         }
     }
 
@@ -473,8 +514,10 @@ abstract class GreenViewModel constructor(
     }
 
     protected open suspend fun denominatedValue(): DenominatedValue? = null
-    protected open fun setDenomination(denominatedValue: DenominatedValue) { }
+    protected open fun setDenominatedValue(denominatedValue: DenominatedValue) { }
     protected open fun errorReport(exception: Throwable): ErrorReport? { return null}
 
-    companion object: Loggable()
+    companion object: Loggable(){
+        fun preview() = object : GreenViewModel() { }
+    }
 }

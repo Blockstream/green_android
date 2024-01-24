@@ -69,7 +69,7 @@ abstract class AbstractAddAccountFragment<T : ViewDataBinding>(
 
 
     override fun enableLightningShortcut(){
-        viewModel.postEvent(AddAccountViewModelAbstract.LocalEvents.EnableLightningShortcut())
+        viewModel.postEvent(AddAccountViewModelAbstract.LocalEvents.EnableLightningShortcut)
     }
 
     override fun lightningShortcutDialogDismissed() {

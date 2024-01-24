@@ -43,6 +43,10 @@ val md_theme_scrim = Color(0xFF000000)
 val md_theme_brandSurface = Color(0xFF19222c)
 
 val green = md_theme_primary
+val green20 = Color(0x3300f113)
+
+val md_theme_surfaceCircle = Color(0xFF363636)
+
 
 val whiteHigh = Color.White
 val whiteMedium = Color.White.copy(alpha = 0.75f)

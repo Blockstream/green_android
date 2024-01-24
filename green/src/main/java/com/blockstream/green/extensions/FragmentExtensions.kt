@@ -95,8 +95,8 @@ fun Context.localized2faMethods(methods: List<String>): List<String> = methods.m
     localized2faMethod(it)
 }
 
-fun Context.stringFromIdentifierOrNull(id: String): String? {
-    if(id.startsWith("id_")) {
+fun Context.stringFromIdentifierOrNull(id: String?): String? {
+    if(id?.startsWith("id_") == true) {
         val res = id.substring(0, id.indexOf("|").takeIf { it != -1 } ?: id.length)
         val formatArgs = (id.split("|").filterIndexed { index, _ -> index != 0 }.toTypedArray())
 
@@ -108,8 +108,8 @@ fun Context.stringFromIdentifierOrNull(id: String): String? {
     return null
 }
 
-fun Context.stringFromIdentifier(id: String?): String? {
-    return id?.let { stringFromIdentifierOrNull(it) ?: id }
+fun Context.stringFromIdentifier(id: String): String {
+    return id.let { stringFromIdentifierOrNull(it) ?: id }
 }
 
 fun Fragment.errorFromResourcesAndGDK(throwable: Throwable): String = requireContext().errorFromResourcesAndGDK(throwable)
@@ -180,7 +180,7 @@ fun Fragment.errorDialog(error: String, errorReport: ErrorReport? = null, listen
                             subject = "Android Error Report",
                             errorReport = errorReport,
                         )
-                        copyToClipboard("Error Report", "$error}")
+                        copyToClipboard("Error Report", error)
                     }else {
                         showErrorReport(
                             errorReport = errorReport,

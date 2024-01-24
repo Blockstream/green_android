@@ -33,10 +33,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.koin.getScreenModel
-import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.models.sheets.AnalyticsViewModel
 import com.blockstream.common.models.sheets.AnalyticsViewModelAbstract
 import com.blockstream.common.models.sheets.AnalyticsViewModelPreview
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
@@ -45,21 +45,23 @@ import com.blockstream.compose.components.GreenCircle
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.GreenSpacer
-import com.blockstream.compose.theme.GreenTheme
+import com.blockstream.compose.navigation.resultKey
+import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.views.GreenBottomSheet
 
 
-@Parcelize
-class AnalyticsBottomSheet(val onDismiss: () -> Unit = {}) : BottomScreen() {
+object AnalyticsBottomSheet : BottomScreen() {
     @Composable
     override fun Content() {
         val viewModel = getScreenModel<AnalyticsViewModel>()
 
         AnalyticsBottomSheet(
             viewModel = viewModel,
-            onDismissRequest = onDismissRequest(onDismiss)
+            onDismissRequest = onDismissRequest {
+                setNavigationResult(resultKey, true)
+            }
         )
     }
 }
@@ -72,6 +74,7 @@ private fun AnalyticsBottomSheet(
 ) {
     GreenBottomSheet(
         title = stringResource(id = R.string.id_help_green_improve),
+        viewModel = viewModel,
         sheetState = rememberModalBottomSheetState(
             skipPartiallyExpanded = true,
             confirmValueChange = {
@@ -84,7 +87,7 @@ private fun AnalyticsBottomSheet(
         var isExpanded by remember {
             mutableStateOf(false)
         }
-        
+
         HandleSideEffect(viewModel = viewModel)
 
         Text(text = stringResource(R.string.id_if_you_agree_green_will_collect))
@@ -114,7 +117,8 @@ private fun AnalyticsBottomSheet(
                         )
                     }
 
-                    val rotation: Float by animateFloatAsState(if (isExpanded) 180f else 0f,
+                    val rotation: Float by animateFloatAsState(
+                        if (isExpanded) 180f else 0f,
                         label = "ArrowDropDown"
                     )
                     Icon(
@@ -179,13 +183,13 @@ private fun AnalyticsBottomSheet(
             }
         }
 
-        if(viewModel.showActionButtons) {
+        if (viewModel.showActionButtons) {
             GreenColumn(padding = 0, space = 8) {
                 GreenButton(
                     text = stringResource(R.string.id_allow_data_collection),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-
+                    viewModel.postEvent(AnalyticsViewModel.LocalEvents.ClickDataCollection(true))
                 }
 
                 GreenButton(
@@ -193,35 +197,20 @@ private fun AnalyticsBottomSheet(
                     modifier = Modifier.fillMaxWidth(),
                     type = GreenButtonType.TEXT
                 ) {
-
+                    viewModel.postEvent(AnalyticsViewModel.LocalEvents.ClickDataCollection(false))
                 }
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
 fun AnalyticsBottomSheetPreview() {
-    GreenTheme {
-        GreenColumn {
-            var showBottomSheet by remember { mutableStateOf(true) }
-
-            GreenButton(text = "Show BottomSheet") {
-                showBottomSheet = true
-            }
-
-            Text("AnalyticsBottomSheetPreview")
-
-            if (showBottomSheet) {
-                AnalyticsBottomSheet(
-                    viewModel = AnalyticsViewModelPreview.preview(),
-                    onDismissRequest = {
-                        showBottomSheet = false
-                    }
-                )
-            }
-        }
+    GreenPreview {
+        AnalyticsBottomSheet(
+            viewModel = AnalyticsViewModelPreview.preview(),
+            onDismissRequest = { }
+        )
     }
 }

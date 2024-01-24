@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -33,7 +34,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import cafe.adriel.voyager.navigator.LocalNavigator
+import com.blockstream.common.data.NavAction
+import com.blockstream.common.data.NavData
 import com.blockstream.compose.LocalAppBarState
+import com.blockstream.compose.components.MenuEntry
 import com.blockstream.compose.components.PopupMenu
 import com.blockstream.compose.components.PopupState
 import com.blockstream.compose.screens.HomeScreen
@@ -42,8 +46,9 @@ import com.blockstream.compose.screens.overview.WalletOverviewScreen
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.titleSmall
-import com.blockstream.compose.utils.AppBarData
 import com.blockstream.compose.utils.AppBarState
+import com.blockstream.compose.utils.drawableResourceIdOrNull
+import com.blockstream.compose.utils.stringResourceId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,7 +62,7 @@ fun GreenTopAppBar(
         navigator?.lastItemOrNull?.let { it is HomeScreen || it is LoginScreen || it is WalletOverviewScreen }
             ?: false
 
-    val appBarData by LocalAppBarState.current.data
+    val navData by LocalAppBarState.current.data
 
 
     CenterAlignedTopAppBar(
@@ -67,23 +72,23 @@ fun GreenTopAppBar(
         ),
         title = {
             AnimatedVisibility(
-                visible = !appBarData.hide,
+                visible = navData.isVisible,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    appBarData.title?.also {
+                    navData.title?.also {
                         Text(
-                            text = it,
+                            text = stringResourceId(it),
                             maxLines = 1,
                             style = titleSmall,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
 
-                    appBarData.subtitle?.also {
+                    navData.subtitle?.also {
                         Text(
-                            text = it,
+                            text = stringResourceId(it),
                             maxLines = 1,
                             style = bodySmall,
                             overflow = TextOverflow.Ellipsis
@@ -94,7 +99,7 @@ fun GreenTopAppBar(
         },
         navigationIcon = {
             AnimatedVisibility(
-                visible = !appBarData.hide,
+                visible = navData.isVisible,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
@@ -119,10 +124,8 @@ fun GreenTopAppBar(
                             )
                         }
                     } else {
-                        IconButton(enabled = !appBarData.hide, onClick = {
-                            appBarData.onBack?.also {
-                                it.invoke()
-                            } ?: run {
+                        IconButton(enabled = navData.isVisible, onClick = {
+                            if(navData.isVisible){
                                 navigator?.pop()
                             }
                         }) {
@@ -139,34 +142,38 @@ fun GreenTopAppBar(
             val popupState = remember { PopupState() }
 
             AnimatedVisibility(
-                visible = !appBarData.hide,
+                visible = navData.isVisible,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
-                appBarData.menu?.filter { it.showAsAction }?.forEach {
-                    IconButton(onClick = {
-                        it.onClick()
-                    }) {
-                        it.iconRes?.also {
-                            Image(
-                                painter = painterResource(id = it),
-                                contentDescription = null
-                            )
+                Row {
+                    navData.actions.filter { !it.isMenuEntry }.forEach {
+                        IconButton(onClick = {
+                            it.onClick()
+                        }) {
+                            drawableResourceIdOrNull(it.icon)?.also {
+                                Image(
+                                    painter = painterResource(id = it),
+                                    contentDescription = null
+                                )
+                            }
                         }
                     }
-                }
 
-                appBarData.menu?.filter { !it.showAsAction }?.takeIf { it.isNotEmpty() }?.also {
-                    IconButton(onClick = {
-                        popupState.isContextMenuVisible.value = true
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "More Menu"
-                        )
+                    navData.actions.filter { it.isMenuEntry }.takeIf { it.isNotEmpty() }?.map {
+                        MenuEntry.from(it)
+                    }?.also {
+                        IconButton(onClick = {
+                            popupState.isContextMenuVisible.value = true
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "More Menu"
+                            )
+                        }
+
+                        PopupMenu(popupState, it)
                     }
-
-                    PopupMenu(popupState, it)
                 }
             }
         },
@@ -179,9 +186,17 @@ fun GreenTopAppBar(
 @Composable
 private fun GreenTopAppScreenPreview() {
     GreenTheme {
-        val appBarState = remember { AppBarState(AppBarData(title = "Title")) }
+        val appBarState = remember {
+            AppBarState(
+                NavData(
+                    title = "Title",
+                    subtitle = "Subtitle",
+                    actions = listOf(NavAction(title = "Action"))
+                )
+            )
+        }
 
-        appBarState.update(AppBarData(title = "Title 2"))
+        appBarState.update(NavData(title = "Title 2"))
 
         CompositionLocalProvider(LocalAppBarState provides appBarState) {
             Scaffold(topBar = {

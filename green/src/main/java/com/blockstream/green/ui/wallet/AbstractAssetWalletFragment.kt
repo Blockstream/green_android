@@ -12,6 +12,9 @@ import com.blockstream.green.extensions.bind
 import com.blockstream.green.ui.bottomsheets.AccountAssetBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.AccountAssetListener
 import com.blockstream.green.ui.bottomsheets.ChooseAssetAccountBottomSheetDialogFragment
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 
 abstract class AbstractAssetWalletFragment<T : ViewDataBinding> constructor(
@@ -25,11 +28,8 @@ abstract class AbstractAssetWalletFragment<T : ViewDataBinding> constructor(
     open val showChooseAssetAccount: Boolean = false
     open val isRefundSwap: Boolean = false
 
-    private val assetWalletViewModel
-        get() = getAccountWalletViewModel() as AbstractAssetWalletViewModel
-
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
-        assetWalletViewModel.accountAssetLiveData.observe(viewLifecycleOwner){
+        getGreenViewModel()?.accountAsset?.filterNotNull()?.onEach {
             accountAssetLayoutBinding?.bind(
                 scope = lifecycleScope,
                 accountAsset = it,
@@ -37,7 +37,7 @@ abstract class AbstractAssetWalletFragment<T : ViewDataBinding> constructor(
                 showBalance = showBalance,
                 showEditIcon = showEditIcon
             )
-        }
+        }?.launchIn(lifecycleScope)
 
         if(showEditIcon) {
             accountAssetLayoutBinding?.root?.setOnClickListener {
@@ -56,6 +56,6 @@ abstract class AbstractAssetWalletFragment<T : ViewDataBinding> constructor(
     }
 
     override fun accountAssetClicked(accountAsset: AccountAsset) {
-        assetWalletViewModel.accountAssetValue = accountAsset
+        getGreenViewModel()?.accountAsset?.value = accountAsset
     }
 }

@@ -297,7 +297,7 @@ class DeviceManagerAndroid constructor(
             }
         }
     }
-    fun getAndroidDevice(deviceId: String?) = getDevice(deviceId = deviceId)?.toAndroidDevice()
+    fun getAndroidDevice(deviceId: String?) = getDeviceOrNull(deviceId = deviceId)?.toAndroidDevice()
 
     companion object : KLogging() {
         private const val ACTION_USB_PERMISSION = "com.blockstream.green.USB_PERMISSION"

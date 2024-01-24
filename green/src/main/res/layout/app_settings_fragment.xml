@@ -155,7 +155,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:checked="@={vm.testnetEnabled}"
-                app:icon="@drawable/ic_bitcoin_testnet"
+                app:icon="@drawable/bitcoin_testnet"
                 app:titleText="@string/id_enable_testnet" />
 
             <com.google.android.material.divider.MaterialDivider

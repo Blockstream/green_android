@@ -32,7 +32,7 @@
                 android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_multisig" />
+                app:srcCompat="@drawable/key_multisig" />
 
             <TextView
                 android:id="@+id/title"
@@ -55,7 +55,7 @@
             android:layout_marginBottom="-16dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_bitcoin"
+            app:srcCompat="@drawable/bitcoin"
             tools:visibility="visible" />
 
     </com.google.android.material.card.MaterialCardView>

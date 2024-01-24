@@ -82,10 +82,10 @@ class DenominationBottomSheetDialogFragment :
                 if(item is DenominationListItem){
                     // Deprecated: use postEvent instead
                     (viewModel as? DenominationListener)?.also {
-                        it.setDenomination(item.denominatedValue)
+                        it.setDenominatedValue(item.denominatedValue)
                     }
 
-                    viewModel.postEvent(Events.SetDenomination(item.denominatedValue))
+                    viewModel.postEvent(Events.SetDenominatedValue(item.denominatedValue))
                     dismiss()
                 }
 
@@ -110,5 +110,5 @@ class DenominationBottomSheetDialogFragment :
 }
 
 interface DenominationListener{
-    fun setDenomination(denominatedValue: DenominatedValue)
+    fun setDenominatedValue(denominatedValue: DenominatedValue)
 }

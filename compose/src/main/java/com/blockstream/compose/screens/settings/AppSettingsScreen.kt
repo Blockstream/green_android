@@ -1,6 +1,5 @@
 package com.blockstream.compose.screens.settings
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +41,8 @@ import com.blockstream.common.data.ScreenLockSetting
 import com.blockstream.common.models.settings.AppSettingsViewModel
 import com.blockstream.common.models.settings.AppSettingsViewModelAbstract
 import com.blockstream.common.models.settings.AppSettingsViewModelPreview
+import com.blockstream.compose.GreenPreview
+import com.blockstream.compose.LocalDialog
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
@@ -50,31 +51,26 @@ import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.sheets.AnalyticsBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
-import com.blockstream.compose.sideeffects.DialogHost
-import com.blockstream.compose.sideeffects.DialogState
 import com.blockstream.compose.sideeffects.OpenDialogData
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.AppBarData
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.TextInputPaste
 import com.blockstream.compose.utils.stringResourceId
 import com.blockstream.compose.views.GreenSwitch
 import kotlinx.coroutines.launch
 
-class AppSettingsScreen : Screen {
+object AppSettingsScreen : Screen {
     @Composable
     override fun Content() {
-        val viewModel = rememberScreenModel<AppSettingsViewModel>{
+        val viewModel = rememberScreenModel<AppSettingsViewModel> {
             AppSettingsViewModel()
         }
 
-        AppBar {
-            AppBarData(title = stringResource(R.string.id_app_settings)) {
-                viewModel.postEvent(AppSettingsViewModel.LocalEvents.OnBack)
-            }
-        }
+        val navData by viewModel.navData.collectAsStateWithLifecycle()
+
+        AppBar(navData)
 
         AppSettingsScreen(viewModel = viewModel)
     }
@@ -86,18 +82,12 @@ fun AppSettingsScreen(
     viewModel: AppSettingsViewModelAbstract
 ) {
     val context = LocalContext.current
-
-    val dialogState = remember { DialogState(context = context) }
-    DialogHost(state = dialogState)
-
-    BackHandler(true) {
-        viewModel.postEvent(AppSettingsViewModel.LocalEvents.OnBack)
-    }
+    val dialog = LocalDialog.current
 
     val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
     HandleSideEffect(viewModel) {
         if (it is AppSettingsViewModel.LocalSideEffects.AnalyticsMoreInfo) {
-            bottomSheetNavigator.show(AnalyticsBottomSheet())
+            bottomSheetNavigator.show(AnalyticsBottomSheet)
         } else if (it is AppSettingsViewModel.LocalSideEffects.UnsavedAppSettings) {
 
             val openDialogData = OpenDialogData(title = context.getString(R.string.id_app_settings),
@@ -112,7 +102,7 @@ fun AppSettingsScreen(
                 })
 
             launch {
-                dialogState.openDialog(openDialogData)
+                dialog.openDialog(openDialogData)
             }
         }
     }
@@ -250,7 +240,7 @@ fun AppSettingsScreen(
 
             HorizontalDivider(modifier = Modifier.padding(start = 54.dp))
 
-            if(viewModel.experimentalFeatureEnabled) {
+            if (viewModel.experimentalFeatureEnabled) {
                 val experimentalFeaturesEnabled by viewModel.experimentalFeaturesEnabled.collectAsStateWithLifecycle()
                 Column {
                     GreenSwitch(
@@ -265,7 +255,7 @@ fun AppSettingsScreen(
                 HorizontalDivider(modifier = Modifier.padding(start = 54.dp))
             }
 
-            if(viewModel.analyticsFeatureEnabled){
+            if (viewModel.analyticsFeatureEnabled) {
                 val analyticsEnabled by viewModel.analyticsEnabled.collectAsStateWithLifecycle()
                 Column {
                     GreenSwitch(
@@ -392,7 +382,7 @@ fun AppSettingsScreen(
                 onCheckedChange = viewModel.spvEnabled.onValueChange()
             )
 
-            if(viewModel.multiServerValidationFeatureEnabled) {
+            if (viewModel.multiServerValidationFeatureEnabled) {
 
                 HorizontalDivider(modifier = Modifier.padding(start = 54.dp))
 
@@ -495,7 +485,7 @@ fun AppSettingsScreen(
                 modifier = Modifier.weight(1f),
                 type = GreenButtonType.TEXT
             ) {
-                 viewModel.postEvent(AppSettingsViewModel.LocalEvents.Cancel)
+                viewModel.postEvent(AppSettingsViewModel.LocalEvents.Cancel)
             }
 
             GreenButton(
@@ -511,9 +501,7 @@ fun AppSettingsScreen(
 @Composable
 @Preview
 fun AppSettingsScreenPreview() {
-    GreenTheme {
-        Box {
-            AppSettingsScreen(viewModel = AppSettingsViewModelPreview.preview(true))
-        }
+    GreenPreview {
+        AppSettingsScreen(viewModel = AppSettingsViewModelPreview.preview(true))
     }
 }

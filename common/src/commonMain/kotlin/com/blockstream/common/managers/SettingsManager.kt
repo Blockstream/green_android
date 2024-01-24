@@ -3,6 +3,7 @@ package com.blockstream.common.managers
 import com.benasher44.uuid.uuid4
 import com.blockstream.common.data.ApplicationSettings
 import com.blockstream.common.utils.server
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.get
 import com.russhwolf.settings.set
@@ -26,6 +27,7 @@ class SettingsManager constructor(
     val appSettings
         get() = _appSettings.value
 
+    @NativeCoroutinesIgnore
     val appSettingsStateFlow
         get() = _appSettings.asStateFlow()
 

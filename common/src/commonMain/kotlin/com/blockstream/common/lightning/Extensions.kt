@@ -12,6 +12,7 @@ import breez_sdk.Payment
 import breez_sdk.PaymentDetails
 import breez_sdk.PaymentStatus
 import breez_sdk.PaymentType
+import breez_sdk.ReceivePaymentResponse
 import breez_sdk.ReverseSwapInfo
 import breez_sdk.SuccessActionProcessed
 import breez_sdk.SwapInfo
@@ -35,6 +36,8 @@ fun Long.milliSatoshi(): ULong = (this * 1000).toULong()
 fun ULong.satoshi() = toLong() / 1000
 
 fun OpenChannelFeeResponse.feeSatoshi() = feeMsat.satoshi()
+
+fun ReceivePaymentResponse.receiveAmountSatoshi() = lnInvoice.receiveAmountSatoshi(openingFeeParams)
 
 fun LnInvoice.amountSatoshi() = this.amountMsat?.satoshi()
 fun LnInvoice.receiveAmountSatoshi(openingFeeParams: OpeningFeeParams?) =

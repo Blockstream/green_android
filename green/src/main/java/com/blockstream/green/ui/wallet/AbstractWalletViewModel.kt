@@ -9,6 +9,7 @@ import com.blockstream.common.data.WalletExtras
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.Settings
 import com.blockstream.common.utils.ConsumableEvent
@@ -30,8 +31,9 @@ import kotlin.time.toDuration
 
 
 abstract class AbstractWalletViewModel constructor(
-    wallet: GreenWallet
-) : AppViewModelAndroid(greenWalletOrNull = wallet) {
+    wallet: GreenWallet,
+    accountAssetOrNull: AccountAsset? = null
+) : AppViewModelAndroid(greenWalletOrNull = wallet, accountAssetOrNull = accountAssetOrNull) {
 
     public sealed class WalletEvent: AppEvent {
         object RenameAccount : WalletEvent()
@@ -171,6 +173,7 @@ abstract class AbstractWalletViewModel constructor(
         })
     }
 
+    @Deprecated("Send  the event")
     fun logout(reason: LogoutReason) {
         postEvent(Events.Logout(reason = reason))
     }

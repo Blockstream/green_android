@@ -9,7 +9,7 @@
 
         <variable
             name="vm"
-            type="com.blockstream.green.ui.receive.ReceiveViewModel" />
+            type="com.blockstream.common.models.receive.ReceiveViewModel" />
 
     </data>
 
@@ -52,12 +52,11 @@
                             android:layout_marginBottom="16dp" />
 
                         <com.google.android.material.card.MaterialCardView
-                            isVisible="@{vm.showAssetWhitelistWarning}"
+                            isVisible="@{vm.showLedgerAssetWarning}"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
                             android:layout_marginTop="8dp"
-                            android:visibility="gone"
                             app:cardBackgroundColor="@color/surface_light">
 
                             <TextView
@@ -76,7 +75,6 @@
 
                         <TextView
                             style="@style/TextAppearance.Green.Overline"
-                            isGone="@{vm.accountAssetLocked}"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="4dp"
@@ -85,7 +83,6 @@
 
                         <com.google.android.material.card.MaterialCardView
                             android:id="@+id/accountAssetMaterialCardView"
-                            isGone="@{vm.accountAssetLocked}"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp">
@@ -98,7 +95,7 @@
 
                         <LinearLayout
                             android:id="@+id/amountLinearLayout"
-                            isVisible="@{vm.accountLiveData.lightning &amp;&amp; !vm.showOnchainAddress}"
+                            isVisible="@{vm.accountAsset.account.lightning &amp;&amp; !vm.showLightningOnChainAddress}"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
@@ -114,7 +111,7 @@
                                 android:text="@string/id_amount" />
 
                             <com.google.android.material.card.MaterialCardView
-                                error="@{vm.amountIsValid == -1}"
+                                error="@{vm.amountError != null}"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content">
 
@@ -133,7 +130,7 @@
                                         android:layout_marginBottom="16dp"
                                         android:layout_weight="1"
                                         android:background="@android:color/transparent"
-                                        android:enabled="@{!vm.onProgress &amp;&amp; StringExtensionsKt.isBlank(vm.addressUri)}"
+                                        android:enabled="@{!vm.onProgress &amp;&amp; StringExtensionsKt.isBlank(vm.receiveAddress)}"
                                         android:fontFamily="@font/monospace"
                                         android:inputType="numberDecimal"
                                         android:singleLine="true"
@@ -156,13 +153,13 @@
 
                                     <ImageButton
                                         android:id="@+id/buttonAmountCurrency"
-                                        isVisible="@{StringExtensionsKt.isBlank(vm.addressUri)}"
+                                        isVisible="@{StringExtensionsKt.isBlank(vm.receiveAddress)}"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center_vertical"
                                         android:adjustViewBounds="true"
                                         android:background="?attr/selectableItemBackgroundBorderless"
-                                        android:enabled="@{!vm.onProgress &amp;&amp; StringExtensionsKt.isBlank(vm.addressUri)}"
+                                        android:enabled="@{!vm.onProgress &amp;&amp; StringExtensionsKt.isBlank(vm.receiveAddress)}"
                                         android:paddingStart="12dp"
                                         android:paddingTop="12dp"
                                         android:paddingEnd="6dp"
@@ -175,13 +172,13 @@
 
                                     <ImageButton
                                         android:id="@+id/buttonAmountClear"
-                                        isVisible="@{!vm.amount.empty &amp;&amp; StringExtensionsKt.isBlank(vm.addressUri)}"
+                                        isVisible="@{!vm.amount.empty &amp;&amp; StringExtensionsKt.isBlank(vm.receiveAddress)}"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center_vertical"
                                         android:adjustViewBounds="true"
                                         android:background="?attr/selectableItemBackgroundBorderless"
-                                        android:enabled="@{!vm.onProgress &amp;&amp; StringExtensionsKt.isBlank(vm.addressUri)}"
+                                        android:enabled="@{!vm.onProgress &amp;&amp; StringExtensionsKt.isBlank(vm.receiveAddress)}"
                                         android:paddingStart="6dp"
                                         android:paddingTop="12dp"
                                         android:paddingEnd="12dp"
@@ -194,13 +191,13 @@
 
                                     <ImageButton
                                         android:id="@+id/buttonAmountPaste"
-                                        isVisible="@{vm.amount.empty &amp;&amp; StringExtensionsKt.isBlank(vm.addressUri)}"
+                                        isVisible="@{vm.amount.empty &amp;&amp; StringExtensionsKt.isBlank(vm.receiveAddress)}"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center_vertical"
                                         android:adjustViewBounds="true"
                                         android:background="?attr/selectableItemBackgroundBorderless"
-                                        android:enabled="@{!vm.onProgress &amp;&amp; StringExtensionsKt.isBlank(vm.addressUri)}"
+                                        android:enabled="@{!vm.onProgress &amp;&amp; StringExtensionsKt.isBlank(vm.receiveAddress)}"
                                         android:paddingStart="6dp"
                                         android:paddingTop="12dp"
                                         android:paddingEnd="12dp"
@@ -214,7 +211,7 @@
 
                                     <ImageButton
                                         android:id="@+id/buttonEditAmount"
-                                        isVisible="@{StringExtensionsKt.isNotBlank(vm.addressUri)}"
+                                        isVisible="@{StringExtensionsKt.isNotBlank(vm.receiveAddress)}"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center_vertical"
@@ -265,7 +262,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                isVisible="@{vm.liquidityFeeError != null}"
+                                isVisible="@{vm.amountError != null}"
                                 app:cardBackgroundColor="@color/error_20">
 
                                 <LinearLayout
@@ -283,7 +280,7 @@
                                         android:layout_marginEnd="12dp"
                                         android:drawablePadding="6dp"
                                         android:textColor="@color/error"
-                                        android:text="@{vm.liquidityFeeError}"
+                                        idText="@{vm.amountError}"
                                         tools:text="@string/id_you_cannot_receive_more_than_s"
                                         app:drawableStartCompat="@drawable/ic_info_16"
                                         app:drawableTint="@color/error" />
@@ -296,7 +293,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                isVisible="@{vm.showLiquidityFee}"
+                                isVisible="@{vm.liquidityFee != null}"
                                 app:cardBackgroundColor="@color/green_20">
 
                                 <LinearLayout
@@ -312,7 +309,7 @@
                                         android:layout_marginTop="8dp"
                                         android:layout_marginEnd="12dp"
                                         android:textColor="@color/color_on_surface_emphasis_medium"
-                                        android:text="@{vm.isSetupChannel ? String.format(@string/id_a_set_up_funding_fee_of_s, vm.channelFee, vm.channelFeeFiat) : String.format(@string/id_a_funding_fee_of_s_s, vm.channelFee, vm.channelFeeFiat, vm.inboundLiquidity, vm.inboundLiquidityFiat)}"
+                                        idText="@{vm.liquidityFee}"
                                         tools:text="@string/id_a_funding_fee_of_s_minimum_s_is"/>
 
                                     <Button
@@ -330,7 +327,7 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            isVisible="@{!vm.accountLiveData.lightning || !StringExtensionsKt.isBlank(vm.addressUri)}"
+                            isVisible="@{!vm.accountAsset.account.lightning || !StringExtensionsKt.isBlank(vm.receiveAddress)}"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
@@ -341,7 +338,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
                                 android:layout_marginBottom="2dp"
-                                android:text="@{vm.accountLiveData.lightning ? vm.showOnchainAddress ? @string/id_onchain_address : @string/id_lightning_invoice : @string/id_account_address}"
+                                android:text="@{vm.accountAsset.account.lightning ? vm.showLightningOnChainAddress ? @string/id_onchain_address : @string/id_lightning_invoice : @string/id_account_address}"
                                 tools:text="@string/id_account_address" />
 
                             <com.google.android.material.card.MaterialCardView
@@ -356,7 +353,7 @@
 
                                     <ImageButton
                                         android:id="@+id/buttonNewAddress"
-                                        isVisible="@{!vm.accountLiveData.lightning}"
+                                        isVisible="@{!vm.accountAsset.account.lightning}"
                                         android:layout_width="48dp"
                                         android:layout_height="48dp"
                                         android:layout_marginTop="4dp"
@@ -370,7 +367,7 @@
 
                                     <com.google.android.material.progressindicator.CircularProgressIndicator
                                         android:id="@+id/loader"
-                                        isVisible="@{vm.onProgress &amp;&amp; vm.addressLiveData == null}"
+                                        isVisible="@{vm.onProgress &amp;&amp; vm.receiveAddress == null}"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center"
@@ -382,7 +379,7 @@
 
                                     <com.google.android.material.card.MaterialCardView
                                         android:id="@+id/addressQrWrap"
-                                        isInvisible="@{vm.addressLiveData == null}"
+                                        isInvisible="@{vm.receiveAddress == null}"
                                         android:layout_width="0dp"
                                         android:layout_height="0dp"
                                         android:layout_marginStart="48dp"
@@ -424,7 +421,7 @@
 
                                         <TextView
                                             android:id="@+id/address"
-                                            isInvisible="@{StringExtensionsKt.isBlank(vm.addressUri)}"
+                                            isInvisible="@{StringExtensionsKt.isBlank(vm.receiveAddress)}"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:layout_gravity="center"
@@ -434,7 +431,7 @@
                                             android:letterSpacing="0"
                                             android:ellipsize="middle"
                                             android:singleLine="true"
-                                            android:text="@{vm.addressUri}"
+                                            android:text="@{vm.receiveAddress}"
                                             android:textAlignment="center"
                                             android:textAppearance="?attr/textAppearanceBodyMedium"
                                             android:textColor="@color/color_on_surface_emphasis_high"
@@ -445,7 +442,7 @@
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:layout_marginBottom="8dp"
-                                            isVisible="@{vm.accountLiveData.lightning &amp;&amp; vm.showOnchainAddress}"
+                                            isVisible="@{vm.accountAsset.account.lightning &amp;&amp; vm.showLightningOnChainAddress}"
                                             app:cardBackgroundColor="@color/brand_green_20">
 
                                             <TextView
@@ -458,16 +455,16 @@
                                                 android:layout_marginBottom="8dp"
                                                 android:textAlignment="center"
                                                 android:textColor="@color/color_on_surface_emphasis_high"
-                                                alphaPulse="@{vm.accountLiveData.lightning &amp;&amp; vm.showOnchainAddress}"
-                                                android:text="@{String.format(@string/id_send_more_than_s_and_up_to_s_to_this, vm.onChainMin, vm.onChainMax, vm.channelFee)}"
+                                                alphaPulse="@{vm.accountAsset.account.lightning &amp;&amp; vm.showLightningOnChainAddress}"
+                                                idText="@{vm.onchainSwapMessage}"
                                                 tools:text="@string/id_send_more_than_s_and_up_to_s_to_this"/>
 
                                         </com.google.android.material.card.MaterialCardView>
 
                                         <com.google.android.material.button.MaterialButton
                                             android:id="@+id/buttonEdit"
-                                            style="@style/Widget.Green.Button.Outlined.Big"
-                                            isVisible="@{vm.isAddressUri}"
+                                            style="@style/Widget.Green.Button.Outlined"
+                                            isVisible="@{vm.requestAmount != null}"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:layout_marginBottom="4dp"
@@ -478,13 +475,13 @@
                                         <com.google.android.material.button.MaterialButton
                                             android:id="@+id/buttonVerify"
                                             style="@style/Widget.Green.Button.Light"
-                                            isVisible="@{vm.canValidateAddressInDevice}"
+                                            isVisible="@{vm.showVerifyOnDevice}"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:text="@string/id_verify_on_device" />
 
                                         <TextView
-                                            isVisible="@{vm.canValidateAddressInDevice}"
+                                            isVisible="@{vm.showVerifyOnDevice}"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:drawablePadding="8dp"
@@ -498,7 +495,7 @@
                             </com.google.android.material.card.MaterialCardView>
 
                             <LinearLayout
-                                isVisible="@{vm.accountLiveData.lightning &amp;&amp; vm.lightningInvoice != null &amp;&amp; !vm.showOnchainAddress}"
+                                isVisible="@{vm.accountAsset.account.lightning &amp;&amp; vm.invoiceAmountToReceive != null &amp;&amp; !vm.showLightningOnChainAddress}"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_marginBottom="16dp"
@@ -520,7 +517,7 @@
                                         android:layout_width="0dp"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
-                                        android:text="@{vm.invoiceAmount}"
+                                        android:text="@{vm.invoiceAmountToReceive}"
                                         android:textAppearance="?attr/textAppearanceTitleMedium"
                                         tools:text="0,000176166" />
 
@@ -528,7 +525,7 @@
                                         android:layout_width="0dp"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
-                                        android:text="@{vm.invoiceFiatAmount}"
+                                        android:text="@{vm.invoiceAmountToReceiveFiat}"
                                         android:textAlignment="textEnd"
                                         android:textAppearance="?attr/textAppearanceLabelMedium"
                                         android:textColor="@color/color_on_surface_emphasis_medium"
@@ -538,7 +535,7 @@
 
                                 <TextView
                                     style="@style/TextAppearance.Green.Overline"
-                                    isVisible="@{StringExtensionsKt.isNotBlank(vm.lightningInvoice.description)}"
+                                    isVisible="@{StringExtensionsKt.isNotBlank(vm.invoiceDescription)}"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="8dp"
@@ -546,10 +543,10 @@
 
                                 <TextView
                                     style="@style/TextAppearance.Green.BodyMedium"
-                                    isVisible="@{StringExtensionsKt.isNotBlank(vm.lightningInvoice.description)}"
+                                    isVisible="@{StringExtensionsKt.isNotBlank(vm.invoiceDescription)}"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="@{vm.lightningInvoice.description}" />
+                                    android:text="@{vm.invoiceDescription}" />
 
                                 <TextView
                                     style="@style/TextAppearance.Green.Overline"
@@ -562,8 +559,7 @@
                                     android:id="@+id/invoiceExpiration"
                                     style="@style/TextAppearance.Green.BodyMedium"
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="@{vm.invoiceExpiration}" />
+                                    android:layout_height="wrap_content" />
 
                             </LinearLayout>
 
@@ -600,13 +596,13 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonShare"
                     style="@style/Widget.Green.Button.Big"
-                    isVisible="@{StringExtensionsKt.isNotBlank(vm.addressUri)}"
+                    isVisible="@{StringExtensionsKt.isNotBlank(vm.receiveAddress)}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginEnd="24dp"
                     android:elevation="24dp"
-                    android:enabled="@{!vm.onProgress &amp;&amp; StringExtensionsKt.isNotBlank(vm.addressUri)}"
+                    android:enabled="@{!vm.onProgress &amp;&amp; StringExtensionsKt.isNotBlank(vm.receiveAddress)}"
                     android:text="@string/id_share"
                     app:icon="@drawable/ic_baseline_share_18"
                     app:iconGravity="textStart"
@@ -617,7 +613,7 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonMore"
                     style="@style/Widget.Green.Button.Outlined.Big"
-                    isVisible="@{StringExtensionsKt.isNotBlank(vm.addressUri) &amp;&amp; !vm.accountLiveData.lightning}"
+                    isVisible="@{StringExtensionsKt.isNotBlank(vm.receiveAddress) &amp;&amp; !vm.accountAsset.account.lightning}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
@@ -634,13 +630,13 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonConfirm"
                     style="@style/Widget.Green.Button.Big"
-                    isVisible="@{vm.accountLiveData.lightning &amp;&amp; !StringExtensionsKt.isNotBlank(vm.addressUri)}"
+                    isVisible="@{vm.accountAsset.account.lightning &amp;&amp; !StringExtensionsKt.isNotBlank(vm.receiveAddress)}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginEnd="24dp"
                     android:elevation="24dp"
-                    android:enabled="@{!vm.onProgress &amp;&amp; StringExtensionsKt.isNotBlank(vm.amount) &amp;&amp; vm.amountIsValid == 1}"
+                    android:enabled="@{vm.buttonEnabled}"
                     android:text="@string/id_confirm"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/addressQrWrap"
@@ -649,13 +645,13 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonOnChainToggle"
                     style="@style/Widget.Green.Button.Text.Tiny"
-                    isVisible="@{vm.accountLiveData.lightning}"
+                    isVisible="@{vm.accountAsset.account.lightning}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginEnd="24dp"
                     android:enabled="@{!vm.onProgress}"
-                    android:text="@{vm.showOnchainAddress ? @string/id_show_lightning_invoice : @string/id_show_onchain_address}"
+                    android:text="@{vm.showLightningOnChainAddress ? @string/id_show_lightning_invoice : @string/id_show_onchain_address}"
                     tools:text="@string/id_show_onchain_address"
                     android:textColor="@color/color_on_surface_emphasis_high"
                     app:elevation="24dp"

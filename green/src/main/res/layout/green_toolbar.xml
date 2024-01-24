@@ -41,7 +41,7 @@
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/icon"
-            tools:src="@drawable/ic_singlesig"
+            tools:src="@drawable/key_singlesig"
             tools:visibility="visible" />
 
         <TextView

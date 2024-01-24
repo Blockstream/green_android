@@ -3,6 +3,7 @@ package com.blockstream.green
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.data.AppInfo
+import com.blockstream.common.database.Database
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
@@ -72,6 +73,11 @@ open class TestViewModel<VM : GreenViewModel>: KoinTest {
                     declareMock<SessionManager> {
                         every { getOnBoardingSession() } returns mockk()
                         every { getWalletSessionOrOnboarding(any()) } returns mockk()
+                        every { connectionChangeEvent } returns mockk()
+                    }
+
+                    declareMock<Database> {
+
                     }
                 }
             )

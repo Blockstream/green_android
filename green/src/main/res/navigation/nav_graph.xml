@@ -135,9 +135,6 @@
         android:label=""
         tools:layout="@layout/add_wallet_fragment">
         <action
-            android:id="@+id/action_addWalletFragment_to_watchOnlyCredentialsFragment"
-            app:destination="@id/watchOnlyPolicyFragment" />
-        <action
             android:id="@+id/action_addWalletFragment_to_recoveryIntroFragment"
             app:destination="@id/recoveryIntroFragment" />
         <action
@@ -146,7 +143,7 @@
     </fragment>
     <fragment
         android:id="@+id/chooseNetworkFragment"
-        android:name="com.blockstream.green.ui.onboarding.ChooseNetworkFragment"
+        android:name="com.blockstream.green.ui.onboarding.WatchOnlyNetworkFragment"
         android:label=""
         tools:layout="@layout/choose_network_fragment">
         <argument
@@ -371,18 +368,6 @@
         <action
             android:id="@+id/action_chooseAccountTypeFragment_to_account2of3Fragment"
             app:destination="@id/account2of3Fragment" />
-        <action
-            android:id="@+id/action_chooseAccountTypeFragment_to_exportLightningKeyFragment"
-            app:destination="@id/exportLightningKeyFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/exportLightningKeyFragment"
-        android:name="com.blockstream.green.ui.add.ExportLightningKeyFragment"
-        tools:layout="@layout/compose_view"
-        android:label="@string/id_export_lightning_key_to_green" >
-        <argument
-            android:name="wallet"
-            app:argType="com.blockstream.common.data.GreenWallet" />
     </fragment>
     <fragment
         android:id="@+id/account2of3Fragment"
@@ -670,10 +655,10 @@
         android:label=""
         tools:layout="@layout/setup_new_wallet_fragment"/>
     <fragment
-        android:id="@+id/introSetupNewWalletFragment"
-        android:name="com.blockstream.green.ui.home.HomeSetupNewWalletFragment"
+        android:id="@+id/onboardingTermsFragment"
+        android:name="com.blockstream.green.ui.onboarding.OnboardingTermsFragment"
         android:label=""
-        tools:layout="@layout/setup_new_wallet_fragment"/>
+        tools:layout="@layout/onboarding_terms_fragment"/>
     <action android:id="@+id/action_global_setupNewWalletFragment" app:destination="@id/setupNewWalletFragment" />
     <fragment
         android:id="@+id/useHardwareDeviceFragment"
@@ -685,7 +670,7 @@
         android:name="com.blockstream.green.ui.devices.JadeGuideFragment"
         android:label="@string/id_setup_guide"
         tools:layout="@layout/jade_guide_fragment"/>
-    <action android:id="@+id/action_global_introSetupNewWalletFragment" app:destination="@id/introSetupNewWalletFragment" />
+    <action android:id="@+id/action_global_onboardingTermsFragment" app:destination="@id/onboardingTermsFragment" />
     <action android:id="@+id/action_global_addWalletFragment" app:destination="@id/addWalletFragment" />
     <action android:id="@+id/action_global_useHardwareDeviceFragment" app:destination="@id/useHardwareDeviceFragment" />
     <fragment
@@ -748,5 +733,22 @@
         android:name="com.blockstream.green.ui.DemoFragment"
         android:label="Demo"
         tools:layout="@layout/demo_fragment"/>
+    <fragment
+        android:id="@+id/jadeQrFragment"
+        android:name="com.blockstream.green.ui.jade.JadeQRFragment"
+        tools:layout="@layout/compose_view">
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.common.data.GreenWallet"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="isLightningMnemonicExport"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
+
+    <action android:id="@+id/action_global_watchOnlyPolicyFragment" app:destination="@id/watchOnlyPolicyFragment" />
+    <action android:id="@+id/action_global_jadeQrFragment" app:destination="@id/jadeQrFragment" />
 
 </navigation>

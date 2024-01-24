@@ -19,7 +19,7 @@ fun OpenKeyboard(focusRequester: FocusRequester) {
     LaunchedEffect(focusRequester) {
         if (showKeyboard) {
             focusRequester.requestFocus()
-            delay(100) // Make sure you have delay here
+            delay(200) // Make sure you have delay here
             keyboard?.show()
         }
     }

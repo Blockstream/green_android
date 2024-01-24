@@ -46,11 +46,9 @@ import com.blockstream.green.views.GreenAlertView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -96,7 +94,7 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
 
     override fun getBannerAlertView(): GreenAlertView = binding.banner
 
-    override fun getAccountWalletViewModel() = viewModel
+    override fun getWalletViewModel() = viewModel
 
     override val title: String
         get() = getString(
@@ -116,7 +114,7 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
             navigate(SendFragmentDirections.actionSendFragmentToSendConfirmFragment(
                 wallet = wallet,
                 account = account,
-                denomination = viewModel.getRecipientLiveData(0)?.denomination?.value,
+                denomination = viewModel.getRecipientStateFlow(0)?.denomination?.value,
                 transactionSegmentation = viewModel.createTransactionSegmentation()
             ))
             // Re-enable continue button
@@ -153,7 +151,7 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
             }
         }
 
-        viewModel.getRecipientsLiveData().observe(viewLifecycleOwner) {
+        viewModel.getRecipientsStateFlow().onEach {
             for (liveData in it.withIndex()) {
                 updateRecipient(liveData.index, liveData.value)
             }
@@ -163,7 +161,7 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
                 binding.recipientContainer.removeViewAt(bindings.size - 1)
                 bindings.removeLastOrNull()
             }
-        }
+        }.launchIn(lifecycleScope)
 
         viewModel.transactionError.distinctUntilChanged().observe(viewLifecycleOwner){
             if(it?.startsWith("id_amount_must_be_at_least_s") == true){
@@ -258,7 +256,7 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
         }
 
         recipientBinding.accountAsset.root.setOnClickListener {
-            val liveData = viewModel.getRecipientLiveData(recipientBinding.index ?: 0)
+            val liveData = viewModel.getRecipientStateFlow(recipientBinding.index ?: 0)
 
             // Skip if we have a bip21 asset / bump / sweep
             if(liveData?.assetBip21?.value == true || isBump || isSweep){
@@ -278,9 +276,9 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
             lifecycleScope.launch {
 
                 val amountToConvert = viewModel.getAmountToConvert()
-                val assetId = viewModel.getRecipientLiveData(0)?.accountAsset?.value?.assetId
+                val assetId = viewModel.getRecipientStateFlow(0)?.accountAsset?.value?.assetId
                 if(assetId.isPolicyAsset(session)) {
-                    val denomination = viewModel.getRecipientLiveData(0)?.denomination?.value
+                    val denomination = viewModel.getRecipientStateFlow(0)?.denomination?.value
 
                     UserInput.parseUserInputSafe(
                         session = session,
@@ -301,13 +299,13 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
         }
 
         recipientBinding.buttonAmountPaste.setOnClickListener {
-            viewModel.getRecipientLiveData(recipientBinding.index ?: 0)?.let {
+            viewModel.getRecipientStateFlow(recipientBinding.index ?: 0)?.let {
                 it.amount.value = getClipboard(requireContext())
             }
         }
 
         recipientBinding.buttonAmountClear.setOnClickListener {
-            viewModel.getRecipientLiveData(recipientBinding.index ?: 0)?.let {
+            viewModel.getRecipientStateFlow(recipientBinding.index ?: 0)?.let {
                 it.amount.value = ""
                 it.isSendAll.value = false
             }
@@ -343,10 +341,10 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
         recipientBinding.liveData = liveData
         recipientBinding.index = index
 
-        viewModel.getRecipientLiveData(index)?.let { addressParamsLiveData ->
+        viewModel.getRecipientStateFlow(index)?.let { addressParamsLiveData ->
             combine(
                 addressParamsLiveData.denomination.asFlow(),
-                addressParamsLiveData.accountAsset.asFlow(),
+                addressParamsLiveData.accountAsset,
             ) { _,  ->
                 addressParamsLiveData
             }.onEach {

@@ -97,6 +97,22 @@ fun GreenTheme(
     }
 }
 
+@Composable
+fun GreenThemePreview(
+    content: @Composable () -> Unit
+) {
+    MaterialTheme(
+        colorScheme = GreenColors,
+        shapes = GreenShapes,
+        typography = Typography
+    ){
+        Surface(
+            color = MaterialTheme.colorScheme.background,
+            content = content
+        )
+    }
+}
+
 
 @Preview(showSystemUi = true, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable

@@ -28,9 +28,9 @@ class RequestAmountLabelViewModel constructor(
     @InjectedParam wallet: GreenWallet,
     @InjectedParam val accountAssetValue: AccountAsset,
     @InjectedParam val initialRequestAmount: String?,
-) : AbstractAccountWalletViewModel(wallet, accountAssetValue.account) {
+) : AbstractAccountWalletViewModel(wallet, accountAssetValue) {
 
-    val isPolicyAsset = accountAssetValue.assetId.isPolicyAsset(accountValue.network)
+    val isPolicyAsset = accountAssetValue.assetId.isPolicyAsset(account.network)
 
     var requestAmount: MutableLiveData<String> =
         MutableLiveData(initialRequestAmount?.let { amount ->

@@ -42,16 +42,12 @@ import com.blockstream.compose.components.MenuEntry
 import com.blockstream.compose.components.PopupMenu
 import com.blockstream.compose.components.PopupState
 import com.blockstream.compose.extensions.resource
-import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
-import com.blockstream.compose.sheets.WalletDeleteBottomSheet
-import com.blockstream.compose.sheets.WalletRenameBottomSheet
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.ifTrue
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun WalletListRow(
     title: String,
@@ -111,16 +107,22 @@ private fun WalletListRow(
         )
     }
 }
-open class WalletListItemCallbacks(
-    val onWalletClick: (wallet: GreenWallet, isLightning: Boolean) -> Unit = { _, _ -> },
-    val onLightningShortcutDelete: ((wallet: GreenWallet) -> Unit)? = null,
+open class WalletListItemCallbacks constructor(
+    val onWalletClick: (wallet: GreenWallet, isLightning: Boolean) -> Unit,
+    val onLightningShortcutDelete: ((wallet: GreenWallet) -> Unit),
+    val onWalletDelete: ((wallet: GreenWallet) -> Unit),
+    val onWalletRename: ((wallet: GreenWallet) -> Unit),
     val hasContextMenu: Boolean = false,
-)
+){
+    companion object{
+        val Empty = WalletListItemCallbacks({_, _ ->}, {}, {} , {} , false)
+    }
+}
 
 @Composable
 fun WalletListItem(
     look: WalletListLook,
-    callbacks: WalletListItemCallbacks = WalletListItemCallbacks()
+    callbacks: WalletListItemCallbacks = WalletListItemCallbacks.Empty
 ) {
     val popupState = remember { PopupState(
         offset = mutableStateOf(DpOffset(0.dp, 0.dp))
@@ -175,7 +177,6 @@ fun WalletListItem(
         }
 
         if (callbacks.hasContextMenu) {
-            val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
             PopupMenu(
                 popupState,
                 if (isLightningPopup) {
@@ -184,7 +185,7 @@ fun WalletListItem(
                             title = stringResource(id = R.string.id_remove_lightning_shortcut),
                             iconRes = R.drawable.lightning_slash,
                             onClick = {
-                                callbacks.onLightningShortcutDelete?.invoke(look.greenWallet)
+                                callbacks.onLightningShortcutDelete.invoke(look.greenWallet)
                             })
                     )
                 } else {
@@ -193,14 +194,14 @@ fun WalletListItem(
                             title = stringResource(id = R.string.id_rename_wallet),
                             iconRes = R.drawable.text_aa,
                             onClick = {
-                                bottomSheetNavigator.show(WalletRenameBottomSheet(look.greenWallet))
+                                callbacks.onWalletRename.invoke(look.greenWallet)
                             }
                         ),
                         MenuEntry(
                             title = stringResource(id = R.string.id_remove_wallet),
                             iconRes = R.drawable.trash,
                             onClick = {
-                                bottomSheetNavigator.show(WalletDeleteBottomSheet(look.greenWallet))
+                                callbacks.onWalletDelete.invoke(look.greenWallet)
                             }
                         )
                     )

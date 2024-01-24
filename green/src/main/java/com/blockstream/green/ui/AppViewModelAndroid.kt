@@ -2,6 +2,7 @@ package com.blockstream.green.ui
 
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.device.HardwareWalletInteraction
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.utils.ConsumableEvent
@@ -17,7 +18,7 @@ import org.koin.android.annotation.KoinViewModel
 import org.koin.core.component.KoinComponent
 
 @KoinViewModel
-open class AppViewModelAndroid constructor(greenWalletOrNull: GreenWallet? = null) : GreenViewModel(greenWalletOrNull = greenWalletOrNull), HardwareWalletInteraction, KoinComponent {
+open class AppViewModelAndroid constructor(greenWalletOrNull: GreenWallet? = null, accountAssetOrNull: AccountAsset? = null) : GreenViewModel(greenWalletOrNull = greenWalletOrNull, accountAssetOrNull = accountAssetOrNull), HardwareWalletInteraction, KoinComponent {
     val onEvent = MutableLiveData<ConsumableEvent<AppEvent>>()
     val onError = MutableLiveData<ConsumableEvent<Throwable>>()
 

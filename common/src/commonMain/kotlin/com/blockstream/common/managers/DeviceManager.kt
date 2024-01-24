@@ -2,6 +2,7 @@ package com.blockstream.common.managers
 
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.gdk.device.DeviceInterface
+import com.blockstream.common.utils.Loggable
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,7 +19,11 @@ open class DeviceManager(scope: ApplicationScope) {
         ble + usb
     }.stateIn(scope, SharingStarted.WhileSubscribed(), listOf())
 
-    fun getDevice(deviceId: String?): DeviceInterface? {
+    fun getDeviceOrNull(deviceId: String?): DeviceInterface? = deviceId?.let { getDevice(it) }
+
+    fun getDevice(deviceId: String): DeviceInterface? {
         return devices.value.find { it.connectionIdentifier == deviceId }
     }
+
+    companion object: Loggable()
 }

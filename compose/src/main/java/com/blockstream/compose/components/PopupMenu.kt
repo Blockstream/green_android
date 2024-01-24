@@ -15,16 +15,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
+import com.blockstream.common.data.NavAction
 import com.blockstream.compose.R
 import com.blockstream.compose.extensions.toggle
 import com.blockstream.compose.theme.GreenTheme
+import com.blockstream.compose.utils.drawableResourceIdOrNull
+import com.blockstream.compose.utils.stringResourceId
 
 data class MenuEntry(
     val title: String,
     val iconRes: Int? = null,
-    val showAsAction: Boolean = false,
     val onClick: () -> Unit = {}
-)
+){
+    companion object{
+
+        @Composable
+        fun from(navAction: NavAction): MenuEntry {
+            return MenuEntry(
+                title = navAction.title,
+                iconRes = drawableResourceIdOrNull(id = navAction.icon),
+                onClick = navAction.onClick
+            )
+        }
+    }
+}
 
 data class PopupState(
     val isContextMenuVisible: MutableState<Boolean> = mutableStateOf(false),
@@ -43,7 +57,7 @@ fun PopupMenu(state: PopupState, entries: List<MenuEntry>) {
     ) {
         entries.forEach {
             DropdownMenuItem(
-                text = { Text(it.title) },
+                text = { Text(stringResourceId(it.title)) },
                 onClick = {
                     it.onClick.invoke()
                     state.isContextMenuVisible.value = false
@@ -69,7 +83,9 @@ fun PopupMenuPreview() {
 
     GreenTheme {
         Box {
-            GreenColumn(modifier = Modifier.fillMaxWidth().fillMaxHeight()) {
+            GreenColumn(modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()) {
                 GreenButton(text = "isContextMenuVisible: ${popupState.isContextMenuVisible.value}") {
                     popupState.isContextMenuVisible.toggle()
                 }

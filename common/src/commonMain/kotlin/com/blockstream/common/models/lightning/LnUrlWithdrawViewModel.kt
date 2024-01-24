@@ -55,9 +55,6 @@ abstract class LnUrlWithdrawViewModelAbstract(greenWallet: GreenWallet) :
     abstract val description : MutableStateFlow<String>
 
     @NativeCoroutinesState
-    abstract val denomination : StateFlow<Denomination>
-
-    @NativeCoroutinesState
     abstract val error: StateFlow<String?>
 
     abstract val redeemMessage: String
@@ -76,9 +73,6 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
     override val exchange: MutableStateFlow<String> = MutableStateFlow("")
 
     override val description: MutableStateFlow<String> = MutableStateFlow(requestData.defaultDescription)
-
-    private val _denomination: MutableStateFlow<Denomination> = MutableStateFlow(Denomination.default(session))
-    override val denomination: StateFlow<Denomination> = _denomination.asStateFlow()
 
     private val _error: MutableStateFlow<String?> = MutableStateFlow(null)
     override val error: StateFlow<String?> = _error.asStateFlow()
@@ -219,7 +213,7 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
         }
     }
 
-    override fun setDenomination(denominatedValue: DenominatedValue) {
+    override fun setDenominatedValue(denominatedValue: DenominatedValue) {
         amount.value = denominatedValue.asInput(session) ?: ""
         _denomination.value = denominatedValue.denomination
     }
@@ -247,7 +241,6 @@ class LnUrlWithdrawViewModelPreview(greenWallet: GreenWallet) :
     override val amountIsEditable: Boolean = false
     override val exchange: MutableStateFlow<String> = MutableStateFlow("")
     override val description: MutableStateFlow<String> = MutableStateFlow("")
-    override val denomination: StateFlow<Denomination> = MutableStateFlow(Denomination.BTC)
     override val error: MutableStateFlow<String> = MutableStateFlow("")
     override val redeemMessage: String = ""
 

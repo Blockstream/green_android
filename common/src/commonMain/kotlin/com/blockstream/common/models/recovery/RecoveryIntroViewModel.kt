@@ -2,6 +2,8 @@ package com.blockstream.common.models.recovery
 
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
+import com.arkivanov.essenty.statekeeper.consume
+import com.blockstream.common.data.NavData
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
@@ -62,6 +64,8 @@ class RecoveryIntroViewModel constructor(setupArgs: SetupArgs, stateKeeper: Stat
                     if (it == 12) gdk.generateMnemonic12() else gdk.generateMnemonic24()
             }.launchIn(viewModelScope.coroutineScope)
         }
+
+        _navData.value = NavData(title = "id_before_you_backup")
 
         bootstrap()
     }

@@ -10,15 +10,21 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.views.wallet.WalletListLook
 import com.rickclephas.kmm.viewmodel.MutableStateFlow
+import com.rickclephas.kmm.viewmodel.coroutineScope
 import com.rickclephas.kmm.viewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 abstract class WalletsViewModelAbstract(val isHome: Boolean): GreenViewModel() {
     override fun screenName(): String? = "Home".takeIf { isHome }
+
+    @NativeCoroutinesState
+    abstract val isEmptyWallet: StateFlow<Boolean?>
 
     @NativeCoroutinesState
     abstract val softwareWallets: StateFlow<List<WalletListLook>?>
@@ -28,9 +34,20 @@ abstract class WalletsViewModelAbstract(val isHome: Boolean): GreenViewModel() {
 
     @NativeCoroutinesState
     abstract val hardwareWallets: StateFlow<List<WalletListLook>?>
+
+    @NativeCoroutinesState
+    abstract val termsOfServiceIsChecked: MutableStateFlow<Boolean>
 }
 
 abstract class WalletsViewModel(isHome: Boolean) : WalletsViewModelAbstract(isHome) {
+
+    override val isEmptyWallet: StateFlow<Boolean?> = database.walletsExistsFlow().map {
+        !it
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
+
+    @NativeCoroutinesState
+    override val termsOfServiceIsChecked =
+        MutableStateFlow(viewModelScope, settingsManager.isDeviceTermsAccepted())
 
     override val softwareWallets = combine(
         database.getWalletsFlow(
@@ -77,6 +94,12 @@ abstract class WalletsViewModel(isHome: Boolean) : WalletsViewModelAbstract(isHo
     }
 
     init {
+        // If you have already agreed, check by default
+        viewModelScope.coroutineScope.launch {
+            termsOfServiceIsChecked.value =
+                settingsManager.isDeviceTermsAccepted() || database.walletsExists()
+        }
+
         bootstrap()
     }
 
@@ -126,6 +149,7 @@ class WalletsViewModelPreview(
     ephemeralWallets: List<WalletListLook>,
     hardwareWallets: List<WalletListLook>,
 ) : WalletsViewModelAbstract(isHome = true) {
+    override val isEmptyWallet: StateFlow<Boolean?> = MutableStateFlow(viewModelScope, softwareWallets.isEmpty() && ephemeralWallets.isEmpty() && hardwareWallets.isEmpty())
 
     override val softwareWallets: StateFlow<List<WalletListLook>?> =
         MutableStateFlow(viewModelScope, softwareWallets)
@@ -133,6 +157,7 @@ class WalletsViewModelPreview(
         MutableStateFlow(viewModelScope, ephemeralWallets)
     override val hardwareWallets: StateFlow<List<WalletListLook>> =
         MutableStateFlow(viewModelScope, hardwareWallets)
+    override val termsOfServiceIsChecked: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, false)
 
     companion object {
         fun previewEmpty() = WalletsViewModelPreview(

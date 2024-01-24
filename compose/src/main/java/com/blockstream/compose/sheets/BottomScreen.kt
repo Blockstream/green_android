@@ -4,14 +4,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import cafe.adriel.voyager.core.lifecycle.JavaSerializable
 import cafe.adriel.voyager.core.screen.Screen
-import com.arkivanov.essenty.parcelable.Parcelable
 
 @OptIn(ExperimentalMaterial3Api::class)
-abstract class BottomScreen : Screen, Parcelable {
+abstract class BottomScreen : Screen, JavaSerializable {
 
     var sheetState: SheetState? = null
-    private set
+        private set
 
     @Composable
     fun sheetState(skipPartiallyExpanded: Boolean = false): SheetState {

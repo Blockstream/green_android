@@ -15,10 +15,13 @@ import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ChooseAccountTypeFragmentBinding
 import com.blockstream.green.extensions.bind
+import com.blockstream.green.extensions.clearNavigationResult
 import com.blockstream.green.extensions.dialog
+import com.blockstream.green.extensions.getNavigationResult
 import com.blockstream.green.ui.bottomsheets.EnrichedAssetsBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.EnrichedAssetsListener
 import com.blockstream.green.ui.items.AccountTypeListItem
+import com.blockstream.green.ui.jade.JadeQRFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
@@ -48,8 +51,9 @@ class ChooseAccountTypeFragment : AbstractAddAccountFragment<ChooseAccountTypeFr
             is SideEffects.NavigateTo -> {
                 (sideEffect.destination as? NavigateDestinations.ExportLightningKey)?.also {
                     navigate(
-                        ChooseAccountTypeFragmentDirections.actionChooseAccountTypeFragmentToExportLightningKeyFragment(
+                        ChooseAccountTypeFragmentDirections.actionGlobalJadeQrFragment(
                             wallet = args.wallet,
+                            isLightningMnemonicExport = true
                         )
                     )
                 }
@@ -100,6 +104,17 @@ class ChooseAccountTypeFragment : AbstractAddAccountFragment<ChooseAccountTypeFr
         super.onViewCreated(view, savedInstanceState)
 
         binding.vm = viewModel
+
+        getNavigationResult<String>(JadeQRFragment.MNEMONIC_RESULT)?.observe(viewLifecycleOwner) { mnemonic ->
+            if (mnemonic != null) {
+                clearNavigationResult(JadeQRFragment.MNEMONIC_RESULT)
+                viewModel.postEvent(
+                    ChooseAccountTypeViewModel.LocalEvents.CreateLightningAccount(
+                        mnemonic
+                    )
+                )
+            }
+        }
 
         viewModel.asset.onEach {
             binding.asset.bind(scope = lifecycleScope, asset = it, session = viewModel.session, showEditIcon = true)

@@ -29,25 +29,29 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
+import com.blockstream.common.models.wallets.WalletsViewModel
 import com.blockstream.common.models.wallets.WalletsViewModelAbstract
 import com.blockstream.common.models.wallets.WalletsViewModelPreview
 import com.blockstream.common.views.wallet.WalletListLook
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.views.WalletListItem
 import com.blockstream.compose.views.WalletListItemCallbacks
 
-open class WalletSectionCallbacks(
-    onWalletClick: (wallet: GreenWallet, isLightning: Boolean) -> Unit = { _, _ -> },
-    onLightningShortcutDelete: ((wallet: GreenWallet) -> Unit)? = null,
-    val onNewWalletClick: () -> Unit = {},
+open class WalletSectionCallbacks constructor(
+    onWalletClick: (wallet: GreenWallet, isLightning: Boolean) -> Unit,
+    onLightningShortcutDelete: ((wallet: GreenWallet) -> Unit),
+    onWalletDelete: ((wallet: GreenWallet) -> Unit),
+    onWalletRename: ((wallet: GreenWallet) -> Unit),
     hasContextMenu: Boolean = false
 ) : WalletListItemCallbacks(
     onWalletClick = onWalletClick,
     onLightningShortcutDelete = onLightningShortcutDelete,
+    onWalletDelete = onWalletDelete,
+    onWalletRename = onWalletRename,
     hasContextMenu = hasContextMenu
 )
 
@@ -72,11 +76,26 @@ private fun LazyListScope.walletSection(
 fun WalletsScreen(
     modifier: Modifier = Modifier,
     viewModel: WalletsViewModelAbstract,
-    callbacks: WalletSectionCallbacks = WalletSectionCallbacks()
 ) {
+    val isEmptyWallet by viewModel.isEmptyWallet.collectAsStateWithLifecycle()
     val softwareWallets by viewModel.softwareWallets.collectAsStateWithLifecycle()
     val ephemeralWallets by viewModel.ephemeralWallets.collectAsStateWithLifecycle()
     val hardwareWallets by viewModel.hardwareWallets.collectAsStateWithLifecycle()
+
+    val callbacks = WalletSectionCallbacks(onWalletClick = { wallet, isLightningShortcut ->
+        viewModel.postEvent(
+            WalletsViewModel.LocalEvents.SelectWallet(
+                greenWallet = wallet,
+                isLightningShortcut = isLightningShortcut
+            )
+        )
+    }, onLightningShortcutDelete = {
+        viewModel.postEvent(WalletsViewModel.LocalEvents.RemoveLightningShortcut(it))
+    }, onWalletDelete = {
+        viewModel.postEvent(Events.ShowDeleteWallet(it))
+    }, onWalletRename = {
+        viewModel.postEvent(Events.ShowRenameWallet(it))
+    }, hasContextMenu = viewModel.isHome)
 
     GreenColumn(
         space = 8,
@@ -116,29 +135,29 @@ fun WalletsScreen(
             }
         }
 
-        Card {
-            Row(modifier = Modifier
-                .clickable {
-                    callbacks.onNewWalletClick.invoke()
-                    viewModel.postEvent(Events.SetupNewWallet)
-                }
-                .height(52.dp)
-                .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = stringResource(id = R.string.id_setup_a_new_wallet),
-                    modifier = Modifier.weight(1f),
-                    style = labelMedium
-                )
+        if(isEmptyWallet == false) {
+            Card {
+                Row(modifier = Modifier
+                    .clickable {
+                        viewModel.postEvent(Events.SetupNewWallet)
+                    }
+                    .height(52.dp)
+                    .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = stringResource(id = R.string.id_setup_a_new_wallet),
+                        modifier = Modifier.weight(1f),
+                        style = labelMedium
+                    )
 
-                Icon(
-                    painter = painterResource(id = R.drawable.caret_right),
-                    contentDescription = null,
-                    tint = whiteLow,
-                    modifier = Modifier.size(16.dp)
-                )
+                    Icon(
+                        painter = painterResource(id = R.drawable.caret_right),
+                        contentDescription = null,
+                        tint = whiteLow,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
             }
         }
-
     }
 }
 
@@ -156,9 +175,7 @@ class NameProvider : PreviewParameterProvider<WalletsViewModelPreview> {
 fun WalletsScreenPreview(
     @PreviewParameter(NameProvider::class) viewModel: WalletsViewModelPreview
 ) {
-    GreenTheme {
-        GreenColumn {
-            WalletsScreen(viewModel = viewModel)
-        }
+    GreenPreview {
+        WalletsScreen(viewModel = viewModel)
     }
 }

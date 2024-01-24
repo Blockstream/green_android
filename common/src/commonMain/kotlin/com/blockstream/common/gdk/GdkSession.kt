@@ -2737,7 +2737,19 @@ class GdkSession constructor(
         return privateKey
     }
 
-    fun jadeBip8539Request(): Pair<ByteArray, BcurEncodedData> {
+    @NativeCoroutinesIgnore
+    suspend fun jadePinRequest(payload: String): BcurEncodedData {
+
+        val params = BcurEncodeParams(
+            urType = "jade-pin",
+            data = payload
+        )
+
+        return bcurEncode(params)
+    }
+
+    @NativeCoroutinesIgnore
+    suspend fun jadeBip8539Request(): Pair<ByteArray, BcurEncodedData> {
         val privateKey = createEcPrivateKey()
 
         val params = BcurEncodeParams(
@@ -2747,27 +2759,28 @@ class GdkSession constructor(
             privateKey = privateKey.toHex()
         )
 
-        return privateKey to authHandler(defaultNetwork, gdk.bcurEncode(gdkSession(defaultNetwork), params)).result<BcurEncodedData>()
+        return privateKey to bcurEncode(params)
     }
 
     fun jadeBip8539Reply(privateKey: ByteArray, publicKey: ByteArray, encrypted: ByteArray): String? {
         return wally.bip85FromJade(privateKey, publicKey, "bip85_bip39_entropy", encrypted)
     }
 
-    fun bcurEncode(params: BcurEncodeParams): BcurEncodedData {
+    @NativeCoroutinesIgnore
+    suspend fun bcurEncode(params: BcurEncodeParams): BcurEncodedData {
         val network = defaultNetworkOrNull ?: networks.bitcoinElectrum
 
-        runBlocking {
+        if(!isConnected) {
             connect(network = network, initNetworks = listOf(network))
         }
 
         return authHandler(network, gdk.bcurEncode(gdkSession(network), params)).result<BcurEncodedData>()
     }
 
-    fun bcurDecode(params: BcurDecodeParams, bcurResolver: BcurResolver): BcurDecodedData {
+    suspend fun bcurDecode(params: BcurDecodeParams, bcurResolver: BcurResolver): BcurDecodedData {
         val network = defaultNetworkOrNull ?: networks.bitcoinElectrum
 
-        runBlocking {
+        if(!isConnected) {
             connect(network = network, initNetworks = listOf(network))
         }
 

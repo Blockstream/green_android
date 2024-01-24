@@ -26,6 +26,16 @@ abstract class AbstractWalletsFragment<T : ViewDataBinding> constructor(
 
     internal fun navigate(directions: NavigateDestination) {
         when (directions) {
+            is NavigateDestinations.SetupNewWallet -> {
+                closeDrawer()
+                navigate(NavGraphDirections.actionGlobalSetupNewWalletFragment())
+            }
+
+            is NavigateDestinations.About -> {
+                closeDrawer()
+                navigate(NavGraphDirections.actionGlobalAboutFragment())
+            }
+
             is NavigateDestinations.WalletOverview -> navigate(
                 NavGraphDirections.actionGlobalWalletOverviewFragment(
                     directions.greenWallet

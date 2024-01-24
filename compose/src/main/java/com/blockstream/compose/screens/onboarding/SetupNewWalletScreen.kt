@@ -1,25 +1,26 @@
 package com.blockstream.compose.screens.onboarding
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material3.Checkbox
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -27,37 +28,94 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
 import com.blockstream.common.events.Events
-import com.blockstream.common.extensions.toggle
 import com.blockstream.common.models.onboarding.SetupNewWalletViewModel
 import com.blockstream.common.models.onboarding.SetupNewWalletViewModelAbstract
 import com.blockstream.common.models.onboarding.SetupNewWalletViewModelPreview
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
 import com.blockstream.compose.components.AppSettingsButton
+import com.blockstream.compose.components.GreenArrow
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.extensions.colorText
-import com.blockstream.compose.extensions.onValueChange
-import com.blockstream.compose.sheets.AnalyticsBottomSheet
-import com.blockstream.compose.sheets.BottomSheetNavigatorM3
-import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
-import com.blockstream.compose.theme.GreenTheme
-import com.blockstream.compose.theme.displayLarge
+import com.blockstream.compose.theme.displayMedium
+import com.blockstream.compose.theme.labelLarge
+import com.blockstream.compose.theme.md_theme_surfaceCircle
+import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 
 
-class SetupNewWalletScreen : Screen {
+object SetupNewWalletScreen : Screen {
     @Composable
     override fun Content() {
         val viewModel = getScreenModel<SetupNewWalletViewModel>()
 
-        AppBar()
+        val navData by viewModel.navData.collectAsStateWithLifecycle()
+
+        AppBar(navData)
 
         SetupNewWalletScreen(viewModel = viewModel)
+    }
+}
+
+@Composable
+fun KeysPolicyListItem(
+    title: String,
+    message: String,
+    tag: String,
+    painter: Painter,
+    onClick: () -> Unit
+) {
+    Box {
+        Card(
+            modifier = Modifier
+                .padding(top = 32.dp, start = 16.dp, end = 16.dp)
+                .clickable {
+                    onClick()
+                }
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .padding(16.dp)
+            ) {
+                GreenColumn(padding = 0, space = 8, modifier = Modifier.padding(end = 80.dp)) {
+                    Text(text = title, style = titleMedium)
+                    Text(
+                        text = message,
+                        color = whiteMedium
+                    )
+                    Text(
+                        text = tag,
+                        style = labelLarge,
+                        modifier = Modifier
+                            .background(
+                                color = md_theme_surfaceCircle,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .padding(horizontal = 12.dp, vertical = 4.dp)
+                    )
+                }
+
+                GreenArrow(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                )
+            }
+        }
+
+        Image(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(end = 6.dp),
+            painter = painter,
+            contentDescription = ""
+        )
     }
 }
 
@@ -65,14 +123,8 @@ class SetupNewWalletScreen : Screen {
 fun SetupNewWalletScreen(
     viewModel: SetupNewWalletViewModelAbstract
 ) {
-    val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
-    HandleSideEffect(viewModel = viewModel) {
-        if(it is SetupNewWalletViewModel.LocalSideEffects.ShowConsent){
-            bottomSheetNavigator.show(AnalyticsBottomSheet {
-                viewModel.postEvent(it.event)
-            })
-        }
-    }
+
+    HandleSideEffect(viewModel = viewModel)
 
     Column(
         modifier = Modifier
@@ -80,106 +132,49 @@ fun SetupNewWalletScreen(
             .fillMaxHeight()
     ) {
 
-        GreenColumn(
+        Column(
             modifier = Modifier
-                .padding(horizontal = 32.dp)
-                .padding(bottom = 32.dp)
-                .weight(3f),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
         ) {
-
-            Image(
-                painter = painterResource(id = R.drawable.brand),
-                contentDescription = null,
+            Text(
+                text = stringResource(R.string.id_how_do_you_want_to_secure_your_funds),
+                style = displayMedium,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
-                    .heightIn(50.dp, 70.dp)
-                    .align(Alignment.CenterHorizontally)
+                    .padding(horizontal = 16.dp)
             )
 
-            GreenColumn {
-                Text(
-                    text = stringResource(R.string.id_simple__secure_selfcustody),
-                    style = displayLarge,
-                    textAlign = TextAlign.Center
-                )
+            KeysPolicyListItem(
+                title = stringResource(id = R.string.id_on_this_device),
+                message = stringResource(id = R.string.id_your_phone_will_store_the_keys_to_your),
+                tag = stringResource(id = R.string.id_for_ease_of_use),
+                painter = painterResource(id = R.drawable.keys_device)
+            ) {
+                viewModel.postEvent(SetupNewWalletViewModel.LocalEvents.ClickOnThisDevice)
+            }
 
-                Text(
-                    text = stringResource(R.string.id_everything_you_need_to_take),
-                    textAlign = TextAlign.Center,
-                    color = whiteMedium
-                )
+            KeysPolicyListItem(
+                title = stringResource(id = R.string.id_on_hardware_wallet),
+                message = stringResource(id = R.string.id_your_keys_will_be_secured_on_a_dedicated_cold_storage),
+                tag = stringResource(id = R.string.id_for_higher_security),
+                painter = painterResource(id = R.drawable.keys_hardware)
+            ) {
+                viewModel.postEvent(SetupNewWalletViewModel.LocalEvents.ClickOnHardwareWallet)
             }
         }
 
-        GreenColumn(
-            padding = 24,
+
+        GreenButton(
+            stringResource(R.string.id_watchonly),
             modifier = Modifier
-                .weight(2f),
-            horizontalAlignment = Alignment.CenterHorizontally,
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth(),
+            size = GreenButtonSize.BIG,
+            type = GreenButtonType.OUTLINE,
+            color = GreenButtonColor.WHITE,
         ) {
-
-            val termsOfServiceIsChecked by viewModel.termsOfServiceIsChecked.collectAsStateWithLifecycle()
-
-            GreenButton(
-                stringResource(R.string.id_add_wallet),
-                modifier = Modifier.fillMaxWidth(),
-                size = GreenButtonSize.BIG,
-                enabled = termsOfServiceIsChecked
-            ) {
-                viewModel.postEvent(SetupNewWalletViewModel.LocalEvents.ClickAddWallet)
-            }
-
-            GreenButton(
-                stringResource(R.string.id_use_hardware_device),
-                modifier = Modifier.fillMaxWidth(),
-                size = GreenButtonSize.BIG,
-                type = GreenButtonType.OUTLINE,
-                color = GreenButtonColor.WHITE,
-                enabled = termsOfServiceIsChecked
-            ) {
-                viewModel.postEvent(SetupNewWalletViewModel.LocalEvents.ClickUseHardwareDevice)
-            }
-
-
-            Row(
-                modifier = Modifier.toggleable(
-                    value = termsOfServiceIsChecked,
-                    onValueChange = viewModel.termsOfServiceIsChecked.onValueChange(),
-                    role = Role.Checkbox
-                )
-            ) {
-                Checkbox(
-                    checked = termsOfServiceIsChecked,
-                    onCheckedChange = viewModel.termsOfServiceIsChecked.onValueChange()
-                )
-
-                val annotatedString = colorText(
-                    stringResource(R.string.id_i_agree_to_the_terms_of_service),
-                    listOf(
-                        R.string.id_terms_of_service,
-                        R.string.id_privacy_policy
-                    ).map { stringResource(it) })
-
-                ClickableText(text = annotatedString,
-                    modifier = Modifier.padding(top = 14.dp),
-                    onClick = {
-                        annotatedString.getStringAnnotations("Index", start = it, end = it)
-                            .firstOrNull()?.item?.toIntOrNull()?.also { index ->
-                                (if (index == 0) {
-                                    SetupNewWalletViewModel.LocalEvents.ClickTermsOfService()
-                                } else {
-                                    SetupNewWalletViewModel.LocalEvents.ClickPrivacyPolicy()
-                                }).also {
-                                    viewModel.postEvent(it)
-                                }
-                            } ?: run {
-                                viewModel.termsOfServiceIsChecked.toggle()
-                        }
-                    })
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
+            viewModel.postEvent(SetupNewWalletViewModel.LocalEvents.WatchOnly)
         }
 
         AppSettingsButton(
@@ -196,9 +191,7 @@ fun SetupNewWalletScreen(
 @Composable
 @Preview
 fun SetupNewWalletScreenPreview() {
-    GreenTheme {
-        BottomSheetNavigatorM3 {
-            SetupNewWalletScreen(viewModel = SetupNewWalletViewModelPreview.preview())
-        }
+    GreenPreview {
+        SetupNewWalletScreen(viewModel = SetupNewWalletViewModelPreview.preview())
     }
 }

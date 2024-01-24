@@ -48,7 +48,7 @@
 
         <TextView
             android:id="@+id/textViewIndex"
-            isVisible="@{vm.recipientsLiveData.size() != 1}"
+            isVisible="@{vm.recipientsStateFlow.size() != 1}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -62,7 +62,7 @@
 
         <ImageView
             android:id="@+id/buttonRemove"
-            isVisible="@{vm.recipientsLiveData.size() != 1 &amp;&amp; !vm.isBump}"
+            isVisible="@{vm.recipientsStateFlow.size() != 1 &amp;&amp; !vm.isBump}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"

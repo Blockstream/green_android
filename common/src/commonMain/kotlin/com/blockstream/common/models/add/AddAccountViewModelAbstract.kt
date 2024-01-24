@@ -32,7 +32,7 @@ abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet) :
     internal val _accountTypeBeingCreated: MutableStateFlow<AccountTypeLook?> = MutableStateFlow(null)
 
     class LocalEvents{
-        class EnableLightningShortcut(): Event
+        object EnableLightningShortcut: Event
     }
 
     class LocalSideEffects{
@@ -174,9 +174,9 @@ abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet) :
         }
     }
 
-    protected fun enableLightningShortcut(lightningMnemonic: String? = null) {
+    protected fun enableLightningShortcut() {
         applicationScope.launch(context = logException(countly)) {
-            _enableLightningShortcut(lightningMnemonic = lightningMnemonic)
+            _enableLightningShortcut()
         }
     }
 }

@@ -15,10 +15,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.views.GreenBottomSheet
 
 
@@ -31,12 +31,12 @@ data class MenuEntry(
 ) : Parcelable
 
 @Parcelize
-class MenuBottomSheet(
+data class MenuBottomSheet(
     val title: String,
     val subtitle: String? = null,
     val entries: List<MenuEntry>,
     val onDismiss: () -> Unit = {}
-) : BottomScreen() {
+) : BottomScreen(), Parcelable {
     @Composable
     override fun Content() {
         MenuBottomSheetView(
@@ -63,6 +63,7 @@ fun MenuBottomSheetView(
         sheetState = rememberModalBottomSheetState(
             skipPartiallyExpanded = true,
         ),
+        viewModel = null,
         onDismissRequest = onDismissRequest
     ) {
 
@@ -91,7 +92,7 @@ fun MenuBottomSheetView(
 @Composable
 @Preview
 fun MenuBottomSheetPreview() {
-    GreenTheme {
+    GreenPreview {
         GreenColumn {
             var showBottomSheet by remember { mutableStateOf(true) }
 
@@ -106,10 +107,10 @@ fun MenuBottomSheetPreview() {
                 MenuBottomSheetView(
                     title = "Select Environment",
                     entries = listOf(
-                        MenuEntry(title ="Mainnet", iconRes = R.drawable.currency_btc) {
+                        MenuEntry(title = "Mainnet", iconRes = R.drawable.currency_btc) {
                             environment = "Mainnet"
                         },
-                        MenuEntry(title ="Testnet", iconRes = R.drawable.flask) {
+                        MenuEntry(title = "Testnet", iconRes = R.drawable.flask) {
                             environment = "Testnet"
                         }
                     ),

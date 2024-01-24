@@ -41,6 +41,7 @@ import com.blockstream.green.ui.items.TransactionHashListItem
 import com.blockstream.green.ui.items.TransactionProgressListItem
 import com.blockstream.green.ui.items.TransactionUtxoListItem
 import com.blockstream.green.ui.wallet.AbstractAccountWalletFragment
+import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.copyToClipboard
 import com.blockstream.green.utils.isDevelopmentOrDebug
@@ -102,8 +103,7 @@ class TransactionDetailsFragment : AbstractAccountWalletFragment<BaseRecyclerVie
             }
         )
 
-
-    override fun getAccountWalletViewModel() = viewModel
+    override fun getWalletViewModel() = viewModel
 
     override fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)

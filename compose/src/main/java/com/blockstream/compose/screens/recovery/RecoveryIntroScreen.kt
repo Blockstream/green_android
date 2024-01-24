@@ -1,7 +1,6 @@
 package com.blockstream.compose.screens.recovery
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -21,20 +20,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.platform.LocalSavedStateRegistryOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cafe.adriel.voyager.androidx.AndroidScreenLifecycleOwner
-import cafe.adriel.voyager.core.lifecycle.ScreenLifecycleProvider
-import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
-import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
 import com.arkivanov.essenty.statekeeper.stateKeeper
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Events
@@ -42,6 +38,8 @@ import com.blockstream.common.models.recovery.RecoveryIntroViewModel
 import com.blockstream.common.models.recovery.RecoveryIntroViewModelAbstract
 import com.blockstream.common.models.recovery.RecoveryIntroViewModelPreview
 import com.blockstream.common.utils.AndroidKeystore
+import com.blockstream.compose.GreenPreview
+import com.blockstream.compose.LocalDialog
 import com.blockstream.compose.LocalSnackbar
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenButton
@@ -51,16 +49,12 @@ import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.sheets.BottomSheetNavigatorM3
 import com.blockstream.compose.sideeffects.BiometricsState
-import com.blockstream.compose.sideeffects.DialogHost
-import com.blockstream.compose.sideeffects.DialogState
-import com.blockstream.compose.theme.GreenTheme
+import com.blockstream.compose.theme.GreenThemePreview
 import com.blockstream.compose.theme.bodyLarge
-import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.AppBarData
 import com.blockstream.compose.utils.HandleSideEffect
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
@@ -69,14 +63,15 @@ import org.koin.core.parameter.parametersOf
 data class RecoveryIntroScreen(val setupArgs: SetupArgs) : Screen, Parcelable {
     @Composable
     override fun Content() {
+        val savedStateRegistryOwner = LocalSavedStateRegistryOwner.current
+
         val viewModel = getScreenModel<RecoveryIntroViewModel>() {
-            // TODO FIX STATE RESTORATION
-            parametersOf(setupArgs, StateKeeperDispatcher())
+            parametersOf(setupArgs, savedStateRegistryOwner.stateKeeper())
         }
 
-        AppBar {
-            AppBarData(title = stringResource(R.string.id_before_you_backup))
-        }
+        val navData by viewModel.navData.collectAsStateWithLifecycle()
+
+        AppBar(navData)
 
         RecoveryIntroScreen(viewModel = viewModel)
     }
@@ -88,29 +83,28 @@ fun RecoveryIntroScreen(
     viewModel: RecoveryIntroViewModelAbstract
 ) {
     val context = LocalContext.current
-
+    val dialog = LocalDialog.current
     val snackbar = LocalSnackbar.current
     val scope = rememberCoroutineScope()
     // LocalInspectionMode is true in preview
     val androidKeystore: AndroidKeystore =
         if (LocalInspectionMode.current) AndroidKeystore(context) else koinInject()
 
-    val dialogState = remember { DialogState(context) }
-    DialogHost(state = dialogState)
+
 
     val biometricsState = remember {
         BiometricsState(
             context = context,
             coroutineScope = scope,
             snackbarHostState = snackbar,
-            dialogState = dialogState,
+            dialogState = dialog,
             androidKeystore = androidKeystore
         )
     }
 
     HandleSideEffect(viewModel) { sideEffect ->
         if (sideEffect is RecoveryIntroViewModel.LocalSideEffects.LaunchUserPresence) {
-            biometricsState.launchUserPresencePrompt {
+            biometricsState.launchUserPresencePrompt(context.getString(R.string.id_authenticate_to_view_the)) {
                 viewModel.postEvent(RecoveryIntroViewModel.LocalEvents.Authenticated(it))
             }
         }
@@ -223,7 +217,7 @@ private fun Item(title: String, message: String, icon: Int) {
 @Composable
 @Preview
 private fun ItemPreview() {
-    GreenTheme {
+    GreenThemePreview {
         GreenColumn {
             Item(
                 stringResource(id = R.string.id_safe_environment),
@@ -237,9 +231,7 @@ private fun ItemPreview() {
 @Composable
 @Preview
 fun RecoveryIntroScreenPreview() {
-    GreenTheme {
-        BottomSheetNavigatorM3 {
-            RecoveryIntroScreen(viewModel = RecoveryIntroViewModelPreview.preview())
-        }
+    GreenPreview {
+        RecoveryIntroScreen(viewModel = RecoveryIntroViewModelPreview.preview())
     }
 }

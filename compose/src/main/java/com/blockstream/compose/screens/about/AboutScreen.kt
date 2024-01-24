@@ -12,7 +12,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -20,12 +23,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
 import com.blockstream.common.models.about.AboutViewModel
 import com.blockstream.common.models.about.AboutViewModelAbstract
 import com.blockstream.common.models.about.AboutViewModelPreview
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
@@ -36,7 +41,7 @@ import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.MenuEntry
 import com.blockstream.compose.components.PopupMenu
 import com.blockstream.compose.components.PopupState
-import com.blockstream.compose.theme.GreenTheme
+import com.blockstream.compose.dialogs.FeedbackDialog
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelLarge
@@ -44,12 +49,14 @@ import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 
-class AboutScreen : Screen {
+object AboutScreen : Screen {
     @Composable
     override fun Content() {
         val viewModel = getScreenModel<AboutViewModel>()
 
-        AppBar()
+        val navData by viewModel.navData.collectAsStateWithLifecycle()
+        AppBar(navData)
+
         AboutScreen(viewModel = viewModel)
     }
 }
@@ -59,10 +66,21 @@ fun AboutScreen(
     viewModel: AboutViewModelAbstract,
 ) {
     val popupState = remember { PopupState() }
+    var showFeedbackDialog by remember { mutableStateOf(false) }
 
     HandleSideEffect(viewModel) {
         if (it is SideEffects.OpenMenu) {
             popupState.isContextMenuVisible.value = true
+        } else if (it is SideEffects.OpenDialog) {
+            showFeedbackDialog = true
+        } else if(it is SideEffects.Dismiss){
+            showFeedbackDialog = false
+        }
+    }
+
+    if (showFeedbackDialog) {
+        FeedbackDialog(viewModel = viewModel) {
+            showFeedbackDialog = false
         }
     }
 
@@ -277,7 +295,7 @@ fun AboutScreen(
 @Composable
 @Preview
 fun AboutScreenPreview() {
-    GreenTheme {
+    GreenPreview {
         AboutScreen(viewModel = AboutViewModelPreview.preview())
     }
 }

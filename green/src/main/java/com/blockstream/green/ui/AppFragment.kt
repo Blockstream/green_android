@@ -20,8 +20,8 @@ import androidx.lifecycle.withResumed
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
-import com.blockstream.base.ZendeskSdk
 import com.blockstream.common.ScreenView
+import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.extensions.handleException
 import com.blockstream.common.gdk.Gdk
@@ -30,6 +30,7 @@ import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.NavGraphDirections
@@ -39,6 +40,7 @@ import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.errorSnackbar
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.extensions.stringFromIdentifier
+import com.blockstream.green.extensions.stringFromIdentifierOrNull
 import com.blockstream.green.ui.bottomsheets.AccountAssetListener
 import com.blockstream.green.ui.bottomsheets.DenominationBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.DeviceInteractionRequestBottomSheetDialogFragment
@@ -71,7 +73,7 @@ import org.koin.android.ext.android.inject
 
 abstract class AppFragment<T : ViewDataBinding>(
     @LayoutRes val layout: Int,
-    @MenuRes val menuRes: Int
+    @MenuRes val menuRes: Int = 0
 ) : Fragment(), MenuProvider, ScreenView, BannerView, AccountAssetListener {
     open val isAdjustResize = false
 
@@ -96,8 +98,6 @@ abstract class AppFragment<T : ViewDataBinding>(
     open val subtitle : String? = null
     open val toolbarIcon: Int? = null
 
-    open val useCompose : Boolean = false
-
     override val screenName: String? = null
     override var screenIsRecorded = false
     override val segmentation: HashMap<String, Any>? = null
@@ -105,6 +105,7 @@ abstract class AppFragment<T : ViewDataBinding>(
     protected val toolbar: GreenToolbar
         get() = (requireActivity() as AppActivity).toolbar
 
+    open val useCompose : Boolean = false
     open val sideEffectsHandledByAppFragment: Boolean = true
 
     open fun updateToolbar() {
@@ -236,20 +237,22 @@ abstract class AppFragment<T : ViewDataBinding>(
                 }
             }
             is SideEffects.Snackbar -> {
-                // Snackbar is implemented in compose but LocalSnackbar is only available in GreenApp
-                view?.also {
-                    Snackbar.make(
-                        it,
-                        requireContext().stringFromIdentifier(sideEffect.text) ?: "",
-                        Snackbar.LENGTH_SHORT
-                    ).show()
+                if(sideEffectsHandledByAppFragment) {
+                    // Snackbar is implemented in compose but LocalSnackbar is only available in GreenApp
+                    view?.also {
+                        Snackbar.make(
+                            it,
+                            requireContext().stringFromIdentifier(sideEffect.text),
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
                 }
 
             }
             is SideEffects.Dialog -> {
                 if (sideEffectsHandledByAppFragment) {
                     MaterialAlertDialogBuilder(requireContext()).setTitle(
-                            requireContext().stringFromIdentifier(
+                            requireContext().stringFromIdentifierOrNull(
                                 sideEffect.title
                             )
                         ).setMessage(requireContext().stringFromIdentifier(sideEffect.message))
@@ -257,17 +260,21 @@ abstract class AppFragment<T : ViewDataBinding>(
                 }
             }
             is SideEffects.ErrorSnackbar -> {
-                errorSnackbar(
-                    throwable = sideEffect.error,
-                    errorReport = sideEffect.errorReport,
-                    duration = Snackbar.LENGTH_LONG
-                )
+                if(sideEffectsHandledByAppFragment) {
+                    errorSnackbar(
+                        throwable = sideEffect.error,
+                        errorReport = sideEffect.errorReport,
+                        duration = Snackbar.LENGTH_LONG
+                    )
+                }
             }
             is SideEffects.ErrorDialog -> {
-                errorDialog(
-                    throwable = sideEffect.error,
-                    errorReport = sideEffect.errorReport,
-                )
+                if(sideEffectsHandledByAppFragment) {
+                    errorDialog(
+                        throwable = sideEffect.error,
+                        errorReport = sideEffect.errorReport,
+                    )
+                }
             }
             is SideEffects.DeviceRequestPin -> {
                 PinMatrixBottomSheetDialogFragment.show(childFragmentManager)
@@ -300,9 +307,7 @@ abstract class AppFragment<T : ViewDataBinding>(
             }
             is SideEffects.NavigateBack -> {
                 if (sideEffect.error == null) {
-                    if(sideEffectsHandledByAppFragment) {
                         popBackStack()
-                    }
                 } else {
                     errorDialog(sideEffect.error!!, errorReport = sideEffect.errorReport) {
                         popBackStack()
@@ -311,9 +316,10 @@ abstract class AppFragment<T : ViewDataBinding>(
             }
             is SideEffects.CopyToClipboard -> {
                 if(sideEffectsHandledByAppFragment) {
-                    copyToClipboard("Green", sideEffect.value, requireContext())
+                    copyToClipboard(sideEffect.label ?: "Green", sideEffect.value, requireContext())
+
                     sideEffect.message?.also {
-                        snackbar(it)
+                        snackbar(requireContext().stringFromIdentifier(it))
                     }
                 }
             }
@@ -335,6 +341,24 @@ abstract class AppFragment<T : ViewDataBinding>(
                     }
                 }
 
+            }
+
+            is SideEffects.NavigateTo -> {
+                (sideEffect.destination as? NavigateDestinations.AddWallet)?.also {
+                    navigate(NavGraphDirections.actionGlobalAddWalletFragment())
+                }
+
+                (sideEffect.destination as? NavigateDestinations.UseHardwareDevice)?.also {
+                    navigate(NavGraphDirections.actionGlobalUseHardwareDeviceFragment())
+                }
+
+                (sideEffect.destination as? NavigateDestinations.NewWatchOnlyWallet)?.also {
+                    navigate(NavGraphDirections.actionGlobalWatchOnlyPolicyFragment())
+                }
+
+                (sideEffect.destination as? NavigateDestinations.AppSettings)?.also {
+                    navigate(NavGraphDirections.actionGlobalAppSettingsFragment())
+                }
             }
         }
     }

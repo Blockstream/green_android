@@ -78,7 +78,7 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
         parametersOf(args.wallet, args.account)
     }
 
-    override fun getAccountWalletViewModel() = viewModel
+    override fun getWalletViewModel() = viewModel
 
     var fastAdapter: FastAdapter<GenericItem>? = null
 

@@ -57,7 +57,7 @@ class WatchOnlyFragment :
                         StringHolder(R.string.id_multisig),
                         iconLeft = ContextCompat.getDrawable(
                             requireContext(),
-                            R.drawable.ic_multisig
+                            R.drawable.key_multisig
                         )
                     )
                 )
@@ -71,7 +71,7 @@ class WatchOnlyFragment :
                         StringHolder(R.string.id_singlesig),
                         iconLeft = ContextCompat.getDrawable(
                             requireContext(),
-                            R.drawable.ic_singlesig
+                            R.drawable.key_singlesig
                         )
                     )
                 )

@@ -26,7 +26,6 @@ import com.blockstream.green.databinding.CameraBottomSheetBinding
 import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.makeItConstant
 import com.blockstream.green.extensions.setNavigationResult
-import com.blockstream.green.ui.onboarding.AbstractOnboardingFragment
 import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.google.zxing.MultiFormatReader
@@ -252,8 +251,7 @@ class CameraBottomSheetDialogFragment : AbstractBottomSheetDialogFragment<Camera
 
         val session =
             (requireParentFragment() as? AbstractWalletFragment<*>)?.getWalletViewModel()?.session
-        val setupArgs = (requireParentFragment() as? AbstractOnboardingFragment<*>)?.setupArgs
-        countly.qrScan(session = session, setupArgs = setupArgs, arguments?.getString(SCREEN_NAME))
+        countly.qrScan(session = session, setupArgs = null, arguments?.getString(SCREEN_NAME))
 
         setNavigationResult(
             result = result,

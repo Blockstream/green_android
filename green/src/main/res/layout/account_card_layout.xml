@@ -86,11 +86,11 @@
                     android:layout_height="18dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
-                    android:src="@{account.network.multisig ? @drawable/ic_multisig : account.network.lightning ? @drawable/ic_lightning_fill : @drawable/ic_singlesig}"
+                    android:src="@{account.network.multisig ? @drawable/key_multisig : account.network.lightning ? @drawable/ic_lightning_fill : @drawable/key_singlesig}"
                     app:layout_constraintDimensionRatio="w,1:1"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:src="@drawable/ic_multisig" />
+                    tools:src="@drawable/key_multisig" />
 
                 <TextView
                     android:id="@+id/nameTextView"

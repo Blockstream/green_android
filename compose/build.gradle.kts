@@ -69,11 +69,6 @@ dependencies {
 
     /**  --- Android / Google ------------------------------------------------------------------- */
     api(libs.androidx.browser)
-    implementation(libs.androidx.biometric)
-    implementation("androidx.camera:camera-camera2:1.3.1")
-    implementation("androidx.camera:camera-lifecycle:1.3.1")
-    implementation("androidx.camera:camera-view:1.3.1")
-    implementation("com.google.mlkit:barcode-scanning:17.2.0")
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Voyager ---------------------------------------------------------------------------- */
@@ -84,14 +79,16 @@ dependencies {
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Koin   ----------------------------------------------------------------------------- */
-    implementation(libs.koin.core)
-    implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
     ksp(libs.koin.ksp.compiler)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Compose QR Code -------------------------------------------------------------------- */
     implementation(libs.compose.qr.code)
+    /** ----------------------------------------------------------------------------------------- */
+
+    /**  --- QR Scanner ------------------------------------------------------------------------- */
+    implementation(libs.zxing.android.embedded)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Rive ------------------------------------------------------------------------------- */

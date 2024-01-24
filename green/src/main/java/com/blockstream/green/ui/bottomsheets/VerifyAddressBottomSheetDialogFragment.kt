@@ -4,16 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.R
 import com.blockstream.green.databinding.VerifyAddressBottomSheetBinding
 import com.blockstream.green.extensions.dismissIn
 import com.blockstream.green.extensions.errorDialog
-import com.blockstream.green.ui.receive.ReceiveViewModel
 import com.blockstream.green.utils.bounceDown
 import mu.KLogging
 
 
-class VerifyAddressBottomSheetDialogFragment : WalletBottomSheetDialogFragment<VerifyAddressBottomSheetBinding, ReceiveViewModel>() {
+class VerifyAddressBottomSheetDialogFragment : WalletBottomSheetDialogFragment<VerifyAddressBottomSheetBinding, GreenViewModel>() {
 
     override val screenName = "VerifyAddress"
 
@@ -23,11 +23,11 @@ class VerifyAddressBottomSheetDialogFragment : WalletBottomSheetDialogFragment<V
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.also { receiveViewModel ->
-            receiveViewModel.deviceAddressValidationEvent.observe(viewLifecycleOwner) {
-                it?.getContentIfNotHandledOrReturnNull()?.let { addressMatch ->
-                    responseFromDevice(addressMatch)
-                }
-            }
+//            receiveViewModel.deviceAddressValidationEvent.observe(viewLifecycleOwner) {
+//                it?.getContentIfNotHandledOrReturnNull()?.let { addressMatch ->
+//                    responseFromDevice(addressMatch)
+//                }
+//            }
 
             binding.device = receiveViewModel.session.gdkHwWallet?.device
         }

@@ -25,12 +25,14 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.koin.getScreenModel
+import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.wallet.WalletNameViewModel
 import com.blockstream.common.models.wallet.WalletNameViewModelAbstract
 import com.blockstream.common.models.wallet.WalletNameViewModelPreview
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenColumn
@@ -42,7 +44,7 @@ import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Parcelize
-data class WalletRenameBottomSheet(val greenWallet: GreenWallet) : BottomScreen() {
+data class WalletRenameBottomSheet(val greenWallet: GreenWallet) : BottomScreen(), Parcelable {
     @Composable
     override fun Content() {
         val viewModel = getScreenModel<WalletNameViewModel>{
@@ -139,7 +141,7 @@ fun WalletRenameBottomSheet(
 @Composable
 @Preview
 fun WalletRenameBottomSheetPreview() {
-    GreenTheme {
+    GreenPreview {
         GreenColumn {
             var showBottomSheet by remember { mutableStateOf(true) }
 

@@ -4,16 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.receive.ReceiveViewModel
 import com.blockstream.green.databinding.NoteBottomSheetBinding
 import com.blockstream.green.extensions.openKeyboard
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import mu.KLogging
 
 interface INote{
     fun saveNote(note: String)
 }
 
-class NoteBottomSheetDialogFragment : WalletBottomSheetDialogFragment<NoteBottomSheetBinding, AbstractWalletViewModel>() {
+class NoteBottomSheetDialogFragment : WalletBottomSheetDialogFragment<NoteBottomSheetBinding, GreenViewModel>() {
     override val screenName = "TransactionNote"
 
     override fun inflate(layoutInflater: LayoutInflater) = NoteBottomSheetBinding.inflate(layoutInflater)
@@ -37,7 +38,11 @@ class NoteBottomSheetDialogFragment : WalletBottomSheetDialogFragment<NoteBottom
         }
 
         binding.buttonSave.setOnClickListener {
-            (viewModel as INote).saveNote(binding.note ?: "")
+            (viewModel as? INote)?.saveNote(binding.note ?: "")
+
+            (viewModel as? ReceiveViewModel)?.also {
+                it.postEvent(ReceiveViewModel.LocalEvents.SetNote(binding.note ?: ""))
+            }
             dismiss()
         }
     }

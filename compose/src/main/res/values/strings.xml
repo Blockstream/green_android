@@ -1449,4 +1449,23 @@
   <string name="id_you_need_an_amp_account_in">You need an AMP account in order to receive it.</string>
   <string name="id_added_already">Added Already!</string>
   <string name="id_you_cannon_add_more_than_one">You cannot add more than one Lightning Account.</string>
+  <string name="id_get_started">Get Started</string>
+  <string name="id_how_do_you_want_to_secure_your_funds">How do you want to secure your funds?</string>
+  <string name="id_on_this_device">On This Device</string>
+  <string name="id_on_hardware_wallet">On Hardware Wallet</string>
+  <string name="id_your_phone_will_store_the_keys_to_your">Your phone will store the keys to your bitcoin, PIN protected.</string>
+  <string name="id_your_keys_will_be_secured_on_a_dedicated_cold_storage">Your keys will be secured on a dedicated cold storage device, PIN protected.</string>
+  <string name="id_for_ease_of_use">For Ease of Use</string>
+  <string name="id_for_higher_security">For Higher Security</string>
+  <string name="id_fully_air_gapped_with_qr">Fully air-gapped with QR</string>
+  <string name="id_qr_mode_allows_you_to_communicate">QR Mode allows you to communicate with Green using Jade\'s camera and QR codes (instead of USB or Bluetooth).</string>
+  <string name="id_qr_pin_unlock">QR PIN Unlock</string>
+  <string name="id_enter_your_pin_on_jade_to_unlock">Enter your PIN on Jade to Unlock</string>
+  <string name="id_unlock_your_jade_to_continue">Unlock your Jade to continue</string>
+  <string name="id_scan_qr_on_jade">Scan QR on Jade</string>
+  <string name="id_initiate_oracle_communication">Initiate oracle communication</string>
+  <string name="id_validate_pin_and_unlock">Validate PIN and unlock</string>
+  <string name="id_increase_qr_size">Increase QR Size</string>
+  <string name="id_dont_have_a_jade">Don’t have a Jade?</string>
+  <string name="id_check_our_store">Check our store</string>
 </resources>

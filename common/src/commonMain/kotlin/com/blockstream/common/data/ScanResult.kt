@@ -8,6 +8,6 @@ import com.blockstream.common.gdk.data.BcurDecodedData
 data class ScanResult(val result: String, val bcur: BcurDecodedData? = null) : Parcelable {
     companion object {
         fun from(bcurDecodedData: BcurDecodedData) =
-            ScanResult(result = bcurDecodedData.result, bcur = bcurDecodedData)
+            ScanResult(result = bcurDecodedData.simplePayload, bcur = bcurDecodedData)
     }
 }

@@ -3,6 +3,7 @@ package com.blockstream.green.ui.transaction.details
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.gdk.params.TransactionParams
 import com.blockstream.common.sideeffects.SideEffects
@@ -26,7 +27,7 @@ class TransactionDetailsViewModel constructor(
     @InjectedParam wallet: GreenWallet,
     @InjectedParam account: Account,
     @InjectedParam val initialTransaction: Transaction
-) : AbstractAccountWalletViewModel(wallet, account),
+) : AbstractAccountWalletViewModel(wallet, AccountAsset.fromAccount(account)),
     INote {
 
     val transactionLiveData = MutableLiveData<Pair<Transaction, TransactionDetailsLook>>()

@@ -33,7 +33,7 @@ class NetworkSmallListItem constructor(val network: String, val networkName: Str
 
         override fun bindView(item: NetworkSmallListItem, payloads: List<Any>) {
             title.text = item.networkName
-            // icon.setImageResource(if(Network.isSinglesig(item.network)) R.drawable.ic_singlesig else R.drawable.ic_multisig)
+            // icon.setImageResource(if(Network.isSinglesig(item.network)) R.drawable.ic_singlesig else R.drawable.key_multisig)
             networkIcon.setImageResource(item.network.getNetworkIcon())
         }
 

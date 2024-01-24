@@ -31,6 +31,7 @@ import com.blockstream.green.utils.feeRateWithUnit
 import com.blockstream.green.utils.toAmountLook
 import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -54,12 +55,12 @@ import kotlin.math.absoluteValue
 @KoinViewModel
 class SendViewModel constructor(
     @InjectedParam wallet: GreenWallet,
-    @InjectedParam accountAsset: AccountAsset,
+    @InjectedParam initAccountAsset: AccountAsset,
     @InjectedParam val isSweep: Boolean,
     @InjectedParam address: String?,
     @InjectedParam addressType: AddressInputType?,
     @InjectedParam val bumpTransaction: JsonElement?,
-) : AbstractAssetWalletViewModel(wallet, accountAsset), DenominationListener {
+) : AbstractAssetWalletViewModel(wallet, initAccountAsset), DenominationListener {
     override val filterSubAccountsWithBalance = true
 
     val isBump = bumpTransaction != null
@@ -67,18 +68,18 @@ class SendViewModel constructor(
 
     var activeRecipient = 0
 
-    private val recipients = MutableLiveData(mutableListOf(
+    private val recipients = MutableStateFlow(mutableListOf(
         AddressParamsLiveData.create(
             session = session,
             index = 0,
             address = address,
             addressInputType = addressType,
-            accountAsset = _accountAssetLiveData
+            accountAsset = this.accountAsset
         )
     ))
-    fun getRecipientsLiveData() = recipients
+    fun getRecipientsStateFlow() = recipients
 
-    fun getRecipientLiveData(index: Int) = recipients.value?.getOrNull(index)
+    fun getRecipientStateFlow(index: Int) = recipients.value.getOrNull(index)
 
     val feeSlider = MutableLiveData<Float>() // SliderHighIndex.toFloat() // fee slider selection, 0 for custom
     val feeAmount = MutableLiveData("") // total tx fee
@@ -239,7 +240,6 @@ class SendViewModel constructor(
 
         // Account
         addressParamsLiveData.accountAsset
-            .asFlow()
             .drop(1)// drop initial value
             .distinctUntilChanged()
             .onEach {
@@ -327,8 +327,8 @@ class SendViewModel constructor(
     }
 
     fun addRecipient() {
-        recipients.value = recipients.value?.apply { add(AddressParamsLiveData.create(session, size, accountAsset = _accountAssetLiveData)) }
-        recipients.value?.lastOrNull()?.let { setupChangeObserve(it) }
+        recipients.value = recipients.value.apply { add(AddressParamsLiveData.create(session, size, accountAsset = accountAsset)) }
+        recipients.value.lastOrNull()?.let { setupChangeObserve(it) }
     }
 
     fun removeRecipient(index: Int) {
@@ -461,7 +461,7 @@ class SendViewModel constructor(
 
                             if (network.isLiquid) {
                                 addressee.bip21Params?.assetId?.let { assetId ->
-                                    recipient.accountAsset.postValue(AccountAsset(recipient.accountAsset.value!!.account, assetId))
+                                    recipient.accountAsset.value = AccountAsset(recipient.accountAsset.value!!.account, assetId)
                                 }
                             }
 
@@ -508,7 +508,7 @@ class SendViewModel constructor(
 
                 checkedTransaction = tx
 
-                feeAmount.postValue(tx.fee?.toAmountLook(session = session, assetId = network.policyAsset, denomination = getRecipientLiveData(0)?.denomination?.value, withUnit = true, withGrouping = true, withMinimumDigits = false) ?: "")
+                feeAmount.postValue(tx.fee?.toAmountLook(session = session, assetId = network.policyAsset, denomination = getRecipientStateFlow(0)?.denomination?.value, withUnit = true, withGrouping = true, withMinimumDigits = false) ?: "")
                 feeAmountRate.postValue(tx.feeRateWithUnit() ?: "")
                 feeAmountFiat.postValue(tx.fee?.toAmountLook(session = session, denomination = Denomination.fiat(session), withUnit = true, withGrouping = true) ?: "")
 
@@ -573,7 +573,7 @@ class SendViewModel constructor(
     }
 
     fun setAccountAsset(index: Int, accountAsset: AccountAsset) {
-        getRecipientLiveData(index)?.let {
+        getRecipientStateFlow(index)?.let {
             // Clear amount if is new asset
             if (it.accountAsset.value?.assetId != accountAsset.assetId) {
                 it.amount.value = ""
@@ -602,7 +602,7 @@ class SendViewModel constructor(
     }
 
     fun sendAll(index: Int, isSendAll : Boolean) {
-        getRecipientLiveData(index)?.let { addressParams ->
+        getRecipientStateFlow(index)?.let { addressParams ->
             addressParams.isSendAll.value = isSendAll
             if(!isSendAll){ // clear amount
                 addressParams.amount.value = ""
@@ -616,7 +616,7 @@ class SendViewModel constructor(
     }
 
     suspend fun getAmountToConvert(): String{
-        return getRecipientLiveData(0)?.let { addressParams ->
+        return getRecipientStateFlow(0)?.let { addressParams ->
             // Get value from the transaction object to get the actual send all amount
             if (checkedTransaction?.isSendAll == true) {
                 addressParams.accountAsset.value?.assetId?.let { assetId ->
@@ -637,8 +637,8 @@ class SendViewModel constructor(
         } ?: ""
     }
 
-    override fun setDenomination(denominatedValue: DenominatedValue) {
-        getRecipientLiveData(0)?.also {
+    override fun setDenominatedValue(denominatedValue: DenominatedValue) {
+        getRecipientStateFlow(0)?.also {
             it.amount.value = denominatedValue.asInput(session) ?: ""
             it.denomination.value = denominatedValue.denomination
         }
@@ -649,7 +649,7 @@ data class AddressParamsLiveData constructor(
     val index: Int,
     val address: MutableLiveData<String>,
     var addressInputType: AddressInputType?,
-    val accountAsset: MutableLiveData<AccountAsset>,
+    val accountAsset: MutableStateFlow<AccountAsset?>,
     val amount: MutableLiveData<String>,
     val denomination: MutableLiveData<Denomination>,
     val isSendAll: MutableLiveData<Boolean> = MutableLiveData(false),
@@ -690,7 +690,7 @@ data class AddressParamsLiveData constructor(
     }
 
     companion object : KLogging() {
-        fun create(session: GdkSession, index: Int, address: String? = null, addressInputType : AddressInputType? = null, accountAsset: MutableLiveData<AccountAsset>) = AddressParamsLiveData(
+        fun create(session: GdkSession, index: Int, address: String? = null, addressInputType : AddressInputType? = null, accountAsset: MutableStateFlow<AccountAsset?>) = AddressParamsLiveData(
             index = index,
             address = MutableLiveData(address ?: ""),
             addressInputType = addressInputType,

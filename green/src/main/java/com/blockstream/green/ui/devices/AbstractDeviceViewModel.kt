@@ -72,18 +72,6 @@ abstract class AbstractDeviceViewModel constructor(
         ).walletHashId
     }
 
-    fun getWalletName(session: GdkSession, network: Network, device: Device) = if (device.isJade) {
-        session.getWalletFingerprint(
-            network = network,
-            gdkHwWallet = device.gdkHardwareWallet,
-            hwInteraction = this
-        )?.uppercase()?.let {
-            "Wallet: $it"
-        } ?: device.name
-    } else {
-        device.name
-    }
-
     override fun showError(err: String) {
         onError.postValue(ConsumableEvent(Exception(err)))
     }

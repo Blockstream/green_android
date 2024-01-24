@@ -5,10 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.data.Denomination
+import com.blockstream.common.models.receive.ReceiveViewModel
 import com.blockstream.common.utils.UserInput
 import com.blockstream.green.databinding.RequestAmountLabelBottomSheetBinding
 import com.blockstream.green.extensions.endIconCustomMode
-import com.blockstream.green.ui.receive.ReceiveViewModel
 import com.blockstream.green.ui.receive.RequestAmountLabelViewModel
 import com.blockstream.green.utils.AmountTextWatcher
 import kotlinx.coroutines.runBlocking
@@ -23,14 +23,14 @@ import org.koin.core.parameter.parametersOf
  */
 class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragment<RequestAmountLabelBottomSheetBinding, ReceiveViewModel>() {
     override val screenName = "RequestAmount"
-    override val segmentation get() = countly.accountSegmentation(session, viewModel.accountValue)
+    override val segmentation get() = countly.accountSegmentation(session, viewModel.account)
 
     override fun inflate(layoutInflater: LayoutInflater) = RequestAmountLabelBottomSheetBinding.inflate(layoutInflater)
 
     private val requestViewModel: RequestAmountLabelViewModel by viewModel {
         parametersOf(
-            viewModel.wallet,
-            viewModel.accountAssetValue,
+            viewModel.greenWallet,
+            viewModel.accountAsset.value!!,
             viewModel.requestAmount.value
         )
     }
@@ -45,7 +45,7 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
 
         binding.buttonOK.setOnClickListener {
             val amount: String? = try{
-                val input = UserInput.parseUserInput(session = session, input = requestViewModel.requestAmount.value, assetId = viewModel.accountAssetValue.assetId, denomination = Denomination.defaultOrFiat(session,requestViewModel.isFiat.value ?: false))
+                val input = UserInput.parseUserInput(session = session, input = requestViewModel.requestAmount.value, assetId = viewModel.accountAsset.value!!.assetId, denomination = Denomination.defaultOrFiat(session,requestViewModel.isFiat.value ?: false))
 
                 // Convert it to BTC as per BIP21 spec
                 runBlocking {
@@ -66,7 +66,7 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
                 null
             }
 
-            viewModel.setRequestAmount(amount)
+            viewModel.postEvent(ReceiveViewModel.LocalEvents.SetRequestAmount(amount))
 
             dismiss()
         }
@@ -77,7 +77,7 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
 
         binding.buttonClear.setOnClickListener {
             requestViewModel.requestAmount.value = ""
-            viewModel.clearRequestAmount()
+            viewModel.postEvent(ReceiveViewModel.LocalEvents.SetRequestAmount(null))
         }
 
         binding.buttonClose.setOnClickListener {

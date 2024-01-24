@@ -3,20 +3,40 @@ package com.blockstream.common.models.about
 import com.blockstream.common.Urls
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
+import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-abstract class AboutViewModelAbstract: GreenViewModel() {
+abstract class AboutViewModelAbstract : GreenViewModel() {
     abstract val year: String
     abstract val version: String
+
+    @NativeCoroutinesState
+    abstract val rate: MutableStateFlow<Int>
+
+    @NativeCoroutinesState
+    abstract val email: MutableStateFlow<String>
+
+    @NativeCoroutinesState
+    abstract val feedback: MutableStateFlow<String>
 }
 
 class AboutViewModel : AboutViewModelAbstract() {
 
     override fun screenName(): String = "About"
+
+    override val rate: MutableStateFlow<Int> = MutableStateFlow(0)
+    override val email: MutableStateFlow<String> = MutableStateFlow("")
+    override val feedback: MutableStateFlow<String> = MutableStateFlow("")
+
 
     class LocalEvents {
         object ClickTermsOfService : Events.OpenBrowser(Urls.TERMS_OF_SERVICE)
@@ -34,6 +54,7 @@ class AboutViewModel : AboutViewModelAbstract() {
         object CountlyCopyDeviceId : Event
         object CountlyResetDeviceId : Event
         object CountlyZeroOffset : Event
+        object SendFeedback: Event
     }
 
     override val year: String =
@@ -44,6 +65,13 @@ class AboutViewModel : AboutViewModelAbstract() {
     private var _clickCounter = 0
 
     init {
+
+        combine(rate, feedback) { rate, feedback ->
+            rate > 0 && feedback.isNotBlank()
+        }.onEach {
+            _isValid.value = it
+        }.launchIn(this)
+
         bootstrap()
     }
 
@@ -59,23 +87,46 @@ class AboutViewModel : AboutViewModelAbstract() {
             }
         } else if (event is LocalEvents.ClickFeedback) {
             postSideEffect(SideEffects.OpenDialog())
-        } else if (event is LocalEvents.CountlyResetDeviceId){
+        } else if (event is LocalEvents.CountlyResetDeviceId) {
             countly.resetDeviceId()
             postSideEffect(SideEffects.Snackbar("DeviceID reset. New DeviceId ${countly.getDeviceId()}"))
-        } else if (event is LocalEvents.CountlyZeroOffset){
+        } else if (event is LocalEvents.CountlyZeroOffset) {
             settingsManager.zeroCountlyOffset()
             countly.updateOffset()
             postSideEffect(SideEffects.Snackbar("Countly offset reset to zero"))
-        } else if (event is LocalEvents.CountlyCopyDeviceId){
+        } else if (event is LocalEvents.CountlyCopyDeviceId) {
             countly.getDeviceId().let { deviceId ->
-                postSideEffect(SideEffects.CopyToClipboard(deviceId, "DeviceID copied to Clipboard $deviceId"))
+                postSideEffect(
+                    SideEffects.CopyToClipboard(
+                        deviceId,
+                        "DeviceID copied to Clipboard $deviceId"
+                    )
+                )
             }
+        } else if (event is LocalEvents.SendFeedback) {
+            countly.recordFeedback(
+                rating = rate.value,
+                email = email.value.trim(),
+                comment = feedback.value
+            )
+            postSideEffect(SideEffects.Snackbar("id_thank_you_for_your_feedback"))
+            postSideEffect(SideEffects.Dismiss)
+
+            rate.value = 0
+            email.value = ""
+            feedback.value = ""
         }
     }
 }
 
-class AboutViewModelPreview(override val year: String, override val version: String) : AboutViewModelAbstract(){
-    companion object{
+class AboutViewModelPreview(override val year: String, override val version: String) :
+    AboutViewModelAbstract() {
+
+    override val rate: MutableStateFlow<Int> = MutableStateFlow(0)
+    override val email: MutableStateFlow<String> = MutableStateFlow("")
+    override val feedback: MutableStateFlow<String> = MutableStateFlow("")
+
+    companion object {
         fun preview() = AboutViewModelPreview(year = "2000", version = "4.0.0-preview")
     }
 }

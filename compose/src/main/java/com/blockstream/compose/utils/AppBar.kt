@@ -7,41 +7,31 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import com.blockstream.common.data.NavData
 import com.blockstream.compose.LocalAppBarState
 import com.blockstream.compose.components.MenuEntry
 
-@Immutable
-data class AppBarData(
-    val title: String? = null,
-    val subtitle: String? = null,
-    val hide: Boolean = false,
-    val menu: List<MenuEntry>? = null,
-    val onBack: (() -> Unit)? = null
-)
-
 @Stable
-class AppBarState(appBarData: AppBarData = AppBarData()) {
-    var data = mutableStateOf(appBarData)
+class AppBarState(navData: NavData = NavData()) {
+    var data = mutableStateOf(navData)
         private set
 
-    fun update(data : AppBarData){
+    fun update(data : NavData){
         this.data.value = data
     }
 }
 
 @Composable
-fun Screen.AppBar(fn: @Composable () -> AppBarData = { AppBarData() }) {
+fun Screen.AppBar(navData: NavData) {
     val screen = this
     val localAppBarState = LocalAppBarState.current
     val navigator = LocalNavigator.current
 
-    val appBarData = fn.invoke()
-
-    val key = appBarData.hashCode() + (navigator?.lastItemOrNull?.hashCode() ?: 0)
+    val key = navData.hashCode() + (navigator?.lastItemOrNull?.hashCode() ?: 0)
 
     LaunchedEffect(key) {
         if(navigator?.lastItemOrNull == screen){
-            localAppBarState.update(appBarData)
+            localAppBarState.update(navData)
         }
     }
 }

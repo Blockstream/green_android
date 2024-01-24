@@ -12,34 +12,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.drawer.DrawerViewModel
 import com.blockstream.common.models.wallets.WalletsViewModelAbstract
 import com.blockstream.common.models.wallets.WalletsViewModelPreview
+import com.blockstream.compose.GreenPreview
+import com.blockstream.compose.LocalDrawer
 import com.blockstream.compose.R
 import com.blockstream.compose.components.AboutButton
 import com.blockstream.compose.components.AppSettingsButton
 import com.blockstream.compose.components.GreenSpacer
 import com.blockstream.compose.components.HelpButton
-import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.utils.HandleSideEffect
+import kotlinx.coroutines.launch
 
-
-class DrawerScreenCallbacks(
-    onWalletClick: (wallet: GreenWallet, isLightning: Boolean) -> Unit = { _, _ -> },
-    onNewWalletClick: () -> Unit = {},
-    val onHelpClick: () -> Unit = {},
-    val onAboutClick: () -> Unit = {},
-    val onAppSettingsClick: () -> Unit = {},
-) : WalletSectionCallbacks(onWalletClick = onWalletClick, onNewWalletClick = onNewWalletClick)
 
 @Composable
 fun DrawerScreen(
-    viewModel: WalletsViewModelAbstract,
-    callbacks: DrawerScreenCallbacks = DrawerScreenCallbacks()
+    viewModel: WalletsViewModelAbstract
 ) {
-    HandleSideEffect(viewModel = viewModel)
+    val drawer = LocalDrawer.current
+    HandleSideEffect(viewModel = viewModel) {
+        launch {
+            drawer.close()
+        }
+    }
 
     Column(modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
         Image(
@@ -53,27 +50,23 @@ fun DrawerScreen(
 
         WalletsScreen(
             modifier = Modifier.weight(1f),
-            viewModel = viewModel,
-            callbacks = callbacks,
+            viewModel = viewModel
         )
 
         Row(modifier = Modifier.fillMaxWidth()) {
             HelpButton {
-                callbacks.onHelpClick()
                 viewModel.postEvent(DrawerViewModel.LocalEvents.ClickHelp)
             }
         }
 
         Row(modifier = Modifier.fillMaxWidth()) {
             AboutButton {
-                callbacks.onAboutClick()
                 viewModel.postEvent(Events.About)
             }
 
             Spacer(modifier = Modifier.weight(1f))
 
             AppSettingsButton {
-                callbacks.onAppSettingsClick()
                 viewModel.postEvent(Events.AppSettings)
             }
         }
@@ -83,7 +76,7 @@ fun DrawerScreen(
 @Composable
 @Preview
 fun DrawerScreenPreview() {
-    GreenTheme {
+    GreenPreview {
         DrawerScreen(viewModel = WalletsViewModelPreview.previewSoftwareOnly())
     }
 }
