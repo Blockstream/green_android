@@ -3,16 +3,21 @@ package com.blockstream.green.ui.bottomsheets
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.content.FileProvider
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
+import com.blockstream.common.extensions.logException
+import com.blockstream.common.lightning.LightningManager
 import com.blockstream.common.lightning.channelsBalanceSatoshi
 import com.blockstream.common.lightning.inboundLiquiditySatoshi
 import com.blockstream.common.lightning.maxPayableSatoshi
 import com.blockstream.common.lightning.maxReceivableSatoshi
 import com.blockstream.common.lightning.maxSinglePaymentAmountSatoshi
+import com.blockstream.common.utils.Loggable
 import com.blockstream.green.R
 import com.blockstream.green.databinding.LightningNodeBottomSheetBinding
 import com.blockstream.green.databinding.ListItemActionBinding
+import com.blockstream.green.extensions.shareTextFile
 import com.blockstream.green.ui.items.ActionListItem
 import com.blockstream.green.ui.items.OverlineTextListItem
 import com.blockstream.green.ui.overview.AccountOverviewFragment
@@ -26,6 +31,9 @@ import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import java.io.File
 
 
 class LightningNodeBottomSheetFragment :
@@ -106,6 +114,8 @@ class LightningNodeBottomSheetFragment :
 
             buttonActions.buttonOutline = if(isDevelopmentOrDebug && it.channelsBalanceSatoshi() > 0) StringHolder(R.string.id_empty_lightning_account) else StringHolder()
 
+            buttonActions.buttonText = StringHolder("Share Logs")
+
             itemAdapter.set(list)
 
         }.launchIn(lifecycleScope)
@@ -122,6 +132,28 @@ class LightningNodeBottomSheetFragment :
             dismiss()
         }
 
+        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.buttonText }) { _, _, _, _ ->
+            lifecycleScope.launch(context = logException()) {
+                val nodeId = session.lightningSdk.nodeInfoStateFlow.value.id
+                val file = File(requireContext().cacheDir, "Greenlight_Logs_$nodeId.txt")
+
+                // Delete the previous file as a procaution to share an old version
+                file.delete()
+
+                val lightningManager: LightningManager by inject()
+
+                file.writeText(lightningManager.logs.toString())
+
+                val fileUri = FileProvider.getUriForFile(
+                    requireActivity(),
+                    requireContext().packageName.toString() + ".provider",
+                    file
+                )
+
+                shareTextFile(fileUri)
+            }
+        }
+
         binding.recycler.apply {
             adapter = fastAdapter
         }
@@ -131,7 +163,7 @@ class LightningNodeBottomSheetFragment :
         }
     }
 
-    companion object {
+    companion object: Loggable() {
         fun show(fragmentManager: FragmentManager) {
             show(LightningNodeBottomSheetFragment(), fragmentManager)
         }

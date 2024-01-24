@@ -1,5 +1,7 @@
 package com.blockstream.common.data
 
+import com.blockstream.common.utils.Loggable
+
 data class AppConfig constructor(
     val isDebug: Boolean,
     val gdkDataDir: String,
@@ -11,7 +13,7 @@ data class AppConfig constructor(
     val lightningFeatureEnabled: Boolean = true,
     val storeRateEnabled: Boolean = false
 ) {
-    companion object {
+    companion object: Loggable() {
         fun default(
             isDebug: Boolean,
             gdkDataDir: String,
@@ -20,6 +22,11 @@ data class AppConfig constructor(
             lightningFeatureEnabled: Boolean,
             storeRateEnabled: Boolean
         ): AppConfig {
+
+            if (lightningFeatureEnabled && (appKeys?.greenlightCert == null || appKeys.greenlightKey == null || appKeys.breezApiKey == null)) {
+                logger.i { "Lightning Feature turned off" }
+            }
+
             return AppConfig(
                 isDebug = isDebug,
                 gdkDataDir = gdkDataDir,
@@ -28,7 +35,7 @@ data class AppConfig constructor(
                 greenlightCert = appKeys?.greenlightCert,
                 zendeskClientId = appKeys?.zendeskClientId,
                 analyticsFeatureEnabled = analyticsFeatureEnabled,
-                lightningFeatureEnabled = lightningFeatureEnabled,
+                lightningFeatureEnabled = lightningFeatureEnabled && appKeys?.greenlightCert != null,
                 storeRateEnabled = storeRateEnabled
             )
         }

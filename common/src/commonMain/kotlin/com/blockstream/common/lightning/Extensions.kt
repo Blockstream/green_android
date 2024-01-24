@@ -161,7 +161,7 @@ fun Transaction.Companion.fromPayment(payment: Payment): Transaction {
         memo = payment.description ?: "",
         rbfOptin = false,
         spvVerified = "",
-        txHash = (payment.details as? PaymentDetails.ClosedChannel)?.data?.closingTxid ?: "",
+        txHash = (payment.details as? PaymentDetails.Ln)?.data?.paymentHash ?: (payment.details as? PaymentDetails.ClosedChannel)?.data?.closingTxid ?: payment.id,
         type = if(payment.paymentType == PaymentType.RECEIVED) "incoming" else "outgoing",
         satoshi = mapOf(BTC_POLICY_ASSET to payment.amountSatoshi()),
         message = ((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Message)?.data?.message,
@@ -212,11 +212,10 @@ fun Transaction.Companion.fromReverseSwapInfo(account: Account, reverseSwapInfo:
         memo = "",
         rbfOptin = false,
         spvVerified = "",
-        txHash = "",
+        txHash = reverseSwapInfo.claimTxid ?: reverseSwapInfo.lockupTxid ?: reverseSwapInfo.id,
         type = Transaction.Type.OUT.gdkType,
         satoshi = mapOf(BTC_POLICY_ASSET to reverseSwapInfo.onchainAmountSat.toLong()),
         isLightningSwap = true,
-        isLightningReverseSwap = true,
         isInProgressSwap = true,
     )
 }

@@ -185,8 +185,8 @@ class GdkSession constructor(
 
     var isWatchOnly: Boolean = false
 
-    // Block notification handling until all networks are initialized
-    private var blockNotificationHandling = false
+    //  Disable notification handling until all networks are initialized
+    private var _disableNotificationHandling = false
 
     private var _walletTotalBalanceSharedFlow = MutableStateFlow(-1L)
     private var _activeAccountStateFlow: MutableStateFlow<Account?> = MutableStateFlow(null)
@@ -1230,7 +1230,7 @@ class GdkSession constructor(
         this.isWatchOnly = loginCredentialsParams.isWatchOnly
         this.device = device
 
-        blockNotificationHandling = true
+        _disableNotificationHandling = true
         _walletActiveEventInvalidated = true
 
         val connectedNetworks = connect(
@@ -1502,7 +1502,7 @@ class GdkSession constructor(
         }
 
         // Allow initialization calls to have priority over notifications initiated updates (getWalletTransactions & updateAccountAndBalances)
-        blockNotificationHandling = false
+        _disableNotificationHandling = false
     }
 
     private suspend fun initializeSessionData(initNetwork: String?, initAccount: Long?) {
@@ -2379,6 +2379,10 @@ class GdkSession constructor(
                     error = "id_invoice_expired"
                 }
 
+                if(sendableSatoshi == null || sendableSatoshi == 0L){
+                    error = "id_invalid_amount"
+                }
+
                 // Make it not null
                 sendableSatoshi = sendableSatoshi ?: 0L
 
@@ -2609,7 +2613,7 @@ class GdkSession constructor(
                     if(it.height > 0) {
                         blockStateFlow(network).value = it
 
-                        if(!blockNotificationHandling) {
+                        if(!_disableNotificationHandling) {
                             // Update transactions
                             accounts.value.filter { it.network == network }.also { accounts ->
                                 accounts.forEach {
@@ -2676,13 +2680,13 @@ class GdkSession constructor(
                 _tickerSharedFlow.tryEmit(Unit)
             }
             "subaccount" -> {
-                if(notification.subaccount?.isSynced == true) {
+                if(!_disableNotificationHandling && notification.subaccount?.isSynced == true) {
                     updateAccountsAndBalances()
                     updateWalletTransactions()
                 }
             }
             "transaction" -> {
-                if (!blockNotificationHandling) {
+                if (!_disableNotificationHandling) {
                     notification.transaction?.let { event ->
                         event.subaccounts.mapNotNull { subAccount ->
                             accounts.value.find {

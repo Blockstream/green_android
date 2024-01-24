@@ -43,11 +43,7 @@ abstract class RecoverFundsViewModelAbstract(greenWallet: GreenWallet, val isSen
         onChainAddress != null
     }
 
-    val isSweep by lazy {
-        onChainAddress == null
-    }
-
-    override fun screenName(): String = if(isRefund) "OnChainRefund" else if(isSendAll) "LightningSendAll" else "LightningSweep"
+    override fun screenName(): String = if(isRefund) "OnChainRefund" else if(isSendAll) "LightningSendAll" else "RedeemOnchainFunds"
 
     @NativeCoroutinesState
     abstract val address: MutableStateFlow<String>
@@ -239,20 +235,20 @@ class RecoverFundsViewModel(
                     feeFiat.value = it.refundTxFeeSat.toLong().toAmountLook(session = session, withUnit = true, denomination = Denomination.fiat(session))
                 }
             } else {
-                // Sweep from Lightning node
-                session.lightningSdk.prepareSweep(
+                // Redeem Onchain funds from Lightning node
+                session.lightningSdk.prepareRedeemOnchainFunds(
                     toAddress = address.value,
                     satPerVbyte = getFee()?.toUInt()
                 ).also {
-                    if(satoshi - it.sweepTxFeeSat.toLong() < 0){
+                    if(satoshi - it.txFeeSat.toLong() < 0){
                         throw Exception("id_insufficient_funds")
                     }
 
-                    amountToBeRefunded.value = (satoshi - it.sweepTxFeeSat.toLong()).toAmountLook(session = session, withUnit = true)
-                    amountToBeRefundedFiat.value = (satoshi - it.sweepTxFeeSat.toLong()).toAmountLook(session = session, withUnit = true, denomination = Denomination.fiat(session))
+                    amountToBeRefunded.value = (satoshi - it.txFeeSat.toLong()).toAmountLook(session = session, withUnit = true)
+                    amountToBeRefundedFiat.value = (satoshi - it.txFeeSat.toLong()).toAmountLook(session = session, withUnit = true, denomination = Denomination.fiat(session))
 
-                    fee.value = it.sweepTxFeeSat.toLong().toAmountLook(session = session, withUnit = true)
-                    feeFiat.value = it.sweepTxFeeSat.toLong().toAmountLook(session = session, withUnit = true, denomination = Denomination.fiat(session))
+                    fee.value = it.txFeeSat.toLong().toAmountLook(session = session, withUnit = true)
+                    feeFiat.value = it.txFeeSat.toLong().toAmountLook(session = session, withUnit = true, denomination = Denomination.fiat(session))
                 }
             }
         }, onError = {
@@ -292,8 +288,8 @@ class RecoverFundsViewModel(
                     satPerVbyte = getFee()?.toUInt()
                 ).refundTxId
             } else {
-                // Sweep from Lightning node
-                session.lightningSdk.sweep(
+                // Redeem Onchain funds from Lightning node
+                session.lightningSdk.redeemOnchainFunds(
                     toAddress = address.value,
                     satPerVbyte = getFee()?.toUInt()
                 ).txid

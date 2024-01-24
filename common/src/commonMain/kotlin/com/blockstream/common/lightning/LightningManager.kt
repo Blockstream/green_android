@@ -1,17 +1,37 @@
 package com.blockstream.common.lightning
 
+import breez_sdk.LogEntry
+import breez_sdk.LogStream
+import breez_sdk.setLogStream
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.utils.Loggable
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.datetime.Clock
 
-class LightningManager(private val scope: ApplicationScope, private val greenlightKeys: GreenlightKeys) {
+class LightningManager constructor(private val scope: ApplicationScope, private val greenlightKeys: GreenlightKeys) {
     private val bridges = mutableMapOf<String, LightningBridge>()
     private val references = mutableMapOf<LightningBridge, Int>()
 
     private val mutex = Mutex()
+
+    val logs = StringBuilder()
+
+    init {
+        setLogStream(object : LogStream {
+            override fun log(l: LogEntry) {
+                if(l.level == "DEBUG") {
+                    logs.append("${Clock.System.now()} - ${l.line}\n")
+                    if(logs.length > 2_000_000){
+                        logger.d { "Clear Lightning Logs" }
+                        logs.deleteRange(0, 1_000_000)
+                    }
+                }
+            }
+        })
+    }
 
     @NativeCoroutinesIgnore
     suspend fun getLightningBridge(

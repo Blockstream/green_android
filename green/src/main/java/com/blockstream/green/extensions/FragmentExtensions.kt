@@ -354,6 +354,19 @@ fun Fragment.shareJPEG(uri: Uri) {
     )
 }
 
+fun Fragment.shareTextFile(uri: Uri) {
+    val builder = ShareCompat.IntentBuilder(requireActivity())
+        .setType("text/plain")
+        .setStream(uri)
+
+    requireActivity().startActivity(
+        Intent.createChooser(
+            builder.intent,
+            getString(R.string.id_share)
+        )
+    )
+}
+
 fun Fragment.showPopupMenu(
     view: View,
     @MenuRes menuRes: Int,

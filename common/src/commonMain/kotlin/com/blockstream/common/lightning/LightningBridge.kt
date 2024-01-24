@@ -27,14 +27,16 @@ import breez_sdk.OpenChannelFeeRequest
 import breez_sdk.OpenChannelFeeResponse
 import breez_sdk.OpeningFeeParams
 import breez_sdk.Payment
+import breez_sdk.PrepareRedeemOnchainFundsRequest
+import breez_sdk.PrepareRedeemOnchainFundsResponse
 import breez_sdk.PrepareRefundRequest
 import breez_sdk.PrepareRefundResponse
-import breez_sdk.PrepareSweepRequest
-import breez_sdk.PrepareSweepResponse
 import breez_sdk.ReceiveOnchainRequest
 import breez_sdk.ReceivePaymentRequest
 import breez_sdk.ReceivePaymentResponse
 import breez_sdk.RecommendedFees
+import breez_sdk.RedeemOnchainFundsRequest
+import breez_sdk.RedeemOnchainFundsResponse
 import breez_sdk.RefundRequest
 import breez_sdk.RefundResponse
 import breez_sdk.ReportIssueRequest
@@ -49,8 +51,6 @@ import breez_sdk.SendOnchainResponse
 import breez_sdk.SendPaymentRequest
 import breez_sdk.SendPaymentResponse
 import breez_sdk.SwapInfo
-import breez_sdk.SweepRequest
-import breez_sdk.SweepResponse
 import breez_sdk.connect
 import breez_sdk.defaultConfig
 import breez_sdk.mnemonicToSeed
@@ -386,12 +386,12 @@ class LightningBridge constructor(
         }
     }
 
-    fun prepareSweep(toAddress: String, satPerVbyte: UInt?): PrepareSweepResponse {
+    fun prepareRedeemOnchainFunds(toAddress: String, satPerVbyte: UInt?): PrepareRedeemOnchainFundsResponse {
         return try {
-            breezSdk.prepareSweep(
-                PrepareSweepRequest(
+            breezSdk.prepareRedeemOnchainFunds(
+                PrepareRedeemOnchainFundsRequest(
                     toAddress = toAddress,
-                    satPerVbyte = satPerVbyte?.toULong() ?: breezSdk.recommendedFees().economyFee
+                    satPerVbyte = satPerVbyte ?: breezSdk.recommendedFees().economyFee.toUInt()
                 )
             )
         } catch (e: Exception) {
@@ -417,10 +417,10 @@ class LightningBridge constructor(
         }
     }
 
-    fun sweep(toAddress: String, satPerVbyte: UInt?): SweepResponse {
+    fun redeemOnchainFunds(toAddress: String, satPerVbyte: UInt?): RedeemOnchainFundsResponse {
         return try {
-            breezSdk.sweep(
-                SweepRequest(
+            breezSdk.redeemOnchainFunds(
+                RedeemOnchainFundsRequest(
                     toAddress = toAddress,
                     satPerVbyte = satPerVbyte ?: breezSdk.recommendedFees().economyFee.toUInt()
                 )
