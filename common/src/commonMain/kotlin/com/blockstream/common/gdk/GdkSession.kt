@@ -2761,6 +2761,7 @@ class GdkSession constructor(
         const val LIQUID_ASSETS_TESTNET_KEY = "liquid_assets_testnet"
 
         val BlockstreamPinOracleUrls = listOf(
+            "https://j8d.io",
             "https://jadepin.blockstream.com",
             "http://mrrxtq6tjpbnbm7vh5jt6mpjctn7ggyfy5wegvbeff3x7jrznqawlmid.onion", // onion jadepin
             "https://jadefw.blockstream.com",
