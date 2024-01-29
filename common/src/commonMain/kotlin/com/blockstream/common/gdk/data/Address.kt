@@ -15,7 +15,6 @@ data class Address constructor(
     @SerialName("branch") val branch: Long = 0,
     @SerialName("tx_count") val txCount: Long? = null,
     @SerialName("script") val script: String? = null,
-    @SerialName("script_type") val scriptType: Int? = null,
     @SerialName("subaccount") val subaccount: Int? = null,
     @SerialName("subtype") val subType: Long? = null,
     @SerialName("user_path") val userPath: List<Long>? = null,

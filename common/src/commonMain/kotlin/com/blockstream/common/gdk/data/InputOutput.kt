@@ -34,7 +34,6 @@ data class InputOutput constructor(
 
     @SerialName("satoshi") val satoshi: Long? = null,
     @SerialName("script") val script: String? = null,
-    @SerialName("script_type") val scriptType: Int? = null,
     @SerialName("scriptpubkey") val scriptPubkey: String? = null,
 
     @SerialName("sequence") val sequence: Long? = null, // this is UInt until Parcelize is supported
