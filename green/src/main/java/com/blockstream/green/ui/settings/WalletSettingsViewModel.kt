@@ -256,7 +256,7 @@ open class WalletSettingsViewModel constructor(
             database.deleteLoginCredentials(wallet.id, CredentialType.PASSWORD_PINDATA)
         }, onSuccess = {
             postSideEffect(SideEffects.Snackbar("id_you_have_successfully_changed"))
-            postSideEffect(SideEffects.Success())
+            postSideEffect(SideEffects.NavigateBack())
         })
     }
 

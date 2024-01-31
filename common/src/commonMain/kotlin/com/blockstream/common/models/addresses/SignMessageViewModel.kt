@@ -51,10 +51,7 @@ class SignMessageViewModel(greenWallet: GreenWallet, account: Account, val addre
                     address = address,
                     message = message.value
                 ),
-                hardwareWalletResolver = DeviceResolver.createIfNeeded(
-                    session.gdkHwWallet,
-                    this
-                )
+                hardwareWalletResolver = DeviceResolver.createIfNeeded(session.gdkHwWallet)
             ).signature
         }, onSuccess = {
             _signature.value = it

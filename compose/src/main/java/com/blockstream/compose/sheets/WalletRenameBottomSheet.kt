@@ -92,21 +92,21 @@ fun WalletRenameBottomSheet(
         // Holds the latest TextFieldValue that BasicTextField was recomposed with. We couldn't simply
         // pass `TextFieldValue(text = value)` to the CoreTextField because we need to preserve the
         // composition.
-//        val textFieldValue = textFieldValueState.copy(text = name)
+        val textFieldValue = textFieldValueState.copy(text = name)
 
-//        SideEffect {
-//            if (textFieldValue.selection != textFieldValueState.selection ||
-//                textFieldValue.composition != textFieldValueState.composition
-//            ) {
-//                textFieldValueState = textFieldValue
-//            }
-//        }
+        SideEffect {
+            if (textFieldValue.selection != textFieldValueState.selection ||
+                textFieldValue.composition != textFieldValueState.composition
+            ) {
+                textFieldValueState = textFieldValue
+            }
+        }
 
         TextField(
             value = textFieldValueState,
             onValueChange = viewModel.name.onTextFieldValueChange {
                 textFieldValueState = it
-             },
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .focusRequester(focusRequester),

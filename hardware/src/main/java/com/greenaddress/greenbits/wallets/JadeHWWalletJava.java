@@ -224,12 +224,14 @@ abstract public class JadeHWWalletJava extends HWWallet {
     public synchronized com.blockstream.common.gdk.device.SignMessageResult signMessage(@Nullable HardwareWalletInteraction hwInteraction, @NonNull List<Integer> path, @NonNull String message, boolean useAeProtocol, @Nullable String aeHostCommitment, @Nullable String aeHostEntropy) {
         Log.d(TAG, "signMessage() for message of length " + message.length() + " using path " + path);
 
+        boolean isSilent = path.size() == 1 && path.get(0) == 1195487518 && message.startsWith("greenaddress.it      login ");
+
         CompletableDeferred completable = CompletableDeferredKt.CompletableDeferred(null);
 
         try {
             final List<Long> unsignedPath = getUnsignedPath(path);
 
-            if (hwInteraction != null) {
+            if (hwInteraction != null && !isSilent) {
                 hwInteraction.interactionRequest(this, completable, "id_check_your_device");
             }
 

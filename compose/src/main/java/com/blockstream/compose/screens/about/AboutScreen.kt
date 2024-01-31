@@ -208,20 +208,20 @@ fun AboutScreen(
 
         GreenColumn(padding = 0) {
 
-//            GreenCard(
-//                modifier = Modifier
-//                    .align(Alignment.CenterHorizontally)
-//                    .clickable {
-//                        viewModel.postEvent(AboutViewModel.LocalEvents.ClickFeedback)
-//                    },
-//            ) {
-//                Text(
-//                    stringResource(id = R.string.id_give_us_your_feedback),
-//                    modifier = Modifier.align(Alignment.Center),
-//                    color = MaterialTheme.colorScheme.primary,
-//                    style = labelLarge,
-//                )
-//            }
+            GreenCard(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .clickable {
+                        viewModel.postEvent(AboutViewModel.LocalEvents.ClickFeedback)
+                    },
+            ) {
+                Text(
+                    stringResource(id = R.string.id_give_us_your_feedback),
+                    modifier = Modifier.align(Alignment.Center),
+                    color = MaterialTheme.colorScheme.primary,
+                    style = labelLarge,
+                )
+            }
 
             GreenCard(
                 modifier = Modifier

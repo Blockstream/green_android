@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.arkivanov.essenty.statekeeper.stateKeeper
 import com.blockstream.common.data.ScanResult
 import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.getBip39WordList
@@ -59,7 +60,7 @@ class EnterRecoveryPhraseFragment : AppFragment<EnterRecoveryPhraseFragmentBindi
         get() = args.setupArgs.network?.getNetworkIcon()
 
     val viewModel: EnterRecoveryPhraseViewModel by viewModel {
-        parametersOf(args.setupArgs)
+        parametersOf(args.setupArgs, stateKeeper())
     }
 
     override fun getGreenViewModel(): GreenViewModel = viewModel

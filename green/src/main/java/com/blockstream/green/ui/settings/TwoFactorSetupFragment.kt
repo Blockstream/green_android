@@ -134,7 +134,7 @@ class TwoFactorSetupFragment : AbstractWalletFragment<TwofactorSetupFragmentBind
             text = R.string.id_by_continuing_you_agree_to_blockstream_s,
             color = R.color.color_on_surface_emphasis_medium,
             links = listOf(
-                R.string.id_tos to object : ClickableSpan() {
+                R.string.id_terms_of_service to object : ClickableSpan() {
                     override fun onClick(widget: View) {
                         viewModel.postEvent(TwoFactorSetupViewModel.LocalEvents.ClickTermsOfService())
                     }

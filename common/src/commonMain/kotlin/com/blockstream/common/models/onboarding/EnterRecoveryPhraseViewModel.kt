@@ -1,5 +1,7 @@
 package com.blockstream.common.models.onboarding
 
+import com.arkivanov.essenty.statekeeper.StateKeeper
+import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
 import com.blockstream.common.data.Redact
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Event
@@ -11,6 +13,7 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.Loggable
 import com.rickclephas.kmm.viewmodel.MutableStateFlow
 import com.rickclephas.kmm.viewmodel.coroutineScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
@@ -18,6 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.serialization.Serializable
 import org.koin.core.component.inject
 import kotlin.math.ceil
 import kotlin.math.max
@@ -68,7 +72,7 @@ abstract class EnterRecoveryPhraseViewModelAbstract(val setupArgs: SetupArgs) :
     abstract val bip39WordList: List<String>
 }
 
-class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs) :
+class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeeper = StateKeeperDispatcher()) :
     EnterRecoveryPhraseViewModelAbstract(setupArgs) {
     val wally: Wally by inject()
 
@@ -111,6 +115,14 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs) :
     init {
         bootstrap()
 
+        stateKeeper.register(STATE, State.serializer()) {
+            State(mnemonic = toMnemonic())
+        }
+
+        stateKeeper.consume(STATE, State.serializer())?.mnemonic.takeIf { it.isNotBlank() }?.also {
+            setRecoveryPhrase(it)
+        }
+
         combine(recoveryPhrase,recoveryPhraseSize, activeWord) { _, _, _ ->
             checkRecoveryPhrase()
         }.launchIn(viewModelScope.coroutineScope)
@@ -127,17 +139,8 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs) :
             }
         } else if (event is LocalEvents.MnemonicEncryptionPassword) {
             proceed(setupArgs.copy(mnemonic = toMnemonic(), password = event.password))
-
         } else if (event is LocalEvents.SetRecoveryPhrase) {
-            println("RECOVERY: -> '${event.recoveryPhrase}'")
-            // Basic check to prevent huge inputs
-            recoveryPhrase.value = event.recoveryPhrase
-                .trim()
-                .replace("\n", " ")
-                .replace("\\s+", "")
-                .takeIf { it.isNotBlank() }
-                ?.split(" ")?.takeIf { it.size <= 32 }?.toMutableList() ?: mutableListOf()
-            activeWord.value = -1
+            setRecoveryPhrase(event.recoveryPhrase)
         } else if (event is LocalEvents.KeyAction) {
             keyAction(event.key)
         } else if (event is LocalEvents.SetActiveWord) {
@@ -145,6 +148,17 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs) :
                 event.index
             } else -1
         }
+    }
+
+    private fun setRecoveryPhrase(phrase: String){
+        // Basic check to prevent huge inputs
+        recoveryPhrase.value = phrase
+            .trim()
+            .replace("\n", " ")
+            .replace("\\s+", "")
+            .takeIf { it.isNotBlank() }
+            ?.split(" ")?.takeIf { it.size <= 32 }?.toMutableList() ?: mutableListOf()
+        activeWord.value = -1
     }
 
     private fun proceed(setupArgs: SetupArgs) {
@@ -294,6 +308,15 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs) :
 
     private fun toMnemonic(): String {
         return recoveryPhrase.value.joinToString(" ")
+    }
+
+    @Serializable
+    private class State(
+        val mnemonic: String
+    )
+
+    companion object: Loggable() {
+        const val STATE = "STATE"
     }
 }
 

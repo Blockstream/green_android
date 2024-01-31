@@ -3,6 +3,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.24] - 2024-01-31
+
+### Changed
+- Export Greenlight logs
+- Add "Receive any Liquid/AMP asset" to the assets list on Receive and Create New Account screens
+
+### Changed
+- 2FA SMS activation comply with US requirements
+- Allow setting custom fees when recovering funds from Lightning
+- Refactor ViewModels to support Kotlin Multiplatform
+- Rewrite some UI screens into Jetpack Compose
+- Update Jade Oracle whitelisted urls
+- Bump Breez to version 0.2.15
+- Bump GDK to version 0.70.0
+
+### Fixed
+- Fix F-Droid build
+- Fix message signing UI
+- Various bug fixes
+
 ## [4.0.23] - 2024-01-08
 
 ### Changed

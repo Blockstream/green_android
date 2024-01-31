@@ -86,7 +86,7 @@
 
             <include
                 android:id="@+id/createNewAccount"
-                isVisible="@{isSelected}"
+                isVisible="@{isSelected &amp;&amp; !isWatchOnly}"
                 layout="@layout/select_account_layout" />
 
         </LinearLayout>

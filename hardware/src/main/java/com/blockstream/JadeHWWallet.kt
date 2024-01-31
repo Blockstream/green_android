@@ -32,26 +32,16 @@ class JadeHWWallet constructor(
     suspend fun authenticate(hwWalletLogin: HwWalletLogin,
                              jadeFirmwareManager: JadeFirmwareManager): Boolean {
         /*
-         * 1. check firmware (and maybe OTA) any completely uninitialised device (ie no keys/pin set - no unlocking needed)
-         * 2. authenticate the user (see above)
-         * 3. check the firmware again (and maybe OTA) for devices that are set-up (and hence needed unlocking first)
-         * 4. authenticate the user *if required* - as we may have OTA'd and rebooted the hww.  Should be a no-op if not needed.
+         * 1. authenticate the user (see above)
+         * 2. check the firmware (and maybe OTA)
+         * 3. authenticate the user *if required* - as we may have OTA'd and rebooted the hww.  Should be a no-op if not needed.
          */
-
-        // check firmware (and maybe OTA) any completely uninitialised device (ie no keys/pin set - no unlocking needed)
-        jadeFirmwareManager.checkFirmware(
-            jade = jadeApi,
-            checkIfUninitialized = true
-        )
 
         // authenticate the user (see above)
         authUser(hwWalletLogin)
 
-        // check the firmware again (and maybe OTA) for devices that are set-up and are below minimum firmware version (and hence needed unlocking first)
-        val fwValid = jadeFirmwareManager.checkFirmware(
-            jade = jadeApi,
-            checkIfUninitialized = false
-        )
+        // check the firmware (and maybe OTA) for devices that are set-up and are below minimum firmware version (and hence needed unlocking first)
+        val fwValid = jadeFirmwareManager.checkFirmware(jade = jadeApi)
 
         if(fwValid == true){
             return authUser(hwWalletLogin) // re-auth if required

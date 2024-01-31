@@ -52,6 +52,7 @@ object AppReviewHelper {
         MaterialAlertDialogBuilder(fragment.requireContext())
             .setTitle(R.string.id_give_us_your_feedback)
             .setView(dialogBinding.root)
+            .setCancelable(false)
             .setPositiveButton(R.string.id_send) { _, _ ->
                 if (dialogBinding.toggleRate.checkedButtonId > 0 || !dialogBinding.feedbackText.text.isNullOrBlank()) {
                     fragment.countly.recordFeedback(

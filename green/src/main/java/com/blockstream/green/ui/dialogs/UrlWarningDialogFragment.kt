@@ -31,7 +31,7 @@ class UrlWarningDialogFragment : AbstractDialogFragment<UrlWarningDialogBinding>
 
         isCancelable = false
 
-        binding.connectionAttemptHost = getString(R.string.id_connection_attempt_to_s, urls.firstOrNull()?.hostname())
+        binding.connectionAttemptHost = getString(R.string.id_connection_attempt_to_s, urls.map { it.hostname() }.joinToString(", "))
 
         binding.buttonClose.setOnClickListener {
             handle(false)

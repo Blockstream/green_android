@@ -1433,8 +1433,7 @@
   <string name="id_some_accounts_can_not_be_logged_in_due_to_network">Some accounts can not be logged in due to network issues. Please try again later.</string>
   <string name="id_the_lightning_service_is_currently_unavailable_for">The Lightning service is currently unavailable for maintenance, but it will be back soon.</string>
   <string name="id_the_lightning_service_is_currently_unavailable_we">The Lightning service is currently unavailable. We apologize for the disruption, we are working to bring the service back online.</string>
-  <string name="id_by_continuing_you_agree_to_blockstream_s">By continuing you agree to Blockstream\'s ToS and Privacy Policy</string>
-  <string name="id_tos">ToS</string>
+  <string name="id_by_continuing_you_agree_to_blockstream_s">By continuing you agree to Blockstream\'s Terms Of Service and Privacy Policy</string>
   <string name="id_message_frequency_varies_according_to_the_number">Message frequency varies according to the number of 2FA SMS requests you make.</string>
   <string name="id_for_help_visit_help_blockstream_com">For help visit help.blockstream.com\nTo unsubscribe turn off SMS 2FA from the app.\nStandard messages and data rates may apply.</string>
   <string name="id_help_blockstream_com">help.blockstream.com</string>

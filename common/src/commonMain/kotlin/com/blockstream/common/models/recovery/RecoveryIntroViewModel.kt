@@ -1,10 +1,7 @@
 package com.blockstream.common.models.recovery
 
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
-import com.arkivanov.essenty.statekeeper.consume
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
@@ -20,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.serialization.Serializable
 import org.koin.core.component.inject
 
 abstract class RecoveryIntroViewModelAbstract(val setupArgs: SetupArgs) :
@@ -37,7 +35,7 @@ class RecoveryIntroViewModel constructor(setupArgs: SetupArgs, stateKeeper: Stat
     RecoveryIntroViewModelAbstract(setupArgs = setupArgs) {
     private val gdk: Gdk by inject()
 
-    private val state: State = stateKeeper.consume(STATE) ?: State(
+    private val state: State = stateKeeper.consume(STATE, State.serializer()) ?: State(
         mnemonic = gdk.generateMnemonic12(), mnemonicSize = 12
     )
 
@@ -54,7 +52,7 @@ class RecoveryIntroViewModel constructor(setupArgs: SetupArgs, stateKeeper: Stat
     }
 
     init {
-        stateKeeper.register(STATE) {
+        stateKeeper.register(STATE, State.serializer()) {
             State(mnemonic = mnemonic.value, mnemonicSize = mnemonicSize.value)
         }
 
@@ -112,10 +110,10 @@ class RecoveryIntroViewModel constructor(setupArgs: SetupArgs, stateKeeper: Stat
         }
     }
 
-    @Parcelize
+    @Serializable
     private class State(
         val mnemonic: String, val mnemonicSize: Int
-    ) : Parcelable
+    )
 
     companion object {
         const val STATE = "STATE"

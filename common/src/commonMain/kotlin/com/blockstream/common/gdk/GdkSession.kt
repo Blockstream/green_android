@@ -982,6 +982,10 @@ class GdkSession constructor(
                 changeSettings(network, Settings.normalizeFromProminent(networkSettings = getSettings(network) ?: it, prominentSettings = it, pgpFromProminent = true))
             }
 
+            if (network.isMultisig) {
+                getTwoFactorConfig(network = network, useCache = false)
+                updateWatchOnlyUsername(network = network)
+            }
 
             // hard refresh accounts for the new network
             val networkAccounts = getAccounts(network, refresh = true)

@@ -70,6 +70,7 @@ data class RecoveryIntroScreen(val setupArgs: SetupArgs) : Screen, Parcelable {
     @Composable
     override fun Content() {
         val viewModel = getScreenModel<RecoveryIntroViewModel>() {
+            // TODO FIX STATE RESTORATION
             parametersOf(setupArgs, StateKeeperDispatcher())
         }
 

@@ -49,6 +49,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
@@ -89,7 +90,8 @@ data class EnterRecoveryPhraseScreen(val setupArgs: SetupArgs) : Screen, Parcela
     @Composable
     override fun Content() {
         val viewModel = getScreenModel<EnterRecoveryPhraseViewModel>() {
-            parametersOf(setupArgs)
+            // TODO FIX STATE RESTORATION
+            parametersOf(setupArgs, StateKeeperDispatcher())
         }
 
         AppBar {
@@ -112,9 +114,6 @@ data class EnterRecoveryPhraseScreen(val setupArgs: SetupArgs) : Screen, Parcela
 fun EnterRecoveryPhraseScreen(
     viewModel: EnterRecoveryPhraseViewModelAbstract
 ) {
-    val context = LocalContext.current
-
-
     HandleSideEffect(viewModel = viewModel)
 
     GreenColumn(
