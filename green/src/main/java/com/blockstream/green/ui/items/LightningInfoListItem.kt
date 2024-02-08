@@ -46,14 +46,16 @@ data class LightningInfoListItem constructor(
                 }
             }
 
-            binding.capacityText = binding.context().getString(
-                R.string.id_your_current_receive_capacity,
-                withContext(context = Dispatchers.IO) {
-                    nodeState.inboundLiquiditySatoshi().toAmountLook(
-                        session = session
-                    )
-                }
-            )
+            binding.capacityText = if (nodeState.inboundLiquiditySatoshi() > 0) {
+                binding.context().getString(
+                    R.string.id_your_current_receive_capacity,
+                    withContext(context = Dispatchers.IO) {
+                        nodeState.inboundLiquiditySatoshi().toAmountLook(
+                            session = session
+                        )
+                    }
+                )
+            } else null
         }
     }
 

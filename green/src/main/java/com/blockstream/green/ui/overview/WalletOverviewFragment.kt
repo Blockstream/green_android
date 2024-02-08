@@ -19,6 +19,8 @@ import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.lightning.isLoading
 import com.blockstream.common.events.Events
 import com.blockstream.common.data.LogoutReason
+import com.blockstream.common.lightning.inboundLiquiditySatoshi
+import com.blockstream.common.lightning.onchainBalanceSatoshi
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemLightningInfoBinding
 import com.blockstream.green.databinding.ListItemWalletBalanceBinding
@@ -457,7 +459,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
         val lightningInboundAdapter: GenericFastItemAdapter = FastItemAdapter()
 
         if(session.isLightningShortcut){
-            session.lightningNodeInfoStateFlow.filter { !it.isLoading() }.onEach {
+            session.lightningNodeInfoStateFlow.filter { !it.isLoading() && (it.onchainBalanceSatoshi() > 0 || it.inboundLiquiditySatoshi() > 0) }.onEach {
                 lightningInboundAdapter.set(
                     listOf(
                         LightningInfoListItem(session = session, nodeState = it)

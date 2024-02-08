@@ -21,6 +21,7 @@ import com.blockstream.common.lightning.isLoading
 import com.blockstream.common.lightning.onchainBalanceSatoshi
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.gdk.EnrichedAssetPair
+import com.blockstream.common.lightning.inboundLiquiditySatoshi
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
@@ -378,7 +379,9 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
         val lightningInboundAdapter: GenericFastItemAdapter = FastItemAdapter()
 
         if(account.isLightning){
-            session.lightningNodeInfoStateFlow.filter { !it.isLoading() }.onEach {
+            // Hide Inbound liquidity if it's zero
+            session.lightningNodeInfoStateFlow.filter { !it.isLoading() && (it.onchainBalanceSatoshi() > 0 || it.inboundLiquiditySatoshi() > 0) }
+                .onEach {
                 lightningInboundAdapter.set(
                     listOf(
                         LightningInfoListItem(session = session, nodeState = it)
