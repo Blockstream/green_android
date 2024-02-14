@@ -35,7 +35,6 @@ import org.koin.core.annotation.Single
 import kotlin.collections.set
 import kotlin.properties.Delegates
 
-@Single
 class SessionManager constructor(
     appInfo: AppInfo,
     lifecycleManager: LifecycleManager,

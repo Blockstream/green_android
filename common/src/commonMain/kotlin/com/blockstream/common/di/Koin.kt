@@ -6,12 +6,16 @@ import co.touchlab.kermit.StaticConfig
 import co.touchlab.kermit.platformLogWriter
 import com.blockstream.common.data.AppConfig
 import com.blockstream.common.data.AppInfo
+import com.blockstream.common.database.Database
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.getGdkBinding
 import com.blockstream.common.gdk.getWally
 import com.blockstream.common.gdk.params.InitConfig
 import com.blockstream.common.lightning.GreenlightKeys
 import com.blockstream.common.lightning.LightningManager
+import com.blockstream.common.managers.AssetManager
+import com.blockstream.common.managers.LifecycleManager
+import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import kotlinx.coroutines.MainScope
 import okio.internal.commonToUtf8String
@@ -20,7 +24,6 @@ import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
-import org.koin.ksp.generated.com_blockstream_common_di_CommonModule
 import kotlin.io.encoding.Base64
 
 typealias ApplicationScope = kotlinx.coroutines.CoroutineScope
@@ -56,6 +59,18 @@ private fun commonModules(appConfig: AppConfig): List<Module> {
         }
         single {
             getWally()
+        }
+        single {
+            AssetManager()
+        }
+        single {
+            SessionManager(get(), get(), get(), get(), get(), get(), get(), get())
+        }
+        single {
+            LifecycleManager(get(), get(), get())
+        }
+        single {
+            Database(get(), get())
         }
         single {
             SettingsManager(
@@ -105,7 +120,7 @@ private fun commonModules(appConfig: AppConfig): List<Module> {
         )
 
         factory { (tag: String?) -> if (tag != null) baseLogger.withTag(tag) else baseLogger }
-    }, com_blockstream_common_di_CommonModule)
+    })
 }
 
 expect val platformModule: Module

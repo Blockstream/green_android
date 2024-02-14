@@ -19,7 +19,6 @@ interface AssetsProvider {
  * App Cache: cached data from apk
  * GDK Cache: cached data from a previous successful fetch
  */
-@Single
 class AssetManager constructor(
     val qaTester: AssetQATester? = null
 ) {

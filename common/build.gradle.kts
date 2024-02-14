@@ -1,5 +1,4 @@
 
-import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
@@ -73,48 +72,45 @@ kotlin {
             }
         }
 
-        commonMain {
-            kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
-            dependencies {
-                /**  --- Kotlin & KotlinX ------------------------------------------------------------------- */
-                api(libs.kotlinx.coroutines.core)
-                api(libs.kotlinx.serialization.core)
-                api(libs.kotlinx.serialization.json)
-                api(libs.kotlinx.serialization.cbor)
-                api(libs.kotlinx.datetime)
-                /** ----------------------------------------------------------------------------------------- */
+        commonMain.dependencies {
+            /**  --- Kotlin & KotlinX ------------------------------------------------------------------- */
+            api(libs.kotlinx.coroutines.core)
+            api(libs.kotlinx.serialization.core)
+            api(libs.kotlinx.serialization.json)
+            api(libs.kotlinx.serialization.cbor)
+            api(libs.kotlinx.datetime)
+            /** ----------------------------------------------------------------------------------------- */
 
-                /**  --- Koin   ----------------------------------------------------------------------------- */
-                api(libs.koin.core)
-                api(libs.koin.annotations)
-                /** ----------------------------------------------------------------------------------------- */
+            /**  --- Koin   ----------------------------------------------------------------------------- */
+            api(libs.koin.core)
+            api(libs.koin.annotations)
+            /** ----------------------------------------------------------------------------------------- */
 
-                /**  --- Voyager ---------------------------------------------------------------------------- */
-                api(libs.voyager.screenmodel)
-                // Required for iOS target compilation
-                compileOnly(compose.runtime)
-                compileOnly(compose.runtimeSaveable)
-                /** ----------------------------------------------------------------------------------------- */
+            /**  --- Voyager ---------------------------------------------------------------------------- */
+            api(libs.voyager.screenmodel)
+            // Required for iOS target compilation
+            compileOnly(compose.runtime)
+            compileOnly(compose.runtimeSaveable)
+            /** ----------------------------------------------------------------------------------------- */
 
-                /**  --- Breez ------------------------------------------------------------------------------ */
-                api(libs.breez.sdk.kmp)
-                /** ----------------------------------------------------------------------------------------- */
+            /**  --- Breez ------------------------------------------------------------------------------ */
+            api(libs.breez.sdk.kmp)
+            /** ----------------------------------------------------------------------------------------- */
 
-                /**  --- Misc. ------------------------------------------------------------------------------ */
-                api(libs.sqldelight.coroutines.extensions)
-                api(libs.kmm.viewmodel)
-                api(libs.stately.concurrent.collections)
-                api(libs.uri.kmp)
-                api(libs.uuid)
-                api(libs.multiplatform.settings)
-                api(libs.okio) // Filesystem
-                api(libs.kermit) //Add latest version
-                api(libs.parcelable) // parcelable
-                api(libs.state.keeper)
-                api(libs.kase64) // base64
-                api(libs.ksoup.entites) // html entities
-                /** ----------------------------------------------------------------------------------------- */
-            }
+            /**  --- Misc. ------------------------------------------------------------------------------ */
+            api(libs.sqldelight.coroutines.extensions)
+            api(libs.kmm.viewmodel)
+            api(libs.stately.concurrent.collections)
+            api(libs.uri.kmp)
+            api(libs.uuid)
+            api(libs.multiplatform.settings)
+            api(libs.okio) // Filesystem
+            api(libs.kermit) //Add latest version
+            api(libs.parcelable) // parcelable
+            api(libs.state.keeper)
+            api(libs.kase64) // base64
+            api(libs.ksoup.entites) // html entities
+            /** ----------------------------------------------------------------------------------------- */
         }
 
         commonTest.dependencies {
@@ -156,24 +152,11 @@ kotlin {
             implementation(libs.stately.common) // until this is fixed https://github.com/touchlab/Stately/issues/93
             implementation(libs.sqldelight.native.driver)
         }
-
-        val iosArm64Main by getting {
-            kotlin.srcDir("build/generated/ksp/metadata/iosArm64Main/kotlin")
-        }
-
-        val iosSimulatorArm64Main by getting {
-            kotlin.srcDir("build/generated/ksp/metadata/iosSimulatorArm64Main/kotlin")
-        }
-
-        val iosX64Main by getting {
-            kotlin.srcDir("build/generated/ksp/metadata/iosX64Main/kotlin")
-        }
     }
 }
 
 task("fetchIosBinaries") {
     doFirst{
-
         val exists = project.file("src/include").exists() && project.file("src/libs").exists()
         if (!exists) {
             exec {
@@ -189,25 +172,6 @@ task("fetchIosBinaries") {
 tasks.configureEach {
     if(name.contains("cinterop")){
         dependsOn("fetchIosBinaries")
-    }
-}
-
-// https://kotlinlang.org/docs/ksp-multiplatform.html
-// https://github.com/InsertKoinIO/hello-kmp/blob/annotations/shared/build.gradle.kts
-dependencies {
-    add("kspCommonMainMetadata", libs.koin.ksp.compiler)
-}
-
-// WORKAROUND: ADD this dependsOn("kspCommonMainKotlinMetadata") instead of above dependencies
-tasks.withType<KotlinCompile<*>>().configureEach {
-    if (name != "kspCommonMainKotlinMetadata") {
-        dependsOn("kspCommonMainKotlinMetadata")
-    }
-}
-tasks.configureEach {
-    if(name.contains("SourcesJar", true)){
-        println("SourceJarTask====>${name}")
-        dependsOn("kspCommonMainKotlinMetadata")
     }
 }
 

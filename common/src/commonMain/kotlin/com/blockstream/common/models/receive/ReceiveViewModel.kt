@@ -504,6 +504,8 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
     private fun updateAmountExchangeRate() {
         // Convert between BTC / Fiat
         doAsync({
+            val nodeState = session.lightningNodeInfoStateFlow.value
+
             val balance = amount.value.takeIf { it.isNotBlank() }?.let {
                 UserInput.parseUserInput(
                     session = session,
@@ -530,21 +532,20 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
             }
 
             val openChannelFee = balance?.satoshi?.let {
-                if (it > session.lightningNodeInfoStateFlow.value.inboundLiquiditySatoshi()) session.lightningSdk.openChannelFee(
+                if (it > nodeState.inboundLiquiditySatoshi()) session.lightningSdk.openChannelFee(
                     it
                 ) else null
             }
 
             _isValid.value = balance != null && (balance.satoshi >= 0 &&
-                    balance.satoshi <= session.lightningNodeInfoStateFlow.value.maxReceivableSatoshi() &&
-                    (balance.satoshi <= session.lightningNodeInfoStateFlow.value.inboundLiquiditySatoshi() || (balance.satoshi > (openChannelFee?.feeSatoshi()
+                    balance.satoshi <= nodeState.maxReceivableSatoshi() &&
+                    (balance.satoshi <= nodeState.inboundLiquiditySatoshi() || (balance.satoshi > (openChannelFee?.feeSatoshi()
                         ?: 0)))
                     )
 
             _amountError.value = if (amount.value.isBlank()) null else {
                 if (balance != null) {
-                    val maxReceivableSatoshi =
-                        session.lightningNodeInfoStateFlow.value.maxReceivableSatoshi()
+                    val maxReceivableSatoshi = nodeState.maxReceivableSatoshi()
                     val channelMinimum = openChannelFee?.feeSatoshi() ?: 0
                     if (balance.satoshi > maxReceivableSatoshi) {
                         "id_you_cannot_receive_more_than_s|${
@@ -582,8 +583,7 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
                 }
             }
 
-            val isSetupChannel =
-                session.lightningNodeInfoStateFlow.value.inboundLiquiditySatoshi() == 0L
+            val isSetupChannel = nodeState.inboundLiquiditySatoshi() == 0L
 
             val channelFee = openChannelFee?.feeSatoshi()?.toAmountLook(
                 session = session,
@@ -599,15 +599,14 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
                 withUnit = true
             ) ?: "-"
 
-            _liquidityFee.value = when{
+            _liquidityFee.value = when {
                 amount.value.isBlank() -> {
                     null
                 }
                 isSetupChannel -> {
                     "id_a_set_up_funding_fee_of_s|${channelFee}|${channelFeeFiat}"
                 }
-                else -> {
-                    val nodeState = session.lightningNodeInfoStateFlow.value
+                (balance?.satoshi ?: 0) > nodeState.inboundLiquiditySatoshi() -> {
 
                     val inboundLiquidity = nodeState.inboundLiquiditySatoshi().toAmountLookOrNa(
                         session = session,
@@ -625,6 +624,7 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
 
                     "id_a_funding_fee_of_s_s|${channelFee}|${channelFeeFiat}|${inboundLiquidity}|${inboundLiquidityFiat}"
                 }
+                else -> null
             }
 
         }, preAction = null, postAction = null, onSuccess = { }, onError = {

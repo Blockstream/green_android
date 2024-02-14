@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withContext
-import org.koin.core.annotation.Single
 
 const val DATABASE_NAME = "green.sqlite"
 
@@ -37,7 +36,6 @@ fun createDatabase(driverFactory: DriverFactory): GreenDB {
     return database
 }
 
-@Single
 class Database(driverFactory: DriverFactory, val settingsManager: SettingsManager) {
 
     private var db: GreenDB

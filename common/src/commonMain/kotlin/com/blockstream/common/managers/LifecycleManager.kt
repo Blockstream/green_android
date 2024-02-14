@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.koin.core.annotation.Single
 
 enum class LifecycleState {
     Foreground, Background;
@@ -25,14 +24,11 @@ enum class LifecycleState {
     }
 }
 
-@Single
 class LifecycleManager constructor(
     val settingsManager: SettingsManager,
     val keystore: GreenKeystore,
     val scope: ApplicationScope
 ) {
-
-
     private val _lifecycleState = MutableStateFlow(LifecycleState.Background)
 
     @NativeCoroutinesState
