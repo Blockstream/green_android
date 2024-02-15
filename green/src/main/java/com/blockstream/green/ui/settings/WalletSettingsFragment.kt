@@ -433,14 +433,11 @@ class WalletSettingsFragment :
         } else {
             list += logoutPreference
 
-            // Allow singlesig to change denomination & price source
-//            if(!session.isWatchOnly || session.defaultNetworkOrNull?.isSinglesig == true){
-//                // General
-//                list += TitleListItem(StringHolder(R.string.id_general))
-//                list += denominationAndExchangeRatePreference
-//            }
-
             if (!session.isWatchOnly && !session.isLightningShortcut) {
+
+                // General
+                list += TitleListItem(StringHolder(R.string.id_general))
+                list += denominationAndExchangeRatePreference
 
                 list += archivedAccountsPreference
 
