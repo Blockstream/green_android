@@ -34,7 +34,12 @@ fun stringResourceIdOrNull(context: Context, id: String?): String? {
 
         val intRes = resources.getIdentifier(res, "string", context.packageName)
         if (intRes > 0) {
-            return context.getString(intRes, *formatArgs)
+            return try {
+                context.getString(intRes, *formatArgs)
+            }catch (e: Exception){
+                e.printStackTrace()
+                id
+            }
         }
     } else if (id?.contains("Breez SDK error", ignoreCase = true) == true){
         val message = try {

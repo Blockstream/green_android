@@ -94,6 +94,13 @@ fun Long.feeRateKBWithUnit(): String {
     }
 }
 
+fun Long.feeRateWithUnit(): String {
+    val feePerByte = this / 1000.0
+    return userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = true, withMinimumDigits = true).format(feePerByte).let {
+        "$it sats / vbyte"
+    }
+}
+
 fun Balance?.toAmountLook(
     session: GdkSession,
     assetId: String? = null,
@@ -144,7 +151,7 @@ fun Balance?.toAmountLook(
                 withGrouping = withGrouping,
                 withMinimumDigits = withMinimumDigits
             ).format(assetAmount?.toDouble() ?: satoshi).let {
-                if (withUnit) "$it ${asset?.ticker ?: assetId?.substring(0 until 10) ?: ""}" else it
+                if (withUnit) "$it ${asset?.ticker ?: assetId?.substring(0 until 6) ?: ""}" else it
             }
         } catch (e: Exception) {
             null

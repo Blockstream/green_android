@@ -141,6 +141,7 @@ abstract class GreenViewModel constructor(
         get() = accountAsset.value!!.account
 
     val sessionOrNull: GdkSession? by lazy {
+        if(isPreview) return@lazy null
         greenWalletOrNull?.let { sessionManager.getWalletSessionOrNull(it) }
     }
 

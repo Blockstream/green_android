@@ -7,7 +7,7 @@
 
         <variable
             name="accountTypeLook"
-            type="com.blockstream.common.views.AccountTypeLook" />
+            type="com.blockstream.common.looks.AccountTypeLook" />
 
     </data>
 

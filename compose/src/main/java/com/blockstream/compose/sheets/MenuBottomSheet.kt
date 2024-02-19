@@ -19,6 +19,8 @@ import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.navigation.resultKey
+import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.views.GreenBottomSheet
 
 
@@ -26,16 +28,14 @@ import com.blockstream.compose.views.GreenBottomSheet
 data class MenuEntry(
     val key: Int = 0,
     val title: String,
-    val iconRes: Int? = null,
-    val onClick: () -> Unit = {}
+    val iconRes: Int? = null
 ) : Parcelable
 
 @Parcelize
 data class MenuBottomSheet(
     val title: String,
     val subtitle: String? = null,
-    val entries: List<MenuEntry>,
-    val onDismiss: () -> Unit = {}
+    val entries: List<MenuEntry>
 ) : BottomScreen(), Parcelable {
     @Composable
     override fun Content() {
@@ -43,7 +43,10 @@ data class MenuBottomSheet(
             title = title,
             subtitle = subtitle,
             entries = entries,
-            onDismissRequest = onDismissRequest(onDismiss)
+            onSelect = { position, menuEntry ->
+                setNavigationResult(resultKey, position)
+            },
+            onDismissRequest = onDismissRequest()
         )
     }
 }
@@ -54,6 +57,7 @@ fun MenuBottomSheetView(
     title: String,
     subtitle: String? = null,
     entries: List<MenuEntry>,
+    onSelect: (position: Int, item: MenuEntry) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
     GreenBottomSheet(
@@ -64,18 +68,20 @@ fun MenuBottomSheetView(
             skipPartiallyExpanded = true,
         ),
         viewModel = null,
-        onDismissRequest = onDismissRequest
+        onDismissRequest = {
+            onDismissRequest.invoke()
+        }
     ) {
 
         Column {
-            entries.forEach {
+            entries.forEachIndexed { index, menuEntry ->
                 DropdownMenuItem(
-                    text = { Text(it.title) },
+                    text = { Text(menuEntry.title) },
                     onClick = {
+                        onSelect.invoke(index, menuEntry)
                         onDismissRequest.invoke()
-                        it.onClick.invoke()
                     },
-                    leadingIcon = it.iconRes?.let {
+                    leadingIcon = menuEntry.iconRes?.let {
                         {
                             Icon(
                                 painterResource(id = it),
@@ -107,13 +113,12 @@ fun MenuBottomSheetPreview() {
                 MenuBottomSheetView(
                     title = "Select Environment",
                     entries = listOf(
-                        MenuEntry(title = "Mainnet", iconRes = R.drawable.currency_btc) {
-                            environment = "Mainnet"
-                        },
-                        MenuEntry(title = "Testnet", iconRes = R.drawable.flask) {
-                            environment = "Testnet"
-                        }
+                        MenuEntry(title = "Mainnet", iconRes = R.drawable.currency_btc),
+                        MenuEntry(title = "Testnet", iconRes = R.drawable.flask)
                     ),
+                    onSelect = { position, menuEntry ->
+
+                    },
                     onDismissRequest = {
                         showBottomSheet = false
                     }

@@ -483,7 +483,7 @@ class SendViewModel constructor(
                                             }
                                         }
 
-                                    AccountAsset(assetAccount, assetId).also {
+                                    AccountAsset.fromAccountAsset(assetAccount, assetId, session).also {
                                         setAccountAsset(0, it)
                                     }
                                 }

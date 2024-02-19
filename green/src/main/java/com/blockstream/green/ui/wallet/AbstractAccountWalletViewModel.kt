@@ -18,13 +18,13 @@ abstract class AbstractAccountWalletViewModel(
         get() = accountAsset.value!!.account
 
     open fun setAccount(account: Account) {
-        accountAsset.value = AccountAsset.fromAccount(account)
+        accountAsset.value = account.accountAsset
     }
 
     override fun renameAccount(account: Account, name: String, callback: ((Account) -> Unit)?) {
         super.renameAccount(account, name){ updatedAccount ->
             if(account.id == updatedAccount.id) {
-                accountAsset.value = AccountAsset.fromAccount(account)
+                accountAsset.value = account.accountAsset
             }
         }
     }
@@ -32,7 +32,7 @@ abstract class AbstractAccountWalletViewModel(
     override fun updateAccountVisibility(account: Account, isHidden: Boolean, callback: ((Account) -> Unit)?) {
         super.updateAccountVisibility(account, isHidden) { updatedAccount ->
             if(account.id == updatedAccount.id) {
-                accountAsset.value = AccountAsset.fromAccount(account)
+                accountAsset.value = account.accountAsset
             }
 
             callback?.invoke(updatedAccount)

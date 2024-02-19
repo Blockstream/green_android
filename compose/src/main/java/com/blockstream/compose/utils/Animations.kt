@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -19,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.node.Ref
 
@@ -88,6 +90,24 @@ fun AlphaPulse(pulseFraction: Float = 0.75f, duration : Int = 500, modifier: Mod
     )
 
     Box(modifier = Modifier.alpha(scale).then(modifier)) {
+        content()
+    }
+}
+
+@Composable
+fun Rotating(duration: Int = 1000, content: @Composable () -> Unit) {
+    val infiniteTransition = rememberInfiniteTransition()
+
+    val rotate by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 359f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(duration, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        )
+    )
+
+    Box(modifier = Modifier.rotate(rotate)) {
         content()
     }
 }

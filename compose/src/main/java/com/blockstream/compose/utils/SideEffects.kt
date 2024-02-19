@@ -1,8 +1,10 @@
 package com.blockstream.compose.utils
 
+import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.ShareCompat
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.stack.Stack
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -14,6 +16,7 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.LocalAppCoroutine
 import com.blockstream.compose.LocalDialog
 import com.blockstream.compose.LocalSnackbar
+import com.blockstream.compose.R
 import com.blockstream.compose.extensions.showErrorSnackbar
 import com.blockstream.compose.navigation.pushUnique
 import com.blockstream.compose.screens.HomeScreen
@@ -116,6 +119,21 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                                 )
                             }
                         })
+                    }
+                }
+
+                is SideEffects.Share -> {
+                    it.text?.also { text ->
+                        val builder = ShareCompat.IntentBuilder(context)
+                            .setType("text/plain")
+                            .setText(text)
+
+                        context.startActivity(
+                            Intent.createChooser(
+                                builder.intent,
+                                context.getString(R.string.id_share)
+                            )
+                        )
                     }
                 }
 

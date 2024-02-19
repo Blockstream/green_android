@@ -370,11 +370,12 @@ class GdkSession constructor(
         get() {
             if (_lightningAccount == null) {
                 _lightningAccount = Account(
-                    networkInjected = lightning,
                     gdkName = "Instant",
                     pointer = 0,
                     type = AccountType.LIGHTNING
-                )
+                ).also {
+                    it.setup(this, lightning!!)
+                }
             }
 
             return _lightningAccount!!
@@ -1584,8 +1585,12 @@ class GdkSession constructor(
         gdk.ackSystemMessage(gdkSession(network), message)
     ).resolve()
 
-    fun setTransactionMemo(network: Network, txHash: String, memo: String) {
-        gdk.setTransactionMemo(gdkSession(network), txHash, memo)
+    fun setTransactionMemo(transaction: Transaction, memo: String) {
+        gdk.setTransactionMemo(gdkSession(transaction.account.network), transaction.txHash, memo)
+
+        // update transaction
+        getTransactions(account = transaction.account, isReset = false, isLoadMore = false)
+        updateWalletTransactions(updateForAccounts = listOf(transaction.account))
     }
 
     fun getWalletIdentifier(
@@ -1699,7 +1704,7 @@ class GdkSession constructor(
                 .result<Account>(
                     hardwareWalletResolver = hardwareWalletResolver
                 ).also {
-                    it.networkInjected = network
+                    it.setup(this, network)
                 }
         }.also {
             _walletActiveEventInvalidated = true
@@ -1734,7 +1739,7 @@ class GdkSession constructor(
             // Watch-only can't discover new accounts
             authHandler(network, gdk.getSubAccounts(it, SubAccountsParams(refresh = if(isWatchOnly) false else refresh)))
                 .result<Accounts>().accounts.onEach { account ->
-                    account.networkInjected = network
+                    account.setup(this, network)
                 }
         }
     }
@@ -1742,7 +1747,7 @@ class GdkSession constructor(
     fun getAccount(account: Account) = authHandler(
         account.network, gdk.getSubAccount(gdkSession(account.network), account.pointer)
     ).result<Account>().also {
-        it.networkInjected = account.network
+        it.setup(this, account.network)
 
         // Update active account if needed
         if(_activeAccountStateFlow.value?.id == it.id){
@@ -1953,7 +1958,7 @@ class GdkSession constructor(
                     }
 
                     val accountAndAssets = accounts.value.flatMap {
-                        this@GdkSession.accountAssets(it).value.toAccountAsset(it)
+                        this@GdkSession.accountAssets(it).value.toAccountAsset(it, this@GdkSession)
                     }
 
                     // Mark it if necessary
@@ -2147,9 +2152,9 @@ class GdkSession constructor(
     private fun sortAccountAssets(a1: AccountAsset, a2: AccountAsset): Int = when {
         a1.account.isBitcoin && a2.account.isLiquid -> -1
         a1.account.isLiquid && a2.account.isBitcoin -> 1
-        a1.assetId == a2.assetId -> a1.account.compareTo(a2.account)
+        a1.asset.assetId == a2.asset.assetId -> a1.account.compareTo(a2.account)
         else -> {
-            sortAssets(a1.assetId, a2.assetId)
+            sortAssets(a1.asset.assetId, a2.asset.assetId)
         }
     }
 

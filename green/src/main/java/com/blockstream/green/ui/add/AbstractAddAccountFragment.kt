@@ -59,9 +59,10 @@ abstract class AbstractAddAccountFragment<T : ViewDataBinding>(
         }
 
         setNavigationResult(
-            result = AccountAsset(
+            result = AccountAsset.fromAccountAsset(
                 account = account,
-                assetId = (assetId ?: account.network.policyAsset)
+                assetId = (assetId ?: account.network.policyAsset),
+                session = viewModel.session
             ), key = SET_ACCOUNT, destinationId = destinationId
         )
         findNavController().popBackStack(destinationId, false)

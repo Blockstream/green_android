@@ -40,4 +40,5 @@ class SideEffects : SideEffect {
     class DeviceInteraction(val device: Device, val message: String?, val completable: CompletableDeferred<Boolean>?):
         SideEffect
     object Dismiss : SideEffect
+    data class Share(val text: String? = null) : SideEffect
 }

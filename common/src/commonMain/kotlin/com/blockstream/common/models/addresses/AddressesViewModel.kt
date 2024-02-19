@@ -3,10 +3,9 @@ package com.blockstream.common.models.addresses
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Event
 import com.blockstream.common.gdk.data.Account
-import com.blockstream.common.gdk.data.Address
+import com.blockstream.common.looks.account.AddressLook
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.views.account.AddressLook
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 
 abstract class AddressesViewModelAbstract(greenWallet: GreenWallet, account: Account) :
-    GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = account.accountAsset()) {
+    GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = account.accountAsset) {
     override fun screenName(): String = "PreviousAddresses"
 
     @NativeCoroutinesState
@@ -37,7 +36,7 @@ class AddressesViewModel(greenWallet: GreenWallet, account: Account) :
 
     class LocalEvents{
         object LoadMore: Event
-        data class AddressBlockExplorer(val address: Address): Event
+        data class AddressBlockExplorer(val address: String): Event
     }
 
     override fun handleEvent(event: Event) {
@@ -53,7 +52,7 @@ class AddressesViewModel(greenWallet: GreenWallet, account: Account) :
                             "/tx/",
                             "/address/"
                         )
-                    }${event.address.address}"
+                    }${event.address}"
                 )
             )
         }

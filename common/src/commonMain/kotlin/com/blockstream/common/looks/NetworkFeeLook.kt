@@ -1,4 +1,4 @@
-package com.blockstream.common.views
+package com.blockstream.common.looks
 
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.gdk.GdkSession

@@ -49,7 +49,6 @@ fun GreenQR(
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
             .then(modifier),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -167,7 +166,7 @@ fun GreenQRPreview() {
 
             GreenQR(
                 data = "chalk verb patch cube sell west penalty fish park worry tribe tourist chalk verb patch cube sell west penalty fish park worry tribe tourist",
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.fillMaxWidth()
             )
 
 //            GreenQR(

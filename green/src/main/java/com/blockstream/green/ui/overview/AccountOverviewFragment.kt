@@ -142,7 +142,7 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
             navigate(
                 AccountOverviewFragmentDirections.actionAccountOverviewFragmentToReceiveFragment(
                     wallet = viewModel.wallet,
-                    accountAsset = AccountAsset.fromAccount(account),
+                    accountAsset = account.accountAsset,
                 )
             )
         }
@@ -153,7 +153,7 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
                     navigate(
                         AccountOverviewFragmentDirections.actionAccountOverviewFragmentToSendFragment(
                             wallet = wallet,
-                            accountAsset = AccountAsset.fromAccount(account),
+                            accountAsset = account.accountAsset,
                             isSweep = true
                         )
                     )
@@ -172,7 +172,7 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
                                     navigate(
                                         AccountOverviewFragmentDirections.actionAccountOverviewFragmentToReceiveFragment(
                                             wallet = viewModel.wallet,
-                                            accountAsset = AccountAsset.fromAccount(viewModel.accountValue)
+                                            accountAsset = account.accountAsset
                                         )
                                     )
                                 }
@@ -186,7 +186,7 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
                     navigate(
                         AccountOverviewFragmentDirections.actionAccountOverviewFragmentToSendFragment(
                             wallet = wallet,
-                            accountAsset = AccountAsset.fromAccount(account),
+                            accountAsset = account.accountAsset,
                             network = viewModel.accountValue.network
                         )
                     )
@@ -586,7 +586,6 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
                         navigate(
                             AccountOverviewFragmentDirections.actionAccountOverviewFragmentToTransactionDetailsFragment(
                                 wallet = wallet,
-                                account = account,
                                 transaction = item.tx
                             )
                         )

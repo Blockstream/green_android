@@ -6,7 +6,7 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isInvisible
-import com.blockstream.common.views.AccountTypeLook
+import com.blockstream.common.looks.AccountTypeLook
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemAccountTypeBinding
 import com.mikepenz.fastadapter.binding.AbstractBindingItem

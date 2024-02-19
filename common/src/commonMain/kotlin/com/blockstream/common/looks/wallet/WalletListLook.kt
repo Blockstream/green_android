@@ -1,4 +1,4 @@
-package com.blockstream.common.views.wallet
+package com.blockstream.common.looks.wallet
 
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.WalletIcon

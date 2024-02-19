@@ -1,4 +1,4 @@
-package com.blockstream.common.views
+package com.blockstream.common.looks
 
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize

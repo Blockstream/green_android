@@ -68,4 +68,9 @@ actual class DecimalFormat actual constructor(private val locale: String?) {
             format.format(it)!! to it.toDouble()
         }
     }
+
+    actual companion object {
+        actual val DecimalSeparator: String
+            get() = DecimalFormatSymbols().decimalSeparator.toString() // DecimalFormat().decimalFormatSymbols.decimalSeparator.toString()  //DecimalFormatSymbols().decimalSeparator.toString()
+    }
 }

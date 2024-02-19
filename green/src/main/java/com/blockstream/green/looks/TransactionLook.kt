@@ -2,7 +2,6 @@ package com.blockstream.green.looks
 
 import androidx.core.view.isVisible
 import com.blockstream.common.data.Denomination
-import com.blockstream.common.extensions.getConfirmations
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.gdk.data.UtxoView
@@ -88,9 +87,9 @@ class TransactionLook constructor(val tx: Transaction, val session: GdkSession):
                 binding.spv.isVisible = true
                 binding.spv.setImageResource(
                     when (tx.spv) {
-                        Transaction.SPVResult.InProgress, Transaction.SPVResult.Unconfirmed -> R.drawable.ic_spv_in_progress
-                        Transaction.SPVResult.NotLongest -> R.drawable.ic_spv_warning
-                        else -> R.drawable.ic_spv_error
+                        Transaction.SPVResult.InProgress, Transaction.SPVResult.Unconfirmed -> R.drawable.spv_in_progress
+                        Transaction.SPVResult.NotLongest -> R.drawable.spv_warning
+                        else -> R.drawable.spv_error
                     }
                 )
             }

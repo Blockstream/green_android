@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 
 abstract class SignMessageViewModelAbstract(greenWallet: GreenWallet, account: Account) :
-    GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = account.accountAsset()) {
+    GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = account.accountAsset) {
     override fun screenName(): String = "SignMessage"
 
     @NativeCoroutinesState

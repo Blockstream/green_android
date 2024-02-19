@@ -44,11 +44,6 @@ fun Transaction.getConfirmationsMax(session: GdkSession): Int {
     return getConfirmations(session.block(network).value.height).coerceAtMost((if (network.isLiquid) 3 else 7)).toInt()
 }
 
-fun Transaction.getConfirmations(session: GdkSession): Long {
-    if(isLoadingTransaction) return -1
-    return getConfirmations(session.block(network).value.height)
-}
-
 fun AccountType?.title(): String = when (this) {
     AccountType.STANDARD -> "2FA Protected"
     AccountType.AMP_ACCOUNT -> "AMP"

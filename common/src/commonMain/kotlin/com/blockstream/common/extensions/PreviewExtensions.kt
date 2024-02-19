@@ -1,11 +1,15 @@
 package com.blockstream.common.extensions
 
 import com.blockstream.common.data.CredentialType
+import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.database.LoginCredentials
 import com.blockstream.common.database.Wallet
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.views.wallet.WalletListLook
+import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.AccountType
+import com.blockstream.common.looks.wallet.WalletListLook
 
 fun previewWallet(isHardware: Boolean = false, isWatchOnly: Boolean = false, isEphemeral: Boolean = false, hasLightningShortcut: Boolean = false): GreenWallet {
     return Wallet(
@@ -44,3 +48,9 @@ fun previewWalletListView(isHardware: Boolean = false, isEphemeral: Boolean = fa
 }
 
 fun previewLoginCredentials() = LoginCredentials("", CredentialType.BIOMETRICS_PINDATA, "", null, null, null, 0)
+
+
+fun previewAccountAsset() = AccountAsset(
+    account = Account(gdkName = "Segwit", pointer = 0, type = AccountType.BIP84_SEGWIT),
+    asset = EnrichedAsset.PreviewBTC
+)

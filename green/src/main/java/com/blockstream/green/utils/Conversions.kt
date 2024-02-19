@@ -155,7 +155,7 @@ fun Balance?.toAmountLook(
                 withGrouping = withGrouping,
                 withMinimumDigits = withMinimumDigits
             ).format(assetAmount?.toDouble() ?: satoshi).let {
-                if (withUnit) "$it ${asset?.ticker ?: assetId?.substring(0 until 10) ?: ""}" else it
+                if (withUnit) "$it ${asset?.ticker ?: assetId?.substring(0 until 6) ?: ""}" else it
             }
         } catch (e: Exception) {
             null

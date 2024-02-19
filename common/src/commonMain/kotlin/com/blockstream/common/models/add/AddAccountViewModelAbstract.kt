@@ -16,7 +16,7 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
-import com.blockstream.common.views.AccountTypeLook
+import com.blockstream.common.looks.AccountTypeLook
 import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO

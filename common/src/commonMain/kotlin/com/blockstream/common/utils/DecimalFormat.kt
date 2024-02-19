@@ -12,4 +12,8 @@ expect class DecimalFormat(locale: String?) {
     fun format(int: Int): String?
     fun format(any: Any): String?
     fun parseTo(input: String, format: DecimalFormat): Pair<String, Double>?
+
+    companion object {
+        val DecimalSeparator: String
+    }
 }

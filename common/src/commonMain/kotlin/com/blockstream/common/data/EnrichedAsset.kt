@@ -6,7 +6,9 @@ import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.GreenJson
+import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.Entity
+import com.blockstream.common.gdk.data.Network
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -25,10 +27,11 @@ data class EnrichedAsset constructor(
     @SerialName("isAnyAsset") val isAnyAsset: Boolean = false, // Display "Any Liquid/Amp Asset" UI element
 ) : GreenJson<EnrichedAsset>(), Parcelable {
 
-    fun name(session: GdkSession): String {
+
+    fun nameOrNull(session: GdkSession?): String? {
         return if (isAnyAsset) {
             if (isAmp) "id_receive_any_amp_asset" else "id_receive_any_liquid_asset"
-        } else if (assetId.isPolicyAsset(session)) {
+        } else if (session != null && assetId.isPolicyAsset(session)) {
             if (assetId == BTC_POLICY_ASSET) {
                 "Bitcoin"
             } else {
@@ -37,9 +40,11 @@ data class EnrichedAsset constructor(
                 if (session.isTestnet) "Testnet $it" else it
             }
         } else {
-            name ?: assetId
+            name
         }
     }
+
+    fun name(session: GdkSession?): String = nameOrNull(session) ?: assetId
 
     fun ticker(session: GdkSession): String? {
         return if (assetId.isPolicyAsset(session)) {
@@ -81,11 +86,18 @@ data class EnrichedAsset constructor(
     override fun kSerializer() = serializer()
 
     companion object {
-        val Emtpy by lazy { EnrichedAsset(assetId = BTC_POLICY_ASSET) }
+        val Empty by lazy { EnrichedAsset(assetId = BTC_POLICY_ASSET) }
+
+        // Untested, only used in Preview
+        val PreviewBTC by lazy { EnrichedAsset(assetId = BTC_POLICY_ASSET, name = "Bitcoin", ticker = "BTC") }
 
         fun createOrNull(session: GdkSession, assetId: String?): EnrichedAsset? {
             return create(session, assetId ?: return null)
         }
+
+        fun create(account: Account): EnrichedAsset = EnrichedAsset(assetId = account.network.policyAsset)
+
+        fun create(session: GdkSession, network: Network): EnrichedAsset = create(session = session, assetId = network.policyAsset)
 
         fun create(session: GdkSession, assetId: String): EnrichedAsset {
             val asset = session.getAsset(assetId)

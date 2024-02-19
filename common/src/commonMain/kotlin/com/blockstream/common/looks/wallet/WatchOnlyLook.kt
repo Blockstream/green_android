@@ -1,4 +1,4 @@
-package com.blockstream.common.views.wallet
+package com.blockstream.common.looks.wallet
 
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.Network

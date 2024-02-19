@@ -123,7 +123,7 @@ data class AssetAccountsListItem constructor(
                             accountBinding.account = account
 
                             accountBinding.root.setOnClickListener { _ ->
-                                listener.accountAssetClicked(AccountAsset(account = account, assetId = assetPair.first.assetId))
+                                listener.accountAssetClicked(AccountAsset.fromAccountAsset(account = account, assetId = assetPair.first.assetId, session = session))
                             }
 
                             binding.accounts.addView(accountBinding.root)

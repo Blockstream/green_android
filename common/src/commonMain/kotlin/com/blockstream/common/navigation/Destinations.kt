@@ -2,6 +2,7 @@ package com.blockstream.common.navigation
 
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SetupArgs
+import com.blockstream.common.gdk.data.AccountAsset
 
 interface NavigateDestination
 sealed class NavigateDestinations : NavigateDestination {
@@ -46,4 +47,16 @@ sealed class NavigateDestinations : NavigateDestination {
     data class DeleteWallet(val greenWallet: GreenWallet) : NavigateDestination
     data class Bip39Passphrase(val greenWallet: GreenWallet, val passphrase: String) : NavigateDestination
 
+    data class Send(
+        val greenWallet: GreenWallet,
+        val accountAsset: AccountAsset,
+        val bumpTransaction: String? = null
+    ) : NavigateDestination
+
+    data class RecoverFunds(
+        val greenWallet: GreenWallet,
+        val satoshi: Long,
+        val isSendAll: Boolean = false,
+        val address: String? = null,
+    ) : NavigateDestination
 }

@@ -6,10 +6,9 @@ import android.view.View
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
-import com.blockstream.common.gdk.data.Address
+import com.blockstream.common.looks.account.AddressLook
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.addresses.AddressesViewModel
-import com.blockstream.common.views.account.AddressLook
 import com.blockstream.green.R
 import com.blockstream.green.databinding.AddressesFragmentBinding
 import com.blockstream.green.databinding.ListItemAddressBinding
@@ -77,7 +76,7 @@ class AddressesFragment : AppFragment<AddressesFragmentBinding>(R.layout.address
         }
 
         addressesModelAdapter.itemFilter.filterPredicate = { item: AddressListItem, constraint: CharSequence? ->
-            item.addressLook.address.address.lowercase().contains(
+            item.addressLook.address.lowercase().contains(
                 constraint.toString().lowercase()
             )
         }
@@ -122,13 +121,13 @@ class AddressesFragment : AppFragment<AddressesFragmentBinding>(R.layout.address
 
         fastAdapter.addClickListener<ListItemAddressBinding, GenericItem>({ binding -> binding.buttonCopy }) { _, _, _, item ->
             if(item is AddressListItem) {
-                copyToClipboard(label = "Address", content = item.addressLook.address.address, showCopyNotification = true)
+                copyToClipboard(label = "Address", content = item.addressLook.address, showCopyNotification = true)
             }
         }
 
         fastAdapter.addClickListener<ListItemAddressBinding, GenericItem>({ binding -> binding.buttonSignature }) { _, _, _, item ->
             if(item is AddressListItem) {
-                SignMessageBottomSheetDialogFragment.show(item.addressLook.address.address, childFragmentManager)
+                SignMessageBottomSheetDialogFragment.show(item.addressLook.address, childFragmentManager)
             }
         }
 
@@ -143,7 +142,7 @@ class AddressesFragment : AppFragment<AddressesFragmentBinding>(R.layout.address
         }
     }
 
-    private fun showPopupMenu(view: View, address: Address) {
+    private fun showPopupMenu(view: View, address: String) {
         showPopupMenu(
             view,
             R.menu.menu_previous_address

@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.WalletIcon
-import com.blockstream.common.views.wallet.WalletListLook
+import com.blockstream.common.looks.wallet.WalletListLook
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenCircle
 import com.blockstream.compose.components.GreenColumn

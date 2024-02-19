@@ -8,7 +8,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -28,11 +28,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.constraintlayout.compose.ConstraintLayout
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.blockstream.common.data.NavAction
 import com.blockstream.common.data.NavData
@@ -43,7 +43,7 @@ import com.blockstream.compose.components.PopupState
 import com.blockstream.compose.screens.HomeScreen
 import com.blockstream.compose.screens.login.LoginScreen
 import com.blockstream.compose.screens.overview.WalletOverviewScreen
-import com.blockstream.compose.theme.GreenTheme
+import com.blockstream.compose.theme.GreenThemePreview
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.utils.AppBarState
@@ -76,22 +76,33 @@ fun GreenTopAppBar(
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    navData.title?.also {
-                        Text(
-                            text = stringResourceId(it),
-                            maxLines = 1,
-                            style = titleSmall,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
+                ConstraintLayout {
+                    val (title, subtitle) = createRefs()
+
+                    Text(
+                        text = stringResourceId(navData.title ?: ""),
+                        maxLines = 1,
+                        style = titleSmall,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.constrainAs(title) {
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            top.linkTo(parent.top)
+                            bottom.linkTo(parent.bottom)
+                        }
+                    )
 
                     navData.subtitle?.also {
                         Text(
                             text = stringResourceId(it),
                             maxLines = 1,
                             style = bodySmall,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.constrainAs(subtitle) {
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                                top.linkTo(title.bottom)
+                            }
                         )
                     }
                 }
@@ -185,7 +196,7 @@ fun GreenTopAppBar(
 @Preview
 @Composable
 private fun GreenTopAppScreenPreview() {
-    GreenTheme {
+    GreenThemePreview {
         val appBarState = remember {
             AppBarState(
                 NavData(
@@ -196,14 +207,11 @@ private fun GreenTopAppScreenPreview() {
             )
         }
 
-        appBarState.update(NavData(title = "Title 2"))
-
         CompositionLocalProvider(LocalAppBarState provides appBarState) {
             Scaffold(topBar = {
                 GreenTopAppBar()
             }) {
-
-                Column(modifier = Modifier.padding(it)) {
+                Box(modifier = Modifier.padding(it)) {
 
                 }
             }

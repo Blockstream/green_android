@@ -1,6 +1,6 @@
 package com.blockstream.green.extensions
 
-import com.blockstream.common.views.Color
+import com.blockstream.common.looks.Color
 import com.blockstream.green.R
 
 

@@ -126,7 +126,7 @@
                     android:id="@+id/spv"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:src="@drawable/ic_spv_in_progress"
+                    android:src="@drawable/spv_in_progress"
                     isVisible="@{confirmations >= confirmationsRequired &amp;&amp; spvEnabled &amp;&amp; isRefundableSwap}"
                     app:layout_constraintBottom_toBottomOf="@+id/progress"
                     app:layout_constraintEnd_toEndOf="@+id/progress"

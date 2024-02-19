@@ -2,7 +2,7 @@ package com.blockstream.green.ui.items
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.blockstream.common.views.account.AddressLook
+import com.blockstream.common.looks.account.AddressLook
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemAddressBinding
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
@@ -20,7 +20,7 @@ data class AddressListItem constructor(
     }
 
     override fun bindView(binding: ListItemAddressBinding, payloads: List<Any>) {
-        binding.address = addressLook.address.address
+        binding.address = addressLook.address
         binding.txCount = addressLook.txCount
         binding.canSign = addressLook.canSign
     }

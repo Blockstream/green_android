@@ -299,7 +299,9 @@ class LightningBridge constructor(
 
             breezSdkOrNull?.listPayments(
                 ListPaymentsRequest()
-            )
+            )?.also {
+              logger.d { "Payments: $it" }
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             null

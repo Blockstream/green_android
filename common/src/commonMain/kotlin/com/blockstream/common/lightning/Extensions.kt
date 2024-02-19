@@ -17,8 +17,8 @@ import breez_sdk.ReverseSwapInfo
 import breez_sdk.SuccessActionProcessed
 import breez_sdk.SwapInfo
 import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.Account
-import com.blockstream.common.gdk.data.Address
 import com.blockstream.common.gdk.data.Addressee
 import com.blockstream.common.gdk.data.InputOutput
 import com.blockstream.common.gdk.data.Output
@@ -152,9 +152,23 @@ fun Output.Companion.fromLnUrlPay(requestData: LnUrlPayRequestData, input: Strin
 }
 
 fun Transaction.Companion.fromPayment(payment: Payment): Transaction {
+    val extras = buildMap {
+        when(val details = payment.details) {
+            is PaymentDetails.ClosedChannel -> {
+                details.data.closingTxid?.also { put("id_invoice", it) }
+            }
+            is PaymentDetails.Ln -> {
+                payment.description.takeIf { it.isNotBlank() }?.also { put("id_invoice_description", it) }
+                put("id_destination_public_key", details.data.destinationPubkey)
+                put("id_payment_hash", details.data.paymentHash)
+                put("id_payment_preimage", details.data.paymentPreimage)
+                put("id_invoice", details.data.bolt11)
+            }
+        }
+    }.toList()
+
     return Transaction(
         blockHeight = payment.paymentTime,
-        canCPFP = false,
         canRBF = false,
         createdAtTs = payment.paymentTime * 1_000_000,
         inputs = listOf(),
@@ -162,7 +176,6 @@ fun Transaction.Companion.fromPayment(payment: Payment): Transaction {
         fee = payment.feeMsat.satoshi(),
         feeRate = 0,
         memo = payment.description ?: "",
-        rbfOptin = false,
         spvVerified = "",
         txHash = (payment.details as? PaymentDetails.Ln)?.data?.paymentHash ?: (payment.details as? PaymentDetails.ClosedChannel)?.data?.closingTxid ?: payment.id,
         type = if(payment.paymentType == PaymentType.RECEIVED) "incoming" else "outgoing",
@@ -170,15 +183,21 @@ fun Transaction.Companion.fromPayment(payment: Payment): Transaction {
         message = ((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Message)?.data?.message,
         plaintext = (((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Aes)?.result as? AesSuccessActionDataResult.Decrypted)?.data?.let { it.description to it.plaintext },
         url = ((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Url)?.data?.let { it.description to it.url},
-        isPendingCloseChannel = payment.paymentType == PaymentType.CLOSED_CHANNEL && payment.status == PaymentStatus.PENDING
+        isPendingCloseChannel = payment.paymentType == PaymentType.CLOSED_CHANNEL && payment.status == PaymentStatus.PENDING,
+        extras = extras
     )
 }
 
 fun Transaction.Companion.fromSwapInfo(account: Account, swapInfo: SwapInfo, isRefundableSwap: Boolean): Transaction {
+    val extras = buildMap {
+        swapInfo.bolt11?.let {
+            put("id_invoice", it)
+        }
+    }.toList()
+
     return Transaction(
         accountInjected = account,
         blockHeight = if(isRefundableSwap) Long.MAX_VALUE else 0,
-        canCPFP = false,
         canRBF = false,
         createdAtTs = swapInfo.createdAt.let { if(it > 0) it * 1_000_000 else 0 },
         inputs = listOf(
@@ -190,14 +209,14 @@ fun Transaction.Companion.fromSwapInfo(account: Account, swapInfo: SwapInfo, isR
         fee = 0,
         feeRate = 0,
         memo = "",
-        rbfOptin = false,
         spvVerified = "",
         txHash = swapInfo.refundTxIds.firstOrNull() ?: "",
-        type = Transaction.Type.MIXED.gdkType,
+        type = Transaction.Type.OUT.gdkType,
         satoshi = mapOf(BTC_POLICY_ASSET to swapInfo.confirmedSats.toLong() + (if(isRefundableSwap) 0 else swapInfo.unconfirmedSats.toLong())),
         isLightningSwap = true,
         isInProgressSwap = swapInfo.confirmedSats.toLong() > 0 && !isRefundableSwap,
-        isRefundableSwap = isRefundableSwap
+        isRefundableSwap = isRefundableSwap,
+        extras = extras
     )
 }
 
@@ -205,7 +224,6 @@ fun Transaction.Companion.fromReverseSwapInfo(account: Account, reverseSwapInfo:
     return Transaction(
         accountInjected = account,
         blockHeight = 0,
-        canCPFP = false,
         canRBF = false,
         createdAtTs = 0,
         inputs = listOf(),
@@ -213,7 +231,6 @@ fun Transaction.Companion.fromReverseSwapInfo(account: Account, reverseSwapInfo:
         fee = 0,
         feeRate = 0,
         memo = "",
-        rbfOptin = false,
         spvVerified = "",
         txHash = reverseSwapInfo.claimTxid ?: reverseSwapInfo.lockupTxid ?: reverseSwapInfo.id,
         type = Transaction.Type.OUT.gdkType,
@@ -223,24 +240,9 @@ fun Transaction.Companion.fromReverseSwapInfo(account: Account, reverseSwapInfo:
     )
 }
 
-fun Address.Companion.fromInvoice(invoice: LnInvoice): Address {
-    return Address(address = invoice.bolt11)
-}
-
-fun Address.Companion.fromSwapInfo(swapInfo: SwapInfo): Address {
-    return Address(address = swapInfo.bitcoinAddress)
-}
-
 fun AppGreenlightCredentials.Companion.fromGreenlightCredentials(greenlightCredentials: GreenlightCredentials): AppGreenlightCredentials {
     return AppGreenlightCredentials(
         deviceKey = greenlightCredentials.deviceKey,
         deviceCert = greenlightCredentials.deviceCert
-    )
-}
-
-fun AppGreenlightCredentials.toGreenlightCredentials(): GreenlightCredentials {
-    return GreenlightCredentials(
-        deviceKey = deviceKey,
-        deviceCert = deviceCert
     )
 }

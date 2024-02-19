@@ -197,7 +197,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
         binding.bottomNav.buttonReceive.setOnClickListener {
             navigate(
                 WalletOverviewFragmentDirections.actionWalletOverviewFragmentToReceiveFragment(
-                    wallet = viewModel.wallet, accountAsset = AccountAsset.fromAccount(session.activeAccount.value!!)
+                    wallet = viewModel.wallet, accountAsset = session.activeAccount.value!!.accountAsset
                 )
             )
         }
@@ -221,7 +221,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                         WalletOverviewFragmentDirections.actionWalletOverviewFragmentToSendFragment(
                             wallet = wallet,
                             isSweep = true,
-                            accountAsset = AccountAsset.fromAccount(session.activeAccount.value!!)
+                            accountAsset = session.activeAccount.value!!.accountAsset
                         )
                     )
                 }
@@ -250,7 +250,7 @@ class WalletOverviewFragment : AbstractWalletFragment<WalletOverviewFragmentBind
                 else -> {
                     navigate(
                         WalletOverviewFragmentDirections.actionWalletOverviewFragmentToSendFragment(
-                            wallet = wallet, accountAsset = AccountAsset.fromAccount(session.activeAccount.value!!)
+                            wallet = wallet, accountAsset = session.activeAccount.value!!.accountAsset
                         )
                     )
                 }

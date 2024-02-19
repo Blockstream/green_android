@@ -36,6 +36,8 @@ data class BiometricsState constructor(
 
     private val executor = ContextCompat.getMainExecutor(context)
 
+    fun cancel() = activeBiometricPrompt?.cancelAuthentication()
+
     fun authenticateWithBiometrics(callback : AuthenticationCallback, onlyDeviceCredentials: Boolean = false){
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle(context.getString(R.string.id_user_authentication))

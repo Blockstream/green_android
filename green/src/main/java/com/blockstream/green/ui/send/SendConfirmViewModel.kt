@@ -5,7 +5,6 @@ import com.blockstream.common.TransactionSegmentation
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.gdk.TwoFactorResolver
 import com.blockstream.common.gdk.data.Account
-import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.SendTransactionSuccess
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.ConsumableEvent
@@ -20,7 +19,7 @@ class SendConfirmViewModel constructor(
     @InjectedParam wallet: GreenWallet,
     @InjectedParam account: Account,
     @InjectedParam val transactionSegmentation: TransactionSegmentation
-) : AbstractAccountWalletViewModel(wallet, AccountAsset.fromAccount(account)), INote {
+) : AbstractAccountWalletViewModel(wallet, account.accountAsset), INote {
 
     val transactionNoteLiveData = MutableLiveData(session.pendingTransaction?.second?.memo ?: "")
     val transactionNote get() = (transactionNoteLiveData.value ?: "").trim()

@@ -4,6 +4,7 @@ import platform.Foundation.NSLocale
 import platform.Foundation.NSNumber
 import platform.Foundation.NSNumberFormatter
 import platform.Foundation.NSNumberFormatterDecimalStyle
+import platform.Foundation.decimalSeparator
 import platform.Foundation.systemLocale
 
 actual class DecimalFormat actual constructor(private val locale: String?) {
@@ -51,5 +52,10 @@ actual class DecimalFormat actual constructor(private val locale: String?) {
         return decimalFormat().numberFromString(input)?.let {
             format.format(it)!! to it.doubleValue()
         }
+    }
+
+    actual companion object {
+        actual val DecimalSeparator: String
+            get() = NSLocale.systemLocale().decimalSeparator()
     }
 }

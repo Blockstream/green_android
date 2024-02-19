@@ -9,7 +9,6 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.lightningMnemonic
 import com.blockstream.common.gdk.data.Account
-import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.lightning.fromSwapInfo
 import com.blockstream.common.sideeffects.SideEffects
@@ -31,7 +30,7 @@ import org.koin.core.annotation.InjectedParam
 class AccountOverviewViewModel constructor(
     @InjectedParam initWallet: GreenWallet,
     @InjectedParam account: Account,
-) : AbstractAccountWalletViewModel(initWallet, AccountAsset.fromAccount(account)) {
+) : AbstractAccountWalletViewModel(initWallet, account.accountAsset) {
     val isWatchOnly: LiveData<Boolean> = MutableLiveData(wallet.isWatchOnly)
 
     private val _twoFactorStateLiveData: MutableLiveData<List<AlertType>> = MutableLiveData()

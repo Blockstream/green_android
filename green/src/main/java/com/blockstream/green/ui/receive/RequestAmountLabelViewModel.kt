@@ -29,7 +29,7 @@ class RequestAmountLabelViewModel constructor(
     @InjectedParam val initialRequestAmount: String?,
 ) : AbstractAccountWalletViewModel(wallet, accountAssetValue) {
 
-    val isPolicyAsset = accountAssetValue.assetId.isPolicyAsset(account.network)
+    val isPolicyAsset = accountAssetValue.asset.assetId.isPolicyAsset(account.network)
 
     var requestAmount: MutableLiveData<String> =
         MutableLiveData(initialRequestAmount?.let { amount ->
@@ -78,7 +78,7 @@ class RequestAmountLabelViewModel constructor(
                 } else if (accountAssetValue.assetId.isPolicyAsset(accountAssetValue.account.network)) {
                     getBitcoinOrLiquidUnit(session = session, assetId = network.policyAsset)
                 } else {
-                    accountAssetValue.asset(session)?.ticker ?: ""
+                    accountAssetValue.asset.ticker ?: ""
                 }
             }.launchIn(viewModelScope.coroutineScope)
     }

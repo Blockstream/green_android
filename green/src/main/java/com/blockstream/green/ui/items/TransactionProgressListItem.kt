@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.blockstream.common.gdk.data.Transaction
-import com.blockstream.common.views.TransactionStatusLook
+import com.blockstream.common.looks.TransactionStatusLook
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemTransactionProgressBinding
 import com.blockstream.green.extensions.context
@@ -51,10 +51,10 @@ data class TransactionProgressListItem constructor(
         if (transaction.spv != Transaction.SPVResult.Disabled) {
             binding.spv.setImageResource(
                 when (transaction.spv) {
-                    Transaction.SPVResult.InProgress, Transaction.SPVResult.Unconfirmed -> R.drawable.ic_spv_in_progress
-                    Transaction.SPVResult.NotLongest -> R.drawable.ic_spv_warning
-                    Transaction.SPVResult.Verified -> R.drawable.ic_spv_verified
-                    else -> R.drawable.ic_spv_error
+                    Transaction.SPVResult.InProgress, Transaction.SPVResult.Unconfirmed -> R.drawable.spv_in_progress
+                    Transaction.SPVResult.NotLongest -> R.drawable.spv_warning
+                    Transaction.SPVResult.Verified -> R.drawable.spv_verified
+                    else -> R.drawable.spv_error
                 }
             )
         }

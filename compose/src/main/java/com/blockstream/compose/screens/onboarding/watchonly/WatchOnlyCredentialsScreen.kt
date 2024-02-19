@@ -222,6 +222,7 @@ fun WatchOnlyCredentialsScreen(
                                 value = watchOnlyDescriptor,
                                 onValueChange = viewModel.watchOnlyDescriptor.onValueChange(),
                                 minLines = 5,
+                                maxLines = 5,
                                 placeholder = {
                                     Text(if (isOutputDescriptors) "Descriptor1,Descriptor2,…" else "xPub1,yPub1,zPub1,xPub2,…")
                                 },

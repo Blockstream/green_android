@@ -3,6 +3,7 @@ package com.blockstream.common.gdk.data
 import com.arkivanov.essenty.parcelable.IgnoredOnParcel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.serializers.AccountTypeSerializer
 import com.blockstream.common.utils.hexToByteArray
@@ -12,7 +13,8 @@ import kotlinx.serialization.Serializable
 @Parcelize
 @Serializable
 data class Account constructor(
-    var networkInjected: Network? = null,
+    private var networkInjected: Network? = null,
+    private var policyAsset: EnrichedAsset? = null,
     @SerialName("name") private val gdkName: String,
     @SerialName("pointer") val pointer: Long,
     @SerialName("hidden") val hidden: Boolean = false,
@@ -27,6 +29,11 @@ data class Account constructor(
     @SerialName("slip132_extended_pubkey") val extendedPubkey: String? = null,
     @SerialName("user_path") val derivationPath: List<Long>? = null
 ) : Parcelable, Comparable<Account> {
+
+    fun setup(session: GdkSession, network: Network) {
+        networkInjected = network
+        policyAsset = EnrichedAsset.create(session = session, network = network)
+    }
 
     @IgnoredOnParcel
     val network
@@ -81,9 +88,12 @@ data class Account constructor(
     val countlyId
         get() = network.countlyId
 
+    val accountAsset
+        get() = AccountAsset(this, policyAsset!!)
+
     @IgnoredOnParcel
     private val weight by lazy {
-        when{
+        when {
             isBitcoin && isSinglesig -> 0
             isBitcoin && isMultisig -> 1
             isLightning -> 2
@@ -164,7 +174,7 @@ data class Account constructor(
             }
         }
 
-    val accountNumber: Long
+    private val accountNumber: Long
         get() = bip32Pointer + 1
 
     fun getRecoveryChainCodeAsBytes(): ByteArray {
@@ -183,9 +193,7 @@ data class Account constructor(
         }
     }
 
-    fun isFunded(session: GdkSession): Boolean{
+    fun isFunded(session: GdkSession): Boolean {
         return session.accountAssets(this).value.assets.values.sum() > 0
     }
-
-    fun accountAsset() = AccountAsset.fromAccount(this)
 }

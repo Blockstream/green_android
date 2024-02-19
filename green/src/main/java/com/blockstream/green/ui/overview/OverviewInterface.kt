@@ -86,7 +86,7 @@ interface OverviewInterface {
                             appFragment.navigate(
                                 NavGraphDirections.actionGlobalSendFragment(
                                     wallet = wallet,
-                                    accountAsset = AccountAsset.fromAccount(account),
+                                    accountAsset = account.accountAsset,
                                     address = data,
                                     addressType = if(isQr) AddressInputType.SCAN else AddressInputType.BIP21
                                 )

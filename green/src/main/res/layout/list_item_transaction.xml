@@ -90,8 +90,8 @@
                     android:id="@+id/typeImageView"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@{tx.txType == Type.IN ? @drawable/ic_receive : (tx.txType == Type.OUT ? @drawable/ic_send : (tx.txType == Type.REDEPOSIT ? @drawable/ic_send : tx.txType == Type.MIXED ? @drawable/ic_swap : @drawable/ic_shield ))}"
-                    tools:src="@drawable/ic_receive" />
+                    android:src="@{tx.txType == Type.IN ? @drawable/ic_receive : (tx.txType == Type.OUT ? @drawable/ic_send : (tx.txType == Type.REDEPOSIT ? @drawable/arrow_u_left_down : tx.txType == Type.MIXED ? @drawable/ic_swap : @drawable/ic_shield ))}"
+                    tools:src="@drawable/arrow_u_left_down" />
 
 
                 <androidx.appcompat.widget.LinearLayoutCompat

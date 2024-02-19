@@ -3,6 +3,7 @@ package com.blockstream.compose.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -57,6 +58,7 @@ fun GreenButton(
     type: GreenButtonType = GreenButtonType.COLOR,
     color: GreenButtonColor = GreenButtonColor.GREEN,
     size: GreenButtonSize = GreenButtonSize.NORMAL,
+    icon: Painter? = null,
     enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
@@ -130,6 +132,15 @@ fun GreenButton(
                 contentPadding = contentPadding,
                 shape = MaterialTheme.shapes.small,
             ) {
+                icon?.also {
+                    Icon(
+                        painter = it,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(end = 6.dp)
+                            .size(18.dp)
+                    )
+                }
                 GreenButtonText(text = text, textStyle = textStyle)
             }
         }
@@ -171,6 +182,15 @@ fun GreenButton(
                 contentPadding = contentPadding,
                 border = border
             ) {
+                icon?.also {
+                    Icon(
+                        painter = it,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(end = 6.dp)
+                            .size(18.dp)
+                    )
+                }
                 GreenButtonText(text = text, textStyle = textStyle)
             }
         }
@@ -192,6 +212,15 @@ fun GreenButton(
                 shape = MaterialTheme.shapes.small,
                 contentPadding = contentPadding,
             ) {
+                icon?.also {
+                    Icon(
+                        painter = it,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(end = 6.dp)
+                            .size(18.dp)
+                    )
+                }
                 GreenButtonText(text = text, textStyle = textStyle)
             }
         }
@@ -337,7 +366,7 @@ fun GreenButtonPreview() {
             HorizontalDivider()
             Text("Normal")
             GreenRow(padding = 0) {
-                GreenButton(text = "Normal Enabled") { }
+                GreenButton(text = "Normal Enabled", icon = painterResource(id = R.drawable.share_network)) { }
                 GreenButton(text = "Norma Disabled", enabled = false) { }
             }
             GreenRow(padding = 0) {

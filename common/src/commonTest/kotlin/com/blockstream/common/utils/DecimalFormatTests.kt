@@ -8,7 +8,6 @@ import kotlin.test.assertEquals
 class DecimalFormatTests {
     @Test
     fun `test en_US`() {
-
         DecimalFormat("en_US").apply {
             minimumFractionDigits = 2
             maximumFractionDigits = 3
@@ -67,6 +66,7 @@ class DecimalFormatTests {
             groupingSeparator = '_'
         }.apply {
             assertEquals("1_123-12", format(1123.12))
+            assertEquals("1_123-12", format(1123.12000))
         }
     }
 }

@@ -5,7 +5,9 @@ import com.arkivanov.essenty.parcelable.IgnoredOnParcel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.GreenJson
+import com.blockstream.common.utils.toAmountLookOrNa
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -13,10 +15,9 @@ import kotlin.math.absoluteValue
 
 @Serializable
 @Parcelize
-data class Transaction(
+data class Transaction constructor(
     var accountInjected: Account? = null,
     @SerialName("block_height") val blockHeight: Long,
-    @SerialName("can_cpfp") val canCPFP: Boolean,
     @SerialName("can_rbf") val canRBF: Boolean,
     @SerialName("created_at_ts") val createdAtTs: Long,
     @SerialName("inputs") val inputs: List<InputOutput>,
@@ -24,18 +25,19 @@ data class Transaction(
     @SerialName("fee") val fee: Long,
     @SerialName("fee_rate") val feeRate: Long,
     @SerialName("memo") val memo: String,
-    @SerialName("rbf_optin") val rbfOptin: Boolean,
     @SerialName("spv_verified") val spvVerified: String,
     @SerialName("txhash") val txHash: String,
     @SerialName("type") val type: String,
     @SerialName("satoshi") val satoshi: Map<String, Long>,
+
     @SerialName("message") val message: String? = null,
-    @SerialName("plaintext") val plaintext: Pair<String,String>? = null,
-    @SerialName("url") val url: Pair<String,String>? = null,
+    @SerialName("plaintext") val plaintext: Pair<String, String>? = null,
+    @SerialName("url") val url: Pair<String, String>? = null,
     @SerialName("isPendingCloseChannel") val isPendingCloseChannel: Boolean = false,
     @SerialName("isLightningSwap") val isLightningSwap: Boolean = false,
     @SerialName("isInProgressSwap") val isInProgressSwap: Boolean = false,
-    @SerialName("isRefundableSwap") val isRefundableSwap: Boolean = false
+    @SerialName("isRefundableSwap") val isRefundableSwap: Boolean = false,
+    @SerialName("extras") val extras: List<Pair<String,String>>? = null,
 ) : GreenJson<Transaction>(), Parcelable {
     val account
         get() = accountInjected!!
@@ -48,9 +50,11 @@ data class Transaction(
     enum class SPVResult {
         Disabled, InProgress, NotVerified, NotLongest, Unconfirmed, Verified;
 
-        fun disabledOrVerified() = this == Disabled || this == Verified
-        fun disabledOrUnconfirmedOrVerified() = this == Disabled || this == Unconfirmed || this == Verified
-        fun inProgress() = this == InProgress
+        fun disabled() = this == Disabled
+
+        fun disabledOrUnconfirmedOrVerified() =
+            this == Disabled || this == Unconfirmed || this == Verified
+
         fun inProgressOrUnconfirmed() = this == InProgress || this == Unconfirmed
         fun unconfirmed() = this == Unconfirmed
         fun failed() = this == NotVerified || this == NotLongest
@@ -82,17 +86,15 @@ data class Transaction(
     val isOut
         get() = txType == Type.OUT
 
-    val isRedeposit
-        get() = txType == Type.REDEPOSIT
-
-    val isMixed
-        get() = txType == Type.MIXED
-
     val satoshiPolicyAsset: Long
         get() = satoshi[BTC_POLICY_ASSET] ?: 0L
 
+    // Lightning on chain address
+    val onChainAddress
+        get() = inputs.first().address ?: ""
+
     @IgnoredOnParcel
-    val spv: SPVResult by lazy{
+    val spv: SPVResult by lazy {
         when (spvVerified) {
             "in_progress" -> SPVResult.InProgress
             "not_verified" -> SPVResult.NotVerified
@@ -104,79 +106,81 @@ data class Transaction(
     }
 
     @IgnoredOnParcel
-    val utxoViews : List<UtxoView> by lazy {
+    val utxoViews: List<UtxoView> by lazy {
         if (account.isLightning) {
-            return@lazy listOf(
+            listOf(
                 UtxoView(
                     address = inputs.firstOrNull()?.address,
                     satoshi = satoshi[BTC_POLICY_ASSET],
                     isChange = false
                 )
             )
-        }
-        if(txType == Type.OUT && network.isLiquid){
+        } else if (txType == Type.OUT && network.isLiquid) {
             // On Liquid we have to synthesize the utxo view as we can't unblind the outputs
-
-            satoshi.mapNotNull { asset ->
-                if(asset.key != network.policyAsset){
-                    UtxoView(
-                        assetId = asset.key,
-                        satoshi = asset.value,
-                        isChange = false
-                    )
-                }else if(asset.key == network.policyAsset && (asset.value.absoluteValue - fee.absoluteValue) != 0L) {
-                    UtxoView(
-                        assetId = asset.key,
-                        satoshi = -(asset.value.absoluteValue - fee.absoluteValue),
-                        isChange = false
-                    )
-                }else{
-                    null
-                }
-            }
 
             assets.map { asset ->
                 // Remove lbtc fee
                 UtxoView(
                     assetId = asset.first,
-                    satoshi = asset.second.takeIf { asset.first != network.policyAsset } ?: -(asset.second.absoluteValue - fee.absoluteValue),
+                    satoshi = asset.second.takeIf { asset.first != network.policyAsset }
+                        ?: -(asset.second.absoluteValue - fee.absoluteValue),
                     isChange = false
                 )
             }
 
-        }else{
+        } else if (txType == Type.MIXED) {
             // Mixed transactions has one part of the transaction as inputs and the other as outputs
+
+            assets.map { asset ->
+                // Remove lbtc fee
+                UtxoView(
+                    assetId = asset.first,
+                    satoshi = asset.second,
+                    isChange = false
+                )
+            }
+
+        } else {
+            // Mixed transactions has one part of the transaction as inputs and the other as outputs
+            // Disabled, better use satoshi field
             val utxos = outputs.takeIf { txType != Type.MIXED } ?: (inputs + outputs)
 
             // Try to find the relevant UTXO, different networks/policies have different json structure
             utxos.filter {
-                when (txType){
+                when (txType) {
                     Type.OUT -> {
-                        if(network.isLiquid){
+                        if (network.isLiquid) {
                             // This is handled above
                             false
-                        }else{
+                        } else {
                             // On Bitcoin, find the tx that is not relevant to our wallet
                             it.isRelevant == false
                         }
                     }
+
                     Type.IN -> {
                         it.isRelevant == true
                     }
+
                     Type.REDEPOSIT -> {
                         false // Hide all utxos as we only display the fee
                     }
+
                     Type.MIXED -> {
                         it.isRelevant == true
                     }
+
                     else -> {
                         false
                     }
                 }
             }.map {
                 // Singlesig liquid returns an unblinded address
-                val outAddress = if(network.isLiquid && network.isSinglesig) null else it.address
-                val outSatoshi = if(txType == Type.OUT || (txType == Type.MIXED && (satoshi[it.assetId] ?: 0) < 0 )) -(it.satoshi ?: 0) else it.satoshi
+                val outAddress = if (network.isLiquid && network.isSinglesig) null else it.address
+                val outSatoshi =
+                    if (txType == Type.OUT || (txType == Type.MIXED && (satoshi[it.assetId]
+                            ?: 0) < 0)
+                    ) -(it.satoshi ?: 0) else it.satoshi
 
                 UtxoView(
                     address = outAddress,
@@ -225,6 +229,11 @@ data class Transaction(
         return currentBlock - blockHeight + 1
     }
 
+    fun getConfirmations(session: GdkSession): Long {
+        if (isLoadingTransaction) return -1
+        return getConfirmations(session.block(network).value.height)
+    }
+
     val isLoadingTransaction
         get() = blockHeight == -1L
 
@@ -234,23 +243,57 @@ data class Transaction(
         val unblindedInputs = inputs.filter {
             it.hasUnblindingData()
         }.map {
-            InputUnblindedData(vin = it.ptIdx?.toUInt() ?: 0.toUInt(), assetId = it.assetId ?: "", assetblinder = it.assetblinder ?: "", satoshi = it.satoshi ?: 0, amountblinder = it.amountblinder ?: "")
+            InputUnblindedData(
+                vin = it.ptIdx?.toUInt() ?: 0.toUInt(),
+                assetId = it.assetId ?: "",
+                assetblinder = it.assetblinder ?: "",
+                satoshi = it.satoshi ?: 0,
+                amountblinder = it.amountblinder ?: ""
+            )
         }
 
         val unblindedOutputs = outputs.filter {
             it.hasUnblindingData()
         }.map {
-            OutputUnblindedData(vout = it.ptIdx?.toUInt() ?: 0.toUInt(), assetId = it.assetId ?: "", assetblinder = it.assetblinder ?: "", satoshi = it.satoshi ?: 0, amountblinder = it.amountblinder ?: "")
+            OutputUnblindedData(
+                vout = it.ptIdx?.toUInt() ?: 0.toUInt(),
+                assetId = it.assetId ?: "",
+                assetblinder = it.assetblinder ?: "",
+                satoshi = it.satoshi ?: 0,
+                amountblinder = it.amountblinder ?: ""
+            )
         }
 
-        return TransactionUnblindedData(txid = txHash, type = type, inputs = unblindedInputs, outputs = unblindedOutputs, version = 0)
+        return TransactionUnblindedData(
+            txid = txHash,
+            type = type,
+            inputs = unblindedInputs,
+            outputs = unblindedOutputs,
+            version = 0
+        )
+    }
+
+    suspend fun details(session: GdkSession): List<Pair<String, String>> = extras ?: run {
+//        listOf("id_transaction_id" to txHash) +
+                buildList<Pair<String, String>> {
+            utxoViews.takeIf { it.size > 1 }?.forEach { utxo ->
+                utxo.address?.also {
+                    add("id_address" to it)
+                    add("id_amount" to utxo.satoshi.toAmountLookOrNa(
+                        session = session,
+                        assetId = utxo.assetId,
+                        withUnit = true,
+                        withDirection = true
+                    ))
+                }
+            }
+        }
     }
 
     companion object {
         // Create a dummy transaction to describe the loading state (blockHeight == -1)
         val LoadingTransaction = Transaction(
             blockHeight = -1,
-            canCPFP = false,
             canRBF = false,
             createdAtTs = 0,
             inputs = listOf(),
@@ -258,7 +301,6 @@ data class Transaction(
             fee = 0,
             feeRate = 0,
             memo = "",
-            rbfOptin = false,
             spvVerified = "",
             txHash = "",
             type = "",

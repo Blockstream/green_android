@@ -1,19 +1,25 @@
 package com.blockstream.compose.screens.overview
 
+import androidx.compose.foundation.clickable
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.navigator.LocalNavigator
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.models.overview.WalletOverviewViewModel
 import com.blockstream.common.models.overview.WalletOverviewViewModelAbstract
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.screens.settings.AppSettingsScreen
+import com.blockstream.compose.screens.transaction.TransactionScreen
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import org.koin.core.parameter.parametersOf
@@ -43,6 +49,8 @@ fun WalletOverviewScreen(
 ) {
     HandleSideEffect(viewModel = viewModel)
 
+    val navigator = LocalNavigator.current
+
     GreenColumn {
         val balance by viewModel.balancePrimary.collectAsStateWithLifecycle()
         Text("Balance: $balance")
@@ -51,7 +59,9 @@ fun WalletOverviewScreen(
         
         Text(text = "TRANSACTIONS")
         transactions.forEach { 
-            Text(text = it.txHash)
+            Text(text = it.txHash, modifier = Modifier.clickable {
+                navigator?.push(TransactionScreen(transaction = it, greenWallet = viewModel.greenWallet))
+            })
         }
     }
 }

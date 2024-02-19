@@ -588,9 +588,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:elevation="24dp"
+                android:gravity="center"
                 android:orientation="vertical"
                 android:paddingBottom="16dp"
-                android:gravity="center"
                 app:gap="4dp">
 
                 <com.google.android.material.button.MaterialButton
@@ -652,7 +652,6 @@
                     android:layout_marginEnd="24dp"
                     android:enabled="@{!vm.onProgress}"
                     android:text="@{vm.showLightningOnChainAddress ? @string/id_show_lightning_invoice : @string/id_show_onchain_address}"
-                    tools:text="@string/id_show_onchain_address"
                     android:textColor="@color/color_on_surface_emphasis_high"
                     app:elevation="24dp"
                     app:icon="@drawable/ic_info_16"
@@ -661,7 +660,8 @@
                     app:iconTint="@color/color_on_surface_emphasis_medium"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/addressQrWrap"
-                    app:layout_constraintStart_toStartOf="@+id/addressQrWrap" />
+                    app:layout_constraintStart_toStartOf="@+id/addressQrWrap"
+                    tools:text="@string/id_show_onchain_address" />
 
             </com.blockstream.green.views.GappedLinearLayout>
 

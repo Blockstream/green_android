@@ -42,7 +42,7 @@ fun AccountAssetLayoutBinding.bind(
     showEditIcon: Boolean = false,
 ) {
     val look = AssetLook(
-        accountAsset.assetId,
+        accountAsset.asset.assetId,
         accountAsset.balance(session),
         session
     )
@@ -67,7 +67,7 @@ fun AccountAssetLayoutBinding.bind(
         }
     }
 
-    icon.setImageDrawable(accountAsset.assetId.getAssetIcon(root.context, session, isLightning = accountAsset.account.isLightning))
+    icon.setImageDrawable(accountAsset.asset.assetId.getAssetIcon(root.context, session, isLightning = accountAsset.account.isLightning))
 }
 
 @Deprecated("Use EnrichedAsset")

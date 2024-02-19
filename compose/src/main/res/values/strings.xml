@@ -1475,4 +1475,26 @@
   <string name="id_lightning_account_shortcut_activated">Lightning Account Shortcut Activated</string>
   <string name="id_with_this_shortcut_you_ll_enjoy">With this shortcut you\'ll enjoy:\n\n• Direct access to the Lightning account, keep the rest of your funds safe and separate while on the go\n\n• Quick biometrics login \n\n• Seamless lightning payments receiving, no need to keep your app open</string>
   <string name="id_ok_i_understand">Ok, I understand</string>
+  <string name="id_received_s_sats">Received %s sats</string>
+  <string name="id_transaction_unconfirmed_s_s">Transaction Unconfirmed %s/%s</string>
+  <string name="id_transaction_confirmed_s_s">Transaction Confirmed %s/%s</string>
+  <string name="id_transaction_completed">Transaction Completed</string>
+  <string name="id_transaction_failed">Transaction Failed</string>
+  <string name="id_your_transaction_was_successfully_sent">Your transaction was successfully sent</string>
+  <string name="id_your_transaction_was_successfully_received">Your transaction was successfully received</string>
+  <string name="id_your_transaction_was_successfully_swapped">Your transaction was successfully swapped</string>
+  <string name="id_your_transaction_failed_s">Your transaction failed: %s</string>
+  <string name="id_network_fees">Network fees</string>
+  <string name="id_speed_up_transaction">Speed up Transaction</string>
+  <string name="id_share_transaction">Share Transaction</string>
+  <string name="id_more_details">More Details</string>
+  <string name="id_verifying_">Verifying…</string>
+  <string name="id_invalid_spv">Invalid SPV</string>
+  <string name="id_edit_note">Edit Note</string>
+  <string name="id_invoice">Invoice</string>
+  <string name="id_payment_hash">Payment Hash</string>
+  <string name="id_payment_preimage">Payment Preimage</string>
+  <string name="id_destination_public_key">Destination Public Key</string>
+  <string name="id_invoice_description">Invoice Description</string>
+  <string name="id_redeposit">Redeposit</string>
 </resources>

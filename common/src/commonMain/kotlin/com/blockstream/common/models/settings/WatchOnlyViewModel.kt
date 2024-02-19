@@ -4,7 +4,7 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.views.wallet.WatchOnlyLook
+import com.blockstream.common.looks.wallet.WatchOnlyLook
 import com.rickclephas.kmm.viewmodel.MutableStateFlow
 import com.rickclephas.kmm.viewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState

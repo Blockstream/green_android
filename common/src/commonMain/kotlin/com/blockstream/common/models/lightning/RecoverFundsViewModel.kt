@@ -9,7 +9,6 @@ import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnectedSuspend
 import com.blockstream.common.extensions.previewWallet
-import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
@@ -157,7 +156,7 @@ class RecoverFundsViewModel(
     init {
         bootstrap()
 
-        accountAsset.value = bitcoinAccounts.value.firstOrNull()?.let { AccountAsset.fromAccount(it) }
+        accountAsset.value = bitcoinAccounts.value.firstOrNull()?.accountAsset
         showManualAddress.value = accountAsset.value == null
 
         // Cache account address so that switching between manual address, account address is the same

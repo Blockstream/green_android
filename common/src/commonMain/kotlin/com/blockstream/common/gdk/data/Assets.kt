@@ -1,5 +1,7 @@
 package com.blockstream.common.gdk.data
 
+import com.blockstream.common.gdk.GdkSession
+
 class Assets(val assetsOrNull: Map<String, Long>? = null) {
     val assets
         get() = assetsOrNull ?: emptyMap()
@@ -37,9 +39,9 @@ class Assets(val assetsOrNull: Map<String, Long>? = null) {
 
     fun containsAsset(assetId: String) = assets.containsKey(assetId)
 
-    fun toAccountAsset(account: Account): List<AccountAsset> {
+    fun toAccountAsset(account: Account, session: GdkSession): List<AccountAsset> {
         return assets.keys.map {
-            AccountAsset(account, it)
+            AccountAsset.fromAccountAsset(account, it, session)
         }
     }
 }

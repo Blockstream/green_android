@@ -7,7 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.settings.WatchOnlyViewModel
-import com.blockstream.common.views.wallet.WatchOnlyLook
+import com.blockstream.common.looks.wallet.WatchOnlyLook
 import com.blockstream.green.R
 import com.blockstream.green.databinding.BaseRecyclerViewBinding
 import com.blockstream.green.databinding.ListItemOutputDescriptorsBinding

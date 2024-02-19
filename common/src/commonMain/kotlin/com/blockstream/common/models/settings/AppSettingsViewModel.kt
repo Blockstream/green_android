@@ -262,7 +262,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
     companion object: Loggable()
 }
 
-class AppSettingsViewModelPreview(val initValue: Boolean = false) : AppSettingsViewModelAbstract() {
+class AppSettingsViewModelPreview(initValue: Boolean = false) : AppSettingsViewModelAbstract() {
 
     companion object {
         fun preview(initValue: Boolean) = AppSettingsViewModelPreview(initValue)

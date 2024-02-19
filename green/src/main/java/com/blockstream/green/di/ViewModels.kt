@@ -24,8 +24,8 @@ import com.blockstream.common.models.onboarding.hardware.UseHardwareDeviceViewMo
 import com.blockstream.common.models.onboarding.phone.AddWalletViewModel
 import com.blockstream.common.models.onboarding.phone.EnterRecoveryPhraseViewModel
 import com.blockstream.common.models.onboarding.phone.PinViewModel
-import com.blockstream.common.models.onboarding.watchonly.WatchOnlyNetworkViewModel
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyCredentialsViewModel
+import com.blockstream.common.models.onboarding.watchonly.WatchOnlyNetworkViewModel
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyPolicyViewModel
 import com.blockstream.common.models.overview.AssetsViewModel
 import com.blockstream.common.models.overview.WalletOverviewViewModel
@@ -38,8 +38,11 @@ import com.blockstream.common.models.settings.AppSettingsViewModel
 import com.blockstream.common.models.settings.TwoFactorAuthenticationViewModel
 import com.blockstream.common.models.settings.WatchOnlyViewModel
 import com.blockstream.common.models.sheets.AnalyticsViewModel
+import com.blockstream.common.models.sheets.AssetDetailsViewModel
+import com.blockstream.common.models.sheets.NoteViewModel
 import com.blockstream.common.models.sheets.RecoveryHelpViewModel
-import com.blockstream.common.models.transaction.TransactionDetailsViewModel
+import com.blockstream.common.models.sheets.TransactionDetailsViewModel
+import com.blockstream.common.models.transaction.TransactionViewModel
 import com.blockstream.common.models.wallet.WalletDeleteViewModel
 import com.blockstream.common.models.wallet.WalletNameViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -67,7 +70,9 @@ val viewModels = module {
     viewModelOf(::LnUrlWithdrawViewModel)
     viewModelOf(::WatchOnlyViewModel)
     viewModelOf(::XpubViewModel)
+    viewModelOf(::TransactionViewModel)
     viewModelOf(::TransactionDetailsViewModel)
+    viewModelOf(::NoteViewModel)
     viewModelOf(::ReviewAddAccountViewModel)
     viewModelOf(::Account2of3ViewModel)
     viewModelOf(::TwoFactorAuthenticationViewModel)
@@ -84,6 +89,8 @@ val viewModels = module {
     viewModelOf(::Bip39PassphraseViewModel)
     viewModelOf(::ReceiveViewModel)
     viewModelOf(::RecoveryHelpViewModel)
+    viewModelOf(::TransactionViewModel)
+    viewModelOf(::AssetDetailsViewModel)
     viewModel {
         JadeQRViewModel(get(), getOrNull())
     }

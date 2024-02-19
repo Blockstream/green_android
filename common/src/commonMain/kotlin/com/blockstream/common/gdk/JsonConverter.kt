@@ -13,10 +13,12 @@ class JsonConverter constructor(val log: Boolean, val maskSensitiveFields: Boole
             return false
         }
 
-        if(log) {
-            if (SkipLogAmountConversions && (jsonString.startsWith("{\"satoshi\":") || jsonString.startsWith(
-                    "{\"bits\":"
-                ))
+        if (log) {
+            if (
+                SkipLogAmountConversions
+                && (jsonString.contains("\"is_current\":true,\"mbtc\":\"")
+                        || jsonString.startsWith("{\"satoshi\":")
+                        || jsonString.startsWith("{\"bits\":"))
             ) {
                 return false
             }

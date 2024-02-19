@@ -32,7 +32,7 @@ import com.blockstream.common.events.Events
 import com.blockstream.common.models.wallets.WalletsViewModel
 import com.blockstream.common.models.wallets.WalletsViewModelAbstract
 import com.blockstream.common.models.wallets.WalletsViewModelPreview
-import com.blockstream.common.views.wallet.WalletListLook
+import com.blockstream.common.looks.wallet.WalletListLook
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenColumn

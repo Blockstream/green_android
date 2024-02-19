@@ -13,6 +13,8 @@ import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isBlank
 import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.common.extensions.previewAccountAsset
+import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Address
 import com.blockstream.common.lightning.expireIn
@@ -407,7 +409,7 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
                 }
 
                 if (account.network.isLiquid) {
-                    it.appendQueryParameter("assetid", accountAsset.value!!.assetId)
+                    it.appendQueryParameter("assetid", accountAsset.value!!.asset.assetId)
                 }
             }.toString()
 
@@ -510,7 +512,7 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
                 UserInput.parseUserInput(
                     session = session,
                     input = it,
-                    assetId = accountAsset.value!!.assetId,
+                    assetId = accountAsset.value!!.asset.assetId,
                     denomination = denomination.value
                 ).getBalance()
             }
@@ -518,7 +520,7 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
             (balance?.let {
                 "≈ " + it.toAmountLook(
                     session = session,
-                    assetId = accountAsset.value!!.assetId,
+                    assetId = accountAsset.value!!.asset.assetId,
                     denomination = Denomination.exchange(
                         session = session,
                         denomination = denomination.value
@@ -644,8 +646,7 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
 
 }
 
-class ReceiveViewModelPreview(greenWallet: GreenWallet) :
-    ReceiveViewModelAbstract(greenWallet = greenWallet, null) {
+class ReceiveViewModelPreview() : ReceiveViewModelAbstract(greenWallet = previewWallet(), accountAssetOrNull = previewAccountAsset()) {
 
     override val receiveAddress: StateFlow<String?> = MutableStateFlow("bc1")
     override val amount: MutableStateFlow<String> = MutableStateFlow("")
@@ -668,6 +669,6 @@ class ReceiveViewModelPreview(greenWallet: GreenWallet) :
     override val showLedgerAssetWarning: StateFlow<Boolean> = MutableStateFlow(false)
 
     companion object {
-
+        fun preview() = ReceiveViewModelPreview()
     }
 }
