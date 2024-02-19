@@ -411,12 +411,25 @@ abstract public class JadeHWWalletJava extends HWWallet {
     public synchronized String getMasterBlindingKey(@Nullable HardwareWalletInteraction hwInteraction) {
         Log.d(TAG, "getMasterBlindingKey() called");
 
+        byte[] masterkey = null;
+
         CompletableDeferred completable = CompletableDeferredKt.CompletableDeferred(null);
         try {
-            if(hwInteraction != null) {
-                hwInteraction.interactionRequest(this, completable, "id_check_your_device");
+            try {
+                // Try to get master blinding key silently
+                masterkey = this.jade.getMasterBlindingKey(true);
+            } catch (final Exception e) {
+                // Re-try
             }
-            final byte[] masterkey = this.jade.getMasterBlindingKey();
+
+            if(masterkey == null){
+                if(hwInteraction != null) {
+                    hwInteraction.interactionRequest(this, completable, "get_master_blinding_key");
+                }
+                // Ask user for master blinding key export
+                masterkey = this.jade.getMasterBlindingKey(false);
+            }
+
             final String keyHex = hexFromBytes(masterkey);
             Log.d(TAG, "getMasterBlindingKey() returning " + keyHex);
             return keyHex;

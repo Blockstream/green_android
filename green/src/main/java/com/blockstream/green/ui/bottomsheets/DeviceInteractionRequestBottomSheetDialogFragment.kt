@@ -5,11 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.core.os.BundleCompat
 import androidx.fragment.app.FragmentManager
+import com.blockstream.common.Urls
 import com.blockstream.common.gdk.data.Device
 import com.blockstream.green.databinding.DeviceInteractionRequestBottomSheetBinding
 import com.blockstream.green.extensions.dismissIn
 import com.blockstream.green.extensions.stringFromIdentifier
+import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.utils.bounceDown
+import com.blockstream.green.utils.openBrowser
 import mu.KLogging
 
 
@@ -27,7 +30,17 @@ class DeviceInteractionRequestBottomSheetDialogFragment constructor() : Abstract
         super.onViewCreated(view, savedInstanceState)
 
         binding.device = device
-        binding.text = if(message.isNullOrBlank()) null else requireContext().stringFromIdentifier(message)
+        if (message == "get_master_blinding_key") {
+            binding.title = "id_green_needs_the_master_blinding_key"
+            binding.message = "id_to_show_balances_and_transactions_on_liquid"
+        } else {
+            binding.title =
+                if (message.isNullOrBlank()) null else requireContext().stringFromIdentifier(message)
+        }
+
+        binding.buttonLearnMore.setOnClickListener {
+            (requireParentFragment() as? AppFragment<*>)?.openBrowser(Urls.HELP_MASTER_BLINDING_KEY)
+        }
 
         binding.arrow.bounceDown()
 

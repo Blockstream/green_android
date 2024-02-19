@@ -4,13 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="com.blockstream.common.gdk.data.Device" />
+
         <variable
             name="device"
             type="com.blockstream.common.gdk.data.Device" />
 
         <variable
-            name="text"
+            name="title"
+            type="String" />
+
+        <variable
+            name="message"
             type="String" />
     </data>
 
@@ -21,6 +27,18 @@
         android:animateLayoutChanges="true">
 
         <ImageView
+            android:id="@+id/hwBackground"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/hw_matrix_bg"
+            app:layout_constraintBottom_toBottomOf="@+id/icon"
+            app:layout_constraintEnd_toEndOf="@+id/icon"
+            app:layout_constraintStart_toStartOf="@+id/icon"
+            app:layout_constraintTop_toTopOf="@+id/icon" />
+
+        <ImageView
             android:id="@+id/icon"
             gdkDevice="@{device}"
             android:layout_width="0dp"
@@ -28,7 +46,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:adjustViewBounds="true"
-            app:layout_constraintBottom_toTopOf="@+id/textView2"
+            app:layout_constraintBottom_toTopOf="@+id/texts"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/arrow"
@@ -45,19 +63,52 @@
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/brand_green" />
 
-        <TextView
-            android:id="@+id/textView2"
+        <LinearLayout
+            android:id="@+id/texts"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginBottom="24dp"
-            android:text="@{text}"
-            android:textAlignment="center"
-            android:textAppearance="?attr/textAppearanceLabelLarge"
-            isVisible="@{text != null}"
+            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/icon"
-            app:layout_constraintStart_toStartOf="@+id/icon"
-            tools:text="@string/id_verify_on_device" />
+            app:layout_constraintStart_toStartOf="@+id/icon">
+
+            <TextView
+                isVisible="@{title != null}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                idText="@{title}"
+                android:textAlignment="center"
+                android:textAppearance="?attr/textAppearanceTitleLarge"
+                tools:text="@string/id_green_needs_the_master_blinding_key" />
+
+            <TextView
+                isVisible="@{message != null}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                idText="@{message}"
+                android:textAlignment="center"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                tools:text="@string/id_to_show_balances_and_transactions_on_liquid" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonLearnMore"
+                isVisible="@{message != null}"
+                style="@style/Widget.Green.Button.Text.Tiny"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:paddingStart="0dp"
+                android:text="@string/id_learn_more"
+                android:layout_gravity="center"
+                app:icon="@drawable/ic_baseline_open_in_new_16"
+                app:iconGravity="end"
+                app:iconPadding="8dp"
+                app:layout_constraintStart_toStartOf="@+id/textView13"
+                app:layout_constraintTop_toBottomOf="@+id/textView13" />
+
+        </LinearLayout>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

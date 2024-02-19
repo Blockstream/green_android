@@ -1469,4 +1469,6 @@
   <string name="id_dont_have_a_jade">Don’t have a Jade?</string>
   <string name="id_check_our_store">Check our store</string>
   <string name="id_remember_hardware_devices">Remember hardware devices</string>
+  <string name="id_green_needs_the_master_blinding_key">Green needs the master blinding key from Jade</string>
+  <string name="id_to_show_balances_and_transactions_on_liquid">to show balances and transactions on Liquid accounts up to 10x faster at every login, and it\'s necessary to use Liquid singlesig accounts.</string>
 </resources>

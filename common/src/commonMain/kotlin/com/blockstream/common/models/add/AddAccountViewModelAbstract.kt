@@ -96,7 +96,10 @@ abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet) :
 
             // Check if network needs initialization
             if (!session.hasActiveNetwork(network) && !session.failedNetworks.value.contains(network)) {
-                session.initNetworkIfNeeded(network) { }
+                session.initNetworkIfNeeded(
+                    network = network,
+                    hardwareWalletResolver = DeviceResolver.createIfNeeded(session.gdkHwWallet, this)
+                ) { }
             }
 
             val accountsWithSameType =
