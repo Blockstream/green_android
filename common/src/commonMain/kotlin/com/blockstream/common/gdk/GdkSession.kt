@@ -1204,7 +1204,7 @@ class GdkSession constructor(
         }
 
         return loginWithLoginCredentials(
-            prominentNetwork = lastUsedNetwork,
+            prominentNetwork = supportedNetworks.first(),
             initNetworks = initNetworks,
             wallet = wallet,
             loginCredentialsParams = LoginCredentialsParams.empty,

@@ -52,7 +52,6 @@ import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.sheets.AnalyticsBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
 import com.blockstream.compose.sideeffects.OpenDialogData
-import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
@@ -227,6 +226,16 @@ fun AppSettingsScreen(
                     )
                 }
             }
+
+            HorizontalDivider(modifier = Modifier.padding(start = 54.dp))
+
+            val rememberHardwareDevices by viewModel.rememberHardwareDevices.collectAsStateWithLifecycle()
+            GreenSwitch(
+                title = stringResource(R.string.id_remember_hardware_devices),
+                checked = rememberHardwareDevices,
+                painter = painterResource(id = R.drawable.cpu),
+                onCheckedChange = viewModel.rememberHardwareDevices.onValueChange()
+            )
 
             HorizontalDivider(modifier = Modifier.padding(start = 54.dp))
 

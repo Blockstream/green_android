@@ -1468,4 +1468,5 @@
   <string name="id_increase_qr_size">Increase QR Size</string>
   <string name="id_dont_have_a_jade">Don’t have a Jade?</string>
   <string name="id_check_our_store">Check our store</string>
+  <string name="id_remember_hardware_devices">Remember hardware devices</string>
 </resources>

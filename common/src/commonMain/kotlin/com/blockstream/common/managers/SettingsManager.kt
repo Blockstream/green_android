@@ -41,10 +41,6 @@ class SettingsManager constructor(
     fun isDeviceTermsAccepted() = settings[KEY_DEVICE_TERMS_ACCEPTED, 0] == 1
     fun setDeviceTermsAccepted() = settings.set(KEY_DEVICE_TERMS_ACCEPTED, 1)
 
-    fun rememberDeviceWallet() = settings[KEY_REMEMBER_DEVICE_WALLET, true]
-    fun setRememberDeviceWallet(rememberDeviceWallet: Boolean) = settings.set(
-        KEY_REMEMBER_DEVICE_WALLET, rememberDeviceWallet)
-
     private fun keyForCustomPinServer(urls: List<String>): String {
         return urls.joinToString("_") {
             it.server()
@@ -121,7 +117,6 @@ class SettingsManager constructor(
         const val KEY_ASKED_APP_REVIEW = "asked_app_review"
         const val KEY_COUNTLY_DEVICE_ID = "countly_device_id"
         const val KEY_COUNTLY_OFFSET = "countly_offset"
-        const val KEY_REMEMBER_DEVICE_WALLET = "remember_device_wallet"
         const val KEY_ALLOW_CUSTOM_PIN_SERVER = "allow_custom_pin_server"
         const val KEY_WALLET_COUNTER = "wallet_counter"
     }

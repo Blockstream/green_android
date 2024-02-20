@@ -19,6 +19,7 @@ data class ApplicationSettings constructor(
     val screenLockInSeconds: Int = ScreenLockSetting.LOCK_IMMEDIATELY.seconds,
     val testnet: Boolean = false,
     val proxyUrl: String? = null,
+    val rememberHardwareDevices: Boolean = true,
     val tor: Boolean = false,
     val electrumNode: Boolean = false,
     val spv: Boolean = false,
@@ -74,6 +75,7 @@ data class ApplicationSettings constructor(
         private const val SCREEN_LOCK_IN_SECONDS = "screenLockInSeconds"
         private const val TESTNET = "testnet"
         private const val PROXY_URL = "proxyURL"
+        private const val REMEMBER_HARDWARE_DEVICES = "rememberHardwareDevices"
         private const val TOR = "tor"
         private const val ELECTRUM_NODE = "electrumNode"
         private const val SPV = "spv"
@@ -99,6 +101,7 @@ data class ApplicationSettings constructor(
                     screenLockInSeconds = settings.getInt(SCREEN_LOCK_IN_SECONDS, 0),
                     testnet = settings.getBoolean(TESTNET, false),
                     proxyUrl = settings.getStringOrNull(PROXY_URL),
+                    rememberHardwareDevices = settings.getBoolean(REMEMBER_HARDWARE_DEVICES, true),
                     tor = settings.getBoolean(TOR, false),
                     electrumNode = settings.getBoolean(ELECTRUM_NODE, false),
                     spv = settings.getBoolean(SPV, false),
@@ -139,6 +142,7 @@ data class ApplicationSettings constructor(
                 it.putInt(SCREEN_LOCK_IN_SECONDS, appSettings.screenLockInSeconds)
                 it.putBoolean(TESTNET, appSettings.testnet)
                 it.putStringOrRemove(PROXY_URL, appSettings.proxyUrl)
+                it.putBoolean(REMEMBER_HARDWARE_DEVICES, appSettings.rememberHardwareDevices)
                 it.putBoolean(TOR, appSettings.tor)
                 it.putBoolean(ELECTRUM_NODE, appSettings.electrumNode)
                 it.putBoolean(SPV, appSettings.spv)

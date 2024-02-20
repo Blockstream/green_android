@@ -43,6 +43,9 @@ abstract class AppSettingsViewModelAbstract() :
     abstract val proxyUrl: MutableStateFlow<String>
 
     @NativeCoroutinesState
+    abstract val rememberHardwareDevices: MutableStateFlow<Boolean>
+
+    @NativeCoroutinesState
     abstract val testnetEnabled: MutableStateFlow<Boolean>
 
     @NativeCoroutinesState
@@ -120,6 +123,9 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
 
     @NativeCoroutinesState
     override val proxyUrl = MutableStateFlow(viewModelScope, appSettings.proxyUrl ?: "")
+
+    @NativeCoroutinesState
+    override val rememberHardwareDevices = MutableStateFlow(viewModelScope, appSettings.rememberHardwareDevices)
 
     @NativeCoroutinesState
     override val testnetEnabled = MutableStateFlow(viewModelScope, appSettings.testnet)
@@ -231,6 +237,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         analytics = analyticsEnabled.value,
         experimentalFeatures = experimentalFeaturesEnabled.value,
         proxyUrl =  proxyUrl.value.takeIf { it.isNotBlank() && proxyEnabled.value },
+        rememberHardwareDevices = rememberHardwareDevices.value,
         electrumNode = electrumNodeEnabled.value,
         tor = torEnabled.value,
         spv = spvEnabled.value,
@@ -269,6 +276,7 @@ class AppSettingsViewModelPreview(val initValue: Boolean = false) : AppSettingsV
     override val torEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
     override val proxyEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
     override val proxyUrl: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
+    override val rememberHardwareDevices: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, true)
     override val testnetEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
     override val experimentalFeaturesEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
     override val analyticsEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)

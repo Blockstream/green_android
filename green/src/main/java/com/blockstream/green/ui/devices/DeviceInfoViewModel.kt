@@ -2,22 +2,19 @@ package com.blockstream.green.ui.devices
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
 import com.blockstream.common.data.DeviceIdentifier
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceConnectionManager
 import com.blockstream.green.devices.DeviceManagerAndroid
 import com.blockstream.green.devices.HardwareConnectInteraction
-import com.blockstream.green.extensions.boolean
 import com.blockstream.green.gdk.getWallet
 import com.blockstream.green.utils.QATester
 import com.greenaddress.greenbits.wallets.JadeFirmwareManager
-import com.rickclephas.kmm.viewmodel.coroutineScope
-import kotlinx.coroutines.launch
 import mu.KLogging
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.InjectedParam
@@ -35,8 +32,6 @@ class DeviceInfoViewModel constructor(
     // Don't use onProgress for this screen as is not turned off for animation reasons
     val navigationLock = MutableLiveData(false)
 
-    val rememberDevice = MutableLiveData(false)
-
     val jadeIsUninitialized = MutableLiveData(false)
 
     val deviceIsConnected = MutableLiveData(false)
@@ -53,10 +48,6 @@ class DeviceInfoViewModel constructor(
     )
 
     init {
-        viewModelScope.coroutineScope.launch(context = logException(countly)) {
-            rememberDevice.postValue(settingsManager.rememberDeviceWallet())
-        }
-
         if(device.gdkHardwareWallet == null){
             connectDevice(context)
         }
@@ -73,16 +64,13 @@ class DeviceInfoViewModel constructor(
         val gdkHardwareWallet = device.gdkHardwareWallet ?: return
 
         doUserAction({
-            // Save user preference
-            settingsManager.setRememberDeviceWallet(rememberDeviceWallet = rememberDevice.value == true)
-
             // Authenticate device if needed
             deviceConnectionManager.authenticateDeviceIfNeeded(gdkHardwareWallet = gdkHardwareWallet, jadeFirmwareManager = jadeFirmwareManager)
 
             val network = deviceConnectionManager.getOperatingNetwork(gdkHardwareWallet)
-            val isEphemeral = !rememberDevice.boolean()
+            val isEphemeral = !settingsManager.appSettings.rememberHardwareDevices
 
-            var previousSession = (if(device.isLedger){
+            val previousSession = (if(device.isLedger){
                 sessionManager.getDeviceSessionForNetworkAllPolicies(device, network, isEphemeral)
             }else{
                 sessionManager.getDeviceSessionForEnvironment(device, network.isTestnet, isEphemeral)
