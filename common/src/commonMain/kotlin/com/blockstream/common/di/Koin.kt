@@ -61,7 +61,7 @@ private fun commonModules(appConfig: AppConfig): List<Module> {
             getWally()
         }
         single {
-            AssetManager()
+            AssetManager
         }
         single {
             SessionManager(get(), get(), get(), get(), get(), get(), get(), get())

@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import com.blockstream.common.gdk.data.Asset
 import com.blockstream.common.gdk.params.AssetsParams
 import com.blockstream.common.gdk.params.GetAssetsParams
+import com.blockstream.common.utils.Loggable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -12,13 +13,19 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.until
 
 enum class CacheStatus {
     Empty, Latest
 }
 
-data class AssetStatus(
+data class AssetStatus constructor(
     var cacheStatus: CacheStatus = CacheStatus.Empty,
+    var updatedAt: Instant? = null,
     var onProgress: Boolean = false,
 )
 
@@ -26,9 +33,7 @@ data class AssetStatus(
  * NetworkAssetManager is responsible of updating Assets and handle different caches
  * App Cache: cached data from apk
  */
-class NetworkAssetManager constructor(
-    val qaTester: AssetQATester?,
-) {
+class NetworkAssetManager constructor() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private val metadata = mutableMapOf<String, Asset?>()
@@ -88,27 +93,27 @@ class NetworkAssetManager constructor(
     fun hasAssetIcon(assetId: String): Boolean = icons.containsKey(assetId)
 
 
-
     fun updateAssetsIfNeeded(provider: AssetsProvider) {
-        if (_status.cacheStatus != CacheStatus.Latest) {
+        val lastUpdate = _status.updatedAt?.until(Clock.System.now(), DateTimeUnit.SECOND, TimeZone.UTC)
 
+        if (lastUpdate == null || lastUpdate > 120) {
+            logger.i { "Liquid Assets are being updated... ${lastUpdate?.let { "Cache is $it secs old." } ?: "Cache is empty."}" }
             scope.launch {
-
                 try {
                     _statusStateFlow.value = _status.apply { onProgress = true }
 
-                    // Allow forceUpdate to override QATester settings
-                    if (qaTester?.isAssetFetchDisabled() == false) {
-                        // Try to update the registry
-                        provider.refreshAssets(
-                            AssetsParams(
-                                assets = true,
-                                icons = true,
-                                refresh = true
-                            )
+                    // Try to update the registry
+                    provider.refreshAssets(
+                        AssetsParams(
+                            assets = true,
+                            icons = true,
+                            refresh = true
                         )
+                    )
 
-                        _status.cacheStatus = CacheStatus.Latest
+                    _status.cacheStatus = CacheStatus.Latest
+                    _status.updatedAt = Clock.System.now().also {
+                        logger.i { "Liquid Assets updated at $it" }
                     }
 
                 } catch (e: Exception) {
@@ -118,6 +123,10 @@ class NetworkAssetManager constructor(
                     _assetsUpdateSharedFlow.tryEmit(Unit)
                 }
             }
+        } else {
+            logger.i { "Liquid Assets cached at ${_status.updatedAt.toString()}, $lastUpdate secs old. Skipped." }
         }
     }
+
+    companion object: Loggable()
 }

@@ -91,19 +91,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/settings_element_margin" />
 
-                    <com.blockstream.green.views.GreenSwitch
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:checked="@={qaTester.assetsFetchDisabled}"
-                        app:captionText="Disable Assets metadata &amp; icons fetching"
-                        app:icon="@drawable/unknown"
-                        app:titleText="Disable Assets fetching" />
-
-                    <com.google.android.material.divider.MaterialDivider
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/settings_element_margin" />
-
                     <TextView
                         android:id="@+id/errorCounter"
                         android:layout_width="match_parent"
