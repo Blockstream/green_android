@@ -21,9 +21,9 @@ _EOF_
 NAME="gdk-android-jni"
 TARBALL="${NAME}.tar.gz"
 # The version of gdk to fetch and its sha256 checksum for integrity checking
-TAGNAME="release_0.70.0"
+TAGNAME="release_0.70.3"
 URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${TARBALL}"
-SHA256="388f1e1caa4a4e98c603207516615c8cd1e1b62e0e073e8bd6788457e4d9177e"
+SHA256="52b6b3c67d80e22f194ac4365d6dbe1fb5cce012ee81b10a6fdfc2cf1fe2d0d9"
 VALIDATE_CHECKSUM=true
 COMMIT=false
 GCLOUD_URL="https://storage.googleapis.com/green-gdk-builds/gdk-"
