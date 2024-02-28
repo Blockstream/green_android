@@ -433,8 +433,16 @@ class WalletSettingsFragment :
         } else {
             list += logoutPreference
 
-            if (!session.isWatchOnly && !session.isLightningShortcut) {
+            if (session.isWatchOnly) {
+                // General
+                list += TitleListItem(StringHolder(R.string.id_general))
+                list += denominationAndExchangeRatePreference
 
+                // Security
+                list += TitleListItem(StringHolder(R.string.id_security))
+                list += altTimeoutPreference
+
+            } else if (!session.isLightningShortcut) {
                 // General
                 list += TitleListItem(StringHolder(R.string.id_general))
                 list += denominationAndExchangeRatePreference

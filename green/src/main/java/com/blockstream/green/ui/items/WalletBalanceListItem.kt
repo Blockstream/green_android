@@ -85,7 +85,7 @@ data class WalletBalanceListItem constructor(val session: GdkSession, val countl
 
         binding.progressBar.isVisible = balance == -1L
         binding.balanceTextView.isInvisible = balance == -1L
-        binding.buttonDenomination.isInvisible = balance == -1L || session.isWatchOnly // (session.isWatchOnly && session.defaultNetwork.isMultisig)
+        binding.buttonDenomination.isInvisible = balance == -1L
         binding.hideAmounts = session.hideAmounts
 
         scope.launch {
