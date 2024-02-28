@@ -42,7 +42,6 @@ fun navigate(navController: NavController, @IdRes resId: Int, args: Bundle?, isL
     val animate =
         !(currentDestinationId == R.id.walletOverviewFragment && resId == R.id.action_global_walletOverviewFragment)
                 && !(currentDestinationId == R.id.loginFragment && resId == R.id.action_global_loginFragment)
-                && !(currentDestinationId == R.id.homeFragment && resId == R.id.action_global_onboardingTermsFragment)
 
     if (animate) {
         navOptionsBuilder.setEnterAnim(R.anim.nav_enter_anim)
@@ -63,10 +62,6 @@ fun navigate(navController: NavController, @IdRes resId: Int, args: Bundle?, isL
     } else if (resId == R.id.action_global_deviceScanFragment) {
         // Allow only one Login screen
         navOptionsBuilder.setPopUpTo(R.id.deviceScanFragment, true)
-        navOptionsBuilder.setLaunchSingleTop(true)
-    } else if (resId == R.id.action_global_onboardingTermsFragment) {
-        // Allow only one Login screen
-        navOptionsBuilder.setPopUpTo(R.id.homeFragment, true)
         navOptionsBuilder.setLaunchSingleTop(true)
     } else if (resId == R.id.action_global_setupNewWalletFragment){
         // Allow a single onboarding path

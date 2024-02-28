@@ -41,6 +41,7 @@ import cafe.adriel.voyager.transitions.ScreenTransition
 import cafe.adriel.voyager.transitions.ScreenTransitionContent
 import com.blockstream.common.managers.LifecycleManager
 import com.blockstream.common.models.drawer.DrawerViewModel
+import com.blockstream.common.utils.AndroidKeystore
 import com.blockstream.compose.screens.DrawerScreen
 import com.blockstream.compose.screens.HomeScreen
 import com.blockstream.compose.screens.LockScreen
@@ -54,8 +55,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+import org.koin.core.context.startKoin
+import org.koin.dsl.module
 
 
 val LocalAppBarState = compositionLocalOf { AppBarState() }
@@ -174,6 +178,15 @@ fun AppFragmentBridge(content: @Composable () -> Unit) {
 fun GreenPreview(content: @Composable () -> Unit) {
     val context = LocalContext.current
     val dialogState = remember { DialogState(context = context)}
+
+    startKoin {
+        modules(module {
+            single { context }
+            single {
+                AndroidKeystore(androidContext())
+            }
+        })
+    }
 
     GreenTheme {
         CompositionLocalProvider(

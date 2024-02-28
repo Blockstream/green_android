@@ -75,7 +75,7 @@ fun WatchOnlyPolicyScreen(
                 message = stringResource(id = R.string.id_enter_your_xpub_to_add_a),
                 painter = painterResource(id = R.drawable.key_singlesig)
             ) {
-                viewModel.postEvent(WatchOnlyPolicyViewModel.LocalEvents.SelectPolicy(false))
+                viewModel.postEvent(WatchOnlyPolicyViewModel.LocalEvents.SelectPolicy(isSinglesig = true))
             }
 
             GreenContentCard(
@@ -83,7 +83,7 @@ fun WatchOnlyPolicyScreen(
                 message = stringResource(id = R.string.id_log_in_to_your_multisig_shield),
                 painter = painterResource(id = R.drawable.key_multisig)
             ) {
-                viewModel.postEvent(WatchOnlyPolicyViewModel.LocalEvents.SelectPolicy(true))
+                viewModel.postEvent(WatchOnlyPolicyViewModel.LocalEvents.SelectPolicy(isSinglesig = false))
             }
         }
     }

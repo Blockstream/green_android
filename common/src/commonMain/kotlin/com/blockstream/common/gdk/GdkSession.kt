@@ -1152,15 +1152,16 @@ class GdkSession constructor(
     }
 
     suspend fun loginWatchOnly(network: Network, username: String = "", watchOnlyCredentials: WatchOnlyCredentials): LoginData {
-        val loginCredentialsParams = if(network.isSinglesig){
-            if(!watchOnlyCredentials.coreDescriptors.isNullOrEmpty()) {
+        val loginCredentialsParams = if (network.isSinglesig) {
+            if (watchOnlyCredentials.coreDescriptors != null) {
                 LoginCredentialsParams(coreDescriptors = watchOnlyCredentials.coreDescriptors)
-            }else{
+            } else {
                 LoginCredentialsParams(slip132ExtendedPubkeys = watchOnlyCredentials.slip132ExtendedPubkeys)
             }
-        }else{
+        } else {
             LoginCredentialsParams(username = username, password = watchOnlyCredentials.password)
         }
+
         return loginWatchOnly(
             network = network,
             loginCredentialsParams = loginCredentialsParams,

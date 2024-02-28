@@ -10,12 +10,14 @@ import androidx.compose.ui.Modifier
 @Composable
 fun Modifier.noRippleToggleable(
     value: Boolean,
+    enabled: Boolean = true,
     onValueChange: (Boolean) -> Unit
 ): Modifier {
     return this then toggleable(
         value = value,
-        indication = null,
         interactionSource = remember { MutableInteractionSource() },
+        indication = null,
+        enabled = enabled,
         onValueChange = onValueChange
     )
 }
@@ -25,8 +27,9 @@ inline fun Modifier.noRippleClickable(
     crossinline onClick: () -> Unit
 ): Modifier {
     return this then clickable(
-        indication = null,
-        interactionSource = remember { MutableInteractionSource() }) {
+        interactionSource = remember { MutableInteractionSource() },
+        indication = null
+    ) {
         onClick()
     }
 }

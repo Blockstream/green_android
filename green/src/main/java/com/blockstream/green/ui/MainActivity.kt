@@ -246,7 +246,7 @@ class MainActivity : AppActivity() {
         navController = navHostFragment.navController
 
         appBarConfiguration = AppBarConfiguration(
-            topLevelDestinationIds = setOf(R.id.walletOverviewFragment, R.id.loginFragment, R.id.homeFragment, R.id.onboardingTermsFragment),
+            topLevelDestinationIds = setOf(R.id.walletOverviewFragment, R.id.loginFragment, R.id.homeFragment),
             drawerLayout = binding.drawerLayout,
             fallbackOnNavigateUpListener = ::onSupportNavigateUp
         )
@@ -293,7 +293,7 @@ class MainActivity : AppActivity() {
             // Make sure the app bar layout is visible between navigation (only SetPin & WalletOverview hides it)
             setToolbarVisibility(true)
 
-            if (destination.id == R.id.onboardingTermsFragment || destination.id == R.id.setupNewWalletFragment || destination.id == R.id.deviceListFragment || destination.id == R.id.deviceScanFragment) {
+            if (destination.id == R.id.setupNewWalletFragment || destination.id == R.id.deviceListFragment || destination.id == R.id.deviceScanFragment) {
                 binding.backgroundWithLines.fadeIn(duration = 500, skipIfAnimated = true)
             } else {
                 binding.backgroundWithLines.fadeOut(duration = 250, skipIfAnimated = true)

@@ -16,13 +16,11 @@ class WatchOnlyPolicyViewModel : WatchOnlyPolicyViewModelAbstract() {
     val gdk: Gdk by inject()
 
     class LocalEvents {
-        class SelectPolicy(val isMultisig: Boolean) : Event
+        class SelectPolicy(val isSinglesig: Boolean) : Event
     }
 
     class Destination : NavigateDestination {
         data class ChooseNetwork(val setupArgs: SetupArgs) : NavigateDestination
-
-        data class Singlesig(val setupArgs: SetupArgs) : NavigateDestination
     }
 
     init {
@@ -32,47 +30,17 @@ class WatchOnlyPolicyViewModel : WatchOnlyPolicyViewModelAbstract() {
     override fun handleEvent(event: Event) {
         super.handleEvent(event)
         if (event is LocalEvents.SelectPolicy) {
-            if (event.isMultisig) {
-                postSideEffect(
-                    SideEffects.NavigateTo(
-                        Destination.ChooseNetwork(
-                            SetupArgs(
-                                isRestoreFlow = true,
-                                isWatchOnly = true,
-                                isSinglesig = false
-                            )
+            postSideEffect(
+                SideEffects.NavigateTo(
+                    Destination.ChooseNetwork(
+                        SetupArgs(
+                            isRestoreFlow = true,
+                            isWatchOnly = true,
+                            isSinglesig = event.isSinglesig
                         )
                     )
                 )
-            } else {
-                if (settingsManager.getApplicationSettings().testnet) {
-                    postSideEffect(
-                        SideEffects.NavigateTo(
-                            Destination.ChooseNetwork(
-                                SetupArgs(
-                                    isRestoreFlow = true,
-                                    isWatchOnly = true,
-                                    isSinglesig = true
-                                )
-                            )
-                        )
-                    )
-                } else {
-                    postSideEffect(
-                        SideEffects.NavigateTo(
-                            Destination.Singlesig(
-                                SetupArgs(
-                                    isRestoreFlow = true,
-                                    isWatchOnly = true,
-                                    isSinglesig = true,
-                                    isTestnet = false,
-                                    network = gdk.networks().bitcoinElectrum
-                                )
-                            )
-                        )
-                    )
-                }
-            }
+            )
         }
     }
 }

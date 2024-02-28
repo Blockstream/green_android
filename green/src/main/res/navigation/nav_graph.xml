@@ -126,14 +126,12 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.blockstream.green.ui.home.HomeFragment"
-        android:label=""
-        tools:layout="@layout/home_fragment" />
+        android:label="" />
 
     <fragment
         android:id="@+id/addWalletFragment"
         android:name="com.blockstream.green.ui.onboarding.AddWalletFragment"
-        android:label=""
-        tools:layout="@layout/add_wallet_fragment">
+        android:label="">
         <action
             android:id="@+id/action_addWalletFragment_to_recoveryIntroFragment"
             app:destination="@id/recoveryIntroFragment" />
@@ -164,8 +162,7 @@
     </fragment>
     <fragment
         android:id="@+id/enterRecoveryPhraseFragment"
-        android:name="com.blockstream.green.ui.onboarding.EnterRecoveryPhraseFragment"
-        tools:layout="@layout/enter_recovery_phrase_fragment">
+        android:name="com.blockstream.green.ui.onboarding.EnterRecoveryPhraseFragment">
         <argument
             android:name="setupArgs"
             app:argType="com.blockstream.common.data.SetupArgs" />
@@ -197,8 +194,7 @@
     <fragment
         android:id="@+id/recoveryIntroFragment"
         android:name="com.blockstream.green.ui.recovery.RecoveryIntroFragment"
-        android:label="@string/id_before_you_backup"
-        tools:layout="@layout/recovery_intro_fragment">
+        android:label="@string/id_before_you_backup">
         <action
             android:id="@+id/action_recoveryIntroFragment_to_recoveryWordsFragment"
             app:destination="@id/recoveryWordsFragment" />
@@ -211,8 +207,7 @@
     </fragment>
     <fragment
         android:id="@+id/recoveryWordsFragment"
-        android:name="com.blockstream.green.ui.recovery.RecoveryWordsFragment"
-        tools:layout="@layout/recovery_words_fragment">
+        android:name="com.blockstream.green.ui.recovery.RecoveryWordsFragment">
         <action
             android:id="@+id/action_recoveryWordsFragment_self"
             app:destination="@id/recoveryWordsFragment" />
@@ -225,8 +220,7 @@
     </fragment>
     <fragment
         android:id="@+id/recoveryCheckFragment"
-        android:name="com.blockstream.green.ui.recovery.RecoveryCheckFragment"
-        tools:layout="@layout/recovery_check_fragment">
+        android:name="com.blockstream.green.ui.recovery.RecoveryCheckFragment">
 
         <action
             android:id="@+id/action_recoveryCheckFragment_self"
@@ -301,14 +295,10 @@
     <fragment
         android:id="@+id/watchOnlyPolicyFragment"
         android:name="com.blockstream.green.ui.onboarding.WatchOnlyPolicyFragment"
-        android:label=""
-        tools:layout="@layout/watch_only_policy_fragment">
+        android:label="">
         <action
             android:id="@+id/action_watchOnlyPolicyFragment_to_chooseNetworkFragment"
             app:destination="@id/chooseNetworkFragment" />
-        <action
-            android:id="@+id/action_watchOnlyPolicyFragment_to_watchOnlyCredentialsFragment"
-            app:destination="@id/watchOnlyCredentialsFragment" />
     </fragment>
     <fragment
         android:id="@+id/watchOnlyCredentialsFragment"
@@ -567,8 +557,7 @@
     <fragment
         android:id="@+id/aboutFragment"
         android:name="com.blockstream.green.ui.about.AboutFragment"
-        android:label=""
-        tools:layout="@layout/about_fragment" />
+        android:label="" />
     <action
         android:id="@+id/action_global_aboutFragment"
         app:destination="@id/aboutFragment" />
@@ -652,25 +641,17 @@
     <fragment
         android:id="@+id/setupNewWalletFragment"
         android:name="com.blockstream.green.ui.onboarding.SetupNewWalletFragment"
-        android:label=""
-        tools:layout="@layout/setup_new_wallet_fragment"/>
-    <fragment
-        android:id="@+id/onboardingTermsFragment"
-        android:name="com.blockstream.green.ui.onboarding.OnboardingTermsFragment"
-        android:label=""
-        tools:layout="@layout/onboarding_terms_fragment"/>
+        android:label="" />
     <action android:id="@+id/action_global_setupNewWalletFragment" app:destination="@id/setupNewWalletFragment" />
     <fragment
         android:id="@+id/useHardwareDeviceFragment"
         android:name="com.blockstream.green.ui.onboarding.UseHardwareDeviceFragment"
-        android:label=""
-        tools:layout="@layout/use_hardware_device_fragment"/>
+        android:label="" />
     <fragment
         android:id="@+id/jadeGuideFragment"
         android:name="com.blockstream.green.ui.devices.JadeGuideFragment"
         android:label="@string/id_setup_guide"
         tools:layout="@layout/jade_guide_fragment"/>
-    <action android:id="@+id/action_global_onboardingTermsFragment" app:destination="@id/onboardingTermsFragment" />
     <action android:id="@+id/action_global_addWalletFragment" app:destination="@id/addWalletFragment" />
     <action android:id="@+id/action_global_useHardwareDeviceFragment" app:destination="@id/useHardwareDeviceFragment" />
     <fragment

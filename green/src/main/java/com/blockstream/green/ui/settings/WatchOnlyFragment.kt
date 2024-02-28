@@ -117,8 +117,8 @@ class WatchOnlyFragment :
                 extendedPublicKeyAdapter,
                 extendedPublicKeyModelAdapter,
                 // Disable Output Descriptor
-//                 outputDescriptorsAdapter,
-//                 outputDescriptorsModelAdapter,
+                outputDescriptorsAdapter,
+                outputDescriptorsModelAdapter,
             )
         )
 

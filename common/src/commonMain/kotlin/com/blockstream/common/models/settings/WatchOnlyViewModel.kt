@@ -1,6 +1,7 @@
 package com.blockstream.common.models.settings
 
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.views.wallet.WatchOnlyLook
@@ -49,23 +50,27 @@ class WatchOnlyViewModel(greenWallet: GreenWallet) :
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
-    private val _accounts = session.accounts.map { accounts ->
-        accounts.filter { it.isSinglesig && it.isBitcoin }.map {
+    private val _singleSigAccounts = session.accounts.map { accounts ->
+        accounts.filter { it.isSinglesig }.map {
             // getAccount() returns a detailed account
             session.getAccount(it)
         }
     }
 
     override val extendedPublicKeysAccounts: StateFlow<List<WatchOnlyLook>> =
-        _accounts.map { accounts ->
-            accounts.map {
+        _singleSigAccounts.map { accounts ->
+            accounts.filter {
+                it.extendedPubkey.isNotBlank()
+            }.map {
                 WatchOnlyLook(account = it, extendedPubkey = it.extendedPubkey)
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
     override val outputDescriptorsAccounts: StateFlow<List<WatchOnlyLook>> =
-        _accounts.map { accounts ->
-            accounts.map {
+        _singleSigAccounts.map { accounts ->
+            accounts.filter {
+                it.outputDescriptors.isNotBlank()
+            }.map {
                 WatchOnlyLook(account = it, outputDescriptors = it.outputDescriptors)
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())

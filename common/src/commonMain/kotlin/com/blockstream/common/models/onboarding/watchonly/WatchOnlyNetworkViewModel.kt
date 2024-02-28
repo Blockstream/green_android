@@ -45,10 +45,13 @@ class WatchOnlyNetworkViewModel(setupArgs: SetupArgs) :
 
         settingsManager.appSettingsStateFlow.onEach {
             val testnet = it.testnet
+
             if (setupArgs.isSinglesig == true) {
                 _networks.value = listOfNotNull(
                     session.networks.bitcoinElectrum,
-                    if (testnet) session.networks.testnetBitcoinElectrum else null
+                    session.networks.liquidElectrum,
+                    if (testnet) session.networks.testnetBitcoinElectrum else null,
+                    if (testnet) session.networks.testnetLiquidElectrum else null
                 )
             } else {
                 _networks.value = listOfNotNull(

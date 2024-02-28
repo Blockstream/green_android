@@ -36,14 +36,6 @@ class WatchOnlyPolicyFragment : AppFragment<ComposeViewBinding>(
                     )
                 )
             }
-
-            (sideEffect.destination as? WatchOnlyPolicyViewModel.Destination.Singlesig)?.also {
-                navigate(
-                    WatchOnlyPolicyFragmentDirections.actionWatchOnlyPolicyFragmentToWatchOnlyCredentialsFragment(
-                        it.setupArgs
-                    )
-                )
-            }
         }
     }
 

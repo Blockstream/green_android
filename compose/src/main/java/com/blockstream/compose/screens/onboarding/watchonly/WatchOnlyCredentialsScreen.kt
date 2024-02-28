@@ -2,11 +2,18 @@ package com.blockstream.compose.screens.onboarding.watchonly
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.with
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -59,6 +67,7 @@ import com.blockstream.compose.components.AppSettingsButton
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenSpacer
 import com.blockstream.compose.components.IconButton
 import com.blockstream.compose.components.ScanQrButton
 import com.blockstream.compose.extensions.onValueChange
@@ -126,7 +135,7 @@ fun WatchOnlyCredentialsScreen(
     }
 
     HandleSideEffect(viewModel = viewModel) {
-        if(it is WatchOnlyCredentialsViewModel.LocalSideEffects.RequestCipher){
+        if (it is WatchOnlyCredentialsViewModel.LocalSideEffects.RequestCipher) {
             biometricsState.getBiometricsCipher(viewModel)
         }
     }
@@ -150,46 +159,64 @@ fun WatchOnlyCredentialsScreen(
                 modifier = Modifier
                     .weight(1f)
             ) {
+                val isOutputDescriptors by viewModel.isOutputDescriptors.collectAsStateWithLifecycle()
+
                 Text(
                     text = stringResource(if (isSinglesig) R.string.id_watchonly_credentials else R.string.id_login),
                     style = displayMedium,
                 )
 
-                Text(
-                    text = stringResource(if (isSinglesig) R.string.id_scan_or_paste_your_extended else R.string.id_log_in_via_watchonly_to_receive),
-                    style = bodyLarge,
-                )
+                val subtitle = (when {
+                    isSinglesig && isOutputDescriptors -> R.string.id_scan_or_paste_your_public
+                    isSinglesig -> R.string.id_scan_or_paste_your_extended
+                    else -> R.string.id_log_in_via_watchonly_to_receive
+                })
+
+                AnimatedContent(targetState = subtitle, transitionSpec = {
+                    // Compare the incoming number with the previous number.
+                    fadeIn().togetherWith(fadeOut())
+
+                }) { res ->
+                    Text(
+                        text = stringResource(id = res),
+                        style = bodyLarge
+                    )
+                }
 
                 GreenColumn(
                     padding = 0, modifier = Modifier
                         .weight(1f)
                         .verticalScroll(rememberScrollState())
                 ) {
-
+                    val isLiquid by viewModel.isLiquid.collectAsStateWithLifecycle()
                     val isOutputDescriptors by viewModel.isOutputDescriptors.collectAsStateWithLifecycle()
+
                     if (isSinglesig) {
                         val watchOnlyDescriptor by viewModel.watchOnlyDescriptor.collectAsStateWithLifecycle()
 
-                        val options = listOf(
-                            stringResource(id = R.string.id_xpub),
-                            stringResource(id = R.string.id_descriptor)
-                        )
+                        if (!isLiquid) {
+                            val options = listOf(
+                                stringResource(id = R.string.id_xpub),
+                                stringResource(id = R.string.id_descriptor)
+                            )
 
-                        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-                            options.forEachIndexed { index, label ->
-                                SegmentedButton(
-                                    shape = SegmentedButtonDefaults.itemShape(
-                                        index = index,
-                                        count = options.size
-                                    ),
-                                    onClick = { viewModel.isOutputDescriptors.value = index == 1 },
-                                    selected = index == if (isOutputDescriptors) 1 else 0
-                                ) {
-                                    Text(label)
+                            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                                options.forEachIndexed { index, label ->
+                                    SegmentedButton(
+                                        shape = SegmentedButtonDefaults.itemShape(
+                                            index = index,
+                                            count = options.size
+                                        ),
+                                        onClick = {
+                                            viewModel.isOutputDescriptors.value = index == 1
+                                        },
+                                        selected = index == if (isOutputDescriptors) 1 else 0
+                                    ) {
+                                        Text(label)
+                                    }
                                 }
                             }
                         }
-
 
                         Column {
                             TextField(
@@ -215,19 +242,29 @@ fun WatchOnlyCredentialsScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                var openDocument = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-                                    uri?.also {
-                                        context.contentResolver.openInputStream(uri)?.source()?.also {
-                                            viewModel.postEvent(WatchOnlyCredentialsViewModel.LocalEvents.ImportFile(it))
+                                if (!isLiquid) {
+                                    val openDocument =
+                                        rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+                                            uri?.also {
+                                                context.contentResolver.openInputStream(uri)
+                                                    ?.source()?.also {
+                                                        viewModel.postEvent(
+                                                            WatchOnlyCredentialsViewModel.LocalEvents.ImportFile(
+                                                                it
+                                                            )
+                                                        )
+                                                    }
+                                            }
                                         }
-                                    }
-                                }
 
-                                IconButton(
-                                    text = stringResource(id = R.string.id_import_from_file),
-                                    icon = painterResource(id = R.drawable.file)
-                                ) {
-                                    openDocument.launch(arrayOf("application/json"))
+                                    IconButton(
+                                        text = stringResource(id = R.string.id_import_from_file),
+                                        icon = painterResource(id = R.drawable.file)
+                                    ) {
+                                        openDocument.launch(arrayOf("application/json"))
+                                    }
+                                } else {
+                                    GreenSpacer(space = 0)
                                 }
 
                                 val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
@@ -294,13 +331,14 @@ fun WatchOnlyCredentialsScreen(
 
                     Column {
                         val isRememberMe by viewModel.isRememberMe.collectAsStateWithLifecycle()
-                        if(!isSinglesig) {
+                        if (!isSinglesig) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.noRippleToggleable(
                                     value = isRememberMe,
                                     onValueChange = viewModel.isRememberMe.onValueChange()
-                                )) {
+                                )
+                            ) {
                                 Text(
                                     text = stringResource(id = R.string.id_remember_me),
                                     style = bodyLarge,
@@ -322,6 +360,7 @@ fun WatchOnlyCredentialsScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.noRippleToggleable(
                                 value = withBiometrics,
+                                enabled = isRememberMe && canUseBiometrics,
                                 onValueChange = viewModel.withBiometrics.onValueChange()
                             )
                         ) {
@@ -379,8 +418,25 @@ fun WatchOnlyCredentialsScreen(
 
 @Composable
 @Preview
-fun WatchOnlyCredentialsPreview() {
+fun WatchOnlyCredentialSinglesigPreview() {
     GreenPreview {
-        WatchOnlyCredentialsScreen(viewModel = WatchOnlyCredentialsViewModelPreview.preview(isSinglesig = true))
+        WatchOnlyCredentialsScreen(
+            viewModel = WatchOnlyCredentialsViewModelPreview.preview(
+                isSinglesig = true
+            )
+        )
+    }
+}
+
+@Composable
+@Preview
+fun WatchOnlyCredentialsSinglesigLiquidPreview() {
+    GreenPreview {
+        WatchOnlyCredentialsScreen(
+            viewModel = WatchOnlyCredentialsViewModelPreview.preview(
+                isSinglesig = true,
+                isLiquid = true
+            )
+        )
     }
 }
