@@ -123,7 +123,7 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
 
         binding.vm = viewModel
         binding.bottomNav.isWatchOnly = wallet.isWatchOnly
-        binding.bottomNav.sweepEnabled = session.defaultNetwork.isBitcoin && session.defaultNetwork.isMultisig
+        binding.bottomNav.sweepEnabled = session.defaultNetwork.isBitcoin
         binding.bottomNav.showSwap = false //account.isLiquid && account.isMultisig
 
         viewModel.lightningShortcut.onEach {
