@@ -1401,8 +1401,6 @@
   <string name="id_lightning_shortcut">Lightning shortcut</string>
   <string name="id_biometrics">Biometrics</string>
   <string name="id_lightning_account_shortcut">Lightning Account Shortcut</string>
-  <string name="id_quickly_access_your_lightning_account">Quickly access your lightning account for payments on the go. Keep the rest of your wallet safely locked when not needed.</string>
-  <string name="id_want_to_quickly_access_your_lightning_account">Want to quickly access your Lightning account separate from your primary wallet, to maintain security and privacy of any other account in your wallet?\n\nYou won\’t need to enter your PIN to access your funds on lightning via this shortcut.</string>
   <string name="id_maybe_later">Maybe later</string>
   <string name="id_yes_create_a_shortcut">Yes, Create a Shortcut</string>
   <string name="id_wallet_overview">Wallet Overview</string>
@@ -1474,4 +1472,7 @@
   <string name="id_lightning_notifications">Lightning Notifications</string>
   <string name="id_open_wallet_to_receive_a_payment">Open wallet to receive a payment</string>
   <string name="id_payment_received">Payment received</string>
+  <string name="id_lightning_account_shortcut_activated">Lightning Account Shortcut Activated</string>
+  <string name="id_with_this_shortcut_you_ll_enjoy">With this shortcut you\'ll enjoy:\n\n• Direct access to the Lightning account, keep the rest of your funds safe and separate while on the go\n\n• Quick biometrics login \n\n• Seamless lightning payments receiving, no need to keep your app open</string>
+  <string name="id_ok_i_understand">Ok, I understand</string>
 </resources>

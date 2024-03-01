@@ -4,12 +4,10 @@ import com.blockstream.common.SATOSHI_UNIT
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.cleanup
 import com.blockstream.common.extensions.createLoginCredentials
 import com.blockstream.common.extensions.hasHistory
-import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.DeviceResolver
@@ -20,11 +18,13 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.views.AccountTypeLook
 import com.rickclephas.kmm.viewmodel.coroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet) :
@@ -32,19 +32,8 @@ abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet) :
 
     internal val _accountTypeBeingCreated: MutableStateFlow<AccountTypeLook?> = MutableStateFlow(null)
 
-    class LocalEvents{
-        object EnableLightningShortcut: Event
-    }
-
     class LocalSideEffects{
         class LightningShortcutDialog(sideEffect: SideEffect): SideEffects.SideEffectEvent(Events.EventSideEffect(sideEffect))
-    }
-
-    override fun handleEvent(event: Event) {
-        super.handleEvent(event)
-        if(event is LocalEvents.EnableLightningShortcut){
-            enableLightningShortcut()
-        }
     }
 
     init {
@@ -76,13 +65,31 @@ abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet) :
 
                         val loginCredentials = createLoginCredentials(
                             walletId = greenWallet.id,
-                            credentialType = CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS,
                             network = network.id,
+                            credentialType = CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS,
                             encryptedData = encryptedData
                         )
 
                         database.replaceLoginCredential(loginCredentials)
                     }
+                }
+
+                // Save Lightning mnemonic
+                if(!greenWallet.isEphemeral) {
+                    val encryptedData = withContext(context = Dispatchers.IO) {
+                        (mnemonic ?: session.deriveLightningMnemonic()).let {
+                            greenKeystore.encryptData(it.encodeToByteArray())
+                        }
+                    }
+
+                    database.replaceLoginCredential(
+                        createLoginCredentials(
+                            walletId = greenWallet.id,
+                            network = network.id,
+                            credentialType = CredentialType.LIGHTNING_MNEMONIC,
+                            encryptedData = encryptedData
+                        )
+                    )
                 }
 
 
@@ -186,12 +193,6 @@ abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet) :
             AccountType.TWO_OF_THREE -> session.bitcoinMultisig!!
             AccountType.LIGHTNING -> session.lightning!!
             AccountType.UNKNOWN -> throw Exception("Network not found")
-        }
-    }
-
-    protected fun enableLightningShortcut() {
-        applicationScope.launch(context = logException(countly)) {
-            _enableLightningShortcut()
         }
     }
 

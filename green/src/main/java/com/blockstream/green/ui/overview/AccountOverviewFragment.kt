@@ -69,7 +69,7 @@ import org.koin.core.parameter.parametersOf
 class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFragmentBinding>(
     layout = R.layout.account_overview_fragment,
     menuRes = R.menu.account_overview
-), OverviewInterface, EnableLightningShortcut {
+), OverviewInterface {
     val args: AccountOverviewFragmentArgs by navArgs()
     override val walletOrNull by lazy { args.wallet }
 
@@ -258,11 +258,8 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
                 if (viewModel.lightningShortcut.value == true) {
                     viewModel.removeLightningShortcut()
                 } else {
-                    LightningShortcutDialogFragment.show(
-                        isAddAccount = false,
-                        isHw = session.isHardwareWallet,
-                        fragmentManager = childFragmentManager
-                    )
+                    viewModel.enableLightningShortcut()
+                    LightningShortcutDialogFragment.show(fragmentManager = childFragmentManager)
                 }
                 true
             }
@@ -601,14 +598,6 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
         }
 
         return fastAdapter
-    }
-
-    override fun enableLightningShortcut() {
-        viewModel.enableLightningShortcut()
-    }
-
-    override fun lightningShortcutDialogDismissed() {
-
     }
 
     fun showLightningRecoveryPhrase(){

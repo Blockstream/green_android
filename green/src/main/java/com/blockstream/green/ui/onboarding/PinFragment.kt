@@ -6,6 +6,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
+import com.blockstream.common.events.Event
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.onboarding.phone.PinViewModel
 import com.blockstream.common.navigation.NavigateDestinations
@@ -18,14 +19,16 @@ import com.blockstream.green.R
 import com.blockstream.green.databinding.ComposeViewBinding
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.MainActivity
+import com.blockstream.green.ui.dialogs.EnableLightningShortcut
+import com.blockstream.green.ui.dialogs.LightningShortcutDialogFragment
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class PinFragment : AppFragment<ComposeViewBinding>(R.layout.compose_view) {
+class PinFragment : AppFragment<ComposeViewBinding>(R.layout.compose_view),
+    EnableLightningShortcut {
     private val args: PinFragmentArgs by navArgs()
-
     private val viewModel: PinViewModel by viewModel {
         parametersOf(args.setupArgs)
     }
@@ -33,6 +36,8 @@ class PinFragment : AppFragment<ComposeViewBinding>(R.layout.compose_view) {
     override val sideEffectsHandledByAppFragment: Boolean = false
 
     override val useCompose: Boolean = true
+
+    private var _pendingEvent: Event? = null
 
     override fun getGreenViewModel(): GreenViewModel = viewModel
 
@@ -46,6 +51,11 @@ class PinFragment : AppFragment<ComposeViewBinding>(R.layout.compose_view) {
         super.handleSideEffect(sideEffect)
         ((sideEffect as? SideEffects.NavigateTo)?.destination as? NavigateDestinations.WalletOverview)?.also {
             navigate(NavGraphDirections.actionGlobalWalletOverviewFragment(it.greenWallet))
+        }
+
+        (sideEffect as? PinViewModel.LocalSideEffects.ShowLightningShortcutDialog)?.also {
+            _pendingEvent = sideEffect.event
+            LightningShortcutDialogFragment.show(fragmentManager = childFragmentManager)
         }
     }
 
@@ -70,5 +80,11 @@ class PinFragment : AppFragment<ComposeViewBinding>(R.layout.compose_view) {
         }.launchIn(lifecycleScope)
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackCallback)
+    }
+
+    override fun lightningShortcutDialogDismissed() {
+        _pendingEvent?.also {
+            viewModel.postEvent(it)
+        }
     }
 }

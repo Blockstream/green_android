@@ -205,14 +205,18 @@ class LightningBridge constructor(
         }
     }
 
-    private fun registerNotifications(xpubHashId: String){
-        firebase.token?.also { token ->
-            (if(appInfo.isDevelopment) GREEN_NOTIFY_DEVELOPMENT else GREEN_NOTIFY_PRODUCTION).let { backend ->
-                "$backend/api/v1/notify?platform=${platformName()}&token=$token&app_data=$xpubHashId"
-            }.also { url ->
-                logger.d { "Registering webhook for wallet($xpubHashId) as $url" }
-                breezSdkOrNull?.registerWebhook(url)
+    private fun registerNotifications(xpubHashId: String) {
+        try {
+            firebase.token?.also { token ->
+                (if (appInfo.isDevelopment) GREEN_NOTIFY_DEVELOPMENT else GREEN_NOTIFY_PRODUCTION).let { backend ->
+                    "$backend/api/v1/notify?platform=${platformName()}&token=$token&app_data=$xpubHashId"
+                }.also { url ->
+                    logger.d { "Registering webhook for wallet($xpubHashId) as $url" }
+                    breezSdkOrNull?.registerWebhook(url)
+                }
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

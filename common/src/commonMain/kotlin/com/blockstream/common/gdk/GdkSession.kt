@@ -1470,7 +1470,7 @@ class GdkSession constructor(
         lightningSdk.connectToGreenlight(mnemonic, parentXpubHashId ?: xPubHashId.takeIf { !isLightningShortcut }, checkCredentials, quickResponse).also {
             hasLightning = it == true
             if (it == null) {
-                _failedNetworksStateFlow.value = _failedNetworksStateFlow.value + listOfNotNull(lightning)
+                _failedNetworksStateFlow.value += listOfNotNull(lightning)
             }
         }
 

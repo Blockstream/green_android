@@ -48,7 +48,7 @@ abstract class AbstractAddAccountFragment<T : ViewDataBinding>(
             }
         } else if(sideEffect is AddAccountViewModelAbstract.LocalSideEffects.LightningShortcutDialog){
             _pendingEvent = sideEffect.event
-            LightningShortcutDialogFragment.show(isAddAccount = true, isHw = viewModel.session.isHardwareWallet, fragmentManager = childFragmentManager)
+            LightningShortcutDialogFragment.show(fragmentManager = childFragmentManager)
         }
     }
 
@@ -65,11 +65,6 @@ abstract class AbstractAddAccountFragment<T : ViewDataBinding>(
             ), key = SET_ACCOUNT, destinationId = destinationId
         )
         findNavController().popBackStack(destinationId, false)
-    }
-
-
-    override fun enableLightningShortcut(){
-        viewModel.postEvent(AddAccountViewModelAbstract.LocalEvents.EnableLightningShortcut)
     }
 
     override fun lightningShortcutDialogDismissed() {

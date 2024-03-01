@@ -4,6 +4,7 @@ import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Event
+import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.createLoginCredentials
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.title
@@ -17,9 +18,12 @@ import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.generateWalletName
 import com.rickclephas.kmm.viewmodel.MutableStateFlow
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.withContext
 
 abstract class PinViewModelAbstract(
     val setupArgs: SetupArgs
@@ -42,6 +46,14 @@ class PinViewModel constructor(
 
     class LocalEvents {
         class SetPin(val pin: String) : Event
+    }
+
+    class LocalSideEffects {
+        class ShowLightningShortcutDialog(wallet: GreenWallet) : SideEffects.SideEffectEvent(
+            Events.EventSideEffect(
+                SideEffects.NavigateTo(NavigateDestinations.WalletOverview(wallet))
+            )
+        )
     }
 
     override val isLoginRequired: Boolean
@@ -246,6 +258,21 @@ class PinViewModel constructor(
 
                         database.replaceLoginCredential(loginCredentials)
                     }
+
+
+                    // Create Lightning Shortcut
+                    val encryptedData = withContext(context = Dispatchers.IO) {
+                        greenKeystore.encryptData(session.deriveLightningMnemonic().encodeToByteArray())
+                    }
+
+                    database.replaceLoginCredential(
+                        createLoginCredentials(
+                            walletId = wallet.id,
+                            network = session.lightning!!.id,
+                            credentialType = CredentialType.LIGHTNING_MNEMONIC,
+                            encryptedData = encryptedData
+                        )
+                    )
                 }
 
                 sessionManager.upgradeOnBoardingSessionToWallet(wallet)
@@ -272,7 +299,11 @@ class PinViewModel constructor(
             onProgress.value = it == null
             rocketAnimation.value = it == null
         }, onSuccess = {
-            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))
+            if (session.hasLightning) {
+                postSideEffect(LocalSideEffects.ShowLightningShortcutDialog(it))
+            } else {
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))
+            }
         })
     }
 

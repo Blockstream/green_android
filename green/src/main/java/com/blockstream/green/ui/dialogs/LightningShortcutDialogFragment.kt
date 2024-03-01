@@ -13,7 +13,6 @@ import mu.KLogging
 import org.koin.android.ext.android.inject
 
 interface EnableLightningShortcut{
-    fun enableLightningShortcut()
     fun lightningShortcutDialogDismissed()
 }
 
@@ -32,19 +31,11 @@ class LightningShortcutDialogFragment : AbstractDialogFragment<LightningShortcut
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.isAddAccount = arguments?.getBoolean(IS_ADD_ACCOUNT, false) ?: false
-        binding.isHw = arguments?.getBoolean(IS_HW, false) ?: false
-
         binding.buttonNeutral.setOnClickListener {
             openBrowser(settingsManager.appSettings, Urls.HELP_LIGHTNING_SHORTCUT)
         }
 
         binding.buttonPositive.setOnClickListener {
-            (parentFragment as? EnableLightningShortcut)?.enableLightningShortcut()
-            dismiss()
-        }
-
-        binding.buttonNegative.setOnClickListener {
             dismiss()
         }
     }
@@ -55,15 +46,8 @@ class LightningShortcutDialogFragment : AbstractDialogFragment<LightningShortcut
     }
 
     companion object : KLogging() {
-        private const val IS_ADD_ACCOUNT = "IS_ADD_ACCOUNT"
-        private const val IS_HW = "IS_HW"
-        fun show(isAddAccount: Boolean, isHw: Boolean, fragmentManager: FragmentManager) {
-            showSingle(LightningShortcutDialogFragment().also {
-                it.arguments = Bundle().also { bundle ->
-                    bundle.putBoolean(IS_ADD_ACCOUNT, isAddAccount)
-                    bundle.putBoolean(IS_HW, isHw)
-                }
-            }, fragmentManager)
+        fun show(fragmentManager: FragmentManager) {
+            showSingle(LightningShortcutDialogFragment(), fragmentManager)
         }
     }
 }
