@@ -16,14 +16,16 @@ fun colorText(text: String, coloredTexts: List<String>, color: Color = md_theme_
 
         coloredTexts.map { it.lowercase() }.onEachIndexed { index, coloredText ->
             val start = text.lowercase().indexOf(coloredText)
-            addStyle(SpanStyle(color = color), start, start + coloredText.length)
+            if (start != -1) {
+                addStyle(SpanStyle(color = color), start, start + coloredText.length)
 
-            addStringAnnotation(
-                tag = "Index",
-                annotation = index.toString(),
-                start = start,
-                end = start + coloredText.length
-            )
+                addStringAnnotation(
+                    tag = "Index",
+                    annotation = index.toString(),
+                    start = start,
+                    end = start + coloredText.length
+                )
+            }
         }
     }
 }
