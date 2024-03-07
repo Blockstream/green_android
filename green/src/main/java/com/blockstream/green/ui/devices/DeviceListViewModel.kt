@@ -1,6 +1,5 @@
 package com.blockstream.green.ui.devices
 
-import android.os.Build
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.common.gdk.device.DeviceInterface
 import com.blockstream.common.managers.DeviceManager
@@ -27,8 +26,6 @@ class DeviceListViewModel constructor(
     val hasBleConnectivity = true // deviceBrand == null || deviceBrand.hasBleConnectivity
 
     var onSuccess: (() -> Unit)? = null
-
-    val canEnableBluetooth = MutableLiveData(Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)
 
     override val device: Device? = null
 

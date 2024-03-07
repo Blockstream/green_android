@@ -91,15 +91,19 @@ abstract class AbstractDeviceFragment<T : ViewDataBinding>(
         requestPermission.launch(BLE_LOCATION_PERMISSION)
     }
     protected fun enableBluetooth(){
-        if (bluetoothAdapter?.isEnabled == false && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                BLE_LOCATION_PERMISSION.first()
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            @Suppress("DEPRECATION")
-            bluetoothAdapter?.enable()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            if (bluetoothAdapter?.isEnabled == false && ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    BLE_LOCATION_PERMISSION.first()
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                bluetoothAdapter?.enable()
+            }
+        } else {
+            startActivity(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
         }
     }
+
     protected fun enableLocationService(){
         MaterialAlertDialogBuilder(
             requireContext(),

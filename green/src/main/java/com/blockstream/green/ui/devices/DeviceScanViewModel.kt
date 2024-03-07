@@ -2,8 +2,8 @@ package com.blockstream.green.ui.devices
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Build
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.devices.ConnectionType
 import com.blockstream.common.gdk.Gdk
@@ -35,7 +35,6 @@ class DeviceScanViewModel constructor(
     val wallet get() = walletOrNull!!
 
     val hasBleConnectivity = wallet.deviceIdentifiers?.any { it.connectionType == ConnectionType.BLUETOOTH } ?: false
-    val canEnableBluetooth = MutableLiveData(Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)
 
     var requestUserActionEmitter: CompletableDeferred<Boolean>? = null
 
