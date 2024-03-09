@@ -60,6 +60,7 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
+import org.koin.mp.KoinPlatformTools
 
 
 val LocalAppBarState = compositionLocalOf { AppBarState() }
@@ -179,7 +180,8 @@ fun GreenPreview(content: @Composable () -> Unit) {
     val context = LocalContext.current
     val dialogState = remember { DialogState(context = context)}
 
-    startKoin {
+    // startKoin only once
+    KoinPlatformTools.defaultContext().getOrNull() ?: startKoin {
         modules(module {
             single { context }
             single {
