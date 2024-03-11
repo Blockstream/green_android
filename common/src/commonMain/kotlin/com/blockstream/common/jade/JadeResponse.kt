@@ -57,4 +57,7 @@ data class JadeHttpRequest constructor(
 
     val isHandshakeComplete
         get() = onReply == "handshake_complete"
+
+    val isPin
+        get() = onReply == "pin"
 }

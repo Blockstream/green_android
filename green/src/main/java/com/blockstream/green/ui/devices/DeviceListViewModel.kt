@@ -8,6 +8,7 @@ import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceConnectionManager
 import com.blockstream.green.utils.QATester
+import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -30,6 +31,8 @@ class DeviceListViewModel constructor(
     override val device: Device? = null
 
     override val deviceConnectionManagerOrNull: DeviceConnectionManager? = null
+
+    val isDevelopment = isDevelopmentOrDebug
 
     init {
         deviceManager.devices.map { devices ->

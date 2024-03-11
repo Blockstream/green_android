@@ -40,7 +40,6 @@ import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenQR
 import com.blockstream.compose.navigation.resultKey
 import com.blockstream.compose.navigation.setNavigationResult
-import com.blockstream.compose.sheets.BottomSheetNavigatorM3
 import com.blockstream.compose.sheets.CameraBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
 import com.blockstream.compose.theme.bodyLarge
@@ -98,7 +97,8 @@ fun JadeQRScreen(
 
     GreenColumn(space = 24, horizontalAlignment = Alignment.CenterHorizontally) {
         GreenColumn(padding = 0, space = 6, horizontalAlignment = Alignment.CenterHorizontally) {
-            if(viewModel.scenario.showStepCounter) {
+            val scenario by viewModel.scenario.collectAsStateWithLifecycle()
+            if(scenario.showStepCounter) {
                 GreenColumn(
                     padding = 0,
                     space = 6,

@@ -10,6 +10,7 @@ import com.blockstream.common.gdk.BcurResolver
 import com.blockstream.common.gdk.params.BcurDecodeParams
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.Loggable
 import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -58,7 +59,8 @@ abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false,
                                                     bcurPartEmitter = it
                                                 }
                                             }
-                                        })
+                                        }
+                                    )
                                 }
 
                                 barcodeScannerResult(ScanResult.from(bcurDecodedData))
@@ -89,4 +91,6 @@ abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false,
             e.printStackTrace()
         }
     }
+
+    companion object: Loggable()
 }

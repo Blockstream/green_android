@@ -46,3 +46,4 @@ data class HandshakeComplete constructor(
     override fun encodeDefaultsValues(): Boolean = true
     override fun kSerializer() = serializer()
 }
+

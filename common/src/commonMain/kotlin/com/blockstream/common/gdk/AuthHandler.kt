@@ -6,6 +6,7 @@ import com.blockstream.common.gdk.data.DeviceRequiredData
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.gdk.device.GdkHardwareWallet
+import com.blockstream.common.utils.Loggable
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.JsonElement
@@ -168,7 +169,7 @@ class AuthHandler constructor(
         } ?: throw RuntimeException("This call does not provide any result")
     }
 
-    companion object {
+    companion object: Loggable() {
         const val CALL = "call"
         const val DONE = "done"
         const val ERROR = "error"

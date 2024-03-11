@@ -137,6 +137,10 @@ class DeviceListFragment : AbstractDeviceFragment<DeviceListFragmentBinding>(
                 changeStep()
             }
         })
+
+        binding.buttonConnectViaQr.setOnClickListener {
+            navigate(DeviceListFragmentDirections.actionGlobalJadeQrFragment())
+        }
     }
 
     private fun changeStep() {

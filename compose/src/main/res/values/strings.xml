@@ -1497,4 +1497,5 @@
   <string name="id_destination_public_key">Destination Public Key</string>
   <string name="id_invoice_description">Invoice Description</string>
   <string name="id_redeposit">Redeposit</string>
+  <string name="id_connect_via_qr">Connect via QR</string>
 </resources>

@@ -34,6 +34,7 @@ import com.blockstream.compose.R
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.md_theme_surfaceTint
+import com.blockstream.compose.utils.QrEncoder
 import com.lightspark.composeqr.QrCodeView
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -44,6 +45,7 @@ fun GreenQR(
     isVisible: Boolean = true,
     visibilityClick: () -> Unit = {}
 ) {
+    val qrEncoder = remember { QrEncoder() }
     var isFullscreen by remember { mutableStateOf(false) }
     val isVisibleAndNotBlank = isVisible && data.isNotBlank()
 
@@ -75,10 +77,11 @@ fun GreenQR(
                     ) {
                         QrCodeView(
                             data = data ?: "",
+                            encoder = qrEncoder,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight()
-                                .padding(12.dp)
+                                .padding(24.dp)
                         )
                     }
                 }
@@ -120,10 +123,11 @@ fun GreenQR(
                     if (isVisibleAndNotBlank) {
                         QrCodeView(
                             data = data ?: "",
+                            encoder = qrEncoder,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight()
-                                .padding(12.dp)
+                                .padding(18.dp)
                         )
                     } else if (isVisible) {
                         Image(
