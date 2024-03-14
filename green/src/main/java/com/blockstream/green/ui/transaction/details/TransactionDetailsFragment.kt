@@ -39,15 +39,6 @@ class TransactionDetailsFragment : AppFragment<ComposeViewBinding>(
         super.handleSideEffect(sideEffect)
 
         if (sideEffect is SideEffects.NavigateTo) {
-            (sideEffect.destination as? NavigateDestinations.Send)?.also {
-                navigate(
-                    TransactionDetailsFragmentDirections.actionTransactionDetailsFragmentToSendFragment(
-                        wallet = it.greenWallet,
-                        accountAsset = it.accountAsset,
-                        bumpTransaction = it.bumpTransaction
-                    )
-                )
-            }
 
             (sideEffect.destination as? NavigateDestinations.RecoverFunds)?.also {
                 navigate(

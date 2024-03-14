@@ -223,8 +223,7 @@ abstract class GreenViewModel constructor(
     @ObjCName(name = "post", swiftName = "postEvent")
     fun postEvent(@ObjCName(swiftName = "_") event: Event) {
         if(!_bootstrapped){
-
-            if(this::class.simpleName?.contains("Preview") == true){
+            if(isPreview){
                 logger.i { "postEvent() Preview ViewModel detected"}
                 return
             }
@@ -295,12 +294,21 @@ abstract class GreenViewModel constructor(
         when(event){
             is Events.SetAccountAsset -> {
                 accountAsset.value = event.accountAsset
+                if(event.setAsActive){
+                    setActiveAccount(event.accountAsset.account)
+                }
+            }
+            is Events.RenameAccount -> {
+                renameAccount(account = event.account, name = event.name)
             }
             is Events.ArchiveAccount -> {
                 updateAccount(account = event.account, isHidden = true)
             }
             is Events.UnArchiveAccount -> {
                 updateAccount(account = event.account, isHidden = false)
+            }
+            is Events.RemoveAccount -> {
+                 removeAccount(account = event.account)
             }
             is EventWithSideEffect -> {
                 postSideEffect(event.sideEffect)
@@ -436,6 +444,16 @@ abstract class GreenViewModel constructor(
         }
     }
 
+    private fun renameAccount(account: Account, name: String){
+        if (name.isBlank()) return
+
+        doAsync({
+            session.updateAccount(account = account, name = name.cleanup() ?: account.name)
+        }, onSuccess = {
+            countly.renameAccount(session, it)
+        })
+    }
+
     private fun updateAccount(account: Account, isHidden: Boolean){
         doAsync({
             session.updateAccount(account = account, isHidden = isHidden)
@@ -447,13 +465,27 @@ abstract class GreenViewModel constructor(
                 }
 
                 postSideEffect(SideEffects.AccountArchived(account = account))
+                postSideEffect(SideEffects.Snackbar("id_account_has_been_archived"))
             }else{
                 // Make it active
                 setActiveAccount(account)
-
                 postSideEffect(SideEffects.AccountUnarchived(account = account))
             }
         })
+    }
+
+    private fun removeAccount(account: Account){
+        if(account.isLightning) {
+            doAsync({
+                database.deleteLoginCredentials(greenWallet.id, CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS)
+                database.deleteLoginCredentials(greenWallet.id, CredentialType.LIGHTNING_MNEMONIC)
+                session.removeAccount(account)
+            }, onSuccess = {
+                // Update active account from Session if it was archived
+                setActiveAccount(session.activeAccount.value!!)
+                postSideEffect(SideEffects.Snackbar("id_account_has_been_removed"))
+            })
+        }
     }
 
     private fun setActiveAccount(account: Account) {

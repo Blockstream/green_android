@@ -1,8 +1,9 @@
 package com.blockstream.common.gdk.data
 
+import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.gdk.GdkSession
 
-class Assets(val assetsOrNull: Map<String, Long>? = null) {
+class Assets constructor(val assetsOrNull: Map<String, Long>? = null) {
     val assets
         get() = assetsOrNull ?: emptyMap()
 
@@ -38,6 +39,10 @@ class Assets(val assetsOrNull: Map<String, Long>? = null) {
     fun balance(assetId: String) = balanceOrNull(assetId) ?: 0
 
     fun containsAsset(assetId: String) = assets.containsKey(assetId)
+
+    fun toEnrichedAssets(session: GdkSession) = assetsOrNull?.mapKeys {
+        EnrichedAsset.create(session = session, assetId = it.key)
+    }
 
     fun toAccountAsset(account: Account, session: GdkSession): List<AccountAsset> {
         return assets.keys.map {

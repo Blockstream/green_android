@@ -48,6 +48,7 @@ import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenSwitch
 import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.sheets.AnalyticsBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
@@ -57,7 +58,6 @@ import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.TextInputPaste
 import com.blockstream.compose.utils.stringResourceId
-import com.blockstream.compose.views.GreenSwitch
 import kotlinx.coroutines.launch
 
 object AppSettingsScreen : Screen {

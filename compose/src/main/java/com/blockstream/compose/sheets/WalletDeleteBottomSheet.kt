@@ -26,9 +26,8 @@ import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.labelLarge
-import com.blockstream.compose.views.GreenBottomSheet
+import com.blockstream.compose.components.GreenBottomSheet
 import kotlinx.parcelize.Parcelize
 import org.koin.core.parameter.parametersOf
 

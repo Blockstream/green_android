@@ -11,20 +11,20 @@ import com.blockstream.common.extensions.getAssetTicker
 import com.blockstream.common.gdk.data.CreateTransaction
 import com.blockstream.common.gdk.data.SwapProposal
 import com.blockstream.common.gdk.data.Utxo
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
 import com.blockstream.green.databinding.SwapFragmentBinding
 import com.blockstream.green.extensions.bind
 import com.blockstream.green.extensions.endIconCustomMode
-import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.hideKeyboard
+import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.bottomsheets.FilterBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.FilterableDataProvider
 import com.blockstream.green.ui.items.AssetSmallListItem
 import com.blockstream.green.ui.items.UtxoListItem
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.utils.toAmountLook
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.GenericFastItemAdapter
@@ -34,7 +34,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 @FlowPreview
-class SwapFragment : AbstractWalletFragment<SwapFragmentBinding>(
+class SwapFragment : AppFragment<SwapFragmentBinding>(
     layout = R.layout.swap_fragment,
     menuRes = 0
 ), FilterableDataProvider {
@@ -42,15 +42,13 @@ class SwapFragment : AbstractWalletFragment<SwapFragmentBinding>(
 
     val args: SwapFragmentArgs by navArgs()
 
-    override val walletOrNull by lazy { args.wallet }
-
     override val screenName = "Swap"
 
     val viewModel: SwapViewModel by viewModel {
         parametersOf(args.wallet, args.proposal)
     }
 
-    override fun getWalletViewModel() = viewModel
+    override fun getGreenViewModel(): GreenViewModel = viewModel
 
     override fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
@@ -59,7 +57,7 @@ class SwapFragment : AbstractWalletFragment<SwapFragmentBinding>(
             (sideEffect.data as? SwapProposal)?.also {
                 navigate(
                     SwapFragmentDirections.actionSwapFragmentToSwapProposalFragment(
-                        wallet = wallet,
+                        wallet = viewModel.greenWallet,
                         proposal = it
                     )
                 )
@@ -67,7 +65,7 @@ class SwapFragment : AbstractWalletFragment<SwapFragmentBinding>(
             (sideEffect.data as? CreateTransaction)?.also {
                 navigate(
                     SwapFragmentDirections.actionSwapFragmentToSendConfirmFragment(
-                        wallet = wallet,
+                        wallet = viewModel.greenWallet,
                         account = viewModel.enabledAccounts.first(),
                         transactionSegmentation = TransactionSegmentation(
                             transactionType = TransactionType.SWAP,
@@ -80,14 +78,9 @@ class SwapFragment : AbstractWalletFragment<SwapFragmentBinding>(
         }
     }
 
-    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-
-        viewModel.onError.observe(viewLifecycleOwner) {
-            it?.getContentIfNotHandledOrReturnNull()?.let {
-                errorDialog(it)
-            }
-        }
 
         viewModel.proposal?.let {
             binding.buttonSwap.visibility = View.GONE
@@ -99,10 +92,10 @@ class SwapFragment : AbstractWalletFragment<SwapFragmentBinding>(
                 binding.from.bind(
                     scope = lifecycleScope,
                     assetId = assetSwap.assetId,
-                    session = session,
+                    session = viewModel.session,
                     primaryValue = {
                         assetSwap.amount.toAmountLook(
-                            session,
+                            viewModel.session,
                             assetId = assetSwap.assetId,
                             withUnit = true,
                             withGrouping = true,
@@ -118,7 +111,7 @@ class SwapFragment : AbstractWalletFragment<SwapFragmentBinding>(
                 binding.to.bind(
                     scope = lifecycleScope,
                     assetId = assetSwap.assetId,
-                    session = session,
+                    session = viewModel.session,
                     showBalance = false
                 )
                 binding.amountTextInputLayout.isEnabled = false
@@ -131,10 +124,10 @@ class SwapFragment : AbstractWalletFragment<SwapFragmentBinding>(
                 binding.from.bind(
                     scope = lifecycleScope,
                     assetId = utxo.assetId,
-                    session = session,
+                    session = viewModel.session,
                     primaryValue = {
                         utxo.satoshi.toAmountLook(
-                            session,
+                            viewModel.session,
                             assetId = utxo.assetId,
                             withUnit = true,
                             withGrouping = true,
@@ -148,7 +141,7 @@ class SwapFragment : AbstractWalletFragment<SwapFragmentBinding>(
 
         viewModel.toAssetIdLiveData.observe(viewLifecycleOwner){ assetIdOrNull ->
             assetIdOrNull?.let { assetId ->
-                binding.to.bind(scope = lifecycleScope, assetId = assetId, session = session, showBalance = false)
+                binding.to.bind(scope = lifecycleScope, assetId = assetId, session = viewModel.session, showBalance = false)
             }
         }
 
@@ -173,12 +166,6 @@ class SwapFragment : AbstractWalletFragment<SwapFragmentBinding>(
         binding.switchExchangeRate.setOnClickListener {
             viewModel.switchExchangeRate()
         }
-
-        viewModel.onError.observe(viewLifecycleOwner){
-            it?.getContentIfNotHandledOrReturnNull()?.let{ throwable ->
-                errorDialog(throwable)
-            }
-        }
     }
 
     override fun onPause() {
@@ -189,13 +176,13 @@ class SwapFragment : AbstractWalletFragment<SwapFragmentBinding>(
     override fun getFilterAdapter(requestCode: Int): ModelAdapter<*, *> {
         return if(requestCode == 1) {
             val adapter = ModelAdapter<Utxo, UtxoListItem> {
-                UtxoListItem(scope = lifecycleScope, utxo = it, session = session, showHash = false, showName = true)
+                UtxoListItem(scope = lifecycleScope, utxo = it, session = viewModel.session, showHash = false, showName = true)
             }.set(viewModel.utxos)
 
             adapter.itemFilter.filterPredicate = { item: UtxoListItem, constraint: CharSequence? ->
-                item.utxo.assetId.getAssetName(session).lowercase().contains(
+                item.utxo.assetId.getAssetName(viewModel.session).lowercase().contains(
                     constraint.toString().lowercase()
-                ) || item.utxo.assetId.getAssetTicker(session)?.lowercase()?.contains(
+                ) || item.utxo.assetId.getAssetTicker(viewModel.session)?.lowercase()?.contains(
                     constraint.toString().lowercase()
                 ) == true
             }
@@ -204,13 +191,13 @@ class SwapFragment : AbstractWalletFragment<SwapFragmentBinding>(
         }else{
 
             val adapter = ModelAdapter<String, AssetSmallListItem> {
-                AssetSmallListItem(assetId = it, session = session)
+                AssetSmallListItem(assetId = it, session = viewModel.session)
             }.set(viewModel.toAssets)
 
             adapter.itemFilter.filterPredicate = { item: AssetSmallListItem, constraint: CharSequence? ->
-                item.assetId.getAssetName(session).lowercase().contains(
+                item.assetId.getAssetName(viewModel.session).lowercase().contains(
                     constraint.toString().lowercase()
-                ) || item.assetId.getAssetTicker(session)?.lowercase()?.contains(
+                ) || item.assetId.getAssetTicker(viewModel.session)?.lowercase()?.contains(
                     constraint.toString().lowercase()
                 ) == true
             }

@@ -1,4 +1,4 @@
-package com.blockstream.compose.views
+package com.blockstream.compose.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -21,8 +21,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.blockstream.compose.R
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelLarge

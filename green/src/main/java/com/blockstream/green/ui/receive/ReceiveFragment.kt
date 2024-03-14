@@ -81,12 +81,11 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
     menuRes = R.menu.menu_receive
 ), MenuDataProvider, ChooseAssetAccountListener {
     val args: ReceiveFragmentArgs by navArgs()
-    override val walletOrNull by lazy { args.wallet }
 
     override val showBalance: Boolean = false
     override val showChooseAssetAccount: Boolean = true
     override val showEditIcon: Boolean by lazy {
-        !(session.isLightningShortcut && session.accounts.value.size == 1)
+        !(viewModel.session.isLightningShortcut && viewModel.session.accounts.value.size == 1)
     }
     override val isAdjustResize: Boolean
         get() = true
@@ -94,8 +93,8 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
     override val accountAssetLayoutBinding: AccountAssetLayoutBinding
         get() = binding.accountAsset
 
-    override val subtitle: String?
-        get() = if (isSessionNetworkInitialized) wallet.name else null
+    override val subtitle: String
+        get() = viewModel.greenWallet.name
 
     val viewModel: ReceiveViewModel by viewModel {
         parametersOf(args.accountAsset, args.wallet)
@@ -136,7 +135,7 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
                 (sideEffect.data as? LnInvoice)?.also { paidInvoice ->
                     lifecycleScope.launch {
                         val amount = (paidInvoice.amountSatoshi() ?: 0).toAmountLook(
-                            session = session,
+                            session = viewModel.session,
                             withUnit = true,
                             withGrouping = true
                         )
@@ -151,9 +150,8 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
         }
     }
 
-
-    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreatedGuarded(view, savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         getNavigationResult<AccountAsset>(AbstractAddAccountFragment.SET_ACCOUNT)?.observe(viewLifecycleOwner) {
             it?.let {
@@ -188,7 +186,7 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
                 menuItems = buildList {
                     add(MenuListItem(id = 0, title = StringHolder(R.string.id_request_amount)))
                     add(MenuListItem(id = 1, title = StringHolder(R.string.id_list_of_addresses)))
-                    if (!network.isLiquid) {
+                    if (!viewModel.account.network.isLiquid) {
                         add(MenuListItem(id = 2, title = StringHolder(R.string.id_sweep_from_paper_wallet)))
                     }
                 },
@@ -256,7 +254,7 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
 
         viewModel.onProgress.onEach {
             // On HWWallet Block going back until address is generated
-            onBackCallback.isEnabled = session.isHardwareWallet && it
+            onBackCallback.isEnabled = viewModel.session.isHardwareWallet && it
             invalidateMenu()
         }.launchIn(lifecycleScope)
 
@@ -272,16 +270,16 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
         listOf(binding.buttonAmountCurrency, binding.amountCurrency).setOnClickListener {
             lifecycleScope.launch {
                 UserInput.parseUserInputSafe(
-                    session,
+                    viewModel.session,
                     viewModel.amount.value,
-                    assetId = session.lightning?.policyAsset,
+                    assetId = viewModel.session.lightning?.policyAsset,
                     denomination = viewModel.denomination.value
 
                 ).getBalance().also {
                     DenominationBottomSheetDialogFragment.show(
                         denominatedValue = DenominatedValue(
                             balance = it,
-                            assetId = session.lightning?.policyAsset,
+                            assetId = viewModel.session.lightning?.policyAsset,
                             denomination = viewModel.denomination.value
                         ),
                         childFragmentManager)
@@ -328,8 +326,8 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
     }
 
     private fun showWaitingToast() {
-        session.device?.let { device ->
-            if (network.isLiquid && device.isLedger) {
+        viewModel.session.device?.let { device ->
+            if (viewModel.account.network.isLiquid && device.isLedger) {
                 toast(R.string.id_please_wait_until_your_ledger)
             } else {
                 toast(R.string.id_please_hold_on_while_your)
@@ -408,14 +406,14 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
     }
 
     override fun onPrepareMenu(menu: Menu) {
-        menu.findItem(R.id.add_description).isVisible = account.isLightning
+        menu.findItem(R.id.add_description).isVisible = viewModel.account.isLightning
         menu.findItem(R.id.add_description).isEnabled = !viewModel.onProgress.value
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
             R.id.help -> {
-                openBrowser(if (account.isAmp) Urls.HELP_AMP_ASSETS else Urls.HELP_RECEIVE_ASSETS)
+                openBrowser(if (viewModel.account.isAmp) Urls.HELP_AMP_ASSETS else Urls.HELP_RECEIVE_ASSETS)
             }
             R.id.add_description -> {
                 NoteBottomSheetDialogFragment.show(
@@ -441,15 +439,15 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
                 1 -> {
                     navigate(
                         ReceiveFragmentDirections.actionReceiveFragmentToPreviousAddressesFragment(
-                            wallet = wallet,
-                            account = account
+                            wallet = viewModel.greenWallet,
+                            account = viewModel.account
                         )
                     )
                 }
                 2 -> {
                     navigate(
                         ReceiveFragmentDirections.actionReceiveFragmentToSendFragment(
-                            wallet = wallet,
+                            wallet = viewModel.greenWallet,
                             accountAsset = viewModel.accountAsset.value!!,
                             isSweep = true
                         )
@@ -462,7 +460,7 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
     override fun createNewAccountClicked(asset: EnrichedAsset) {
         navigate(
             ReceiveFragmentDirections.actionGlobalChooseAccountTypeFragment(
-                wallet = wallet,
+                wallet = viewModel.greenWallet,
                 asset = asset
             )
         )

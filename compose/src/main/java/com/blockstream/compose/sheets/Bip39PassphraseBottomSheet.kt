@@ -48,7 +48,7 @@ import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.TextInputPassword
-import com.blockstream.compose.views.GreenBottomSheet
+import com.blockstream.compose.components.GreenBottomSheet
 import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)

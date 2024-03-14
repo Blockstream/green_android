@@ -33,7 +33,6 @@ abstract class AbstractWalletsFragment<T : ViewDataBinding> constructor(
 
             is NavigateDestinations.About -> {
                 closeDrawer()
-                navigate(NavGraphDirections.actionGlobalAboutFragment())
             }
 
             is NavigateDestinations.WalletOverview -> navigate(

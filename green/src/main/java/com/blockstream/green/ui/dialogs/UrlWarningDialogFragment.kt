@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.managers.SettingsManager
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.utils.hostname
 import com.blockstream.green.R
 import com.blockstream.green.databinding.UrlWarningDialogBinding
@@ -13,7 +14,8 @@ import com.blockstream.green.utils.openNewTicket
 import mu.KLogging
 import org.koin.android.ext.android.inject
 
-class UrlWarningDialogFragment : AbstractDialogFragment<UrlWarningDialogBinding>() {
+class UrlWarningDialogFragment : AbstractDialogFragment<UrlWarningDialogBinding, GreenViewModel>() {
+    override val viewModel: GreenViewModel? = null
 
     private val settingsManager: SettingsManager by inject()
     override fun inflate(layoutInflater: LayoutInflater): UrlWarningDialogBinding =

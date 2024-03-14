@@ -18,9 +18,9 @@ import androidx.core.app.ActivityCompat
 import androidx.databinding.ViewDataBinding
 import com.blockstream.common.Urls
 import com.blockstream.common.gdk.device.DeviceBrand
+import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.green.R
 import com.blockstream.green.databinding.PinTextDialogBinding
-import com.blockstream.green.extensions.errorSnackbar
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.bottomsheets.EnvironmentBottomSheetDialogFragment
@@ -48,36 +48,31 @@ abstract class AbstractDeviceFragment<T : ViewDataBinding>(
         // Nothing to do here, it's already handled by DeviceManager
     }
 
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+
+        when (sideEffect) {
+            is AbstractDeviceViewModel.LocalSideEffects.RequestPin -> {
+                requestPin()
+            }
+            is AbstractDeviceViewModel.LocalSideEffects.RequestNetwork -> {
+                requestNetwork()
+            }
+            is AbstractDeviceViewModel.LocalSideEffects.AskForFirmwareUpgrade -> {
+                askForFirmwareUpgrade(sideEffect.request)
+            }
+            is AbstractDeviceViewModel.LocalSideEffects.FirmwarePushedToDevice -> {
+                JadeFirmwareUpdateBottomSheetDialogFragment.show(childFragmentManager)
+                viewModel.firmwareState.value = sideEffect
+            }
+            is AbstractDeviceViewModel.LocalSideEffects.FirmwareUpdateComplete,
+            is AbstractDeviceViewModel.LocalSideEffects.FirmwareUpdateProgress -> {
+                viewModel.firmwareState.value = sideEffect
+            }
+        }
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        viewModel.onEvent.observe(viewLifecycleOwner) { onEvent ->
-            onEvent.getContentIfNotHandledForType<AbstractDeviceViewModel.DeviceEvent>()?.let {
-                when (it) {
-                    is AbstractDeviceViewModel.DeviceEvent.RequestPin -> {
-                        requestPin()
-                    }
-                    is AbstractDeviceViewModel.DeviceEvent.RequestNetwork -> {
-                        requestNetwork()
-                    }
-                    is AbstractDeviceViewModel.DeviceEvent.AskForFirmwareUpgrade -> {
-                        askForFirmwareUpgrade(it.request)
-                    }
-                    is AbstractDeviceViewModel.DeviceEvent.FirmwarePushedToDevice -> {
-                        JadeFirmwareUpdateBottomSheetDialogFragment.show(childFragmentManager)
-                    }
-                    else -> {
-
-                    }
-                }
-            }
-        }
-
-        viewModel.onError.observe(viewLifecycleOwner){
-            it.getContentIfNotHandledOrReturnNull()?.also { throwable ->
-                errorSnackbar(throwable)
-            }
-        }
 
         viewModel.onInstructions.observe(viewLifecycleOwner){
             it.getContentIfNotHandledOrReturnNull()?.also{ res ->

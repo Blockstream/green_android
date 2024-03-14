@@ -9,6 +9,7 @@ import app.rive.runtime.kotlin.core.PlayableInstance
 import com.blockstream.base.AppReview
 import com.blockstream.common.Urls
 import com.blockstream.common.managers.SettingsManager
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.databinding.AppRateDialogBinding
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.utils.RiveListener
@@ -16,12 +17,13 @@ import com.blockstream.green.utils.openBrowser
 import mu.KLogging
 import org.koin.android.ext.android.inject
 
-class AppRateDialogFragment : AbstractDialogFragment<AppRateDialogBinding>() {
+class AppRateDialogFragment : AbstractDialogFragment<AppRateDialogBinding, GreenViewModel>() {
 
     override fun inflate(layoutInflater: LayoutInflater): AppRateDialogBinding =
         AppRateDialogBinding.inflate(layoutInflater)
 
     override val screenName: String? = null
+    override val viewModel: GreenViewModel? = null
 
     override val isFullWidth: Boolean = true
 

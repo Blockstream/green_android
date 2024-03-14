@@ -5,12 +5,12 @@
 
     <data>
 
-        <import type="com.blockstream.green.ui.settings.TwoFactorSetupAction" />
-        <import type="com.blockstream.green.data.TwoFactorMethod" />
+        <import type="com.blockstream.common.data.TwoFactorSetupAction" />
+        <import type="com.blockstream.common.data.TwoFactorMethod" />
 
         <variable
             name="vm"
-            type="com.blockstream.green.ui.settings.TwoFactorSetupViewModel" />
+            type="com.blockstream.common.models.settings.TwoFactorSetupViewModel" />
 
         <variable
             name="message"
@@ -96,7 +96,7 @@
                         android:layout_height="wrap_content"
                         android:imeOptions="actionDone"
                         android:inputType="phone"
-                        android:text="@={vm.phoneNumber}" />
+                        android:text="@={vm.number}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -197,7 +197,7 @@
                 android:layout_marginBottom="16dp"
                 android:layout_marginTop="24dp"
                 style="@style/Widget.Green.Button.Big"
-                android:enabled="@{!vm.onProgress &amp;&amp; vm.isValidLiveData}"
+                android:enabled="@{!vm.onProgress &amp;&amp; vm.buttonEnabled}"
                 android:text="@{button}" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>

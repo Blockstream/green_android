@@ -21,7 +21,7 @@ import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.navigation.resultKey
 import com.blockstream.compose.navigation.setNavigationResult
-import com.blockstream.compose.views.GreenBottomSheet
+import com.blockstream.compose.components.GreenBottomSheet
 
 
 @Parcelize

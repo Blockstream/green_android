@@ -7,8 +7,6 @@ import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.ui.wallet.AbstractAccountWalletViewModel
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
 
 
 abstract class WalletBottomSheetDialogFragment<T : ViewDataBinding, VM : GreenViewModel> : AbstractBottomSheetDialogFragment<T>() {
@@ -20,8 +18,7 @@ abstract class WalletBottomSheetDialogFragment<T : ViewDataBinding, VM : GreenVi
 
     @Suppress("UNCHECKED_CAST")
     internal val viewModel : VM by lazy {
-        (requireParentFragment() as? AbstractWalletFragment<*>)?.getWalletViewModel() as? VM
-            ?: (requireParentFragment() as AppFragment<*>).getGreenViewModel() as VM
+        (requireParentFragment() as AppFragment<*>).getGreenViewModel() as VM
     }
 
     val session
@@ -31,7 +28,7 @@ abstract class WalletBottomSheetDialogFragment<T : ViewDataBinding, VM : GreenVi
         get() = viewModel.greenWallet
 
     open val accountOrNull: Account?
-        get() = viewModel.let { viewModel -> if(viewModel is AbstractAccountWalletViewModel) viewModel.accountValue else null }
+        get() = viewModel.let { viewModel -> viewModel.accountAsset.value?.account }
 
     open val account: Account
         get() = accountOrNull!!

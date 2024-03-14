@@ -199,9 +199,9 @@ class GdkSession constructor(
     private var _walletTransactionsStateFlow : MutableStateFlow<List<Transaction>> = MutableStateFlow(listOf(Transaction.LoadingTransaction))
     private var _accountTransactionsStateFlow = mutableMapOf<AccountId, MutableStateFlow<List<Transaction>>>()
     private var _accountTransactionsPagerSharedFlow = mutableMapOf<AccountId, MutableSharedFlow<Boolean>>()
-    private var _twoFactorConfigCache = mutableMapOf<Network, TwoFactorConfig>()
     private var _blockStateFlow = mutableMapOf<Network, MutableStateFlow<Block>>()
     private var _settingsStateFlow = mutableMapOf<Network, MutableStateFlow<Settings?>>()
+    private var _twoFactorConfigStateFlow = mutableMapOf<Network, MutableStateFlow<TwoFactorConfig?>>()
     private var _twoFactorResetStateFlow = mutableMapOf<Network, MutableStateFlow<TwoFactorReset?>>()
     private var _networkEventsStateFlow = mutableMapOf<Network, MutableStateFlow<NetworkEvent?>>()
     private val _networkErrors: Channel<Pair<Network, NetworkEvent>> = Channel()
@@ -226,6 +226,7 @@ class GdkSession constructor(
     private fun twoFactorResetStateFlow(network: Network) = _twoFactorResetStateFlow.getOrPut(network) { MutableStateFlow(null) }
 
     private fun settingsStateFlow(network: Network) = _settingsStateFlow.getOrPut(network) { MutableStateFlow(null) }
+    private fun twoFactorConfigStateFlow(network: Network) = _twoFactorConfigStateFlow.getOrPut(network) { MutableStateFlow(null) }
 
     private fun blockStateFlow(network: Network) = _blockStateFlow.getOrPut(network) { MutableStateFlow(Block(height = 0)) }
 
@@ -292,7 +293,8 @@ class GdkSession constructor(
 
     fun block(network: Network): StateFlow<Block> = blockStateFlow(network).asStateFlow()
 
-    fun settings(network: Network) = settingsStateFlow(network).asStateFlow()
+    fun settings(network: Network = defaultNetwork) = settingsStateFlow(network).asStateFlow()
+    fun twoFactorConfig(network: Network = defaultNetwork) = twoFactorConfigStateFlow(network).asStateFlow()
 
     fun twoFactorReset(network: Network) = twoFactorResetStateFlow(network).asStateFlow()
 
@@ -482,14 +484,52 @@ class GdkSession constructor(
     fun walletExistsAndIsUnlocked(network: Network?) = network?.let { getTwoFactorReset(network)?.isActive != true } ?: false
     fun getTwoFactorReset(network: Network): TwoFactorReset? = twoFactorReset(network).value
     fun getSettings(network: Network? = null): Settings? {
-        return (network?.let { it.takeIf { !it.isLightning } ?: bitcoin } ?: defaultNetworkOrNull)?.let {
-            settingsStateFlow(it).value ?: try {
-                gdk.getSettings(gdkSession(it))
+        return (network?.let { it.takeIf { !it.isLightning } ?: bitcoin } ?: defaultNetworkOrNull)?.let { network ->
+            settingsStateFlow(network).value ?: try {
+                updateSettings(network = network)
             } catch (e: Exception) {
                 e.printStackTrace()
                 null
             }
         }
+    }
+
+    fun updateSettings(network: Network? = null): Settings?{
+        activeSessions.filter { network == null || it.network == network.id }.forEach {
+            settingsStateFlow(it).value = gdk.getSettings(gdkSession(it))
+            if(it.isMultisig){
+                updateTwoFactorConfig(network = it)
+            }
+        }
+
+        return (network?.let { it.takeIf { !it.isLightning } ?: bitcoin } ?: defaultNetworkOrNull)?.let {
+            settingsStateFlow(it).value
+        }
+    }
+
+    fun getTwoFactorConfig(network: Network): TwoFactorConfig? {
+        return twoFactorConfigStateFlow(network).value ?: try {
+            updateTwoFactorConfig(network = network, useCache = false)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    private fun updateTwoFactorConfig(network: Network, useCache: Boolean = false): TwoFactorConfig? {
+        if(!network.isMultisig) return null
+
+        var config = if(useCache) twoFactorConfigStateFlow(network).value else null
+
+        if(config == null){
+            gdk.getTwoFactorConfig(gdkSession(network)).also {
+                twoFactorConfigStateFlow(network).value = it
+                twoFactorResetStateFlow(network).value = it.twoFactorReset
+                config = it
+            }
+        }
+
+        return config
     }
 
     fun changeSettings(network: Network, settings: Settings) =
@@ -521,12 +561,6 @@ class GdkSession constructor(
 
         if(exceptions.isNotEmpty()){
             throw Exception(exceptions.first().message)
-        }
-    }
-
-    fun updateSettings(network: Network? = null){
-        activeSessions.filter { network == null || it.network == network.id }.forEach {
-            settingsStateFlow(it).value = gdk.getSettings(gdkSession(it))
         }
     }
 
@@ -697,6 +731,7 @@ class GdkSession constructor(
 
         _blockStateFlow = mutableMapOf()
         _settingsStateFlow = mutableMapOf()
+        _twoFactorConfigStateFlow = mutableMapOf()
         _twoFactorResetStateFlow = mutableMapOf()
         _networkEventsStateFlow = mutableMapOf()
 
@@ -708,9 +743,6 @@ class GdkSession constructor(
 
         // Clear HW derived lightning mnemonic
         _derivedHwLightningMnemonic = null
-
-        // Clear Cache
-        _twoFactorConfigCache = mutableMapOf()
 
         _walletHasHistorySharedFlow.value = false
 
@@ -982,7 +1014,7 @@ class GdkSession constructor(
             }
 
             if (network.isMultisig) {
-                getTwoFactorConfig(network = network, useCache = false)
+                updateTwoFactorConfig(network = network, useCache = false)
                 updateWatchOnlyUsername(network = network)
             }
 
@@ -1543,13 +1575,13 @@ class GdkSession constructor(
             try {
                 // Cache 2fa config
                 activeBitcoinMultisig?.also {
-                    getTwoFactorConfig(network = it, useCache = false)
+                    updateTwoFactorConfig(network = it, useCache = false)
                     updateWatchOnlyUsername(network = it)
                 }
 
                 // Cache 2fa config
                 activeLiquidMultisig?.also {
-                    getTwoFactorConfig(network = it, useCache = false)
+                    updateTwoFactorConfig(network = it, useCache = false)
                     updateWatchOnlyUsername(network = it)
                 }
             }catch (e: Exception){
@@ -1990,6 +2022,8 @@ class GdkSession constructor(
 
             try {
                 transactionsMutex.withLock {
+                    transactionsPagerSharedFlow.emit(false)
+
                     val txSize = transactionsStateFlow.value.let {
                         if(it.size == 1 && it[0].isLoadingTransaction){
                             0
@@ -2180,26 +2214,17 @@ class GdkSession constructor(
         return Assets(assets?.toSortedLinkedHashMap(::sortAssets))
     }
 
-    fun changeSettingsTwoFactor(network: Network, method: String, methodConfig: TwoFactorMethodConfig) =
-        authHandler(network, gdk.changeSettingsTwoFactor(
-                gdkSession(network),
-                method,
-                methodConfig
-            )
-        )
-
-    fun getTwoFactorConfig(network: Network, useCache: Boolean = false): TwoFactorConfig {
-        if(!useCache || !_twoFactorConfigCache.contains(network)){
-            _twoFactorConfigCache[network] = try {
-                gdk.getTwoFactorConfig(gdkSession(network))
-            } catch (e: Exception) {
-                countly.recordException(e)
-                // Quick fix to solve login issues
-                TwoFactorConfig.empty
-            }
+    fun changeSettingsTwoFactor(
+        network: Network,
+        method: String,
+        methodConfig: TwoFactorMethodConfig,
+        twoFactorResolver: TwoFactorResolver
+    ) {
+        authHandler(
+            network, gdk.changeSettingsTwoFactor(gdkSession(network), method, methodConfig)
+        ).resolve(twoFactorResolver = twoFactorResolver).also {
+            updateTwoFactorConfig(network)
         }
-
-        return _twoFactorConfigCache[network]!!
     }
 
     private fun getWatchOnlyUsername(network: Network) = gdk.getWatchOnlyUsername(gdkSession(network))
@@ -2220,7 +2245,7 @@ class GdkSession constructor(
         }).asStateFlow()
     }
 
-    fun updateWatchOnlyUsername(network: Network? = null) {
+    private fun updateWatchOnlyUsername(network: Network? = null) {
         if (isWatchOnly) return
 
         (network?.let { listOfNotNull(network) } ?: activeMultisig).filter {
@@ -2239,22 +2264,63 @@ class GdkSession constructor(
         }
     }
 
-    fun twoFactorReset(network: Network, email:String, isDispute: Boolean) =
-        authHandler(network, gdk.twoFactorReset(gdkSession(network), email, isDispute))
+    fun twoFactorReset(
+        network: Network,
+        email: String,
+        isDispute: Boolean,
+        twoFactorResolver: TwoFactorResolver
+    ): TwoFactorReset {
+        logger.d { "TwoFactorReset ${network.id} email:$email isDispute:$isDispute" }
+        return authHandler(
+            network,
+            gdk.twoFactorReset(gdkSession(network), email, isDispute)
+        ).result<TwoFactorReset>(twoFactorResolver = twoFactorResolver).also {
+            // Should we disconnect
+            // disconnectAsync(LogoutReason.USER_ACTION)
+            updateSettings(network)
+        }
+    }
 
-    fun twofactorUndoReset(network: Network, email: String) =
-        authHandler(network, gdk.twoFactorUndoReset(gdkSession(network), email))
+    fun twoFactorUndoReset(network: Network, email: String, twoFactorResolver: TwoFactorResolver) {
+        logger.d { "TwoFactorUndoReset ${network.id} email:$email" }
+        authHandler(network, gdk.twoFactorUndoReset(gdkSession(network), email)).resolve(
+            twoFactorResolver = twoFactorResolver
+        ).also {
+            // Should we disconnect
+            // disconnectAsync(LogoutReason.USER_ACTION)
+            updateSettings(network)
+        }
+    }
 
-    fun twofactorCancelReset(network: Network) =
-        authHandler(network, gdk.twoFactorCancelReset(gdkSession(network)))
+    fun twoFactorCancelReset(network: Network, twoFactorResolver: TwoFactorResolver) {
+        logger.d { "TwoFactorCancelReset ${network.id}" }
+        authHandler(network, gdk.twoFactorCancelReset(gdkSession(network))).resolve(
+            twoFactorResolver = twoFactorResolver
+        ).also {
+            // Should we disconnect
+            // disconnectAsync(LogoutReason.USER_ACTION)
+            updateSettings(network)
+        }
+    }
 
-    fun twofactorChangeLimits(network: Network, limits: Limits) =
-        authHandler(network, gdk.twoFactorChangeLimits(gdkSession(network), limits))
+    fun twoFactorChangeLimits(network: Network, limits: Limits, twoFactorResolver: TwoFactorResolver): Limits {
+        return authHandler(network, gdk.twoFactorChangeLimits(gdkSession(network), limits)).result<Limits>(
+            twoFactorResolver = twoFactorResolver
+        ).also {
+            updateTwoFactorConfig(network)
+        }
+    }
 
     fun sendNlocktimes(network: Network) = gdk.sendNlocktimes(gdkSession(network))
 
-    fun setCsvTime(network: Network, value: CsvParams) =
-        authHandler(network, gdk.setCsvTime(gdkSession(network), value))
+    fun setCsvTime(network: Network, value: CsvParams, twoFactorResolver: TwoFactorResolver) {
+        authHandler(
+            network,
+            gdk.setCsvTime(gdkSession(network), value)
+        ).resolve(twoFactorResolver = twoFactorResolver).also {
+            updateSettings(network)
+        }
+    }
 
     private fun updateAccounts(refresh: Boolean = false) {
         getAccounts(refresh).also { fetchedAccounts ->
@@ -2801,7 +2867,9 @@ class GdkSession constructor(
             lightningSdkOrNull?.parseBoltOrLNUrlAndCache(input)?.let { lightning to it }
         } ?: run {
             activeGdkSessions.mapValues {
-                validateAddress(it.key, ValidateAddresseesParams.create(it.key, input))
+                validateAddress(it.key, ValidateAddresseesParams.create(it.key, input)).also {
+                    logger.d { "$it" }
+                }
             }.filter { it.value.isValid }.keys.firstOrNull()?.let { it to null }
         })
     }
@@ -2816,7 +2884,7 @@ class GdkSession constructor(
     }
 
     companion object: Loggable() {
-        const val WALLET_OVERVIEW_TRANSACTIONS = 10
+        const val WALLET_OVERVIEW_TRANSACTIONS = 20
 
         const val LIQUID_ASSETS_KEY = "liquid_assets"
         const val LIQUID_ASSETS_TESTNET_KEY = "liquid_assets_testnet"

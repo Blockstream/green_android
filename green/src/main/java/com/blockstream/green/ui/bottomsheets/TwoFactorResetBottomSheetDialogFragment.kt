@@ -9,15 +9,15 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.TwoFactorReset
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
-import com.blockstream.green.data.TwoFactorMethod
+import com.blockstream.common.data.TwoFactorMethod
+import com.blockstream.common.data.TwoFactorSetupAction
 import com.blockstream.green.databinding.ListItemActionBinding
 import com.blockstream.green.databinding.RecyclerBottomSheetBinding
 import com.blockstream.green.extensions.navigate
 import com.blockstream.green.ui.items.ActionListItem
-import com.blockstream.green.ui.settings.TwoFactorSetupAction
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.toPixels
 import com.blockstream.green.views.SpaceItemDecoration
@@ -26,7 +26,7 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 
-class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<RecyclerBottomSheetBinding, AbstractWalletViewModel>() {
+class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<RecyclerBottomSheetBinding, GreenViewModel>() {
     private lateinit var twoFactorReset: TwoFactorReset
 
     private var cancelItem : ActionListItem? = null
@@ -131,7 +131,7 @@ class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<
             }
 
             val directions = NavGraphDirections.actionGlobalTwoFactorSetupFragment(
-                wallet = viewModel.wallet,
+                wallet = viewModel.greenWallet,
                 method = TwoFactorMethod.EMAIL,
                 action = twoFactorSetupAction,
                 network = network

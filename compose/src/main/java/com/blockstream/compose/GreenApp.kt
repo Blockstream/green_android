@@ -42,6 +42,7 @@ import cafe.adriel.voyager.transitions.ScreenTransitionContent
 import com.blockstream.common.managers.LifecycleManager
 import com.blockstream.common.models.drawer.DrawerViewModel
 import com.blockstream.common.utils.AndroidKeystore
+import com.blockstream.compose.components.GreenTopAppBar
 import com.blockstream.compose.screens.DrawerScreen
 import com.blockstream.compose.screens.HomeScreen
 import com.blockstream.compose.screens.LockScreen
@@ -50,7 +51,6 @@ import com.blockstream.compose.sideeffects.DialogHost
 import com.blockstream.compose.sideeffects.DialogState
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.utils.AppBarState
-import com.blockstream.compose.views.GreenTopAppBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -162,14 +162,28 @@ fun GreenApp() {
 fun AppFragmentBridge(content: @Composable () -> Unit) {
     val context = LocalContext.current
     val dialogState = remember { DialogState(context = context)}
+    val snackbarHostState = remember { SnackbarHostState() }
 
     GreenTheme {
         CompositionLocalProvider(
             LocalDialog provides dialogState,
+            LocalSnackbar provides snackbarHostState,
         ) {
             BottomSheetNavigatorM3 {
+                Scaffold(
+                    snackbarHost = {
+                        SnackbarHost(hostState = snackbarHostState)
+                    },
+                    content = { innerPadding ->
+                        Box(
+                            modifier = Modifier
+                                .padding(innerPadding),
+                        ) {
+                            content()
+                        }
+                    },
+                )
                 DialogHost(state = dialogState)
-                content()
             }
         }
     }

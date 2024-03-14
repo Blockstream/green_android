@@ -32,12 +32,12 @@ import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.ScreenContainer
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.views.PinView
-import com.blockstream.compose.views.ScreenContainer
 import kotlinx.coroutines.launch
 import org.koin.core.parameter.parametersOf
 

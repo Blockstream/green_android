@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 
-package com.blockstream.compose.views
+package com.blockstream.compose.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -25,7 +25,6 @@ import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.titleSmall

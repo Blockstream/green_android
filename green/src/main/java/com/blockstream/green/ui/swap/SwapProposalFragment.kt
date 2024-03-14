@@ -9,17 +9,18 @@ import androidx.core.text.buildSpannedString
 import androidx.core.text.color
 import androidx.core.text.scale
 import androidx.navigation.fragment.navArgs
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.R
 import com.blockstream.green.databinding.SwapProposalFragmentBinding
 import com.blockstream.green.extensions.copyToClipboard
 import com.blockstream.green.extensions.share
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
+import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.utils.toAmountLook
 import kotlinx.coroutines.runBlocking
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class SwapProposalFragment : AbstractWalletFragment<SwapProposalFragmentBinding>(
+class SwapProposalFragment : AppFragment<SwapProposalFragmentBinding>(
     layout = R.layout.swap_proposal_fragment,
     menuRes = 0
 ) {
@@ -28,17 +29,16 @@ class SwapProposalFragment : AbstractWalletFragment<SwapProposalFragmentBinding>
     val args: SwapProposalFragmentArgs by navArgs()
     var link: String? = null
 
-    override val walletOrNull by lazy { args.wallet }
-
     override val screenName = "SwapProposal"
 
     val viewModel: SwapProposalViewModel by viewModel {
         parametersOf(args.wallet, args.proposal)
     }
 
-    override fun getWalletViewModel() = viewModel
+    override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
 
         viewModel.link.observe(viewLifecycleOwner) {
@@ -55,13 +55,13 @@ class SwapProposalFragment : AbstractWalletFragment<SwapProposalFragmentBinding>
 
         val from = args.proposal.inputs[0].let {
             runBlocking {
-                it.amount.toAmountLook(session = session, assetId = it.assetId, withUnit = true)
+                it.amount.toAmountLook(session = viewModel.session, assetId = it.assetId, withUnit = true)
             }
         }
 
         val to = args.proposal.outputs[0].let {
             runBlocking {
-                it.amount.toAmountLook(session = session, assetId = it.assetId, withUnit = true)
+                it.amount.toAmountLook(session = viewModel.session, assetId = it.assetId, withUnit = true)
             }
         }
 

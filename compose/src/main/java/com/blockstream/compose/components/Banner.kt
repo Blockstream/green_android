@@ -1,4 +1,4 @@
-package com.blockstream.compose.views
+package com.blockstream.compose.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,7 +8,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,22 +21,17 @@ import com.blockstream.common.data.Banner
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.compose.R
-import com.blockstream.compose.components.GreenButton
-import com.blockstream.compose.components.GreenButtonSize
-import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 
 @Composable
-fun BannerView(viewModel: GreenViewModel) {
+fun Banner(viewModel: GreenViewModel) {
     val bannerOrNull by viewModel.banner.collectAsStateWithLifecycle()
 
     AnimatedNullableVisibility(bannerOrNull) { _, banner ->
-        BannerView(banner, modifier = Modifier.padding(top = 16.dp), onClick = {
+        Banner(banner, modifier = Modifier.padding(top = 16.dp), onClick = {
             viewModel.postEvent(Events.BannerAction)
         }, onClose = {
             viewModel.postEvent(Events.BannerDismiss)
@@ -46,7 +40,7 @@ fun BannerView(viewModel: GreenViewModel) {
 }
 
 @Composable
-fun BannerView(
+fun Banner(
     banner: Banner,
     modifier: Modifier = Modifier,
     onClick: (url: String) -> Unit = {},
@@ -125,12 +119,12 @@ fun BannerView(
 
 @Composable
 @Preview
-fun BannerViewPreview() {
+fun BannerPreview() {
     GreenTheme {
         GreenColumn {
-            BannerView(Banner.preview1)
-            BannerView(Banner.preview2)
-            BannerView(Banner.preview3)
+            Banner(Banner.preview1)
+            Banner(Banner.preview2)
+            Banner(Banner.preview3)
         }
     }
 }

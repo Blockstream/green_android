@@ -4,7 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import com.blockstream.common.gdk.device.DeviceInterface
 import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceConnectionManager
 import com.blockstream.green.utils.QATester
@@ -40,13 +39,17 @@ class DeviceListViewModel constructor(
         }.onEach {
             devices.value = it
         }.launchIn(viewModelScope.coroutineScope)
+
+        bootstrap()
     }
 
     fun askForPermissionOrBond(device: Device) {
         device.askForPermissionOrBond(onSuccess = {
             postSideEffect(SideEffects.Navigate(device))
-        }, onError = {error ->
-            error?.also { onError.postValue(ConsumableEvent(it)) }
+        }, onError = { error ->
+            error?.also {
+                postSideEffect(SideEffects.ErrorSnackbar(it))
+            }
         })
     }
 }

@@ -26,7 +26,7 @@ import com.blockstream.green.databinding.CameraBottomSheetBinding
 import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.makeItConstant
 import com.blockstream.green.extensions.setNavigationResult
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
+import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.google.zxing.MultiFormatReader
 import com.google.zxing.RGBLuminanceSource
@@ -249,8 +249,7 @@ class CameraBottomSheetDialogFragment : AbstractBottomSheetDialogFragment<Camera
             logger.info { "QR (DevelopmentOrDebug): $result" }
         }
 
-        val session =
-            (requireParentFragment() as? AbstractWalletFragment<*>)?.getWalletViewModel()?.session
+        val session = (requireParentFragment() as? AppFragment<*>)?.getGreenViewModel()?.sessionOrNull
         countly.qrScan(session = session, setupArgs = null, arguments?.getString(SCREEN_NAME))
 
         setNavigationResult(

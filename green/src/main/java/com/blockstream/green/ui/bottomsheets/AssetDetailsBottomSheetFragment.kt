@@ -10,11 +10,11 @@ import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.networkForAsset
 import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.R
 import com.blockstream.green.databinding.AssetDetailsBottomSheetBinding
 import com.blockstream.green.looks.AssetLook
 import com.blockstream.green.ui.items.OverlineTextListItem
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.StringHolder
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 
-class AssetDetailsBottomSheetFragment: WalletBottomSheetDialogFragment<AssetDetailsBottomSheetBinding, AbstractWalletViewModel>() {
+class AssetDetailsBottomSheetFragment: WalletBottomSheetDialogFragment<AssetDetailsBottomSheetBinding, GreenViewModel>() {
     override val screenName = "AssetDetails"
     override val segmentation: HashMap<String, Any>? = null
 

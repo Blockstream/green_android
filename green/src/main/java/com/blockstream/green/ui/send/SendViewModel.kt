@@ -18,16 +18,16 @@ import com.blockstream.common.gdk.data.Assets
 import com.blockstream.common.gdk.data.CreateTransaction
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.params.AddressParams
+import com.blockstream.common.gdk.params.Convert
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.lightning.lnUrlPayDescription
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.common.utils.UserInput
 import com.blockstream.common.utils.toAmountLook
 import com.blockstream.green.extensions.boolean
 import com.blockstream.green.extensions.lnUrlPayBitmap
 import com.blockstream.green.ui.bottomsheets.DenominationListener
-import com.blockstream.green.ui.wallet.AbstractAssetWalletViewModel
 import com.blockstream.green.utils.feeRateWithUnit
 import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -62,9 +62,7 @@ class SendViewModel constructor(
     @InjectedParam address: String?,
     @InjectedParam addressType: AddressInputType?,
     @InjectedParam val bumpTransaction: JsonElement?,
-) : AbstractAssetWalletViewModel(wallet, initAccountAsset), DenominationListener {
-    override val filterSubAccountsWithBalance = true
-
+) : GreenViewModel(wallet, initAccountAsset), DenominationListener {
     val isBump = bumpTransaction != null
     val isBumpOrSweep = isBump || isSweep
 
@@ -111,9 +109,7 @@ class SendViewModel constructor(
 
     init {
         // Update fee estimation on network change
-        accountAssetLiveData.asFlow().map {
-            it.account.network
-        }.distinctUntilChanged().onEach {
+        accountAsset.filterNotNull().map { it.account.network }.onEach { network ->
             updateFeeEstimation()
 
             // Set initial fee slider value
@@ -128,10 +124,9 @@ class SendViewModel constructor(
                         feeSlider.value = 3 - it.toFloat()
                     }
             }
-
         }.launchIn(viewModelScope.coroutineScope)
 
-        _accountAssetLiveData.asFlow().distinctUntilChanged().onEach {
+        accountAsset.filterNotNull().onEach {
             setAccountAsset(0, it)
         }.launchIn(viewModelScope.coroutineScope)
 
@@ -166,6 +161,8 @@ class SendViewModel constructor(
         recipients.value?.getOrNull(0)?.let {
             setupChangeObserve(it)
         }
+
+        bootstrap()
     }
 
     fun createTransactionSegmentation(): TransactionSegmentation {
@@ -175,7 +172,7 @@ class SendViewModel constructor(
                 isBump -> TransactionType.BUMP
                 else -> TransactionType.SEND
             },
-            addressInputType = recipients.value?.get(0)?.addressInputType,
+            addressInputType = recipients.value.get(0)?.addressInputType,
             sendAll = isSendAll()
         )
     }
@@ -187,14 +184,14 @@ class SendViewModel constructor(
     private fun updateFeeEstimation() {
         feeRate = null // reset fee rate
 
-        doUserAction({
-            logger.info { "updateFeeEstimation for ${network.id}" }
-            session.getFeeEstimates(network)
+        doAsync({
+            logger.info { "updateFeeEstimation for ${account.network.id}" }
+            session.getFeeEstimates(account.network)
         }, preAction = null, postAction = null, onSuccess = {
             feeEstimation = if(isBump){
 
                 // Old fee rate + minimum relay
-                val bumpFeeAndRelay = (getBumpTransactionFeeRate() ?: it.fees[0]) + (it.minimumRelayFee ?: network.defaultFee)
+                val bumpFeeAndRelay = (getBumpTransactionFeeRate() ?: it.fees[0]) + (it.minimumRelayFee ?: account.network.defaultFee)
                 it.fees.mapIndexed { index, fee ->
                     if(index == 0) {
                         fee
@@ -286,7 +283,7 @@ class SendViewModel constructor(
 
         if (session.hasLightning) {
             session.lightningNodeInfoStateFlow.drop(1).onEach {
-                if (accountAssetValue.account.isLightning) {
+                if (account.isLightning) {
                     // Re-check the transaction on node_info update
                     checkTransaction()
                 }
@@ -297,9 +294,9 @@ class SendViewModel constructor(
     private fun updateExchange(addressParamsLiveData: AddressParamsLiveData) {
         addressParamsLiveData.amount.value?.let { amount ->
             // Convert between BTC / Fiat
-            doUserAction({
+            doAsync({
                 addressParamsLiveData.accountAsset.value?.assetId?.let { assetId ->
-                    if (assetId.isPolicyAsset(network)) {
+                    if (assetId.isPolicyAsset(account.network)) {
 
                         // TODO calculate exchange from string input or from satoshi ?
                         UserInput.parseUserInputSafe(
@@ -344,14 +341,14 @@ class SendViewModel constructor(
 
     fun getFeeRate(): Long = if(feeSlider.value?.toInt() == SliderCustomIndex){
             // prevent custom fee lower than relay or default fee
-            customFee?.coerceAtLeast(feeEstimation?.firstOrNull() ?: network.defaultFee) ?: network.defaultFee
+            customFee?.coerceAtLeast(feeEstimation?.firstOrNull() ?: account.network.defaultFee) ?: account.network.defaultFee
         }else{
-            feeRate ?: network.defaultFee.coerceAtLeast(feeEstimation?.getOrNull(0) ?: 0)
+            feeRate ?: account.network.defaultFee.coerceAtLeast(feeEstimation?.getOrNull(0) ?: 0)
         }
 
     private suspend fun createTransactionParams(): CreateTransactionParams {
-        if(accountValue.isLightning){
-            return recipients.value!!.map {
+        if(account.isLightning){
+            return recipients.value.map {
                 it.toAddressParams(session = session, isGreedy = false)
             }.let { params ->
                 CreateTransactionParams(
@@ -362,15 +359,15 @@ class SendViewModel constructor(
         }
 
         val unspentOutputs = if(isSweep){
-            session.getUnspentOutputs(accountValue.network, recipients.value?.get(0)?.address?.value?.trim() ?: "")
+            session.getUnspentOutputs(account.network, recipients.value[0].address.value?.trim() ?: "")
         }else{
-            session.getUnspentOutputs(accountValue, isBump)
+            session.getUnspentOutputs(account, isBump)
         }
 
         return when{
             isBump -> {
                 CreateTransactionParams(
-                    subaccount = accountValue.pointer,
+                    subaccount = account.pointer,
                     feeRate = getFeeRate(),
                     utxos = unspentOutputs.unspentOutputsAsJsonElement,
                     previousTransaction = bumpTransaction,
@@ -379,11 +376,11 @@ class SendViewModel constructor(
             }
             isSweep -> {
                 listOf(
-                    session.getReceiveAddress(accountValue)
+                    session.getReceiveAddress(account)
                 ).let { params ->
                     CreateTransactionParams(
                         feeRate = getFeeRate(),
-                        privateKey = recipients.value?.get(0)?.address?.value?.trim() ?: "", // private key
+                        privateKey = recipients.value[0].address.value?.trim() ?: "", // private key
                         passphrase = "",
                         addressees = params.map { it.toJsonElement() },
                         addresseesAsParams = params.map {
@@ -402,7 +399,7 @@ class SendViewModel constructor(
                     it.toAddressParams(session = session, isGreedy = it.isSendAll.boolean())
                 }.let { params ->
                     CreateTransactionParams(
-                        subaccount = accountValue.pointer,
+                        subaccount = account.pointer,
                         addressees = params.map { it.toJsonElement() },
                         addresseesAsParams = params,
                         feeRate = getFeeRate(),
@@ -417,21 +414,21 @@ class SendViewModel constructor(
     private fun checkTransaction(userInitiated: Boolean = false, finalCheckBeforeContinue: Boolean = false) {
         logger.info { "checkTransaction" }
 
-        doUserAction({
+        doAsync({
             // Prevent race condition
             checkTransactionMutex.withLock {
 
                 val params = createTransactionParams()
 
-                val tx = session.createTransaction(network, params)
+                val tx = session.createTransaction(account.network, params)
                 var balance: Assets? = null
 
                 if(finalCheckBeforeContinue && !isSweep){
-                    balance = session.getBalance(accountValue)
+                    balance = session.getBalance(account)
                 }
 
                 // Change UI based on the transaction
-                recipients.value?.let { recipients ->
+                recipients.value.let { recipients ->
                     for(recipient in recipients){
                         val hasLockedAmount = tx.addressees.getOrNull(recipient.index)?.hasLockedAmount == true
 
@@ -460,7 +457,6 @@ class SendViewModel constructor(
                         )
 
                         tx.addressees.getOrNull(recipient.index)?.let { addressee ->
-
                             addressee.bip21Params?.assetId?.let { assetId ->
                                 withContext(context = Dispatchers.Main) {
                                     val assetAccount =
@@ -495,8 +491,8 @@ class SendViewModel constructor(
 
                             // Get amount from GDK if is a BIP21 or isSendAll or Sweep or Bump or Lightning
                             if(addressee.bip21Params?.hasAmount == true || recipient.isSendAll.value == true || isBumpOrSweep || hasLockedAmount){
-                                val assetId = addressee.assetId ?: network.policyAsset
-                                if(!assetId.isPolicyAsset(network) && recipient.denomination.value?.isFiat == true){
+                                val assetId = addressee.assetId ?: account.network.policyAsset
+                                if(!assetId.isPolicyAsset(account.network) && recipient.denomination.value?.isFiat == true){
                                     recipient.denomination.postValue(Denomination.default(session))
                                 }
 
@@ -514,7 +510,6 @@ class SendViewModel constructor(
                                         )
                                     }
                                 } ?: tx.addressees.getOrNull(recipient.index)?.bip21Params?.amount?.let { bip21Amount ->
-
                                     session.convert(
                                         assetId = assetId,
                                         asString = bip21Amount
@@ -547,7 +542,7 @@ class SendViewModel constructor(
 
                 checkedTransaction = tx
 
-                feeAmount.postValue(tx.fee?.toAmountLook(session = session, assetId = network.policyAsset, denomination = getRecipientStateFlow(0)?.denomination?.value, withUnit = true, withGrouping = true, withMinimumDigits = false) ?: "")
+                feeAmount.postValue(tx.fee?.toAmountLook(session = session, assetId = account.network.policyAsset, denomination = getRecipientStateFlow(0)?.denomination?.value, withUnit = true, withGrouping = true, withMinimumDigits = false) ?: "")
                 feeAmountRate.postValue(tx.feeRateWithUnit() ?: "")
                 feeAmountFiat.postValue(tx.fee?.toAmountLook(session = session, denomination = Denomination.fiat(session), withUnit = true, withGrouping = true) ?: "")
 
@@ -569,9 +564,9 @@ class SendViewModel constructor(
             }
         }, onError = {
             transactionError.value = (it.cause?.message ?: it.message).let { error ->
-                if(recipients.value?.get(0)?.address?.value.isNullOrBlank() && (error == "id_invalid_address" || error == "id_invalid_private_key")){
+                if(recipients.value[0].address.value.isNullOrBlank() && (error == "id_invalid_address" || error == "id_invalid_private_key")){
                     "" // empty error to avoid ui glitches
-                }else if(recipients.value?.get(0)?.amount?.value.isNullOrBlank() && !isSendAll() && (error == "id_invalid_amount" || error == "id_insufficient_funds")){
+                }else if(recipients.value[0].amount.value.isNullOrBlank() && !isSendAll() && (error == "id_invalid_amount" || error == "id_insufficient_funds")){
                     "" // empty error to avoid ui glitches
                 }else{
                     error
@@ -586,8 +581,8 @@ class SendViewModel constructor(
                 }
             }
 
-            if(isBumpOrSweep && userInitiated){
-                onError.postValue(ConsumableEvent(it))
+            if(isBumpOrSweep && userInitiated) {
+                postSideEffect(SideEffects.ErrorDialog(it))
             }
         })
     }
@@ -605,7 +600,7 @@ class SendViewModel constructor(
             it.address.value = address
             it.addressInputType = inputType
 
-            if(accountValue.isLightning && address.isBlank()){
+            if(account.isLightning && address.isBlank()){
                 it.amount.value = ""
             }
         }
@@ -627,15 +622,15 @@ class SendViewModel constructor(
     }
 
     fun setCustomFeeRate(feeRate : Long?){
-        customFee = feeRate ?: network.defaultFee
+        customFee = feeRate ?: account.network.defaultFee
         feeSlider.value = SliderCustomIndex.toFloat()
         checkTransaction()
     }
 
     private fun isSendAll(): Boolean {
-        return recipients.value?.map {
+        return recipients.value.map {
             it.isSendAll.boolean()
-        }?.reduceOrNull { acc, b ->
+        }.reduceOrNull { acc, b ->
             acc || b
         } ?: false
     }

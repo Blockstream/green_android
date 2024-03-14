@@ -6,13 +6,13 @@ import android.view.View
 import androidx.core.os.BundleCompat
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.overview.WalletOverviewViewModel
 import com.blockstream.green.databinding.SystemMessageBottomSheetBinding
 import com.blockstream.green.extensions.dismissIn
-import com.blockstream.green.extensions.errorDialog
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 
 class SystemMessageBottomSheetDialogFragment :
-    WalletBottomSheetDialogFragment<SystemMessageBottomSheetBinding, AbstractWalletViewModel>() {
+    WalletBottomSheetDialogFragment<SystemMessageBottomSheetBinding, GreenViewModel>() {
 
     override val screenName = "SystemMessage"
 
@@ -32,26 +32,14 @@ class SystemMessageBottomSheetDialogFragment :
 
         binding.buttonAccept.setOnClickListener {
             BundleCompat.getParcelable(requireArguments(), NETWORK, Network::class.java)?.also {
-                viewModel.ackSystemMessage(it, message)
+                viewModel.postEvent(WalletOverviewViewModel.LocalEvents.AckSystemMessage(it, message))
+                binding.closing = true
+                dismissIn(1000)
             }
         }
 
         binding.buttonClose.setOnClickListener {
             dismiss()
-        }
-
-        viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
-            consumableEvent?.getContentIfNotHandledForType<AbstractWalletViewModel.WalletEvent.AckMessage>()
-                ?.let {
-                    binding.closing = true
-                    dismissIn(1000)
-                }
-        }
-
-        viewModel.onError.observe(viewLifecycleOwner) {
-            it?.getContentIfNotHandledOrReturnNull()?.let {
-                errorDialog(it)
-            }
         }
     }
 

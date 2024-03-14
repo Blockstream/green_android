@@ -31,7 +31,7 @@ class SideEffects : SideEffect {
     object NavigateToRoot : SideEffect
     data class Logout(val reason: LogoutReason) : SideEffect
     object WalletDelete : SideEffect
-    data class CopyToClipboard(val value: String, val message: String?, val label: String? = null) : SideEffect
+    data class CopyToClipboard(val value: String, val message: String? = null, val label: String? = null) : SideEffect
     data class AccountArchived(val account: Account) : SideEffect
     data class AccountUnarchived(val account: Account) : SideEffect
     data class UrlWarning(val urls: List<String>): SideEffect

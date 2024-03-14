@@ -1,9 +1,13 @@
 package com.blockstream.common.gdk.data
 
+import com.arkivanov.essenty.parcelable.Parcelable
+import com.arkivanov.essenty.parcelable.Parcelize
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Parcelize
 data class TwoFactorConfig(
     @SerialName("all_methods") val allMethods: List<String> = listOf(),
     @SerialName("enabled_methods") val enabledMethods: List<String> = listOf(),
@@ -20,7 +24,9 @@ data class TwoFactorConfig(
 
     @SerialName("limits") val limits: Balance,
     @SerialName("twofactor_reset") val twoFactorReset: TwoFactorReset,
-){
+): GreenJson<TwoFactorConfig>(), Parcelable {
+    override fun kSerializer() = serializer()
+
     companion object{
         // Emtpy object in case of 2FA bug in GDK
         val empty = TwoFactorConfig(

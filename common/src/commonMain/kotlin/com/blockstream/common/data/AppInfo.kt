@@ -10,4 +10,7 @@ class AppInfo constructor(
         get() = if(isDebug) "debug" else "release"
 
     val isDevelopmentOrDebug = isDevelopment || isDebug
+
+    val versionFlavorDebug
+        get() = "$version ${if(isDevelopment) "(Development)" else ""}${if(isDebug) "[Debug]" else ""}"
 }

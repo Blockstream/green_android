@@ -6,6 +6,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.Urls
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.deviceIcon
@@ -16,7 +17,6 @@ import com.blockstream.green.databinding.DeviceScanFragmentBinding
 import com.blockstream.green.devices.Device
 import com.blockstream.green.extensions.navigate
 import com.blockstream.green.gdk.getIcon
-import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.utils.openBrowser
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -44,7 +44,7 @@ class DeviceScanFragment : AbstractDeviceFragment<DeviceScanFragmentBinding>(
         parametersOf(args.wallet)
     }
 
-    override fun getAppViewModel(): AppViewModelAndroid = viewModel
+    override fun getGreenViewModel(): GreenViewModel = viewModel
 
     override fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
@@ -69,31 +69,25 @@ class DeviceScanFragment : AbstractDeviceFragment<DeviceScanFragmentBinding>(
                     popBackStack()
                     openBrowser(Urls.HELP_JADE_USB_UPGRADE)
                 }.show()
+        } else if (sideEffect is AbstractDeviceViewModel.LocalSideEffects.RequestWalletIsDifferent) {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.id_warning)
+                .setMessage("The wallet hash is different from the previous wallet. Continue with a new Ephemeral Wallet?")
+                .setPositiveButton(R.string.id_continue) { _, _ ->
+                    viewModel.requestUserActionEmitter?.complete(true)
+                }.setNegativeButton(android.R.string.cancel) { _, _ ->
+                    viewModel.requestUserActionEmitter?.complete(false)
+                }
+                .setOnDismissListener {
+                    viewModel.requestUserActionEmitter?.complete(false)
+                }
+                .show()
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-
-        viewModel.onEvent.observe(viewLifecycleOwner) { onEvent ->
-            onEvent.getContentIfNotHandledForType<DeviceScanFragmentEvent>()?.let {
-                if(it is DeviceScanFragmentEvent.RequestWalletIsDifferent){
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(R.string.id_warning)
-                        .setMessage("The wallet hash is different from the previous wallet. Continue with a new Ephemeral Wallet?")
-                        .setPositiveButton(R.string.id_continue) { _, _ ->
-                            viewModel.requestUserActionEmitter?.complete(true)
-                        }.setNegativeButton(android.R.string.cancel) { _, _ ->
-                            viewModel.requestUserActionEmitter?.complete(false)
-                        }
-                        .setOnDismissListener {
-                            viewModel.requestUserActionEmitter?.complete(false)
-                        }
-                        .show()
-                }
-            }
-        }
 
         viewModel.deviceLiveData.observe(viewLifecycleOwner) {
             binding.deviceImageView.setImageResource(

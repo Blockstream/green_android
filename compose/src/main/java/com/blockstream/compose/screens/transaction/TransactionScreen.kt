@@ -48,6 +48,7 @@ import com.blockstream.compose.components.GreenAmount
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.GreenSpacer
+import com.blockstream.compose.components.TransactionStatusIcon
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.extensions.color
 import com.blockstream.compose.extensions.icon

@@ -58,7 +58,7 @@ fun AccountType?.title(): String = when (this) {
 
 fun Account.needs2faActivation(session: GdkSession): Boolean {
     return try {
-        isMultisig && !isAmp && (!session.isWatchOnly && !session.getTwoFactorConfig(network = network, useCache = true).anyEnabled)
+        isMultisig && !isAmp && (!session.isWatchOnly && session.getTwoFactorConfig(network = network)?.anyEnabled == false)
     }catch (e: Exception){
         e.printStackTrace()
         false

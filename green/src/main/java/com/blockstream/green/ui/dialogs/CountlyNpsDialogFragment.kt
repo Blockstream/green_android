@@ -8,13 +8,15 @@ import android.view.View
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.data.CountlyWidget
 import com.blockstream.common.data.FollowUpType
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.R
 import com.blockstream.green.databinding.CountlyNpsDialogBinding
 import com.blockstream.green.extensions.snackbar
 import ly.count.android.sdk.ModuleFeedback
 import mu.KLogging
 
-class CountlyNpsDialogFragment : AbstractDialogFragment<CountlyNpsDialogBinding>() {
+class CountlyNpsDialogFragment : AbstractDialogFragment<CountlyNpsDialogBinding, GreenViewModel>() {
+    override val viewModel: GreenViewModel? = null
 
     override fun inflate(layoutInflater: LayoutInflater): CountlyNpsDialogBinding =
         CountlyNpsDialogBinding.inflate(layoutInflater)

@@ -1,12 +1,16 @@
 package com.blockstream.common
 
 const val BTC_POLICY_ASSET = "btc"
+const val LBTC_POLICY_ASSET = "lbtc" // Used in preview mostly
 
 const val BTC_UNIT = "BTC"
 const val MBTC_UNIT = "mBTC"
 const val UBTC_UNIT = "\u00B5BTC"
 const val BITS_UNIT = "bits"
 const val SATOSHI_UNIT = "sats"
+
+val BitcoinUnits = listOf(BTC_UNIT, MBTC_UNIT, UBTC_UNIT, BITS_UNIT, SATOSHI_UNIT)
+val TestnetUnits = listOf("TEST", "mTEST", "\u00B5TEST", "bTEST", "sTEST")
 
 object Urls {
     const val BLOCKSTREAM_GREEN_WEBSITE = "https://blockstream.com/green/"

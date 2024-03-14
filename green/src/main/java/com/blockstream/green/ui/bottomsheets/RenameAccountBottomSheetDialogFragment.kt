@@ -5,14 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.core.os.BundleCompat
 import androidx.fragment.app.FragmentManager
-import com.blockstream.common.extensions.cleanup
+import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.databinding.RenameAccountBottomSheetBinding
 import com.blockstream.green.extensions.openKeyboard
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import mu.KLogging
 
-class RenameAccountBottomSheetDialogFragment : WalletBottomSheetDialogFragment<RenameAccountBottomSheetBinding, AbstractWalletViewModel>() {
+class RenameAccountBottomSheetDialogFragment : WalletBottomSheetDialogFragment<RenameAccountBottomSheetBinding, GreenViewModel>() {
     override val screenName = "RenameAccount"
 
     override fun inflate(layoutInflater: LayoutInflater) = RenameAccountBottomSheetBinding.inflate(layoutInflater)
@@ -37,7 +37,7 @@ class RenameAccountBottomSheetDialogFragment : WalletBottomSheetDialogFragment<R
         }
 
         binding.buttonSave.setOnClickListener {
-            viewModel.renameAccount(account, binding.name.cleanup() ?: "")
+            viewModel.postEvent(Events.RenameAccount(account, binding.name.toString()))
             dismiss()
         }
     }

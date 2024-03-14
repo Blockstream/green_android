@@ -10,7 +10,7 @@
 
         <variable
             name="vm"
-            type="com.blockstream.green.ui.overview.AccountOverviewViewModel" />
+            type="com.blockstream.common.models.overview.AccountOverviewViewModel" />
     </data>
 
 

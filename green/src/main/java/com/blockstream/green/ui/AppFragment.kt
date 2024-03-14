@@ -3,7 +3,13 @@ package com.blockstream.green.ui
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
@@ -47,8 +53,9 @@ import com.blockstream.green.ui.bottomsheets.DeviceInteractionRequestBottomSheet
 import com.blockstream.green.ui.bottomsheets.PassphraseBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.PinMatrixBottomSheetDialogFragment
 import com.blockstream.green.ui.drawer.DrawerFragment
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
-import com.blockstream.green.utils.*
+import com.blockstream.green.utils.BannersHelper
+import com.blockstream.green.utils.copyToClipboard
+import com.blockstream.green.utils.openBrowser
 import com.blockstream.green.views.GreenAlertView
 import com.blockstream.green.views.GreenToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -90,9 +97,7 @@ abstract class AppFragment<T : ViewDataBinding>(
     val zendeskSdk: ZendeskSdk by inject()
 
     val settingsManager: SettingsManager by inject()
-    open fun getGreenViewModel() = getAppViewModel() as GreenViewModel?
-
-    open fun getAppViewModel(): AppViewModelAndroid? = null
+    open fun getGreenViewModel(): GreenViewModel? = null
 
     open val title : String? = null
     open val subtitle : String? = null
@@ -170,7 +175,7 @@ abstract class AppFragment<T : ViewDataBinding>(
             countly.screenView(this)
         }
 
-        BannersHelper.handle(this, if(this is AbstractWalletFragment<*>) sessionOrNull else null)
+        BannersHelper.handle(this, getGreenViewModel()?.sessionOrNull)
     }
 
     override fun onPrepareMenu(menu: Menu) {
@@ -247,7 +252,6 @@ abstract class AppFragment<T : ViewDataBinding>(
                         ).show()
                     }
                 }
-
             }
             is SideEffects.Dialog -> {
                 if (sideEffectsHandledByAppFragment) {
@@ -348,6 +352,10 @@ abstract class AppFragment<T : ViewDataBinding>(
                     navigate(NavGraphDirections.actionGlobalAddWalletFragment())
                 }
 
+                (sideEffect.destination as? NavigateDestinations.About)?.also {
+                    navigate(NavGraphDirections.actionGlobalAboutFragment())
+                }
+
                 (sideEffect.destination as? NavigateDestinations.UseHardwareDevice)?.also {
                     navigate(NavGraphDirections.actionGlobalUseHardwareDeviceFragment())
                 }
@@ -358,6 +366,28 @@ abstract class AppFragment<T : ViewDataBinding>(
 
                 (sideEffect.destination as? NavigateDestinations.AppSettings)?.also {
                     navigate(NavGraphDirections.actionGlobalAppSettingsFragment())
+                }
+
+                (sideEffect.destination as? NavigateDestinations.Receive)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalReceiveFragment(
+                            wallet = it.greenWallet,
+                            accountAsset = it.accountAsset
+                        )
+                    )
+                }
+
+                (sideEffect.destination as? NavigateDestinations.Send)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalSendFragment(
+                            wallet = it.greenWallet,
+                            accountAsset = it.accountAsset,
+                            isSweep = it.isSweep,
+                            address = it.address,
+                            assetId = it.assetId,
+                            bumpTransaction = it.bumpTransaction
+                        )
+                    )
                 }
             }
         }

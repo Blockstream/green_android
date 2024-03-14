@@ -54,6 +54,7 @@
         <item>sTEST</item>
     </string-array>
 
+<!--  Deprecatd  -->
     <string-array name="auto_logout_values" translatable="false">
         <item>1</item>
         <item>2</item>

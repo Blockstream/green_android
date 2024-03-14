@@ -38,3 +38,15 @@ fun String.server(): String {
 
     return substring(0, end)
 }
+
+private val EmailAddressRegex = Regex(
+    "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
+            "\\@" +
+            "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+            "(" +
+            "\\." +
+            "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+            ")+"
+)
+
+fun String.isEmailValid() = matches(EmailAddressRegex)

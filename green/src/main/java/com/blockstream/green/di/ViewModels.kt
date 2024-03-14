@@ -27,15 +27,20 @@ import com.blockstream.common.models.onboarding.phone.PinViewModel
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyCredentialsViewModel
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyNetworkViewModel
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyPolicyViewModel
+import com.blockstream.common.models.overview.AccountOverviewViewModel
 import com.blockstream.common.models.overview.AssetsViewModel
 import com.blockstream.common.models.overview.WalletOverviewViewModel
 import com.blockstream.common.models.receive.ReceiveViewModel
+import com.blockstream.common.models.receive.RequestAmountViewModel
 import com.blockstream.common.models.recovery.RecoveryCheckViewModel
 import com.blockstream.common.models.recovery.RecoveryIntroViewModel
 import com.blockstream.common.models.recovery.RecoveryPhraseViewModel
 import com.blockstream.common.models.recovery.RecoveryWordsViewModel
 import com.blockstream.common.models.settings.AppSettingsViewModel
+import com.blockstream.common.models.settings.DenominationExchangeRateViewModel
 import com.blockstream.common.models.settings.TwoFactorAuthenticationViewModel
+import com.blockstream.common.models.settings.TwoFactorSetupViewModel
+import com.blockstream.common.models.settings.WalletSettingsViewModel
 import com.blockstream.common.models.settings.WatchOnlyViewModel
 import com.blockstream.common.models.sheets.AnalyticsViewModel
 import com.blockstream.common.models.sheets.AssetDetailsViewModel
@@ -91,6 +96,14 @@ val viewModels = module {
     viewModelOf(::RecoveryHelpViewModel)
     viewModelOf(::TransactionViewModel)
     viewModelOf(::AssetDetailsViewModel)
+    viewModelOf(::AccountOverviewViewModel)
+    viewModelOf(::DenominationExchangeRateViewModel)
+    viewModelOf(::RequestAmountViewModel)
+    viewModelOf(::WalletSettingsViewModel)
+    viewModelOf(::TwoFactorSetupViewModel)
+    viewModel {
+        WalletSettingsViewModel(get(), getOrNull(), get())
+    }
     viewModel {
         JadeQRViewModel(get(), getOrNull())
     }

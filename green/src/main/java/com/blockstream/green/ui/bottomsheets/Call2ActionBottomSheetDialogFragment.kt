@@ -9,15 +9,15 @@ import androidx.navigation.fragment.findNavController
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountType
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.databinding.Call2ActionBottomSheetBinding
 import com.blockstream.green.extensions.navigate
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import mu.KLogging
 
 class Call2ActionBottomSheetDialogFragment :
-    WalletBottomSheetDialogFragment<Call2ActionBottomSheetBinding, AbstractWalletViewModel>() {
+    WalletBottomSheetDialogFragment<Call2ActionBottomSheetBinding, GreenViewModel>() {
 
     override val screenName: String? = null
 

@@ -10,12 +10,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.R
 import com.blockstream.green.databinding.FilterBottomSheetBinding
 import com.blockstream.green.extensions.endIconCustomMode
 import com.blockstream.green.extensions.makeItConstant
 import com.blockstream.green.ui.items.AssetAccountsListItem
-import com.blockstream.green.ui.wallet.AbstractAssetWalletViewModel
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.ISelectionListener
@@ -30,7 +30,7 @@ import kotlinx.coroutines.withContext
 
 
 class ChooseAssetAccountBottomSheetDialogFragment :
-    WalletBottomSheetDialogFragment<FilterBottomSheetBinding, AbstractAssetWalletViewModel>() {
+    WalletBottomSheetDialogFragment<FilterBottomSheetBinding, GreenViewModel>() {
 
     override val screenName = "ChooseAssetAndAccount"
 

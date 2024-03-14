@@ -22,7 +22,9 @@ import com.blockstream.common.gdk.params.CreateSwapParams
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.gdk.params.LiquidDexV0AssetParams
 import com.blockstream.common.gdk.params.LiquidDexV0Params
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.UserInput
 import com.blockstream.green.extensions.toggle
 import com.blockstream.green.utils.exchangeRate
@@ -46,8 +48,8 @@ import org.koin.core.annotation.InjectedParam
 @KoinViewModel
 class SwapViewModel constructor(
     @InjectedParam wallet: GreenWallet,
-    @InjectedParam proposal: SwapProposal?,
-) : AbstractSwapWalletViewModel(wallet, proposal) {
+    @InjectedParam val proposal: SwapProposal?,
+) : GreenViewModel(wallet) {
 
     var utxos: List<Utxo> = listOf()
 
@@ -126,7 +128,7 @@ class SwapViewModel constructor(
             Unit
         }.debounce(50).onEach {
 
-            doUserAction({
+            doAsync({
                 // Convert utxo satoshi values
                 val utxoAmount = if(utxo?.assetId.isPolicyAsset(session)){
                     session.convert(
@@ -139,8 +141,6 @@ class SwapViewModel constructor(
                         asLong = utxo!!.satoshi
                     )!!.valueInMainUnit
                 }
-
-                logger.info { "utxoAmount $utxoAmount" }
 
                 // Make conversion for BTC values
                 val toAmount = UserInput.parseUserInput(
@@ -189,7 +189,7 @@ class SwapViewModel constructor(
             outputLiveData.postValue(it)
         }
 
-        doUserAction({
+        doAsync({
             val utxo = proposal.inputs.first()
             val out = proposal.outputs.first()
             val utxoAmount = utxo.amount.toAmountLook(session, utxo.assetId,
@@ -236,7 +236,7 @@ class SwapViewModel constructor(
     }
 
     fun createSwapProposal(twoFactorResolver: TwoFactorResolver) {
-        doUserAction({
+        doAsync({
             val satoshi = UserInput.parseUserInput(
                 session = session,
                 input = toAmount.value!!,
@@ -267,7 +267,7 @@ class SwapViewModel constructor(
             return
         }
 
-        doUserAction({
+        doAsync({
             val v0List= LiquiDexV0List(
                 proposals = listOf(proposal!!)
             )
@@ -314,4 +314,6 @@ class SwapViewModel constructor(
     fun switchExchangeRate(){
         exchangeRateDirection.toggle()
     }
+
+    companion object: Loggable()
 }

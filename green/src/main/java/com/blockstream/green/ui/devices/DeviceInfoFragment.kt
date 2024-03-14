@@ -15,6 +15,7 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.DeviceBrand
 import com.blockstream.common.gdk.device.DeviceState
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.NavGraphDirections
@@ -23,7 +24,6 @@ import com.blockstream.green.databinding.DeviceInfoFragmentBinding
 import com.blockstream.green.devices.DeviceManagerAndroid
 import com.blockstream.green.extensions.navigate
 import com.blockstream.green.extensions.snackbar
-import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.ui.MainActivity
 import com.blockstream.green.ui.bottomsheets.EnvironmentListener
 import com.blockstream.green.utils.isDevelopmentFlavor
@@ -55,7 +55,7 @@ class DeviceInfoFragment : AbstractDeviceFragment<DeviceInfoFragmentBinding>(
     override val title: String?
         get() = deviceOrNull?.deviceBrand?.name
 
-    override fun getAppViewModel(): AppViewModelAndroid? = if(deviceOrNull == null) null else viewModel
+    override fun getGreenViewModel(): GreenViewModel? = if(deviceOrNull == null) null else viewModel
 
     private val onBackCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {

@@ -9,7 +9,6 @@ import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.items.AccountAssetListItem
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.blockstream.green.utils.observeList
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.GenericFastItemAdapter
@@ -22,7 +21,7 @@ class AccountAssetBottomSheetDialogFragment : FilterBottomSheetDialogFragment(),
 
     @Suppress("UNCHECKED_CAST")
     internal val viewModel: GreenViewModel by lazy {
-        (requireParentFragment() as? AppFragment<*>)?.getGreenViewModel() ?: (requireParentFragment() as AbstractWalletFragment<*>).getWalletViewModel()!!
+        (requireParentFragment() as? AppFragment<*>)?.getGreenViewModel()!!
     }
 
     override val withSearch: Boolean = true

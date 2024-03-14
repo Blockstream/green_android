@@ -15,6 +15,7 @@ import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.ExceptionWithErrorReport
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.SendTransactionSuccess
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
@@ -27,6 +28,7 @@ import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.setNavigationResult
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.looks.ConfirmTransactionLook
+import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.bottomsheets.NoteBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.VerifyTransactionBottomSheetDialogFragment
 import com.blockstream.green.ui.items.NoteListItem
@@ -34,7 +36,6 @@ import com.blockstream.green.ui.items.TransactionFeeListItem
 import com.blockstream.green.ui.items.TransactionUtxoListItem
 import com.blockstream.green.ui.overview.WalletOverviewFragment
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
-import com.blockstream.green.ui.wallet.AbstractAccountWalletFragment
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.blockstream.green.utils.openBrowser
 import com.blockstream.green.views.GreenAlertView
@@ -52,20 +53,18 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBinding>(
+class SendConfirmFragment : AppFragment<SendConfirmFragmentBinding>(
     layout = R.layout.send_confirm_fragment,
     menuRes = R.menu.send_confirm
 ) {
     val args: SendConfirmFragmentArgs by navArgs()
 
-    override val walletOrNull by lazy { args.wallet }
-
     override val screenName = "SendConfirm"
     override val segmentation
-        get() = if (isSessionAndWalletRequired() && isSessionNetworkInitialized) countly.accountSegmentation(
-            session = session,
-            account = viewModel.accountValue
-        ) else null
+        get() = countly.accountSegmentation(
+            session = viewModel.session,
+            account = viewModel.account
+        )
 
     private val beagle: Beagle by inject()
 
@@ -76,9 +75,9 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
 
     override fun getBannerAlertView(): GreenAlertView = binding.banner
 
-    override fun getWalletViewModel() = viewModel
+    override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    private val transactionOrNull get() = session.pendingTransaction?.second
+    private val transactionOrNull get() = viewModel.session.pendingTransaction?.second
     private val transaction get() = transactionOrNull!!
 
     private val onBackCallback = object : OnBackPressedCallback(false) {
@@ -93,7 +92,9 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
             (sideEffect.data as? String)?.also { signedTransaction ->
                 dialog("Signed Transaction", signedTransaction, isMessageSelectable = true)
             }
-        } else if(sideEffect is SideEffects.Navigate){
+        } else if (sideEffect is SideEffects.NavigateToRoot) {
+            findNavController().popBackStack(R.id.walletOverviewFragment, false)
+        } else if (sideEffect is SideEffects.Navigate) {
             (sideEffect.data as? SendTransactionSuccess)?.also { sendTransactionSuccess ->
                 if (sendTransactionSuccess.hasMessageOrUrl) {
                     val message = sendTransactionSuccess.message ?: ""
@@ -124,16 +125,17 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
         }
     }
 
-    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
 
-        if(session.pendingTransaction == null){
+        if(viewModel.session.pendingTransaction == null){
             popBackStack()
             return
         }
 
         if(isDevelopmentOrDebug){
-            session.pendingTransaction!!.second.toJson().also {
+            viewModel.session.pendingTransaction!!.second.toJson().also {
                 logger.info { it }
                 beagle.log(it)
             }
@@ -150,7 +152,7 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
             if(!transaction.isSweep() && !it.isNullOrBlank()) {
                 noteAdapter.set(
                     listOf(
-                        NoteListItem(note = viewModel.transactionNote, isEditable = !account.isLightning)
+                        NoteListItem(note = viewModel.transactionNote, isEditable = !viewModel.account.isLightning)
                     )
                 )
             }else{
@@ -181,39 +183,9 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
             }
         }
 
-        viewModel.onError.observe(viewLifecycleOwner){
-            it?.getContentIfNotHandledOrReturnNull()?.let{ throwable ->
-                // Reset send slider
-                binding.buttonSend.setCompleted(completed = false, withAnimation = true)
-
-                when {
-                    // If the error is the Anti-Exfil validation violation we show that prominently.
-                    // Otherwise show a toast of the error text.
-                    throwable.message == "id_signature_validation_failed_if" -> {
-                        errorDialog(throwable = throwable, errorReport = ErrorReport.create(throwable = throwable, network = network, session = session))
-                    }
-                    throwable.message == "id_transaction_already_confirmed" -> {
-                        snackbar(R.string.id_transaction_already_confirmed)
-                        findNavController().popBackStack(R.id.walletOverviewFragment, false)
-                    }
-                    throwable.message != "id_action_canceled" -> {
-                        errorDialog(
-                            throwable = throwable,
-                            errorReport = (throwable as? ExceptionWithErrorReport)?.errorReport
-                                ?: ErrorReport.create(
-                                    throwable = throwable,
-                                    network = network,
-                                    session = session
-                                )
-                        )
-                    }
-                }
-            }
-        }
-
         viewModel.onProgress.onEach {
             onBackCallback.isEnabled = it
-            if(account.isLightning){
+            if(viewModel.account.isLightning){
                 binding.outputs.alpha = if(it) 0.2f else 1.0f
             }
         }.launchIn(lifecycleScope)
@@ -222,7 +194,7 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
     }
 
     override fun onPrepareMenu(menu: Menu) {
-        menu.findItem(R.id.add_note).isVisible = transactionOrNull?.isSweep() == false && viewModel.transactionNote.isBlank() && !account.isLightning
+        menu.findItem(R.id.add_note).isVisible = transactionOrNull?.isSweep() == false && viewModel.transactionNote.isBlank() && !viewModel.account.isLightning
         menu.findItem(R.id.sign_transaction).isVisible = isDevelopmentOrDebug
     }
 
@@ -242,11 +214,11 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
 
     fun createAdapter(isAddressVerificationOnDevice: Boolean): ItemAdapter<GenericItem> {
         val look = ConfirmTransactionLook(
-            network = network,
-            session = session,
+            network = viewModel.account.network,
+            session = viewModel.session,
             transaction = transaction,
             denomination = args.denomination.takeIf { it?.isFiat == false },
-            showChangeOutputs = isAddressVerificationOnDevice && session.device?.isLedger == true,
+            showChangeOutputs = isAddressVerificationOnDevice && viewModel.session.device?.isLedger == true,
             isAddressVerificationOnDevice = isAddressVerificationOnDevice
         )
 
@@ -256,14 +228,14 @@ class SendConfirmFragment : AbstractAccountWalletFragment<SendConfirmFragmentBin
         for (i in 0 until look.utxoSize) {
             list += TransactionUtxoListItem(
                 index = i,
-                session = session,
+                session = viewModel.session,
                 look = look,
                 withStroke = isAddressVerificationOnDevice
             )
         }
 
-        if(!account.isLightning) {
-            list += TransactionFeeListItem(session = session, look = look, confirmLook = look)
+        if(!viewModel.account.isLightning) {
+            list += TransactionFeeListItem(session = viewModel.session, look = look, confirmLook = look)
         }
 
         itemAdapter.add(list)

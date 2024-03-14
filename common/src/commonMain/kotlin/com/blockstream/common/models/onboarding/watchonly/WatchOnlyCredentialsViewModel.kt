@@ -103,11 +103,6 @@ class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs) :
     class LocalEvents {
         data class AppendWatchOnlyDescriptor(val value: String) : Event
         class ImportFile(val source: Source) : Event
-        class ProvideCipher(
-            val platformCipher: PlatformCipher? = null,
-            val exception: Exception? = null
-        ) :
-            Event
     }
 
     class LocalSideEffects {
@@ -163,7 +158,7 @@ class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs) :
                 )
             }
 
-            is LocalEvents.ProvideCipher -> {
+            is Events.ProvideCipher -> {
                 event.platformCipher?.also {
                     biometricsPlatformCipher?.complete(it)
                 }

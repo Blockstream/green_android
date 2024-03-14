@@ -7,10 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.core.os.BundleCompat
 import androidx.fragment.app.FragmentManager
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.databinding.QrDialogBinding
 import mu.KLogging
 
-class QrDialogFragment : AbstractDialogFragment<QrDialogBinding>() {
+class QrDialogFragment : AbstractDialogFragment<QrDialogBinding,GreenViewModel>() {
+    override val viewModel: GreenViewModel? = null
 
     override fun inflate(layoutInflater: LayoutInflater): QrDialogBinding =
         QrDialogBinding.inflate(layoutInflater)

@@ -5,18 +5,31 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.Urls
+import com.blockstream.common.data.LogoutReason
+import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.SettingsNotification
-import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.data.LogoutReason
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.utils.AndroidKeystore
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
-import com.blockstream.green.data.TwoFactorMethod
+import com.blockstream.common.data.TwoFactorMethod
+import com.blockstream.common.data.TwoFactorSetupAction
+import com.blockstream.common.models.settings.WalletSettingsSection
+import com.blockstream.common.models.settings.WalletSettingsViewModel
+import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.compose.AppFragmentBridge
+import com.blockstream.compose.screens.HomeScreen
+import com.blockstream.compose.screens.settings.WalletSettingsScreen
+import com.blockstream.green.databinding.ComposeViewBinding
 import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.ListItemActionBinding
 import com.blockstream.green.databinding.WalletSettingsFragmentBinding
@@ -29,12 +42,12 @@ import com.blockstream.green.extensions.getNavigationResult
 import com.blockstream.green.extensions.showChoiceDialog
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.gdk.getNetworkIcon
+import com.blockstream.green.ui.AppFragment
+import com.blockstream.green.ui.add.ChooseAccountTypeFragmentDirections
+import com.blockstream.green.ui.dialogs.DenominationExchangeRateDialogFragment
 import com.blockstream.green.ui.items.ActionListItem
 import com.blockstream.green.ui.items.PreferenceListItem
 import com.blockstream.green.ui.items.TitleListItem
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.common.utils.AndroidKeystore
 import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.colorText
 import com.blockstream.green.utils.copyToClipboard
@@ -54,543 +67,99 @@ import org.koin.core.parameter.parametersOf
 import java.security.InvalidAlgorithmParameterException
 
 
-class WalletSettingsFragment :
-    AbstractWalletFragment<WalletSettingsFragmentBinding>(R.layout.wallet_settings_fragment, 0) {
+class WalletSettingsFragment : AppFragment<ComposeViewBinding>(R.layout.compose_view, 0) {
     val args: WalletSettingsFragmentArgs by navArgs()
-    override val walletOrNull by lazy { args.wallet }
-
-    override val screenName by lazy { if (args.showRecoveryTransactions) "WalletSettingsRecoveryTransactions" else "WalletSettings" }
-
-    private val bannerAdapter = ItemAdapter<GenericItem>()
-    private val itemAdapter = ItemAdapter<GenericItem>()
-
-    private lateinit var logoutPreference: PreferenceListItem
-    private lateinit var archivedAccountsPreference: PreferenceListItem
-    private lateinit var supportIdPreference: PreferenceListItem
-    private lateinit var watchOnlyPreference: PreferenceListItem
-    private lateinit var denominationAndExchangeRatePreference: PreferenceListItem
-    private lateinit var pgpPreference: PreferenceListItem
-    private lateinit var altTimeoutPreference: PreferenceListItem
-    private lateinit var twoFactorAuthenticationPreference: PreferenceListItem
-    private lateinit var recoveryPreference: PreferenceListItem
-
-    // Multisig
-    private lateinit var multisigBitcoinPreference: PreferenceListItem
-    private lateinit var multisigLiquidPreference: PreferenceListItem
-
-    // Show Recovery Transactions
-    private lateinit var setupEmailRecoveryTransactionsPreference: PreferenceListItem
-    private lateinit var recoveryTransactionEmailsPreference: PreferenceListItem
-    private lateinit var requestRecoveryTransactionsPreference: PreferenceListItem
-
-    private lateinit var biometricsPreference: PreferenceListItem
-    private lateinit var changePinPreference: PreferenceListItem
-
-    private lateinit var versionPreference: PreferenceListItem
-
-    private val networkOrNull: Network?
-        get() = args.network
-
-    val network: Network
-        get() = networkOrNull!!
-
-    private val androidKeystore: AndroidKeystore by inject()
 
     val viewModel: WalletSettingsViewModel by viewModel {
-        parametersOf(args.wallet)
+        parametersOf(
+            args.wallet,
+            args.network,
+            if (args.showRecoveryTransactions) WalletSettingsSection.RecoveryTransactions else WalletSettingsSection.General
+        )
     }
+
+    override fun getGreenViewModel() = viewModel
+
+    override val useCompose: Boolean = true
+
+    override val sideEffectsHandledByAppFragment: Boolean = false
 
     override val title: String?
-        get() = if (args.showRecoveryTransactions) getString(R.string.id_recovery_transactions) else if(networkOrNull != null) getString(R.string.id_settings) else null
+        get() = if (args.showRecoveryTransactions) getString(R.string.id_recovery_transactions) else if(args.network != null) getString(R.string.id_settings) else null
 
     override val subtitle: String?
-        get() = if(networkOrNull != null) getString(R.string.id_multisig) else null
+        get() = if(args.network != null) getString(R.string.id_multisig) else null
 
     override val toolbarIcon: Int?
-        get() = networkOrNull?.getNetworkIcon()
+        get() = args.network?.getNetworkIcon()
 
-    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
-        getNavigationResult<Boolean>()?.observe(viewLifecycleOwner) {
-            it?.let {
-                viewModel.updateTwoFactorConfig()
-                clearNavigationResult()
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+
+        when (sideEffect) {
+            is SideEffects.NavigateTo -> {
+                (sideEffect.destination as? NavigateDestinations.RecoveryIntro)?.also {
+                    navigate(
+                        WalletSettingsFragmentDirections.actionWalletSettingsFragmentToRecoveryIntroFragment(
+                            setupArgs = it.args
+                        )
+                    )
+                }
+                (sideEffect.destination as? NavigateDestinations.TwoFactorAuthentication)?.also {
+                    navigate(
+                        WalletSettingsFragmentDirections.actionWalletSettingsFragmentToTwoFractorAuthenticationFragment(
+                            wallet = it.greenWallet
+                        )
+                    )
+                }
+                (sideEffect.destination as? NavigateDestinations.TwoFactorSetup)?.also {
+                    navigate(
+                        WalletSettingsFragmentDirections.actionWalletSettingsFragmentToTwoFactorSetupFragment(
+                            wallet = it.greenWallet,
+                            method = it.method,
+                            action = it.action,
+                            network = it.network
+                        )
+                    )
+                }
+                (sideEffect.destination as? NavigateDestinations.ArchivedAccounts)?.also {
+                    navigate(
+                        WalletSettingsFragmentDirections.actionGlobalArchivedAccountsFragment(
+                            wallet = it.greenWallet
+                        )
+                    )
+                }
+                (sideEffect.destination as? NavigateDestinations.ChangePin)?.also {
+                    navigate(
+                        WalletSettingsFragmentDirections.actionWalletSettingsFragmentToChangePinFragment(
+                            wallet = it.greenWallet
+                        )
+                    )
+                }
+                (sideEffect.destination as? NavigateDestinations.WatchOnly)?.also {
+                    navigate(
+                        WalletSettingsFragmentDirections.actionWalletSettingsFragmentToWatchOnlyFragment(
+                            wallet = it.greenWallet
+                        )
+                    )
+                }
+
             }
         }
+    }
 
-        binding.vm = viewModel
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        supportIdPreference = PreferenceListItem(
-            StringHolder(R.string.id_support),
-            subtitle = StringHolder(R.string.id_copy_support_id),
-            iconRes = R.drawable.ic_copy
-        )
-        watchOnlyPreference =
-            PreferenceListItem(title = StringHolder(R.string.id_watchonly), isInnerMenu = true)
-        logoutPreference = PreferenceListItem(
-            StringHolder(R.string.id_logout),
-            if (!session.isLightningShortcut) StringHolder(wallet.name) else StringHolder(R.string.id_lightning_account),
-            subtitleColor = R.color.red,
-            iconRes = R.drawable.ic_baseline_logout_24
-        )
-        archivedAccountsPreference = PreferenceListItem(
-            StringHolder(R.string.id_archived_accounts),
-            isInnerMenu = true
-        )
-        denominationAndExchangeRatePreference = PreferenceListItem(StringHolder(R.string.id_denomination__exchange_rate))
-        changePinPreference =
-            PreferenceListItem(StringHolder(R.string.id_change_pin), isInnerMenu = true)
-        multisigBitcoinPreference = PreferenceListItem(StringHolder("Bitcoin"), isInnerMenu = true)
-        multisigLiquidPreference = PreferenceListItem(StringHolder("Liquid"), isInnerMenu = true)
-
-        biometricsPreference = PreferenceListItem(
-            StringHolder(R.string.id_login_with_biometrics),
-            withSwitch = true
-        )
-        altTimeoutPreference = PreferenceListItem(StringHolder(R.string.id_auto_logout_timeout))
-        recoveryPreference = PreferenceListItem(
-            StringHolder(R.string.id_backup_recovery_phrase), StringHolder(
-                R.string.id_touch_to_display
-            ), isInnerMenu = true
-        )
-        setupEmailRecoveryTransactionsPreference = PreferenceListItem(
-            StringHolder(R.string.id_set_an_email_for_recovery)
-        )
-        recoveryTransactionEmailsPreference = PreferenceListItem(
-            StringHolder(R.string.id_recovery_transaction_emails),
-            withSwitch = true
-        )
-        requestRecoveryTransactionsPreference = PreferenceListItem(
-            StringHolder(R.string.id_request_recovery_transactions)
-        )
-
-        twoFactorAuthenticationPreference = PreferenceListItem(
-            StringHolder(R.string.id_twofactor_authentication),
-            isInnerMenu = true,
-        )
-        pgpPreference =
-            PreferenceListItem(StringHolder(R.string.id_pgp_key))
-
-        versionPreference = PreferenceListItem(
-            StringHolder(R.string.id_version), StringHolder(
-                String.format(
-                    "%s %s",
-                    getString(R.string.app_name),
-                    getString(
-                        R.string.id_version_1s_2s,
-                        BuildConfig.VERSION_NAME,
-                        BuildConfig.BUILD_TYPE
-                    )
-                )
+        binding.composeView.apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
             )
-        )
-
-        updateAdapter()
-
-        val fastAdapter = FastAdapter.with(listOf(bannerAdapter, itemAdapter))
-
-        fastAdapter.onClickListener =
-            { _: View?, _: IAdapter<GenericItem>, iItem: GenericItem, _: Int ->
-                when (iItem) {
-                    logoutPreference -> {
-                        viewModel.logout(LogoutReason.USER_ACTION)
-                    }
-                    archivedAccountsPreference -> {
-                        navigate(
-                            WalletSettingsFragmentDirections.actionGlobalArchivedAccountsFragment(
-                                wallet = args.wallet
-                            )
-                        )
-                    }
-                    supportIdPreference -> {
-                        copyToClipboard("SupportId", session.supportId(), requireContext())
-                        snackbar(R.string.id_copied_to_clipboard)
-                    }
-                    watchOnlyPreference -> {
-                        navigate(
-                            WalletSettingsFragmentDirections.actionWalletSettingsFragmentToWatchOnlyFragment(
-                                wallet
-                            )
-                        )
-                    }
-                    changePinPreference -> {
-                        navigate(
-                            WalletSettingsFragmentDirections.actionWalletSettingsFragmentToChangePinFragment(
-                                wallet
-                            )
-                        )
-                    }
-                    multisigBitcoinPreference -> {
-                        navigate(
-                            WalletSettingsFragmentDirections.actionWalletSettingsFragmentSelf(
-                                wallet = wallet,
-                                network = session.bitcoinMultisig
-                            )
-                        )
-                    }
-                    multisigLiquidPreference -> {
-                        navigate(
-                            WalletSettingsFragmentDirections.actionWalletSettingsFragmentSelf(
-                                wallet = wallet,
-                                network = session.liquidMultisig
-                            )
-                        )
-                    }
-                    recoveryPreference -> {
-                        navigate(
-                            WalletSettingsFragmentDirections.actionWalletSettingsFragmentToRecoveryIntroFragment(
-                                setupArgs = SetupArgs(mnemonic = "", greenWallet = wallet, isShowRecovery = true)
-                            )
-                        )
-                    }
-                    setupEmailRecoveryTransactionsPreference -> {
-                        navigate(
-                            WalletSettingsFragmentDirections.actionWalletSettingsFragmentToTwoFactorSetupFragment(
-                                wallet = wallet,
-                                method = TwoFactorMethod.EMAIL,
-                                action = TwoFactorSetupAction.SETUP_EMAIL,
-                                network = network
-                            )
-                        )
-                    }
-                    recoveryTransactionEmailsPreference -> {
-                        toggleRecoveryTransactionsEmails(network)
-                    }
-                    requestRecoveryTransactionsPreference -> {
-                        viewModel.sendNlocktimes(network)
-                    }
-                    twoFactorAuthenticationPreference -> {
-                        navigate(
-                            WalletSettingsFragmentDirections.actionWalletSettingsFragmentToTwoFractorAuthenticationFragment(
-                                wallet = wallet
-                            )
-                        )
-                    }
-                    denominationAndExchangeRatePreference -> {
-                        showDenominationAndExchangeRateDialog {
-                            // Update Limits as changing exchange reference can also change limits
-                            viewModel.updateTwoFactorConfig()
-                        }
-                    }
-                    altTimeoutPreference -> {
-                        handleAltTimeout()
-                    }
-                    pgpPreference -> {
-                        handlePGP()
-                    }
-                    biometricsPreference -> {
-                        if (viewModel.biometricsLiveData.value == null) {
-                            enableBiometrics()
-                        } else {
-                            viewModel.removeBiometrics()
-                        }
-                    }
-                    versionPreference -> {
-                        navigate(
-                            NavGraphDirections.actionGlobalAboutFragment()
-                        )
-                    }
-                    else -> {
-
-                    }
-                }
-                true
-            }
-
-        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.buttonOutline }) { _, _, _, _ ->
-            openBrowser(Urls.HELP_NLOCKTIMES)
-        }
-
-        binding.recycler.apply {
-            itemAnimator = SlideDownAlphaAnimator()
-            adapter = fastAdapter
-        }
-
-        viewModel.onError.observe(viewLifecycleOwner) {
-            it?.getContentIfNotHandledOrReturnNull()?.let {
-                errorDialog(it)
-            }
-        }
-
-
-        (if(networkOrNull == null){
-            viewModel.prominentNetworkSettings
-        }else{
-            viewModel.networkSettingsLiveData(network)
-        }).observe(viewLifecycleOwner) {
-            it?.let {
-
-                denominationAndExchangeRatePreference.subtitle = StringHolder(colorText(
-                    getString(
-                        R.string.id_display_values_in_s_and,
-                        getBitcoinOrLiquidUnit(session = session),
-                        it.pricing.currency,
-                        it.pricing.exchange
-                    ),
-                    R.color.color_on_surface_emphasis_medium,
-                    R.color.white,
-                    getBitcoinOrLiquidUnit(session = session),
-                    it.pricing.currency,
-                    it.pricing.exchange
-                ))
-
-                altTimeoutPreference.subtitle = StringHolder(
-                    if (it.altimeout == 1) "1 " + getString(R.string.id_minute) else getString(
-                        R.string.id_1d_minutes,
-                        it.altimeout
-                    )
-                )
-
-                notifyDataSetChanged()
-            }
-        }
-
-        session.activeMultisig.firstOrNull()?.also {
-            viewModel.networkSettingsLiveData(it).observe(viewLifecycleOwner) {
-                pgpPreference.subtitle = if (it.pgp.isNullOrBlank()) StringHolder(R.string.id_add_a_pgp_public_key_to_receive) else StringHolder(null)
-                fastAdapter.getItemById(pgpPreference.identifier)?.let {
-                    it.second?.let { it1 -> fastAdapter.notifyAdapterItemChanged(it1) }
+            setContent {
+                AppFragmentBridge {
+                    WalletSettingsScreen(viewModel = viewModel)
                 }
             }
-        }
-
-        if (args.showRecoveryTransactions) {
-            viewModel.networkSettingsLiveData(network).observe(viewLifecycleOwner) {
-                recoveryTransactionEmailsPreference.switchChecked =
-                    it.notifications?.emailIncoming == true
-            }
-        }
-
-        viewModel.biometricsLiveData.distinctUntilChanged().observe(viewLifecycleOwner) {
-            biometricsPreference.switchChecked = it != null
-            updateBiometricsSubtitle()
-            notifyDataSetChanged()
-        }
-
-        session.activeSessions.forEach {
-            viewModel.networkTwoFactorConfigLiveData(it).observe(viewLifecycleOwner) {
-                // use updateAdapter as we show/hide elements related to twofactorconfig eg. set recovery email
-                updateAdapter()
-            }
-        }
-
-        viewModel.archivedAccountsLiveData.observe(viewLifecycleOwner){
-            archivedAccountsPreference.subtitle = viewModel.archivedAccounts.let {
-                StringHolder(if(it > 0)  "(${it})" else null)
-            }
-        }
-    }
-
-    private fun updateBiometricsSubtitle() {
-        val canUseBiometrics = androidKeystore.canUseBiometrics()
-
-        biometricsPreference.subtitle = StringHolder(
-            if (canUseBiometrics) {
-                if (viewModel.biometricsLiveData.value == null) {
-                    getString(R.string.id_biometric_login_is_disabled)
-                } else {
-                    getString(R.string.id_biometric_login_is_enabled)
-                }
-            } else {
-                getString(R.string.id_a_screen_lock_must_be_enabled)
-            }
-        )
-
-        biometricsPreference.isEnabled = canUseBiometrics
-    }
-
-    private fun updateAdapter() {
-        // val isLiquid = wallet.isLiquid
-        //val twoFactorConfig = viewModel.twoFactorConfigLiveData.value
-
-        val list = mutableListOf<GenericItem>()
-
-        val hasMultisig = session.activeBitcoinMultisig != null || session.activeLiquidMultisig != null
-
-        if(networkOrNull != null){
-            if (args.showRecoveryTransactions) {
-                list += ActionListItem(
-                    message = StringHolder(R.string.id_if_you_have_some_coins_on_the),
-                    buttonOutline = StringHolder(R.string.id_more_info)
-                )
-
-                val twoFactorConfig = viewModel.networkTwoFactorConfigLiveData(network).value
-
-                if (twoFactorConfig?.email?.confirmed == false) {
-                    list += setupEmailRecoveryTransactionsPreference
-                } else {
-                    list += recoveryTransactionEmailsPreference
-                    list += requestRecoveryTransactionsPreference
-                }
-
-            } else {
-                val is2faReset = session.getTwoFactorReset(network)?.isActive == true
-                if (is2faReset) {
-                    // TODO cancel 2fa
-                } else {
-
-                }
-            }
-        } else {
-            list += logoutPreference
-
-            if (session.isWatchOnly) {
-                // General
-                list += TitleListItem(StringHolder(R.string.id_general))
-                list += denominationAndExchangeRatePreference
-
-                // Security
-                list += TitleListItem(StringHolder(R.string.id_security))
-                list += altTimeoutPreference
-
-            } else if (!session.isLightningShortcut) {
-                // General
-                list += TitleListItem(StringHolder(R.string.id_general))
-                list += denominationAndExchangeRatePreference
-
-                list += archivedAccountsPreference
-
-                // No support for Liquid Singlesig yet
-                if (session.activeSessions.firstOrNull { (it.isMultisig || (it.isSinglesig && it.isBitcoin)) } != null && !session.isLightningShortcut) {
-                    // Disable it until is supported by GDK
-                    list += watchOnlyPreference
-                }
-
-                // Security
-                list += TitleListItem(StringHolder(R.string.id_security))
-
-                if (!wallet.isEphemeral && !wallet.isHardware) {
-                    list += changePinPreference
-                    list += biometricsPreference
-                }
-
-                if (hasMultisig) {
-                    list += twoFactorAuthenticationPreference
-                    list += pgpPreference
-                }
-
-                list += altTimeoutPreference
-
-                if(session.activeBitcoinMultisig != null || !session.isHardwareWallet) {
-                    list += TitleListItem(StringHolder(R.string.id_recovery))
-
-                    if (!session.isHardwareWallet) {
-                        list += recoveryPreference
-                    }
-                }
-            }
-
-            list += TitleListItem(StringHolder(R.string.id_about))
-
-            list += versionPreference
-
-            if(hasMultisig || session.hasLightning) {
-                list += supportIdPreference
-            }
-        }
-
-        updateBiometricsSubtitle()
-
-        FastAdapterDiffUtil.set(itemAdapter, list, true)
-    }
-
-    override fun getWalletViewModel(): AbstractWalletViewModel = viewModel
-    
-    private fun notifyDataSetChanged() {
-        binding.recycler.adapter?.notifyDataSetChanged()
-    }
-
-    private fun handlePGP() {
-        viewModel.networkSettingsLiveData(session.activeMultisig.first()).value?.let { settings ->
-            val dialogBinding = EditTextDialogBinding.inflate(LayoutInflater.from(context))
-            dialogBinding.text = settings.pgp
-            dialogBinding.textInputLayout.endIconCustomMode()
-
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.id_pgp_key)
-                .setView(dialogBinding.root)
-                .setPositiveButton(android.R.string.ok) { _, _ ->
-                    viewModel.savePGP(dialogBinding.text?.trim())
-                }
-                .setNegativeButton(android.R.string.cancel, null)
-                .show()
-        }
-    }
-
-    private fun toggleRecoveryTransactionsEmails(network: Network) {
-        viewModel.networkSettingsLiveData(network).value?.let { settings ->
-            settings.notifications?.let { notifications ->
-                val toggled = !notifications.emailIncoming
-                viewModel.saveNetworkSettings(network, settings.copy(
-                    notifications = SettingsNotification(
-                        emailIncoming = toggled,
-                        emailOutgoing = toggled
-                    )
-                ))
-            }
-        }
-    }
-
-    private fun handleAltTimeout() {
-        viewModel.prominentNetworkSettings.value?.let { settings ->
-            val values = resources.getStringArray(R.array.auto_logout_values)
-            val entries: Array<CharSequence> = values.map {
-                val minutes = Integer.valueOf(it)
-                if (minutes == 1) "1 " + getString(R.string.id_minute) else getString(
-                    R.string.id_1d_minutes,
-                    minutes
-                )
-            }.toTypedArray()
-
-            showChoiceDialog(
-                getString(R.string.id_auto_logout_timeout), entries, values.indexOf(
-                    settings.altimeout.toString()
-                )
-            ) {
-                val altimeout = values[it].toInt()
-                viewModel.saveGlobalSettings(settings.copy(altimeout = altimeout))
-            }
-        }
-    }
-
-    private fun enableBiometrics(onlyDeviceCredentials: Boolean = false) {
-
-        if (androidKeystore.isBiometricsAuthenticationRequired()) {
-            authenticateWithBiometrics(object : AuthenticationCallback(fragment = this) {
-                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    enableBiometrics(onlyDeviceCredentials = true)
-                }
-            }, onlyDeviceCredentials = onlyDeviceCredentials)
-            return
-        }
-
-        val promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle(getString(R.string.id_login_with_biometrics))
-            .setDescription(getString(R.string.id_green_uses_biometric))
-            .setNegativeButtonText(getString(R.string.id_cancel))
-            .setConfirmationRequired(true)
-            .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
-
-        val biometricPrompt = BiometricPrompt(
-            this,
-            ContextCompat.getMainExecutor(requireContext()),
-            object : AuthenticationCallback(fragment = this) {
-                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    result.cryptoObject?.cipher?.let {
-                        viewModel.enableBiometrics(it)
-                    }
-                }
-            })
-
-        try {
-            biometricPrompt.authenticate(
-                promptInfo.build(),
-                BiometricPrompt.CryptoObject(androidKeystore.getBiometricsEncryptionCipher(recreateKeyIfNeeded = true))
-            )
-        } catch (e: InvalidAlgorithmParameterException) {
-            // At least one biometric must be enrolled
-            errorDialog(getString(R.string.id_please_activate_at_least_one))
-        } catch (e: Exception) {
-            errorDialog(e)
         }
     }
 }

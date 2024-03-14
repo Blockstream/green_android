@@ -10,9 +10,14 @@ import com.blockstream.compose.theme.whiteHigh
 import kotlin.math.max
 import kotlin.math.min
 
-fun colorText(text: String, coloredTexts: List<String>, color: Color = md_theme_primary): AnnotatedString {
+fun colorText(
+    text: String,
+    coloredTexts: List<String>,
+    baseColor: Color = whiteHigh,
+    color: Color = md_theme_primary
+): AnnotatedString {
     return buildAnnotatedString {
-        withStyle(style = SpanStyle(color = whiteHigh)){
+        withStyle(style = SpanStyle(color = baseColor)){
             append(text)
         }
 

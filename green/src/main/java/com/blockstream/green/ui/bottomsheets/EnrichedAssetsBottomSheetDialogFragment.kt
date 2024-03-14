@@ -8,7 +8,6 @@ import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.items.AssetListItem
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.GenericFastItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
@@ -21,7 +20,7 @@ import kotlinx.coroutines.withContext
 class EnrichedAssetsBottomSheetDialogFragment : FilterBottomSheetDialogFragment(), FilterableDataProvider {
 
     val session: GdkSession
-        get() = (requireParentFragment() as? AbstractWalletFragment<*>)?.getWalletViewModel()?.session ?: (requireParentFragment() as AppFragment<*>).getGreenViewModel()!!.session
+        get() = (requireParentFragment() as AppFragment<*>).getGreenViewModel()!!.session
 
     override val withDivider: Boolean = false
 

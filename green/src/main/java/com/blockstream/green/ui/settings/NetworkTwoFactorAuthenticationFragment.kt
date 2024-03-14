@@ -4,35 +4,36 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
-import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.Urls
 import com.blockstream.common.data.Denomination
+import com.blockstream.common.data.TwoFactorMethod
+import com.blockstream.common.data.TwoFactorSetupAction
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.settings.WalletSettingsSection
+import com.blockstream.common.models.settings.WalletSettingsViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.UserInput
 import com.blockstream.green.R
-import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.databinding.CustomTitleDialogBinding
 import com.blockstream.green.databinding.ListItemActionBinding
 import com.blockstream.green.databinding.SettingsLimitsDialogBinding
 import com.blockstream.green.databinding.WalletSettingsFragmentBinding
 import com.blockstream.green.extensions.clearNavigationResult
 import com.blockstream.green.extensions.endIconCustomMode
-import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.getNavigationResult
 import com.blockstream.green.extensions.localized2faMethods
 import com.blockstream.green.gdk.getNetworkIcon
+import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.bottomsheets.TwoFactorResetBottomSheetDialogFragment
 import com.blockstream.green.ui.items.ActionListItem
 import com.blockstream.green.ui.items.PreferenceListItem
 import com.blockstream.green.ui.items.TitleListItem
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.AmountTextWatcher
 import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.getBitcoinOrLiquidUnit
@@ -53,11 +54,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class NetworkTwoFactorAuthenticationFragment :
-    AbstractWalletFragment<WalletSettingsFragmentBinding>(R.layout.wallet_settings_fragment, 0) {
+    AppFragment<WalletSettingsFragmentBinding>(R.layout.wallet_settings_fragment, 0) {
     val args: TwoFactorAuthenticationFragmentArgs by navArgs()
-    override val walletOrNull by lazy { args.wallet }
-
-    override val screenName = "WalletSettings2FA"
 
     private val itemAdapter = ItemAdapter<GenericItem>()
 
@@ -93,7 +91,7 @@ class NetworkTwoFactorAuthenticationFragment :
         get() = network.getNetworkIcon()
 
     val viewModel: WalletSettingsViewModel by viewModel {
-        parametersOf(args.wallet)
+        parametersOf(args.wallet, args.network, WalletSettingsSection.TwoFactor )
     }
 
     override fun handleSideEffect(sideEffect: SideEffect) {
@@ -103,10 +101,11 @@ class NetworkTwoFactorAuthenticationFragment :
         }
     }
 
-    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         getNavigationResult<Boolean>(key = network.id)?.observe(viewLifecycleOwner) {
             it?.let {
-                viewModel.updateTwoFactorConfig(network)
                 clearNavigationResult(key = network.id)
             }
         }
@@ -131,7 +130,7 @@ class NetworkTwoFactorAuthenticationFragment :
 
         fastAdapter.onClickListener =
             { _: View?, _: IAdapter<GenericItem>, item: GenericItem, _: Int ->
-                viewModel.networkTwoFactorConfigLiveData(network).value?.let {
+                viewModel.session.twoFactorConfig(network).value?.let {
                     when (item) {
                         emailPreference -> {
                             if (it.email.enabled) {
@@ -180,29 +179,27 @@ class NetworkTwoFactorAuthenticationFragment :
                         recoveryTransactionsPreference -> {
                             navigate(
                                     TwoFactorAuthenticationFragmentDirections.actionTwoFractorAuthenticationFragmentToWalletSettingsFragment(
-                                    wallet = wallet,
+                                    wallet = viewModel.greenWallet,
                                     showRecoveryTransactions = true,
-                                    network = session.bitcoinMultisig!!
+                                    network = viewModel.session.bitcoinMultisig!!
                                 )
                             )
                         }
 
                         else -> {
                             if (csvBucketPreferences.contains(item)) {
-                                csvBucketPreferences.forEach { pref ->
-                                    pref.radioChecked = pref == item
-                                    fastAdapter.notifyItemChanged(fastAdapter.getPosition(pref))
-                                }
 
-                                val selectedIndex = csvBucketPreferences.indexOfFirst { it.radioChecked }
-                                if (selectedIndex > -1) {
-                                    val csvTime = network.csvBuckets[selectedIndex]
-                                    viewModel.setCsvTime(
-                                        network,
-                                        csvTime,
-                                        DialogTwoFactorResolver(this)
-                                    )
-                                }
+
+                                csvBucketPreferences.indexOf(item).takeIf { index -> index != -1 }
+                                    ?.let { index -> network.csvBuckets.getOrNull(index) }
+                                    ?.also { csvTime ->
+                                        viewModel.postEvent(
+                                            WalletSettingsViewModel.LocalEvents.SetCsvTime(
+                                                csvTime,
+                                                DialogTwoFactorResolver(this)
+                                            )
+                                        )
+                                    }
                             }
                         }
                     }
@@ -212,11 +209,11 @@ class NetworkTwoFactorAuthenticationFragment :
 
         fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.button }) { _, _, _, _ ->
             // Recovery tool
-            if(session.walletExistsAndIsUnlocked(network)){
+            if(viewModel.session.walletExistsAndIsUnlocked(network)){
                 openBrowser(settingsManager.getApplicationSettings(), Urls.RECOVERY_TOOL)
             }else{
                 // 2FA Reset
-                session.getTwoFactorReset(network)?.also {
+                viewModel.session.getTwoFactorReset(network)?.also {
                     TwoFactorResetBottomSheetDialogFragment.show(
                         network,
                         it,
@@ -231,17 +228,10 @@ class NetworkTwoFactorAuthenticationFragment :
             adapter = fastAdapter
         }
 
-        viewModel.onError.observe(viewLifecycleOwner) { event ->
-            event?.getContentIfNotHandledOrReturnNull()?.let {
-                errorDialog(it)
-                updateAdapter()
-            }
-        }
-
         // Update when both available
         combine(
-            viewModel.networkSettingsLiveData(network).asFlow(),
-            viewModel.networkTwoFactorConfigLiveData(network).asFlow()
+            viewModel.session.settings(network),
+            viewModel.session.twoFactorConfig(network)
         ) { settings, twoFactorConfig ->
             settings to twoFactorConfig
         }.onEach {
@@ -250,22 +240,19 @@ class NetworkTwoFactorAuthenticationFragment :
     }
 
     private fun updateAdapter() {
-        val settings = viewModel.networkSettings(network)
-        val twoFactorConfig = viewModel.networkTwoFactorConfig(network)
-        
+        val settings = viewModel.session.settings(network).value
+        val twoFactorConfig = viewModel.session.twoFactorConfig(network).value
+
         if (settings == null || twoFactorConfig == null) {
             if (settings == null) {
-                session.updateSettings(network)
-            }
-            if (twoFactorConfig == null) {
-                viewModel.updateTwoFactorConfig(network)
+                viewModel.session.updateSettings(network)
             }
             return
         }
 
 
         val list = mutableListOf<GenericItem>()
-        if(session.walletExistsAndIsUnlocked(network)) {
+        if(viewModel.session.walletExistsAndIsUnlocked(network)) {
             list += TitleListItem(StringHolder(R.string.id_2fa_methods))
 
             twoFactorConfig.allMethods.also { methods ->
@@ -322,7 +309,7 @@ class NetworkTwoFactorAuthenticationFragment :
                                 limits.fiat
                             } else {
                                 limits.toAmountLook(
-                                    session = session
+                                    session = viewModel.session
                                 )
                             }
                         }
@@ -348,13 +335,13 @@ class NetworkTwoFactorAuthenticationFragment :
                 button = StringHolder(R.string.id_recovery_tool)
             )
 
-            if(network.isBitcoin && session.walletExistsAndIsUnlocked(network)) {
+            if(network.isBitcoin && viewModel.session.walletExistsAndIsUnlocked(network)) {
                 list += recoveryTransactionsPreference
             }
         }else{
             list += TitleListItem(StringHolder(R.string.id_2fa_reset_in_progress))
 
-            session.getTwoFactorReset(network)?.also {
+            viewModel.session.getTwoFactorReset(network)?.also {
                 list += ActionListItem(
                     message = StringHolder(getString(R.string.id_your_wallet_is_locked_for_a, it.daysRemaining)),
                     button = StringHolder(R.string.id_learn_more)
@@ -367,20 +354,20 @@ class NetworkTwoFactorAuthenticationFragment :
         itemAdapter.fastAdapter?.notifyAdapterDataSetChanged()
     }
 
-    override fun getWalletViewModel(): AbstractWalletViewModel = viewModel
+    override fun getGreenViewModel(): GreenViewModel = viewModel
 
     private fun handleTwoFactorThreshold() {
         val binding = SettingsLimitsDialogBinding.inflate(requireActivity().layoutInflater)
         binding.amountInputLayout.endIconCustomMode()
 
         // Warning, don't change the order of fiat and btc,
-        val currencies = listOf(getBitcoinOrLiquidUnit(session = session, assetId = network.policyAsset), getFiatCurrency(session))
+        val currencies = listOf(getBitcoinOrLiquidUnit(session = viewModel.session, assetId = network.policyAsset), getFiatCurrency(viewModel.session))
         val adapter =
             ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, currencies)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.currencySpinner.adapter = adapter
 
-        viewModel.networkTwoFactorConfig(network)?.limits?.let { limits ->
+        viewModel.session.twoFactorConfig(network).value?.limits?.let { limits ->
             // Deprecate setting fiat value if not already setup
             if(limits.isFiat){
                 binding.showFiat = true
@@ -390,9 +377,9 @@ class NetworkTwoFactorAuthenticationFragment :
                 // the amount themselves using GA_convert_amount if desired.
                 binding.amount = limits.fiat
             }else{
-                binding.currency = getBitcoinOrLiquidUnit(assetId = network.policyAsset, session = session)
+                binding.currency = getBitcoinOrLiquidUnit(assetId = network.policyAsset, session = viewModel.session)
                 binding.amount = limits.toAmountLook(
-                    session = session,
+                    session = viewModel.session,
                     withUnit = false
                 )
             }
@@ -408,11 +395,11 @@ class NetworkTwoFactorAuthenticationFragment :
                 try {
                     val isFiat = binding.currencySpinner.selectedItemPosition == 1
                     val input = UserInput.parseUserInputSafe(
-                        session = session,
+                        session = viewModel.session,
                         input = binding.amount.takeIf { it.isNotBlank() } ?: "0",
-                        denomination = Denomination.fiatOrNull(session, isFiat))
+                        denomination = Denomination.fiatOrNull(viewModel.session, isFiat))
 
-                    viewModel.setLimits(network, input.toLimit(), DialogTwoFactorResolver(this))
+                    viewModel.postEvent(WalletSettingsViewModel.LocalEvents.SetLimits(input.toLimit(), DialogTwoFactorResolver(this)))
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -424,7 +411,7 @@ class NetworkTwoFactorAuthenticationFragment :
     private fun enable2FA(method: TwoFactorMethod) {
         navigate(
             TwoFactorAuthenticationFragmentDirections.actionTwoFractorAuthenticationFragmentToTwoFactorSetupFragment(
-                wallet = wallet,
+                wallet = viewModel.greenWallet,
                 method = method,
                 action = TwoFactorSetupAction.SETUP,
                 network = network
@@ -433,7 +420,7 @@ class NetworkTwoFactorAuthenticationFragment :
     }
 
     private fun disable2FA(method: TwoFactorMethod) {
-        viewModel.networkTwoFactorConfigLiveData(network).value?.let {
+        viewModel.session.twoFactorConfig(network).value?.let {
             val binding = CustomTitleDialogBinding.inflate(requireActivity().layoutInflater)
 
             binding.title = getString(R.string.id_security_change)
@@ -445,10 +432,7 @@ class NetworkTwoFactorAuthenticationFragment :
             MaterialAlertDialogBuilder(requireContext())
                 .setCustomTitle(binding.root)
                 .setSingleChoiceItems(requireContext().localized2faMethods(methods).toTypedArray(), -1) { dialog, i: Int ->
-                    viewModel.disable2FA(network,
-                        method,
-                        DialogTwoFactorResolver(this, selectedMethod = methods[i])
-                    )
+                    viewModel.postEvent(WalletSettingsViewModel.LocalEvents.Disable2FA(method, DialogTwoFactorResolver(this, selectedMethod = methods[i])))
                     dialog.dismiss()
                 }
                 .setNegativeButton(android.R.string.cancel, null)
@@ -457,7 +441,7 @@ class NetworkTwoFactorAuthenticationFragment :
                         setNeutralButton(R.string.id_i_lost_my_2fa) { _: DialogInterface, _: Int ->
                             navigate(
                                 TwoFactorAuthenticationFragmentDirections.actionTwoFractorAuthenticationFragmentToTwoFactorSetupFragment(
-                                    wallet = wallet,
+                                    wallet = viewModel.greenWallet,
                                     action = TwoFactorSetupAction.RESET,
                                     network = network
                                 )
@@ -468,12 +452,5 @@ class NetworkTwoFactorAuthenticationFragment :
 
                 .show()
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        // Update the list in case we did enabled call using sms backup
-        viewModel.updateTwoFactorConfig(network = network)
     }
 }

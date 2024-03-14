@@ -90,8 +90,6 @@ fun RecoveryIntroScreen(
     val androidKeystore: AndroidKeystore =
         if (LocalInspectionMode.current) AndroidKeystore(context) else koinInject()
 
-
-
     val biometricsState = remember {
         BiometricsState(
             context = context,

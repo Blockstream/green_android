@@ -1,4 +1,4 @@
-package com.blockstream.compose.views
+package com.blockstream.compose.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
@@ -37,9 +37,6 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.blockstream.common.data.NavAction
 import com.blockstream.common.data.NavData
 import com.blockstream.compose.LocalAppBarState
-import com.blockstream.compose.components.MenuEntry
-import com.blockstream.compose.components.PopupMenu
-import com.blockstream.compose.components.PopupState
 import com.blockstream.compose.screens.HomeScreen
 import com.blockstream.compose.screens.login.LoginScreen
 import com.blockstream.compose.screens.overview.WalletOverviewScreen

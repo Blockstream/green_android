@@ -2,7 +2,10 @@ package com.blockstream.common.navigation
 
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SetupArgs
+import com.blockstream.common.data.TwoFactorMethod
+import com.blockstream.common.data.TwoFactorSetupAction
 import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.Network
 
 interface NavigateDestination
 sealed class NavigateDestinations : NavigateDestination {
@@ -11,10 +14,10 @@ sealed class NavigateDestinations : NavigateDestination {
     object SetupNewWallet : NavigateDestination
     object AddWallet : NavigateDestination
     object UseHardwareDevice : NavigateDestination
-    data class RecoveryIntro(val args: SetupArgs) : NavigateDestination
+
     object NewWatchOnlyWallet : NavigateDestination
     data class EnterRecoveryPhrase(val args: SetupArgs) : NavigateDestination
-
+    data class RecoveryIntro(val args: SetupArgs) : NavigateDestination
     data class RecoveryWords(val args: SetupArgs) : NavigateDestination
 
     data class RecoveryCheck(val args: SetupArgs) : NavigateDestination
@@ -46,10 +49,24 @@ sealed class NavigateDestinations : NavigateDestination {
 
     data class DeleteWallet(val greenWallet: GreenWallet) : NavigateDestination
     data class Bip39Passphrase(val greenWallet: GreenWallet, val passphrase: String) : NavigateDestination
+    data class WalletSettings(val greenWallet: GreenWallet) : NavigateDestination
+    data class ArchivedAccounts(val greenWallet: GreenWallet) : NavigateDestination
+    data class WatchOnly(val greenWallet: GreenWallet) : NavigateDestination
+    data class ChangePin(val greenWallet: GreenWallet) : NavigateDestination
+    data class TwoFactorAuthentication(val greenWallet: GreenWallet) : NavigateDestination
+    data class TwoFactorSetup(
+        val greenWallet: GreenWallet,
+        val method: TwoFactorMethod,
+        val action: TwoFactorSetupAction,
+        val network: Network
+    ) : NavigateDestination
 
     data class Send(
         val greenWallet: GreenWallet,
         val accountAsset: AccountAsset,
+        val isSweep: Boolean = false,
+        val address: String? = null,
+        val assetId: String? = null,
         val bumpTransaction: String? = null
     ) : NavigateDestination
 
@@ -59,4 +76,6 @@ sealed class NavigateDestinations : NavigateDestination {
         val isSendAll: Boolean = false,
         val address: String? = null,
     ) : NavigateDestination
+
+    data class Receive(val greenWallet: GreenWallet, val accountAsset: AccountAsset) : NavigateDestination
 }

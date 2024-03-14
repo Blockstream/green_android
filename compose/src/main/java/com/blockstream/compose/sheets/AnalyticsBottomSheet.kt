@@ -49,7 +49,7 @@ import com.blockstream.compose.navigation.resultKey
 import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.utils.HandleSideEffect
-import com.blockstream.compose.views.GreenBottomSheet
+import com.blockstream.compose.components.GreenBottomSheet
 
 
 object AnalyticsBottomSheet : BottomScreen() {

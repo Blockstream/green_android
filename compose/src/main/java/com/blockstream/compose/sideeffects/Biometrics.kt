@@ -11,10 +11,10 @@ import androidx.compose.runtime.Stable
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.blockstream.common.database.LoginCredentials
+import com.blockstream.common.events.Events
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.login.LoginViewModel
 import com.blockstream.common.models.login.LoginViewModelAbstract
-import com.blockstream.common.models.onboarding.watchonly.WatchOnlyCredentialsViewModel
-import com.blockstream.common.models.onboarding.watchonly.WatchOnlyCredentialsViewModelAbstract
 import com.blockstream.common.utils.AndroidKeystore
 import com.blockstream.common.utils.Loggable
 import com.blockstream.compose.R
@@ -183,7 +183,7 @@ data class BiometricsState constructor(
         }
     }
 
-    fun getBiometricsCipher(viewModel: WatchOnlyCredentialsViewModelAbstract, onlyDeviceCredentials: Boolean = false) {
+    fun getBiometricsCipher(viewModel: GreenViewModel, onlyDeviceCredentials: Boolean = false) {
 
         if (androidKeystore.isBiometricsAuthenticationRequired()) {
             authenticateWithBiometrics(object : AuthenticationCallback(state = this@BiometricsState) {
@@ -209,9 +209,9 @@ data class BiometricsState constructor(
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     super.onAuthenticationSucceeded(result)
                     result.cryptoObject?.cipher?.also {
-                        viewModel.postEvent(WatchOnlyCredentialsViewModel.LocalEvents.ProvideCipher(platformCipher = it))
+                        viewModel.postEvent(Events.ProvideCipher(platformCipher = it))
                     } ?: kotlin.run {
-                        viewModel.postEvent(WatchOnlyCredentialsViewModel.LocalEvents.ProvideCipher(exception = Exception("No Cipher Provided")))
+                        viewModel.postEvent(Events.ProvideCipher(exception = Exception("No Cipher Provided")))
                     }
                 }
 
@@ -221,7 +221,7 @@ data class BiometricsState constructor(
                     } else {
                         Exception(context.getString(R.string.id_authentication_error_s, "$errorCode $errString"))
                     }).also {
-                        viewModel.postEvent(WatchOnlyCredentialsViewModel.LocalEvents.ProvideCipher(exception = it))
+                        viewModel.postEvent(Events.ProvideCipher(exception = it))
                     }
                 }
             })

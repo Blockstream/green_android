@@ -1,4 +1,4 @@
-package com.blockstream.compose.screens.transaction
+package com.blockstream.compose.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

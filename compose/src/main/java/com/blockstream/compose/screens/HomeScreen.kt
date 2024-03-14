@@ -38,6 +38,7 @@ import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
 import com.blockstream.compose.components.AboutButton
 import com.blockstream.compose.components.AppSettingsButton
+import com.blockstream.compose.components.Banner
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.extensions.colorText
@@ -45,14 +46,11 @@ import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.navigation.getNavigationResult
 import com.blockstream.compose.navigation.resultKey
 import com.blockstream.compose.sheets.AnalyticsBottomSheet
-import com.blockstream.compose.sheets.BottomSheetNavigatorM3
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
-import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.displayLarge
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
-import com.blockstream.compose.views.BannerView
 
 object HomeScreen : Screen {
 
@@ -97,7 +95,7 @@ fun HomeScreen(
                 .align(Alignment.CenterHorizontally)
         )
 
-        BannerView(viewModel)
+        Banner(viewModel)
 
         val isEmptyWallet by viewModel.isEmptyWallet.collectAsStateWithLifecycle()
 

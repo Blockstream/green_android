@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @Parcelize
-data class SetupArgs(
+data class SetupArgs constructor(
     val mnemonic: String = "",
     val password: String? = null,
     val isRestoreFlow: Boolean = false,

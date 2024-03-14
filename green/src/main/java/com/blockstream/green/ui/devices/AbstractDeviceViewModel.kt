@@ -9,14 +9,14 @@ import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.DeviceBrand
 import com.blockstream.common.managers.DeviceManager
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.ConsumableEvent
-import com.blockstream.green.data.AppEvent
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceConnectionManager
 import com.blockstream.green.devices.DeviceManagerAndroid
 import com.blockstream.green.devices.HardwareConnectInteraction
-import com.blockstream.green.ui.AppViewModelAndroid
 import com.blockstream.green.utils.QATester
 import com.greenaddress.greenbits.wallets.FirmwareFileData
 import com.greenaddress.greenbits.wallets.FirmwareUpgradeRequest
@@ -31,23 +31,28 @@ abstract class AbstractDeviceViewModel constructor(
     val deviceManager: DeviceManager,
     val qaTester: QATester,
     val walletOrNull: GreenWallet?
-) : AppViewModelAndroid(), HardwareConnectInteraction, HwWalletLogin {
+) : GreenViewModel(), HardwareConnectInteraction, HwWalletLogin {
 
     protected var proceedToLogin: Boolean = false
 
     var requestNetworkEmitter: CompletableDeferred<Network?>? = null
-    sealed class DeviceEvent : AppEvent {
-        data class RequestPin(val deviceBrand: DeviceBrand) : DeviceEvent()
-        object RequestNetwork: DeviceEvent()
+
+    val firmwareState = MutableStateFlow<SideEffect?>(null)
+
+    class LocalSideEffects {
+        data class RequestPin(val deviceBrand: DeviceBrand) : SideEffect
+        object RequestNetwork: SideEffect
         data class AskForFirmwareUpgrade(
             val request: FirmwareUpgradeRequest
-        ) : DeviceEvent()
+        ) : SideEffect
 
-        data class FirmwarePushedToDevice(val firmwareFileData: FirmwareFileData, val hash: String) : DeviceEvent()
+        data class FirmwarePushedToDevice(val firmwareFileData: FirmwareFileData, val hash: String) : SideEffect
 
-        data class FirmwareUpdateProgress(val written: Int, val totalSize: Int): DeviceEvent()
+        data class FirmwareUpdateProgress(val written: Int, val totalSize: Int): SideEffect
 
-        data class FirmwareUpdateComplete(val success: Boolean): DeviceEvent()
+        data class FirmwareUpdateComplete(val success: Boolean): SideEffect
+
+        object RequestWalletIsDifferent : SideEffect
     }
 
     abstract val deviceConnectionManagerOrNull : DeviceConnectionManager?
@@ -73,7 +78,7 @@ abstract class AbstractDeviceViewModel constructor(
     }
 
     override fun showError(err: String) {
-        onError.postValue(ConsumableEvent(Exception(err)))
+        postSideEffect(SideEffects.ErrorSnackbar(Exception(err)))
     }
 
     override fun showInstructions(resId: Int) {
@@ -94,7 +99,7 @@ abstract class AbstractDeviceViewModel constructor(
     ): Deferred<Int?> {
         return CompletableDeferred<Int?>().also {
             askForFirmwareUpgradeEmitter = it
-            onEvent.postValue(ConsumableEvent(DeviceEvent.AskForFirmwareUpgrade(firmwareUpgradeRequest)))
+            postSideEffect(LocalSideEffects.AskForFirmwareUpgrade(firmwareUpgradeRequest))
         }
     }
 
@@ -108,7 +113,7 @@ abstract class AbstractDeviceViewModel constructor(
     }
 
     override fun requestPinBlocking(deviceBrand: DeviceBrand): String {
-        onEvent.postValue(ConsumableEvent(DeviceEvent.RequestPin(deviceBrand)))
+        postSideEffect(LocalSideEffects.RequestPin(deviceBrand))
 
         return CompletableDeferred<String>().also {
             requestPinEmitter = it
@@ -124,20 +129,20 @@ abstract class AbstractDeviceViewModel constructor(
     override fun requestNetwork(): Network? {
         requestNetworkEmitter = CompletableDeferred()
 
-        onEvent.postValue(ConsumableEvent(DeviceEvent.RequestNetwork))
+        postSideEffect(LocalSideEffects.RequestNetwork)
 
         return runBlocking { requestNetworkEmitter!!.await() }
     }
 
     override fun firmwarePushedToDevice(firmwareFileData: FirmwareFileData, hash: String) {
-        onEvent.postValue(ConsumableEvent(DeviceEvent.FirmwarePushedToDevice(firmwareFileData, hash)))
+        postSideEffect(LocalSideEffects.FirmwarePushedToDevice(firmwareFileData, hash))
         device?.also {
             countly.jadeOtaStart(it, firmwareFileData.image.config, firmwareFileData.image.patchSize != null, firmwareFileData.image.version)
         }
     }
 
     override fun firmwareProgress(written: Int, totalSize: Int) {
-        onEvent.postValue(ConsumableEvent(DeviceEvent.FirmwareUpdateProgress(written, totalSize)))
+        postSideEffect(LocalSideEffects.FirmwareUpdateProgress(written, totalSize))
     }
 
     override fun firmwareComplete(success: Boolean, firmwareFileData: FirmwareFileData) {
@@ -147,7 +152,7 @@ abstract class AbstractDeviceViewModel constructor(
             it.updateFirmwareVersion(firmwareFileData.image.version)
         }
 
-        onEvent.postValue(ConsumableEvent(DeviceEvent.FirmwareUpdateComplete(success)))
+        postSideEffect(LocalSideEffects.FirmwareUpdateComplete(success))
         if(success) {
             device?.also {
                 countly.jadeOtaComplete(it, firmwareFileData.image.config, firmwareFileData.image.patchSize != null, firmwareFileData.image.version)

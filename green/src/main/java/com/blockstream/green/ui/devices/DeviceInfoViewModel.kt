@@ -51,6 +51,8 @@ class DeviceInfoViewModel constructor(
         if(device.gdkHardwareWallet == null){
             connectDevice(context)
         }
+
+        bootstrap()
     }
 
     private fun connectDevice(context: Context) {
@@ -63,7 +65,7 @@ class DeviceInfoViewModel constructor(
     fun authenticateAndContinue(jadeFirmwareManager: JadeFirmwareManager? = null){
         val gdkHardwareWallet = device.gdkHardwareWallet ?: return
 
-        doUserAction({
+        doAsync({
             // Authenticate device if needed
             deviceConnectionManager.authenticateDeviceIfNeeded(gdkHardwareWallet = gdkHardwareWallet, jadeFirmwareManager = jadeFirmwareManager)
 
@@ -79,7 +81,7 @@ class DeviceInfoViewModel constructor(
             if(previousSession != null){
                 // Session already setup
                 previousSession.getWallet(database, sessionManager)?.also {
-                    return@doUserAction it
+                    return@doAsync it
                 }
             }
 

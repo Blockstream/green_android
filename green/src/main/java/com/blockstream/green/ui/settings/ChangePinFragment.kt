@@ -4,35 +4,35 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.navigation.fragment.navArgs
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.settings.WalletSettingsSection
+import com.blockstream.common.models.settings.WalletSettingsViewModel
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ChangePinFragmentBinding
-import com.blockstream.green.extensions.errorDialog
-import com.blockstream.green.ui.wallet.AbstractWalletFragment
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
+import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.views.GreenPinViewListener
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class ChangePinFragment : AbstractWalletFragment<ChangePinFragmentBinding>(R.layout.change_pin_fragment, menuRes = 0) {
+class ChangePinFragment : AppFragment<ChangePinFragmentBinding>(R.layout.change_pin_fragment, menuRes = 0) {
 
     val args : WalletSettingsFragmentArgs by navArgs()
-    override val walletOrNull by lazy { args.wallet }
-
-    override val screenName = "WalletSettingsChangePIN"
 
     val viewModel: WalletSettingsViewModel by viewModel {
-        parametersOf(args.wallet)
+        parametersOf(args.wallet, null, WalletSettingsSection.ChangePin)
     }
 
-    override fun getWalletViewModel(): AbstractWalletViewModel = viewModel
+    override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         binding.vm = viewModel
 
         binding.pinView.isVerifyMode = true
         binding.pinView.listener = object : GreenPinViewListener{
             override fun onPin(pin: String) {
-                viewModel.changePin(pin)
+                viewModel.postEvent(WalletSettingsViewModel.LocalEvents.SetPin(pin = pin))
             }
 
             override fun onPinChange(pinLength: Int, intermediatePin: String?) {
@@ -45,12 +45,6 @@ class ChangePinFragment : AbstractWalletFragment<ChangePinFragmentBinding>(R.lay
 
             override fun onChangeMode(isVerify: Boolean) {
                 binding.title.setText(if(isVerify) R.string.id_verify_your_pin else R.string.id_change_pin)
-            }
-        }
-
-        viewModel.onError.observe(viewLifecycleOwner) {
-            it?.getContentIfNotHandledOrReturnNull()?.let {
-                errorDialog(it)
             }
         }
     }

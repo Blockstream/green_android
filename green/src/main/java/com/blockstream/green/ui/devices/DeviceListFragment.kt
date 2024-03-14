@@ -13,6 +13,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.blockstream.common.Urls
 import com.blockstream.common.gdk.device.DeviceInterface
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
@@ -50,7 +51,7 @@ class DeviceListFragment : AbstractDeviceFragment<DeviceListFragmentBinding>(
         parametersOf(args.isJade)
     }
 
-    override fun getAppViewModel() = viewModel
+    override fun getGreenViewModel(): GreenViewModel = viewModel
 
     private val deviceManager: DeviceManagerAndroid by inject()
 

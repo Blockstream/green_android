@@ -1,4 +1,4 @@
-package com.blockstream.compose.views
+package com.blockstream.compose.components
 
 import android.view.LayoutInflater
 import androidx.compose.animation.AnimatedVisibility
@@ -31,8 +31,6 @@ import app.rive.runtime.kotlin.RiveAnimationView
 import co.touchlab.kermit.Logger
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.compose.R
-import com.blockstream.compose.components.GreenButton
-import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.utils.ifTrue

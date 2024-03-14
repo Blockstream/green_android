@@ -94,9 +94,8 @@ class AuthHandler constructor(
                                         it.getCode(
                                             network = network,
                                             enable2faCallMethod = session.getTwoFactorConfig(
-                                                network = network,
-                                                useCache = true
-                                            ).enabledMethods.let { it.size == 1 && it.firstOrNull() == "sms" },
+                                                network = network
+                                            )?.enabledMethods?.let { it.size == 1 && it.firstOrNull() == "sms" } ?: false,
                                             authHandlerStatus = authHandlerStatus
                                         ).await()
                                     })

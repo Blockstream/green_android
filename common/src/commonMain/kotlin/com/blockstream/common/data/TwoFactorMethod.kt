@@ -1,6 +1,4 @@
-package com.blockstream.green.data
-
-import com.blockstream.green.R
+package com.blockstream.common.data
 
 
 enum class TwoFactorMethod(val gdkType: String) {
@@ -12,13 +10,14 @@ enum class TwoFactorMethod(val gdkType: String) {
 
     override fun toString(): String = gdkType
 
-    fun getIcon(): Int = when (this) {
-        EMAIL -> R.drawable.ic_2fa_email
-        SMS -> R.drawable.ic_2fa_sms
-        PHONE -> R.drawable.ic_2fa_call
-        AUTHENTICATOR -> R.drawable.ic_2fa_authenticator
-        TELEGRAM -> R.drawable.ic_2fa_sms
-    }
+    val localized : String
+        get() = when(this){
+            EMAIL -> "id_email"
+            SMS -> "id_sms"
+            PHONE -> "id_call"
+            AUTHENTICATOR -> "id_authenticator_app"
+            TELEGRAM -> "id_telegram"
+        }
 
     companion object {
         fun from(gdkType: String) = when (gdkType) {

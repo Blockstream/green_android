@@ -5,7 +5,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Build
 
-fun copyToClipboard(context: Context, label: String, content: String) {
+fun copyToClipboard(context: Context, label: String = "Green", content: String) {
     (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(
         ClipData.newPlainText(label, content)
     )

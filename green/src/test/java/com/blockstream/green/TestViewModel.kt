@@ -8,7 +8,6 @@ import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.green.ui.AppViewModelAndroid
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkClass
@@ -49,7 +48,6 @@ open class TestViewModel<VM : GreenViewModel>: KoinTest {
     @Before
     open fun setup() {
         Dispatchers.setMain(testDispatcher)
-        AppViewModelAndroid.ioDispatcher = testDispatcher
 
         MockProvider.register {
             // Your way to build a Mock here

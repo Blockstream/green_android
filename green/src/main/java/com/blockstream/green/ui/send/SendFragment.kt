@@ -15,6 +15,7 @@ import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.ScanResult
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.FeeBlockTarget
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.UserInput
@@ -65,7 +66,6 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
 
     val args: SendFragmentArgs by navArgs()
 
-    override val walletOrNull by lazy { args.wallet }
     private val isSweep by lazy { args.isSweep }
     private val isBump by lazy { !args.bumpTransaction.isNullOrBlank() }
     private val bumpTransaction by lazy { if(isBump) Json.parseToJsonElement(args.bumpTransaction ?: "") else null }
@@ -94,7 +94,7 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
 
     override fun getBannerAlertView(): GreenAlertView = binding.banner
 
-    override fun getWalletViewModel() = viewModel
+    override fun getGreenViewModel(): GreenViewModel = viewModel
 
     override val title: String
         get() = getString(
@@ -112,8 +112,8 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
         super.handleSideEffect(sideEffect)
         if(sideEffect is SideEffects.Navigate){
             navigate(SendFragmentDirections.actionSendFragmentToSendConfirmFragment(
-                wallet = wallet,
-                account = account,
+                wallet = viewModel.greenWallet,
+                account = viewModel.account,
                 denomination = viewModel.getRecipientStateFlow(0)?.denomination?.value,
                 transactionSegmentation = viewModel.createTransactionSegmentation()
             ))
@@ -122,7 +122,7 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
         }
     }
 
-    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         // Clear previous references as we need to re-create everything
         bindings.clear()
 
@@ -144,12 +144,6 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
 
         binding.vm = viewModel
         binding.enableMultipleRecipients = false //isDevelopmentFlavor() && session.isTestnet
-
-        viewModel.onError.observe(viewLifecycleOwner) {
-            it?.getContentIfNotHandledOrReturnNull()?.let {
-                errorDialog(it)
-            }
-        }
 
         viewModel.getRecipientsStateFlow().onEach {
             for (liveData in it.withIndex()) {
@@ -209,11 +203,11 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
             }
         }
 
-        super.onViewCreatedGuarded(view, savedInstanceState)
+        super.onViewCreated(view, savedInstanceState)
     }
 
     private fun getExpectedConfirmationTime(context: Context, blocks: Int): String {
-        val blocksPerHour = account.network.blocksPerHour
+        val blocksPerHour = viewModel.account.network.blocksPerHour
         val n = if (blocks % blocksPerHour == 0) blocks / blocksPerHour else blocks * (60 / blocksPerHour)
         val s = context.getString(if (blocks % blocksPerHour == 0) if (blocks == blocksPerHour) R.string.id_hour else R.string.id_hours else R.string.id_minutes)
         return String.format(Locale.getDefault(), " ~ %d %s", n, s)
@@ -277,11 +271,11 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
 
                 val amountToConvert = viewModel.getAmountToConvert()
                 val assetId = viewModel.getRecipientStateFlow(0)?.accountAsset?.value?.assetId
-                if(assetId.isPolicyAsset(session)) {
+                if(assetId.isPolicyAsset(viewModel.session)) {
                     val denomination = viewModel.getRecipientStateFlow(0)?.denomination?.value
 
                     UserInput.parseUserInputSafe(
-                        session = session,
+                        session = viewModel.session,
                         input = amountToConvert,
                         assetId = assetId,
                         denomination = denomination
@@ -351,14 +345,14 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
                 val assetId = addressParamsLiveData.accountAsset.value!!.assetId
                 val account = addressParamsLiveData.accountAsset.value!!.account
 
-                val balance = session.accountAssets(account).value.balanceOrNull(assetId)
+                val balance = viewModel.session.accountAssets(account).value.balanceOrNull(assetId)
                 var look: AssetLook? = null
 
                 if (!assetId.isNullOrBlank()) {
                     look = AssetLook(
                         assetId = assetId,
                         amount = balance ?: 0,
-                        session = session
+                        session = viewModel.session
                     )
                 }
 
@@ -367,10 +361,10 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
                 recipientBinding.assetName = look?.name
                 recipientBinding.assetBalance = look?.balance(denomination = it.denomination.value, withUnit = true) ?: ""
                 recipientBinding.assetSatoshi = balance ?: 0
-                assetId.isPolicyAsset(session).also { isPolicyAsset ->
+                assetId.isPolicyAsset(viewModel.session).also { isPolicyAsset ->
                     recipientBinding.canConvert = isPolicyAsset
 
-                    (it.denomination.value?.assetTicker(session, it.accountAsset.value?.assetId) ?: "").also { amountCurrency ->
+                    (it.denomination.value?.assetTicker(viewModel.session, it.accountAsset.value?.assetId) ?: "").also { amountCurrency ->
                         // Underline only if canConvert
                         recipientBinding.amountCurrency.text = if (isPolicyAsset) underlineText(amountCurrency) else amountCurrency
                     }
@@ -407,7 +401,7 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
                         if (input.isNullOrBlank()) {
                             viewModel.setCustomFeeRate(null)
                         } else {
-                            val minFeeRateKB: Long = viewModel.feeEstimation?.firstOrNull() ?: account.network.defaultFee
+                            val minFeeRateKB: Long = viewModel.feeEstimation?.firstOrNull() ?: viewModel.account.network.defaultFee
                             val enteredFeeRate = dialogBinding.text?.toDouble() ?: 0.0
                             if (enteredFeeRate * 1000 < minFeeRateKB) {
                                 snackbar(

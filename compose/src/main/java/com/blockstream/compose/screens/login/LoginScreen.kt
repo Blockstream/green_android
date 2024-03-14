@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
@@ -23,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,7 +33,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -46,14 +43,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.screen.uniqueScreenKey
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
-import co.touchlab.kermit.Logger
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.GreenWallet
@@ -70,6 +64,7 @@ import com.blockstream.compose.LocalDialog
 import com.blockstream.compose.LocalSnackbar
 import com.blockstream.compose.R
 import com.blockstream.compose.components.AppSettingsButton
+import com.blockstream.compose.components.Banner
 import com.blockstream.compose.components.BiometricsButton
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenColumn
@@ -81,17 +76,14 @@ import com.blockstream.compose.navigation.getNavigationResult
 import com.blockstream.compose.navigation.resultKey
 import com.blockstream.compose.screens.settings.AppSettingsScreen
 import com.blockstream.compose.sheets.Bip39PassphraseBottomSheet
-import com.blockstream.compose.sheets.BottomSheetNavigatorM3
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
 import com.blockstream.compose.sheets.WalletDeleteBottomSheet
 import com.blockstream.compose.sheets.WalletRenameBottomSheet
 import com.blockstream.compose.sideeffects.BiometricsState
-import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.headlineMedium
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium
-import com.blockstream.compose.theme.labelSmall
 import com.blockstream.compose.theme.lightning
 import com.blockstream.compose.theme.red
 import com.blockstream.compose.theme.titleLarge
@@ -103,7 +95,6 @@ import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.TextInputPassword
 import com.blockstream.compose.utils.stringResourceId
-import com.blockstream.compose.views.BannerView
 import com.blockstream.compose.views.PinView
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.serialization.Serializable
@@ -349,7 +340,7 @@ fun LoginScreen(
         ) {
 
             if (!onProgress) {
-                BannerView(viewModel)
+                Banner(viewModel)
             }
 
             if (viewModel.greenWallet.isWatchOnly) {

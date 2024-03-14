@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.blockstream.green.ui.receive.RequestAmountLabelViewModel" />
+            type="com.blockstream.common.models.receive.RequestAmountViewModel" />
 
     </data>
 
@@ -77,7 +77,7 @@
                         android:imeOptions="actionDone"
                         android:inputType="numberDecimal"
                         android:textAlignment="textEnd"
-                        android:text="@={vm.requestAmount}" />
+                        android:text="@={vm.amount}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 

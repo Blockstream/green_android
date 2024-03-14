@@ -7,7 +7,7 @@ import com.blockstream.common.data.HerokuResponse
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
 import com.blockstream.common.gdk.data.SwapProposal
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.utils.createQrBitmap
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.rickclephas.kmm.viewmodel.coroutineScope
@@ -25,7 +25,7 @@ import java.net.URL
 class SwapProposalViewModel constructor(
     @InjectedParam wallet: GreenWallet,
     @InjectedParam proposal: SwapProposal,
-) : AbstractWalletViewModel(wallet) {
+) : GreenViewModel(wallet) {
 
     var qrBitmap = MutableLiveData<Bitmap?>()
     var currentFrame = MutableLiveData<Int>()

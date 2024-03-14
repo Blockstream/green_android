@@ -3,8 +3,7 @@ package com.blockstream.green.ui.items
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.gdk.data.TwoFactorReset
+import com.blockstream.common.data.AlertType
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemAlertBinding
 import com.blockstream.green.extensions.context
@@ -125,13 +124,3 @@ data class AlertListItem constructor(val alertType: AlertType) : AbstractBinding
     }
 }
 
-sealed class AlertType{
-    data class SystemMessage(val network: Network, val message: String) : AlertType()
-    data class Dispute2FA(val network: Network, val twoFactorReset: TwoFactorReset) : AlertType()
-    data class Reset2FA(val network: Network, val twoFactorReset: TwoFactorReset): AlertType()
-    object TestnetWarning : AlertType()
-    object EphemeralBip39 : AlertType()
-    data class Banner(val banner: com.blockstream.common.data.Banner) : AlertType()
-    object FailedNetworkLogin : AlertType()
-    data class LspStatus(val maintenance: Boolean) : AlertType()
-}

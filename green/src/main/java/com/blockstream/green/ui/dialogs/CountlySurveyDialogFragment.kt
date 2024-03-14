@@ -8,13 +8,15 @@ import android.view.View
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.data.CountlyWidget
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.R
 import com.blockstream.green.databinding.CountlySurveyDialogBinding
 import com.blockstream.green.extensions.snackbar
 import ly.count.android.sdk.ModuleFeedback
 import mu.KLogging
 
-class CountlySurveyDialogFragment : AbstractDialogFragment<CountlySurveyDialogBinding>() {
+class CountlySurveyDialogFragment : AbstractDialogFragment<CountlySurveyDialogBinding, GreenViewModel>() {
+    override val viewModel: GreenViewModel? = null
 
     override fun inflate(layoutInflater: LayoutInflater): CountlySurveyDialogBinding =
         CountlySurveyDialogBinding.inflate(layoutInflater)

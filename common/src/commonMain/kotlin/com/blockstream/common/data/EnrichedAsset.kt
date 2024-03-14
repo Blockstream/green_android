@@ -3,6 +3,7 @@ package com.blockstream.common.data
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.LBTC_POLICY_ASSET
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.GreenJson
@@ -90,6 +91,7 @@ data class EnrichedAsset constructor(
 
         // Untested, only used in Preview
         val PreviewBTC by lazy { EnrichedAsset(assetId = BTC_POLICY_ASSET, name = "Bitcoin", ticker = "BTC") }
+        val PreviewLBTC by lazy { EnrichedAsset(assetId = LBTC_POLICY_ASSET, name = "Liquid Bitcoin", ticker = "L-BTC") }
 
         fun createOrNull(session: GdkSession, assetId: String?): EnrichedAsset? {
             return create(session, assetId ?: return null)

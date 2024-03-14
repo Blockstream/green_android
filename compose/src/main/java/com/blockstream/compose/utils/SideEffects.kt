@@ -34,6 +34,7 @@ import com.blockstream.compose.screens.recovery.RecoveryIntroScreen
 import com.blockstream.compose.screens.recovery.RecoveryPhraseScreen
 import com.blockstream.compose.screens.recovery.RecoveryWordsScreen
 import com.blockstream.compose.screens.settings.AppSettingsScreen
+import com.blockstream.compose.screens.settings.WalletSettingsScreen
 import com.blockstream.compose.sheets.Bip39PassphraseBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
 import com.blockstream.compose.sheets.WalletDeleteBottomSheet
@@ -50,6 +51,25 @@ fun <Item : Screen> Stack<Item>.pushOrReplace(item: Item) {
         replace(item)
     } else {
         push(item)
+    }
+}
+
+@Composable
+fun HandleSideEffectDialog(viewModel: GreenViewModel, onDismiss: CoroutineScope.() -> Unit = {}, handler: CoroutineScope.(sideEffect: SideEffect) -> Unit = {}) {
+    LaunchedEffect(Unit) {
+        viewModel.sideEffect.onEach {
+            launch {
+                viewModel.sideEffectReEmitted.emit(it)
+            }
+
+            handler.invoke(this, it)
+
+            when (it) {
+                is SideEffects.Dismiss -> {
+                    onDismiss()
+                }
+            }
+        }.collect()
     }
 }
 
@@ -173,7 +193,6 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                 }
 
                 is SideEffects.Logout -> {
-
                     viewModel.greenWalletOrNull?.let { greenWallet ->
                         if (greenWallet.isEphemeral || greenWallet.isHardware || it.reason == LogoutReason.USER_ACTION) {
                             navigator?.replaceAll(HomeScreen)
@@ -218,6 +237,14 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                             navigator?.replaceAll(
                                 WalletOverviewScreen(
                                     greenWallet = destination.greenWallet,
+                                )
+                            )
+                        }
+
+                        is NavigateDestinations.WalletSettings -> {
+                            navigator?.push(
+                                WalletSettingsScreen(
+                                    greenWallet = destination.greenWallet
                                 )
                             )
                         }
@@ -307,10 +334,10 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                         }
 
                         is NavigateDestinations.SetPin -> {
-                            navigator?.items?.firstOrNull {
-                                it is RecoveryIntroScreen
+                            navigator?.items?.firstOrNull { screen ->
+                                screen is RecoveryIntroScreen
                             }?.also {
-                                navigator.popUntil { it is RecoveryIntroScreen}
+                                navigator.popUntil { screen -> screen is RecoveryIntroScreen}
                             }
                             navigator?.push(
                                 PinScreen(destination.args)
@@ -324,15 +351,20 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                         }
 
                         is NavigateDestinations.RecoveryPhrase -> {
-                            navigator?.push(
-                                with(destination.args) {
-                                    RecoveryPhraseScreen(
-                                        isLightning = isLightning,
-                                        providedCredentials = credentials,
-                                        greenWallet = greenWallet,
-                                    )
+                            with(destination.args) {
+                                RecoveryPhraseScreen(
+                                    isLightning = isLightning,
+                                    providedCredentials = credentials,
+                                    greenWallet = greenWallet,
+                                ).also { screen ->
+                                    // WalletSettings > RecoveryIntroScreen
+                                    if (navigator?.lastItemOrNull is RecoveryIntroScreen) {
+                                        navigator.replace(screen)
+                                    } else {
+                                        navigator?.push(screen)
+                                    }
                                 }
-                            )
+                            }
                         }
                     }
                 }

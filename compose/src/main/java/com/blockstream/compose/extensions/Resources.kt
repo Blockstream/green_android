@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.LBTC_POLICY_ASSET
 import com.blockstream.common.data.WalletIcon
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.GdkSession
@@ -97,7 +98,7 @@ private fun Bitmap.toPainter(): Painter {
 
 @Composable
 fun String?.assetIcon(session: GdkSession? = null, isLightning: Boolean = false): Painter {
-    return if (this == null || this == BTC_POLICY_ASSET || (session != null && this.isPolicyAsset(
+    return if (this == null || this == BTC_POLICY_ASSET || this == LBTC_POLICY_ASSET || (session != null && this.isPolicyAsset(
             session
         ))
     ) {

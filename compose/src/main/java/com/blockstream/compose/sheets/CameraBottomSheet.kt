@@ -16,11 +16,9 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
 import com.blockstream.compose.components.BarcodeScanner
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.navigation.resultKey
 import com.blockstream.compose.navigation.setNavigationResult
-import com.blockstream.compose.theme.GreenThemePreview
-import com.blockstream.compose.views.GreenBottomSheet
 import kotlinx.parcelize.Parcelize
 import org.koin.core.parameter.parametersOf
 

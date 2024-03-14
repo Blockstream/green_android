@@ -9,7 +9,6 @@ import com.blockstream.common.devices.ConnectionType
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceConnectionManager
 import com.blockstream.green.devices.DeviceManagerAndroid
@@ -91,7 +90,7 @@ class DeviceScanViewModel constructor(
             // Device is unlocked
             onDeviceReady(device, null)
         } else if (device.hasPermissionsOrIsBonded() || device.handleBondingByHwwImplementation()) {
-            doUserAction({
+            doAsync({
                 session.disconnect()
                 deviceConnectionManager.connectDevice(
                     context,
@@ -131,7 +130,7 @@ class DeviceScanViewModel constructor(
             return
         }
 
-        doUserAction({
+        doAsync({
             val gdkHardwareWallet = device.gdkHardwareWallet ?: throw Exception("Not HWWallet initiated")
 
             deviceConnectionManager.authenticateDeviceIfNeeded(gdkHardwareWallet)
@@ -186,7 +185,7 @@ class DeviceScanViewModel constructor(
 
         }, onError = {
             onDeviceFailed(device)
-            onError.value = ConsumableEvent(it)
+            postSideEffect(SideEffects.ErrorSnackbar(it))
         }, onSuccess = {
             proceedToLogin = true
             postSideEffect(SideEffects.Navigate(it))

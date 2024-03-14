@@ -110,11 +110,11 @@
         <argument
             android:name="method"
             android:defaultValue="EMAIL"
-            app:argType="com.blockstream.green.data.TwoFactorMethod" />
+            app:argType="com.blockstream.common.data.TwoFactorMethod" />
         <argument
             android:name="action"
             android:defaultValue="SETUP"
-            app:argType="com.blockstream.green.ui.settings.TwoFactorSetupAction" />
+            app:argType="com.blockstream.common.data.TwoFactorSetupAction" />
         <argument
             android:name="isSmsBackup"
             app:argType="boolean"
@@ -253,8 +253,8 @@
             android:id="@+id/action_accountOverviewFragment_to_sendFragment"
             app:destination="@id/sendFragment" />
         <argument
-            android:name="account"
-            app:argType="com.blockstream.common.gdk.data.Account" />
+            android:name="accountAsset"
+            app:argType="com.blockstream.common.gdk.data.AccountAsset" />
         <action
             android:id="@+id/action_accountOverviewFragment_to_recoverFundsFragment"
             app:destination="@id/recoverFundsFragment" />
@@ -487,11 +487,6 @@
             android:name="accountAsset"
             app:argType="com.blockstream.common.gdk.data.AccountAsset" />
         <argument
-            android:name="network"
-            android:defaultValue="@null"
-            app:argType="com.blockstream.common.gdk.data.Network"
-            app:nullable="true" />
-        <argument
             android:name="assetId"
             android:defaultValue="@null"
             app:argType="string"
@@ -510,14 +505,14 @@
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
-        <action
-            android:id="@+id/action_sendFragment_to_sendConfirmFragment"
-            app:destination="@id/sendConfirmFragment" />
         <argument
             android:name="addressType"
             app:argType="com.blockstream.common.AddressInputType"
             app:nullable="true"
             android:defaultValue="@null" />
+        <action
+            android:id="@+id/action_sendFragment_to_sendConfirmFragment"
+            app:destination="@id/sendConfirmFragment" />
     </fragment>
 
     <fragment
@@ -725,6 +720,6 @@
     </fragment>
 
     <action android:id="@+id/action_global_watchOnlyPolicyFragment" app:destination="@id/watchOnlyPolicyFragment" />
-    <action android:id="@+id/action_global_jadeQrFragment" app:destination="@id/jadeQrFragment" />
+    <action android:id="@+id/action_global_jadeQrFragment" app:destination="@id/jadeQrFragment" /><action android:id="@+id/action_global_receiveFragment" app:destination="@id/receiveFragment"/>
 
 </navigation>

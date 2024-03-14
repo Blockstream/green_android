@@ -65,6 +65,7 @@ import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenSpacer
 import com.blockstream.compose.components.IconButton
 import com.blockstream.compose.components.ScanQrButton
+import com.blockstream.compose.components.ScreenContainer
 import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.navigation.getNavigationResult
 import com.blockstream.compose.navigation.resultKey
@@ -82,7 +83,6 @@ import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.TextInputPassword
 import com.blockstream.compose.utils.TextInputPaste
 import com.blockstream.compose.utils.noRippleToggleable
-import com.blockstream.compose.views.ScreenContainer
 import okio.source
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf

@@ -22,6 +22,7 @@ import androidx.core.view.updatePadding
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.MutableLiveData
 import androidx.viewbinding.ViewBinding
+import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.green.R
@@ -37,6 +38,14 @@ fun ViewBinding.context(): Context = root.context
 
 fun Activity.snackbar(text: String, duration: Int = Snackbar.LENGTH_SHORT) {
     Snackbar.make(findViewById(android.R.id.content), text, duration).show()
+}
+
+fun TwoFactorMethod.getIcon(): Int = when (this) {
+    TwoFactorMethod.EMAIL -> R.drawable.ic_2fa_email
+    TwoFactorMethod.SMS -> R.drawable.ic_2fa_sms
+    TwoFactorMethod.PHONE -> R.drawable.ic_2fa_call
+    TwoFactorMethod.AUTHENTICATOR -> R.drawable.ic_2fa_authenticator
+    TwoFactorMethod.TELEGRAM -> R.drawable.ic_2fa_sms
 }
 
 fun TextInputLayout.endIconPadding(margin: Int = 24){

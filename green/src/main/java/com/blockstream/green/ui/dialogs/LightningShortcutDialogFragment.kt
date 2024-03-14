@@ -7,6 +7,7 @@ import android.view.View
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.Urls
 import com.blockstream.common.managers.SettingsManager
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.databinding.LightningShortcutDialogBinding
 import com.blockstream.green.utils.openBrowser
 import mu.KLogging
@@ -16,7 +17,8 @@ interface EnableLightningShortcut{
     fun lightningShortcutDialogDismissed()
 }
 
-class LightningShortcutDialogFragment : AbstractDialogFragment<LightningShortcutDialogBinding>() {
+class LightningShortcutDialogFragment : AbstractDialogFragment<LightningShortcutDialogBinding, GreenViewModel>() {
+    override val viewModel: GreenViewModel? = null
 
     override fun inflate(layoutInflater: LayoutInflater): LightningShortcutDialogBinding =
         LightningShortcutDialogBinding.inflate(layoutInflater)

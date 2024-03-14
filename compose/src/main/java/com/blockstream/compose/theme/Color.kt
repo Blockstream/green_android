@@ -45,7 +45,7 @@ val md_theme_brandSurface = Color(0xFF19222c)
 val green = md_theme_primary
 val green20 = Color(0x3300f113)
 
-val red = Color(0xFFD60000)
+val red = Color(0xFFEA5262)
 val orange = Color(0xFFBB7B00)
 
 val md_theme_surfaceCircle = Color(0xFF363636)

@@ -13,6 +13,7 @@ import com.blockstream.common.lightning.inboundLiquiditySatoshi
 import com.blockstream.common.lightning.maxPayableSatoshi
 import com.blockstream.common.lightning.maxReceivableSatoshi
 import com.blockstream.common.lightning.maxSinglePaymentAmountSatoshi
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.utils.Loggable
 import com.blockstream.green.R
 import com.blockstream.green.databinding.LightningNodeBottomSheetBinding
@@ -21,7 +22,6 @@ import com.blockstream.green.extensions.shareTextFile
 import com.blockstream.green.ui.items.ActionListItem
 import com.blockstream.green.ui.items.OverlineTextListItem
 import com.blockstream.green.ui.overview.AccountOverviewFragment
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.blockstream.green.utils.toAmountLookOrNa
@@ -37,7 +37,7 @@ import java.io.File
 
 
 class LightningNodeBottomSheetFragment :
-    WalletBottomSheetDialogFragment<LightningNodeBottomSheetBinding, AbstractWalletViewModel>() {
+    WalletBottomSheetDialogFragment<LightningNodeBottomSheetBinding, GreenViewModel>() {
     override val screenName = "LightningNodeState"
 
     override val expanded: Boolean = true

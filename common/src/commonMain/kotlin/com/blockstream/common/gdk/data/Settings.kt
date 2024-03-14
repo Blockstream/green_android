@@ -10,7 +10,7 @@ import kotlinx.serialization.json.jsonPrimitive
 
 @Serializable
 data class Settings(
-    @SerialName("altimeout") val altimeout: Int = 5, // minutes
+    @SerialName("altimeout") val altimeout: Int = 0, // minutes
     @SerialName("csvtime") val csvTime: Int = 0,
     @SerialName("nlocktime") val nlocktime: Int = 0,
     @SerialName("notifications") val notifications: SettingsNotification? = null,

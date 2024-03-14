@@ -18,7 +18,7 @@ import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.utils.HandleSideEffect
-import com.blockstream.compose.views.GreenBottomSheet
+import com.blockstream.compose.components.GreenBottomSheet
 
 
 object RecoveryHelpBottomSheet : BottomScreen() {
