@@ -13,6 +13,7 @@ import com.blockstream.common.extensions.createLoginCredentials
 import com.blockstream.common.extensions.objectId
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.receive.launchIn
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
@@ -29,6 +30,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -99,7 +101,7 @@ class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs) :
     private var biometricsPlatformCipher: CompletableDeferred<PlatformCipher>? = null
 
     class LocalEvents {
-        class AppendWatchOnlyDescriptor(val value: String) : Event
+        data class AppendWatchOnlyDescriptor(val value: String) : Event
         class ImportFile(val source: Source) : Event
         class ProvideCipher(
             val platformCipher: PlatformCipher? = null,
@@ -117,6 +119,12 @@ class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs) :
             canUseBiometrics = MutableStateFlow(viewModelScope, it)
             withBiometrics = MutableStateFlow(viewModelScope, it)
         }
+
+        watchOnlyDescriptor.onEach {
+            if (it.contains("(")) {
+                isOutputDescriptors.value = true
+            }
+        }.launchIn(this)
 
         isLoginEnabled = combine(
             watchOnlyDescriptor,
@@ -178,10 +186,6 @@ class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs) :
     private fun appendWatchOnlyDescriptor(vararg value: String) {
         watchOnlyDescriptor.value = watchOnlyDescriptor.value.trimMargin()
             .let { it + (if (it.isNotBlank()) ",\n" else "") + value.joinToString(",\n") }
-
-        if (watchOnlyDescriptor.value.contains("(")) {
-            isOutputDescriptors.value = true
-        }
     }
 
     private fun createNewWatchOnlyWallet(

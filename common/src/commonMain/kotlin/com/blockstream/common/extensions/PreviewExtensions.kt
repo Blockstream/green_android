@@ -4,6 +4,7 @@ import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.database.LoginCredentials
 import com.blockstream.common.database.Wallet
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.views.wallet.WalletListLook
 
 fun previewWallet(isHardware: Boolean = false, isWatchOnly: Boolean = false, isEphemeral: Boolean = false, hasLightningShortcut: Boolean = false): GreenWallet {
@@ -25,6 +26,8 @@ fun previewWallet(isHardware: Boolean = false, isWatchOnly: Boolean = false, isE
         GreenWallet(wallet = it, ephemeralIdOrNull = if(isEphemeral) 1 else null, hasLightningShortcut = hasLightningShortcut)
     }
 }
+
+fun previewNetwork(isMainnet: Boolean = true) = Network("mainnet", "Bitcoin", "mainet", isMainnet, false, false)
 
 fun previewWalletListView(isHardware: Boolean = false, isEphemeral: Boolean = false, hasLightningShortcut: Boolean = false): WalletListLook {
     val wallet = previewWallet(isHardware = isHardware, isEphemeral = isEphemeral, hasLightningShortcut = hasLightningShortcut)

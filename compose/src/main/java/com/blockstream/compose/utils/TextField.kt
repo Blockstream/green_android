@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun TextInputPaste(state: MutableStateFlow<String>) {
-
     val context = LocalContext.current
     val value by state.collectAsStateWithLifecycle()
 
@@ -26,12 +25,12 @@ fun TextInputPaste(state: MutableStateFlow<String>) {
         Icon(painterResource(id = R.drawable.clipboard_text),
             contentDescription = "clear text",
             modifier = Modifier.clickable {
-                    state.value = getClipboard(context) ?: ""
-                })
+                state.value = getClipboard(context) ?: ""
+            })
     } else {
         Icon(Icons.Default.Clear, contentDescription = "clear text", modifier = Modifier.clickable {
-                state.value = ""
-            })
+            state.value = ""
+        })
     }
 }
 

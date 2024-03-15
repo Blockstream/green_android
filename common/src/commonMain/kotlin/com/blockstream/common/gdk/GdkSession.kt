@@ -403,9 +403,8 @@ class GdkSession constructor(
     private val _isConnectedState = MutableStateFlow(false)
     @NativeCoroutinesIgnore
     val isConnectedState = _isConnectedState.asStateFlow()
-    var isConnected
+    val isConnected
         get() = isConnectedState.value
-        private set(value) { _isConnectedState.value = value}
 
     var xPubHashId : String? = null
         private set
@@ -1441,8 +1440,8 @@ class GdkSession constructor(
             .filterNotNull()
             .let {
                 it.firstOrNull() ?: throw exceptions.first() // Throw if all networks failed
-            }.also{
-                _failedNetworksStateFlow.value = _failedNetworksStateFlow.value + failedNetworkLogins
+            }.also {
+                _failedNetworksStateFlow.value += failedNetworkLogins
                 onLoginSuccess(
                     loginData = it,
                     initAccount = initAccount,

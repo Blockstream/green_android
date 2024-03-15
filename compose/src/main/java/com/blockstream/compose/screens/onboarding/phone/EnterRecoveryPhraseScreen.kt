@@ -440,7 +440,6 @@ fun EnterRecoveryPhraseScreen(
                             )
                         }
 
-                        val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
                         ScanQrButton() {
                             bottomSheetNavigator.show(
                                 CameraBottomSheet(

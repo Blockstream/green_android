@@ -42,15 +42,16 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import co.touchlab.kermit.Logger
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.models.abstract.AbstractScannerViewModel
 import com.blockstream.common.models.camera.CameraViewModelPreview
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.LocalDialog
 import com.blockstream.compose.R
 import com.blockstream.compose.android.views.ViewFinderView
 import com.blockstream.compose.extensions.pxToDp
-import com.blockstream.compose.theme.GreenThemePreview
 import com.google.zxing.MultiFormatReader
 import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.client.android.Intents
@@ -151,7 +152,6 @@ fun BarcodeScanner(
                         captureManager =
                             CaptureManager(context as Activity, decoratedBarcode).also {
                                 it.setShowMissingCameraPermissionDialog(true)
-                                it.onResume()
                             }
 
                     }
@@ -174,13 +174,12 @@ fun BarcodeScanner(
                 val observer = LifecycleEventObserver { _, event ->
                     when (event) {
                         Lifecycle.Event.ON_RESUME -> {
+                            Logger.d { "BarcodeScanner OnResume" }
                             captureManager?.onResume()
                         }
                         Lifecycle.Event.ON_PAUSE -> {
+                            Logger.d { "BarcodeScanner OnPause" }
                             captureManager?.onPause()
-                        }
-                        Lifecycle.Event.ON_DESTROY -> {
-                            captureManager?.onDestroy()
                         }
 
                         else -> { }
@@ -192,6 +191,7 @@ fun BarcodeScanner(
 
                 // When the effect leaves the Composition, remove the observer
                 onDispose {
+                    Logger.d { "BarcodeScanner onDispose" }
                     captureManager?.onPause()
                     captureManager?.onDestroy()
                     lifecycleOwner.lifecycle.removeObserver(observer)
@@ -283,7 +283,7 @@ fun BarcodeScanner(
 @Composable
 @Preview
 fun BarcodeScannerPreview() {
-    GreenThemePreview {
+    GreenPreview {
         GreenColumn {
             BarcodeScanner(isDecodeContinuous = false, viewModel = CameraViewModelPreview.preview(),
                 modifier = Modifier.aspectRatio(1f))

@@ -2,6 +2,7 @@ package com.blockstream.common.models.onboarding.watchonly
 
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Event
+import com.blockstream.common.extensions.previewNetwork
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.models.GreenViewModel
@@ -71,7 +72,7 @@ class WatchOnlyNetworkViewModel(setupArgs: SetupArgs) :
 
 class WatchOnlyNetworkViewModelPreview(setupArgs: SetupArgs) :
     WatchOnlyNetworkViewModelAbstract(setupArgs = setupArgs) {
-    override val networks: StateFlow<List<Network>> = MutableStateFlow(listOf(session.networks.bitcoinElectrum))
+    override val networks: StateFlow<List<Network>> = MutableStateFlow(listOf(previewNetwork(), previewNetwork(false)))
 
     companion object {
         fun preview() = WatchOnlyNetworkViewModelPreview(

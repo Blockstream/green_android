@@ -233,7 +233,6 @@ class PinViewModel constructor(
                 database.insertWallet(wallet)
 
                 if (session.hasLightning) {
-
                     session.lightningSdk.appGreenlightCredentials?.also { credentials ->
                         val encryptedData =
                             greenKeystore.encryptData(credentials.toJson().encodeToByteArray())
@@ -249,6 +248,9 @@ class PinViewModel constructor(
                     }
                 }
 
+                sessionManager.upgradeOnBoardingSessionToWallet(wallet)
+
+                countly.importWallet(session)
             } else {
                 wallet = greenWalletOrNull
             }
@@ -261,10 +263,6 @@ class PinViewModel constructor(
                     pinData = encryptWithPin.pinData
                 )
             )
-
-            sessionManager.upgradeOnBoardingSessionToWallet(wallet)
-
-            countly.importWallet(session)
 
             wallet
         }, preAction = {

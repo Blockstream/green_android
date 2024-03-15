@@ -57,6 +57,7 @@ import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
@@ -300,7 +301,7 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
 
         val accountAdapter: GenericFastItemAdapter = FastItemAdapter()
 
-        viewModel.accountLiveData.observe(viewLifecycleOwner) {
+        viewModel.accountAsset.filterNotNull().onEach {
             AccountsListItem(
                 session = session,
                 accounts = listOf(viewModel.accountValue),
@@ -353,7 +354,7 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
 
             // Update toolbar to shot the account name
             updateToolbar()
-        }
+        }.launchIn(lifecycleScope)
 
         // AMP Id
         val ampAccountHelpAdapter: GenericFastItemAdapter = FastItemAdapter()

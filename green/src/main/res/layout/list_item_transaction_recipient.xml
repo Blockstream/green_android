@@ -120,7 +120,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_marginBottom="2dp"
-                android:text="@{vm.isSweep ? @string/id_private_key : vm.accountLiveData.lightning ? @string/id_lightning_invoice__lnurl : @string/id_recipient_address}"
+                android:text="@{vm.isSweep ? @string/id_private_key : vm.accountAsset.account.lightning ? @string/id_lightning_invoice__lnurl : @string/id_recipient_address}"
                 tools:text="@string/id_lightning_invoice__lnurl" />
 
             <com.google.android.material.card.MaterialCardView
@@ -416,7 +416,7 @@
 
                 <com.google.android.material.button.MaterialButtonToggleGroup
                     android:id="@+id/toggleGroupSendAll"
-                    isVisible="@{!vm.isBumpOrSweep &amp;&amp; !vm.accountLiveData.lightning}"
+                    isVisible="@{!vm.isBumpOrSweep &amp;&amp; !vm.accountAsset.account.lightning}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end">

@@ -3,17 +3,13 @@ package com.blockstream.compose.screens.onboarding.watchonly
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.animation.with
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -32,7 +28,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -131,7 +126,11 @@ fun WatchOnlyCredentialsScreen(
     }
 
     getNavigationResult<ScanResult>(CameraBottomSheet::class.resultKey).value?.also {
-        viewModel.watchOnlyDescriptor.value = it.result
+        viewModel.postEvent(
+            WatchOnlyCredentialsViewModel.LocalEvents.AppendWatchOnlyDescriptor(
+                value = it.result
+            )
+        )
     }
 
     HandleSideEffect(viewModel = viewModel) {
@@ -271,7 +270,7 @@ fun WatchOnlyCredentialsScreen(
                                 ScanQrButton {
                                     bottomSheetNavigator.show(
                                         CameraBottomSheet(
-                                            isDecodeContinuous = false,
+                                            isDecodeContinuous = true,
                                             parentScreenName = viewModel.screenName(),
                                             setupArgs = viewModel.setupArgs
                                         )

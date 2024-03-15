@@ -80,4 +80,13 @@ abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false,
             }
         }
     }
+
+    override fun onDispose() {
+        super.onDispose()
+        try {
+            bcurPartEmitter?.completeExceptionally(Exception(""))
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 }

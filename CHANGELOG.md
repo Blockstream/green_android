@@ -3,9 +3,30 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [4.0.24] - 2024-01-31
+## [4.0.25] - 2024-03-15
+
+### Added
+- Enable Singlesig Liquid watch-only descriptors
+- New app setting "Remember hardware device"
+- Add metadata for F-Droid build
+- Handle "master blinding key" for advanced jade users
+
 
 ### Changed
+- Bump GDK to version 0.70.3
+- Allow changing denomination on watch-only sessions
+- Rewrite some UI screens into Jetpack Compose
+- Enable Bluetooth adapter from the app
+- Change Assets cache behavior
+- Enable Sweep for Bitcoin Singlesig watch-only sessions
+
+### Fixed
+- Fix F-Droid build
+- Various bug fixes
+
+## [4.0.24] - 2024-01-31
+
+### Added
 - Export Greenlight logs
 - Add "Receive any Liquid/AMP asset" to the assets list on Receive and Create New Account screens
 

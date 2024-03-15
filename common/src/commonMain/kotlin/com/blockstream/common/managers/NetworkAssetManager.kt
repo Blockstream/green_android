@@ -111,6 +111,15 @@ class NetworkAssetManager constructor() {
                         )
                     )
 
+                    // Remove null assets from cache
+                    metadata.filterValues { it == null }.forEach {
+                        metadata.remove(it.key)
+                    }
+
+                    icons.filterValues { it == null }.forEach {
+                        icons.remove(it.key)
+                    }
+
                     _status.cacheStatus = CacheStatus.Latest
                     _status.updatedAt = Clock.System.now().also {
                         logger.i { "Liquid Assets updated at $it" }
