@@ -90,6 +90,7 @@ class LightningBridge constructor(
             blockHeight = 0u,
             channelsBalanceMsat = 0u,
             onchainBalanceMsat = 0u,
+            pendingOnchainBalanceMsat = 0u,
             utxos = listOf(),
             maxPayableMsat = 0u,
             maxReceivableMsat = 0u,

@@ -35,7 +35,7 @@ fun Long.milliSatoshi(): ULong = (this * 1000).toULong()
 
 fun ULong.satoshi() = toLong() / 1000
 
-fun OpenChannelFeeResponse.feeSatoshi() = feeMsat.satoshi()
+fun OpenChannelFeeResponse.feeSatoshi() = feeMsat?.satoshi()
 
 fun ReceivePaymentResponse.receiveAmountSatoshi() = lnInvoice.receiveAmountSatoshi(openingFeeParams)
 

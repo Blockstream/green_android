@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.26] - 2024-03-18
+
+### Changed
+- Bump Breez to version 0.3.6
+
 ## [4.0.25] - 2024-03-15
 
 ### Added
@@ -10,7 +15,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - New app setting "Remember hardware device"
 - Add metadata for F-Droid build
 - Handle "master blinding key" for advanced jade users
-
 
 ### Changed
 - Bump GDK to version 0.70.3
