@@ -1,5 +1,10 @@
 package com.blockstream.common.gdk.params
 
+import com.blockstream.common.BITS_UNIT
+import com.blockstream.common.BTC_UNIT
+import com.blockstream.common.MBTC_UNIT
+import com.blockstream.common.SATOSHI_UNIT
+import com.blockstream.common.UBTC_UNIT
 import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.gdk.data.Asset
 import kotlinx.serialization.SerialName
@@ -9,8 +14,6 @@ import kotlinx.serialization.Serializable
 data class Convert constructor(
     @SerialName("satoshi") val satoshi: Long? = null,
     @SerialName("asset_info") val asset: Asset? = null,
-
-    @SerialName("assetAmount") val assetAmount: String? = null, // this field is only in Android app
 
     @SerialName("btc") val btc: String? = null,
     @SerialName("mbtc") val mbtc: String? = null,
@@ -28,20 +31,32 @@ data class Convert constructor(
 
     override fun kSerializer() = serializer()
 
-    companion object{
-        fun forUnit(unit: String = com.blockstream.common.BTC_UNIT, amount: String): Convert {
-
-            return when (unit) {
-                com.blockstream.common.BTC_UNIT -> Convert(btc = amount)
-                com.blockstream.common.MBTC_UNIT -> Convert(mbtc = amount)
-                com.blockstream.common.BITS_UNIT, com.blockstream.common.UBTC_UNIT -> Convert(bits = amount)
-                com.blockstream.common.SATOSHI_UNIT -> Convert(sats = amount)
-                else -> Convert(fiat = amount)
+    companion object {
+        fun create(
+            asset: Asset? = null,
+            asString: String? = null,
+            asLong: Long? = null,
+            unit: String = BTC_UNIT
+        ): Convert {
+            return if (asset == null) {
+                if (asString != null) {
+                    when (unit) {
+                        BTC_UNIT -> Convert(btc = asString)
+                        MBTC_UNIT -> Convert(mbtc = asString)
+                        BITS_UNIT, UBTC_UNIT -> Convert(bits = asString)
+                        SATOSHI_UNIT -> Convert(sats = asString)
+                        else -> Convert(fiat = asString)
+                    }
+                } else {
+                    Convert(satoshi = asLong)
+                }
+            } else {
+                if (asString != null) {
+                    Convert(asset = asset, btc = asString)
+                } else {
+                    Convert(asset = asset, satoshi = asLong)
+                }
             }
-        }
-
-        fun forAsset(asset: Asset, amount: String): Convert {
-            return Convert(asset = asset, assetAmount = amount)
         }
     }
 }

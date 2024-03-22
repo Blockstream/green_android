@@ -8,10 +8,12 @@ import com.blockstream.common.MBTC_UNIT
 import com.blockstream.common.SATOSHI_UNIT
 import com.blockstream.common.UBTC_UNIT
 import com.blockstream.common.gdk.GreenJson
-import com.blockstream.common.gdk.params.Convert
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 /*
     GDK 0.0.58.post1 changed the limits structure to return only fiat values if is_fiat = true, so
@@ -31,12 +33,12 @@ data class Balance constructor(
     @SerialName("sats") val sats: String = "0",
     @SerialName("ubtc") val ubtc: String = "0.00",
     @SerialName("is_current") val isCurrent: Boolean? = null,
-    var assetValue: String? = null,
-    var assetInfo: Asset? = null
+    var assetAmount: String? = null,
+    var asset: Asset? = null,
 ): GreenJson<Balance>(), Parcelable {
     override fun kSerializer() = serializer()
 
-    val valueInMainUnit: String get() = assetValue ?: btc
+    val valueInMainUnit: String get() = assetAmount ?: btc
 
     fun getValue(unit: String): String {
         return when (unit) {
@@ -50,34 +52,25 @@ data class Balance constructor(
     }
 
     companion object {
-        fun fromAssetWithoutMetadata(convert: Convert): Balance {
+        fun fromAssetWithoutMetadata(amount: Long): Balance {
             return Balance(
-                satoshi = convert.satoshi ?: 0,
+                satoshi = amount,
                 bits = "",
                 btc = "",
-                fiatCurrency = "",
                 mbtc = "",
                 sats = "",
                 ubtc = ""
             )
         }
 
-        fun fromJsonString(jsonString: String, conversionFrom: Convert): Balance {
-            return fromJsonElement(json.parseToJsonElement(jsonString), conversionFrom)
-        }
-
         /**
         Transform the gdk json to a more appropriate format
          */
-        fun fromJsonElement(element: JsonElement, conversionFrom: Convert): Balance {
-
-            val balance: Balance = json.decodeFromJsonElement(element)
-            conversionFrom.asset?.let {
-                balance.assetInfo = it
-                balance.assetValue = element.jsonObject[conversionFrom.asset.assetId]?.jsonPrimitive?.content
+        fun fromJsonElement(jsonElement: JsonElement, assetId: String?): Balance = json.decodeFromJsonElement<Balance>(jsonElement).also { balance ->
+            // Asset convesion is returned with the assetKey
+            assetId.also {
+                balance.assetAmount = jsonElement.jsonObject[assetId]?.jsonPrimitive?.content
             }
-
-            return balance
         }
     }
 }

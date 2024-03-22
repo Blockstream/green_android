@@ -55,6 +55,24 @@ data class EnrichedAsset constructor(
         }
     }
 
+    fun sortWeight(session: GdkSession) = when {
+        assetId == BTC_POLICY_ASSET -> Int.MAX_VALUE
+        isLiquid(session) -> Int.MAX_VALUE - 1
+        isSendable -> Int.MIN_VALUE
+        isAnyAsset -> Int.MIN_VALUE + 1
+        else -> {
+            val hasAssetIcon = session.hasAssetIcon(assetId)
+
+            if (hasAssetIcon) {
+                weight // from Countly
+            } else if (name != null) {
+                -10_000
+            } else {
+                -100_000
+            }
+        }
+    }
+
     val isBitcoin
         get() = assetId == BTC_POLICY_ASSET
 

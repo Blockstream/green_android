@@ -1,12 +1,11 @@
 package com.blockstream.green.looks
 
-import com.blockstream.common.gdk.data.Balance
-import com.blockstream.common.gdk.params.Convert
 import com.blockstream.common.data.Denomination
-import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.extensions.getAssetName
 import com.blockstream.common.extensions.isPolicyAsset
-import com.blockstream.green.utils.toAmountLookOrNa
+import com.blockstream.common.gdk.GdkSession
+import com.blockstream.common.gdk.data.Balance
+import com.blockstream.common.utils.toAmountLookOrNa
 import kotlinx.coroutines.runBlocking
 
 
@@ -36,7 +35,7 @@ class AssetLook constructor(
 
     val fiatValue: Balance?
         get() = if (isPolicyAsset) {
-            runBlocking { session.convertAmount(assetId, Convert(satoshi = amount)) }
+            runBlocking { session.convert(assetId = assetId, asLong = amount) }
         } else {
             null
         }

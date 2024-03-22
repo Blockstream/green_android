@@ -79,15 +79,17 @@ class ChooseAssetAccountBottomSheetDialogFragment :
     }
 
     private fun createEnrichedAssets(): List<EnrichedAsset> {
-        return listOfNotNull(
+        return (setOfNotNull(
             EnrichedAsset.createOrNull(session = session, session.bitcoin?.policyAsset),
             EnrichedAsset.createOrNull(session = session, session.liquid?.policyAsset),
-        ) + (session.enrichedAssets.value.takeIf { session.liquid != null }?.map {
+        ) + session.walletAssets.value.assets.keys.map {
+            EnrichedAsset.create(session = session, assetId = it)
+        }.toSet() + (session.enrichedAssets.value.takeIf { session.liquid != null }?.map {
             EnrichedAsset.create(session = session, assetId = it.assetId)
-        } ?: listOf()) + listOfNotNull(
+        } ?: setOf()) + setOfNotNull(
             EnrichedAsset.createAnyAsset(session = session, isAmp = false),
             EnrichedAsset.createAnyAsset(session = session, isAmp = true)
-        ).sortedWith(session::sortEnrichedAssets)
+        )).sortedWith(session::sortEnrichedAssets)
     }
 
     private fun createModelAdapter(): ModelAdapter<*, *> {

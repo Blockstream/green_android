@@ -107,6 +107,9 @@ data class Network(
         return if (isMainnet) BIP32_VER_MAIN_PUBLIC else BIP32_VER_TEST_PUBLIC
     }
 
+    fun isSameNetwork(other: Network): Boolean =
+        this.isBitcoin && other.isBitcoin || this.isLightning && other.isLightning || this.isLiquid && other.isLiquid
+
     override fun kSerializer() = serializer()
 
     companion object{

@@ -1,7 +1,6 @@
 package com.blockstream.common.gdk
 
 import com.blockstream.common.gdk.data.AuthHandlerStatus
-import com.blockstream.common.gdk.data.Balance
 import com.blockstream.common.gdk.data.FeeEstimation
 import com.blockstream.common.gdk.data.LiquidAssets
 import com.blockstream.common.gdk.data.LoginData
@@ -17,7 +16,6 @@ import com.blockstream.common.gdk.params.BalanceParams
 import com.blockstream.common.gdk.params.BcurDecodeParams
 import com.blockstream.common.gdk.params.BcurEncodeParams
 import com.blockstream.common.gdk.params.ConnectionParams
-import com.blockstream.common.gdk.params.Convert
 import com.blockstream.common.gdk.params.CredentialsParams
 import com.blockstream.common.gdk.params.CsvParams
 import com.blockstream.common.gdk.params.DecryptWithPinParams
@@ -210,10 +208,7 @@ interface GdkBinding {
     fun setTransactionMemo(session: GASession, txHash: String, memo: String)
 
     @Throws(Exception::class)
-    fun convertAmount(session: GASession, amount: Convert): Balance
-
-    @Throws(Exception::class)
-    fun convertAmount(session: GASession, amount: Convert, assetConvert :JsonElement): Balance
+    fun convertAmount(session: GASession, convert: JsonElement): JsonElement
 
     @Throws(Exception::class)
     fun networks(): Networks

@@ -6,15 +6,14 @@ import com.blockstream.common.MBTC_UNIT
 import com.blockstream.common.SATOSHI_UNIT
 import com.blockstream.common.UBTC_UNIT
 import com.blockstream.common.data.Denomination
+import com.blockstream.common.extensions.getAssetTicker
+import com.blockstream.common.extensions.isPolicyAsset
+import com.blockstream.common.extensions.networkForAsset
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Balance
 import com.blockstream.common.gdk.data.CreateTransaction
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.gdk.params.Convert
 import com.blockstream.common.utils.UserInput
-import com.blockstream.common.extensions.getAssetTicker
-import com.blockstream.common.extensions.isPolicyAsset
-import com.blockstream.common.extensions.networkForAsset
 import java.math.RoundingMode
 import java.text.DateFormat
 import java.text.DecimalFormat
@@ -115,8 +114,8 @@ fun Balance?.toAmountLook(
     denomination: Denomination? = null
 ): String? {
     if(this == null) return null
-    return if(assetId.isPolicyAsset(session)){
-        if(denomination?.isFiat == true) {
+    return if (assetId.isPolicyAsset(session)) {
+        if (denomination?.isFiat == true) {
              try {
                  userNumberFormat(
                      decimals = 2,
@@ -129,7 +128,7 @@ fun Balance?.toAmountLook(
                 null
             }
 
-        }else{
+        } else {
             try {
                 val unit = denomination?.denomination
                     ?: (session.getSettings(assetId.networkForAsset(session))?.unit ?: BTC_UNIT)
@@ -148,15 +147,15 @@ fun Balance?.toAmountLook(
             }
         }
 
-    }else{
+    } else {
         try {
             userNumberFormat(
-                assetInfo?.precision ?: 0,
+                asset?.precision ?: 0,
                 withDecimalSeparator = false,
                 withGrouping = withGrouping,
                 withMinimumDigits = withMinimumDigits
-            ).format(assetValue?.toDouble() ?: satoshi).let {
-                if (withUnit) "$it ${assetInfo?.ticker ?: assetId?.substring(0 until 10) ?: ""}" else it
+            ).format(assetAmount?.toDouble() ?: satoshi).let {
+                if (withUnit) "$it ${asset?.ticker ?: assetId?.substring(0 until 10) ?: ""}" else it
             }
         } catch (e: Exception) {
             null
@@ -195,9 +194,10 @@ suspend fun Long?.toAmountLook(
     denomination: Denomination? = null
 ): String? {
     if(this == null) return null
+    val convert = session.convert(assetId = assetId, asLong = this)
     return if(assetId == null || assetId.isPolicyAsset(session)){
         if(denomination?.isFiat == true) {
-            session.convertAmount(assetId, Convert(satoshi = this))?.toAmountLook(
+            convert?.toAmountLook(
                 session,
                 assetId = assetId,
                 withUnit = withUnit,
@@ -205,7 +205,7 @@ suspend fun Long?.toAmountLook(
                 denomination = denomination
             )
         }else{
-            session.convertAmount(assetId, Convert(satoshi = this))?.toAmountLook(
+            convert?.toAmountLook(
                 session,
                 assetId = assetId,
                 withUnit = withUnit,
@@ -219,11 +219,7 @@ suspend fun Long?.toAmountLook(
             null
         } else {
             // withMinimumDigits is not used on asset amounts
-            session.convertAmount(
-                assetId,
-                Convert(satoshi = this, session.getAsset(assetId)),
-                isAsset = true
-            )?.toAmountLook(
+            convert?.toAmountLook(
                 session = session,
                 assetId = assetId,
                 withUnit = withUnit,

@@ -6,7 +6,6 @@ import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.gdk.params.Convert
 import com.blockstream.common.utils.UserInput
 import com.blockstream.green.ui.wallet.AbstractAccountWalletViewModel
 import com.blockstream.green.utils.getBitcoinOrLiquidUnit
@@ -39,9 +38,9 @@ class RequestAmountLabelViewModel constructor(
                     runBlocking {
                         // Amount is always in BTC value, convert it to user's settings
                         session
-                            .convertAmount(network, Convert.forUnit(amount = amount))
+                            .convert(assetId = network.policyAsset, asString = amount)
                             ?.toAmountLook(
-                                session,
+                                session = session,
                                 withUnit = false,
                                 withGrouping = false,
                                 withMinimumDigits = false

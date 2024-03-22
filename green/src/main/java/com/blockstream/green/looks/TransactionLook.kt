@@ -6,7 +6,8 @@ import com.blockstream.common.extensions.getConfirmations
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.gdk.data.UtxoView
-import com.blockstream.common.gdk.params.Convert
+import com.blockstream.common.utils.toAmountLook
+import com.blockstream.common.utils.toAmountLookOrNa
 import com.blockstream.green.R
 import com.blockstream.green.databinding.TransactionAssetLayoutBinding
 import com.blockstream.green.databinding.TransactionUtxoLayoutBinding
@@ -15,8 +16,6 @@ import com.blockstream.green.gdk.getAssetIcon
 import com.blockstream.green.gdk.getDirectionColor
 import com.blockstream.green.utils.feeRateWithUnit
 import com.blockstream.green.utils.formatAuto
-import com.blockstream.green.utils.toAmountLook
-import com.blockstream.green.utils.toAmountLookOrNa
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,7 +40,7 @@ class TransactionLook constructor(val tx: Transaction, val session: GdkSession):
             withMinimumDigits = true
         )
 
-    override suspend fun feeFiat(): String? = session.convertAmount(network.policyAsset, Convert(satoshi = tx.fee))
+    override suspend fun feeFiat(): String? = session.convert(assetId = network.policyAsset, asLong = tx.fee)
             ?.toAmountLook(session = session, denomination = Denomination.fiat(session), withUnit = true)?.let {
                 "≈ $it"
             }

@@ -1,17 +1,16 @@
 package com.blockstream.green.looks
 
+import com.blockstream.common.data.Denomination
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.CreateTransaction
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.UtxoView
-import com.blockstream.common.gdk.params.Convert
-import com.blockstream.common.data.Denomination
+import com.blockstream.common.utils.toAmountLook
+import com.blockstream.common.utils.toAmountLookOrNa
 import com.blockstream.green.databinding.TransactionUtxoLayoutBinding
-import com.blockstream.common.gdk.GdkSession
 import com.blockstream.green.gdk.getAssetIcon
 import com.blockstream.green.gdk.getDirectionColor
 import com.blockstream.green.utils.feeRateWithUnit
-import com.blockstream.green.utils.toAmountLook
-import com.blockstream.green.utils.toAmountLookOrNa
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -43,7 +42,7 @@ data class ConfirmTransactionLook constructor(
             denomination = if(isAddressVerificationOnDevice) Denomination.BTC else denomination
         )
 
-    override suspend fun feeFiat(): String? = session.convertAmount(network, Convert(satoshi = transaction.fee))
+    override suspend fun feeFiat(): String? = session.convert(assetId = network.policyAsset, asLong = transaction.fee)
             ?.toAmountLook(
                 session = session,
                 assetId = network.policyAsset,
@@ -65,7 +64,7 @@ data class ConfirmTransactionLook constructor(
         denomination = if(isAddressVerificationOnDevice) Denomination.BTC else denomination
     )
 
-    suspend fun totalFiat(): String? = session.convertAmount(network, Convert(satoshi = totalPolicyAsLong()))
+    suspend fun totalFiat(): String? = session.convert(assetId = network.policyAsset, asLong = totalPolicyAsLong())
         ?.toAmountLook(
             session = session,
             assetId = network.policyAsset,

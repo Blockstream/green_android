@@ -5,9 +5,9 @@ import androidx.lifecycle.lifecycleScope
 import breez_sdk.InputType
 import com.blockstream.common.AddressInputType
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.ScanResult
 import com.blockstream.common.data.LnUrlAuthRequest
 import com.blockstream.common.data.LnUrlWithdrawRequest
+import com.blockstream.common.data.ScanResult
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.green.NavGraphDirections
@@ -77,8 +77,8 @@ interface OverviewInterface {
                             var account = activeAccount
 
                             // Different network
-                            if(account.network.isBitcoin != checkedInput.first.isBitcoin){
-                                session.allAccounts.value.find { it.isBitcoin == checkedInput.first.isBitcoin }?.also {
+                            if(!account.network.isSameNetwork(checkedInput.first)){
+                                session.allAccounts.value.find { it.network.isSameNetwork(checkedInput.first) }?.also {
                                     account = it
                                 }
                             }

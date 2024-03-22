@@ -90,8 +90,7 @@ class NetworkAssetManager constructor() {
         return icons[assetId]
     }
 
-    fun hasAssetIcon(assetId: String): Boolean = icons.containsKey(assetId)
-
+    fun hasAssetIcon(assetId: String): Boolean = icons[assetId] != null
 
     fun updateAssetsIfNeeded(provider: AssetsProvider) {
         val lastUpdate = _status.updatedAt?.until(Clock.System.now(), DateTimeUnit.SECOND, TimeZone.UTC)

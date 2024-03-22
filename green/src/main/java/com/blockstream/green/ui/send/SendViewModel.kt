@@ -23,13 +23,14 @@ import com.blockstream.common.lightning.lnUrlPayDescription
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.common.utils.UserInput
+import com.blockstream.common.utils.toAmountLook
 import com.blockstream.green.extensions.boolean
 import com.blockstream.green.extensions.lnUrlPayBitmap
 import com.blockstream.green.ui.bottomsheets.DenominationListener
 import com.blockstream.green.ui.wallet.AbstractAssetWalletViewModel
 import com.blockstream.green.utils.feeRateWithUnit
-import com.blockstream.green.utils.toAmountLook
 import com.rickclephas.kmm.viewmodel.coroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
@@ -42,6 +43,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -459,9 +461,31 @@ class SendViewModel constructor(
 
                         tx.addressees.getOrNull(recipient.index)?.let { addressee ->
 
-                            if (network.isLiquid) {
-                                addressee.bip21Params?.assetId?.let { assetId ->
-                                    recipient.accountAsset.value = AccountAsset(recipient.accountAsset.value!!.account, assetId)
+                            addressee.bip21Params?.assetId?.let { assetId ->
+                                withContext(context = Dispatchers.Main) {
+                                    val assetAccount =
+                                        recipient.accountAsset.value!!.account.let { account ->
+
+                                            // Check if selected account as balance
+                                            if (account.isLiquid && session.accountAssets(account).value.balance(assetId) > 0) {
+                                                account
+                                            } else {
+                                                // Find an account with balance
+                                                session.accountAsset.value.firstOrNull { accountAsset ->
+                                                    accountAsset.assetId == assetId && accountAsset.balance(
+                                                        session
+                                                    ) > 0
+                                                }?.account
+                                                    ?: session.accountAsset.value.firstOrNull {
+                                                        it.account.isLiquid
+                                                    }?.account
+                                                    ?: account
+                                            }
+                                        }
+
+                                    AccountAsset(assetAccount, assetId).also {
+                                        setAccountAsset(0, it)
+                                    }
                                 }
                             }
 
@@ -476,7 +500,7 @@ class SendViewModel constructor(
                                     recipient.denomination.postValue(Denomination.default(session))
                                 }
 
-                                recipient.amount.postValue(tx.satoshi[assetId]?.absoluteValue?.let { sendAmount ->
+                                (tx.satoshi[assetId]?.absoluteValue?.let { sendAmount ->
                                     // Avoid UI glitches if isSweep and amount is zero (probably error)
                                     if(isSweep && sendAmount == 0L){
                                         ""
@@ -489,7 +513,22 @@ class SendViewModel constructor(
                                             withGrouping = false
                                         )
                                     }
-                                })
+                                } ?: tx.addressees.getOrNull(recipient.index)?.bip21Params?.amount?.let { bip21Amount ->
+
+                                    session.convert(
+                                        assetId = assetId,
+                                        asString = bip21Amount
+                                    )?.toAmountLook(
+                                        session = session,
+                                        assetId = assetId,
+                                        withUnit = false,
+                                        withGrouping = false,
+                                        withMinimumDigits = false,
+                                        denomination = recipient.denomination.value,
+                                    )
+                                }).also {
+                                    recipient.amount.postValue(it)
+                                }
                             }
                         }
                     }
@@ -572,7 +611,7 @@ class SendViewModel constructor(
         }
     }
 
-    fun setAccountAsset(index: Int, accountAsset: AccountAsset) {
+    private fun setAccountAsset(index: Int, accountAsset: AccountAsset) {
         getRecipientStateFlow(index)?.let {
             // Clear amount if is new asset
             if (it.accountAsset.value?.assetId != accountAsset.assetId) {

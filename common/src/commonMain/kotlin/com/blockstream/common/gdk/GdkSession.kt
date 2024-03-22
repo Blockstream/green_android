@@ -8,6 +8,7 @@ import breez_sdk.ReceivePaymentResponse
 import breez_sdk.SwapInfo
 import co.touchlab.kermit.Logger
 import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.BTC_UNIT
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.data.CountlyAsset
 import com.blockstream.common.data.EnrichedAsset
@@ -2124,32 +2125,15 @@ class GdkSession constructor(
             }
         }
 
-    fun sortEnrichedAssets(a1: EnrichedAsset, a2: EnrichedAsset): Int = when {
-        a1.assetId == BTC_POLICY_ASSET && a2.assetId == BTC_POLICY_ASSET -> 0
-        a1.assetId == BTC_POLICY_ASSET -> -1
-        a2.assetId == BTC_POLICY_ASSET -> 1
-        a1.isLiquid(this) && a2.isLiquid(this) -> 0 // Liquid
-        a1.isLiquid(this) -> -1 // Liquid
-        a2.isLiquid(this) -> 1 // Liquid
-        else -> {
-            val icon1 = networkAssetManager.getAssetIcon(a1.assetId, this)
-            val icon2 = networkAssetManager.getAssetIcon(a2.assetId, this)
+    fun sortEnrichedAssets(a1: EnrichedAsset, a2: EnrichedAsset): Int {
+        val w1 = a1.sortWeight(this)
+        val w2 = a2.sortWeight(this)
 
-            if ((icon1 == null) xor (icon2 == null)) {
-                if (icon1 != null) -1 else 1
-            } else if ((a1.name == null) xor (a2.name == null)) {
-                if (a1.name != null) -1 else 1
-            } else {
-                val weight1 = a1.weight
-                val weight2 = a2.weight
-
-                if (weight1 == weight2) {
-                    a1.name(this).compareTo(a2.name(this))
-                } else {
-                    weight2.compareTo(weight1)
-                }
-            }
+        if(w1 != w2){
+            return w2.compareTo(w1)
         }
+
+        return a1.name(this).compareTo(a2.name(this))
     }
 
     private fun sortAccountAssets(a1: AccountAsset, a2: AccountAsset): Int = when {
@@ -2276,27 +2260,39 @@ class GdkSession constructor(
 
     // asset_info in Convert object can be null for liquid assets that don't have asset metadata
     // if no asset is given, no conversion is needed (conversion will be identified as a btc value in gdk)
-    suspend fun convertAmount(network: Network, convert: Convert, isAsset: Boolean = false) = try {
-        withContext(context = Dispatchers.IO) {
-            if (isAsset && convert.asset == null) {
-                Balance.fromAssetWithoutMetadata(convert)
-            } else if (isAsset && convert.assetAmount != null) {
-                val jsonElement = buildJsonObject {
-                    put("asset_info", convert.asset!!.toJsonElement())
-                    put(convert.asset.assetId, convert.assetAmount)
-                }
-                gdk.convertAmount(gdkSession(network), convert, jsonElement)
-            } else {
-                gdk.convertAmount(gdkSession(network), convert)
+    suspend fun convert(assetId: String? = null, asString: String? = null, asLong: Long? = null, denomination: String? = null): Balance? {
+        val network = assetId.networkForAsset(this)
+        val isPolicyAsset = assetId.isPolicyAsset(this)
+        val asset = assetId?.let { getAsset(it) }
+
+        val convert = if (isPolicyAsset || assetId == null || asString == null) {
+            Convert.create(
+                asset = asset,
+                asString = asString,
+                asLong = asLong,
+                unit = denomination ?: BTC_UNIT
+            ).toJsonElement()
+        } else if (asset != null) {
+            buildJsonObject {
+                put("asset_info", asset.toJsonElement())
+                put(assetId, asString)
+            }
+        } else {
+            return Balance.fromAssetWithoutMetadata(asLong ?: 0)
+        }
+
+        val balance = withContext(context = Dispatchers.IO) {
+            try {
+                Balance.fromJsonElement(jsonElement = gdk.convertAmount(gdkSession(network), convert), assetId = assetId)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
             }
         }
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
-    }
 
-    suspend fun convertAmount(assetId: String?, convert: Convert, isAsset: Boolean = false): Balance? {
-        return convertAmount(assetId.networkForAsset(this@GdkSession), convert, isAsset)
+        balance?.asset = asset
+
+        return balance
     }
 
     private fun getUnspentOutputs(network: Network, params: BalanceParams) = authHandler(

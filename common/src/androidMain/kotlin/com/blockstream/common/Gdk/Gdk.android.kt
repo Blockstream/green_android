@@ -250,18 +250,8 @@ class AndroidGdk(log: Boolean, config: InitConfig) : GdkBinding {
         return GDKJNI.set_transaction_memo(session, txHash, memo, 0)
     }
 
-    override fun convertAmount(session: GASession, amount: Convert): Balance {
-        return Balance.fromJsonElement(
-            GDKJNI.convert_amount(session, amount) as JsonElement,
-            amount
-        )
-    }
-
-    override fun convertAmount(session: GASession, amount: Convert, assetConvert :JsonElement): Balance {
-        return Balance.fromJsonElement(
-            GDKJNI.convert_amount(session, assetConvert) as JsonElement,
-            amount
-        )
+    override fun convertAmount(session: GASession, convert: JsonElement): JsonElement {
+        return GDKJNI.convert_amount(session, convert) as JsonElement
     }
 
     private var _cachedNetworks: Networks? = null

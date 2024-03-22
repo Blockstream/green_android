@@ -18,7 +18,6 @@ import com.blockstream.common.gdk.data.SwapAsset
 import com.blockstream.common.gdk.data.SwapProposal
 import com.blockstream.common.gdk.data.Utxo
 import com.blockstream.common.gdk.params.CompleteSwapParams
-import com.blockstream.common.gdk.params.Convert
 import com.blockstream.common.gdk.params.CreateSwapParams
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.gdk.params.LiquidDexV0AssetParams
@@ -130,15 +129,14 @@ class SwapViewModel constructor(
             doUserAction({
                 // Convert utxo satoshi values
                 val utxoAmount = if(utxo?.assetId.isPolicyAsset(session)){
-                    session.convertAmount(
-                        utxo?.assetId,
-                        Convert(satoshi = utxo!!.satoshi)
+                    session.convert(
+                        assetId = utxo?.assetId,
+                        asLong = utxo!!.satoshi
                     )!!.valueInMainUnit
                 }else{
-                    session.convertAmount(
-                        utxo?.assetId,
-                        Convert(satoshi = utxo!!.satoshi, session.getAsset(utxo!!.assetId)),
-                        isAsset = true
+                    session.convert(
+                        assetId = utxo?.assetId,
+                        asLong = utxo!!.satoshi
                     )!!.valueInMainUnit
                 }
 

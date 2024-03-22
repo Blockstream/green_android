@@ -12,7 +12,6 @@ import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Balance
 import com.blockstream.common.gdk.data.CreateTransaction
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.gdk.params.Convert
 
 // Use it for GDK purposes
 // Lowercase & replace μbtc -> ubtc
@@ -140,12 +139,12 @@ fun Balance?.toAmountLook(
     }else{
         try {
             userNumberFormat(
-                assetInfo?.precision ?: 0,
+                asset?.precision ?: 0,
                 withDecimalSeparator = false,
                 withGrouping = withGrouping,
                 withMinimumDigits = withMinimumDigits
-            ).format(assetValue?.toDouble() ?: satoshi).let {
-                if (withUnit) "$it ${assetInfo?.ticker ?: assetId?.substring(0 until 10) ?: ""}" else it
+            ).format(assetAmount?.toDouble() ?: satoshi).let {
+                if (withUnit) "$it ${asset?.ticker ?: assetId?.substring(0 until 10) ?: ""}" else it
             }
         } catch (e: Exception) {
             null
@@ -184,9 +183,10 @@ suspend fun Long?.toAmountLook(
     denomination: Denomination? = null
 ): String? {
     if(this == null) return null
+    val convert = session.convert(assetId = assetId, asLong = this)
     return if(assetId == null || assetId.isPolicyAsset(session)){
         if(denomination?.isFiat == true) {
-            session.convertAmount(assetId, Convert(satoshi = this))?.toAmountLook(
+            convert?.toAmountLook(
                 session,
                 assetId = assetId,
                 withUnit = withUnit,
@@ -194,7 +194,7 @@ suspend fun Long?.toAmountLook(
                 denomination = denomination
             )
         }else{
-            session.convertAmount(assetId, Convert(satoshi = this))?.toAmountLook(
+            convert?.toAmountLook(
                 session,
                 assetId = assetId,
                 withUnit = withUnit,
@@ -208,11 +208,7 @@ suspend fun Long?.toAmountLook(
             null
         } else {
             // withMinimumDigits is not used on asset amounts
-            session.convertAmount(
-                assetId,
-                Convert(satoshi = this, session.getAsset(assetId)),
-                isAsset = true
-            )?.toAmountLook(
+            convert?.toAmountLook(
                 session = session,
                 assetId = assetId,
                 withUnit = withUnit,

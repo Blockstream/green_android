@@ -810,35 +810,16 @@ class IOSGdkBinding constructor(config: InitConfig) : GdkBinding {
     }
 
     @Throws(Exception::class)
-    override fun convertAmount(session: GASession, amount: Convert): Balance {
+    override fun convertAmount(session: GASession, convert: JsonElement): JsonElement {
         return memScoped {
             gaJson().let { gaJson ->
                 GA_convert_amount(
                     session = session.asGASession(),
-                    value_details = amount.toGaJson(this),
+                    value_details = convert.toGaJson(this),
                     output = gaJson.ptr
                 ).okOrThrow {
                     gaJson.toJsonString(this).let {
-                        Balance.fromJsonString(it, amount)
-                    }
-                }
-            }
-        }
-    }
-
-    @Throws(Exception::class)
-    override fun convertAmount(
-        session: GASession, amount: Convert, assetConvert: JsonElement
-    ): Balance {
-        return memScoped {
-            gaJson().let { gaJson ->
-                GA_convert_amount(
-                    session = session.asGASession(),
-                    value_details = assetConvert.toGaJson(this),
-                    output = gaJson.ptr
-                ).okOrThrow {
-                    gaJson.toJsonString(this).let {
-                        Balance.fromJsonString(it, amount)
+                        Json.parseToJsonElement(it)
                     }
                 }
             }

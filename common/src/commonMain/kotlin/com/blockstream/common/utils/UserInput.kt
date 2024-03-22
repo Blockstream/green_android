@@ -6,7 +6,6 @@ import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Asset
 import com.blockstream.common.gdk.data.Balance
-import com.blockstream.common.gdk.params.Convert
 import com.blockstream.common.gdk.params.Limits
 
 // Parse user input respecting user Locale and convert the value to GDK compatible value (US Locale)
@@ -22,11 +21,7 @@ data class UserInput(
 
     suspend fun getBalance(): Balance? {
         return if(amount.isNotBlank()){
-            if (asset == null) {
-                session.convertAmount(assetId, Convert.forUnit(denomination.denomination, amount))
-            } else {
-                session.convertAmount(assetId, Convert.forAsset(asset, amount), isAsset = true)
-            }
+            session.convert(assetId = assetId, asString = amount, denomination = denomination.denomination)
         }else{
             null
         }
