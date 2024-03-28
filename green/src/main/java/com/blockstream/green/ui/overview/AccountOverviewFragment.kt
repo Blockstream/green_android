@@ -532,10 +532,6 @@ class AccountOverviewFragment : AbstractAccountWalletFragment<AccountOverviewFra
             fastAdapter.notifyAdapterDataSetChanged()
         }.launchIn(lifecycleScope)
 
-        fastAdapter.addClickListener<ListItemLightningInfoBinding, GenericItem>({ binding -> binding.buttonIncreaseInbound }) { _, _, _, _ ->
-            ComingSoonBottomSheetDialogFragment.show(childFragmentManager)
-        }
-
         fastAdapter.addClickListener<ListItemLightningInfoBinding, GenericItem>({ binding -> binding.buttonSweep }) { _, _, _, _ ->
             navigate(
                 AccountOverviewFragmentDirections.actionAccountOverviewFragmentToRecoverFundsFragment(

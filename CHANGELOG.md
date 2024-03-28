@@ -3,6 +3,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.27] - 2024-03-28
+
+### Added
+- Add push notification support for Lightning payments
+
+### Changed
+- Bump Breez to version 0.3.8
+- Make Lightning Shortcut opt-out
+- Update transaction details view
+- Improve QR code scanability
+
 ## [4.0.26] - 2024-03-18
 
 ### Changed

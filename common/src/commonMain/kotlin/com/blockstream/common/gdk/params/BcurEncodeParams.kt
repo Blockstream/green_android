@@ -12,7 +12,7 @@ data class BcurEncodeParams constructor(
     @SerialName("num_words") val numWords: Int? = null,
     @SerialName("index") val index: Int? = null,
     @SerialName("private_key") val privateKey: String? = null,
-    @SerialName("max_fragment_len") val maxFragmentLen: Int = 100
+    @SerialName("max_fragment_len") val maxFragmentLen: Int = 50
 ) : GreenJson<BcurEncodeParams>() {
     override fun explicitNulls(): Boolean = false
     override fun encodeDefaultsValues(): Boolean = true

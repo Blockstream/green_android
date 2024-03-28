@@ -161,7 +161,9 @@ fun JadeQRScreen(
                     )
                 } else {
                     GreenQR(
-                        data = qrCode, modifier = Modifier
+                        data = qrCode,
+                        isJadeQR = true,
+                        modifier = Modifier
                             .align(Alignment.Center)
                             .fillMaxWidth()
                     )

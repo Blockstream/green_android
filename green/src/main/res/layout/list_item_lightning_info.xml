@@ -116,16 +116,5 @@
                     android:text="@string/id_learn_more" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-
-        <Button
-            android:id="@+id/buttonIncreaseInbound"
-            style="@style/Widget.Green.Button.Text.Tiny"
-            isVisible="@{capacityText != null}"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/id_increase_inbound_capacity_now"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
     </LinearLayout>
 </layout>

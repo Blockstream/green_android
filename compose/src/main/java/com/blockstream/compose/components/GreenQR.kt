@@ -35,6 +35,7 @@ import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.md_theme_surfaceTint
 import com.blockstream.compose.utils.QrEncoder
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.lightspark.composeqr.QrCodeView
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -43,11 +44,17 @@ fun GreenQR(
     modifier: Modifier = Modifier,
     data: String?,
     isVisible: Boolean = true,
+    isJadeQR: Boolean = false,
     visibilityClick: () -> Unit = {}
 ) {
-    val qrEncoder = remember { QrEncoder() }
+    val qrEncoder = remember {
+        QrEncoder(
+            errorCorrection = if (isJadeQR) ErrorCorrectionLevel.L else ErrorCorrectionLevel.H
+        )
+    }
     var isFullscreen by remember { mutableStateOf(false) }
     val isVisibleAndNotBlank = isVisible && data.isNotBlank()
+    val qrPadding = if(isJadeQR) 24.dp else 12.dp
 
     Column(
         modifier = Modifier
@@ -81,7 +88,7 @@ fun GreenQR(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight()
-                                .padding(24.dp)
+                                .padding(qrPadding)
                         )
                     }
                 }
@@ -127,7 +134,7 @@ fun GreenQR(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight()
-                                .padding(18.dp)
+                                .padding(qrPadding)
                         )
                     } else if (isVisible) {
                         Image(
@@ -170,6 +177,7 @@ fun GreenQRPreview() {
 
             GreenQR(
                 data = "chalk verb patch cube sell west penalty fish park worry tribe tourist chalk verb patch cube sell west penalty fish park worry tribe tourist",
+                isJadeQR = true,
                 modifier = Modifier.fillMaxWidth()
             )
 
