@@ -1,5 +1,6 @@
 package com.blockstream.common.data
 
+import cafe.adriel.voyager.core.lifecycle.JavaSerializable
 import com.arkivanov.essenty.parcelable.CommonParceler
 import com.arkivanov.essenty.parcelable.ParcelReader
 import com.arkivanov.essenty.parcelable.ParcelWriter
@@ -18,15 +19,51 @@ import com.blockstream.common.database.GetWalletsWithCredentialType
 import com.blockstream.common.database.Wallet
 import com.blockstream.common.extensions.isBlank
 import com.blockstream.common.extensions.objectId
-import com.blockstream.common.serializers.WalletSerializer
+import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.Serializable
 
+@Parcelize
+@Serializable
+public data class WalletSerializable(
+    public val id: String,
+    public val name: String,
+    public val xpub_hash_id: String,
+    public val active_network: String,
+    public val active_account: Long,
+    public val is_testnet: Boolean,
+    public val is_hardware: Boolean,
+    public val is_lightning: Boolean,
+    public val ask_bip39_passphrase: Boolean,
+    public val watch_only_username: String?,
+    public val device_identifiers: List<DeviceIdentifier>?,
+    public val extras: WalletExtras?,
+    public val order: Long
+): Parcelable, JavaSerializable
+
+fun Wallet.toWalletSerializable(): WalletSerializable {
+    return WalletSerializable(
+        id = id,
+        name = name,
+        xpub_hash_id = xpub_hash_id,
+        active_network = active_network,
+        active_account,
+        is_testnet = is_testnet,
+        is_hardware = is_hardware,
+        is_lightning = is_lightning,
+        ask_bip39_passphrase = ask_bip39_passphrase,
+        watch_only_username = watch_only_username,
+        device_identifiers = device_identifiers,
+        extras = extras,
+        order = order
+    )
+}
+
 fun Wallet.toGreenWallet(): GreenWallet {
-    return GreenWallet(wallet = this)
+    return GreenWallet(wallet = this.toWalletSerializable())
 }
 
 fun GetWalletsWithCredentialType.toGreenWallet(): GreenWallet {
-    val wallet = Wallet(
+    val wallet = WalletSerializable(
         id = id,
         name = name,
         xpub_hash_id = xpub_hash_id,
@@ -50,10 +87,11 @@ enum class WalletIcon { REGULAR, WATCH_ONLY, TESTNET, BIP39, HARDWARE, LIGHTNING
 @Parcelize
 @TypeParceler<Wallet, WalletParceler>()
 data class GreenWallet constructor(
-    @Serializable(with = WalletSerializer::class) var wallet: Wallet,
+    var wallet: WalletSerializable,
     val ephemeralIdOrNull: Long? = null,
     val hasLightningShortcut: Boolean = false
-) : Parcelable {
+) : GreenJson<GreenWallet>(), Parcelable {
+    override fun kSerializer() = serializer()
 
     var id
         get() = wallet.id
@@ -190,7 +228,7 @@ data class GreenWallet constructor(
             extras: WalletExtras? = null
         ): GreenWallet {
             return GreenWallet(
-                wallet = Wallet(
+                wallet = WalletSerializable(
                     id = objectId().toString(),
                     name = name ?: networkId.replaceFirstChar { n -> n.titlecase() },
                     xpub_hash_id = networkId,

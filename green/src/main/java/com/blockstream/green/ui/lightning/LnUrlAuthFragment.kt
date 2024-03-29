@@ -17,7 +17,7 @@ class LnUrlAuthFragment : AppFragment<LnurlAuthFragmentBinding>(R.layout.lnurl_a
 
     val args: LnUrlAuthFragmentArgs by navArgs()
 
-    private val requestData by lazy { args.lnUrlAuthRequest.requestData }
+    private val requestData by lazy { args.lnUrlAuthRequest.deserialize() }
 
     override val subtitle: String
         get() = args.wallet.name

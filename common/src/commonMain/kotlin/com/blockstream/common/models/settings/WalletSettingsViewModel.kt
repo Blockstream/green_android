@@ -70,8 +70,8 @@ abstract class WalletSettingsViewModelAbstract(
 
 class WalletSettingsViewModel(
     greenWallet: GreenWallet,
-    val network: Network? = null,
-    private val section: WalletSettingsSection
+    private val section: WalletSettingsSection,
+    val network: Network? = null
 ) :
     WalletSettingsViewModelAbstract(greenWallet = greenWallet, section = section) {
 

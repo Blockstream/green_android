@@ -3,6 +3,7 @@ package com.blockstream.common.gdk.data
 
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.utils.hexToByteArray
 import com.blockstream.common.utils.hexToByteArrayReversed
 import kotlinx.serialization.SerialName
@@ -55,7 +56,8 @@ data class InputOutput constructor(
     @SerialName("blinding_key") val blindingKey: String? = null, // the blinding public key embedded into the blinded address we are sending to
 
     @SerialName("eph_public_key") val ephPublicKey: String? = null, // our ephemeral public key for [un]blinding
-) : Parcelable {
+) : GreenJson<InputOutput>(), Parcelable {
+    override fun kSerializer() = serializer()
 
     // Called from Java to use the UInt.toInt() inline fun
     fun getPtIdxInt() = ptIdx?.toInt() ?: 0

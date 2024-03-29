@@ -2,7 +2,10 @@ package com.blockstream.common.gdk.data
 
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.blockstream.common.gdk.GreenJson
+import kotlinx.serialization.Serializable
 
+@Serializable
 @Parcelize
 data class UtxoView constructor(
     val address: String? = null,
@@ -11,7 +14,9 @@ data class UtxoView constructor(
     val assetId: String? = null,
     val satoshi: Long? = null,
     val isChange: Boolean = false,
-): Parcelable {
+): GreenJson<UtxoView>(), Parcelable {
+    override fun kSerializer() = serializer()
+
     companion object{
         fun fromOutput(output: Output): UtxoView {
             return UtxoView(

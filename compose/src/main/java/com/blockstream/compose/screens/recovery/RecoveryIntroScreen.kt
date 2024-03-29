@@ -47,7 +47,6 @@ import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenRow
-import com.blockstream.compose.sheets.BottomSheetNavigatorM3
 import com.blockstream.compose.sideeffects.BiometricsState
 import com.blockstream.compose.theme.GreenThemePreview
 import com.blockstream.compose.theme.bodyLarge

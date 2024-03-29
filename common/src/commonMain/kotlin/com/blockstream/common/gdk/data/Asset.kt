@@ -1,6 +1,7 @@
 package com.blockstream.common.gdk.data
 
 
+import cafe.adriel.voyager.core.lifecycle.JavaSerializable
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.BTC_POLICY_ASSET
@@ -36,5 +37,5 @@ data class Asset constructor(
 
 @Serializable
 @Parcelize
-data class Entity(@SerialName("domain") val domain: String) : Parcelable
+data class Entity(@SerialName("domain") val domain: String) : Parcelable, JavaSerializable
 

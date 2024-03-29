@@ -1,6 +1,7 @@
 package com.blockstream.common.gdk
 
 
+import cafe.adriel.voyager.core.lifecycle.JavaSerializable
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Transient
@@ -9,7 +10,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
 @OptIn(ExperimentalSerializationApi::class)
-abstract class GreenJson<T> {
+abstract class GreenJson<T>: JavaSerializable {
     open fun encodeDefaultsValues() = true
 
     open fun explicitNulls() = true

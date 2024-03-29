@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -62,36 +63,43 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
     override fun segmentation(): HashMap<String, Any> =
         countly.accountSegmentation(session = session, account = account)
 
-
     override val hasLightningShortcut = if(greenWallet.isEphemeral) {
         emptyFlow<Boolean?>()
     } else {
         database.getLoginCredentialsFlow(greenWallet.id).map {
             it.lightningMnemonic != null
         }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
+    }.filter { session.isConnected }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     override val assets: StateFlow<Map<EnrichedAsset, Long>> = session.accountAssets(account).map {
         session.takeIf { account.isLiquid }?.ifConnected {
             it.toEnrichedAssets(session)
         } ?: mapOf()
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), mapOf())
+    }.filter { session.isConnected }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), mapOf())
 
     override val accounts: StateFlow<List<AccountLook>> = session.accounts.map { accounts ->
         accounts.map {
             AccountLook.create(it)
         }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
+    }.filter { session.isConnected }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
-    override val transactions: StateFlow<List<Transaction>> = combine(session.accountTransactions(account), (session.takeIf { account.isLightning }?.ifConnected {
-        session.lightningSdkOrNull?.swapInfoStateFlow
-    } ?: flowOf(listOf()))) { accountTransactions, swaps ->
+    override val transactions: StateFlow<List<Transaction>> = combine(
+        session.accountTransactions(account),
+        (session.takeIf { account.isLightning }?.ifConnected {
+            session.lightningSdkOrNull?.swapInfoStateFlow
+        } ?: flowOf(listOf()))) { accountTransactions, swaps ->
         swaps.map {
             Transaction.fromSwapInfo(account, it.first, it.second)
         } + accountTransactions
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf(Transaction.LoadingTransaction))
+    }.filter { session.isConnected }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(),
+        listOf(Transaction.LoadingTransaction)
+    )
 
-    override val hasMoreTransactions = session.accountTransactionsPager(account).stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
+    override val hasMoreTransactions =
+        session.accountTransactionsPager(account).filter { session.isConnected }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     private val _twoFactorState: MutableStateFlow<AlertType?> = MutableStateFlow(null)
 
@@ -105,7 +113,7 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
             lspHeath?.takeIf { it != HealthCheckStatus.OPERATIONAL }
                 ?.let { AlertType.LspStatus(maintenance = it == HealthCheckStatus.MAINTENANCE) },
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
+    }.filter { session.isConnected }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
     class LocalEvents {
         object Send : Event
@@ -159,7 +167,7 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                 } else {
                     null
                 }
-            }.launchIn(this)
+            }.filter { session.isConnected }.launchIn(this)
 
             session.getTransactions(account = account, isReset = true, isLoadMore = false)
         }

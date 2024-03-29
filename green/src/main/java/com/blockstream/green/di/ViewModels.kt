@@ -99,10 +99,9 @@ val viewModels = module {
     viewModelOf(::AccountOverviewViewModel)
     viewModelOf(::DenominationExchangeRateViewModel)
     viewModelOf(::RequestAmountViewModel)
-    viewModelOf(::WalletSettingsViewModel)
     viewModelOf(::TwoFactorSetupViewModel)
     viewModel {
-        WalletSettingsViewModel(get(), getOrNull(), get())
+        WalletSettingsViewModel(get(), get(), getOrNull())
     }
     viewModel {
         JadeQRViewModel(get(), getOrNull())

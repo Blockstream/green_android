@@ -27,7 +27,7 @@ class LnUrlWithdrawFragment : AppFragment<LnurlWithdrawFragmentBinding>(
     val args: LnUrlWithdrawFragmentArgs by navArgs()
 
     val requestData
-        get() = args.lnUrlWithdrawRequest.requestData
+        get() = args.lnUrlWithdrawRequest.deserialize()
 
     override val subtitle: String
         get() = viewModel.greenWallet.name
@@ -38,7 +38,7 @@ class LnUrlWithdrawFragment : AppFragment<LnurlWithdrawFragmentBinding>(
     val viewModel: LnUrlWithdrawViewModel by viewModel {
         parametersOf(
             args.wallet,
-            args.lnUrlWithdrawRequest.requestData
+            requestData
         )
     }
 

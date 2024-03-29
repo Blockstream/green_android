@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.media.RingtoneManager
 import android.os.Build
+import android.os.Parcelable
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -158,7 +159,7 @@ class NotificationManager constructor(
     ): Notification {
         val intent = Intent(context, MainActivity::class.java).also {
             it.action = MainActivity.OPEN_WALLET
-            it.putExtra(MainActivity.WALLET, wallet)
+            it.putExtra(MainActivity.WALLET, wallet as Parcelable)
             session.device?.let { device ->
                 it.putExtra(MainActivity.DEVICE_ID, device.connectionIdentifier)
             }
@@ -220,7 +221,7 @@ class NotificationManager constructor(
     ): Notification {
         val intent = Intent(context, MainActivity::class.java).also {
             it.action = MainActivity.OPEN_WALLET
-            it.putExtra(MainActivity.WALLET, wallet)
+            it.putExtra(MainActivity.WALLET, wallet as Parcelable)
             it.putExtra(MainActivity.IS_LIGHTNING, database.getLoginCredential(wallet.id, CredentialType.LIGHTNING_MNEMONIC) != null)
         }
         val pendingIntent = PendingIntent.getActivity(
@@ -254,7 +255,7 @@ class NotificationManager constructor(
     ): Notification {
         val intent = Intent(context, MainActivity::class.java).also {
             it.action = MainActivity.OPEN_WALLET
-            it.putExtra(MainActivity.WALLET, wallet)
+            it.putExtra(MainActivity.WALLET, wallet as Parcelable)
             it.putExtra(MainActivity.IS_LIGHTNING, database.getLoginCredential(wallet.id, CredentialType.LIGHTNING_MNEMONIC) != null)
         }
         val pendingIntent = PendingIntent.getActivity(

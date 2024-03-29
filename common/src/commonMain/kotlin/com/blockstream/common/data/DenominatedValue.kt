@@ -1,5 +1,6 @@
 package com.blockstream.common.data
 
+import cafe.adriel.voyager.core.lifecycle.JavaSerializable
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.BITS_UNIT
@@ -20,8 +21,7 @@ data class DenominatedValue constructor(
     val balance: Balance?,
     val assetId: String?,
     val denomination: Denomination
-) : Parcelable {
-
+) : Parcelable, JavaSerializable {
 
     fun asNetworkUnit(session: GdkSession): String {
         return if (denomination.isFiat) {
@@ -77,7 +77,7 @@ data class DenominatedValue constructor(
 }
 
 @Parcelize
-sealed class Denomination(open val denomination: String) : Parcelable {
+sealed class Denomination(open val denomination: String) : Parcelable, JavaSerializable {
     object BTC : Denomination(BTC_UNIT)
     object MBTC : Denomination(MBTC_UNIT)
     object UBTC : Denomination(UBTC_UNIT)

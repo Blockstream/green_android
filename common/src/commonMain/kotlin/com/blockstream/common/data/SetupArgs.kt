@@ -1,5 +1,6 @@
 package com.blockstream.common.data
 
+import cafe.adriel.voyager.core.lifecycle.JavaSerializable
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.gdk.data.AccountType
@@ -8,7 +9,6 @@ import com.blockstream.common.gdk.data.Network
 import kotlinx.serialization.Serializable
 
 
-@Serializable
 @Parcelize
 data class SetupArgs constructor(
     val mnemonic: String = "",
@@ -26,7 +26,7 @@ data class SetupArgs constructor(
     val page: Int = 1,
     val isShowRecovery: Boolean = false,
     val isLightning: Boolean = false
-) : Parcelable {
+) : Parcelable, JavaSerializable {
 
     val mnemonicAsWords
         get() = mnemonic.split(" ")

@@ -44,6 +44,7 @@ import com.blockstream.common.data.WalletSetting
 import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.models.settings.DenominationExchangeRateViewModel
+import com.blockstream.common.models.settings.WalletSettingsSection
 import com.blockstream.common.models.settings.WalletSettingsViewModel
 import com.blockstream.common.models.settings.WalletSettingsViewModelAbstract
 import com.blockstream.common.models.settings.WalletSettingsViewModelPreview
@@ -77,13 +78,13 @@ import org.koin.core.parameter.parametersOf
 @Parcelize
 data class WalletSettingsScreen(
     val greenWallet: GreenWallet,
-    val network: Network? = null,
-    val isRecoveryTransactions: Boolean = false
+    val section: WalletSettingsSection = WalletSettingsSection.General,
+    val network: Network? = null
 ) : Screen, Parcelable {
     @Composable
     override fun Content() {
         val viewModel = getScreenModel<WalletSettingsViewModel>() {
-            parametersOf(greenWallet, network, true)
+            parametersOf(greenWallet, section, network)
         }
 
         val navData by viewModel.navData.collectAsStateWithLifecycle()

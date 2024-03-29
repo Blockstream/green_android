@@ -1,5 +1,6 @@
 package com.blockstream.common.data
 
+import cafe.adriel.voyager.core.lifecycle.JavaSerializable
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.gdk.data.Network
@@ -38,7 +39,7 @@ data class ApplicationSettings constructor(
     val spvLiquidElectrumServer: String? = null,
     val spvTestnetElectrumServer: String? = null,
     val spvTestnetLiquidElectrumServer: String? = null,
-) : Parcelable {
+) : Parcelable, JavaSerializable {
 
     fun getPersonalElectrumServer(network: Network) = when {
             Network.isBitcoinMainnet(network.id) -> {

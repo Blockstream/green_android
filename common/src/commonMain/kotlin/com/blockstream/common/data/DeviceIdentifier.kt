@@ -1,5 +1,7 @@
 package com.blockstream.common.data
 
+import com.arkivanov.essenty.parcelable.Parcelable
+import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.devices.ConnectionType
 import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.gdk.device.DeviceBrand
@@ -8,13 +10,14 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
+@Parcelize
 @Serializable
 data class DeviceIdentifier constructor(
     @SerialName("name") val name: String,
     @SerialName("unique_identifier") val uniqueIdentifier: String,
     @SerialName("brand") val brand: DeviceBrand,
     @SerialName("connection") val connectionType: ConnectionType,
-): GreenJson<DeviceIdentifier>() {
+): GreenJson<DeviceIdentifier>(), Parcelable {
 
     override fun kSerializer() = serializer()
 

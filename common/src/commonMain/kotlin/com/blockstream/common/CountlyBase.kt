@@ -1,5 +1,6 @@
 package com.blockstream.common
 
+import cafe.adriel.voyager.core.lifecycle.JavaSerializable
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.AppInfo
@@ -854,7 +855,7 @@ enum class TransactionType(val string: String) {
 }
 
 @Parcelize
-enum class AddressInputType constructor(val string: String) : Parcelable {
+enum class AddressInputType constructor(val string: String) : Parcelable, JavaSerializable {
     PASTE("paste"),
     SCAN("scan"),
     BIP21("bip21");
@@ -867,7 +868,7 @@ data class TransactionSegmentation constructor(
     val transactionType: TransactionType,
     val addressInputType: AddressInputType?,
     val sendAll: Boolean
-) : Parcelable
+) : Parcelable, JavaSerializable
 
 interface ScreenView{
     var screenIsRecorded: Boolean // no need in ViewModel implementation

@@ -3,16 +3,16 @@ package com.blockstream.common.extensions
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.WalletSerializable
 import com.blockstream.common.database.LoginCredentials
-import com.blockstream.common.database.Wallet
-import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountType
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.looks.wallet.WalletListLook
 
 fun previewWallet(isHardware: Boolean = false, isWatchOnly: Boolean = false, isEphemeral: Boolean = false, hasLightningShortcut: Boolean = false): GreenWallet {
-    return Wallet(
+    return WalletSerializable(
         id = objectId().toString(),
         name = if(isHardware) listOf("Jade USB", "Jade BLE", "Ledger").random() else "Wallet #${(1L..999L).random()}",
         xpub_hash_id = "",

@@ -83,25 +83,27 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
 
     override val isWalletOnboarding: StateFlow<Boolean> = combine(session.zeroAccounts, session.failedNetworks) { zeroAccounts, failedNetworks ->
         zeroAccounts && failedNetworks.isEmpty()
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
+    }.filter { session.isConnected }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
-    override val assets: StateFlow<List<EnrichedAsset>> = session.walletAssets.map {
-        session.ifConnected {
+    override val assets: StateFlow<List<EnrichedAsset>> = session.walletAssets
+        .filter { session.isConnected }.map {
             it.assets.keys.filter {
                 session.hasAssetIcon(it)
             }.map {
                 EnrichedAsset.create(session, it)
             }
-        } ?: listOf()
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
-    override val accounts: StateFlow<List<AccountLook>> = session.accounts.map { accounts ->
-        accounts.map {
-            AccountLook.create(it)
-        }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
+    override val accounts: StateFlow<List<AccountLook>> = session.accounts
+        .filter { session.isConnected }.map { accounts ->
+            accounts.map {
+                AccountLook.create(it)
+            }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
-    override val transactions: StateFlow<List<Transaction>> = session.walletTransactions
+    override val transactions: StateFlow<List<Transaction>> =
+        session.walletTransactions.filter { session.isConnected }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
     private val primaryBalanceInFiat: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
@@ -125,7 +127,7 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
             lspHeath?.takeIf { it != HealthCheckStatus.OPERATIONAL }
                 ?.let { AlertType.LspStatus(maintenance = it == HealthCheckStatus.MAINTENANCE) },
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
+    }.filter { session.isConnected }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
     class LocalEvents {
         object ToggleBalance : Event
@@ -169,7 +171,7 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
                 )
             )
 
-            session.systemMessage.onEach {
+            session.systemMessage.filter { session.isConnected }.onEach {
                 _systemMessage.value = if (it.isEmpty()) {
                     null
                 } else {
@@ -179,7 +181,7 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
 
             // Support only for Bitcoin
             session.bitcoinMultisig?.let { network ->
-                session.twoFactorReset(network).onEach {
+                session.twoFactorReset(network).filter { session.isConnected }.onEach {
                     _twoFactorState.value = if (it != null && it.isActive == true) {
                         if (it.isDisputed == true) {
                             AlertType.Dispute2FA(network, it)

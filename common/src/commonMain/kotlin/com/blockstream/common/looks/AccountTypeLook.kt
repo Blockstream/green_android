@@ -2,13 +2,17 @@ package com.blockstream.common.looks
 
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.gdk.data.AccountType
+import kotlinx.serialization.Serializable
 
+@Serializable
 @Parcelize
 data class AccountTypeLook(
     val accountType: AccountType,
     val canBeAdded: Boolean = true
-) : Parcelable {
+) : GreenJson<AccountTypeLook>(), Parcelable {
+    override fun kSerializer() = serializer()
 
     val isMultisig
         get() = accountType.isMutlisig()

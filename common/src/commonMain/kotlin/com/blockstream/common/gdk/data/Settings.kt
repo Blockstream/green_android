@@ -1,5 +1,7 @@
 package com.blockstream.common.gdk.data
 
+import com.arkivanov.essenty.parcelable.Parcelable
+import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -8,6 +10,7 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
+@Parcelize
 @Serializable
 data class Settings(
     @SerialName("altimeout") val altimeout: Int = 0, // minutes
@@ -18,7 +21,7 @@ data class Settings(
     @SerialName("required_num_blocks") val requiredNumBlocks: Int = 12,
     @SerialName("unit") val unit: String,
     @SerialName("pgp") val pgp: String? = null
-): GreenJson<Settings>() {
+): GreenJson<Settings>(), Parcelable {
     override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()
@@ -50,20 +53,22 @@ data class Settings(
     }
 }
 
+@Parcelize
 @Serializable
 data class SettingsNotification(
     @SerialName("email_incoming") val emailIncoming: Boolean,
     @SerialName("email_outgoing") val emailOutgoing: Boolean,
-): GreenJson<SettingsNotification>() {
+): GreenJson<SettingsNotification>(), Parcelable {
 
     override fun kSerializer() = serializer()
 }
 
+@Parcelize
 @Serializable
 data class Pricing(
     @SerialName("currency") val currency: String,
     @SerialName("exchange") val exchange: String,
-): GreenJson<Pricing>() {
+): GreenJson<Pricing>(), Parcelable {
 
     override fun kSerializer() = serializer()
 

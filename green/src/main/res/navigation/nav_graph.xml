@@ -675,7 +675,7 @@
             app:argType="com.blockstream.common.data.GreenWallet" />
         <argument
             android:name="lnUrlWithdrawRequest"
-            app:argType="com.blockstream.common.data.LnUrlWithdrawRequest" />
+            app:argType="com.blockstream.common.data.LnUrlWithdrawRequestSerializable" />
     </fragment>
     <fragment
         android:id="@+id/lnUrlAuthFragment"
@@ -687,7 +687,7 @@
             app:argType="com.blockstream.common.data.GreenWallet" />
         <argument
             android:name="lnUrlAuthRequest"
-            app:argType="com.blockstream.common.data.LnUrlAuthRequest" />
+            app:argType="com.blockstream.common.data.LnUrlAuthRequestDataSerializable" />
     </fragment>
     <action
         android:id="@+id/action_global_lnUrlWithdrawFragment"

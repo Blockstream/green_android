@@ -1,14 +1,17 @@
 package com.blockstream.common.data
 
+import com.arkivanov.essenty.parcelable.Parcelable
+import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.gdk.data.Settings
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Parcelize
 @Serializable
 data class WalletExtras(
     @SerialName("settings") val settings: Settings? = null,
-) : GreenJson<WalletExtras>() {
+) : GreenJson<WalletExtras>(), Parcelable {
     override fun kSerializer() = serializer()
 
     companion object {

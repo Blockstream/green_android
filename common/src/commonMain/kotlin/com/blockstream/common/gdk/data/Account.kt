@@ -5,6 +5,7 @@ import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.gdk.GdkSession
+import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.serializers.AccountTypeSerializer
 import com.blockstream.common.utils.hexToByteArray
 import kotlinx.serialization.SerialName
@@ -28,7 +29,9 @@ data class Account constructor(
     @SerialName("core_descriptors") val coreDescriptors: List<String>? = null,
     @SerialName("slip132_extended_pubkey") val extendedPubkey: String? = null,
     @SerialName("user_path") val derivationPath: List<Long>? = null
-) : Parcelable, Comparable<Account> {
+): GreenJson<Account>(), Parcelable, Comparable<Account> {
+
+    override fun kSerializer() = serializer()
 
     fun setup(session: GdkSession, network: Network) {
         networkInjected = network

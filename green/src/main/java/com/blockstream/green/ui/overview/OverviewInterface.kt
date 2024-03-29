@@ -5,11 +5,9 @@ import androidx.lifecycle.lifecycleScope
 import breez_sdk.InputType
 import com.blockstream.common.AddressInputType
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.LnUrlAuthRequest
-import com.blockstream.common.data.LnUrlWithdrawRequest
 import com.blockstream.common.data.ScanResult
+import com.blockstream.common.data.toSerializable
 import com.blockstream.common.gdk.GdkSession
-import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.extensions.clearNavigationResult
@@ -55,7 +53,7 @@ interface OverviewInterface {
                             appFragment.navigate(
                                 NavGraphDirections.actionGlobalLnUrlAuthFragment(
                                     wallet = wallet,
-                                    lnUrlAuthRequest = LnUrlAuthRequest(inputType.data),
+                                    lnUrlAuthRequest = inputType.data.toSerializable(),
                                 )
                             )
                         }
@@ -66,7 +64,7 @@ interface OverviewInterface {
                             appFragment.navigate(
                                 NavGraphDirections.actionGlobalLnUrlWithdrawFragment(
                                     wallet = wallet,
-                                    lnUrlWithdrawRequest = LnUrlWithdrawRequest(inputType.data),
+                                    lnUrlWithdrawRequest = inputType.data.toSerializable(),
                                 )
                             )
                         }

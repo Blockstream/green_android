@@ -1,70 +1,22 @@
 package com.blockstream.green.ui.settings
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import androidx.biometric.BiometricManager
-import androidx.biometric.BiometricPrompt
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.navArgs
-import com.blockstream.common.Urls
-import com.blockstream.common.data.LogoutReason
-import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.gdk.data.SettingsNotification
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.utils.AndroidKeystore
-import com.blockstream.green.BuildConfig
-import com.blockstream.green.NavGraphDirections
-import com.blockstream.green.R
-import com.blockstream.common.data.TwoFactorMethod
-import com.blockstream.common.data.TwoFactorSetupAction
 import com.blockstream.common.models.settings.WalletSettingsSection
 import com.blockstream.common.models.settings.WalletSettingsViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.AppFragmentBridge
-import com.blockstream.compose.screens.HomeScreen
 import com.blockstream.compose.screens.settings.WalletSettingsScreen
+import com.blockstream.green.R
 import com.blockstream.green.databinding.ComposeViewBinding
-import com.blockstream.green.databinding.EditTextDialogBinding
-import com.blockstream.green.databinding.ListItemActionBinding
-import com.blockstream.green.databinding.WalletSettingsFragmentBinding
-import com.blockstream.green.extensions.AuthenticationCallback
-import com.blockstream.green.extensions.authenticateWithBiometrics
-import com.blockstream.green.extensions.clearNavigationResult
-import com.blockstream.green.extensions.endIconCustomMode
-import com.blockstream.green.extensions.errorDialog
-import com.blockstream.green.extensions.getNavigationResult
-import com.blockstream.green.extensions.showChoiceDialog
-import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.gdk.getNetworkIcon
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.ui.add.ChooseAccountTypeFragmentDirections
-import com.blockstream.green.ui.dialogs.DenominationExchangeRateDialogFragment
-import com.blockstream.green.ui.items.ActionListItem
-import com.blockstream.green.ui.items.PreferenceListItem
-import com.blockstream.green.ui.items.TitleListItem
-import com.blockstream.green.utils.StringHolder
-import com.blockstream.green.utils.colorText
-import com.blockstream.green.utils.copyToClipboard
-import com.blockstream.green.utils.getBitcoinOrLiquidUnit
-import com.blockstream.green.utils.openBrowser
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.GenericItem
-import com.mikepenz.fastadapter.IAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.mikepenz.fastadapter.binding.listeners.addClickListener
-import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
-import com.mikepenz.itemanimators.SlideDownAlphaAnimator
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
-import java.security.InvalidAlgorithmParameterException
 
 
 class WalletSettingsFragment : AppFragment<ComposeViewBinding>(R.layout.compose_view, 0) {
@@ -73,8 +25,8 @@ class WalletSettingsFragment : AppFragment<ComposeViewBinding>(R.layout.compose_
     val viewModel: WalletSettingsViewModel by viewModel {
         parametersOf(
             args.wallet,
-            args.network,
-            if (args.showRecoveryTransactions) WalletSettingsSection.RecoveryTransactions else WalletSettingsSection.General
+            if (args.showRecoveryTransactions) WalletSettingsSection.RecoveryTransactions else WalletSettingsSection.General,
+            args.network
         )
     }
 
