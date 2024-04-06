@@ -3,7 +3,7 @@ package com.blockstream.common.looks
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Transaction
-import com.blockstream.common.utils.feeRateKBWithUnit
+import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.toAmountLookOrNa
 
 data class NetworkFeeLook(val fee: String, val feeFiat: String, val feeRate: String?) {
@@ -30,7 +30,7 @@ data class NetworkFeeLook(val fee: String, val feeFiat: String, val feeRate: Str
             }
 
             val feeRate = transaction.feeRate.takeIf { !transaction.account.isLightning }
-                ?.let { "(${transaction.feeRate.feeRateKBWithUnit()})" }
+                ?.let { "(${transaction.feeRate.feeRateWithUnit()})" }
 
             return NetworkFeeLook(fee, feeFiat, feeRate)
         }

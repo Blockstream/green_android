@@ -1,7 +1,9 @@
 package com.blockstream.common.gdk.data
 
+import cafe.adriel.voyager.core.lifecycle.JavaSerializable
 
-enum class AccountType(val gdkType: String) {
+
+enum class AccountType(val gdkType: String): JavaSerializable {
     // Mutlisig
     STANDARD("2of2"),
     AMP_ACCOUNT("2of2_no_recovery"),

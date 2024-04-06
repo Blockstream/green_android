@@ -15,9 +15,7 @@ import com.blockstream.green.extensions.getNavigationResult
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 interface OverviewInterface {
     fun requireContext(): Context
@@ -41,9 +39,7 @@ interface OverviewInterface {
     fun handleUserInput(data: String, isQr: Boolean = false) {
         appFragment.lifecycleScope.launch {
 
-            val checkedInput = withContext(context = Dispatchers.IO) {
-                session.parseInput(data)
-            }
+            val checkedInput = session.parseInput(data)
 
             if (checkedInput != null) {
 

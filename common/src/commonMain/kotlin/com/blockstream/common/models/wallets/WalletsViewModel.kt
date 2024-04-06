@@ -13,6 +13,7 @@ import com.rickclephas.kmm.viewmodel.MutableStateFlow
 import com.rickclephas.kmm.viewmodel.coroutineScope
 import com.rickclephas.kmm.viewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -94,6 +95,12 @@ abstract class WalletsViewModel(isHome: Boolean) : WalletsViewModelAbstract(isHo
     }
 
     init {
+
+        viewModelScope.coroutineScope.launch {
+            delay(50L)
+
+        }
+
         // If you have already agreed, check by default
         viewModelScope.coroutineScope.launch {
             termsOfServiceIsChecked.value =

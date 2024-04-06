@@ -9,13 +9,10 @@ import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import breez_sdk.AesSuccessActionDataResult
-import breez_sdk.SuccessActionProcessed
-import com.blockstream.common.data.ErrorReport
-import com.blockstream.common.data.ExceptionWithErrorReport
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.SendTransactionSuccess
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.send.SendConfirmViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.R
@@ -24,7 +21,6 @@ import com.blockstream.green.databinding.ListItemTransactionOutputBinding
 import com.blockstream.green.databinding.SendConfirmFragmentBinding
 import com.blockstream.green.extensions.copyToClipboard
 import com.blockstream.green.extensions.dialog
-import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.setNavigationResult
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.looks.ConfirmTransactionLook
@@ -59,7 +55,6 @@ class SendConfirmFragment : AppFragment<SendConfirmFragmentBinding>(
 ) {
     val args: SendConfirmFragmentArgs by navArgs()
 
-    override val screenName = "SendConfirm"
     override val segmentation
         get() = countly.accountSegmentation(
             session = viewModel.session,
@@ -68,9 +63,8 @@ class SendConfirmFragment : AppFragment<SendConfirmFragmentBinding>(
 
     private val beagle: Beagle by inject()
 
-
     val viewModel: SendConfirmViewModel by viewModel {
-        parametersOf(args.wallet, args.account, args.transactionSegmentation)
+        parametersOf(args.wallet, args.accountAsset, args.transactionSegmentation)
     }
 
     override fun getBannerAlertView(): GreenAlertView = binding.banner
@@ -122,6 +116,10 @@ class SendConfirmFragment : AppFragment<SendConfirmFragmentBinding>(
                     navigateBack(sendTransactionSuccess.isSendAll)
                 }
             }
+        } else if(sideEffect is SendConfirmViewModel.LocalSideEffects.DeviceAddressValidation){
+            VerifyTransactionBottomSheetDialogFragment.show(childFragmentManager)
+        } else if(sideEffect is SideEffects.Dismiss){
+            VerifyTransactionBottomSheetDialogFragment.closeAll(childFragmentManager)
         }
     }
 
@@ -141,18 +139,13 @@ class SendConfirmFragment : AppFragment<SendConfirmFragmentBinding>(
             }
         }
 
-        viewModel.deviceAddressValidationEvent.observe(viewLifecycleOwner){
-            if(it.peekContent() == null){ // open if null
-                VerifyTransactionBottomSheetDialogFragment.show(childFragmentManager)
-            }
-        }
         val noteAdapter = FastItemAdapter<GenericItem>()
 
-        viewModel.transactionNoteLiveData.observe(viewLifecycleOwner){
-            if(!transaction.isSweep() && !it.isNullOrBlank()) {
+        viewModel.note.onEach {
+            if(!transaction.isSweep() && it.isNotBlank()) {
                 noteAdapter.set(
                     listOf(
-                        NoteListItem(note = viewModel.transactionNote, isEditable = !viewModel.account.isLightning)
+                        NoteListItem(note = viewModel.note.value, isEditable = !viewModel.account.isLightning)
                     )
                 )
             }else{
@@ -160,12 +153,12 @@ class SendConfirmFragment : AppFragment<SendConfirmFragmentBinding>(
             }
 
             invalidateMenu()
-        }
+        }.launchIn(lifecycleScope)
 
         val fastAdapter = FastAdapter.with(listOf(createAdapter(isAddressVerificationOnDevice = false), noteAdapter))
 
         fastAdapter.addClickListener<ListItemTransactionNoteBinding, GenericItem>({ binding -> binding.buttonEdit }) { _, _, _, _ ->
-            NoteBottomSheetDialogFragment.show(note = viewModel.transactionNote, fragmentManager = childFragmentManager)
+            NoteBottomSheetDialogFragment.show(note = viewModel.note.value, fragmentManager = childFragmentManager)
         }
 
         fastAdapter.addClickListener<ListItemTransactionOutputBinding, GenericItem>({ binding -> binding.addressTextView }) { v, _: Int, _: FastAdapter<GenericItem>, _: GenericItem ->
@@ -179,7 +172,9 @@ class SendConfirmFragment : AppFragment<SendConfirmFragmentBinding>(
 
         binding.buttonSend.onSlideCompleteListener = object : SlideToActView.OnSlideCompleteListener{
             override fun onSlideComplete(view: SlideToActView) {
-                viewModel.signTransaction(broadcast = true, twoFactorResolver = DialogTwoFactorResolver(this@SendConfirmFragment))
+                viewModel.postEvent(SendConfirmViewModel.LocalEvents.SignTransaction(
+                    broadcastTransaction = true, twoFactorResolver = DialogTwoFactorResolver(this@SendConfirmFragment)
+                ))
             }
         }
 
@@ -194,18 +189,20 @@ class SendConfirmFragment : AppFragment<SendConfirmFragmentBinding>(
     }
 
     override fun onPrepareMenu(menu: Menu) {
-        menu.findItem(R.id.add_note).isVisible = transactionOrNull?.isSweep() == false && viewModel.transactionNote.isBlank() && !viewModel.account.isLightning
+        menu.findItem(R.id.add_note).isVisible = transactionOrNull?.isSweep() == false && viewModel.note.value.isBlank() && !viewModel.account.isLightning
         menu.findItem(R.id.sign_transaction).isVisible = isDevelopmentOrDebug
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
             R.id.add_note -> {
-                NoteBottomSheetDialogFragment.show(note = viewModel.transactionNote, fragmentManager = childFragmentManager)
+                NoteBottomSheetDialogFragment.show(note = viewModel.note.value, fragmentManager = childFragmentManager)
                 return true
             }
             R.id.sign_transaction -> {
-                viewModel.signTransaction(broadcast = false, twoFactorResolver = DialogTwoFactorResolver(this))
+                viewModel.postEvent(SendConfirmViewModel.LocalEvents.SignTransaction(
+                    broadcastTransaction = false, twoFactorResolver = DialogTwoFactorResolver(this)
+                ))
             }
         }
 

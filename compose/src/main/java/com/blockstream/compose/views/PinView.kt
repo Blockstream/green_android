@@ -211,7 +211,7 @@ fun PinView(
                 }
             }
 
-            AnimatedNullableVisibility(value = error) { _, error ->
+            AnimatedNullableVisibility(value = error) { error ->
                 Text(
                     text = stringResourceId(error),
                     style = labelMedium,

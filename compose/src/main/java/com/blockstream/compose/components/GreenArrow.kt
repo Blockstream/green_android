@@ -16,17 +16,19 @@ import androidx.compose.ui.unit.dp
 import com.blockstream.compose.R
 import com.blockstream.compose.theme.GreenThemePreview
 import com.blockstream.compose.theme.green
+import com.blockstream.compose.theme.md_theme_outline
 import com.blockstream.compose.theme.whiteHigh
 
 @Composable
-fun GreenArrow(modifier: Modifier = Modifier) {
+fun GreenArrow(modifier: Modifier = Modifier, enabled: Boolean = true) {
+
     Card(
         Modifier
             .size(40.dp)
             .then(modifier),
         colors = CardDefaults.cardColors(
             contentColor = whiteHigh,
-            containerColor = green
+            containerColor = if(enabled) green else md_theme_outline
         )
     ) {
         Box(
@@ -50,6 +52,7 @@ fun GreenArrowPreview() {
     GreenThemePreview {
         GreenColumn {
             GreenArrow()
+            GreenArrow(enabled = false)
         }
     }
 }

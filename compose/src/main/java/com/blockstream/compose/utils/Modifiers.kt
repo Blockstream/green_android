@@ -1,11 +1,17 @@
 package com.blockstream.compose.utils
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import com.blockstream.compose.theme.md_theme_surfaceCircle
 
 @Composable
 fun Modifier.noRippleToggleable(
@@ -32,4 +38,12 @@ inline fun Modifier.noRippleClickable(
     ) {
         onClick()
     }
+}
+
+@Composable
+inline fun Modifier.roundBackground(horizontal: Dp = 8.dp, vertical: Dp = 4.dp): Modifier {
+    return this then background(
+        color = md_theme_surfaceCircle,
+        shape = RoundedCornerShape(16.dp)
+    ).padding(horizontal = horizontal, vertical = vertical)
 }

@@ -1,7 +1,6 @@
 package com.blockstream.compose.screens.onboarding
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -42,11 +40,11 @@ import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.theme.labelLarge
-import com.blockstream.compose.theme.md_theme_surfaceCircle
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.roundBackground
 
 
 object SetupNewWalletScreen : Screen {
@@ -93,12 +91,7 @@ fun KeysPolicyListItem(
                     Text(
                         text = tag,
                         style = labelLarge,
-                        modifier = Modifier
-                            .background(
-                                color = md_theme_surfaceCircle,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .padding(horizontal = 12.dp, vertical = 4.dp)
+                        modifier = Modifier.roundBackground(horizontal = 12.dp, vertical = 4.dp)
                     )
                 }
 

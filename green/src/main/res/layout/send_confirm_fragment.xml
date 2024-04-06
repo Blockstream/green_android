@@ -9,7 +9,7 @@
 
         <variable
             name="vm"
-            type="com.blockstream.green.ui.send.SendConfirmViewModel" />
+            type="com.blockstream.common.models.send.SendConfirmViewModel" />
 
     </data>
 
@@ -57,6 +57,7 @@
             android:layout_marginTop="32dp"
             android:layout_marginEnd="32dp"
             android:layout_marginBottom="32dp"
+            tools:visibility="gone"
             isVisible="@{vm.onProgress &amp;&amp; vm.account.lightning}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -171,6 +172,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:indeterminate="true"
+            tools:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/buttonSend"
             app:layout_constraintEnd_toEndOf="@+id/buttonSend"
             app:layout_constraintStart_toStartOf="@+id/buttonSend"

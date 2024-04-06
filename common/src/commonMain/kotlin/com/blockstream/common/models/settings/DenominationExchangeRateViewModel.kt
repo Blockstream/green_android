@@ -9,6 +9,7 @@ import com.blockstream.common.events.Event
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewWallet
+import com.blockstream.common.gdk.data.Settings
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
@@ -60,7 +61,7 @@ class DenominationExchangeRateViewModel(greenWallet: GreenWallet) :
     init {
         session.ifConnected {
             session.settings().filterNotNull().onEach { settings ->
-                _selectedUnit.value = settings.unit
+                _selectedUnit.value = settings.networkUnit(session)
 
                 _exchangeAndCurrencies.value = availablePricing.map {
                     "id_s_from_s|${it.currency}|${it.exchange}"
@@ -93,7 +94,7 @@ class DenominationExchangeRateViewModel(greenWallet: GreenWallet) :
     private fun saveSettings() {
         val newSettings = session.getSettings()!!.let { settings ->
             settings.copy(
-                unit = selectedUnit.value,
+                unit = Settings.fromNetworkUnit(selectedUnit.value, session),
                 pricing = selectedExchangeAndCurrency.value.let {
                     _exchangeAndCurrencies.value.indexOf(it).takeIf { it >= 0 }?.let {
                         availablePricing[it]

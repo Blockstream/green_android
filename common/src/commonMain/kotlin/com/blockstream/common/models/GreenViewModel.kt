@@ -67,7 +67,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.native.ObjCName
 
-abstract class GreenViewModel constructor(
+open class GreenViewModel constructor(
     val greenWalletOrNull: GreenWallet? = null,
     accountAssetOrNull: AccountAsset? = null,
 ) : ScreenModel, KMMViewModel(), KoinComponent, ViewModelView, HardwareWalletInteraction {
@@ -176,7 +176,7 @@ abstract class GreenViewModel constructor(
         // https://kotlinlang.org/docs/inheritance.html#derived-class-initialization-order
     }
 
-    protected fun bootstrap(){
+    protected open fun bootstrap(){
         logger.d { "Bootstrap ${this::class.simpleName}" }
 
         _bootstrapped = true
@@ -448,7 +448,14 @@ abstract class GreenViewModel constructor(
         if (name.isBlank()) return
 
         doAsync({
-            session.updateAccount(account = account, name = name.cleanup() ?: account.name)
+            session.updateAccount(account = account, name = name.cleanup() ?: account.name).also { updatedAccount ->
+                accountAsset.value?.let {
+                    // Update active account if needed
+                    if(it.account.id == updatedAccount.id){
+                        accountAsset.value = it.copy(account = updatedAccount)
+                    }
+                }
+            }
         }, onSuccess = {
             countly.renameAccount(session, it)
         })

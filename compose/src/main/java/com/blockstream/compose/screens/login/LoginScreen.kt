@@ -589,10 +589,10 @@ fun LoginScreen(
                                     }
                                 )
 
-                                AnimatedNullableVisibility(value = error) { _, error ->
+                                AnimatedNullableVisibility(value = error) { it ->
                                     Text(
                                         modifier = Modifier.fillMaxWidth(),
-                                        text = stringResourceId(id = error),
+                                        text = stringResourceId(id = it),
                                         style = labelMedium,
                                         color = red
                                     )

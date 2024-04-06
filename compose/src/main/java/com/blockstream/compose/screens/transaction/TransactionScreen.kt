@@ -283,7 +283,7 @@ fun TransactionScreen(
                     }
                 }
 
-                AnimatedNullableVisibility(value = note) { _, it ->
+                AnimatedNullableVisibility(value = note) {
                     Detail(label = R.string.id_note) {
                         CopyContainer(value = it) {
                             Text(it)

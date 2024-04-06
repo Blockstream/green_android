@@ -1498,4 +1498,8 @@
   <string name="id_invoice_description">Invoice Description</string>
   <string name="id_redeposit">Redeposit</string>
   <string name="id_connect_via_qr">Connect via QR</string>
+  <string name="id_receive_in">Receive in</string>
+  <string name="id_s_minutes">~%s minutes</string>
+  <string name="id_s_hour">~%s hour</string>
+  <string name="id_s_hours">~%s hours</string>
 </resources>

@@ -167,7 +167,7 @@ class WalletSettingsViewModel(
                     list += listOfNotNull(
                         WalletSetting.Text("id_general"),
                         WalletSetting.DenominationExchangeRate(
-                            unit = settings.unit,
+                            unit = settings.networkUnit(session),
                             currency = settings.pricing.currency,
                             exchange = settings.pricing.exchange
                         ),
@@ -182,7 +182,7 @@ class WalletSettingsViewModel(
                     list += listOfNotNull(
                         WalletSetting.Text("id_general"),
                         WalletSetting.DenominationExchangeRate(
-                            unit = settings.unit,
+                            unit = settings.networkUnit(session),
                             currency = settings.pricing.currency,
                             exchange = settings.pricing.exchange
                         ),
@@ -364,6 +364,7 @@ class WalletSettingsViewModel(
 
             is LocalEvents.SupportId -> {
                 postSideEffect(SideEffects.CopyToClipboard(value = session.supportId()))
+                postSideEffect(SideEffects.Snackbar(text = "id_copied_to_clipboard"))
             }
         }
     }

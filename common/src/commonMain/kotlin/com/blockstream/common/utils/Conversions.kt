@@ -10,8 +10,6 @@ import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.networkForAsset
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Balance
-import com.blockstream.common.gdk.data.CreateTransaction
-import com.blockstream.common.gdk.data.Network
 
 // Use it for GDK purposes
 // Lowercase & replace μbtc -> ubtc
@@ -53,8 +51,6 @@ fun getBitcoinOrLiquidUnit(
     }
 }
 
-fun getBitcoinOrLiquidSymbol(network: Network): String = if(network.isLiquid) "L-$BTC_UNIT" else BTC_UNIT
-
 fun getDecimals(unit: String): Int {
     return when (unit) {
         BTC_UNIT -> 8
@@ -81,17 +77,6 @@ fun userNumberFormat(decimals: Int,
     maximumFractionDigits = decimals
     isDecimalSeparatorAlwaysShown = withDecimalSeparator
     isGroupingUsed = withGrouping
-}
-
-fun CreateTransaction.feeRateKBWithUnit(): String? {
-    return feeRate?.feeRateKBWithUnit()
-}
-
-fun Long.feeRateKBWithUnit(): String {
-    val feePerByte = this / 1000.0
-    return userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = true, withMinimumDigits = true).format(feePerByte).let {
-        "$it sats / vbyte"
-    }
 }
 
 fun Long.feeRateWithUnit(): String {

@@ -12,6 +12,7 @@ import com.blockstream.common.LBTC_POLICY_ASSET
 import com.blockstream.common.data.WalletIcon
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.GdkSession
+import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.gdk.device.DeviceInterface
@@ -49,6 +50,14 @@ fun String.getNetworkIcon(): Int{
     if (Network.isLiquidTestnet(this)) return R.drawable.liquid_testnet
     if (Network.isLightningMainnet(this)) return R.drawable.bitcoin_lightning
     return R.drawable.unknown
+}
+
+fun Account.policyIcon(): Int {
+    return when{
+        isLightning -> R.drawable.lightning_fill
+        isSinglesig -> R.drawable.key_singlesig
+        else -> R.drawable.key_multisig
+    }
 }
 
 fun Network.icon(): Int = network.getNetworkIcon()

@@ -4,14 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
+import com.blockstream.common.extensions.ifConnected
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.databinding.TransactionVerifyAddressBottomSheetBinding
 import com.blockstream.green.ui.send.SendConfirmFragment
-import com.blockstream.green.ui.send.SendConfirmViewModel
 import com.blockstream.green.utils.bounceDown
 import com.mikepenz.fastadapter.FastAdapter
 import mu.KLogging
 
-class VerifyTransactionBottomSheetDialogFragment: WalletBottomSheetDialogFragment<TransactionVerifyAddressBottomSheetBinding, SendConfirmViewModel>() {
+class VerifyTransactionBottomSheetDialogFragment: WalletBottomSheetDialogFragment<TransactionVerifyAddressBottomSheetBinding, GreenViewModel>() {
 
     override val screenName = "VerifyTransaction"
 
@@ -24,15 +25,10 @@ class VerifyTransactionBottomSheetDialogFragment: WalletBottomSheetDialogFragmen
 
         isCancelable = true
 
-        viewModel.also { receiveViewModel ->
-            receiveViewModel.deviceAddressValidationEvent.observe(viewLifecycleOwner) {
-                it?.getContentIfNotHandledOrReturnNull()?.let {
-                    dismiss()
-                }
-            }
-
-            binding.device = receiveViewModel.session.gdkHwWallet?.device
+        viewModel.session.ifConnected {
+            binding.device = viewModel.session.gdkHwWallet?.device
         }
+
 
         val fastAdapter = FastAdapter.with((parentFragment as SendConfirmFragment).createAdapter(isAddressVerificationOnDevice = true))
 
@@ -46,6 +42,10 @@ class VerifyTransactionBottomSheetDialogFragment: WalletBottomSheetDialogFragmen
     companion object : KLogging() {
         fun show(fragmentManager: FragmentManager){
             show(VerifyTransactionBottomSheetDialogFragment(), fragmentManager)
+        }
+
+        fun closeAll(fragmentManager: FragmentManager){
+            closeAll(VerifyTransactionBottomSheetDialogFragment::class.java, fragmentManager)
         }
     }
 }

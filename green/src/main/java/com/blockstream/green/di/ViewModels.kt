@@ -1,5 +1,6 @@
 package com.blockstream.green.di
 
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.about.AboutViewModel
 import com.blockstream.common.models.add.Account2of3ViewModel
 import com.blockstream.common.models.add.ChooseAccountTypeViewModel
@@ -36,6 +37,9 @@ import com.blockstream.common.models.recovery.RecoveryCheckViewModel
 import com.blockstream.common.models.recovery.RecoveryIntroViewModel
 import com.blockstream.common.models.recovery.RecoveryPhraseViewModel
 import com.blockstream.common.models.recovery.RecoveryWordsViewModel
+import com.blockstream.common.models.send.FeeViewModel
+import com.blockstream.common.models.send.SendConfirmViewModel
+import com.blockstream.common.models.send.SweepViewModel
 import com.blockstream.common.models.settings.AppSettingsViewModel
 import com.blockstream.common.models.settings.DenominationExchangeRateViewModel
 import com.blockstream.common.models.settings.TwoFactorAuthenticationViewModel
@@ -100,6 +104,14 @@ val viewModels = module {
     viewModelOf(::DenominationExchangeRateViewModel)
     viewModelOf(::RequestAmountViewModel)
     viewModelOf(::TwoFactorSetupViewModel)
+    viewModelOf(::SendConfirmViewModel)
+    viewModelOf(::FeeViewModel)
+    viewModel {
+        GreenViewModel(getOrNull(), getOrNull())
+    }
+    viewModel {
+        SweepViewModel(get(), getOrNull(), getOrNull())
+    }
     viewModel {
         WalletSettingsViewModel(get(), get(), getOrNull())
     }

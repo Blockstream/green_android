@@ -66,7 +66,7 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
 
     val args: SendFragmentArgs by navArgs()
 
-    private val isSweep by lazy { args.isSweep }
+    private val isSweep = false
     private val isBump by lazy { !args.bumpTransaction.isNullOrBlank() }
     private val bumpTransaction by lazy { if(isBump) Json.parseToJsonElement(args.bumpTransaction ?: "") else null }
 
@@ -85,7 +85,6 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
         parametersOf(
             args.wallet,
             args.accountAsset,
-            isSweep,
             args.address,
             args.addressType,
             bumpTransaction
@@ -113,7 +112,7 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
         if(sideEffect is SideEffects.Navigate){
             navigate(SendFragmentDirections.actionSendFragmentToSendConfirmFragment(
                 wallet = viewModel.greenWallet,
-                account = viewModel.account,
+                accountAsset = viewModel.accountAsset.value!!,
                 denomination = viewModel.getRecipientStateFlow(0)?.denomination?.value,
                 transactionSegmentation = viewModel.createTransactionSegmentation()
             ))
@@ -210,7 +209,7 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
         val blocksPerHour = viewModel.account.network.blocksPerHour
         val n = if (blocks % blocksPerHour == 0) blocks / blocksPerHour else blocks * (60 / blocksPerHour)
         val s = context.getString(if (blocks % blocksPerHour == 0) if (blocks == blocksPerHour) R.string.id_hour else R.string.id_hours else R.string.id_minutes)
-        return String.format(Locale.getDefault(), " ~ %d %s", n, s)
+        return String.format(Locale.getDefault(), "~ %d %s", n, s)
     }
 
     private fun updateRecipient(index: Int, value: AddressParamsLiveData) {

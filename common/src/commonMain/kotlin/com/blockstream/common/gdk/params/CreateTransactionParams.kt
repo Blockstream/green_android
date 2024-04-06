@@ -10,6 +10,7 @@ import kotlinx.serialization.json.JsonElement
 data class CreateTransactionParams constructor(
     @SerialName("subaccount") val subaccount: Long? = null,
     @SerialName("addressees") val addressees: List<JsonElement>? = null, // This can also be a BIP21 URI
+    @kotlin.jvm.Transient
     @Transient
     val addresseesAsParams: List<AddressParams>? = null, // This can also be a BIP21 URI
     @SerialName("fee_rate") val feeRate: Long? = null,

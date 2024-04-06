@@ -333,7 +333,11 @@ class Gdk constructor(
 
 expect fun getGdkBinding(log: Boolean, config: InitConfig): GdkBinding
 
-val FeeBlockTarget = listOf(1, 9, 18)
+val FeeMinRelay = 0
+val FeeBlockHigh = 1
+val FeeBlockMedium = 9
+val FeeBlockLow = 18
+val FeeBlockTarget = listOf(FeeBlockHigh, FeeBlockMedium, FeeBlockLow)
 
 expect val GA_ERROR: Int
 expect val GA_RECONNECT: Int

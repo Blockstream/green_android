@@ -2409,13 +2409,15 @@ class GdkSession constructor(
         ))
     }
 
+    @NativeCoroutinesIgnore
     suspend fun createTransaction(network: Network, params: CreateTransactionParams) =
-        if (network.isLightning) {
-            createLightningTransaction(network, params)
-        } else authHandler(
-            network,
-            gdk.createTransaction(gdkSession(network), params)
-        ).result<CreateTransaction>()
+        withContext(context = Dispatchers.IO) {
+            if (network.isLightning) {
+                createLightningTransaction(network, params)
+            } else authHandler(network,
+                gdk.createTransaction(gdkSession(network), params)
+            ).result<CreateTransaction>()
+        }
 
     private suspend fun generateLightningError(
         account: Account,
@@ -2862,17 +2864,19 @@ class GdkSession constructor(
         return authHandler(network, gdk.bcurDecode(gdkSession(network), params)).result<BcurDecodedData>(bcurResolver = bcurResolver)
     }
 
-    fun parseInput(input: String): Pair<Network, InputType?>? {
-        return (lightning?.let { lightning ->
-            lightningSdkOrNull?.parseBoltOrLNUrlAndCache(input)?.let { lightning to it }
-        } ?: run {
-            activeGdkSessions.mapValues {
-                validateAddress(it.key, ValidateAddresseesParams.create(it.key, input)).also {
-                    logger.d { "$it" }
-                }
-            }.filter { it.value.isValid }.keys.firstOrNull()?.let { it to null }
-        })
-    }
+    suspend fun parseInput(input: String): Pair<Network, InputType?>? =
+        withContext(context = Dispatchers.IO) {
+            lightning?.let { lightning ->
+                lightningSdkOrNull?.parseBoltOrLNUrlAndCache(input)?.let { lightning to it }
+            } ?: run {
+                activeGdkSessions.mapValues {
+                    validateAddress(it.key, ValidateAddresseesParams.create(it.key, input)).also {
+                        logger.d { "$it" }
+                    }
+                }.filter { it.value.isValid }.keys.firstOrNull()?.let { it to null }
+            }
+        }
+
 
     fun supportId() = allAccounts.value.filter {
         it.isMultisig && it.pointer == 0L || it.isLightning

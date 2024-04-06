@@ -2,11 +2,14 @@ package com.blockstream.common.sideeffects
 
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.ErrorReport
+import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.Redact
 import com.blockstream.common.events.Event
 import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Device
+import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.navigation.NavigateDestination
 import kotlinx.coroutines.CompletableDeferred
 
@@ -22,6 +25,11 @@ class SideEffects : SideEffect {
     data class Dialog(val title: String? = null, val message: String) : SideEffect
     data class ErrorDialog(val error: Throwable, val errorReport: ErrorReport? = null) : SideEffect
     data class OpenDenominationDialog(val denominatedValue: DenominatedValue): SideEffect
+    data class OpenFeeBottomSheet(
+        val greenWallet: GreenWallet,
+        val accountAsset: AccountAsset,
+        val params: CreateTransactionParams
+    ) : SideEffect
     data class Success(val data: Any? = null) : SideEffect
     data class Mnemonic(val mnemonic: String) : SideEffect, Redact
     data class Navigate(val data: Any? = null) : SideEffect

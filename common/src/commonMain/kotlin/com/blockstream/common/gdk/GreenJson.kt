@@ -17,18 +17,18 @@ abstract class GreenJson<T>: JavaSerializable {
 
     open fun keepJsonElement() = false
 
+    @kotlin.jvm.Transient
     @Transient
     var jsonElement: JsonElement? = null
 
     abstract fun kSerializer(): KSerializer<T>
 
-    protected val json by lazy {
-        Json {
+    protected val json
+        get() = Json {
             encodeDefaults = encodeDefaultsValues()
             explicitNulls = explicitNulls()
             ignoreUnknownKeys = true
         }
-    }
 
     final override fun toString(): String {
         @Suppress("UNCHECKED_CAST")

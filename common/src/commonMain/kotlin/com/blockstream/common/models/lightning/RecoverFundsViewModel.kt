@@ -12,7 +12,7 @@ import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
-import com.blockstream.common.utils.feeRateKBWithUnit
+import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.toAmountLook
 import com.rickclephas.kmm.viewmodel.MutableStateFlow
 import com.rickclephas.kmm.viewmodel.coroutineScope
@@ -192,7 +192,7 @@ class RecoverFundsViewModel(
     }
 
     private fun prepare(): Job {
-        _feeAmountRate.value = ((getFee()?.toLong() ?: 0) * 1000).feeRateKBWithUnit()
+        _feeAmountRate.value = ((getFee()?.toLong() ?: 0) * 1000).feeRateWithUnit()
         return doAsync({
             if (isSendAll) {
                 val maxReverseSwapAmount = session.lightningSdk.maxReverseSwapAmount().totalSat

@@ -259,12 +259,14 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
     }
 
     private fun removeWord() {
-        if (activeWord.value != -1) {
-            recoveryPhrase.value =
-                recoveryPhrase.value.toMutableList().also { it.removeAt(activeWord.value) }
-        } else if (recoveryPhrase.value.isNotEmpty()) {
-            recoveryPhrase.value =
-                recoveryPhrase.value.toMutableList().also { it.removeLastOrNull() }.toList()
+        if(activeWord.value < recoveryPhrase.value.size) {
+            if (activeWord.value != -1) {
+                recoveryPhrase.value =
+                    recoveryPhrase.value.toMutableList().also { it.removeAt(activeWord.value) }
+            } else if (recoveryPhrase.value.isNotEmpty()) {
+                recoveryPhrase.value =
+                    recoveryPhrase.value.toMutableList().also { it.removeLastOrNull() }.toList()
+            }
         }
         activeWord.value = -1
     }
@@ -286,8 +288,8 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
             if (activeWord.value == -1) {
                 activeWord.value = recoveryPhrase.value.size - 1
             } else if (recoveryPhrase.value.isNotEmpty()) {
-                val word = recoveryPhrase.value[activeWord.value]
-                if (word.isEmpty()) {
+                val word = recoveryPhrase.value.getOrNull(activeWord.value)
+                if (word.isNullOrEmpty()) {
                     removeWord()
                 } else {
                     recoveryPhrase.value = recoveryPhrase.value.toMutableList().also {

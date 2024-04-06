@@ -160,7 +160,7 @@ fun AboutScreen(
                     contentDescription = null,
                 )
                 Image(
-                    painter = painterResource(id = R.drawable.twitter_logo),
+                    painter = painterResource(id = R.drawable.x_logo),
                     modifier = Modifier
                         .size(30.dp)
                         .clickable {

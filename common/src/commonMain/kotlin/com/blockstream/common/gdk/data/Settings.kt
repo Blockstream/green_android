@@ -2,6 +2,14 @@ package com.blockstream.common.gdk.data
 
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.blockstream.common.BITS_UNIT
+import com.blockstream.common.BTC_UNIT
+import com.blockstream.common.BitcoinUnits
+import com.blockstream.common.MBTC_UNIT
+import com.blockstream.common.SATOSHI_UNIT
+import com.blockstream.common.TestnetUnits
+import com.blockstream.common.UBTC_UNIT
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -34,7 +42,35 @@ data class Settings(
         )
     }
 
+    fun networkUnit(session: GdkSession): String = unit.let {
+        if (session.isTestnet) {
+            when (it) {
+                BTC_UNIT -> "TEST"
+                MBTC_UNIT -> "mTEST"
+                UBTC_UNIT -> "\u00B5TEST"
+                BITS_UNIT -> "bTEST"
+                SATOSHI_UNIT -> "sTEST"
+                else -> unit
+            }
+        } else {
+            it
+        }
+    }.let {
+        if (session.defaultNetworkOrNull?.isLiquid == true) {
+            "L-$it"
+        } else {
+            it
+        }
+    }
+
+
     companion object {
+        fun fromNetworkUnit(unit: String, session: GdkSession): String = if (session.isTestnet) {
+            BitcoinUnits.getOrNull(TestnetUnits.indexOf(unit.replace("L-", ""))) ?: BTC_UNIT
+        } else {
+            unit
+        }
+
         fun normalizeFromProminent(networkSettings: Settings, prominentSettings: Settings, pgpFromProminent: Boolean = false): Settings {
             return Settings(
                 // Prominent Settings

@@ -11,6 +11,7 @@ import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
+import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isBlank
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.previewAccountAsset
@@ -189,58 +190,61 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
     private val _generateAddressLock = Mutex()
 
     init {
-        accountAsset.onEach {
-            _requestAmount.value = null
-            _showLightningOnChainAddress.value = false
-        }.launchIn(this)
+        session.ifConnected {
+            accountAsset.onEach {
+                _requestAmount.value = null
+                _showLightningOnChainAddress.value = false
+            }.launchIn(this)
 
-        combine(accountAsset, _requestAmount) { _, _, ->
+            combine(accountAsset, _requestAmount) { _, _, ->
 
-        }.onEach {
-            generateAddress()
-        }.launchIn(this)
+            }.onEach {
+                generateAddress()
+            }.launchIn(this)
 
 
-        // lightningSdk is not null
-        session.lightning?.takeIf { session.hasLightning }?.also {
-            // Support single lightning account, else we have to incorporate account change events
-            val lightningAccount = session.lightningAccount
+            // lightningSdk is not null
+            session.lightning?.takeIf { session.hasLightning }?.also {
+                // Support single lightning account, else we have to incorporate account change events
+                val lightningAccount = session.lightningAccount
 
-            combine(session.lightningSdk.lspInfoStateFlow, amount, denomination) { _ , _, _ ->
+                combine(session.lightningSdk.lspInfoStateFlow, amount, denomination) { _, _, _ ->
 
-            }.onEach { _ ->
-                updateAmountExchangeRate()
-            }.launchIn(viewModelScope.coroutineScope)
-
-            denomination
-                .onEach {
-                    _amountCurrency.value = it.unit(session, lightningAccount.network.policyAsset)
+                }.onEach { _ ->
+                    updateAmountExchangeRate()
                 }.launchIn(viewModelScope.coroutineScope)
 
-            combine(session.lightningNodeInfoStateFlow, denomination) { nodeState, _ ->
-                nodeState
-            }.onEach {
-                _maxReceiveAmount.value = it.maxReceivableSatoshi().toAmountLookOrNa(
-                    session = session,
-                    assetId = lightningAccount.network.policyAsset,
-                    denomination = denomination.value,
-                    withUnit = true
-                )
+                denomination
+                    .onEach {
+                        _amountCurrency.value =
+                            it.unit(session, lightningAccount.network.policyAsset)
+                    }.launchIn(viewModelScope.coroutineScope)
 
-                updateAmountExchangeRate()
-            }.launchIn(viewModelScope.coroutineScope)
+                combine(session.lightningNodeInfoStateFlow, denomination) { nodeState, _ ->
+                    nodeState
+                }.onEach {
+                    _maxReceiveAmount.value = it.maxReceivableSatoshi().toAmountLookOrNa(
+                        session = session,
+                        assetId = lightningAccount.network.policyAsset,
+                        denomination = denomination.value,
+                        withUnit = true
+                    )
 
-            session.lastInvoicePaid.filterNotNull().onEach { paidDetails ->
-                if(paidDetails.paymentHash == _lightningInvoice.value?.paymentHash){
-                    (withContext(context = Dispatchers.IO) {
-                        // Parse the actual Bolt11 invoice
-                        session.parseInput(paidDetails.bolt11)
-                    }?.second as? InputType.Bolt11)?.also {
-                        postSideEffect(SideEffects.Success(it.invoice))
-                        _lightningInvoice.value = null
+                    updateAmountExchangeRate()
+                }.launchIn(viewModelScope.coroutineScope)
+
+                session.lastInvoicePaid.filterNotNull().onEach { paidDetails ->
+                    if (paidDetails.paymentHash == _lightningInvoice.value?.paymentHash) {
+                        (withContext(context = Dispatchers.IO) {
+                            // Parse the actual Bolt11 invoice
+                            session.parseInput(paidDetails.bolt11)
+                        }?.second as? InputType.Bolt11)?.also {
+                            postSideEffect(SideEffects.Success(it.invoice))
+                            _lightningInvoice.value = null
+                        }
                     }
-                }
-            }.launchIn(viewModelScope.coroutineScope)
+                }.launchIn(viewModelScope.coroutineScope)
+            }
         }
 
         bootstrap()

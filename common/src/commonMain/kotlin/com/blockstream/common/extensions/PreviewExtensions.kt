@@ -48,8 +48,15 @@ fun previewWalletListView(isHardware: Boolean = false, isEphemeral: Boolean = fa
 }
 
 fun previewLoginCredentials() = LoginCredentials("", CredentialType.BIOMETRICS_PINDATA, "", null, null, null, 0)
+fun previewEnrichedAsset() = EnrichedAsset.PreviewBTC
 
-fun previewAccount() = Account(gdkName = "Segwit", pointer = 0, type = AccountType.BIP84_SEGWIT)
+fun previewAccount() = Account(
+    gdkName = "Segwit",
+    pointer = 0,
+    type = AccountType.BIP84_SEGWIT,
+    networkInjected = previewNetwork(),
+    policyAsset = previewEnrichedAsset()
+)
 
 fun previewAccountAsset() = AccountAsset(
     account = previewAccount(),

@@ -1,7 +1,6 @@
 package com.blockstream.compose.utils
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.LinearEasing
@@ -37,7 +36,7 @@ inline fun <T> AnimatedNullableVisibility(
     modifier: Modifier = Modifier,
     enter: EnterTransition = fadeIn() + expandVertically(),
     exit: ExitTransition = fadeOut() + shrinkVertically(),
-    crossinline content: @Composable (scope: AnimatedVisibilityScope, T) -> Unit
+    crossinline content: @Composable (T) -> Unit
 ) {
     val ref = remember {
         Ref<T>()
@@ -52,7 +51,7 @@ inline fun <T> AnimatedNullableVisibility(
         exit = exit,
         content = {
             ref.value?.let { value ->
-                content(this, value)
+                content(value)
             }
         }
     )

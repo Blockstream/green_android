@@ -218,11 +218,17 @@ class WalletOverviewFragment : AppFragment<WalletOverviewFragmentBinding>(
             when {
                 session.isWatchOnly -> {
                     navigate(
-                        WalletOverviewFragmentDirections.actionWalletOverviewFragmentToSendFragment(
-                            wallet = wallet,
-                            isSweep = true,
-                            accountAsset = session.activeAccount.value!!.accountAsset
-                        )
+                        if(wallet.isWatchOnly){
+                            WalletOverviewFragmentDirections.actionGlobalSweepFragment(
+                                wallet = wallet
+                            )
+                        }else{
+                            WalletOverviewFragmentDirections.actionWalletOverviewFragmentToSendFragment(
+                                wallet = wallet,
+                                accountAsset = session.activeAccount.value!!.accountAsset
+                            )
+                        }
+
                     )
                 }
 //                ((viewModel.walletAssets[session.bitcoin] ?: 0L) == 0L && (viewModel.walletAssets[session.liquid] ?: 0L) == 0L) -> {

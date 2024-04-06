@@ -497,10 +497,6 @@
             app:argType="string"
             app:nullable="true" />
         <argument
-            android:name="isSweep"
-            android:defaultValue="false"
-            app:argType="boolean" />
-        <argument
             android:name="bumpTransaction"
             android:defaultValue="@null"
             app:argType="string"
@@ -524,8 +520,8 @@
             android:name="wallet"
             app:argType="com.blockstream.common.data.GreenWallet" />
         <argument
-            android:name="account"
-            app:argType="com.blockstream.common.gdk.data.Account" />
+            android:name="accountAsset"
+            app:argType="com.blockstream.common.gdk.data.AccountAsset" />
         <argument
             android:name="transactionSegmentation"
             app:argType="com.blockstream.common.TransactionSegmentation" />
@@ -721,5 +717,24 @@
 
     <action android:id="@+id/action_global_watchOnlyPolicyFragment" app:destination="@id/watchOnlyPolicyFragment" />
     <action android:id="@+id/action_global_jadeQrFragment" app:destination="@id/jadeQrFragment" /><action android:id="@+id/action_global_receiveFragment" app:destination="@id/receiveFragment"/>
+    <fragment
+        android:id="@+id/sweepFragment"
+        android:name="com.blockstream.green.ui.send.SweepFragment"
+        android:label="SweepFragment"
+        tools:layout="@layout/compose_view">
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.common.data.GreenWallet" />
+        <argument
+            android:name="accountAsset"
+            app:argType="com.blockstream.common.gdk.data.AccountAsset"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="privateKey"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment><action android:id="@+id/action_global_sweepFragment" app:destination="@id/sweepFragment"/>
 
 </navigation>

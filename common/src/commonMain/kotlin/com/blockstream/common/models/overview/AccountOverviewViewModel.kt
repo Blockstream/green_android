@@ -189,11 +189,17 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                 if (greenWallet.isWatchOnly || session.accountAssets(account).value.policyAsset != 0L) {
                     postSideEffect(
                         SideEffects.NavigateTo(
-                            NavigateDestinations.Send(
-                                greenWallet = greenWallet,
-                                accountAsset = accountAsset.value!!,
-                                isSweep = greenWallet.isWatchOnly
-                            )
+                            if (greenWallet.isWatchOnly) {
+                                NavigateDestinations.Sweep(
+                                    greenWallet = greenWallet,
+                                    accountAsset = accountAsset.value,
+                                )
+                            } else {
+                                NavigateDestinations.Send(
+                                    greenWallet = greenWallet,
+                                    accountAsset = accountAsset.value!!,
+                                )
+                            }
                         )
                     )
                 } else {

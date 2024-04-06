@@ -446,10 +446,9 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
                 }
                 2 -> {
                     navigate(
-                        ReceiveFragmentDirections.actionReceiveFragmentToSendFragment(
+                        ReceiveFragmentDirections.actionGlobalSweepFragment(
                             wallet = viewModel.greenWallet,
-                            accountAsset = viewModel.accountAsset.value!!,
-                            isSweep = true
+                            accountAsset = viewModel.accountAsset.value,
                         )
                     )
                 }

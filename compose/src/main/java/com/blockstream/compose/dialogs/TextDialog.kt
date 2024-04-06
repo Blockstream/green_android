@@ -49,9 +49,12 @@ import com.blockstream.compose.utils.stringResourceId
 fun TextDialog(
     title: String,
     message: String? = null,
+    initialText: String? = null,
+    placeholder: String? = null,
     label: String,
     supportingText: String? = null,
     isPassword: Boolean = false,
+    keyboardOptions: KeyboardOptions? = null,
     onDismissRequest: (text: String?) -> Unit
 ) {
     Dialog(
@@ -81,7 +84,7 @@ fun TextDialog(
                 var textFieldValueState by remember {
                     mutableStateOf(
                         TextFieldValue(
-                            text = ""
+                            text = initialText ?: ""
                         )
                     )
                 }
@@ -99,7 +102,7 @@ fun TextDialog(
                         .fillMaxWidth()
                         .focusRequester(focusRequester),
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions.Default.let {
+                    keyboardOptions = keyboardOptions ?: KeyboardOptions.Default.let {
                         if (isPassword) it.copy(
                             autoCorrect = false,
                             keyboardType = KeyboardType.Password,
@@ -111,6 +114,11 @@ fun TextDialog(
                             focusManager.clearFocus()
                         }
                     ),
+                    placeholder = {
+                         Text(placeholder ?: "")
+                    },
+                        //.takeIf { placeholder != null },
+//                    placeholder = placeholder?.also { Text(it) },
                     label = { Text(label) },
                     supportingText = {
                         Text(text = supportingText ?: "")

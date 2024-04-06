@@ -56,7 +56,6 @@
                 android:layout_height="160dp">
 
                 <ImageView
-                    isVisible="@{account.bitcoin || account.lightning}"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_gravity="end"
@@ -65,8 +64,8 @@
                     android:adjustViewBounds="true"
                     android:alpha="0.1"
                     android:cropToPadding="false"
-                    android:src="@{account.bitcoin ? @drawable/bitcoin_letter : @drawable/lightning_thunder}"
-                    tools:src="@drawable/lightning_thunder"
+                    android:src="@{account.bitcoin ? @drawable/bitcoin_letter : account.liquid ? @drawable/liquid_circle : @drawable/lightning_thunder}"
+                    tools:src="@drawable/liquid_circle"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />

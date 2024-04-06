@@ -11,9 +11,13 @@ fun copyToClipboard(context: Context, label: String = "Green", content: String) 
     )
 }
 
-fun getClipboard(context: Context): String? =
+fun getClipboard(context: Context, clearClipboard: Boolean = false): String? =
     (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).let {
         it.primaryClip?.getItemAt(0)?.text?.toString()
+    }.also {
+        if (clearClipboard) {
+            clearClipboard(context = context)
+        }
     }
 
 fun clearClipboard(context: Context) {

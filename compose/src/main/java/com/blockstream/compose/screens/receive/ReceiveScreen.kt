@@ -48,6 +48,7 @@ import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAddress
+import com.blockstream.compose.components.GreenAmountField
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonType
@@ -106,7 +107,7 @@ fun ReceiveScreen(
                     }
                 }
 
-                GreenTextField()
+                GreenAmountField(stringResource(id = R.string.id_amount))
 
                 Column {
 

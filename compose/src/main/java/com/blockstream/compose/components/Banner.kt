@@ -30,7 +30,7 @@ import com.blockstream.compose.utils.AnimatedNullableVisibility
 fun Banner(viewModel: GreenViewModel) {
     val bannerOrNull by viewModel.banner.collectAsStateWithLifecycle()
 
-    AnimatedNullableVisibility(bannerOrNull) { _, banner ->
+    AnimatedNullableVisibility(bannerOrNull) { banner ->
         Banner(banner, modifier = Modifier.padding(top = 16.dp), onClick = {
             viewModel.postEvent(Events.BannerAction)
         }, onClose = {

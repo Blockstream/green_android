@@ -242,15 +242,13 @@ abstract class AppFragment<T : ViewDataBinding>(
                 }
             }
             is SideEffects.Snackbar -> {
-                if(sideEffectsHandledByAppFragment) {
-                    // Snackbar is implemented in compose but LocalSnackbar is only available in GreenApp
-                    view?.also {
-                        Snackbar.make(
-                            it,
-                            requireContext().stringFromIdentifier(sideEffect.text),
-                            Snackbar.LENGTH_SHORT
-                        ).show()
-                    }
+                // Snackbar is implemented in compose but LocalSnackbar is only available in GreenApp
+                view?.also {
+                    Snackbar.make(
+                        it,
+                        requireContext().stringFromIdentifier(sideEffect.text),
+                        Snackbar.LENGTH_SHORT
+                    ).show()
                 }
             }
             is SideEffects.Dialog -> {
@@ -377,12 +375,21 @@ abstract class AppFragment<T : ViewDataBinding>(
                     )
                 }
 
+                (sideEffect.destination as? NavigateDestinations.Sweep)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalSweepFragment(
+                            wallet = it.greenWallet,
+                            accountAsset = it.accountAsset,
+                            privateKey = it.privateKey
+                        )
+                    )
+                }
+
                 (sideEffect.destination as? NavigateDestinations.Send)?.also {
                     navigate(
                         NavGraphDirections.actionGlobalSendFragment(
                             wallet = it.greenWallet,
                             accountAsset = it.accountAsset,
-                            isSweep = it.isSweep,
                             address = it.address,
                             assetId = it.assetId,
                             bumpTransaction = it.bumpTransaction

@@ -6,16 +6,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Card
 import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
@@ -23,33 +16,30 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.blockstream.compose.R
 import com.blockstream.compose.theme.GreenThemePreview
 import com.blockstream.compose.theme.bodyLarge
-import com.blockstream.compose.theme.labelLarge
-import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.utils.getClipboard
 
 @Composable
 fun GreenTextField(
+    title: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    error: String? = null,
+    singleLine: Boolean = true,
+    minLines: Int = 1,
+    onQrClick : (() -> Unit)? = null
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        Text(
-            text = stringResource(id = R.string.id_amount),
-            style = labelMedium,
-            modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
-        )
-
-        Card {
+        GreenDataLayout(title = title, withPadding = false, error = error) {
             GreenRow(
                 padding = 0, space = 10,
                 verticalAlignment = Alignment.CenterVertically,
@@ -58,40 +48,25 @@ fun GreenTextField(
                     .padding(vertical = 16.dp)
             ) {
 
-                var value by remember { mutableStateOf("123") }
-
                 val textStyle = LocalTextStyle.current.merge(
                     TextStyle(
                         color = whiteHigh,
-                        textAlign = TextAlign.End
+                        textAlign = TextAlign.Start
                     )
                 ).merge(bodyLarge)
 
-                val isError = false
                 val colors = TextFieldDefaults.colors()
 
                 BasicTextField(
                     value = value,
-                    onValueChange = { value = it },
+                    onValueChange = onValueChange,
                     textStyle = textStyle,
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Decimal
-                    ),
-                    singleLine = true,
+                    singleLine = singleLine,
+                    minLines = minLines,
                     cursorBrush = SolidColor(colors.cursorColor),
                     modifier = Modifier
                         .weight(1f)
                 )
-
-                Text(
-                    text = "BTC",
-                    style = labelLarge.merge(TextStyle(textDecoration = TextDecoration.Underline))
-                )
-
-//                Image(
-//                    painter = painterResource(id = R.drawable.arrows_counter_clockwise),
-//                    contentDescription = "Edit",
-//                )
 
                 if (value.isEmpty()) {
                     val context = LocalContext.current
@@ -99,7 +74,15 @@ fun GreenTextField(
                         painter = painterResource(id = R.drawable.clipboard_text),
                         contentDescription = "Edit",
                         modifier = Modifier.clickable {
-                            value = getClipboard(context) ?: ""
+                            onValueChange(getClipboard(context) ?: "")
+                        }
+                    )
+
+                    Image(
+                        painter = painterResource(id = R.drawable.qr_code),
+                        contentDescription = "QR",
+                        modifier = Modifier.clickable {
+                            onQrClick?.invoke()
                         }
                     )
                 } else {
@@ -107,17 +90,10 @@ fun GreenTextField(
                         contentDescription = "Clear",
                         modifier = Modifier
                             .clickable {
-                                value = ""
-                            })
+                                onValueChange("")
+                            }
+                    )
                 }
-
-                Image(
-                    painter = painterResource(id = R.drawable.pencil_simple_line),
-                    contentDescription = "Edit",
-                    modifier = Modifier.clickable {
-                        
-                    }
-                )
             }
         }
     }
@@ -128,7 +104,9 @@ fun GreenTextField(
 fun GreenTextFieldPreview() {
     GreenThemePreview {
         GreenColumn {
-            GreenTextField()
+            GreenTextField(stringResource(R.string.id_address), "123", {})
+            GreenTextField(stringResource(R.string.id_private_key), "", {})
+            GreenTextField(stringResource(R.string.id_private_key), "", {}, error = "id_insufficient_funds")
         }
     }
 }

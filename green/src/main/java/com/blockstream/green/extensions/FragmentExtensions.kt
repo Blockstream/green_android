@@ -29,7 +29,6 @@ import com.blockstream.green.databinding.DialogErrorReportBinding
 import com.blockstream.green.gdk.isConnectionError
 import com.blockstream.green.gdk.isNotAuthorized
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.utils.clearClipboard
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.utils.openNewTicket
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -64,10 +63,6 @@ fun Fragment.copyToClipboard(label: String, content: String, animateView: View? 
     if(showCopyNotification) {
         snackbar(R.string.id_copied_to_clipboard)
     }
-}
-
-fun Fragment.clearClipboard() {
-    clearClipboard(requireContext())
 }
 
 fun BottomSheetDialogFragment.dismissIn(timeMillis: Long){

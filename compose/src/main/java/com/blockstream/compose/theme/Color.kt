@@ -17,8 +17,8 @@ val md_theme_onTertiary = Color(0xFFFFFFFF)
 val md_theme_tertiaryContainer = Color(0xFF00b45a)
 val md_theme_onTertiaryContainer = Color(0xFFFFFFFF)
 
-val md_theme_error = Color(0xFFEA5262)
-val md_theme_errorContainer = Color(0xFF93000A)
+val md_theme_error = Color(0xFFCB1D36)
+val md_theme_errorContainer = Color(0xFF9A0000)
 val md_theme_onError = Color(0xFF690005)
 val md_theme_onErrorContainer = Color(0xFFFFDAD6)
 

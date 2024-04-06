@@ -33,9 +33,11 @@ import com.blockstream.compose.screens.recovery.RecoveryCheckScreen
 import com.blockstream.compose.screens.recovery.RecoveryIntroScreen
 import com.blockstream.compose.screens.recovery.RecoveryPhraseScreen
 import com.blockstream.compose.screens.recovery.RecoveryWordsScreen
+import com.blockstream.compose.screens.send.SweepScreen
 import com.blockstream.compose.screens.settings.AppSettingsScreen
 import com.blockstream.compose.screens.settings.WalletSettingsScreen
 import com.blockstream.compose.sheets.Bip39PassphraseBottomSheet
+import com.blockstream.compose.sheets.FeeRateBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
 import com.blockstream.compose.sheets.WalletDeleteBottomSheet
 import com.blockstream.compose.sheets.WalletRenameBottomSheet
@@ -100,6 +102,16 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                             url = it.url
                         )
                     }
+                }
+
+                is SideEffects.OpenFeeBottomSheet -> {
+                    bottomSheetNavigator.show(
+                        FeeRateBottomSheet(
+                            greenWallet = it.greenWallet,
+                            accountAsset = it.accountAsset,
+                            params = it.params
+                        )
+                    )
                 }
 
                 is SideEffects.Snackbar -> {
@@ -210,10 +222,12 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                     }
                 }
 
-                is SideEffects.NavigateTo -> {
-                    val destination = it.destination
+                is SideEffects.NavigateToRoot -> {
+                    navigator?.popAll()
+                }
 
-                    when(destination) {
+                is SideEffects.NavigateTo -> {
+                    when(val destination = it.destination) {
                         
                         is NavigateDestinations.RenameWallet -> {
                             bottomSheetNavigator.show(WalletRenameBottomSheet(destination.greenWallet))
@@ -347,6 +361,16 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                         is NavigateDestinations.EnterRecoveryPhrase -> {
                             navigator?.push(
                                 EnterRecoveryPhraseScreen(destination.args)
+                            )
+                        }
+
+                        is NavigateDestinations.Sweep -> {
+                            navigator?.push(
+                                SweepScreen(
+                                    greenWallet = destination.greenWallet,
+                                    privateKey = destination.privateKey,
+                                    accountAsset = destination.accountAsset
+                                )
                             )
                         }
 

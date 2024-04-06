@@ -64,7 +64,6 @@ sealed class NavigateDestinations : NavigateDestination {
     data class Send(
         val greenWallet: GreenWallet,
         val accountAsset: AccountAsset,
-        val isSweep: Boolean = false,
         val address: String? = null,
         val assetId: String? = null,
         val bumpTransaction: String? = null
@@ -78,4 +77,9 @@ sealed class NavigateDestinations : NavigateDestination {
     ) : NavigateDestination
 
     data class Receive(val greenWallet: GreenWallet, val accountAsset: AccountAsset) : NavigateDestination
+    data class Sweep(
+        val greenWallet: GreenWallet,
+        val privateKey: String? = null,
+        val accountAsset: AccountAsset? = null
+    ) : NavigateDestination
 }

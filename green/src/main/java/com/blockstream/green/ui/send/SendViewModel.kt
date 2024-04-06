@@ -18,7 +18,6 @@ import com.blockstream.common.gdk.data.Assets
 import com.blockstream.common.gdk.data.CreateTransaction
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.params.AddressParams
-import com.blockstream.common.gdk.params.Convert
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.lightning.lnUrlPayDescription
 import com.blockstream.common.models.GreenViewModel
@@ -58,13 +57,13 @@ import kotlin.math.absoluteValue
 class SendViewModel constructor(
     @InjectedParam wallet: GreenWallet,
     @InjectedParam initAccountAsset: AccountAsset,
-    @InjectedParam val isSweep: Boolean,
     @InjectedParam address: String?,
     @InjectedParam addressType: AddressInputType?,
     @InjectedParam val bumpTransaction: JsonElement?,
 ) : GreenViewModel(wallet, initAccountAsset), DenominationListener {
+    val isSweep = false
     val isBump = bumpTransaction != null
-    val isBumpOrSweep = isBump || isSweep
+    val isBumpOrSweep = isBump
 
     var activeRecipient = 0
 
@@ -168,7 +167,6 @@ class SendViewModel constructor(
     fun createTransactionSegmentation(): TransactionSegmentation {
         return TransactionSegmentation(
             transactionType = when{
-                isSweep -> TransactionType.SWEEP
                 isBump -> TransactionType.BUMP
                 else -> TransactionType.SEND
             },
@@ -358,11 +356,7 @@ class SendViewModel constructor(
             }
         }
 
-        val unspentOutputs = if(isSweep){
-            session.getUnspentOutputs(account.network, recipients.value[0].address.value?.trim() ?: "")
-        }else{
-            session.getUnspentOutputs(account, isBump)
-        }
+        val unspentOutputs = session.getUnspentOutputs(account, isBump)
 
         return when{
             isBump -> {
@@ -373,26 +367,6 @@ class SendViewModel constructor(
                     previousTransaction = bumpTransaction,
 
                 )
-            }
-            isSweep -> {
-                listOf(
-                    session.getReceiveAddress(account)
-                ).let { params ->
-                    CreateTransactionParams(
-                        feeRate = getFeeRate(),
-                        privateKey = recipients.value[0].address.value?.trim() ?: "", // private key
-                        passphrase = "",
-                        addressees = params.map { it.toJsonElement() },
-                        addresseesAsParams = params.map {
-                            AddressParams(
-                                address = it.address,
-                                satoshi = 0,
-                                isGreedy = true
-                            )
-                        },
-                        utxos = unspentOutputs.unspentOutputsAsJsonElement
-                    )
-                }
             }
             else -> {
                 recipients.value!!.map {
@@ -423,7 +397,7 @@ class SendViewModel constructor(
                 val tx = session.createTransaction(account.network, params)
                 var balance: Assets? = null
 
-                if(finalCheckBeforeContinue && !isSweep){
+                if(finalCheckBeforeContinue){
                     balance = session.getBalance(account)
                 }
 
@@ -498,7 +472,7 @@ class SendViewModel constructor(
 
                                 (tx.satoshi[assetId]?.absoluteValue?.let { sendAmount ->
                                     // Avoid UI glitches if isSweep and amount is zero (probably error)
-                                    if(isSweep && sendAmount == 0L){
+                                    if(sendAmount == 0L){
                                         ""
                                     }else{
                                         sendAmount.toAmountLook(
@@ -570,14 +544,6 @@ class SendViewModel constructor(
                     "" // empty error to avoid ui glitches
                 }else{
                     error
-                }
-            }
-
-            if (isSweep) {
-                recipients.value?.let { recipients ->
-                    for (recipient in recipients) {
-                        recipient.amount.value = ""
-                    }
                 }
             }
 

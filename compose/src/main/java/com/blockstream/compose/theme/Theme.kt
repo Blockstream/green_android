@@ -59,6 +59,9 @@ val GreenShapes = Shapes(
     extraLarge = RoundedCornerShape(24.dp)
 )
 
+val GreenSmallTop = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp, bottomStart = 4.dp, bottomEnd = 4.dp)
+val GreenSmallBottom = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 0.dp, bottomEnd = 0.dp)
+
 @Composable
 fun GreenTheme(
     content: @Composable () -> Unit

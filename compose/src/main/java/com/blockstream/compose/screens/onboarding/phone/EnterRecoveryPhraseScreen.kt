@@ -435,7 +435,7 @@ fun EnterRecoveryPhraseScreen(
                         PasteButton {
                             viewModel.postEvent(
                                 EnterRecoveryPhraseViewModel.LocalEvents.SetRecoveryPhrase(
-                                    getClipboard(context) ?: ""
+                                    getClipboard(context = context, clearClipboard = true) ?: ""
                                 )
                             )
                         }
