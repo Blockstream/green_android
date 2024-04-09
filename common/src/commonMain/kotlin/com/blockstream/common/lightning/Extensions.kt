@@ -119,7 +119,7 @@ fun Addressee.Companion.fromInvoice(invoice: LnInvoice, fallbackAmount: Long): A
     return Addressee(
         address = invoice.bolt11,
         satoshi = (invoice.amountSatoshi() ?: fallbackAmount).let { -it },
-        hasLockedAmount = invoice.amountMsat != null,
+        isInvoiceAmountLocked = invoice.amountMsat != null,
     )
 }
 
@@ -129,7 +129,7 @@ fun Addressee.Companion.fromLnUrlPay(requestData: LnUrlPayRequestData, input: St
         satoshi = -(requestData.sendableSatoshi(satoshi) ?: 0),
         domain = requestData.domain,
         metadata = requestData.metadata(),
-        hasLockedAmount = requestData.isAmountLocked(),
+        isInvoiceAmountLocked = requestData.isAmountLocked(),
         minAmount = requestData.minSendableSatoshi(),
         maxAmount = requestData.maxSendableSatoshi()
     )

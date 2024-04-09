@@ -1,15 +1,15 @@
 package com.blockstream.compose.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,99 +36,88 @@ fun GreenAccount(
     session: GdkSession? = null,
     title: String? = null,
     withEditIcon: Boolean = false,
-    onClick: () -> Unit = {}
+    onClick: (() -> Unit)? = null
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        title?.also {
-            Text(
-                text = it,
-                style = labelMedium,
-                modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
-            )
-        }
+    GreenDataLayout(title = title, onClick = onClick, withPadding = false) {
 
-        Card(modifier = Modifier.clickable {
-            onClick()
-        }) {
-            Row(
-                modifier = Modifier.padding(start = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box {
-                    Image(
-                        painter = account?.let {
-                            it.network.policyAsset.assetIcon(
-                                session = session,
-                                isLightning = it.isLightning
-                            )
-                        } ?: painterResource(
-                            id = R.drawable.unknown
-                        ),
-                        contentDescription = null,
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier
-                            .padding(vertical = 16.dp)
-                            .padding(end = 7.dp)
-                            .size(32.dp)
-                    )
-
-                    if (account != null) {
-                        Image(
-                            painter = painterResource(id = account.policyIcon()),
-                            contentDescription = "Policy",
-                            modifier = Modifier
-                                .align(Alignment.BottomEnd)
-                                .padding(bottom = 7.dp)
-                                .size(18.dp)
+        Row(
+            modifier = Modifier.padding(start = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box {
+                Image(
+                    painter = account?.let {
+                        it.network.policyAsset.assetIcon(
+                            session = session,
+                            isLightning = it.isLightning
                         )
-                    }
-                }
-
-                Box(
+                    } ?: painterResource(
+                        id = R.drawable.unknown
+                    ),
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
                     modifier = Modifier
-                        .padding(start = 12.dp)
-                        .padding(end = 16.dp)
-                        .weight(1f),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    if (account == null) {
+                        .padding(vertical = 16.dp)
+                        .padding(end = 7.dp)
+                        .size(32.dp)
+                )
+
+                if (account != null) {
+                    Image(
+                        painter = painterResource(id = account.policyIcon()),
+                        contentDescription = "Policy",
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(bottom = 7.dp)
+                            .size(18.dp)
+                    )
+                }
+            }
+
+            Box(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .padding(end = if (withEditIcon && onClick != null) 0.dp else 16.dp)
+                    .weight(1f),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                if (account == null) {
+                    Text(
+                        text = stringResource(id = R.string.id_select_account),
+                        style = labelLarge,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                } else {
+                    Column {
+                        // Account Name
                         Text(
-                            text = stringResource(id = R.string.id_select_account),
+                            text = account.name,
                             style = labelLarge,
                             overflow = TextOverflow.Ellipsis
                         )
-                    } else {
-                        Column {
-                            // Account Name
-                            Text(
-                                text = account.name,
-                                style = labelLarge,
-                                overflow = TextOverflow.Ellipsis
-                            )
 
-                            // Account
-                            Text(
-                                text = account.type.toString().uppercase(),
-                                style = labelMedium,
-                                color = whiteMedium,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
+                        // Account
+                        Text(
+                            text = account.type.toString(),
+                            style = labelMedium,
+                            color = whiteMedium,
+                            overflow = TextOverflow.Ellipsis
+                        )
                     }
                 }
+            }
 
-                if (withEditIcon) {
-                    Image(
+            if (withEditIcon && onClick != null) {
+                IconButton(onClick = onClick) {
+                    Icon(
                         painter = painterResource(id = R.drawable.pencil_simple_line),
                         contentDescription = "Edit",
-                        modifier = Modifier.padding(end = 16.dp)
+                        modifier = Modifier.minimumInteractiveComponentSize()
                     )
                 }
             }
         }
+
     }
 }
 
@@ -140,7 +129,7 @@ fun GreenAccountPreview() {
             GreenAccount(account = previewAccount(), withEditIcon = true)
             GreenAccount(account = previewAccount())
             GreenAccount(account = previewAccount())
-            GreenAccount(account = null, withEditIcon = true)
+            GreenAccount(account = null, withEditIcon = true, onClick = {})
         }
     }
 }

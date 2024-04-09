@@ -37,8 +37,11 @@ import com.blockstream.common.models.recovery.RecoveryCheckViewModel
 import com.blockstream.common.models.recovery.RecoveryIntroViewModel
 import com.blockstream.common.models.recovery.RecoveryPhraseViewModel
 import com.blockstream.common.models.recovery.RecoveryWordsViewModel
+import com.blockstream.common.models.send.BumpViewModel
+import com.blockstream.common.models.send.DenominationViewModel
 import com.blockstream.common.models.send.FeeViewModel
 import com.blockstream.common.models.send.SendConfirmViewModel
+import com.blockstream.common.models.send.SendViewModel
 import com.blockstream.common.models.send.SweepViewModel
 import com.blockstream.common.models.settings.AppSettingsViewModel
 import com.blockstream.common.models.settings.DenominationExchangeRateViewModel
@@ -106,6 +109,11 @@ val viewModels = module {
     viewModelOf(::TwoFactorSetupViewModel)
     viewModelOf(::SendConfirmViewModel)
     viewModelOf(::FeeViewModel)
+    viewModelOf(::DenominationViewModel)
+    viewModelOf(::BumpViewModel)
+    viewModel {
+        SendViewModel(get(), getOrNull(), getOrNull(), getOrNull())
+    }
     viewModel {
         GreenViewModel(getOrNull(), getOrNull())
     }

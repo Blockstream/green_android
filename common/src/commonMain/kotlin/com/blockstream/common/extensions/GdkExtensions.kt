@@ -146,3 +146,15 @@ fun Throwable.isNotAuthorized() =
     getGDKErrorCode() == GA_NOT_AUTHORIZED || message == "id_invalid_pin"
 
 fun Throwable.isConnectionError() = message?.contains("failed to connect") ?: false
+
+fun String.twoFactorMethodsLocalized(): String = when (this) {
+    "phone" -> "id_call"
+    "gauth" -> "id_authenticator_app"
+    else -> {
+        "id_$this"
+    }
+}
+
+fun List<String>.twoFactorMethodsLocalized(): List<String> = map {
+    it.twoFactorMethodsLocalized()
+}

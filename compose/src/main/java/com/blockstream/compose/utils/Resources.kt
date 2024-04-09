@@ -1,6 +1,8 @@
 package com.blockstream.compose.utils
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.platform.LocalContext
@@ -64,4 +66,15 @@ fun drawableResourceIdOrNull(id: String?): Int? {
 fun drawableResourceIdOrNull(context: Context, id: String?): Int? {
     val resources = context.resources
     return resources.getIdentifier(id, "drawable", context.packageName).takeIf { it > 0 }
+}
+
+fun ByteArray?.toBitmap(): Bitmap?{
+    if(this != null) {
+        try {
+            return BitmapFactory.decodeByteArray(this, 0, this.size)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+    return null
 }

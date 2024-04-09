@@ -7,7 +7,7 @@ sealed class FeePriority(
     open val error: String? = null,
     open val expectedConfirmationTime: String? = null
 ) {
-    data class Custom(
+    data class Custom constructor(
         val customFeeRate: Double = Double.NaN,
         override val fee: String? = null,
         override val feeFiat: String? = null,
@@ -84,6 +84,9 @@ sealed class FeePriority(
 
     val enabled
         get() = error == null
+
+    val isPrimitive: Boolean
+        get() = fee == null && feeFiat == null && feeRate == null && error == null && expectedConfirmationTime == null
 
     // Useful to be used
     fun primitive() = when (this) {

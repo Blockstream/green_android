@@ -47,12 +47,16 @@ class FeeViewModel(
         MutableStateFlow(listOf(FeePriority.High(), FeePriority.Medium(), FeePriority.Low()))
     override val feePriorities: StateFlow<List<FeePriority>> = _feePriorities.asStateFlow()
 
+
+
     init {
         _navData.value = NavData(
             title = "id_network_fee"
         )
 
         session.ifConnected {
+            _network.value = accountAsset.account.network
+
             _feeEstimation.filterNotNull().onEach {
                 calculateFees()
             }.launchIn(this)
@@ -65,10 +69,13 @@ class FeeViewModel(
         doAsync({
             listOf(FeePriority.High(), FeePriority.Medium(), FeePriority.Low()).map {
                 try{
-                    val feeRate = getFeeRate(it)
+                    val feeRate = getFeeRate(priority = it)
                     val tx = session.createTransaction(
                         account.network,
-                        params.copy(feeRate = feeRate)
+                        params.copy(
+                            addressees = listOfNotNull(params.addresseesAsParams?.firstOrNull()?.toJsonElement()),
+                            feeRate = feeRate
+                        )
                     )
 
                     calculateFeePriority(

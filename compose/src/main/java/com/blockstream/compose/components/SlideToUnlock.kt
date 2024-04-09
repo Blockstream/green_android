@@ -249,9 +249,9 @@ fun Hint(
     enabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val hintTextColor by remember(swipeFraction) {
-        derivedStateOf { calculateHintTextColor(swipeFraction) }
-    }
+//    val hintTextColor by remember(swipeFraction) {
+//        derivedStateOf { calculateHintTextColor(swipeFraction) }
+//    }
 
     Text(
         text = text,

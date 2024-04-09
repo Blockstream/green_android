@@ -41,7 +41,7 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requestViewModel.sideEffect.onEach { sideEffect ->
+        requestViewModel.sideEffectAppFragment.onEach { sideEffect ->
             if(sideEffect is SideEffects.Dismiss){
                 dismiss()
             }else if(sideEffect is SideEffects.Success){

@@ -130,7 +130,7 @@ class MainActivity : AppActivity() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                activityViewModel.sideEffect.onEach {
+                activityViewModel.sideEffectAppFragment.onEach {
                     if(it is SideEffects.UrlWarning){
                         UrlWarningDialogFragment.show(it.urls, supportFragmentManager)
                     }

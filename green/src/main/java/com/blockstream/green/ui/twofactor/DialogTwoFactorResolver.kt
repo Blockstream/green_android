@@ -81,7 +81,6 @@ class DialogTwoFactorResolver(
                         context.localized2faMethod(method)
                     )
                 }
-                dialogBinding.hint = context.getString(R.string.id_code)
 
                 authHandlerStatus.attemptsRemaining?.let {
                     dialogBinding.attemptsRemaining =
@@ -127,7 +126,7 @@ class DialogTwoFactorResolver(
                                             it.openNewTicket(
                                                 settingsManager = it.settingsManager,
                                                 subject = "Android: I am not receiving my 2FA code",
-                                                errorReport = ErrorReport.createForMultisig()
+                                                errorReport = ErrorReport.createForMultisig("Android: I am not receiving my 2FA code")
                                             )
                                         }
                                     }

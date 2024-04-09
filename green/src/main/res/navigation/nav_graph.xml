@@ -487,17 +487,7 @@
             android:name="accountAsset"
             app:argType="com.blockstream.common.gdk.data.AccountAsset" />
         <argument
-            android:name="assetId"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
             android:name="address"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="bumpTransaction"
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
@@ -720,7 +710,7 @@
     <fragment
         android:id="@+id/sweepFragment"
         android:name="com.blockstream.green.ui.send.SweepFragment"
-        android:label="SweepFragment"
+        android:label="@string/id_sweep"
         tools:layout="@layout/compose_view">
         <argument
             android:name="wallet"
@@ -735,6 +725,24 @@
             app:argType="string"
             app:nullable="true"
             android:defaultValue="@null" />
-    </fragment><action android:id="@+id/action_global_sweepFragment" app:destination="@id/sweepFragment"/>
+    </fragment>
+    <fragment
+        android:id="@+id/bumpFragment"
+        android:name="com.blockstream.green.ui.send.BumpFragment"
+        android:label="@string/id_increase_fee"
+        tools:layout="@layout/compose_view">
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.common.data.GreenWallet" />
+        <argument
+            android:name="accountAsset"
+            app:argType="com.blockstream.common.gdk.data.AccountAsset"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="transaction"
+            app:argType="string" />
+    </fragment>
+    <action android:id="@+id/action_global_sweepFragment" app:destination="@id/sweepFragment"/><action android:id="@+id/action_global_sendConfirmFragment" app:destination="@id/sendConfirmFragment"/><action android:id="@+id/action_global_bumpFragment" app:destination="@id/bumpFragment"/>
 
 </navigation>

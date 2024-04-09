@@ -15,5 +15,6 @@ expect class DecimalFormat(locale: String?) {
 
     companion object {
         val DecimalSeparator: String
+        val GroupingSeparator: String
     }
 }

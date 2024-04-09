@@ -11,11 +11,14 @@ data class Addressee constructor(
     @SerialName("satoshi") val satoshi: Long? = null,
     @SerialName("is_greedy") var isGreedy: Boolean? = null,
     @SerialName("bip21-params") val bip21Params: Bip21Params? = null,
-    @SerialName("has_locked_amount") val hasLockedAmount: Boolean? = null,
+    @SerialName("is_invoice_amount_locked") val isInvoiceAmountLocked: Boolean? = null,
     @SerialName("min_amount") val minAmount: Long? = null,
     @SerialName("max_amount") val maxAmount: Long? = null,
     @SerialName("domain") val domain: String? = null,
     @SerialName("metadata") val metadata: List<List<String>>? = null,
 ) : GreenJson<Addressee>() {
     override fun kSerializer() = serializer()
+
+    val isAmountLocked: Boolean?
+        get() = isInvoiceAmountLocked == true || bip21Params?.hasAmount == true
 }

@@ -15,6 +15,7 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.send.SendConfirmViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.Loggable
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemTransactionNoteBinding
 import com.blockstream.green.databinding.ListItemTransactionOutputBinding
@@ -42,10 +43,8 @@ import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.ncorti.slidetoact.SlideToActView
-import com.pandulapeter.beagle.Beagle
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -60,8 +59,6 @@ class SendConfirmFragment : AppFragment<SendConfirmFragmentBinding>(
             session = viewModel.session,
             account = viewModel.account
         )
-
-    private val beagle: Beagle by inject()
 
     val viewModel: SendConfirmViewModel by viewModel {
         parametersOf(args.wallet, args.accountAsset, args.transactionSegmentation)
@@ -92,7 +89,6 @@ class SendConfirmFragment : AppFragment<SendConfirmFragmentBinding>(
             (sideEffect.data as? SendTransactionSuccess)?.also { sendTransactionSuccess ->
                 if (sendTransactionSuccess.hasMessageOrUrl) {
                     val message = sendTransactionSuccess.message ?: ""
-
                     val isUrl = sendTransactionSuccess.url.isNotBlank()
 
                     MaterialAlertDialogBuilder(requireContext())
@@ -134,8 +130,7 @@ class SendConfirmFragment : AppFragment<SendConfirmFragmentBinding>(
 
         if(isDevelopmentOrDebug){
             viewModel.session.pendingTransaction!!.second.toJson().also {
-                logger.info { it }
-                beagle.log(it)
+                logger.d { it }
             }
         }
 
@@ -247,4 +242,6 @@ class SendConfirmFragment : AppFragment<SendConfirmFragmentBinding>(
         )
         findNavController().popBackStack(R.id.walletOverviewFragment, false)
     }
+
+    companion object: Loggable()
 }

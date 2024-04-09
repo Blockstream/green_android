@@ -34,6 +34,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.blockstream.common.AddressInputType
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.ScanResult
@@ -41,6 +42,7 @@ import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
+import com.blockstream.common.models.send.SendViewModel
 import com.blockstream.common.models.send.SweepViewModel
 import com.blockstream.common.models.send.SweepViewModelAbstract
 import com.blockstream.common.models.send.SweepViewModelPreview
@@ -52,6 +54,7 @@ import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenAccount
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenDataLayout
+import com.blockstream.compose.components.GreenNetworkFee
 import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.GreenTextField
 import com.blockstream.compose.components.SlideToUnlock
@@ -65,15 +68,18 @@ import com.blockstream.compose.sheets.CameraBottomSheet
 import com.blockstream.compose.sheets.FeeRateBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
 import com.blockstream.compose.sideeffects.OpenDialogData
+import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.headlineMedium
+import com.blockstream.compose.theme.headlineSmall
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelSmall
 import com.blockstream.compose.theme.md_theme_error
 import com.blockstream.compose.theme.md_theme_onError
 import com.blockstream.compose.theme.md_theme_onErrorContainer
 import com.blockstream.compose.theme.red
+import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
@@ -109,11 +115,9 @@ data class SweepScreen(
 fun SweepScreen(
     viewModel: SweepViewModelAbstract
 ) {
-    val context = LocalContext.current
-    val dialog = LocalDialog.current
-
     getNavigationResult<ScanResult>(CameraBottomSheet::class.resultKey).value?.also {
         viewModel.privateKey.value = it.result
+        viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SetAddressInputType(AddressInputType.SCAN))
     }
 
     getNavigationResult<Account>(AccountsBottomSheet::class.resultKey).value?.also {
@@ -128,25 +132,7 @@ fun SweepScreen(
 
     val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
     HandleSideEffect(viewModel) {
-        if (it is AppSettingsViewModel.LocalSideEffects.AnalyticsMoreInfo) {
-            bottomSheetNavigator.show(AnalyticsBottomSheet)
-        } else if (it is AppSettingsViewModel.LocalSideEffects.UnsavedAppSettings) {
-
-            val openDialogData = OpenDialogData(title = context.getString(R.string.id_app_settings),
-                message = context.getString(
-                    R.string.id_your_settings_are_unsavednndo
-                ),
-                onPrimary = {
-                    viewModel.postEvent(AppSettingsViewModel.LocalEvents.Cancel)
-                },
-                onSecondary = {
-
-                })
-
-            launch {
-                dialog.openDialog(openDialogData)
-            }
-        } else if (it is CreateTransactionViewModelAbstract.LocalSideEffects.ShowCustomFeeRate) {
+        if (it is CreateTransactionViewModelAbstract.LocalSideEffects.ShowCustomFeeRate) {
             customFeeDialog = it.feeRate.toString()
         }
     }
@@ -190,7 +176,10 @@ fun SweepScreen(
             GreenTextField(
                 title = stringResource(id = R.string.id_private_key),
                 value = privateKey,
-                onValueChange = viewModel.privateKey.onValueChange(),
+                onValueChange = {
+                    viewModel.privateKey.value = it
+                    viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SetAddressInputType(AddressInputType.SCAN))
+                },
                 singleLine = false,
                 error = error.takeIf { listOf("id_invalid_private_key").contains(it) },
                 minLines = 2,
@@ -235,79 +224,26 @@ fun SweepScreen(
                     ) {
 
                         SelectionContainer {
-                            Text(text = it, style = headlineMedium)
+                            Text(text = it, style = titleLarge)
                         }
 
                         amountFiat?.also { fiat ->
                             SelectionContainer {
-                                Text(text = fiat)
+                                Text(text = fiat, style = bodyLarge)
                             }
                         }
                     }
                 }
             }
 
-            AnimatedVisibility(visible = privateKey.isNotBlank() && accountAsset != null) {
-                val feePriority by viewModel.feePriority.collectAsStateWithLifecycle()
-
-                GreenDataLayout(
-                    title = stringResource(R.string.id_network_fee),
-                    error = error.takeIf { it == "id_insufficient_funds" },
-                    onClick = {
-                        viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.ClickFeePriority)
+            val showFeeSelector by viewModel.showFeeSelector.collectAsStateWithLifecycle()
+            val feePriority by viewModel.feePriority.collectAsStateWithLifecycle()
+            AnimatedVisibility(visible = showFeeSelector) {
+                GreenNetworkFee(
+                    feePriority = feePriority, onClick = { onIconClicked ->
+                        viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.ClickFeePriority(showCustomFeeRateDialog = onIconClicked))
                     }
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column {
-                            GreenRow(
-                                padding = 0,
-                                space = 4,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(stringResourceId(feePriority.title), style = titleSmall)
-                                feePriority.expectedConfirmationTime?.also {
-                                    Text(text = stringResourceId(it),
-                                        style = bodyMedium,
-                                        color = whiteMedium,
-                                        modifier = Modifier.roundBackground(horizontal = 6.dp, vertical = 2.dp)
-                                    )
-                                }
-                            }
-                            feePriority.feeRate?.also {
-                                Text(it, style = bodySmall, color = whiteMedium)
-                            }
-                        }
-
-                        GreenRow(
-                            padding = 0,
-                            space = 8,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-
-                                Text(
-                                    text = feePriority.fee ?: "",
-                                    color = whiteMedium,
-                                    style = labelLarge
-                                )
-                                Text(
-                                    text = feePriority.feeFiat ?: "",
-                                    color = whiteMedium,
-                                    style = bodyMedium
-                                )
-                            }
-
-                            Image(
-                                painter = painterResource(id = R.drawable.pencil_simple_line),
-                                contentDescription = "Edit",
-                            )
-                        }
-                    }
-                }
+                )
             }
 
             AnimatedNullableVisibility(value = error.takeIf { !listOf("id_invalid_private_key", "id_insufficient_funds").contains(it) }) {
@@ -336,7 +272,7 @@ fun SweepScreen(
         val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
 
         SlideToUnlock(isLoading = onProgress, enabled = buttonEnabled, onSlideComplete = {
-            viewModel.postEvent(SweepViewModel.LocalEvents.SignTransaction(broadcastTransaction = true))
+            viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SignTransaction())
         })
     }
 }

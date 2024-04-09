@@ -19,9 +19,9 @@ data class UserInput(
 ) {
     fun toLimit() = Limits.fromUnit(denomination.denomination, amount)
 
-    suspend fun getBalance(): Balance? {
+    suspend fun getBalance(onlyInAcceptableRange: Boolean = true): Balance? {
         return if(amount.isNotBlank()){
-            session.convert(assetId = assetId, asString = amount, denomination = denomination.denomination)
+            session.convert(assetId = assetId, asString = amount, denomination = denomination.denomination, onlyInAcceptableRange = onlyInAcceptableRange)
         }else{
             null
         }

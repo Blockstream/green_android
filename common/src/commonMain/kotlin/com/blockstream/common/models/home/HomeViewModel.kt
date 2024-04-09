@@ -7,6 +7,7 @@ import com.blockstream.common.models.wallets.WalletsViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.Loggable
 
 class HomeViewModel: WalletsViewModel(isHome = true){
 
@@ -41,4 +42,6 @@ class HomeViewModel: WalletsViewModel(isHome = true){
     private fun shouldShowConsentDialog(): Boolean {
         return settingsManager.analyticsFeatureEnabled && (!settingsManager.isAskedAboutAnalyticsConsent() && !settingsManager.getApplicationSettings().analytics)
     }
+
+    companion object: Loggable()
 }

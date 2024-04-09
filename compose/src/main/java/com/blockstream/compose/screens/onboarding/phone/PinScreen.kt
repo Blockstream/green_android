@@ -71,10 +71,13 @@ fun PinScreen(
     val snackbar = LocalSnackbar.current
 
     val rocketAnimation by viewModel.rocketAnimation.collectAsStateWithLifecycle()
+    val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
+    val onProgressDescription by viewModel.onProgressDescription.collectAsStateWithLifecycle()
     ScreenContainer(
-        viewModel = viewModel,
+        onProgress = onProgress,
+        onProgressDescription = onProgressDescription,
         blurBackground = !rocketAnimation,
-        showRiveAnimation = rocketAnimation
+        riveAnimation = R.raw.rocket
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp),

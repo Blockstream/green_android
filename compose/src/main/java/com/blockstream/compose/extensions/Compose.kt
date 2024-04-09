@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.Dp
+import com.blockstream.common.utils.DecimalFormat
 import kotlinx.coroutines.flow.MutableStateFlow
 
 fun MutableState<Boolean>.toggle() {

@@ -27,10 +27,6 @@ class TransactionDetailsFragment : AppFragment<ComposeViewBinding>(
         parametersOf(args.transaction, args.wallet)
     }
 
-    override val subtitle: String
-        get() = args.transaction.account.name
-
-    override val sideEffectsHandledByAppFragment: Boolean = false
     override val useCompose: Boolean = true
 
     override fun getGreenViewModel(): GreenViewModel = viewModel

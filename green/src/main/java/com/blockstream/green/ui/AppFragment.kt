@@ -39,6 +39,8 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.Loggable
+import com.blockstream.compose.utils.stringResourceId
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.data.BannerView
 import com.blockstream.green.data.CountlyAndroid
@@ -63,7 +65,6 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import mu.KLogging
 import org.koin.android.ext.android.inject
 
 
@@ -99,8 +100,11 @@ abstract class AppFragment<T : ViewDataBinding>(
     val settingsManager: SettingsManager by inject()
     open fun getGreenViewModel(): GreenViewModel? = null
 
-    open val title : String? = null
-    open val subtitle : String? = null
+    open val title : String?
+        get() = getGreenViewModel()?.navData?.value?.title
+    open val subtitle : String?
+        get() = getGreenViewModel()?.navData?.value?.subtitle
+
     open val toolbarIcon: Int? = null
 
     override val screenName: String? = null
@@ -111,13 +115,12 @@ abstract class AppFragment<T : ViewDataBinding>(
         get() = (requireActivity() as AppActivity).toolbar
 
     open val useCompose : Boolean = false
-    open val sideEffectsHandledByAppFragment: Boolean = true
 
     open fun updateToolbar() {
         title?.let {
-            toolbar.title = it
+            toolbar.title = stringResourceId(requireContext(), it)
         }
-        toolbar.subtitle = subtitle
+        toolbar.subtitle = subtitle?.let { stringResourceId(requireContext(), it) }
         toolbar.logo = null
         // Only show toolbar icon if it's overridden eg. add account flow
         toolbarIcon?.let { toolbar.setLogo(it) }
@@ -154,9 +157,20 @@ abstract class AppFragment<T : ViewDataBinding>(
                 BannersHelper.setupBanner(this, it)
             }.launchIn(lifecycleScope)
 
+            if(useCompose){
+                viewModel.navData.onEach {
+                    updateToolbar()
+                }
+            }
+
             viewLifecycleOwner.lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                    (if(useCompose) viewModel.sideEffectReEmitted else viewModel.sideEffect).onEach {
+                    if(!useCompose){
+                        viewModel.sideEffect.onEach {
+                            // Consume side effects
+                        }.launchIn(this)
+                    }
+                    viewModel.sideEffectAppFragment.onEach {
                         handleSideEffect(it)
                     }.launchIn(this)
                 }
@@ -237,7 +251,7 @@ abstract class AppFragment<T : ViewDataBinding>(
     open fun handleSideEffect(sideEffect: SideEffect){
         when (sideEffect){
             is SideEffects.OpenBrowser -> {
-                if(sideEffectsHandledByAppFragment) {
+                if(!useCompose) {
                     openBrowser(sideEffect.url)
                 }
             }
@@ -252,7 +266,7 @@ abstract class AppFragment<T : ViewDataBinding>(
                 }
             }
             is SideEffects.Dialog -> {
-                if (sideEffectsHandledByAppFragment) {
+                if (!useCompose) {
                     MaterialAlertDialogBuilder(requireContext()).setTitle(
                             requireContext().stringFromIdentifierOrNull(
                                 sideEffect.title
@@ -262,7 +276,7 @@ abstract class AppFragment<T : ViewDataBinding>(
                 }
             }
             is SideEffects.ErrorSnackbar -> {
-                if(sideEffectsHandledByAppFragment) {
+                if(!useCompose) {
                     errorSnackbar(
                         throwable = sideEffect.error,
                         errorReport = sideEffect.errorReport,
@@ -271,7 +285,7 @@ abstract class AppFragment<T : ViewDataBinding>(
                 }
             }
             is SideEffects.ErrorDialog -> {
-                if(sideEffectsHandledByAppFragment) {
+                if(!useCompose) {
                     errorDialog(
                         throwable = sideEffect.error,
                         errorReport = sideEffect.errorReport,
@@ -304,8 +318,13 @@ abstract class AppFragment<T : ViewDataBinding>(
                     }
                 }
             }
-            is SideEffects.OpenDenominationDialog -> {
-                DenominationBottomSheetDialogFragment.show(denominatedValue = sideEffect.denominatedValue, childFragmentManager)
+            is SideEffects.OpenDenomination -> {
+                if(!useCompose) {
+                    DenominationBottomSheetDialogFragment.show(
+                        denominatedValue = sideEffect.denominatedValue,
+                        childFragmentManager
+                    )
+                }
             }
             is SideEffects.NavigateBack -> {
                 if (sideEffect.error == null) {
@@ -317,7 +336,7 @@ abstract class AppFragment<T : ViewDataBinding>(
                 }
             }
             is SideEffects.CopyToClipboard -> {
-                if(sideEffectsHandledByAppFragment) {
+                if(!useCompose) {
                     copyToClipboard(sideEffect.label ?: "Green", sideEffect.value, requireContext())
 
                     sideEffect.message?.also {
@@ -326,6 +345,7 @@ abstract class AppFragment<T : ViewDataBinding>(
                 }
             }
             is SideEffects.Logout -> {
+                logger.d { "Logout sideeffect: $sideEffect" }
                 getGreenViewModel()?.greenWalletOrNull?.let {
                     // If is ephemeral wallet, prefer going to intro
                     if (it.isEphemeral || it.isHardware || sideEffect.reason == LogoutReason.USER_ACTION) {
@@ -342,7 +362,6 @@ abstract class AppFragment<T : ViewDataBinding>(
                         navigate(it.actionId, it.arguments, isLogout = true)
                     }
                 }
-
             }
 
             is SideEffects.NavigateTo -> {
@@ -390,9 +409,27 @@ abstract class AppFragment<T : ViewDataBinding>(
                         NavGraphDirections.actionGlobalSendFragment(
                             wallet = it.greenWallet,
                             accountAsset = it.accountAsset,
-                            address = it.address,
-                            assetId = it.assetId,
-                            bumpTransaction = it.bumpTransaction
+                            address = it.address
+                        )
+                    )
+                }
+
+                (sideEffect.destination as? NavigateDestinations.Bump)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalBumpFragment(
+                            wallet = it.greenWallet,
+                            accountAsset = it.accountAsset,
+                            transaction = it.transaction
+                        )
+                    )
+                }
+
+                (sideEffect.destination as? NavigateDestinations.SendConfirm)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalSendConfirmFragment(
+                            wallet = it.greenWallet,
+                            accountAsset = it.accountAsset,
+                            transactionSegmentation = it.transactionSegmentation,
                         )
                     )
                 }
@@ -408,5 +445,5 @@ abstract class AppFragment<T : ViewDataBinding>(
         }
     }
 
-    companion object: KLogging()
+    companion object: Loggable()
 }

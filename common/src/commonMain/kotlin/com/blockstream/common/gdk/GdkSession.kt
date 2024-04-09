@@ -1884,13 +1884,15 @@ class GdkSession constructor(
         }else{
             gdk.getFeeEstimates(gdkSession(network)).let {
                 // Temp fix
-                if(network.isSinglesig && network.isLiquid) {
+                if (network.isSinglesig && network.isLiquid) {
                     FeeEstimation(it.fees.map { fee ->
                         fee.coerceAtLeast(100L)
                     })
-                }else{
+                } else {
                     it
                 }
+            }.also {
+                logger.d { "FeeEstimation: ${network.id} $it" }
             }
         }
     } catch (e: Exception) {
@@ -2344,7 +2346,8 @@ class GdkSession constructor(
 
     // asset_info in Convert object can be null for liquid assets that don't have asset metadata
     // if no asset is given, no conversion is needed (conversion will be identified as a btc value in gdk)
-    suspend fun convert(assetId: String? = null, asString: String? = null, asLong: Long? = null, denomination: String? = null): Balance? {
+    // onlyInAcceptableRange return MIN, MAX values so that the error pop in different gdk call
+    suspend fun convert(assetId: String? = null, asString: String? = null, asLong: Long? = null, denomination: String? = null, onlyInAcceptableRange: Boolean = true): Balance? {
         val network = assetId.networkForAsset(this)
         val isPolicyAsset = assetId.isPolicyAsset(this)
         val asset = assetId?.let { getAsset(it) }
@@ -2371,7 +2374,21 @@ class GdkSession constructor(
                 Balance.fromJsonElement(jsonElement = gdk.convertAmount(gdkSession(network), convert), assetId = assetId)
             } catch (e: Exception) {
                 e.printStackTrace()
-                null
+                if (!onlyInAcceptableRange) {
+                    when (e.message) {
+                        "id_amount_above_maximum_allowed" -> {
+                            Balance(satoshi = Long.MAX_VALUE)
+                        }
+                        "id_amount_below_minimum_allowed" -> {
+                            Balance(satoshi = -Long.MAX_VALUE)
+                        }
+                        else -> {
+                            null
+                        }
+                    }
+                } else {
+                    null
+                }
             }
         }
 
@@ -2419,7 +2436,9 @@ class GdkSession constructor(
     suspend fun createTransaction(network: Network, params: CreateTransactionParams) =
         withContext(context = Dispatchers.IO) {
             if (network.isLightning) {
-                createLightningTransaction(network, params)
+                createLightningTransaction(network, params).also {
+                    logger.d { "createLightningTransaction $it" }
+                }
             } else authHandler(network,
                 gdk.createTransaction(gdkSession(network), params)
             ).result<CreateTransaction>()
@@ -2553,20 +2572,16 @@ class GdkSession constructor(
         _walletActiveEventInvalidated = true
     }
 
-    fun sendTransaction(
-        account: Account,
-        signedTransaction: CreateTransaction,
-        twoFactorResolver: TwoFactorResolver
-    ): SendTransactionSuccess = if (account.network.isLightning) {
-        val invoiceOrLnUrl = signedTransaction.addressees.first().address
-        val satoshi = signedTransaction.addressees.first().satoshi?.absoluteValue ?: 0L
-        val comment = signedTransaction.memo
+    fun sendLightningTransaction(params: CreateTransaction): SendTransactionSuccess{
+        val invoiceOrLnUrl = params.addressees.first().address
+        val satoshi = params.addressees.first().satoshi?.absoluteValue ?: 0L
+        val comment = params.memo
 
         Logger.d { "invoiceOrLnUrl: $invoiceOrLnUrl satoshi: $satoshi comment: $comment " }
 
         _walletActiveEventInvalidated = true
 
-        when (val inputType = lightningSdk.parseBoltOrLNUrlAndCache(invoiceOrLnUrl)) {
+        return when (val inputType = lightningSdk.parseBoltOrLNUrlAndCache(invoiceOrLnUrl)) {
             is InputType.Bolt11 -> {
                 // Check for expiration
                 if(inputType.invoice.isExpired()){
@@ -2588,7 +2603,7 @@ class GdkSession constructor(
                         ErrorReport.create(
                             throwable = e,
                             paymentHash = inputType.invoice.paymentHash,
-                            network = account.network,
+                            network = lightningAccount.network,
                             session = this
                         )
                     )
@@ -2615,7 +2630,7 @@ class GdkSession constructor(
                                 ErrorReport.create(
                                     throwable = exception,
                                     paymentHash = it.data.paymentHash,
-                                    network = account.network,
+                                    network = lightningAccount.network,
                                     session = this
                                 )
                             )
@@ -2628,6 +2643,14 @@ class GdkSession constructor(
                 throw Exception("id_invalid")
             }
         }
+    }
+
+    fun sendTransaction(
+        account: Account,
+        signedTransaction: CreateTransaction,
+        twoFactorResolver: TwoFactorResolver
+    ): SendTransactionSuccess = if (account.network.isLightning) {
+        sendLightningTransaction(signedTransaction)
     } else {
         authHandler(
             account.network,

@@ -1,11 +1,11 @@
 package com.blockstream.compose.components
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.blockstream.compose.R
 import com.blockstream.compose.theme.GreenThemePreview
 import com.blockstream.compose.theme.bodyLarge
+import com.blockstream.compose.theme.monospaceFont
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.utils.getClipboard
 
@@ -30,26 +31,26 @@ fun GreenTextField(
     title: String,
     value: String,
     onValueChange: (String) -> Unit,
+    enabled: Boolean = true,
     error: String? = null,
     singleLine: Boolean = true,
     minLines: Int = 1,
-    onQrClick : (() -> Unit)? = null
+    maxLines: Int = Int.MAX_VALUE,
+    footerContent: @Composable (() -> Unit)? = null,
+    onQrClick: (() -> Unit)? = null
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
+    Column {
         GreenDataLayout(title = title, withPadding = false, error = error) {
-            GreenRow(
-                padding = 0, space = 10,
+            Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp)
-                    .padding(vertical = 16.dp)
+                    .padding(start = 16.dp)
+                    .padding(vertical = 4.dp)
             ) {
 
                 val textStyle = LocalTextStyle.current.merge(
                     TextStyle(
+                        fontFamily = monospaceFont,
                         color = whiteHigh,
                         textAlign = TextAlign.Start
                     )
@@ -63,6 +64,7 @@ fun GreenTextField(
                     textStyle = textStyle,
                     singleLine = singleLine,
                     minLines = minLines,
+                    maxLines = if (singleLine) 1 else maxLines,
                     cursorBrush = SolidColor(colors.cursorColor),
                     modifier = Modifier
                         .weight(1f)
@@ -70,32 +72,34 @@ fun GreenTextField(
 
                 if (value.isEmpty()) {
                     val context = LocalContext.current
-                    Image(
-                        painter = painterResource(id = R.drawable.clipboard_text),
-                        contentDescription = "Edit",
-                        modifier = Modifier.clickable {
-                            onValueChange(getClipboard(context) ?: "")
-                        }
-                    )
+                    IconButton(onClick = { onQrClick?.invoke() }, enabled = enabled) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.qr_code),
+                            contentDescription = "Scan QR"
+                        )
+                    }
 
-                    Image(
-                        painter = painterResource(id = R.drawable.qr_code),
-                        contentDescription = "QR",
-                        modifier = Modifier.clickable {
-                            onQrClick?.invoke()
-                        }
-                    )
+                    IconButton(
+                        onClick = { onValueChange(getClipboard(context) ?: "") },
+                        enabled = enabled
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.clipboard),
+                            contentDescription = "Edit"
+                        )
+                    }
                 } else {
-                    Image(painter = painterResource(id = R.drawable.x_circle),
-                        contentDescription = "Clear",
-                        modifier = Modifier
-                            .clickable {
-                                onValueChange("")
-                            }
-                    )
+                    IconButton(onClick = { onValueChange("") }, enabled = enabled) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.x_circle),
+                            contentDescription = "Clear"
+                        )
+                    }
                 }
             }
         }
+
+        footerContent?.invoke()
     }
 }
 
@@ -106,7 +110,12 @@ fun GreenTextFieldPreview() {
         GreenColumn {
             GreenTextField(stringResource(R.string.id_address), "123", {})
             GreenTextField(stringResource(R.string.id_private_key), "", {})
-            GreenTextField(stringResource(R.string.id_private_key), "", {}, error = "id_insufficient_funds")
+            GreenTextField(
+                stringResource(R.string.id_private_key),
+                "",
+                {},
+                error = "id_insufficient_funds"
+            )
         }
     }
 }

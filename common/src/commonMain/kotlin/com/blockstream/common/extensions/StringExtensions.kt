@@ -9,4 +9,4 @@ fun String?.padHex() = this?.replace("........".toRegex(), "$0 ")
 fun String?.cleanup(): String? = if (isNullOrBlank()) null else trim().replace("\n", "")
 
 fun List<String>?.startsWith(other: String?): Boolean = if(this == null) false else
-    other.takeIf { it.isNotBlank() }?.let { o -> any { it.startsWith(o) } } ?: false
+    other.takeIf { it.isNotBlank() }?.let { o -> any { o.startsWith(it) } } ?: false

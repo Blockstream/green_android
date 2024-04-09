@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -20,26 +21,34 @@ import com.blockstream.compose.theme.labelMedium
 
 @Composable
 fun GreenDataLayout(
-    title: String,
+    modifier: Modifier = Modifier,
+    title: String? = null,
     error: String? = null,
+    errorColor: Color? = null,
     withPadding: Boolean = true,
+    enabled: Boolean = true,
     onClick: (() -> Unit)? = null,
     content: @Composable BoxScope.() -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .then(modifier)
     ) {
-        Text(
-            text = title,
-            style = labelMedium,
-            modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
-        )
+        title?.also {
+            Text(
+                text = it,
+                style = labelMedium,
+                modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
+            )
+        }
 
         GreenCard(
             padding = (if (withPadding) 16.dp else 0.dp),
             onClick = onClick,
             error = error,
+            enabled = enabled,
+            errorColor = errorColor,
             content = content
         )
     }
@@ -50,7 +59,11 @@ fun GreenDataLayout(
 fun GreenDataLayoutPreview() {
     GreenThemePreview {
         GreenColumn {
-            GreenDataLayout(stringResource(R.string.id_amount)) {
+            GreenDataLayout() {
+                Text(text = "Test")
+            }
+
+            GreenDataLayout(title = stringResource(R.string.id_amount)) {
                 Text(text = "Test")
             }
 
@@ -58,7 +71,7 @@ fun GreenDataLayoutPreview() {
                 mutableStateOf<String?>("Error")
             }
 
-            GreenDataLayout(stringResource(R.string.id_error), error = error, onClick = {
+            GreenDataLayout(title = stringResource(R.string.id_error), error = error, onClick = {
                 if (error == null) {
                     error = "This is an error"
                 } else {

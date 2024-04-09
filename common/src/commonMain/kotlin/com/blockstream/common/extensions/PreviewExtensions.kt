@@ -51,7 +51,7 @@ fun previewLoginCredentials() = LoginCredentials("", CredentialType.BIOMETRICS_P
 fun previewEnrichedAsset() = EnrichedAsset.PreviewBTC
 
 fun previewAccount() = Account(
-    gdkName = "Segwit",
+    gdkName = "Account #1",
     pointer = 0,
     type = AccountType.BIP84_SEGWIT,
     networkInjected = previewNetwork(),

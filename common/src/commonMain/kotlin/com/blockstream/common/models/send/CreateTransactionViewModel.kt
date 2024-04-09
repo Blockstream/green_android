@@ -12,6 +12,7 @@ import com.blockstream.common.gdk.FeeBlockLow
 import com.blockstream.common.gdk.FeeBlockMedium
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.models.GreenViewModel
@@ -26,25 +27,29 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.sync.Mutex
 
 
 abstract class CreateTransactionViewModelAbstract(
     greenWallet: GreenWallet,
     accountAssetOrNull: AccountAsset? = null,
-) :
-    GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = accountAssetOrNull) {
+) : GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = accountAssetOrNull) {
 
     override fun segmentation(): HashMap<String, Any>? {
         return countly.sessionSegmentation(session = session)
     }
 
-    internal val _network: MutableStateFlow<Network?> =
-        MutableStateFlow(accountAssetOrNull?.account?.network)
+    internal val _network: MutableStateFlow<Network?> = MutableStateFlow(null)
 
     internal val _feePriority: MutableStateFlow<FeePriority> = MutableStateFlow(FeePriority.Low())
+    @NativeCoroutinesState
+    val feePriority: StateFlow<FeePriority> = _feePriority.asStateFlow()
+
     internal val _feeEstimation: MutableStateFlow<List<Long>?> = MutableStateFlow(null)
 
     // Used to trigger
@@ -53,20 +58,54 @@ abstract class CreateTransactionViewModelAbstract(
 
     internal var _addressInputType: AddressInputType? = null
 
+    internal val _showFeeSelector: MutableStateFlow<Boolean> = MutableStateFlow(false)
     @NativeCoroutinesState
-    val feePriority: StateFlow<FeePriority> = _feePriority.asStateFlow()
+    val showFeeSelector: StateFlow<Boolean> = _showFeeSelector.asStateFlow()
 
-    private var _customFeeRate: MutableStateFlow<Double?> = MutableStateFlow(null)
+    // Gets updated when Account assets are updated
+    @NativeCoroutinesState
+    open val accountAssetBalance: StateFlow<AccountAssetBalance?> =
+        combine(denomination, _network.flatMapLatest { network ->
+            network?.let {
+                accountAsset.flatMapLatest { accountAsset ->
+                    accountAsset?.let { session.accountAssets(it.account) } ?: flowOf(null)
+                }
+            } ?: flowOf(null)
+        }) { _, assets ->
+            assets
+        }.map { assets ->
+            assets?.let {
+                accountAsset.value?.let {
+                    AccountAssetBalance.create(
+                        accountAsset = it,
+                        session,
+                        denomination = denomination.value
+                    )
+                }
+            }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
+
+    internal var _customFeeRate: MutableStateFlow<Double?> = MutableStateFlow(null)
 
     @NativeCoroutinesState
     val customFeeRate: StateFlow<Double?> = _customFeeRate.asStateFlow()
 
-    internal var _transactionParams: CreateTransactionParams? = null
+    protected val _error: MutableStateFlow<String?> = MutableStateFlow(null)
+
+    @NativeCoroutinesState
+    val error: StateFlow<String?> = _error.asStateFlow()
+
+    internal var createTransactionParams: MutableStateFlow<CreateTransactionParams?> = MutableStateFlow(null)
+
+    internal val checkTransactionMutex = Mutex()
+    open fun createTransaction(params: CreateTransactionParams?, finalCheckBeforeContinue: Boolean = false) { }
 
     class LocalEvents {
-        object ClickFeePriority : Event
+        data class ClickFeePriority(val showCustomFeeRateDialog: Boolean = false) : Event
         data class SetFeeRate(val feePriority: FeePriority) : Event
         data class SetCustomFeeRate(val amount: String) : Event
+        data class SetAddressInputType(val inputType: AddressInputType): Event
+        data class SignTransaction(val broadcastTransaction: Boolean = true) : Event
     }
 
     class LocalSideEffects {
@@ -77,10 +116,18 @@ abstract class CreateTransactionViewModelAbstract(
         super.bootstrap()
 
         session.ifConnected {
-            _network.filterNotNull().onEach {
-                _feeEstimation.value = session.getFeeEstimates(it).fees
-                _customFeeRate.value = _customFeeRate.value ?: ((_feeEstimation.value?.firstOrNull()
-                    ?: it.defaultFee) / 1000.0)
+            _network.onEach {
+                if (it == null) {
+                    _feeEstimation.value = null
+                } else {
+                    _feeEstimation.value = session.getFeeEstimates(it).fees
+                    _customFeeRate.value = _customFeeRate.value ?: ((_feeEstimation.value?.firstOrNull()
+                        ?: it.defaultFee) / 1000.0)
+                }
+            }.launchIn(this)
+
+            createTransactionParams.onEach {
+                createTransaction(params = it, finalCheckBeforeContinue = false)
             }.launchIn(this)
         }
     }
@@ -90,27 +137,39 @@ abstract class CreateTransactionViewModelAbstract(
 
         if (event is LocalEvents.SetFeeRate) {
             if (event.feePriority is FeePriority.Custom && event.feePriority.customFeeRate.isNaN()) {
-                _feePriority.value = FeePriority.Custom(_customFeeRate.value ?: minFee())
+
+                // Prevent replacing if rate is the same as it will clear the fee estimation data
+                FeePriority.Custom(_customFeeRate.value ?: minFee()).also {
+                    if(_feePriorityPrimitive.value != it.primitive()){
+                        _feePriority.value = it
+                    }
+                }
                 showCustomFeeRateDialog()
             } else {
                 _feePriority.value = event.feePriority
             }
         } else if (event is LocalEvents.ClickFeePriority) {
-            ifNotNull(accountAsset.value, _transactionParams) { acc, params ->
-                postSideEffect(
-                    SideEffects.OpenFeeBottomSheet(
-                        greenWallet = greenWallet,
-                        accountAsset = acc,
-                        params = params
+            ifNotNull(accountAsset.value, createTransactionParams.value) { acc, params ->
+                if(event.showCustomFeeRateDialog && feePriority.value is FeePriority.Custom){
+                    showCustomFeeRateDialog()
+                }else{
+                    postSideEffect(
+                        SideEffects.OpenFeeBottomSheet(
+                            greenWallet = greenWallet,
+                            accountAsset = acc,
+                            params = params
+                        )
                     )
-                )
+                }
             }
         } else if (event is LocalEvents.SetCustomFeeRate) {
             setCustomFeeRate(event.amount)
+        } else if (event is LocalEvents.SetAddressInputType) {
+            _addressInputType = event.inputType
         }
     }
 
-    private fun minFee(): Double =
+    internal fun minFee(): Double =
         (_feeEstimation.value?.firstOrNull() ?: _network.value?.defaultFee
         ?: session.defaultNetwork.defaultFee) / 1000.0
 
@@ -129,7 +188,12 @@ abstract class CreateTransactionViewModelAbstract(
             }
         }
 
-        _feePriority.value = FeePriority.Custom(_customFeeRate.value ?: minFee)
+        // Prevent replacing if rate is the same as it will clear the fee estimation data
+        FeePriority.Custom(_customFeeRate.value ?: minFee).also {
+            if(_feePriorityPrimitive.value != it.primitive()){
+                _feePriority.value = it
+            }
+        }
     }
 
     internal suspend fun calculateFeePriority(
@@ -207,11 +271,11 @@ abstract class CreateTransactionViewModelAbstract(
     }
 
     private fun showCustomFeeRateDialog() {
-        postSideEffect(LocalSideEffects.ShowCustomFeeRate(_customFeeRate.value ?: 0.0))
+        postSideEffect(LocalSideEffects.ShowCustomFeeRate((_customFeeRate.value ?: 0.0).coerceAtLeast(minFee())))
     }
 
-    internal fun getFeeRate(priority: FeePriority? = null): Long =
-        (priority ?: feePriority.value).let {
+    internal fun getFeeRate(priority: FeePriority = feePriority.value): Long =
+        priority.let {
             if (it is FeePriority.Custom) {
                 (it.customFeeRate.coerceAtLeast(minFee()) * 1000).toLong()
             } else {

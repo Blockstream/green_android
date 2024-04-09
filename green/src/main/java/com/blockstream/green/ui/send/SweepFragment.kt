@@ -22,8 +22,6 @@ class SweepFragment : AppFragment<ComposeViewBinding>(
 ) {
     private val args: SweepFragmentArgs by navArgs()
 
-    override val sideEffectsHandledByAppFragment: Boolean = false
-
     override val useCompose: Boolean = true
 
     override val title: String

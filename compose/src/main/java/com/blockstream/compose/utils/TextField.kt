@@ -22,7 +22,7 @@ fun TextInputPaste(state: MutableStateFlow<String>) {
     val value by state.collectAsStateWithLifecycle()
 
     if (value.isEmpty()) {
-        Icon(painterResource(id = R.drawable.clipboard_text),
+        Icon(painterResource(id = R.drawable.clipboard),
             contentDescription = "clear text",
             modifier = Modifier.clickable {
                 state.value = getClipboard(context) ?: ""

@@ -246,17 +246,6 @@ dependencies {
     implementation(libs.countly.sdk.android)
     /** ----------------------------------------------------------------------------------------- */
 
-    /**  --- Beagle  ---------------------------------------------------------------------------- */
-    developmentImplementation(libs.beagle.ui.drawer)
-    developmentImplementation(libs.beagle.log.crash)
-
-    productionGoogleImplementation(libs.beagle.noop)
-    productionGoogleImplementation(libs.beagle.log.crash.noop)
-
-    productionFDroidImplementation(libs.beagle.noop)
-    productionFDroidImplementation(libs.beagle.log.crash.noop)
-    /** ----------------------------------------------------------------------------------------- */
-
     /**  --- Slide To Act ----------------------------------------------------------------------- */
     implementation(libs.slidetoact)
     /** ----------------------------------------------------------------------------------------- */

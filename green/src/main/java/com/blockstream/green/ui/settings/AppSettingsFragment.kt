@@ -19,8 +19,6 @@ class AppSettingsFragment : AppFragment<ComposeViewBinding>(R.layout.compose_vie
 
     override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override val sideEffectsHandledByAppFragment: Boolean = false
-
     override val useCompose: Boolean = true
 
     private val onBackCallback = object : OnBackPressedCallback(true) {

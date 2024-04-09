@@ -3,7 +3,7 @@ package com.blockstream.common.gdk.data
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.gdk.GdkSession
 
-class Assets constructor(val assetsOrNull: Map<String, Long>? = null) {
+data class Assets constructor(val assetsOrNull: Map<String, Long>? = null) {
     val assets
         get() = assetsOrNull ?: emptyMap()
 

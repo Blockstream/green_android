@@ -39,8 +39,6 @@ class EnterRecoveryPhraseFragment : AppFragment<ComposeViewBinding>(
         parametersOf(args.setupArgs, stateKeeper())
     }
 
-    override val sideEffectsHandledByAppFragment: Boolean = false
-
     override val useCompose: Boolean = true
 
     override fun getGreenViewModel(): GreenViewModel = viewModel

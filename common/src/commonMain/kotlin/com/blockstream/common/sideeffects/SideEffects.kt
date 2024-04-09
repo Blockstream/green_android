@@ -5,10 +5,12 @@ import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.Redact
+import com.blockstream.common.data.TwoFactorResolverData
 import com.blockstream.common.events.Event
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Device
+import com.blockstream.common.gdk.data.SendTransactionSuccess
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.navigation.NavigateDestination
 import kotlinx.coroutines.CompletableDeferred
@@ -24,7 +26,7 @@ class SideEffects : SideEffect {
         SideEffect
     data class Dialog(val title: String? = null, val message: String) : SideEffect
     data class ErrorDialog(val error: Throwable, val errorReport: ErrorReport? = null) : SideEffect
-    data class OpenDenominationDialog(val denominatedValue: DenominatedValue): SideEffect
+    data class OpenDenomination(val denominatedValue: DenominatedValue): SideEffect
     data class OpenFeeBottomSheet(
         val greenWallet: GreenWallet,
         val accountAsset: AccountAsset,
@@ -37,6 +39,7 @@ class SideEffects : SideEffect {
     data class NavigateBack(val error: Throwable? = null, val errorReport: ErrorReport? = null, val title: String? = null) :
         SideEffect
     object NavigateToRoot : SideEffect
+    data class TransactionSent(val data: SendTransactionSuccess) : SideEffect
     data class Logout(val reason: LogoutReason) : SideEffect
     object WalletDelete : SideEffect
     data class CopyToClipboard(val value: String, val message: String? = null, val label: String? = null) : SideEffect
@@ -49,4 +52,5 @@ class SideEffects : SideEffect {
         SideEffect
     object Dismiss : SideEffect
     data class Share(val text: String? = null) : SideEffect
+    data class TwoFactorResolver(val data: TwoFactorResolverData) : SideEffect
 }

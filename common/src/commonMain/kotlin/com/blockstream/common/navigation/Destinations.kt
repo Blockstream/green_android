@@ -1,10 +1,12 @@
 package com.blockstream.common.navigation
 
+import com.blockstream.common.TransactionSegmentation
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorSetupAction
 import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.data.Network
 
 interface NavigateDestination
@@ -48,6 +50,7 @@ sealed class NavigateDestinations : NavigateDestination {
     data class RenameWallet(val greenWallet: GreenWallet) : NavigateDestination
 
     data class DeleteWallet(val greenWallet: GreenWallet) : NavigateDestination
+    data class AssetsAccounts(val greenWallet: GreenWallet, val assetsAccounts: List<AccountAssetBalance>) : NavigateDestination
     data class Bip39Passphrase(val greenWallet: GreenWallet, val passphrase: String) : NavigateDestination
     data class WalletSettings(val greenWallet: GreenWallet) : NavigateDestination
     data class ArchivedAccounts(val greenWallet: GreenWallet) : NavigateDestination
@@ -65,8 +68,18 @@ sealed class NavigateDestinations : NavigateDestination {
         val greenWallet: GreenWallet,
         val accountAsset: AccountAsset,
         val address: String? = null,
-        val assetId: String? = null,
-        val bumpTransaction: String? = null
+    ) : NavigateDestination
+
+    data class Bump(
+        val greenWallet: GreenWallet,
+        val accountAsset: AccountAsset,
+        val transaction: String
+    ) : NavigateDestination
+
+    data class SendConfirm(
+        val greenWallet: GreenWallet,
+        val accountAsset: AccountAsset,
+        val transactionSegmentation: TransactionSegmentation
     ) : NavigateDestination
 
     data class RecoverFunds(

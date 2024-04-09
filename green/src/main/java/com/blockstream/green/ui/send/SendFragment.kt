@@ -4,23 +4,39 @@ import android.content.Context
 import android.os.Bundle
 import android.text.InputType
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import androidx.activity.OnBackPressedCallback
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.AddressInputType
 import com.blockstream.common.Urls
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.ScanResult
+import com.blockstream.common.data.isEmpty
+import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.FeeBlockTarget
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.home.HomeViewModel
+import com.blockstream.common.models.login.LoginViewModel
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.UserInput
+import com.blockstream.compose.AppFragmentBridge
+import com.blockstream.compose.screens.HomeScreen
+import com.blockstream.compose.screens.login.LoginScreen
+import com.blockstream.compose.screens.send.SendScreen
+import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.databinding.AccountAssetLayoutBinding
+import com.blockstream.green.databinding.ComposeViewBinding
 import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.ListItemTransactionRecipientBinding
 import com.blockstream.green.databinding.SendFragmentBinding
@@ -34,11 +50,16 @@ import com.blockstream.green.extensions.setOnClickListener
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.filters.NumberValueFilter
 import com.blockstream.green.looks.AssetLook
+import com.blockstream.green.ui.AppFragment
+import com.blockstream.green.ui.MainActivity
 import com.blockstream.green.ui.bottomsheets.AccountAssetBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.DenominationBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.SelectUtxosBottomSheetDialogFragment
+import com.blockstream.green.ui.login.LoginFragmentArgs
+import com.blockstream.green.ui.login.LoginFragmentDirections
 import com.blockstream.green.ui.wallet.AbstractAssetWalletFragment
+import com.blockstream.green.ui.wallet.AbstractWalletsFragment
 import com.blockstream.green.utils.AmountTextWatcher
 import com.blockstream.green.utils.getClipboard
 import com.blockstream.green.utils.openBrowser
@@ -58,7 +79,68 @@ import java.lang.ref.WeakReference
 import java.text.NumberFormat
 import java.util.Locale
 
-class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
+class SendFragment : AppFragment<ComposeViewBinding>(
+    layout = R.layout.compose_view,
+    menuRes = 0
+) {
+    val args: SendFragmentArgs by navArgs()
+
+    val viewModel: com.blockstream.common.models.send.SendViewModel by viewModel {
+        parametersOf(
+            args.wallet,
+            args.accountAsset,
+            args.address,
+            args.addressType
+        )
+    }
+
+    override fun getGreenViewModel(): GreenViewModel = viewModel
+
+    override val title: String
+        get() = getString(R.string.id_send)
+
+    override val useCompose: Boolean = true
+
+    private val onBackCallback = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            // Prevent back
+        }
+    }
+
+    override fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+        when (sideEffect) {
+            is SideEffects.NavigateToRoot -> {
+                findNavController().popBackStack(R.id.walletOverviewFragment, false)
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.composeView.apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            )
+            setContent {
+                AppFragmentBridge {
+                    SendScreen(viewModel = viewModel)
+                }
+            }
+        }
+
+        viewModel.navData.onEach {
+            setToolbarVisibility(it.isVisible)
+            onBackCallback.isEnabled = !it.isVisible
+            (requireActivity() as MainActivity).lockDrawer(!it.isVisible)
+        }.launchIn(lifecycleScope)
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackCallback)
+    }
+}
+
+class SendFragmentOld : AbstractAssetWalletFragment<SendFragmentBinding>(
     layout = R.layout.send_fragment,
     menuRes = 0
 ) {
@@ -67,8 +149,11 @@ class SendFragment : AbstractAssetWalletFragment<SendFragmentBinding>(
     val args: SendFragmentArgs by navArgs()
 
     private val isSweep = false
-    private val isBump by lazy { !args.bumpTransaction.isNullOrBlank() }
-    private val bumpTransaction by lazy { if(isBump) Json.parseToJsonElement(args.bumpTransaction ?: "") else null }
+    private val isBump by lazy {
+        false
+//        !args.bumpTransaction.isNullOrBlank()
+    }
+    private val bumpTransaction by lazy { if(isBump) Json.parseToJsonElement( "") else null }
 
     // Store bindings as weak reference to allow them to be GC'ed
     val bindings = mutableListOf<WeakReference<ListItemTransactionRecipientBinding>>()

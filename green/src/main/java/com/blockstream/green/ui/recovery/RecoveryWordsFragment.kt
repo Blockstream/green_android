@@ -37,8 +37,6 @@ class RecoveryWordsFragment : AppFragment<ComposeViewBinding>(
         parametersOf(args.args)
     }
 
-    override val sideEffectsHandledByAppFragment: Boolean = false
-
     override val useCompose: Boolean = true
 
     // If wallet is null, WalletFragment will give the viewModel to AppFragment, guard this behavior and return null

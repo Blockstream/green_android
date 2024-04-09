@@ -3,7 +3,7 @@
 package com.blockstream.gms.di
 
 import com.blockstream.base.AppReview
-import com.blockstream.base.Firebase
+import com.blockstream.common.fcm.Firebase
 import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.data.AppConfig
 import com.blockstream.gms.AppReviewImpl

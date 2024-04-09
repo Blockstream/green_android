@@ -22,8 +22,6 @@ class UseHardwareDeviceFragment : AppFragment<ComposeViewBinding>(
 
     override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override val sideEffectsHandledByAppFragment: Boolean = false
-
     override val useCompose: Boolean = true
 
     override fun handleSideEffect(sideEffect: SideEffect) {

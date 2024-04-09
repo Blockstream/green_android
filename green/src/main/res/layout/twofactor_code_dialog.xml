@@ -13,9 +13,9 @@
             name="text"
             type="String" />
 
-        <variable
-            name="hint"
-            type="String" />
+<!--        <variable-->
+<!--            name="hint"-->
+<!--            type="String" />-->
 
         <variable
             name="attemptsRemaining"

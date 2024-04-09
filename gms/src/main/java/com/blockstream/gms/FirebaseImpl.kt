@@ -1,8 +1,8 @@
 package com.blockstream.gms
 
 
-import com.blockstream.base.Firebase
 import com.blockstream.common.fcm.FcmCommon
+import com.blockstream.common.fcm.Firebase
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import mu.KLogging

@@ -144,7 +144,7 @@ fun GreenQR(
                             modifier = Modifier.align(Alignment.Center)
                         )
                     } else {
-                        IconButton(
+                        GreenIconButton(
                             text = stringResource(id = R.string.id_show_qr_code),
                             icon = painterResource(id = R.drawable.eye),
                             modifier = Modifier.align(Alignment.Center)

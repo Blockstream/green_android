@@ -63,7 +63,7 @@ import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenSpacer
-import com.blockstream.compose.components.IconButton
+import com.blockstream.compose.components.GreenIconButton
 import com.blockstream.compose.components.ScanQrButton
 import com.blockstream.compose.components.ScreenContainer
 import com.blockstream.compose.extensions.onValueChange
@@ -141,8 +141,9 @@ fun WatchOnlyCredentialsScreen(
 
     val isSinglesig = viewModel.isSinglesig.value
 
+    val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
     ScreenContainer(
-        viewModel = viewModel
+        onProgress = onProgress
     ) {
         val focusManager = LocalFocusManager.current
 
@@ -257,7 +258,7 @@ fun WatchOnlyCredentialsScreen(
                                             }
                                         }
 
-                                    IconButton(
+                                    GreenIconButton(
                                         text = stringResource(id = R.string.id_import_from_file),
                                         icon = painterResource(id = R.drawable.file)
                                     ) {

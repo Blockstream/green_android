@@ -44,7 +44,6 @@ import com.blockstream.green.extensions.toast
 import com.blockstream.green.ui.add.AbstractAddAccountFragment
 import com.blockstream.green.ui.bottomsheets.ChooseAssetAccountListener
 import com.blockstream.green.ui.bottomsheets.DenominationBottomSheetDialogFragment
-import com.blockstream.green.ui.bottomsheets.DeviceInteractionRequestBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.MenuBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.MenuDataProvider
 import com.blockstream.green.ui.bottomsheets.NoteBottomSheetDialogFragment
@@ -116,7 +115,7 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
 
         when (sideEffect) {
             is ReceiveViewModel.LocalSideEffects.VerifiedOnDevice -> {
-                DeviceInteractionRequestBottomSheetDialogFragment.closeAll(childFragmentManager)
+                VerifyAddressBottomSheetDialogFragment.closeAll(childFragmentManager)
             }
 
             is ReceiveViewModel.LocalSideEffects.VerifyOnDevice -> {

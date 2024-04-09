@@ -1,4 +1,4 @@
-package com.blockstream.base
+package com.blockstream.common.fcm
 
 import com.blockstream.common.utils.Loggable
 

@@ -12,6 +12,7 @@ help_message() {
     -h, --help        Display this help message and exit
     -d, --docker      Run in Docker container
     -o, --overwrite   Add new checksums
+    -a, --assemble    Run assemble task to get more dependencies (takes longer)
     -b, --build       Run build task to get more dependencies (takes longer)
     -t, --test        Run test task to get more dependencies (takes longer)
 
@@ -40,6 +41,9 @@ case $key in
     -b | --build)
       TASK="assembleDevelopmentDebug"
       shift ;;
+    -a | --assemble)
+          TASK="assemble"
+          shift ;;
     -t | --test)
       TASK="test"
       shift ;;

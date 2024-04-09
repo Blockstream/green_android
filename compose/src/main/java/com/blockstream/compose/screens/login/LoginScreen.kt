@@ -53,7 +53,6 @@ import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.gdk.data.Credentials
 import com.blockstream.common.models.login.LoginViewModel
 import com.blockstream.common.models.login.LoginViewModelAbstract
 import com.blockstream.common.models.login.LoginViewModelPreview
@@ -556,7 +555,8 @@ fun LoginScreen(
                                             )
                                         )
                                     }
-                                })
+                                }
+                            )
                         } else if (passwordCredentials.isNotEmpty()) {
                             val focusManager = LocalFocusManager.current
                             var password by remember {

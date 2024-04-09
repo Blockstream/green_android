@@ -18,10 +18,10 @@ data class AccountAsset constructor(
     val assetId
         get() = asset.assetId
 
-    fun balance(session: GdkSession) =
-        session.accountAssets(account).value.assets.firstNotNullOfOrNull { accountAssets ->
-            accountAssets.value.takeIf { accountAssets.key == asset.assetId }
-        } ?: 0L
+    val accountAssetBalance
+        get() = AccountAssetBalance(account = account, asset = asset)
+
+    fun balance(session: GdkSession) = session.accountAssets(account).value.balance(assetId)
 
     companion object {
         fun fromAccountAsset(account: Account, assetId: String, session: GdkSession): AccountAsset {

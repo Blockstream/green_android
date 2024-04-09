@@ -4,6 +4,7 @@ import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Network
 
 data class ErrorReport private constructor(
+    val subject: String? = null,
     val error: String,
     val supportId: String? = null,
     val paymentHash: String? = null,
@@ -39,8 +40,8 @@ data class ErrorReport private constructor(
             )
         }
 
-        fun createForMultisig(): ErrorReport{
-            return ErrorReport(error = "", zendeskSecurityPolicy = "multisig_shield__green_")
+        fun createForMultisig(subject: String?): ErrorReport{
+            return ErrorReport(subject = subject, error = "", zendeskSecurityPolicy = "multisig_shield__green_")
         }
     }
 }

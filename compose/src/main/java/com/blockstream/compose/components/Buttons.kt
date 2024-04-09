@@ -228,14 +228,15 @@ fun GreenButton(
 }
 
 @Composable
-fun IconButton(
+fun GreenIconButton(
     modifier: Modifier = Modifier,
     text: String,
     icon: Painter,
     color: Color = green,
+    contentPadding: PaddingValues = ButtonDefaults.TextButtonContentPadding,
     onClick: () -> Unit
 ) {
-    TextButton(modifier = Modifier.then(modifier), onClick = onClick) {
+    TextButton(modifier = Modifier.then(modifier), contentPadding = contentPadding, onClick = onClick) {
         GreenRow(padding = 0, space = 6) {
             Icon(
                 painter = icon,
@@ -251,7 +252,7 @@ fun IconButton(
 
 @Composable
 fun HelpButton(onClick: () -> Unit) {
-    IconButton(
+    GreenIconButton(
         text = stringResource(id = R.string.id_help),
         icon = painterResource(id = R.drawable.question),
         color = whiteMedium,
@@ -261,16 +262,16 @@ fun HelpButton(onClick: () -> Unit) {
 
 @Composable
 fun PasteButton(onClick: () -> Unit) {
-    IconButton(
+    GreenIconButton(
         text = stringResource(id = R.string.id_paste),
-        icon = painterResource(id = R.drawable.clipboard_text),
+        icon = painterResource(id = R.drawable.clipboard),
         onClick = onClick
     )
 }
 
 @Composable
 fun ScanQrButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
-    IconButton(
+    GreenIconButton(
         modifier = modifier,
         text = stringResource(id = R.string.id_scan_qr_code),
         icon = painterResource(id = R.drawable.qr_code),
@@ -280,7 +281,7 @@ fun ScanQrButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
 
 @Composable
 fun ZoomButton(onClick: () -> Unit) {
-    IconButton(
+    GreenIconButton(
         text = stringResource(id = R.string.id_increase_qr_size),
         icon = painterResource(id = R.drawable.magnifying_glass_plus),
         color = whiteMedium,
@@ -293,7 +294,7 @@ fun LearnMoreButton(
     color: Color = green,
     onClick: () -> Unit
 ) {
-    IconButton(
+    GreenIconButton(
         text = stringResource(id = R.string.id_learn_more),
         icon = painterResource(id = R.drawable.arrow_square_out),
         color = color,
@@ -303,7 +304,7 @@ fun LearnMoreButton(
 
 @Composable
 fun AboutButton(onClick: () -> Unit) {
-    IconButton(
+    GreenIconButton(
         text = stringResource(id = R.string.id_about),
         icon = painterResource(id = R.drawable.green_shield),
         color = whiteMedium,

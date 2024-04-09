@@ -1,5 +1,6 @@
 package com.blockstream.common.models.wallets
 
+import com.blockstream.common.data.Banner
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Event
@@ -95,12 +96,6 @@ abstract class WalletsViewModel(isHome: Boolean) : WalletsViewModelAbstract(isHo
     }
 
     init {
-
-        viewModelScope.coroutineScope.launch {
-            delay(50L)
-
-        }
-
         // If you have already agreed, check by default
         viewModelScope.coroutineScope.launch {
             termsOfServiceIsChecked.value =
@@ -166,6 +161,9 @@ class WalletsViewModelPreview(
         MutableStateFlow(viewModelScope, hardwareWallets)
     override val termsOfServiceIsChecked: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, false)
 
+    init {
+        banner.value = Banner.preview3
+    }
     companion object {
         fun previewEmpty() = WalletsViewModelPreview(
             listOf(), listOf(), listOf()

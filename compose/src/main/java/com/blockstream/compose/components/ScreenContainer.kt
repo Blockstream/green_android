@@ -17,8 +17,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -26,29 +24,22 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.rive.runtime.kotlin.RiveAnimationView
-import co.touchlab.kermit.Logger
-import com.blockstream.common.models.GreenViewModel
 import com.blockstream.compose.R
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.utils.ifTrue
 import com.blockstream.compose.utils.stringResourceId
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Composable
 fun ScreenContainer(
-    viewModel: GreenViewModel,
-    showRiveAnimation: Boolean = false,
+    onProgress: Boolean,
+    onProgressDescription: String? = null,
+    riveAnimation: Int? = null,
     blurBackground: Boolean = true,
     content: @Composable BoxScope.() -> Unit
 ) {
-    val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
-
-    Box(
-        Modifier
+    Box(modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
             .ifTrue(onProgress) {
@@ -86,14 +77,14 @@ fun ScreenContainer(
                 horizontalAlignment = Alignment.CenterHorizontally
 
             ) {
-                if (showRiveAnimation) {
+                if (riveAnimation != null) {
                     AndroidView({
                         LayoutInflater.from(it)
                             .inflate(R.layout.rive, null)
                             .apply {
                                 val animationView: RiveAnimationView = findViewById(R.id.rive)
                                 animationView.setRiveResource(
-                                    R.raw.rocket,
+                                    riveAnimation,
                                     autoplay = true
                                 )
                             }
@@ -107,7 +98,6 @@ fun ScreenContainer(
                     )
                 }
 
-                val onProgressDescription by viewModel.onProgressDescription.collectAsStateWithLifecycle()
                 onProgressDescription?.also {
                     Text(text = stringResourceId(it), style = labelLarge)
                 }
@@ -120,33 +110,12 @@ fun ScreenContainer(
 @Preview
 fun ScreenContainerPreview() {
     GreenTheme {
-        val viewModel = remember {
-            object : GreenViewModel() {
-                init {
-                    onProgress.value = true
-                    onProgressDescription.value = "On Progress Description..."
-                }
 
-                fun progress() {
-                    onProgress.value = true
-                    applicationScope.launch {
-                        delay(1000L)
-                        onProgress.value = false
-                    }
-                }
-            }
-        }
-
-        ScreenContainer(viewModel = viewModel) {
+        ScreenContainer(onProgress = true, onProgressDescription =  "On Progress Description...") {
             GreenColumn {
                 Text(text = "Text")
                 Text(text = "Text")
                 Text(text = "Text")
-
-                GreenButton(text = "Progress") {
-                    Logger.d { "ON CLICK" }
-                    viewModel.progress()
-                }
             }
         }
     }

@@ -34,8 +34,6 @@ class WalletSettingsFragment : AppFragment<ComposeViewBinding>(R.layout.compose_
 
     override val useCompose: Boolean = true
 
-    override val sideEffectsHandledByAppFragment: Boolean = false
-
     override val title: String?
         get() = if (args.showRecoveryTransactions) getString(R.string.id_recovery_transactions) else if(args.network != null) getString(R.string.id_settings) else null
 

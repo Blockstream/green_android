@@ -61,5 +61,9 @@ class VerifyAddressBottomSheetDialogFragment : WalletBottomSheetDialogFragment<V
                 }
             }, fragmentManager)
         }
+
+        fun closeAll(fragmentManager: FragmentManager){
+            closeAll(VerifyAddressBottomSheetDialogFragment::class.java, fragmentManager)
+        }
     }
 }

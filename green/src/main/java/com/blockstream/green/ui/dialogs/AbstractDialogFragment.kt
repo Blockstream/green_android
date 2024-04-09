@@ -75,7 +75,7 @@ abstract class AbstractDialogFragment<T : ViewDataBinding, VM: GreenViewModel> :
         viewModel?.also { viewModel ->
             viewLifecycleOwner.lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                    viewModel.sideEffect.onEach {
+                    viewModel.sideEffectAppFragment.onEach {
                         if(it is SideEffects.Dismiss || it is SideEffects.Logout){
                             dismiss()
                         }

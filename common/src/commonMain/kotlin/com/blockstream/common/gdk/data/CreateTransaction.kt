@@ -10,6 +10,9 @@ data class CreateTransaction constructor(
     @SerialName("satoshi") val satoshi: Map<String, Long> = mapOf(),
     @SerialName("fee") val fee: Long? = null,
     @SerialName("fee_rate") val feeRate: Long? = null,
+    @SerialName("calculated_fee_rate") val calculatedFeeRate: Long? = null,
+    @SerialName("old_fee") val oldFee: Long? = null,
+    @SerialName("old_fee_rate") val oldFeeRate: Long? = null,
     @SerialName("transaction_outputs") val outputs: List<Output> = listOf(),
     @SerialName("private_key") val privateKey: String? = null,
     @SerialName("memo") val memo: String? = null,
@@ -18,6 +21,7 @@ data class CreateTransaction constructor(
     @SerialName("txhash") val txHash: String? = null,
     @SerialName("sign_with") var signWith: List<String> = listOf(), // user, green-backendm, all
     @SerialName("is_lightning") val isLightning: Boolean = false, // synthesized
+    @SerialName("previous_transaction") val previousTransaction: Transaction? = null, // Bump
 ) : GreenJson<CreateTransaction>() {
     override fun keepJsonElement() = true
 

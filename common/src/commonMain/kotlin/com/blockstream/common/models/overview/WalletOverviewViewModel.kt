@@ -20,6 +20,8 @@ import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.looks.account.AccountLook
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.toAmountLook
 import com.rickclephas.kmm.viewmodel.coroutineScope
@@ -136,6 +138,8 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
         object ReconnectFailedNetworks : Event
         class AckSystemMessage(val network: Network, val message: String) : Event
         object DismissSystemMessage : Event
+        object Send: Event
+        object Receive: Event
     }
 
     init {
@@ -254,6 +258,14 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
 
             is LocalEvents.AckSystemMessage -> {
                 ackSystemMessage(event.network, event.message)
+            }
+
+            is LocalEvents.Send -> {
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Send(greenWallet = greenWallet, accountAsset = session.activeAccount.value!!.accountAsset)))
+            }
+
+            is LocalEvents.Receive -> {
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Receive(greenWallet = greenWallet, accountAsset = session.activeAccount.value!!.accountAsset)))
             }
 
             is LocalEvents.ToggleHideAmounts -> {

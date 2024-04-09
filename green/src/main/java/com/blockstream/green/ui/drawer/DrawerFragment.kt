@@ -25,8 +25,6 @@ class DrawerFragment :
 
     override val useCompose: Boolean = true
 
-    override val sideEffectsHandledByAppFragment: Boolean = false
-
     override fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
 

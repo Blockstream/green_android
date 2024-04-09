@@ -33,8 +33,6 @@ class PinFragment : AppFragment<ComposeViewBinding>(R.layout.compose_view),
         parametersOf(args.setupArgs)
     }
 
-    override val sideEffectsHandledByAppFragment: Boolean = false
-
     override val useCompose: Boolean = true
 
     private var _pendingEvent: Event? = null

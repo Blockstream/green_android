@@ -27,11 +27,11 @@ import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 
 @Composable
-fun Banner(viewModel: GreenViewModel) {
+fun Banner(viewModel: GreenViewModel, withTopPadding: Boolean = false) {
     val bannerOrNull by viewModel.banner.collectAsStateWithLifecycle()
 
     AnimatedNullableVisibility(bannerOrNull) { banner ->
-        Banner(banner, modifier = Modifier.padding(top = 16.dp), onClick = {
+        Banner(banner, modifier = Modifier.padding(top = if(withTopPadding) 16.dp else 0.dp), onClick = {
             viewModel.postEvent(Events.BannerAction)
         }, onClose = {
             viewModel.postEvent(Events.BannerDismiss)

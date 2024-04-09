@@ -3,12 +3,14 @@ package com.blockstream.common.gdk.data
 import breez_sdk.AesSuccessActionDataResult
 import breez_sdk.LnUrlPaySuccessData
 import breez_sdk.SuccessActionProcessed
+import com.arkivanov.essenty.parcelable.Parcelable
+import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.GreenJson
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Parcelize
 @Serializable
 data class SendTransactionSuccess constructor(
     @SerialName("txhash") val txHash: String? = null,
@@ -17,12 +19,12 @@ data class SendTransactionSuccess constructor(
     @SerialName("payment_id") val paymentId: String? = null,
     @SerialName("message") val message: String? = null,
     @SerialName("url") val url: String? = null,
-) : GreenJson<SendTransactionSuccess>() {
+) : GreenJson<SendTransactionSuccess>(), Parcelable {
 
     val hasMessageOrUrl
         get() = message.isNotBlank() || url.isNotBlank()
 
-    override fun kSerializer(): KSerializer<SendTransactionSuccess> = serializer()
+    override fun kSerializer() = serializer()
 
     companion object {
         fun create(successData: LnUrlPaySuccessData): SendTransactionSuccess{

@@ -28,8 +28,6 @@ class RecoveryCheckFragment : AppFragment<ComposeViewBinding>(
 
     private val networkOrNull by lazy { args.args.network }
 
-    override val sideEffectsHandledByAppFragment: Boolean = false
-
     override val useCompose: Boolean = true
 
     override val title: String

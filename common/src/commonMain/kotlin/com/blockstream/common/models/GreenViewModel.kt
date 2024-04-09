@@ -16,6 +16,7 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.NavData
 import com.blockstream.common.data.Redact
+import com.blockstream.common.data.TwoFactorResolverData
 import com.blockstream.common.database.Database
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.events.Event
@@ -27,8 +28,11 @@ import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.GdkSession
+import com.blockstream.common.gdk.TwoFactorResolver
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.AuthHandlerStatus
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.DeviceBrand
 import com.blockstream.common.gdk.device.GdkHardwareWallet
 import com.blockstream.common.gdk.device.HardwareWalletInteraction
@@ -72,7 +76,7 @@ import kotlin.native.ObjCName
 open class GreenViewModel constructor(
     val greenWalletOrNull: GreenWallet? = null,
     accountAssetOrNull: AccountAsset? = null,
-) : ScreenModel, KMMViewModel(), KoinComponent, ViewModelView, HardwareWalletInteraction {
+) : ScreenModel, KMMViewModel(), KoinComponent, ViewModelView, HardwareWalletInteraction, TwoFactorResolver {
     val appInfo: AppInfo by inject()
     protected val database: Database by inject()
     protected val countly: CountlyBase by inject()
@@ -86,6 +90,7 @@ open class GreenViewModel constructor(
 
     private val _event: MutableSharedFlow<Event> = MutableSharedFlow()
     private val _sideEffect: Channel<SideEffect> = Channel()
+    private val _sideEffectAppFragment: Channel<SideEffect> = Channel()
     // Check with Don't Keep activities if the logout event is persisted
 
     // Helper method to force the use of MutableStateFlow(viewModelScope)
@@ -96,7 +101,7 @@ open class GreenViewModel constructor(
     val sideEffect = _sideEffect.receiveAsFlow()
 
     @NativeCoroutines
-    val sideEffectReEmitted: MutableSharedFlow<SideEffect> = MutableSharedFlow()
+    val sideEffectAppFragment = _sideEffectAppFragment.receiveAsFlow()
 
     @NativeCoroutinesState
     val onProgress = MutableStateFlow(viewModelScope, false)
@@ -258,6 +263,9 @@ open class GreenViewModel constructor(
         viewModelScope.coroutineScope.launch {
             _sideEffect.send(sideEffect)
         }
+        viewModelScope.coroutineScope.launch {
+            _sideEffectAppFragment.send(sideEffect)
+        }
     }
 
     private fun listenForNetworksEvents(){
@@ -356,7 +364,7 @@ open class GreenViewModel constructor(
             is Events.SelectDenomination -> {
                 viewModelScope.coroutineScope.launch {
                     denominatedValue()?.also {
-                        postSideEffect(SideEffects.OpenDenominationDialog(it))
+                        postSideEffect(SideEffects.OpenDenomination(it))
                     }
                 }
             }
@@ -381,6 +389,16 @@ open class GreenViewModel constructor(
                         it.reportLightningError(event.errorReport.paymentHash ?: "")
                     }
                 }
+            }
+            is Events.SelectTwoFactorMethod -> {
+                _twoFactorDeferred?.takeIf { !it.isCompleted }?.also {
+                    if(event.method == null){
+                        it.completeExceptionally(Exception("id_action_canceled"))
+                    }else{
+                        it.complete(event.method)
+                    }
+                }
+                _twoFactorDeferred = null
             }
         }
     }
@@ -562,6 +580,25 @@ open class GreenViewModel constructor(
     protected open suspend fun denominatedValue(): DenominatedValue? = null
     protected open fun setDenominatedValue(denominatedValue: DenominatedValue) { }
     protected open fun errorReport(exception: Throwable): ErrorReport? { return null}
+
+    var _twoFactorDeferred: CompletableDeferred<String>? = null
+    override suspend fun selectMethod(availableMethods: List<String>): CompletableDeferred<String> {
+        return CompletableDeferred<String>().also {
+            _twoFactorDeferred = it
+            postSideEffect(SideEffects.TwoFactorResolver(TwoFactorResolverData.selectMethod(availableMethods)))
+        }
+    }
+
+    override suspend fun getCode(
+        network: Network,
+        enable2faCallMethod: Boolean,
+        authHandlerStatus: AuthHandlerStatus
+    ): CompletableDeferred<String> {
+        return CompletableDeferred<String>().also {
+            _twoFactorDeferred = it
+            postSideEffect(SideEffects.TwoFactorResolver(TwoFactorResolverData.getCode(network,enable2faCallMethod, authHandlerStatus)))
+        }
+    }
 
     companion object: Loggable(){
         fun preview() = object : GreenViewModel() { }

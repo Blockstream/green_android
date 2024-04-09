@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -38,6 +39,7 @@ import com.blockstream.common.models.overview.WalletOverviewViewModelAbstract
 import com.blockstream.common.models.overview.WalletOverviewViewModelPreview
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
+import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.extensions.assetIcon
@@ -170,6 +172,16 @@ fun WalletOverviewScreen(
             modifier = Modifier.align(Alignment.TopCenter),
             state = state,
         )
+
+        Row (modifier = Modifier.align(Alignment.BottomCenter)){
+            GreenButton(text = stringResource(id = R.string.id_send)) {
+                viewModel.postEvent(WalletOverviewViewModel.LocalEvents.Send)
+            }
+            GreenButton(text = stringResource(id = R.string.id_receive)) {
+                viewModel.postEvent(WalletOverviewViewModel.LocalEvents.Receive)
+            }
+        }
+
     }
 }
 

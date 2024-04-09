@@ -66,7 +66,7 @@ class JsonConverter constructor(val log: Boolean, val maskSensitiveFields: Boole
     }
 
     companion object{
-        const val SkipLogAmountConversions = true
+        const val SkipLogAmountConversions = false
 
         /**
          * Serialization / Deserialization JSON Options

@@ -22,8 +22,6 @@ class AboutFragment : AppFragment<ComposeViewBinding>(R.layout.compose_view, men
 
     override fun getGreenViewModel() = viewModel
 
-    override val sideEffectsHandledByAppFragment: Boolean = false
-
     override val useCompose: Boolean = true
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

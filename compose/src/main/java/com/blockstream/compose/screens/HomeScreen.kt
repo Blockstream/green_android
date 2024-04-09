@@ -63,7 +63,6 @@ object HomeScreen : Screen {
 
         HomeScreen(viewModel = viewModel)
     }
-
 }
 
 @Composable
@@ -95,7 +94,7 @@ fun HomeScreen(
                 .align(Alignment.CenterHorizontally)
         )
 
-        Banner(viewModel)
+        Banner(viewModel, withTopPadding = true)
 
         val isEmptyWallet by viewModel.isEmptyWallet.collectAsStateWithLifecycle()
 

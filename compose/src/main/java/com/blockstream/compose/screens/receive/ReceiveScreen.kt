@@ -1,34 +1,26 @@
 package com.blockstream.compose.screens.receive
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -37,9 +29,8 @@ import cafe.adriel.voyager.koin.getScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.models.overview.WalletOverviewViewModel
-import com.blockstream.common.models.overview.WalletOverviewViewModelAbstract
 import com.blockstream.common.models.receive.ReceiveViewModel
 import com.blockstream.common.models.receive.ReceiveViewModelAbstract
 import com.blockstream.common.models.receive.ReceiveViewModelPreview
@@ -55,13 +46,16 @@ import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenGradient
 import com.blockstream.compose.components.GreenQR
-import com.blockstream.compose.components.GreenTextField
-import com.blockstream.compose.theme.GreenThemePreview
+import com.blockstream.compose.extensions.onValueChange
+import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
+import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelMedium
+import com.blockstream.compose.theme.whiteLow
+import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.CopyContainer
 import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.stringResourceId
 import org.koin.core.parameter.parametersOf
 
 
@@ -88,6 +82,7 @@ data class ReceiveScreen(
 fun ReceiveScreen(
     viewModel: ReceiveViewModelAbstract
 ) {
+    val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
     HandleSideEffect(viewModel = viewModel)
 
     Column {
@@ -97,17 +92,66 @@ fun ReceiveScreen(
                 padding = 0,
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
-                    .padding(24.dp)
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 16.dp)
             ) {
 
                 val accountAsset by viewModel.accountAsset.collectAsStateWithLifecycle()
                 accountAsset?.also {
-                    GreenAccountAsset(accountAsset = it, session = viewModel.sessionOrNull) {
-
+                    GreenAccountAsset(
+                        accountAssetBalance = it.accountAssetBalance,
+                        session = viewModel.sessionOrNull,
+                        title = stringResource(R.string.id_account__asset),
+                        withEditIcon = true
+                    ) {
+//                        bottomSheetNavigator.show(
+//                            AssetsAccountBottomSheet(
+//                                greenWallet = viewModel.greenWallet,
+//                                accounts = viewModel.assetsAndAccounts.value ?: listOf()
+//                            )
+//                        )
                     }
                 }
 
-                GreenAmountField(stringResource(id = R.string.id_amount))
+                AnimatedNullableVisibility(value = accountAsset) {
+                    val denomination by viewModel.denomination.collectAsStateWithLifecycle()
+                    val amount by viewModel.amount.collectAsStateWithLifecycle()
+                    val maxReceiveAmount by viewModel.maxReceiveAmount.collectAsStateWithLifecycle()
+                    val amountExchange by viewModel.amountExchange.collectAsStateWithLifecycle()
+                    val amountError by viewModel.amountError.collectAsStateWithLifecycle()
+                    GreenAmountField(
+                        value = amount,
+                        onValueChange = viewModel.amount.onValueChange(),
+                        assetId = it.assetId,
+                        session = viewModel.sessionOrNull,
+                        error = amountError,
+                        denomination = denomination,
+                        footerContent = {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 2.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Text(
+                                    text = stringResourceId(id = maxReceiveAmount),
+                                    textAlign = TextAlign.Start,
+                                    modifier = Modifier.weight(1f),
+                                    style = bodyMedium,
+                                    color = whiteLow
+                                )
+
+                                Text(
+                                    text = amountExchange,
+                                    textAlign = TextAlign.End,
+                                    style = bodyMedium,
+                                    color = whiteLow
+                                )
+                            }
+                        },
+                        onDenominationClick = {
+                            viewModel.postEvent(Events.SelectDenomination)
+                        }
+                    )
+                }
 
                 Column {
 

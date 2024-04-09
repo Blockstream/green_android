@@ -243,7 +243,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:fontFamily="@font/monospace"
-                                    android:text="@{String.format(@string/id_max_limit_s, vm.maxReceiveAmount)}"
+                                    idText="@{vm.maxReceiveAmount}"
                                     android:textAppearance="?attr/textAppearanceBodySmall"
                                     android:textColor="@color/color_on_surface_emphasis_medium" />
 

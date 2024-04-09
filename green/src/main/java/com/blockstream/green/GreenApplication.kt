@@ -10,8 +10,8 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
-import com.blockstream.base.Firebase
 import com.blockstream.common.ZendeskSdk
+import com.blockstream.common.fcm.Firebase
 import com.blockstream.common.managers.LifecycleManager
 import com.blockstream.green.di.startKoin
 import com.blockstream.green.lifecycle.ActivityLifecycle
@@ -31,7 +31,7 @@ class GreenApplication : Application() {
 
     private val zendeskSdk: ZendeskSdk by inject()
 
-     private val firebase: Firebase by inject()
+    private val firebase: Firebase by inject()
 
     override fun onCreate() {
         super.onCreate()

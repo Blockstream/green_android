@@ -5,8 +5,11 @@ import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
+import com.blockstream.common.data.TwoFactorMethod
+import com.blockstream.common.data.TwoFactorSetupAction
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.navigation.NavigateDestination
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
@@ -46,9 +49,22 @@ class Events : Event {
     class SetAccountAsset(val accountAsset: AccountAsset, val setAsActive: Boolean = false): Event
     class SetBarcodeScannerResult(val scannedText : String): Event
     class SubmitErrorReport(val email : String, val message: String, val errorReport: ErrorReport): Event
-
     class ProvideCipher(
         val platformCipher: PlatformCipher? = null,
         val exception: Exception? = null
     ) : Event
+
+    data class SelectTwoFactorMethod(val method: String?): Event
+    data class TwoFactorSetup(
+        val greenWallet: GreenWallet,
+        val method: TwoFactorMethod,
+        val action: TwoFactorSetupAction,
+        val network: Network,
+        val isSmsBackup: Boolean = false
+    ) : NavigateTo(NavigateDestinations.TwoFactorSetup(
+        greenWallet = greenWallet,
+        method = method,
+        action = action,
+        network = network
+    ))
 }

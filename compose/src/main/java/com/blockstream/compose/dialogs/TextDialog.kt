@@ -17,7 +17,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -30,6 +29,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
 import com.blockstream.compose.R
@@ -38,7 +38,7 @@ import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.theme.GreenThemePreview
-import com.blockstream.compose.theme.bodyMedium
+import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.utils.OpenKeyboard
 import com.blockstream.compose.utils.getClipboard
@@ -67,14 +67,16 @@ fun TextDialog(
                 Text(
                     text = stringResourceId(id = title),
                     style = titleSmall,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 if (!message.isNullOrBlank()) {
                     Text(
                         text = stringResourceId(id = message),
-                        style = bodyMedium,
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                        style = bodyLarge,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
 
@@ -136,7 +138,7 @@ fun TextDialog(
                         } else {
                             if (textFieldValueState.text.isEmpty()) {
                                 Icon(
-                                    painterResource(id = R.drawable.clipboard_text),
+                                    painterResource(id = R.drawable.clipboard),
                                     contentDescription = "clear text",
                                     modifier = Modifier
                                         .clickable {

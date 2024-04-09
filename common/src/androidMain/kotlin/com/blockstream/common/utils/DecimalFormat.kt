@@ -71,6 +71,8 @@ actual class DecimalFormat actual constructor(private val locale: String?) {
 
     actual companion object {
         actual val DecimalSeparator: String
-            get() = DecimalFormatSymbols().decimalSeparator.toString() // DecimalFormat().decimalFormatSymbols.decimalSeparator.toString()  //DecimalFormatSymbols().decimalSeparator.toString()
+            get() = DecimalFormatSymbols().decimalSeparator.toString()
+        actual val GroupingSeparator: String
+            get() = DecimalFormatSymbols().groupingSeparator.toString()
     }
 }

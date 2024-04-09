@@ -14,6 +14,7 @@ import com.blockstream.common.models.login.LoginViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.Loggable
 import com.blockstream.compose.AppFragmentBridge
 import com.blockstream.compose.screens.login.LoginScreen
 import com.blockstream.green.NavGraphDirections
@@ -41,8 +42,6 @@ class LoginFragment : AppFragment<ComposeViewBinding>(
     override val subtitle: String?
         get() = if(args.isLightningShortcut) getString(R.string.id_lightning_account) else null
 
-    override val sideEffectsHandledByAppFragment: Boolean = false
-
     override val useCompose: Boolean = true
 
     override fun handleSideEffect(sideEffect: SideEffect) {
@@ -69,7 +68,7 @@ class LoginFragment : AppFragment<ComposeViewBinding>(
 
 
                 (sideEffect.destination as? NavigateDestinations.RecoveryPhrase)?.args?.credentials?.also {
-                    logger.info { "Emergency Recovery Phrase" }
+                    logger.i { "Emergency Recovery Phrase" }
                     navigate(
                         LoginFragmentDirections.actionGlobalRecoveryPhraseFragment(
                             wallet = null,
@@ -139,5 +138,7 @@ class LoginFragment : AppFragment<ComposeViewBinding>(
         }
         return super.onMenuItemSelected(menuItem)
     }
+
+    companion object: Loggable()
 }
 

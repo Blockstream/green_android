@@ -90,7 +90,13 @@ fun ErrorReportDialog(
                         type = GreenButtonType.TEXT,
                         enabled = email.isNotBlank()
                     ) {
-                        onSubmitErrorReport?.invoke(Events.SubmitErrorReport(email, message, errorReport))
+                        onSubmitErrorReport?.invoke(
+                            Events.SubmitErrorReport(
+                                email = email,
+                                message = message,
+                                errorReport = errorReport
+                            )
+                        )
                         onDismiss()
                     }
                 }

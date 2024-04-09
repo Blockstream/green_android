@@ -152,7 +152,12 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
 
         if(session.isConnected) {
             _navData.value = NavData(
-                title = "id_transaction_details",
+                title = when (transaction.txType) {
+                    Transaction.Type.OUT -> "id_sent"
+                    Transaction.Type.REDEPOSIT -> "id_redeposited"
+                    Transaction.Type.MIXED -> "id_swap"
+                    else -> "id_received"
+                },
                 subtitle = account.name
             )
 
@@ -167,11 +172,11 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
             }.filterNotNull().onEach {
                 _transaction.value = it
             }.launchIn(viewModelScope.coroutineScope)
-        }
 
-        _transaction.onEach {
-            updateData()
-        }.launchIn(viewModelScope.coroutineScope)
+            _transaction.onEach {
+                updateData()
+            }.launchIn(viewModelScope.coroutineScope)
+        }
 
         bootstrap()
     }
@@ -330,10 +335,10 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
         }, onSuccess = {
             postSideEffect(
                 SideEffects.NavigateTo(
-                    NavigateDestinations.Send(
+                    NavigateDestinations.Bump(
                         greenWallet = greenWallet,
                         accountAsset = accountAsset.value!!,
-                        bumpTransaction = it
+                        transaction = it
                     )
                 )
             )

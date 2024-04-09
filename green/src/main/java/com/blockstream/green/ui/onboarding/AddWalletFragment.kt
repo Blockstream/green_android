@@ -18,7 +18,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class AddWalletFragment : AppFragment<ComposeViewBinding>(R.layout.compose_view) {
     val viewModel: AddWalletViewModel by viewModel()
 
-    override val sideEffectsHandledByAppFragment: Boolean = false
     override val useCompose: Boolean = true
 
     override fun getGreenViewModel(): GreenViewModel = viewModel

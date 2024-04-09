@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -40,8 +41,9 @@ fun GreenCard(
     padding: Dp = 16.dp,
     border: BorderStroke? = null,
     error: String? = null,
+    errorColor: Color? = null,
+    contentError: (@Composable BoxScope.(error: String) -> Unit)? = null,
     onClick: (() -> Unit)? = null,
-    contentError: (@Composable BoxScope.() -> Unit)? = null,
     content: @Composable BoxScope.() -> Unit
 ) {
 
@@ -55,7 +57,7 @@ fun GreenCard(
                 shape = if (error == null) CardDefaults.shape else GreenSmallBottom,
                 elevation = elevation,
                 colors = colors,
-                border = if (error == null) border else BorderStroke(1.dp, md_theme_errorContainer)
+                border = if (error == null) border else BorderStroke(1.dp, errorColor ?: md_theme_errorContainer)
             ) {
                 Box(
                     modifier = Modifier
@@ -71,7 +73,7 @@ fun GreenCard(
                 shape = if (error == null) CardDefaults.shape else GreenSmallBottom,
                 elevation = elevation,
                 colors = colors,
-                border = if (error == null) border else BorderStroke(1.dp, md_theme_errorContainer)
+                border = if (error == null) border else BorderStroke(1.dp, errorColor ?: md_theme_errorContainer)
             ) {
                 Box(
                     modifier = Modifier
@@ -82,14 +84,13 @@ fun GreenCard(
             }
         }
 
-
         AnimatedNullableVisibility(value = error) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = GreenSmallTop,
                 colors = CardDefaults.cardColors(
                     contentColor = whiteHigh,
-                    containerColor = md_theme_errorContainer
+                    containerColor = errorColor ?: md_theme_errorContainer
                 )
             ) {
                 Box(
@@ -98,10 +99,10 @@ fun GreenCard(
                         .padding(horizontal = 8.dp)
                         .padding(top = 6.dp, bottom = 8.dp),
                 ) {
-                    if (contentError == null) {
-                        Text(text = stringResourceId(id = it), style = bodyMedium)
-                    } else {
-                        contentError()
+                    if(contentError != null){
+                        contentError(it)
+                    }else{
+                        Text(text = stringResourceId(it), style = bodyMedium)
                     }
                 }
             }
@@ -119,6 +120,10 @@ fun GreenCardPreview() {
                 .padding(24.dp)
                 .padding(24.dp)
         ) {
+
+            GreenCard(padding = 0.dp) {
+                Text(text = "No Padding", modifier = Modifier.fillMaxWidth())
+            }
 
             GreenCard {
                 Text(text = "Simple Green Card")
@@ -159,6 +164,7 @@ fun GreenCardPreview() {
             }
 
             GreenCard(error = error, contentError = {
+                Text(it)
                 GreenButton(
                     modifier = Modifier.align(Alignment.CenterEnd),
                     text = "Clear Error",

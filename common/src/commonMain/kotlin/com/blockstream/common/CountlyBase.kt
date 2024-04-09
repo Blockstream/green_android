@@ -866,7 +866,7 @@ enum class AddressInputType constructor(val string: String) : Parcelable, JavaSe
 @Parcelize
 data class TransactionSegmentation constructor(
     val transactionType: TransactionType,
-    val addressInputType: AddressInputType?,
+    val addressInputType: AddressInputType? = null,
     val sendAll: Boolean = false
 ) : Parcelable, JavaSerializable
 

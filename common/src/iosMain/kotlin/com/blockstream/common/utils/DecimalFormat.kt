@@ -5,6 +5,7 @@ import platform.Foundation.NSNumber
 import platform.Foundation.NSNumberFormatter
 import platform.Foundation.NSNumberFormatterDecimalStyle
 import platform.Foundation.decimalSeparator
+import platform.Foundation.groupingSeparator
 import platform.Foundation.systemLocale
 
 actual class DecimalFormat actual constructor(private val locale: String?) {
@@ -57,5 +58,8 @@ actual class DecimalFormat actual constructor(private val locale: String?) {
     actual companion object {
         actual val DecimalSeparator: String
             get() = NSLocale.systemLocale().decimalSeparator()
+
+        actual val GroupingSeparator: String
+            get() = NSLocale.systemLocale().groupingSeparator()
     }
 }

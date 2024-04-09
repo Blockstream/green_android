@@ -11,17 +11,23 @@ import com.blockstream.common.UBTC_UNIT
 import com.blockstream.common.extensions.assetTicker
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.gdk.GdkSession
+import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.gdk.data.Balance
 import com.blockstream.common.utils.getBitcoinOrLiquidUnit
 import com.blockstream.common.utils.toAmountLook
+import kotlinx.serialization.Serializable
 
 
+@Serializable
 @Parcelize
 data class DenominatedValue constructor(
-    val balance: Balance?,
-    val assetId: String?,
-    val denomination: Denomination
-) : Parcelable, JavaSerializable {
+    val denomination: Denomination,
+    val balance: Balance? = null,
+    val assetId: String? = null,
+    val asInput: String? = null,
+    val asLook: String? = null
+): GreenJson<DenominatedValue>(), Parcelable, JavaSerializable {
+    override fun kSerializer() = serializer()
 
     fun asNetworkUnit(session: GdkSession): String {
         return if (denomination.isFiat) {
@@ -62,8 +68,32 @@ data class DenominatedValue constructor(
             return DenominatedValue(balance = balance, assetId = assetId, denomination = denomination)
         }
 
-        fun toDenomination(denominatedValue: DenominatedValue, denomination: Denomination): DenominatedValue {
+        fun toDenominationDeprecated(denominatedValue: DenominatedValue, denomination: Denomination): DenominatedValue {
             return DenominatedValue(balance = denominatedValue.balance, assetId = denominatedValue.assetId, denomination = denomination)
+        }
+
+        suspend fun toDenomination(denominatedValue: DenominatedValue, denomination: Denomination, session: GdkSession): DenominatedValue {
+            return DenominatedValue(
+                denomination = denomination,
+                balance = denominatedValue.balance,
+                assetId = denominatedValue.assetId,
+                asInput = denominatedValue.balance?.toAmountLook(
+                    session = session,
+                    assetId = denominatedValue.assetId,
+                    withUnit = false,
+                    withGrouping = false,
+                    withMinimumDigits = false,
+                    denomination = denomination
+                ),
+                asLook = denominatedValue.balance?.toAmountLook(
+                    session = session,
+                    assetId = denominatedValue.assetId,
+                    withUnit = true,
+                    withGrouping = true,
+                    withMinimumDigits = false,
+                    denomination = denomination
+                )
+            )
         }
 
         fun createDefault(session: GdkSession): DenominatedValue {
@@ -76,15 +106,36 @@ data class DenominatedValue constructor(
     }
 }
 
+@Serializable
 @Parcelize
-sealed class Denomination(open val denomination: String) : Parcelable, JavaSerializable {
-    object BTC : Denomination(BTC_UNIT)
-    object MBTC : Denomination(MBTC_UNIT)
-    object UBTC : Denomination(UBTC_UNIT)
-    object BITS : Denomination(BITS_UNIT)
-    object SATOSHI : Denomination(SATOSHI_UNIT)
+sealed class Denomination : Parcelable, JavaSerializable {
+    abstract val denomination: String
+    @Serializable
+    object BTC: Denomination() {
+        override val denomination: String = BTC_UNIT
+    }
+    @Serializable
+    object MBTC : Denomination(){
+        override val denomination: String = MBTC_UNIT
+    }
 
-    class FIAT(override val denomination: String) : Denomination(denomination)
+    @Serializable
+    object UBTC : Denomination(){
+        override val denomination: String = UBTC_UNIT
+    }
+
+    @Serializable
+    object BITS : Denomination(){
+        override val denomination: String = BITS_UNIT
+    }
+
+    @Serializable
+    object SATOSHI : Denomination(){
+        override val denomination: String = SATOSHI_UNIT
+    }
+
+    @Serializable
+    class FIAT(override val denomination: String) : Denomination()
 
     override fun toString(): String {
         return denomination

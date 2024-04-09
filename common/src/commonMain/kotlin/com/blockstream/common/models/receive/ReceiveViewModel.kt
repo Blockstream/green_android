@@ -9,6 +9,7 @@ import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.NavData
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnected
@@ -190,6 +191,8 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
     private val _generateAddressLock = Mutex()
 
     init {
+        _navData.value = NavData(title = "id_receive", subtitle = greenWallet.name)
+
         session.ifConnected {
             accountAsset.onEach {
                 _requestAmount.value = null
@@ -223,12 +226,14 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
                 combine(session.lightningNodeInfoStateFlow, denomination) { nodeState, _ ->
                     nodeState
                 }.onEach {
-                    _maxReceiveAmount.value = it.maxReceivableSatoshi().toAmountLookOrNa(
+                    _maxReceiveAmount.value = it.maxReceivableSatoshi().toAmountLook(
                         session = session,
                         assetId = lightningAccount.network.policyAsset,
                         denomination = denomination.value,
                         withUnit = true
-                    )
+                    )?.let {
+                        "id_max_limit_s|$it"
+                    } ?: ""
 
                     updateAmountExchangeRate()
                 }.launchIn(viewModelScope.coroutineScope)
@@ -339,16 +344,20 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
         _address.value?.let { address ->
             session.gdkHwWallet?.let { hwWallet ->
                 doAsync({
-                    hwWallet.getGreenAddress(
+                    if(hwWallet.getGreenAddress(
                         network = account.network,
                         hwInteraction = null,
                         account = account,
                         path = address.userPath ?: listOf(),
                         csvBlocks = address.subType ?: 0
-                    )
+                    ) != address.address){
+                        throw Exception("id_the_addresses_dont_match")
+                    }
                 }, preAction = null, postAction = null, timeout = 30, onSuccess = {
-                    postSideEffect(LocalSideEffects.VerifiedOnDevice(it == address.address))
+                    postSideEffect(SideEffects.Snackbar("id_the_address_is_valid"))
+                    postSideEffect(LocalSideEffects.VerifiedOnDevice(true))
                 }, onError = {
+                    postSideEffect(SideEffects.ErrorDialog(it))
                     postSideEffect(LocalSideEffects.VerifiedOnDevice(false))
                 })
             }
@@ -639,6 +648,20 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
             _amountError.value = null
             _liquidityFee.value = null
         })
+    }
+
+    override suspend fun denominatedValue(): DenominatedValue {
+        return UserInput.parseUserInputSafe(
+            session,
+            amount.value,
+            denomination = denomination.value
+        ).getBalance().let {
+            DenominatedValue(
+                balance = it,
+                assetId = accountAsset.value?.assetId,
+                denomination = denomination.value
+            )
+        }
     }
 
     override fun setDenominatedValue(denominatedValue: DenominatedValue) {

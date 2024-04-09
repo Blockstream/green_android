@@ -8,11 +8,8 @@ import com.blockstream.common.crypto.PlatformCipher
 import com.blockstream.common.data.AppConfig
 import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.EncryptedData
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.database.DriverFactory
-import com.blockstream.common.lightning.BreezNotification
 import com.blockstream.common.fcm.Firebase
-import com.blockstream.common.managers.AssetQATester
 import com.blockstream.common.managers.LifecycleManager
 import com.russhwolf.settings.NSUserDefaultsSettings
 import com.russhwolf.settings.Settings
@@ -34,9 +31,6 @@ fun initKoinIos(
     module {
         single { appInfo }
         single<Settings> { NSUserDefaultsSettings(userDefaults) }
-        single<AssetQATester?> { object : AssetQATester{
-            override fun isAssetFetchDisabled(): Boolean = false
-        } }
         single<CountlyBase> {
             // Dummy
             object : CountlyBase(get(), get(), get(), get()){
@@ -128,28 +122,7 @@ fun initKoinIos(
             ZendeskSdk()
         }
         single {
-            object : Firebase(get()){
-                override fun scheduleLightningBackgroundJob(
-                    walletId: String,
-                    breezNotification: BreezNotification
-                ) {
-
-                }
-
-                override suspend fun handleReceivedPayment(
-                    wallet: GreenWallet,
-                    bolt11: String,
-                    paymentHash: String,
-                    satoshi: Long
-                ) {
-                }
-
-                override suspend fun showNotification(
-                    walletId: String,
-                    breezNotification: BreezNotification
-                ) {
-                }
-            }
+            Firebase()
         }
         single { doOnStartup }
     }

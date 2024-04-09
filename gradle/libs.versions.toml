@@ -63,7 +63,6 @@ zendesk = "5.2.0"
 essenty = "1.3.0"
 stately = "2.0.6"
 swiperefreshlayout = "1.1.0"
-beagle = "2.9.0"
 turbine = "1.0.0"
 usb-serial = "6.0.6"
 uuid = "0.8.4"
@@ -156,10 +155,6 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
-beagle-log-crash = { module = "io.github.pandulapeter.beagle:log-crash", version.ref = "beagle" }
-beagle-ui-drawer = { module = "io.github.pandulapeter.beagle:ui-drawer", version.ref = "beagle" }
-beagle-log-crash-noop = { module = "io.github.pandulapeter.beagle:log-crash-noop", version.ref = "beagle" }
-beagle-noop = { module = "io.github.pandulapeter.beagle:noop", version.ref = "beagle" }
 ksoup-entites = { module = "com.mohamedrejeb.ksoup:ksoup-entites", version.ref = "ksoupEntites" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito-kotlin" }

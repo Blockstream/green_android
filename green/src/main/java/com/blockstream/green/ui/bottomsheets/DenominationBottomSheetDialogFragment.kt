@@ -60,16 +60,16 @@ class DenominationBottomSheetDialogFragment :
 
         val list = mutableListOf<DenominationListItem>()
 
-        list += DenominationListItem(session = session, DenominatedValue.toDenomination(denominatedValue, Denomination.BTC), denominatedValue.denomination is Denomination.BTC)
-        list += DenominationListItem(session = session, DenominatedValue.toDenomination(denominatedValue, Denomination.MBTC), denominatedValue.denomination is Denomination.MBTC)
-        list += DenominationListItem(session = session, DenominatedValue.toDenomination(denominatedValue, Denomination.UBTC), denominatedValue.denomination is Denomination.UBTC)
-        list += DenominationListItem(session = session, DenominatedValue.toDenomination(denominatedValue, Denomination.BITS), denominatedValue.denomination is Denomination.BITS)
-        list += DenominationListItem(session = session, DenominatedValue.toDenomination(denominatedValue, Denomination.SATOSHI), denominatedValue.denomination is Denomination.SATOSHI)
+        list += DenominationListItem(session = session, DenominatedValue.toDenominationDeprecated(denominatedValue, Denomination.BTC), denominatedValue.denomination is Denomination.BTC)
+        list += DenominationListItem(session = session, DenominatedValue.toDenominationDeprecated(denominatedValue, Denomination.MBTC), denominatedValue.denomination is Denomination.MBTC)
+        list += DenominationListItem(session = session, DenominatedValue.toDenominationDeprecated(denominatedValue, Denomination.UBTC), denominatedValue.denomination is Denomination.UBTC)
+        list += DenominationListItem(session = session, DenominatedValue.toDenominationDeprecated(denominatedValue, Denomination.BITS), denominatedValue.denomination is Denomination.BITS)
+        list += DenominationListItem(session = session, DenominatedValue.toDenominationDeprecated(denominatedValue, Denomination.SATOSHI), denominatedValue.denomination is Denomination.SATOSHI)
 
         session.getSettings()?.pricing?.currency?.also {
             list += DenominationListItem(
                 session = session,
-                denominatedValue = DenominatedValue.toDenomination(denominatedValue, Denomination.FIAT(it)),
+                denominatedValue = DenominatedValue.toDenominationDeprecated(denominatedValue, Denomination.FIAT(it)),
                 isChecked = denominatedValue.denomination is Denomination.FIAT
             )
         }

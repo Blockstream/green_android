@@ -21,8 +21,6 @@ open class SetupNewWalletFragment : AppFragment<ComposeViewBinding>(
 
     override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override val sideEffectsHandledByAppFragment: Boolean = false
-
     override val useCompose: Boolean = true
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

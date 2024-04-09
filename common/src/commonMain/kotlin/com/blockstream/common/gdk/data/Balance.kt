@@ -67,7 +67,7 @@ data class Balance constructor(
         Transform the gdk json to a more appropriate format
          */
         fun fromJsonElement(jsonElement: JsonElement, assetId: String?): Balance = json.decodeFromJsonElement<Balance>(jsonElement).also { balance ->
-            // Asset convesion is returned with the assetKey
+            // Asset conversion is returned with the assetKey
             assetId.also {
                 balance.assetAmount = jsonElement.jsonObject[assetId]?.jsonPrimitive?.content
             }

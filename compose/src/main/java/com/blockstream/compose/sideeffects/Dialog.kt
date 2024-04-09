@@ -101,7 +101,7 @@ class DialogState(val context: Context) {
                 isTor = viewModel.settingsManager.appSettings.tor,
                 url = openNewTicketUrl(
                     appInfo = viewModel.appInfo,
-                    subject = viewModel.screenName()?.let { "Android Issue in $it" } ?: "Android Error Report",
+                    subject = errorReport.subject ?: viewModel.screenName()?.let { "Android Issue in $it" } ?: "Android Error Report",
                     errorReport = errorReport,
                 )
             )
@@ -159,7 +159,9 @@ fun DialogHost(state: DialogState) {
                             state.clear()
                         }
                     ) {
-                        Text(stringResource(android.R.string.ok))
+                        Text(data.primaryText?.let { stringResourceId(it) } ?: stringResource(
+                            android.R.string.ok
+                        ))
                     }
                 },
                 dismissButton = {
@@ -170,7 +172,8 @@ fun DialogHost(state: DialogState) {
                                 state.clear()
                             }
                         ) {
-                            Text(data.secondaryText.takeIf { it.isNotBlank() }
+                            Text(data.secondaryText?.takeIf { it.isNotBlank() }
+                                ?.let { stringResourceId(it) }
                                 ?: stringResource(android.R.string.cancel))
                         }
                     }

@@ -366,7 +366,6 @@ class SendViewModel constructor(
                     feeRate = getFeeRate(),
                     utxos = unspentOutputs.unspentOutputsAsJsonElement,
                     previousTransaction = bumpTransaction,
-
                 )
             }
             else -> {
@@ -405,7 +404,7 @@ class SendViewModel constructor(
                 // Change UI based on the transaction
                 recipients.value.let { recipients ->
                     for(recipient in recipients){
-                        val hasLockedAmount = tx.addressees.getOrNull(recipient.index)?.hasLockedAmount == true
+                        val hasLockedAmount = tx.addressees.getOrNull(recipient.index)?.isAmountLocked == true
 
                         // If we have BIP21/sweep/bump, update the amounts from GDK side, and disable text input editing
                         recipient.assetBip21.postValue(tx.addressees.getOrNull(recipient.index)?.bip21Params?.hasAssetId == true)
@@ -628,6 +627,7 @@ class SendViewModel constructor(
                         assetId = assetId,
                         denomination = addressParams.denomination.value,
                         withUnit = false,
+
                         withMinimumDigits = false,
                         withGrouping = false
                     ) ?: ""

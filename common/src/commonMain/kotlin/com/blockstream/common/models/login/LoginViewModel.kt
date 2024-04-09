@@ -3,6 +3,7 @@ package com.blockstream.common.models.login
 import com.blockstream.common.Urls
 import com.blockstream.common.crypto.PlatformCipher
 import com.blockstream.common.data.ApplicationSettings
+import com.blockstream.common.data.Banner
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.ErrorReport
@@ -830,6 +831,9 @@ class LoginViewModelPreview(
     override val lightningCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
     override val lightningMnemonic: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
 
+    init {
+        banner.value = Banner.preview3
+    }
     companion object{
         fun preview(): LoginViewModelPreview{
             return LoginViewModelPreview(

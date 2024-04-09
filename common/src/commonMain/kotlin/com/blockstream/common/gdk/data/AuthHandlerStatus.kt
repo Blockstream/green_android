@@ -25,6 +25,8 @@ data class AuthHandlerStatus constructor(
 
     override fun kSerializer() = serializer()
 
+    fun isSms() = method == "sms"
+
     companion object {
         fun from(jsonString: String): AuthHandlerStatus = Json.decodeFromString(jsonString)
     }
