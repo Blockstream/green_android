@@ -42,6 +42,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -92,12 +93,16 @@ import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.labelSmall
 import com.blockstream.compose.theme.lightning
+import com.blockstream.compose.theme.red
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AlphaPulse
+import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.TextInputPassword
+import com.blockstream.compose.utils.stringResourceId
 import com.blockstream.compose.views.BannerView
 import com.blockstream.compose.views.PinView
 import kotlinx.parcelize.IgnoredOnParcel
@@ -205,22 +210,6 @@ fun LoginScreen(
 
             is SideEffects.WalletDelete -> {
                 navigator?.popUntilRoot()
-            }
-
-            is SideEffects.Navigate -> {
-                (it.data as? Credentials)?.also {
-                    // TODO
-//                    navigate(
-//                        LoginFragmentDirections.actionGlobalRecoveryPhraseFragment(
-//                            wallet = null,
-//                            credentials = sideEffect.data as Credentials
-//                        )
-//                    )
-                }
-            }
-
-            is LoginViewModel.LocalSideEffects.PinError -> {
-                // binding.pinView.reset(true)
             }
         }
     }
@@ -561,17 +550,70 @@ fun LoginScreen(
                 ) {
 
                     val error by viewModel.error.collectAsStateWithLifecycle()
-                    if (!viewModel.isLightningShortcut && pinCredentials.isNotEmpty() && !onProgress) {
-                        PinView(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .align(Alignment.BottomCenter),
-                            error = error,
-                            onPin = {
-                                if (it.isNotBlank()) {
-                                    viewModel.postEvent(LoginViewModel.LocalEvents.LoginWithPin(it))
+                    if(!viewModel.isLightningShortcut && !onProgress){
+                        if (pinCredentials.isNotEmpty()) {
+                            PinView(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .align(Alignment.BottomCenter),
+                                error = error,
+                                onPin = {
+                                    if (it.isNotBlank()) {
+                                        viewModel.postEvent(
+                                            LoginViewModel.LocalEvents.LoginWithPin(
+                                                it
+                                            )
+                                        )
+                                    }
+                                })
+                        } else if (passwordCredentials.isNotEmpty()) {
+                            val focusManager = LocalFocusManager.current
+                            var password by remember {
+                                mutableStateOf("")
+                            }
+                            val passwordVisibility = remember { mutableStateOf(false) }
+
+                            GreenColumn(modifier = Modifier.align(Alignment.TopCenter)) {
+                                TextField(
+                                    value = password,
+                                    visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation(),
+                                    onValueChange = {
+                                        password = it
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    singleLine = true,
+                                    keyboardOptions = KeyboardOptions.Default.copy(
+                                        autoCorrect = false,
+                                        keyboardType = KeyboardType.Password,
+                                        imeAction = ImeAction.Done
+                                    ),
+                                    keyboardActions = KeyboardActions(
+                                        onDone = {
+                                            focusManager.clearFocus()
+                                        }
+                                    ),
+                                    label = { Text(stringResource(id = R.string.id_pin)) },
+                                    trailingIcon = {
+                                        TextInputPassword(passwordVisibility)
+                                    }
+                                )
+
+                                AnimatedNullableVisibility(value = error) { _, error ->
+                                    Text(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        text = stringResourceId(id = error),
+                                        style = labelMedium,
+                                        color = red
+                                    )
                                 }
-                            })
+
+                                GreenButton(text = stringResource(id = R.string.id_log_in), modifier = Modifier.fillMaxWidth()) {
+                                    viewModel.postEvent(
+                                        LoginViewModel.LocalEvents.LoginWithPin(password)
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -607,8 +649,8 @@ fun LoginScreen(
 @Preview
 fun LoginScreenPreview() {
     GreenPreview {
-        LoginScreen(viewModel = LoginViewModelPreview.previewWithPin().also {
-            it.onProgress.value = true
+        LoginScreen(viewModel = LoginViewModelPreview.previewWithPassword().also {
+
         })
     }
 }

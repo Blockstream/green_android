@@ -205,7 +205,6 @@ class LoginViewModel constructor(
         class LaunchBiometrics(val loginCredentials: LoginCredentials): SideEffect
         object LaunchUserPresenceForLightning : SideEffect
         object AskBip39Passphrase : SideEffect
-        object PinError : SideEffect
     }
 
     init {
@@ -264,8 +263,10 @@ class LoginViewModel constructor(
 
             }.launchIn(viewModelScope.coroutineScope)
 
-            pinCredentials.onEach { dataState ->
-                _error.value = dataState.data()?.let {
+            combine(pinCredentials, passwordCredentials) { pinCredentials, passwordCredentials ->
+                pinCredentials.data() ?: passwordCredentials.data()
+            }.onEach { dataState ->
+                _error.value = dataState?.let {
                     if (it.counter > 0) {
                         if (it.counter == 2L) {
                             "id_last_attempt_if_failed_you_will"
@@ -276,7 +277,6 @@ class LoginViewModel constructor(
                         null
                     }
                 }
-
             }.launchIn(viewModelScope.coroutineScope)
         }
 
@@ -442,7 +442,6 @@ class LoginViewModel constructor(
                 postSideEffect(SideEffects.ErrorSnackbar(it))
             }
 
-            postSideEffect(LocalSideEffects.PinError)
             countly.failedWalletLogin(session, it)
         })
     }
@@ -751,8 +750,6 @@ class LoginViewModel constructor(
                         )
                     }
                 }
-
-                postSideEffect(LocalSideEffects.PinError)
             } else {
                 val errorReport = ErrorReport.create(throwable = it, session = session)
                 postSideEffect(SideEffects.NavigateBack(error = it, errorReport = errorReport))
@@ -811,6 +808,7 @@ class LoginViewModel constructor(
 class LoginViewModelPreview(
     greenWallet: GreenWallet,
     withPinCredentials: Boolean = false,
+    withPasswprdCredentials: Boolean = false,
     isWatchOnly: Boolean = false,
     isLightningShortcut: Boolean = false
 ) : LoginViewModelAbstract(greenWallet = greenWallet, isLightningShortcut = isLightningShortcut) {
@@ -829,7 +827,7 @@ class LoginViewModelPreview(
     override val biometricsCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
     override val watchOnlyCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
     override val pinCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, if(withPinCredentials) DataState.Success(previewLoginCredentials()) else DataState.Empty)
-    override val passwordCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
+    override val passwordCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, if(withPasswprdCredentials) DataState.Success(previewLoginCredentials()) else DataState.Empty)
     override val lightningCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
     override val lightningMnemonic: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
 
@@ -844,6 +842,13 @@ class LoginViewModelPreview(
             return LoginViewModelPreview(
                 greenWallet = previewWallet(),
                 withPinCredentials = true
+            )
+        }
+
+        fun previewWithPassword(): LoginViewModelPreview{
+            return LoginViewModelPreview(
+                greenWallet = previewWallet(),
+                withPasswprdCredentials = true
             )
         }
 
