@@ -50,3 +50,19 @@ private val EmailAddressRegex = Regex(
 )
 
 fun String.isEmailValid() = matches(EmailAddressRegex)
+
+fun String.nthIndexOf(substring: String, nth: Int): Int {
+    return if (nth == 1) {
+        indexOf(substring)
+    } else {
+        indexOf(substring, nthIndexOf(substring, nth - 1) + substring.length)
+    }
+}
+
+fun String.lastNthIndexOf(substring: String, nth: Int): Int {
+    return if (nth == 1) {
+        lastIndexOf(substring)
+    } else {
+        lastIndexOf(substring, lastNthIndexOf(substring, nth - 1) - substring.length)
+    }
+}

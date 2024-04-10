@@ -151,9 +151,7 @@ fun ReceiveScreen(
                                 ) {
                                     // val address = "bitcoin:bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu?amount=123"
                                     val address = "bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu"
-                                    CopyContainer(value = address) {
-                                        GreenAddress(address = address)
-                                    }
+                                    GreenAddress(address = address)
 
                                     GreenButton(
                                         text = stringResource(id = R.string.id_edit),

@@ -273,7 +273,7 @@ fun TransactionScreen(
 
                 address?.also {
                     Detail(label = if (type == Transaction.Type.IN) R.string.id_received_on else R.string.id_send_to) {
-                        CopyContainer(value = it) { GreenAddress(address = it) }
+                        GreenAddress(address = it)
                     }
                 }
 

@@ -5,10 +5,10 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
+import com.blockstream.common.utils.lastNthIndexOf
+import com.blockstream.common.utils.nthIndexOf
 import com.blockstream.compose.theme.md_theme_primary
 import com.blockstream.compose.theme.whiteHigh
-import kotlin.math.max
-import kotlin.math.min
 
 fun colorText(
     text: String,
@@ -37,17 +37,16 @@ fun colorText(
     }
 }
 
-fun colorTextEdges(text: String, numberOfChars: Int? = null, color: Color = md_theme_primary): AnnotatedString {
+fun colorTextEdges(text: String, numberOfSections: Int = 1, color: Color = md_theme_primary): AnnotatedString {
     return buildAnnotatedString {
         withStyle(style = SpanStyle(color = whiteHigh)){
             append(text)
         }
 
-        val leading = numberOfChars ?: min(text.indexOf(" "), text.length)
-        val trailing = numberOfChars?.let { text.length - it } ?: max(0, text.lastIndexOf(" "))
+        val leading = text.nthIndexOf(" ", numberOfSections)
+        val trailing = text.lastNthIndexOf(" ", numberOfSections)
 
-        if (text.length > 0 && leading >= 0 && leading < text.length && trailing >= 0 && trailing < text.length) {
-
+        if (text.isNotEmpty() && leading >= 0 && leading < text.length && trailing >= 0 && trailing < text.length) {
             val style = SpanStyle(color = color)
             addStyle(style, 0, leading)
             addStyle(style, trailing, text.length)
