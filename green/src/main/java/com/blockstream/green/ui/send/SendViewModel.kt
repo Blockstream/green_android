@@ -101,7 +101,8 @@ class SendViewModel constructor(
         "id_invalid_asset_id",
         "id_invoice_expired",
         "id_amount_must_be_at_least_s",
-        "id_amount_must_be_at_most_s"
+        "id_amount_must_be_at_most_s",
+        "id_amount_below_the_dust_threshold"
     ) + listOfNotNull(if(!isBump) "id_insufficient_funds" else null) // On Bump, show fee error on errorTextView
 
     private val checkTransactionMutex = Mutex()
@@ -540,7 +541,7 @@ class SendViewModel constructor(
             transactionError.value = (it.cause?.message ?: it.message).let { error ->
                 if(recipients.value[0].address.value.isNullOrBlank() && (error == "id_invalid_address" || error == "id_invalid_private_key")){
                     "" // empty error to avoid ui glitches
-                }else if(recipients.value[0].amount.value.isNullOrBlank() && !isSendAll() && (error == "id_invalid_amount" || error == "id_insufficient_funds")){
+                }else if(recipients.value[0].amount.value.isNullOrBlank() && !isSendAll() && (error == "id_invalid_amount" || error == "id_insufficient_funds" || error == "id_amount_below_the_dust_threshold")){
                     "" // empty error to avoid ui glitches
                 }else{
                     error

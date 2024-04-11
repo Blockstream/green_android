@@ -244,7 +244,7 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                error="@{StringExtensionsKt.isNotBlank(liveData.address) &amp;&amp; (`id_invalid_amount`.equals(vm.transactionError) || `id_insufficient_funds`.equals(vm.transactionError) || vm.transactionError.startsWith(`id_amount_must_be_at_least_s`) || vm.transactionError.startsWith(`id_amount_must_be_at_most_s`)) ? true : false}">
+                error="@{StringExtensionsKt.isNotBlank(liveData.address) &amp;&amp; (`id_amount_below_the_dust_threshold`.equals(vm.transactionError) || `id_invalid_amount`.equals(vm.transactionError) || `id_insufficient_funds`.equals(vm.transactionError) || vm.transactionError.startsWith(`id_amount_must_be_at_least_s`) || vm.transactionError.startsWith(`id_amount_must_be_at_most_s`)) ? true : false}">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -351,11 +351,10 @@
                 android:orientation="horizontal">
 
                 <com.google.android.material.textview.MaterialTextView
-                    gdkError="@{`id_invalid_amount`.equals(vm.transactionError) || `id_insufficient_funds`.equals(vm.transactionError) || vm.transactionError.startsWith(`id_amount_must_be_at_least_s`) || vm.transactionError.startsWith(`id_amount_must_be_at_most_s`) ? vm.transactionError : null}"
+                    gdkError="@{`id_amount_below_the_dust_threshold`.equals(vm.transactionError) || `id_invalid_amount`.equals(vm.transactionError) || `id_insufficient_funds`.equals(vm.transactionError) || vm.transactionError.startsWith(`id_amount_must_be_at_least_s`) || vm.transactionError.startsWith(`id_amount_must_be_at_most_s`) ? vm.transactionError : null}"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="3"
-                    isVisible="@{vm.transactionError != null &amp;&amp; !vm.transactionError.empty}"
                     android:textAppearance="?attr/textAppearanceLabelMedium"
                     android:textColor="@color/error" />
 

@@ -1502,4 +1502,7 @@
   <string name="id_s_minutes">~%s minutes</string>
   <string name="id_s_hour">~%s hour</string>
   <string name="id_s_hours">~%s hours</string>
+  <string name="id_amount_below_the_dust_threshold">Amount below the dust threshold</string>
+  <string name="id_amount_below_minimum_allowed">Amount below minimum allowed</string>
+  <string name="id_amount_above_maximum_allowed">Amount above maximum allowed</string>
 </resources>

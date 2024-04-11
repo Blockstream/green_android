@@ -3,8 +3,8 @@ package com.blockstream.common.models.settings
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.previewWallet
-import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.looks.wallet.WatchOnlyLook
+import com.blockstream.common.models.GreenViewModel
 import com.rickclephas.kmm.viewmodel.MutableStateFlow
 import com.rickclephas.kmm.viewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
@@ -51,10 +51,7 @@ class WatchOnlyViewModel(greenWallet: GreenWallet) :
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
     private val _singleSigAccounts = session.accounts.map { accounts ->
-        accounts.filter { it.isSinglesig }.map {
-            // getAccount() returns a detailed account
-            session.getAccount(it)
-        }
+        accounts.filter { it.isSinglesig }
     }
 
     override val extendedPublicKeysAccounts: StateFlow<List<WatchOnlyLook>> =
