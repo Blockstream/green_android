@@ -122,6 +122,7 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
         object RemoveLightningShortcut : Event
         object EnableLightningShortcut : Event
         object LoadMoreTransactions : Event
+        object RescanSwaps : Event
     }
 
     init {
@@ -218,31 +219,9 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
             is LocalEvents.LoadMoreTransactions -> {
                 loadMoreTransactions()
             }
-
-//
-//            is LocalEvents.ReconnectFailedNetworks -> {
-//                tryFailedNetworks()
-//            }
-//
-//            is LocalEvents.DismissSystemMessage -> {
-//                _systemMessage.value = null
-//            }
-//
-//            is LocalEvents.AckSystemMessage -> {
-//                ackSystemMessage(event.network, event.message)
-//            }
-//
-//            is LocalEvents.ToggleHideAmounts -> {
-//                settingsManager.saveApplicationSettings(
-//                    settingsManager.getApplicationSettings().let {
-//                        it.copy(hideAmounts = !it.hideAmounts)
-//                    }
-//                )
-//
-//                if (settingsManager.appSettings.hideAmounts) {
-//                    countly.hideAmount(session)
-//                }
-//            }
+            is LocalEvents.RescanSwaps -> {
+                rescanSwaps()
+            }
         }
     }
 
@@ -269,6 +248,16 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
 
             })
         }
+    }
+
+    private fun rescanSwaps(){
+        postSideEffect(SideEffects.Snackbar("id_rescan_swaps_initiated"))
+
+        doAsync({
+            session.lightningSdkOrNull?.rescanSwaps()
+        }, onSuccess = {
+
+        })
     }
 
     companion object: Loggable()

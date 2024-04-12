@@ -7,19 +7,19 @@
 
     </data>
 
-    <LinearLayout
+    <com.blockstream.green.views.GappedLinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
         android:layout_marginBottom="16dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:gap="8dp">
 
         <TextView
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
             android:textAppearance="?attr/textAppearanceTitleSmall"
             tools:text="TOR Proxy" />
 
@@ -40,7 +40,6 @@
             style="@style/Widget.Green.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             tools:text="Button" />
 
         <Button
@@ -48,7 +47,6 @@
             style="@style/Widget.Green.Button.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             tools:text="Button Outline" />
 
         <Button
@@ -56,8 +54,7 @@
             style="@style/Widget.Green.Button.Text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             tools:text="Button Text" />
 
-    </LinearLayout>
+    </com.blockstream.green.views.GappedLinearLayout>
 </layout>

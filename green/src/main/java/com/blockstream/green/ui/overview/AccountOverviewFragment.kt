@@ -36,7 +36,6 @@ import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.bottomsheets.AssetDetailsBottomSheetFragment
 import com.blockstream.green.ui.bottomsheets.Call2ActionBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.CameraBottomSheetDialogFragment
-import com.blockstream.green.ui.bottomsheets.ComingSoonBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.LightningNodeBottomSheetFragment
 import com.blockstream.green.ui.bottomsheets.RenameAccountBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.TwoFactorResetBottomSheetDialogFragment
@@ -583,6 +582,10 @@ class AccountOverviewFragment : AppFragment<AccountOverviewFragmentBinding>(
                 isSendAll = true
             )
         )
+    }
+
+    fun rescanSwaps(){
+        viewModel.postEvent(AccountOverviewViewModel.LocalEvents.RescanSwaps)
     }
 
     override fun openProposal(link: String) {

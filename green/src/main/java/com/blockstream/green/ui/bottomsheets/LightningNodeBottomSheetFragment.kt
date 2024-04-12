@@ -50,9 +50,11 @@ class LightningNodeBottomSheetFragment :
 
         val itemAdapter = FastItemAdapter<GenericItem>()
 
-        val buttonActions = ActionListItem(
+        val buttonActions1 = ActionListItem(
             button = StringHolder(R.string.id_show_recovery_phrase)
         )
+
+        val buttonActions2 = ActionListItem()
 
         session.lightningSdk.nodeInfoStateFlow.onEach {
             val list = mutableListOf<GenericItem>()
@@ -110,11 +112,15 @@ class LightningNodeBottomSheetFragment :
                 )
             }
 
-            list += buttonActions
+            list += buttonActions1
 
-            buttonActions.buttonOutline = if(isDevelopmentOrDebug && it.channelsBalanceSatoshi() > 0) StringHolder(R.string.id_empty_lightning_account) else StringHolder()
+            list += buttonActions2
 
-            buttonActions.buttonText = StringHolder("Share Logs")
+            buttonActions1.buttonOutline = if(it.channelsBalanceSatoshi() > 0) StringHolder(R.string.id_empty_lightning_account) else StringHolder()
+
+            buttonActions2.buttonOutline = StringHolder("Rescan Swaps")
+
+            buttonActions2.buttonText = StringHolder("Share Logs")
 
             itemAdapter.set(list)
 
@@ -122,17 +128,21 @@ class LightningNodeBottomSheetFragment :
 
         val fastAdapter = FastAdapter.with(itemAdapter)
 
-        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.button }) { _, _, _, _ ->
+        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.button }) { _, _, _, item ->
             (parentFragment as? AccountOverviewFragment)?.showLightningRecoveryPhrase()
             dismiss()
         }
 
-        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.buttonOutline }) { _, _, _, _ ->
-            (parentFragment as? AccountOverviewFragment)?.showEmptyLightningAccount()
+        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.buttonOutline }) { _, _, _, item ->
+            if(item == buttonActions1){
+                (parentFragment as? AccountOverviewFragment)?.showEmptyLightningAccount()
+            }else{
+                (parentFragment as? AccountOverviewFragment)?.rescanSwaps()
+            }
             dismiss()
         }
 
-        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.buttonText }) { _, _, _, _ ->
+        fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.buttonText }) { _, _, _, item ->
             lifecycleScope.launch(context = logException()) {
                 val nodeId = session.lightningSdk.nodeInfoStateFlow.value.id
                 val file = File(requireContext().cacheDir, "Greenlight_Logs_$nodeId.txt")

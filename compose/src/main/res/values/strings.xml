@@ -1505,4 +1505,8 @@
   <string name="id_amount_below_the_dust_threshold">Amount below the dust threshold</string>
   <string name="id_amount_below_minimum_allowed">Amount below minimum allowed</string>
   <string name="id_amount_above_maximum_allowed">Amount above maximum allowed</string>
+  <string name="id_old_fee">Old fee</string>
+  <string name="id_funding_transaction_id">Funding Transaction ID</string>
+  <string name="id_closing_transaction_id">Closing Transaction ID</string>
+  <string name="id_rescan_swaps_initiated">Rescan Swaps initiated</string>
 </resources>

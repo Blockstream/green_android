@@ -17,12 +17,14 @@
         android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/linearLayout6"
+            isInvisible="@{vm.onProgress &amp;&amp; vm.showLightningAnimation}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="24dp"
             android:orientation="vertical"
-            isInvisible="@{vm.onProgress &amp;&amp; vm.showLightningAnimation}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -240,13 +242,13 @@
                             isInvisible="@{vm.feeAmountRate.empty}"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="16dp"
                             android:includeFontPadding="false"
                             android:text="@{`(`+vm.feeAmountRate+`)`}"
                             android:textAppearance="?attr/textAppearanceBodySmall"
                             android:textColor="@color/color_on_surface_emphasis_medium"
                             android:textSize="11dp"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginTop="16dp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             tools:text="(1.00 satoshi / vbyte)" />
@@ -271,9 +273,9 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="1dp"
+                            android:includeFontPadding="false"
                             android:text="@{vm.feeFiat}"
                             android:textAlignment="textEnd"
-                            android:includeFontPadding="false"
                             android:textAppearance="?attr/textAppearanceBodySmall"
                             app:layout_constraintEnd_toEndOf="@+id/feeAmount"
                             app:layout_constraintStart_toEndOf="@+id/feeRate"
@@ -299,8 +301,8 @@
                             android:id="@+id/barrier"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            app:barrierDirection="bottom"
                             app:barrierAllowsGoneWidgets="false"
+                            app:barrierDirection="bottom"
                             app:constraint_referenced_ids="feeRate,feeAmountFiat" />
 
                         <com.google.android.material.slider.Slider
@@ -399,27 +401,27 @@
             </LinearLayout>
 
             <TextView
+                gdkError="@{vm.error}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                gdkError="@{vm.error}"
-                tools:text="Error"
                 android:layout_marginTop="24dp"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textColor="@color/error"/>
+                android:textColor="@color/error"
+                tools:text="Error" />
 
             <LinearLayout
+                isVisible="@{vm.amountToBeRefunded != null &amp;&amp; vm.error == null}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:layout_marginTop="24dp"
-                isVisible="@{vm.amountToBeRefunded != null &amp;&amp; vm.error == null}">
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/id_amount_to_be_refunded"
                     android:textAppearance="?attr/textAppearanceLabelLarge"
-                    android:textColor="@color/color_on_surface_emphasis_low"/>
+                    android:textColor="@color/color_on_surface_emphasis_low" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -518,9 +520,9 @@
             android:layout_gravity="bottom"
             android:indeterminate="true"
             app:hideAnimationBehavior="inward"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:trackCornerRadius="@dimen/progress_radius" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

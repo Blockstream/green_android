@@ -1,6 +1,7 @@
 package com.blockstream.common.lightning
 
 import breez_sdk.AesSuccessActionDataResult
+import breez_sdk.ChannelState
 import breez_sdk.GreenlightCredentials
 import breez_sdk.LnInvoice
 import breez_sdk.LnUrlPayRequestData
@@ -10,7 +11,6 @@ import breez_sdk.OpenChannelFeeResponse
 import breez_sdk.OpeningFeeParams
 import breez_sdk.Payment
 import breez_sdk.PaymentDetails
-import breez_sdk.PaymentStatus
 import breez_sdk.PaymentType
 import breez_sdk.ReceivePaymentResponse
 import breez_sdk.ReverseSwapInfo
@@ -155,7 +155,8 @@ fun Transaction.Companion.fromPayment(payment: Payment): Transaction {
     val extras = buildMap {
         when(val details = payment.details) {
             is PaymentDetails.ClosedChannel -> {
-                details.data.closingTxid?.also { put("id_invoice", it) }
+                details.data.fundingTxid.also { put("id_funding_transaction_id", it) }
+                details.data.closingTxid?.also { put("id_closing_transaction_id", it) }
             }
             is PaymentDetails.Ln -> {
                 payment.description.takeIf { it.isNotBlank() }?.also { put("id_invoice_description", it) }
@@ -167,8 +168,10 @@ fun Transaction.Companion.fromPayment(payment: Payment): Transaction {
         }
     }.toList()
 
+    val isPendingCloseChannel = payment.paymentType == PaymentType.CLOSED_CHANNEL && (payment.details as? PaymentDetails.ClosedChannel)?.data?.state == ChannelState.PENDING_CLOSE
+
     return Transaction(
-        blockHeight = payment.paymentTime,
+        blockHeight = if(isPendingCloseChannel) 0 else payment.paymentTime,
         canRBF = false,
         createdAtTs = payment.paymentTime * 1_000_000,
         inputs = listOf(),
@@ -183,7 +186,7 @@ fun Transaction.Companion.fromPayment(payment: Payment): Transaction {
         message = ((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Message)?.data?.message,
         plaintext = (((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Aes)?.result as? AesSuccessActionDataResult.Decrypted)?.data?.let { it.description to it.plaintext },
         url = ((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Url)?.data?.let { it.description to it.url},
-        isPendingCloseChannel = payment.paymentType == PaymentType.CLOSED_CHANNEL && payment.status == PaymentStatus.PENDING,
+        isPendingCloseChannel = isPendingCloseChannel,
         extras = extras
     )
 }

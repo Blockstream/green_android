@@ -308,6 +308,14 @@ class LightningBridge constructor(
         }
     }
 
+    fun rescanSwaps() {
+        try {
+            breezSdk.rescanSwaps()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     fun openChannelFee(satoshi: Long): OpenChannelFeeResponse? {
         return try {
             breezSdk.openChannelFee(OpenChannelFeeRequest(amountMsat = satoshi.toULong() * 1000u)).also {
