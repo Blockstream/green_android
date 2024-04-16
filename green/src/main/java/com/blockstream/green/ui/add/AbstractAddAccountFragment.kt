@@ -5,6 +5,7 @@ import androidx.annotation.MenuRes
 import androidx.databinding.ViewDataBinding
 import androidx.navigation.fragment.findNavController
 import com.blockstream.common.events.Event
+import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Network
@@ -57,6 +58,16 @@ abstract class AbstractAddAccountFragment<T : ViewDataBinding>(
         val destinationId = findNavController().currentBackStack.value.let { backQueue ->
             (backQueue.find { it.destination.id == R.id.receiveFragment } ?: backQueue.find { it.destination.id == R.id.walletOverviewFragment })!!.destination.id
         }
+
+        viewModel.postEvent(
+            Events.SetAccountAsset(
+                AccountAsset.fromAccountAsset(
+                    account = account,
+                    assetId = (assetId ?: account.network.policyAsset),
+                    session = viewModel.session
+                ), setAsActive = true
+            )
+        )
 
         setNavigationResult(
             result = AccountAsset.fromAccountAsset(

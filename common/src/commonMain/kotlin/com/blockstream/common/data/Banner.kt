@@ -25,7 +25,7 @@ data class Banner(
     companion object{
         val preview1 = Banner(
             title = "Lorem Ipsum",
-            message = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            message = "Lorem ipsum dolor",
             dismissable = true
         )
 

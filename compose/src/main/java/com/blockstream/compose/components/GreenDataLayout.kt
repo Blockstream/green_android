@@ -44,7 +44,7 @@ fun GreenDataLayout(
         }
 
         GreenCard(
-            padding = (if (withPadding) 16.dp else 0.dp),
+            padding = (if (withPadding) 16 else 0),
             onClick = onClick,
             error = error,
             enabled = enabled,

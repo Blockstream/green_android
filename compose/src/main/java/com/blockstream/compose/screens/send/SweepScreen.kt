@@ -2,11 +2,8 @@ package com.blockstream.compose.screens.send
 
 import android.os.Parcelable
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -23,8 +20,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -42,53 +37,35 @@ import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
-import com.blockstream.common.models.send.SendViewModel
 import com.blockstream.common.models.send.SweepViewModel
 import com.blockstream.common.models.send.SweepViewModelAbstract
 import com.blockstream.common.models.send.SweepViewModelPreview
-import com.blockstream.common.models.settings.AppSettingsViewModel
 import com.blockstream.common.utils.DecimalFormat
 import com.blockstream.compose.GreenPreview
-import com.blockstream.compose.LocalDialog
 import com.blockstream.compose.R
-import com.blockstream.compose.components.GreenAccount
+import com.blockstream.compose.components.GreenAccountAsset
+import com.blockstream.compose.components.GreenAmount
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.components.GreenNetworkFee
-import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.GreenTextField
 import com.blockstream.compose.components.SlideToUnlock
 import com.blockstream.compose.dialogs.TextDialog
-import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.navigation.getNavigationResult
 import com.blockstream.compose.navigation.resultKey
 import com.blockstream.compose.sheets.AccountsBottomSheet
-import com.blockstream.compose.sheets.AnalyticsBottomSheet
 import com.blockstream.compose.sheets.CameraBottomSheet
 import com.blockstream.compose.sheets.FeeRateBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
-import com.blockstream.compose.sideeffects.OpenDialogData
 import com.blockstream.compose.theme.bodyLarge
-import com.blockstream.compose.theme.bodyMedium
-import com.blockstream.compose.theme.bodySmall
-import com.blockstream.compose.theme.headlineMedium
-import com.blockstream.compose.theme.headlineSmall
-import com.blockstream.compose.theme.labelLarge
-import com.blockstream.compose.theme.labelSmall
-import com.blockstream.compose.theme.md_theme_error
 import com.blockstream.compose.theme.md_theme_onError
 import com.blockstream.compose.theme.md_theme_onErrorContainer
-import com.blockstream.compose.theme.red
 import com.blockstream.compose.theme.titleLarge
-import com.blockstream.compose.theme.titleSmall
-import com.blockstream.compose.theme.whiteHigh
-import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
-import com.blockstream.compose.utils.roundBackground
 import com.blockstream.compose.utils.stringResourceId
-import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Parcelize
@@ -99,7 +76,7 @@ data class SweepScreen(
 ) : Parcelable, Screen {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<SweepViewModel>() {
+        val viewModel = koinViewModel<SweepViewModel> {
             parametersOf(greenWallet, privateKey, accountAsset)
         }
 
@@ -195,16 +172,18 @@ fun SweepScreen(
 
             val accountAsset by viewModel.accountAsset.collectAsStateWithLifecycle()
 
-            GreenAccount(
+            GreenAccountAsset(
                 title = stringResource(R.string.id_receive_in),
-                account = accountAsset?.account,
+                accountAssetBalance = accountAsset?.accountAssetBalance,
                 session = viewModel.sessionOrNull,
+                withAsset = false,
                 withEditIcon = true
             ) {
                 bottomSheetNavigator.show(
                     AccountsBottomSheet(
                         viewModel.greenWallet,
-                        viewModel.accounts.value
+                        viewModel.accounts.value,
+                        withAsset = false
                     )
                 )
             }
@@ -214,26 +193,11 @@ fun SweepScreen(
             val amountFiat by viewModel.amountFiat.collectAsStateWithLifecycle()
 
             AnimatedNullableVisibility(value = amount) {
-
-                GreenDataLayout(title = stringResource(id = R.string.id_amount)) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .fillMaxWidth()
-
-                    ) {
-
-                        SelectionContainer {
-                            Text(text = it, style = titleLarge)
-                        }
-
-                        amountFiat?.also { fiat ->
-                            SelectionContainer {
-                                Text(text = fiat, style = bodyLarge)
-                            }
-                        }
-                    }
-                }
+                GreenAmount(
+                    title = stringResource(id = R.string.id_amount),
+                    amount = it,
+                    amountFiat = amountFiat
+                )
             }
 
             val showFeeSelector by viewModel.showFeeSelector.collectAsStateWithLifecycle()

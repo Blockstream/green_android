@@ -29,6 +29,7 @@ import com.blockstream.common.events.Events
 import com.blockstream.common.models.onboarding.SetupNewWalletViewModel
 import com.blockstream.common.models.onboarding.SetupNewWalletViewModelAbstract
 import com.blockstream.common.models.onboarding.SetupNewWalletViewModelPreview
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
 import com.blockstream.compose.components.AppSettingsButton
@@ -175,7 +176,7 @@ fun SetupNewWalletScreen(
                 .align(Alignment.End)
                 .padding(end = 16.dp)
         ) {
-            viewModel.postEvent(Events.AppSettings)
+            viewModel.postEvent(NavigateDestinations.AppSettings)
         }
     }
 

@@ -3,6 +3,7 @@ package com.blockstream.compose.extensions
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
@@ -19,12 +20,21 @@ import com.blockstream.common.gdk.device.DeviceInterface
 import com.blockstream.common.looks.transaction.Completed
 import com.blockstream.common.looks.transaction.Confirmed
 import com.blockstream.common.looks.transaction.Failed
+import com.blockstream.common.looks.transaction.TransactionLook
 import com.blockstream.common.looks.transaction.TransactionStatus
 import com.blockstream.common.looks.transaction.Unconfirmed
 import com.blockstream.compose.R
+import com.blockstream.compose.theme.amp
+import com.blockstream.compose.theme.amp_testnet
+import com.blockstream.compose.theme.bitcoin
+import com.blockstream.compose.theme.bitcoin_testnet
 import com.blockstream.compose.theme.green
+import com.blockstream.compose.theme.lightning
+import com.blockstream.compose.theme.liquid
+import com.blockstream.compose.theme.liquid_testnet
 import com.blockstream.compose.theme.orange
 import com.blockstream.compose.theme.red
+import com.blockstream.compose.theme.whiteHigh
 
 fun WalletIcon.resource() = when(this) {
     WalletIcon.WATCH_ONLY -> R.drawable.eye
@@ -50,6 +60,21 @@ fun String.getNetworkIcon(): Int{
     if (Network.isLiquidTestnet(this)) return R.drawable.liquid_testnet
     if (Network.isLightningMainnet(this)) return R.drawable.bitcoin_lightning
     return R.drawable.unknown
+}
+
+fun String.getNetworkColor(): Color = when {
+    Network.isBitcoinMainnet(this) -> bitcoin
+    Network.isLiquidMainnet(this) -> liquid
+    Network.isLightning(this) -> lightning
+    Network.isLiquidTestnet(this) -> liquid_testnet
+    Network.isBitcoinTestnet(this) -> bitcoin_testnet
+    else -> bitcoin_testnet
+}
+
+fun Account.getAccountColor(): Color = when {
+    isAmp && isLiquidMainnet -> amp
+    isAmp && isLiquidTestnet -> amp_testnet
+    else -> networkId.getNetworkColor()
 }
 
 fun Account.policyIcon(): Int {
@@ -88,6 +113,11 @@ fun Transaction.SPVResult.title() = when (this) {
     Transaction.SPVResult.NotLongest -> R.string.id_not_on_longest_chain
     Transaction.SPVResult.Verified -> R.string.id_verified
     else -> R.drawable.spv_error
+}
+
+fun TransactionLook.directionColor(index: Int) = when  {
+    transaction.isRefundableSwap -> red
+    else -> if((transaction.assets.getOrNull(index)?.second ?: 0) < 0) whiteHigh else green
 }
 
 private fun ByteArray?.toBitmap(): Bitmap? {

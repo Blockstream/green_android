@@ -10,15 +10,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.app.ShareCompat
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.core.stack.Stack
-import cafe.adriel.voyager.navigator.LocalNavigator
+import androidx.core.content.FileProvider
 import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorResolverData
 import com.blockstream.common.data.TwoFactorSetupAction
-import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.twoFactorMethodsLocalized
 import com.blockstream.common.models.GreenViewModel
@@ -27,11 +24,13 @@ import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.LocalAppCoroutine
 import com.blockstream.compose.LocalDialog
+import com.blockstream.compose.LocalRootNavigator
 import com.blockstream.compose.LocalSnackbar
 import com.blockstream.compose.R
 import com.blockstream.compose.dialogs.SingleChoiceDialog
 import com.blockstream.compose.dialogs.TwoFactorCodeDialog
 import com.blockstream.compose.extensions.showErrorSnackbar
+import com.blockstream.compose.navigation.pushOrReplace
 import com.blockstream.compose.navigation.pushUnique
 import com.blockstream.compose.screens.HomeScreen
 import com.blockstream.compose.screens.about.AboutScreen
@@ -42,22 +41,35 @@ import com.blockstream.compose.screens.onboarding.phone.AddWalletScreen
 import com.blockstream.compose.screens.onboarding.phone.EnterRecoveryPhraseScreen
 import com.blockstream.compose.screens.onboarding.phone.PinScreen
 import com.blockstream.compose.screens.onboarding.watchonly.WatchOnlyPolicyScreen
+import com.blockstream.compose.screens.overview.AccountOverviewScreen
 import com.blockstream.compose.screens.overview.WalletOverviewScreen
 import com.blockstream.compose.screens.receive.ReceiveScreen
 import com.blockstream.compose.screens.recovery.RecoveryCheckScreen
 import com.blockstream.compose.screens.recovery.RecoveryIntroScreen
 import com.blockstream.compose.screens.recovery.RecoveryPhraseScreen
 import com.blockstream.compose.screens.recovery.RecoveryWordsScreen
+import com.blockstream.compose.screens.send.AccountExchangeScreen
 import com.blockstream.compose.screens.send.BumpScreen
+import com.blockstream.compose.screens.send.SendConfirmScreen
 import com.blockstream.compose.screens.send.SendScreen
 import com.blockstream.compose.screens.send.SweepScreen
 import com.blockstream.compose.screens.settings.AppSettingsScreen
 import com.blockstream.compose.screens.settings.WalletSettingsScreen
+import com.blockstream.compose.screens.transaction.TransactionScreen
+import com.blockstream.compose.sheets.AccountRenameBottomSheet
+import com.blockstream.compose.sheets.AccountsBottomSheet
+import com.blockstream.compose.sheets.AssetDetailsBottomSheet
 import com.blockstream.compose.sheets.AssetsAccountsBottomSheet
 import com.blockstream.compose.sheets.Bip39PassphraseBottomSheet
+import com.blockstream.compose.sheets.Call2ActionBottomSheet
+import com.blockstream.compose.sheets.CameraBottomSheet
 import com.blockstream.compose.sheets.DenominationBottomSheet
 import com.blockstream.compose.sheets.FeeRateBottomSheet
+import com.blockstream.compose.sheets.LightningNodeBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
+import com.blockstream.compose.sheets.SystemMessageBottomSheet
+import com.blockstream.compose.sheets.TransactionDetailsBottomSheet
+import com.blockstream.compose.sheets.TwoFactorResetBottomSheet
 import com.blockstream.compose.sheets.WalletDeleteBottomSheet
 import com.blockstream.compose.sheets.WalletRenameBottomSheet
 import com.blockstream.compose.sideeffects.OpenDialogData
@@ -66,14 +78,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-
-fun <Item : Screen> Stack<Item>.pushOrReplace(item: Item) {
-    if(lastItemOrNull?.let { it::class == item::class } == true) {
-        replace(item)
-    } else {
-        push(item)
-    }
-}
+import java.io.File
 
 @Composable
 fun HandleSideEffectDialog(viewModel: GreenViewModel, onDismiss: CoroutineScope.() -> Unit = {}, handler: CoroutineScope.(sideEffect: SideEffect) -> Unit = {}) {
@@ -93,7 +98,7 @@ fun HandleSideEffectDialog(viewModel: GreenViewModel, onDismiss: CoroutineScope.
 @Composable
 fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEffect: SideEffect) -> Unit = {}) {
     val snackbar = LocalSnackbar.current
-    val navigator = LocalNavigator.current
+    val navigator = LocalRootNavigator.current
     val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
     val context = LocalContext.current
     val dialog = LocalDialog.current
@@ -133,8 +138,7 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                                 secondaryText = "id_contact_support",
                                 onPrimary = {
                                     if (it.enable2faCallMethod){
-                                        viewModel.postEvent(Events.TwoFactorSetup(
-                                            greenWallet = viewModel.greenWallet,
+                                        viewModel.postEvent(NavigateDestinations.TwoFactorSetup(
                                             method = TwoFactorMethod.PHONE,
                                             action = TwoFactorSetupAction.SETUP,
                                             network = it.network!!,
@@ -257,6 +261,25 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                     }
                 }
 
+                is SideEffects.ShareFile -> {
+                    val fileUri = FileProvider.getUriForFile(
+                        context,
+                        context.packageName.toString() + ".provider",
+                        File(it.path.toString())
+                    )
+
+                    val builder = ShareCompat.IntentBuilder(context)
+                        .setType("text/plain")
+                        .setStream(fileUri)
+
+                    context.startActivity(
+                        Intent.createChooser(
+                            builder.intent,
+                            context.getString(R.string.id_share)
+                        )
+                    )
+                }
+
                 is SideEffects.NavigateBack -> {
                     // Check if Navigator exists, else is handled by AppFragment for now
                     if(navigator != null) {
@@ -287,7 +310,7 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                     copyToClipboard(context = context, "Green", it.value)
                     it.message?.also {
                         appCoroutine.launch {
-                            snackbar.showSnackbar(message = it)
+                            snackbar.showSnackbar(message = stringResourceId(context = context, id = it))
                         }
                     }
                 }
@@ -352,6 +375,61 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
 
                 is SideEffects.NavigateTo -> {
                     when(val destination = it.destination) {
+                        is NavigateDestinations.LightningNode -> {
+                            bottomSheetNavigator.show(
+                                LightningNodeBottomSheet(
+                                    viewModel.greenWallet
+                                )
+                            )
+                        }
+
+                        is NavigateDestinations.TransactionDetails -> {
+                            bottomSheetNavigator.show(
+                                TransactionDetailsBottomSheet(
+                                    greenWallet = viewModel.greenWallet,
+                                    transaction = destination.transaction
+                                )
+                            )
+                        }
+
+                        is NavigateDestinations.AssetDetails -> {
+                            bottomSheetNavigator.show(
+                                AssetDetailsBottomSheet(
+                                    greenWallet = viewModel.greenWallet,
+                                    assetId = destination.assetId,
+                                    accountAsset = destination.accountAsset
+                                )
+                            )
+                        }
+
+                        is NavigateDestinations.RenameAccount -> {
+                            bottomSheetNavigator.show(
+                                AccountRenameBottomSheet(
+                                    viewModel.greenWallet,
+                                    destination.account
+                                )
+                            )
+                        }
+
+                        is NavigateDestinations.SystemMessage -> {
+                            bottomSheetNavigator.show(
+                                SystemMessageBottomSheet(
+                                    greenWallet = viewModel.greenWallet,
+                                    network = destination.network,
+                                    message = destination.message
+                                )
+                            )
+                        }
+
+                        is NavigateDestinations.TwoFactorReset -> {
+                            bottomSheetNavigator.show(
+                                TwoFactorResetBottomSheet(
+                                    greenWallet = viewModel.greenWallet,
+                                    network = destination.network,
+                                    twoFactorReset = destination.twoFactorReset,
+                                )
+                            )
+                        }
                         
                         is NavigateDestinations.RenameWallet -> {
                             bottomSheetNavigator.show(WalletRenameBottomSheet(destination.greenWallet))
@@ -361,6 +439,16 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                             bottomSheetNavigator.show(AssetsAccountsBottomSheet(destination.greenWallet, destination.assetsAccounts))
                         }
 
+                        is NavigateDestinations.Accounts -> {
+                            bottomSheetNavigator.show(
+                                AccountsBottomSheet(
+                                    greenWallet = destination.greenWallet,
+                                    accountsBalance = destination.accounts,
+                                    withAsset = destination.withAsset
+                                )
+                            )
+                        }
+
                         is NavigateDestinations.DeleteWallet -> {
                             bottomSheetNavigator.show(WalletDeleteBottomSheet(destination.greenWallet))
                         }
@@ -368,9 +456,15 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                         is NavigateDestinations.Bip39Passphrase -> {
                             bottomSheetNavigator.show(
                                 Bip39PassphraseBottomSheet(
-                                    greenWallet = destination.greenWallet,
+                                    greenWallet = viewModel.greenWallet,
                                     passphrase = destination.passphrase
                                 )
+                            )
+                        }
+
+                        is NavigateDestinations.EnableTwoFactor -> {
+                            bottomSheetNavigator.show(
+                                Call2ActionBottomSheet(greenWallet = viewModel.greenWallet)
                             )
                         }
 
@@ -382,10 +476,19 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                             )
                         }
 
+                        is NavigateDestinations.AccountOverview -> {
+                            navigator?.pushUnique(
+                                AccountOverviewScreen(
+                                    greenWallet = viewModel.greenWallet,
+                                    accountAsset = destination.accountAsset
+                                )
+                            )
+                        }
+
                         is NavigateDestinations.WalletSettings -> {
                             navigator?.push(
                                 WalletSettingsScreen(
-                                    greenWallet = destination.greenWallet
+                                    greenWallet = viewModel.greenWallet
                                 )
                             )
                         }
@@ -456,7 +559,7 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                         }
 
                         is NavigateDestinations.RecoveryIntro -> {
-                            navigator?.pushUnique(
+                            navigator?.push(
                                 RecoveryIntroScreen(destination.args)
                             )
                         }
@@ -494,9 +597,26 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                         is NavigateDestinations.Sweep -> {
                             navigator?.push(
                                 SweepScreen(
-                                    greenWallet = destination.greenWallet,
+                                    greenWallet = viewModel.greenWallet,
                                     privateKey = destination.privateKey,
                                     accountAsset = destination.accountAsset
+                                )
+                            )
+                        }
+
+                        is NavigateDestinations.Transaction -> {
+                            navigator?.push(
+                                TransactionScreen(
+                                    greenWallet = viewModel.greenWallet,
+                                    transaction = destination.transaction,
+                                )
+                            )
+                        }
+
+                        is NavigateDestinations.AccountExchange -> {
+                            navigator?.push(
+                                AccountExchangeScreen(
+                                    greenWallet = viewModel.greenWallet,
                                 )
                             )
                         }
@@ -504,9 +624,19 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                         is NavigateDestinations.Bump -> {
                             navigator?.push(
                                 BumpScreen(
-                                    greenWallet = destination.greenWallet,
+                                    greenWallet = viewModel.greenWallet,
                                     accountAsset = destination.accountAsset,
                                     transaction = destination.transaction
+                                )
+                            )
+                        }
+
+                        is NavigateDestinations.SendConfirm -> {
+                            navigator?.push(
+                                SendConfirmScreen(
+                                    greenWallet = viewModel.greenWallet,
+                                    accountAsset = destination.accountAsset,
+                                    denomination = destination.denomination
                                 )
                             )
                         }
@@ -514,7 +644,7 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                         is NavigateDestinations.Send -> {
                             navigator?.push(
                                 SendScreen(
-                                    greenWallet = destination.greenWallet,
+                                    greenWallet = viewModel.greenWallet,
                                     accountAsset = destination.accountAsset
                                 )
                             )
@@ -523,7 +653,7 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                         is NavigateDestinations.Receive -> {
                             navigator?.push(
                                 ReceiveScreen(
-                                    greenWallet = destination.greenWallet,
+                                    greenWallet = viewModel.greenWallet,
                                     accountAsset = destination.accountAsset
                                 )
                             )
@@ -544,6 +674,16 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                                     }
                                 }
                             }
+                        }
+
+                        is NavigateDestinations.Camera -> {
+                            bottomSheetNavigator.show(
+                                CameraBottomSheet(
+                                    isDecodeContinuous = destination.isDecodeContinuous,
+                                    parentScreenName = destination.parentScreenName,
+                                    setupArgs = destination.setupArgs
+                                )
+                            )
                         }
                     }
                 }

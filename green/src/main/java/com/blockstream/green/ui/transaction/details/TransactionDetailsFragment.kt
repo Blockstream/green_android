@@ -6,9 +6,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.transaction.TransactionViewModel
-import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.sideeffects.SideEffect
-import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.AppFragmentBridge
 import com.blockstream.compose.screens.transaction.TransactionScreen
 import com.blockstream.green.R
@@ -30,23 +27,6 @@ class TransactionDetailsFragment : AppFragment<ComposeViewBinding>(
     override val useCompose: Boolean = true
 
     override fun getGreenViewModel(): GreenViewModel = viewModel
-
-    override fun handleSideEffect(sideEffect: SideEffect) {
-        super.handleSideEffect(sideEffect)
-
-        if (sideEffect is SideEffects.NavigateTo) {
-
-            (sideEffect.destination as? NavigateDestinations.RecoverFunds)?.also {
-                navigate(
-                    TransactionDetailsFragmentDirections.actionTransactionDetailsFragmentToRecoverFundsFragment(
-                        wallet = it.greenWallet,
-                        amount = it.satoshi,
-                        address = it.address
-                    )
-                )
-            }
-        }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

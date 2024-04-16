@@ -43,6 +43,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -194,6 +195,10 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
         _navData.value = NavData(title = "id_receive", subtitle = greenWallet.name)
 
         session.ifConnected {
+            session.activeAccount.filterNotNull().drop(1).onEach {
+                 // accountAsset.value = it.accountAsset
+            }.launchIn(this)
+
             accountAsset.onEach {
                 _requestAmount.value = null
                 _showLightningOnChainAddress.value = false

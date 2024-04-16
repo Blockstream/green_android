@@ -2,12 +2,12 @@
 
 package com.blockstream.gms.di
 
-import com.blockstream.base.AppReview
+import com.blockstream.base.GooglePlay
 import com.blockstream.common.fcm.Firebase
 import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.data.AppConfig
-import com.blockstream.gms.AppReviewImpl
 import com.blockstream.gms.FirebaseImpl
+import com.blockstream.gms.GooglePlayImpl
 import com.blockstream.gms.ZendeskSdkAndroid
 import com.google.android.play.core.review.ReviewManagerFactory
 import okio.internal.commonToUtf8String
@@ -25,8 +25,8 @@ class GmsModule
 
 val gmsModule = module {
     single {
-        AppReviewImpl(ReviewManagerFactory.create(get()))
-    } binds(arrayOf(AppReview::class))
+        GooglePlayImpl(ReviewManagerFactory.create(get()))
+    } binds(arrayOf(GooglePlay::class))
 
     single {
         val apiKey = get<AppConfig>().zendeskClientId?.let { base64 ->

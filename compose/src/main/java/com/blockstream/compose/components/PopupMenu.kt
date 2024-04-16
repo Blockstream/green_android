@@ -47,8 +47,9 @@ data class PopupState(
 
 
 @Composable
-fun PopupMenu(state: PopupState, entries: List<MenuEntry>) {
+fun PopupMenu(modifier: Modifier = Modifier, state: PopupState, entries: List<MenuEntry>) {
     DropdownMenu(
+        modifier = modifier,
         expanded = state.isContextMenuVisible.value,
         onDismissRequest = {
             state.isContextMenuVisible.value = false
@@ -89,7 +90,7 @@ fun PopupMenuPreview() {
                 GreenButton(text = "isContextMenuVisible: ${popupState.isContextMenuVisible.value}") {
                     popupState.isContextMenuVisible.toggle()
                 }
-                PopupMenu(popupState, listOf(MenuEntry(title = "Menu 1"), MenuEntry(title = "Menu 2", iconRes = R.drawable.question )))
+                PopupMenu(state = popupState, entries = listOf(MenuEntry(title = "Menu 1"), MenuEntry(title = "Menu 2", iconRes = R.drawable.question )))
             }
         }
     }

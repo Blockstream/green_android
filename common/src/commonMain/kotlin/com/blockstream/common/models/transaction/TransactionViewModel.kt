@@ -167,8 +167,8 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
                 session.block(transaction.account.network)
             ) { walletTransactions, accountTransactions, _ ->
                 // Be sure to find the correct tx not just by hash but also with the correct type (cross-account transactions)
-                walletTransactions.find { it.txHash == transaction.txHash && it.txType == transaction.txType }
-                    ?: accountTransactions.find { it.txHash == transaction.txHash }
+                walletTransactions.data()?.find { it.txHash == transaction.txHash && it.txType == transaction.txType }
+                    ?: accountTransactions.data()?.find { it.txHash == transaction.txHash }
             }.filterNotNull().onEach {
                 _transaction.value = it
             }.launchIn(viewModelScope.coroutineScope)
@@ -211,7 +211,6 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
             postSideEffect(
                 SideEffects.NavigateTo(
                     NavigateDestinations.RecoverFunds(
-                        greenWallet = greenWallet,
                         satoshi = transaction.value.satoshiPolicyAsset,
                         address = transaction.value.onChainAddress
                     )
@@ -225,26 +224,7 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
         logger.d { "UpdateData with tx: $transaction" }
 
         val confirmations = transaction.getConfirmations(session)
-        _status.value = when {
-            transaction.isRefundableSwap -> {
-                Failed()
-            }
-            confirmations == 0L -> {
-                Unconfirmed(transaction.network.confirmationsRequired)
-            }
-
-            confirmations < transaction.network.confirmationsRequired -> {
-                Confirmed(confirmations = confirmations.toInt(), transaction.network.confirmationsRequired)
-            }
-
-            confirmations >= transaction.network.confirmationsRequired -> {
-                Completed
-            }
-
-            else -> {
-                Failed()
-            }
-        }
+        _status.value = TransactionStatus.create(transaction, session)
 
         _spv.value = transaction.spv
 
@@ -336,7 +316,6 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
             postSideEffect(
                 SideEffects.NavigateTo(
                     NavigateDestinations.Bump(
-                        greenWallet = greenWallet,
                         accountAsset = accountAsset.value!!,
                         transaction = it
                     )

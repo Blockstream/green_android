@@ -1,6 +1,6 @@
 package com.blockstream.green.di
 
-import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.models.about.AboutViewModel
 import com.blockstream.common.models.add.Account2of3ViewModel
 import com.blockstream.common.models.add.ChooseAccountTypeViewModel
@@ -37,6 +37,7 @@ import com.blockstream.common.models.recovery.RecoveryCheckViewModel
 import com.blockstream.common.models.recovery.RecoveryIntroViewModel
 import com.blockstream.common.models.recovery.RecoveryPhraseViewModel
 import com.blockstream.common.models.recovery.RecoveryWordsViewModel
+import com.blockstream.common.models.send.AccountExchangeViewModel
 import com.blockstream.common.models.send.BumpViewModel
 import com.blockstream.common.models.send.DenominationViewModel
 import com.blockstream.common.models.send.FeeViewModel
@@ -51,6 +52,7 @@ import com.blockstream.common.models.settings.WalletSettingsViewModel
 import com.blockstream.common.models.settings.WatchOnlyViewModel
 import com.blockstream.common.models.sheets.AnalyticsViewModel
 import com.blockstream.common.models.sheets.AssetDetailsViewModel
+import com.blockstream.common.models.sheets.LightningNodeViewModel
 import com.blockstream.common.models.sheets.NoteViewModel
 import com.blockstream.common.models.sheets.RecoveryHelpViewModel
 import com.blockstream.common.models.sheets.TransactionDetailsViewModel
@@ -107,15 +109,22 @@ val viewModels = module {
     viewModelOf(::DenominationExchangeRateViewModel)
     viewModelOf(::RequestAmountViewModel)
     viewModelOf(::TwoFactorSetupViewModel)
-    viewModelOf(::SendConfirmViewModel)
     viewModelOf(::FeeViewModel)
     viewModelOf(::DenominationViewModel)
     viewModelOf(::BumpViewModel)
+    viewModelOf(::LightningNodeViewModel)
+    viewModelOf(::AssetDetailsViewModel)
+    viewModel {
+        SendConfirmViewModel(get(), get(), getOrNull())
+    }
+    viewModel {
+        AccountExchangeViewModel(get(), getOrNull())
+    }
     viewModel {
         SendViewModel(get(), getOrNull(), getOrNull(), getOrNull())
     }
     viewModel {
-        GreenViewModel(getOrNull(), getOrNull())
+        SimpleGreenViewModel(getOrNull(), getOrNull(), getOrNull())
     }
     viewModel {
         SweepViewModel(get(), getOrNull(), getOrNull())

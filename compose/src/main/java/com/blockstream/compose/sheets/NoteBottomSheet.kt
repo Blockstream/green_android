@@ -35,13 +35,18 @@ import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.navigation.resultKey
 import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.utils.OpenKeyboard
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Parcelize
-data class NoteBottomSheet(val note: String, val isLightning: Boolean, val greenWallet: GreenWallet) : BottomScreen(), Parcelable {
+data class NoteBottomSheet(
+    val greenWallet: GreenWallet,
+    val note: String,
+    val isLightning: Boolean
+) : BottomScreen(), Parcelable {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<NoteViewModel>{
+        val viewModel = koinViewModel<NoteViewModel>{
             parametersOf(note, isLightning, greenWallet)
         }
 

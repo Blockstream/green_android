@@ -69,7 +69,6 @@ class HomeViewModelUnitTests : TestViewModel<HomeViewModel>(){
     @Test
     fun whenWalletExists_termsShouldBeChecked() = runTest {
         init(true)
-
         assertTrue(viewModel.termsOfServiceIsChecked.value)
     }
 }

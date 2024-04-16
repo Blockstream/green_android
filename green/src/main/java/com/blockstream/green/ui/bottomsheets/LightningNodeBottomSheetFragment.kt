@@ -129,15 +129,15 @@ class LightningNodeBottomSheetFragment :
         val fastAdapter = FastAdapter.with(itemAdapter)
 
         fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.button }) { _, _, _, item ->
-            (parentFragment as? AccountOverviewFragment)?.showLightningRecoveryPhrase()
+            // (parentFragment as? AccountOverviewFragment)?.showLightningRecoveryPhrase()
             dismiss()
         }
 
         fastAdapter.addClickListener<ListItemActionBinding, GenericItem>({ binding -> binding.buttonOutline }) { _, _, _, item ->
             if(item == buttonActions1){
-                (parentFragment as? AccountOverviewFragment)?.showEmptyLightningAccount()
+//                (parentFragment as? AccountOverviewFragment)?.showEmptyLightningAccount()
             }else{
-                (parentFragment as? AccountOverviewFragment)?.rescanSwaps()
+//                (parentFragment as? AccountOverviewFragment)?.rescanSwaps()
             }
             dismiss()
         }

@@ -14,6 +14,7 @@ import com.blockstream.common.gdk.data.SendTransactionSuccess
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.navigation.NavigateDestination
 import kotlinx.coroutines.CompletableDeferred
+import okio.Path
 
 
 class SideEffects : SideEffect {
@@ -46,11 +47,15 @@ class SideEffects : SideEffect {
     data class AccountArchived(val account: Account) : SideEffect
     data class AccountUnarchived(val account: Account) : SideEffect
     data class UrlWarning(val urls: List<String>): SideEffect
+    object AppReview: SideEffect
     object DeviceRequestPassphrase: SideEffect
     object DeviceRequestPin: SideEffect
     class DeviceInteraction(val device: Device, val message: String?, val completable: CompletableDeferred<Boolean>?):
         SideEffect
     object Dismiss : SideEffect
     data class Share(val text: String? = null) : SideEffect
+    data class ShareFile(val path: Path) : SideEffect
     data class TwoFactorResolver(val data: TwoFactorResolverData) : SideEffect
+    object OpenDenominationExchangeRate : SideEffect
+    object LightningShortcut : SideEffect
 }

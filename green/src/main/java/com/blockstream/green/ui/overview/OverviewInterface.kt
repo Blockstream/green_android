@@ -8,6 +8,7 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.ScanResult
 import com.blockstream.common.data.toSerializable
 import com.blockstream.common.gdk.GdkSession
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.extensions.clearNavigationResult
@@ -25,18 +26,18 @@ interface OverviewInterface {
     val wallet: GreenWallet
     val appFragment: AppFragment<*>
 
-    fun overviewSetup(){
+    fun overviewSetup(viewModel: GreenViewModel){
         appFragment.getNavigationResult<ScanResult>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(
             appFragment.viewLifecycleOwner
         ) {
             it?.let { result ->
                 appFragment.clearNavigationResult(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)
-                handleUserInput(result.result, true)
+                handleUserInput(viewModel, result.result, true)
             }
         }
     }
 
-    fun handleUserInput(data: String, isQr: Boolean = false) {
+    fun handleUserInput(viewModel: GreenViewModel, data: String, isQr: Boolean = false) {
         appFragment.lifecycleScope.launch {
 
             val checkedInput = session.parseInput(data)
@@ -46,6 +47,7 @@ interface OverviewInterface {
                 when (val inputType = checkedInput.second) {
                     is InputType.LnUrlAuth -> {
                         if (session.hasLightning) {
+
                             appFragment.navigate(
                                 NavGraphDirections.actionGlobalLnUrlAuthFragment(
                                     wallet = wallet,

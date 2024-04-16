@@ -82,7 +82,7 @@ private fun commonModules(appConfig: AppConfig): List<Module> {
         }
         single {
             val config = InitConfig(
-                datadir = appConfig.gdkDataDir,
+                datadir = appConfig.filesDir,
                 logLevel = if (appConfig.isDebug) "debug" else "none"
             )
             Gdk(
@@ -105,7 +105,7 @@ private fun commonModules(appConfig: AppConfig): List<Module> {
                 }
             )
 
-            LightningManager(greenlightKeys, get(), get(), get(), get())
+            LightningManager(greenlightKeys, get(), get(), get(), get(), get())
         }
 
         val minSeverity = if (appConfig.isDebug) Severity.Debug else Severity.Info

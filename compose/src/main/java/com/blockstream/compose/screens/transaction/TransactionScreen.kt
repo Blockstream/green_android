@@ -33,18 +33,17 @@ import cafe.adriel.voyager.koin.getScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.looks.transaction.Failed
-import com.blockstream.common.looks.transaction.TransactionStatus
 import com.blockstream.common.looks.transaction.Unconfirmed
 import com.blockstream.common.models.transaction.TransactionViewModel
 import com.blockstream.common.models.transaction.TransactionViewModelAbstract
 import com.blockstream.common.models.transaction.TransactionViewModelPreview
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenAddress
-import com.blockstream.compose.components.GreenAmount
+import com.blockstream.compose.components.GreenAmounts
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.GreenSpacer
@@ -55,12 +54,10 @@ import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.extensions.title
 import com.blockstream.compose.navigation.getNavigationResult
 import com.blockstream.compose.navigation.resultKey
-import com.blockstream.compose.sheets.AssetDetailsBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
 import com.blockstream.compose.sheets.MenuBottomSheet
 import com.blockstream.compose.sheets.MenuEntry
 import com.blockstream.compose.sheets.NoteBottomSheet
-import com.blockstream.compose.sheets.TransactionDetailsBottomSheet
 import com.blockstream.compose.theme.GreenThemePreview
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
@@ -231,16 +228,15 @@ fun TransactionScreen(
 
 
         if (amounts.isNotEmpty()) {
-            GreenAmount(
+            GreenAmounts(
                 amounts = amounts,
                 session = viewModel.sessionOrNull,
                 modifier = Modifier.padding(vertical = 32.dp),
                 onAssetClick = {
-                    bottomSheetNavigator.show(
-                        AssetDetailsBottomSheet(
+                    viewModel.postEvent(
+                        NavigateDestinations.AssetDetails(
                             assetId = it,
-                            accountAsset = viewModel.accountAsset.value,
-                            greenWallet = viewModel.greenWallet
+                            accountAsset = viewModel.accountAsset.value
                         )
                     )
                 }
@@ -356,10 +352,9 @@ fun TransactionScreen(
                     stringResource(id = R.string.id_more_details),
                     painterResource(id = R.drawable.magnifying_glass)
                 ) {
-                    bottomSheetNavigator.show(
-                        TransactionDetailsBottomSheet(
-                            transaction = viewModel.transaction.value,
-                            greenWallet = viewModel.greenWallet
+                    viewModel.postEvent(
+                        NavigateDestinations.TransactionDetails(
+                            transaction = transaction
                         )
                     )
                 }

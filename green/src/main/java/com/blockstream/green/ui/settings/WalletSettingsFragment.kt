@@ -58,24 +58,8 @@ class WalletSettingsFragment : AppFragment<ComposeViewBinding>(R.layout.compose_
                 (sideEffect.destination as? NavigateDestinations.TwoFactorAuthentication)?.also {
                     navigate(
                         WalletSettingsFragmentDirections.actionWalletSettingsFragmentToTwoFractorAuthenticationFragment(
-                            wallet = it.greenWallet
-                        )
-                    )
-                }
-                (sideEffect.destination as? NavigateDestinations.TwoFactorSetup)?.also {
-                    navigate(
-                        WalletSettingsFragmentDirections.actionWalletSettingsFragmentToTwoFactorSetupFragment(
-                            wallet = it.greenWallet,
-                            method = it.method,
-                            action = it.action,
+                            wallet = viewModel.greenWallet,
                             network = it.network
-                        )
-                    )
-                }
-                (sideEffect.destination as? NavigateDestinations.ArchivedAccounts)?.also {
-                    navigate(
-                        WalletSettingsFragmentDirections.actionGlobalArchivedAccountsFragment(
-                            wallet = it.greenWallet
                         )
                     )
                 }

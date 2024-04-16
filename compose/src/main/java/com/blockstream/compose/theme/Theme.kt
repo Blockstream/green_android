@@ -61,6 +61,8 @@ val GreenShapes = Shapes(
 
 val GreenSmallTop = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp, bottomStart = 4.dp, bottomEnd = 4.dp)
 val GreenSmallBottom = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 0.dp, bottomEnd = 0.dp)
+val GreenSmallStart = RoundedCornerShape(topStart = 0.dp, topEnd = 4.dp, bottomStart = 0.dp, bottomEnd = 4.dp)
+val GreenSmallEnd = RoundedCornerShape(topStart = 4.dp, topEnd = 0.dp, bottomStart = 4.dp, bottomEnd = 0.dp)
 
 @Composable
 fun GreenTheme(

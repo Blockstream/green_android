@@ -96,9 +96,6 @@ class SendFragment : AppFragment<ComposeViewBinding>(
 
     override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override val title: String
-        get() = getString(R.string.id_send)
-
     override val useCompose: Boolean = true
 
     private val onBackCallback = object : OnBackPressedCallback(false) {
@@ -180,15 +177,6 @@ class SendFragmentOld : AbstractAssetWalletFragment<SendFragmentBinding>(
 
     override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override val title: String
-        get() = getString(
-            when {
-                isBump -> R.string.id_increase_fee
-                isSweep -> R.string.id_sweep
-                else -> R.string.id_send
-            }
-        )
-
     override val accountAssetLayoutBinding: AccountAssetLayoutBinding?
         get() = bindings.getOrNull(0)?.get()?.accountAsset
 
@@ -198,8 +186,7 @@ class SendFragmentOld : AbstractAssetWalletFragment<SendFragmentBinding>(
             navigate(SendFragmentDirections.actionSendFragmentToSendConfirmFragment(
                 wallet = viewModel.greenWallet,
                 accountAsset = viewModel.accountAsset.value!!,
-                denomination = viewModel.getRecipientStateFlow(0)?.denomination?.value,
-                transactionSegmentation = viewModel.createTransactionSegmentation()
+                denomination = viewModel.getRecipientStateFlow(0)?.denomination?.value
             ))
             // Re-enable continue button
             viewModel.onProgress.value = false
@@ -220,11 +207,11 @@ class SendFragmentOld : AbstractAssetWalletFragment<SendFragmentBinding>(
         }
 
         // Handle pending URI (BIP-21 or lightning)
-        sessionManager.pendingUri.filterNotNull().onEach {
-            viewModel.setUri(it)
-            sessionManager.pendingUri.value = null
-            snackbar(R.string.id_address_was_filled_by_a_payment)
-        }.launchIn(lifecycleScope)
+//        sessionManager.pendingUri.filterNotNull().onEach {
+//            viewModel.setUri(it)
+//            sessionManager.pendingUri.value = null
+//            snackbar(R.string.id_address_was_filled_by_a_payment)
+//        }.launchIn(lifecycleScope)
 
         binding.vm = viewModel
         binding.enableMultipleRecipients = false //isDevelopmentFlavor() && session.isTestnet
@@ -392,7 +379,7 @@ class SendFragmentOld : AbstractAssetWalletFragment<SendFragmentBinding>(
         recipientBinding.buttonRemove.setOnClickListener {
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.id_remove)
-                .setMessage(R.string.id_are_you_sure_you_want_to_remove)
+                .setMessage(R.string.id_are_you_sure_you_want_to_delete)
                 .setPositiveButton(R.string.id_remove) { _, _ ->
                     viewModel.removeRecipient(recipientBinding.index ?: 0)
                 }

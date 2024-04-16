@@ -55,6 +55,7 @@ fun GreenAmountField(
     value: String,
     onValueChange: (String) -> Unit,
     denomination: Denomination,
+    title: String? = null,
     assetId: String? = null,
     session: GdkSession? = null,
     sendAll: Boolean? = null,
@@ -71,7 +72,7 @@ fun GreenAmountField(
         val errorColor by remember { mutableStateOf<Color?>(null) }
 
         GreenDataLayout(
-            title = stringResource(id = R.string.id_amount),
+            title = title ?: stringResource(id = R.string.id_amount),
             withPadding = false,
             error = error,
             errorColor = errorColor

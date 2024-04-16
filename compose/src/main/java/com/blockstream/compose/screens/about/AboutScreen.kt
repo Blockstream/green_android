@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.getScreenModel
 import com.blockstream.common.models.about.AboutViewModel
 import com.blockstream.common.models.about.AboutViewModelAbstract
 import com.blockstream.common.models.about.AboutViewModelPreview
@@ -48,11 +47,12 @@ import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
+import org.koin.androidx.compose.koinViewModel
 
 object AboutScreen : Screen {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<AboutViewModel>()
+        val viewModel = koinViewModel<AboutViewModel>()
 
         val navData by viewModel.navData.collectAsStateWithLifecycle()
         AppBar(navData)
@@ -118,8 +118,8 @@ fun AboutScreen(
                 )
 
                 PopupMenu(
-                    popupState,
-                    listOf(
+                    state = popupState,
+                    entries = listOf(
                         MenuEntry(
                             title = stringResource(id = R.string.id_copy_device_id),
                             iconRes = R.drawable.copy,

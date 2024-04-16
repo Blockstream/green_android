@@ -27,13 +27,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.getScreenModel
 import com.blockstream.common.events.Event
-import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.toggle
 import com.blockstream.common.models.home.HomeViewModel
 import com.blockstream.common.models.wallets.WalletsViewModelAbstract
 import com.blockstream.common.models.wallets.WalletsViewModelPreview
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
 import com.blockstream.compose.components.AboutButton
@@ -51,12 +50,13 @@ import com.blockstream.compose.theme.displayLarge
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
+import org.koin.androidx.compose.koinViewModel
 
 object HomeScreen : Screen {
 
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<HomeViewModel>()
+        val viewModel = koinViewModel<HomeViewModel>()
 
         val navData by viewModel.navData.collectAsStateWithLifecycle()
         AppBar(navData)
@@ -204,11 +204,11 @@ fun HomeScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             AboutButton {
-                viewModel.postEvent(Events.About)
+                viewModel.postEvent(NavigateDestinations.About)
             }
 
             AppSettingsButton {
-                viewModel.postEvent(Events.AppSettings)
+                viewModel.postEvent(NavigateDestinations.AppSettings)
             }
         }
     }

@@ -86,6 +86,12 @@ kotlin {
             api(libs.koin.annotations)
             /** ----------------------------------------------------------------------------------------- */
 
+//            /**  --- Koin   ----------------------------------------------------------------------------- */
+//            implementation("io.ktor:ktor-client-core:2.3.11")
+//            implementation("io.ktor:ktor-client-cio:2.3.11")
+//            implementation("io.ktor:ktor-client-websockets:2.3.11")
+//            /** ----------------------------------------------------------------------------------------- */
+
             /**  --- Voyager ---------------------------------------------------------------------------- */
             api(libs.voyager.screenmodel)
             // Required for iOS target compilation

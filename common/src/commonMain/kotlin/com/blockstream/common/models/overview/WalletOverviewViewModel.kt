@@ -1,7 +1,9 @@
 package com.blockstream.common.models.overview
 
 import breez_sdk.HealthCheckStatus
+import com.blockstream.common.Urls
 import com.blockstream.common.data.AlertType
+import com.blockstream.common.data.DataState
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
@@ -11,20 +13,24 @@ import com.blockstream.common.data.NavData
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnected
+import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccount
+import com.blockstream.common.extensions.previewTransactionLook
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.extensions.toggle
-import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.gdk.data.Transaction
-import com.blockstream.common.gdk.device.DeviceResolver
-import com.blockstream.common.looks.account.AccountLook
+import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.AccountBalance
+import com.blockstream.common.gdk.data.WalletEvents
+import com.blockstream.common.looks.account.LightningInfoLook
+import com.blockstream.common.looks.transaction.TransactionLook
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.AppReviewHelper
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.toAmountLook
-import com.rickclephas.kmm.viewmodel.coroutineScope
 import com.rickclephas.kmm.viewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,9 +38,12 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 
 abstract class WalletOverviewViewModelAbstract(
@@ -47,25 +56,39 @@ abstract class WalletOverviewViewModelAbstract(
     abstract val alerts: StateFlow<List<AlertType>>
 
     @NativeCoroutinesState
-    abstract val balancePrimary: StateFlow<String>
+    abstract val balancePrimary: StateFlow<String?>
 
     @NativeCoroutinesState
-    abstract val balanceSecondary: StateFlow<String>
+    abstract val balanceSecondary: StateFlow<String?>
 
     @NativeCoroutinesState
     abstract val hideAmounts: StateFlow<Boolean>
 
     @NativeCoroutinesState
+    abstract val assetsVisibility: StateFlow<Boolean?>
+
+    @NativeCoroutinesState
     abstract val isWalletOnboarding: StateFlow<Boolean>
 
     @NativeCoroutinesState
-    abstract val assets: StateFlow<List<EnrichedAsset>>
+    abstract val assetIcons: StateFlow<List<String>>
 
     @NativeCoroutinesState
-    abstract val accounts: StateFlow<List<AccountLook>>
+    abstract val totalAssets: StateFlow<Int>
 
     @NativeCoroutinesState
-    abstract val transactions: StateFlow<List<Transaction>>
+    abstract val activeAccount: StateFlow<Account?>
+
+    @NativeCoroutinesState
+    abstract val accounts: StateFlow<List<AccountBalance>>
+
+    @NativeCoroutinesState
+    abstract val lightningInfo: StateFlow<LightningInfoLook?>
+
+    @NativeCoroutinesState
+    abstract val transactions: StateFlow<DataState<List<TransactionLook>>>
+
+    open val isLightningShortcut: Boolean = false
 }
 
 class WalletOverviewViewModel(greenWallet: GreenWallet) :
@@ -73,39 +96,90 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
     override fun segmentation(): HashMap<String, Any> =
         countly.sessionSegmentation(session = session)
     
-    private val _balancePrimary: MutableStateFlow<String> = MutableStateFlow("")
-    override val balancePrimary: StateFlow<String> = _balancePrimary.asStateFlow()
+    private val _balancePrimary: MutableStateFlow<String?> = MutableStateFlow(null)
+    override val balancePrimary: StateFlow<String?> = _balancePrimary.asStateFlow()
 
-    private val _balanceSecondary: MutableStateFlow<String> = MutableStateFlow("")
-    override val balanceSecondary: StateFlow<String> = _balanceSecondary.asStateFlow()
+    private val _balanceSecondary: MutableStateFlow<String?> = MutableStateFlow(null)
+    override val balanceSecondary: StateFlow<String?> = _balanceSecondary.asStateFlow()
+
+    override val activeAccount: StateFlow<Account?> = session.activeAccount
 
     override val hideAmounts: StateFlow<Boolean> = settingsManager.appSettingsStateFlow.map {
         it.hideAmounts
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), settingsManager.appSettings.hideAmounts)
 
+    override val assetsVisibility: StateFlow<Boolean?> = session.walletAssets.map {
+        when {
+            it.size > 1 && session.walletHasHistory -> true
+            (session.activeBitcoin != null && session.activeLiquid != null && it.isEmpty()) -> null
+            else -> false
+        }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     override val isWalletOnboarding: StateFlow<Boolean> = combine(session.zeroAccounts, session.failedNetworks) { zeroAccounts, failedNetworks ->
         zeroAccounts && failedNetworks.isEmpty()
     }.filter { session.isConnected }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
-    override val assets: StateFlow<List<EnrichedAsset>> = session.walletAssets
+    override val assetIcons: StateFlow<List<String>> = session.walletAssets
         .filter { session.isConnected }.map {
-            it.assets.keys.filter {
-                session.hasAssetIcon(it)
-            }.map {
-                EnrichedAsset.create(session, it)
+            it.assets.keys.map {
+                if (it.isPolicyAsset(session) || session.hasAssetIcon(it)) {
+                    it
+                } else {
+                    "unknown"
+                }
+            }.distinct()
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
+
+    override val totalAssets: StateFlow<Int> = session.walletAssets.map {
+        it.size
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+
+    private val _accountsBalance = combine(
+        session.accounts,
+        session.settings(),
+        merge(flowOf(Unit), session.accountsAndBalanceUpdated), // set initial value
+        merge(flowOf(Unit), session.networkAssetManager.assetsUpdateFlow), // set initial value
+        denomination
+    ) { accounts, _, _, _, _ ->
+        accounts.map {
+            AccountBalance.create(account = it, session = session)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
+
+    override val accounts: StateFlow<List<AccountBalance>> =
+        combine(hideAmounts, _accountsBalance) { hideAmounts, accountsBalance ->
+            if (hideAmounts) {
+                accountsBalance.map { it.asMasked }
+            } else {
+                accountsBalance
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
-    override val accounts: StateFlow<List<AccountLook>> = session.accounts
-        .filter { session.isConnected }.map { accounts ->
-            accounts.map {
-                AccountLook.create(it)
-            }
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
+    override val lightningInfo: StateFlow<LightningInfoLook?> = session.lightningNodeInfoStateFlow.map {
+        if(session.isConnected && isLightningShortcut){
+            LightningInfoLook.create(session = session, nodeState = it)
+        } else null
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
-    override val transactions: StateFlow<List<Transaction>> =
-        session.walletTransactions.filter { session.isConnected }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
+
+    private val _transactions: StateFlow<DataState<List<TransactionLook>>> =
+        session.walletTransactions.filter { session.isConnected }.map { transactionsLooks ->
+        transactionsLooks.mapSuccess {
+            it.map {
+                TransactionLook.create(it, session)
+            }
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), DataState.Loading)
+
+    override val transactions: StateFlow<DataState<List<TransactionLook>>> =
+        combine(hideAmounts, _transactions) { hideAmounts, transactionsLooks ->
+            if (transactionsLooks is DataState.Success && hideAmounts) {
+                DataState.Success(transactionsLooks.data.map { it.asMasked })
+            } else {
+                transactionsLooks
+            }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), DataState.Loading)
 
     private val primaryBalanceInFiat: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
@@ -131,49 +205,60 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
         )
     }.filter { session.isConnected }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
+    override val isLightningShortcut
+        get() = session.isLightningShortcut
+
     class LocalEvents {
         object ToggleBalance : Event
         object ToggleHideAmounts : Event
         object Refresh : Event
-        object ReconnectFailedNetworks : Event
-        class AckSystemMessage(val network: Network, val message: String) : Event
-        object DismissSystemMessage : Event
         object Send: Event
         object Receive: Event
+        object DenominationExchangeRate: Event
+        object ClickLightningLearnMore : Events.OpenBrowser(Urls.HELP_RECEIVE_CAPACITY)
+    }
+
+    class LocalSideEffects {
+        object AccountArchivedDialog: SideEffect
     }
 
     init {
-        session.ifConnected {
-            _navData.value = NavData(
-                title = greenWallet.name,
-                subtitle = if(session.isLightningShortcut) "id_lightning_account" else null,
-                actions = listOfNotNull(
-                    NavAction(
-                        title = "id_create_new_account",
-                        icon = "plus_circle",
-                        isMenuEntry = true,
-                        onClick = {
 
-                        }
-                    ).takeIf { !session.isWatchOnly && !greenWallet.isLightning },
-                    NavAction(
-                        title = "id_settings",
-                        icon = "gear_six",
-                        isMenuEntry = true,
-                        onClick = {
-                            postEvent(Events.WalletSettings(greenWallet))
-                        }
-                    ),
-                    NavAction(
-                        title = "id_log_out",
-                        icon = "sign_out",
-                        isMenuEntry = true,
-                        onClick = {
-                            postEvent(Events.Logout(reason = LogoutReason.USER_ACTION))
-                        }
+        session.ifConnected {
+            isWalletOnboarding.onEach {
+                _navData.value = NavData(
+                    title = greenWallet.name,
+                    subtitle = if(session.isLightningShortcut) "id_lightning_account" else null,
+                    isVisible = !it,
+                    actions = listOfNotNull(
+                        NavAction(
+                            title = "id_create_new_account",
+                            icon = "plus_circle",
+                            isMenuEntry = true,
+                            onClick = {
+                                postEvent(Events.ChooseAccountType())
+                                countly.accountNew(session)
+                            }
+                        ).takeIf { !session.isWatchOnly && !greenWallet.isLightning },
+                        NavAction(
+                            title = "id_settings",
+                            icon = "gear_six",
+                            isMenuEntry = true,
+                            onClick = {
+                                postEvent(NavigateDestinations.WalletSettings)
+                            }
+                        ),
+                        NavAction(
+                            title = "id_log_out",
+                            icon = "sign_out",
+                            isMenuEntry = true,
+                            onClick = {
+                                postEvent(Events.Logout(reason = LogoutReason.USER_ACTION))
+                            }
+                        )
                     )
                 )
-            )
+            }.launchIn(this)
 
             session.systemMessage.filter { session.isConnected }.onEach {
                 _systemMessage.value = if (it.isEmpty()) {
@@ -181,7 +266,7 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
                 } else {
                     AlertType.SystemMessage(it.first().first, it.first().second)
                 }
-            }.launchIn(viewModelScope.coroutineScope)
+            }.launchIn(this)
 
             // Support only for Bitcoin
             session.bitcoinMultisig?.let { network ->
@@ -206,6 +291,28 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
             }.onEach {
                 updateBalance()
             }.launchIn(this)
+
+            session.eventsSharedFlow.onEach {
+                when(it){
+                    WalletEvents.ARCHIVED_ACCOUNT -> {
+                        postSideEffect(LocalSideEffects.AccountArchivedDialog)
+                    }
+                    WalletEvents.APP_REVIEW -> {
+                        if (AppReviewHelper.shouldAskForReview(settingsManager, countly)) {
+                            postSideEffect(SideEffects.AppReview)
+                        }
+                    }
+                }
+            }.launchIn(this)
+
+            // Handle pending URI (BIP-21 or lightning)
+            sessionManager.pendingUri.filterNotNull().debounce(50L).onEach {
+                // Check if pendingUri is consumed from SendViewModel
+                if (sessionManager.pendingUri.value != null) {
+                    handleUserInput(it, isQr = false)
+                    sessionManager.pendingUri.value = null
+                }
+            }.launchIn(this)
         }
 
         bootstrap()
@@ -214,17 +321,17 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
     private suspend fun updateBalance() {
         // Loading
         if (session.walletTotalBalance.value == -1L) {
-            _balancePrimary.value = ""
-            _balanceSecondary.value = ""
+            _balancePrimary.value = null
+            _balanceSecondary.value = null
         } else {
             val balance = session.starsOrNull ?: session.walletTotalBalance.value.toAmountLook(
                 session = session
-            ) ?: ""
+            )
 
             val fiat = session.starsOrNull ?: session.walletTotalBalance.value.toAmountLook(
                 session = session,
                 denomination = Denomination.fiat(session)
-            ) ?: ""
+            )
 
             if (primaryBalanceInFiat.value) {
                 _balancePrimary.value = fiat
@@ -248,24 +355,34 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
                 session.refresh()
             }
 
-            is LocalEvents.ReconnectFailedNetworks -> {
-                tryFailedNetworks()
-            }
-
-            is LocalEvents.DismissSystemMessage -> {
+            is Events.DismissSystemMessage -> {
                 _systemMessage.value = null
             }
 
-            is LocalEvents.AckSystemMessage -> {
-                ackSystemMessage(event.network, event.message)
-            }
-
             is LocalEvents.Send -> {
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Send(greenWallet = greenWallet, accountAsset = session.activeAccount.value!!.accountAsset)))
+                postSideEffect(
+                    SideEffects.NavigateTo(
+                        if(session.isWatchOnly){
+                            NavigateDestinations.Sweep(
+                                accountAsset = session.activeAccount.value?.accountAsset
+                            )
+                        }else{
+                            NavigateDestinations.Send(
+                                accountAsset = session.activeAccount.value!!.accountAsset
+                            )
+                        }
+                    )
+                )
+
             }
 
             is LocalEvents.Receive -> {
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Receive(greenWallet = greenWallet, accountAsset = session.activeAccount.value!!.accountAsset)))
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Receive(accountAsset = session.activeAccount.value!!.accountAsset)))
+            }
+
+            is LocalEvents.DenominationExchangeRate -> {
+                countly.preferredUnits(session)
+                postSideEffect(SideEffects.OpenDenominationExchangeRate)
             }
 
             is LocalEvents.ToggleHideAmounts -> {
@@ -281,55 +398,63 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
             }
         }
     }
-
-    private fun ackSystemMessage(network: Network, message : String){
-        doAsync({
-            session.ackSystemMessage(network, message)
-            session.updateSystemMessage()
-        }, onSuccess = {
-
-        })
-    }
-
-    private fun tryFailedNetworks() {
-        session.tryFailedNetworks(hardwareWalletResolver = session.device?.let { device ->
-            DeviceResolver.createIfNeeded(
-                device.gdkHardwareWallet,
-                // this // TODO enable hw interaction support to GreenViewModel
-            )
-        })
-    }
 }
 
-class WalletOverviewViewModelPreview() :
+class WalletOverviewViewModelPreview(val isEmpty: Boolean = false) :
     WalletOverviewViewModelAbstract(greenWallet = previewWallet()) {
 
-    override val isWalletOnboarding: StateFlow<Boolean> = MutableStateFlow(false)
+    override val isWalletOnboarding: StateFlow<Boolean> = MutableStateFlow(isEmpty)
 
     override val alerts: StateFlow<List<AlertType>> = MutableStateFlow(listOf())
 
-    override val balancePrimary: StateFlow<String> = MutableStateFlow("1.00000 BTC")
+    override val balancePrimary: StateFlow<String?> = MutableStateFlow("1.00000 BTC")
 
-    override val balanceSecondary: StateFlow<String> = MutableStateFlow("90.000 USD")
+    override val balanceSecondary: StateFlow<String?> = MutableStateFlow("90.000 USD")
 
     override val hideAmounts: StateFlow<Boolean> = MutableStateFlow(false)
 
-    override val assets: StateFlow<List<EnrichedAsset>> = MutableStateFlow(
+    override val assetsVisibility: StateFlow<Boolean?> = MutableStateFlow(true)
+
+    override val activeAccount: StateFlow<Account?> = MutableStateFlow(null)
+
+    override val assetIcons: StateFlow<List<String>> = MutableStateFlow(if(isEmpty) listOf() else
         listOf(
             EnrichedAsset.PreviewBTC,
             EnrichedAsset.PreviewLBTC,
             EnrichedAsset.PreviewLBTC,
             EnrichedAsset.PreviewLBTC,
             EnrichedAsset.PreviewLBTC,
+            EnrichedAsset.PreviewLBTC,
+            EnrichedAsset.PreviewLBTC,
+            EnrichedAsset.PreviewLBTC,
             EnrichedAsset.PreviewLBTC
-        )
+        ).map {
+            it.assetId
+        }
     )
 
-    override val accounts: StateFlow<List<AccountLook>> = MutableStateFlow(listOf(AccountLook.create(previewAccount())))
+    override val totalAssets: StateFlow<Int> = MutableStateFlow(7)
 
-    override val transactions: StateFlow<List<Transaction>> = MutableStateFlow(listOf())
+    override val accounts: StateFlow<List<AccountBalance>> = MutableStateFlow(listOf(AccountBalance.create(previewAccount())))
+
+    override val lightningInfo: StateFlow<LightningInfoLook?> = MutableStateFlow(null)
+
+    override val transactions: StateFlow<DataState<List<TransactionLook>>> = MutableStateFlow(DataState.Success(if(isEmpty) listOf() else listOf(
+        previewTransactionLook(),
+        previewTransactionLook(),
+        previewTransactionLook(),
+        previewTransactionLook(),
+        previewTransactionLook(),
+        previewTransactionLook(),
+        previewTransactionLook(),
+        previewTransactionLook(),
+        previewTransactionLook(),
+        previewTransactionLook(),
+        previewTransactionLook(),
+        previewTransactionLook(),
+    )))
 
     companion object: Loggable(){
-        fun create() = WalletOverviewViewModelPreview()
+        fun create(isEmpty: Boolean = false) = WalletOverviewViewModelPreview(isEmpty = isEmpty)
     }
 }

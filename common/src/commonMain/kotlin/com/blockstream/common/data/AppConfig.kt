@@ -4,7 +4,8 @@ import com.blockstream.common.utils.Loggable
 
 data class AppConfig constructor(
     val isDebug: Boolean,
-    val gdkDataDir: String,
+    val filesDir: String,
+    val cacheDir: String,
     val breezApiKey: String? = null,
     val greenlightKey: String? = null,
     val greenlightCert: String? = null,
@@ -16,7 +17,8 @@ data class AppConfig constructor(
     companion object: Loggable() {
         fun default(
             isDebug: Boolean,
-            gdkDataDir: String,
+            filesDir: String,
+            cacheDir: String,
             appKeys: AppKeys?,
             analyticsFeatureEnabled: Boolean,
             lightningFeatureEnabled: Boolean,
@@ -29,7 +31,8 @@ data class AppConfig constructor(
 
             return AppConfig(
                 isDebug = isDebug,
-                gdkDataDir = gdkDataDir,
+                filesDir = filesDir,
+                cacheDir = cacheDir,
                 breezApiKey = appKeys?.breezApiKey,
                 greenlightKey = appKeys?.greenlightKey,
                 greenlightCert = appKeys?.greenlightCert,

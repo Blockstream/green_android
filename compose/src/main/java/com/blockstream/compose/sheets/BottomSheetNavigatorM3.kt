@@ -13,7 +13,6 @@ import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.stack.Stack
 import cafe.adriel.voyager.navigator.CurrentScreen
-import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.compositionUniqueId
 import kotlinx.coroutines.CoroutineScope
@@ -39,11 +38,7 @@ fun BottomSheetNavigatorM3(
         }
 
         CompositionLocalProvider(LocalBottomSheetNavigatorM3 provides bottomSheetNavigator) {
-            // this is a temporary solution to set LocalNavigator to null and avoid navigation
-            CompositionLocalProvider(LocalNavigator provides null) {
-                content(bottomSheetNavigator)
-            }
-
+            content(bottomSheetNavigator)
             bottomSheetContent(bottomSheetNavigator)
         }
     }

@@ -42,6 +42,8 @@ val md_theme_scrim = Color(0xFF000000)
 
 val md_theme_brandSurface = Color(0xFF19222c)
 
+val bottom_nav_bg = Color(0xFF2E3033)
+
 val green = md_theme_primary
 val green20 = Color(0x3300f113)
 
@@ -57,3 +59,8 @@ val whiteLow = Color.White.copy(alpha = 0.5f)
 val bitcoin = Color(0xFFfe8e02)
 val liquid = Color(0xFF46BEAE)
 val lightning = Color(0xFFE8B810)
+val bitcoin_testnet = Color(0xFF8C8C8C)
+val liquid_testnet = Color(0xFF9ab8b4)
+val amp = Color(0xFF51AAB0)
+val amp_testnet = Color(0xFF7fadb0)
+

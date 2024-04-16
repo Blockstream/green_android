@@ -1,7 +1,9 @@
 package com.blockstream.common.models
 
+import breez_sdk.InputType
 import cafe.adriel.voyager.core.model.ScreenModel
 import co.touchlab.kermit.Logger
+import com.blockstream.common.AddressInputType
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.ViewModelView
 import com.blockstream.common.ZendeskSdk
@@ -17,6 +19,7 @@ import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.NavData
 import com.blockstream.common.data.Redact
 import com.blockstream.common.data.TwoFactorResolverData
+import com.blockstream.common.data.toSerializable
 import com.blockstream.common.database.Database
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.events.Event
@@ -26,6 +29,8 @@ import com.blockstream.common.extensions.cleanup
 import com.blockstream.common.extensions.createLoginCredentials
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.common.extensions.isPolicyAsset
+import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.TwoFactorResolver
@@ -34,10 +39,13 @@ import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AuthHandlerStatus
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.DeviceBrand
+import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.gdk.device.GdkHardwareWallet
 import com.blockstream.common.gdk.device.HardwareWalletInteraction
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
+import com.blockstream.common.navigation.NavigateDestination
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
@@ -58,6 +66,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -72,6 +81,22 @@ import kotlinx.coroutines.withTimeout
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.native.ObjCName
+
+
+class SimpleGreenViewModel(
+    greenWalletOrNull: GreenWallet? = null,
+    accountAssetOrNull: AccountAsset? = null,
+    val screenName: String? = null
+) : GreenViewModel(greenWalletOrNull = greenWalletOrNull, accountAssetOrNull = accountAssetOrNull) {
+
+    override fun screenName(): String? = screenName
+
+    init {
+        bootstrap()
+    }
+}
+
+class SimpleGreenViewModelPreview(greenWalletOrNull: GreenWallet? = null, accountAssetOrNull: AccountAsset? = null): GreenViewModel(greenWalletOrNull, accountAssetOrNull)
 
 open class GreenViewModel constructor(
     val greenWalletOrNull: GreenWallet? = null,
@@ -195,7 +220,7 @@ open class GreenViewModel constructor(
                             logoutSideEffect(it)
                         }
                     }
-                }.launchIn(viewModelScope.coroutineScope)
+                }.launchIn(this)
             }
 
             greenWalletFlow.onEach {
@@ -204,7 +229,19 @@ open class GreenViewModel constructor(
                 }else{
                     _greenWallet = it
                 }
-            }.launchIn(viewModelScope.coroutineScope)
+            }.launchIn(this)
+
+            // Update account (eg. rename)
+            session.accounts.drop(1).onEach { accounts ->
+                accountAsset.value?.also { accountAsset ->
+                    accounts.firstOrNull { it.id == accountAsset.account.id}?.also {
+                        this.accountAsset.value = accountAsset.copy(
+                            account = it
+                        )
+                    }
+                }
+
+            }.launchIn(this)
         }
 
         _event.onEach {
@@ -323,6 +360,9 @@ open class GreenViewModel constructor(
             is EventWithSideEffect -> {
                 postSideEffect(event.sideEffect)
             }
+            is NavigateDestination -> {
+                postSideEffect(SideEffects.NavigateTo(event))
+            }
             is Events.BannerDismiss -> {
                 banner.value?.also {
                     closedBanners += it
@@ -364,7 +404,9 @@ open class GreenViewModel constructor(
             is Events.SelectDenomination -> {
                 viewModelScope.coroutineScope.launch {
                     denominatedValue()?.also {
-                        postSideEffect(SideEffects.OpenDenomination(it))
+                        if(it.assetId.isPolicyAsset(session)){
+                            postSideEffect(SideEffects.OpenDenomination(it))
+                        }
                     }
                 }
             }
@@ -399,6 +441,42 @@ open class GreenViewModel constructor(
                     }
                 }
                 _twoFactorDeferred = null
+            }
+            is Events.AckSystemMessage -> {
+                ackSystemMessage(event.network, event.message)
+            }
+
+            is Events.ReconnectFailedNetworks -> {
+                tryFailedNetworks()
+            }
+            is Events.HandleUserInput -> {
+                handleUserInput(event.data, event.isQr)
+            }
+            is Events.Transaction -> {
+                if(event.transaction.isLightningSwap && !event.transaction.isRefundableSwap){
+                    postSideEffect(SideEffects.Snackbar("id_swap_is_in_progress"))
+                }else{
+                    postSideEffect(
+                        SideEffects.NavigateTo(
+                            NavigateDestinations.Transaction(
+                                transaction = event.transaction
+                            )
+                        )
+                    )
+                }
+            }
+            is Events.ChooseAccountType -> {
+                postSideEffect(
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.ChooseAccountType(
+                            greenWallet = greenWallet
+                        )
+                    )
+                )
+
+                if(event.isFirstAccount){
+                    countly.firstAccount(session)
+                }
             }
         }
     }
@@ -482,12 +560,13 @@ open class GreenViewModel constructor(
             }
         }, onSuccess = {
             countly.renameAccount(session, it)
+            postSideEffect(SideEffects.Dismiss)
         })
     }
 
     private fun updateAccount(account: Account, isHidden: Boolean){
         doAsync({
-            session.updateAccount(account = account, isHidden = isHidden)
+            session.updateAccount(account = account, isHidden = isHidden, userInitiated = true)
         }, onSuccess = {
             if(isHidden){
                 // Update active account from Session if it was archived
@@ -497,6 +576,9 @@ open class GreenViewModel constructor(
 
                 postSideEffect(SideEffects.AccountArchived(account = account))
                 postSideEffect(SideEffects.Snackbar("id_account_has_been_archived"))
+                
+                // This only have effect on AccountOverview
+                postSideEffect(SideEffects.NavigateToRoot)
             }else{
                 // Make it active
                 setActiveAccount(account)
@@ -515,6 +597,9 @@ open class GreenViewModel constructor(
                 // Update active account from Session if it was archived
                 setActiveAccount(session.activeAccount.value!!)
                 postSideEffect(SideEffects.Snackbar("id_account_has_been_removed"))
+
+                // This only have effect on AccountOverview
+                postSideEffect(SideEffects.NavigateToRoot)
             })
         }
     }
@@ -532,6 +617,92 @@ open class GreenViewModel constructor(
                 }
             }
         }
+    }
+
+    private fun tryFailedNetworks() {
+        session.tryFailedNetworks(hardwareWalletResolver = session.device?.let { device ->
+            DeviceResolver.createIfNeeded(device.gdkHardwareWallet, this)
+        })
+    }
+
+    private fun ackSystemMessage(network: Network, message : String){
+        doAsync({
+            session.ackSystemMessage(network, message)
+            session.updateSystemMessage()
+        }, onSuccess = {
+            postSideEffect(SideEffects.Dismiss)
+        })
+    }
+
+    protected fun handleUserInput(data: String, isQr: Boolean) {
+        doAsync({
+            val checkedInput = session.parseInput(data)
+
+            if (checkedInput != null) {
+
+                when (val inputType = checkedInput.second) {
+                    is InputType.LnUrlAuth -> {
+                        if (session.hasLightning) {
+                            postSideEffect(
+                                SideEffects.NavigateTo(
+                                    NavigateDestinations.LnUrlAuth(
+                                        lnUrlAuthRequest = inputType.data.toSerializable()
+                                    )
+                                )
+                            )
+                        } else {
+                            postSideEffect(SideEffects.Snackbar("id_you_dont_have_a_lightning_account"))
+                        }
+                    }
+
+                    is InputType.LnUrlWithdraw -> {
+                        if (session.hasLightning) {
+                            postSideEffect(
+                                SideEffects.NavigateTo(
+                                    NavigateDestinations.LnUrlWithdraw(
+                                        lnUrlWithdrawRequest = inputType.data.toSerializable()
+                                    )
+                                )
+                            )
+                        }else{
+                            postSideEffect(SideEffects.Snackbar("id_you_dont_have_a_lightning_account"))
+                        }
+                    }
+
+                    else -> {
+                        session.activeAccount.value?.also { activeAccount ->
+                            var account = activeAccount
+
+                            // Different network
+                            if(!account.network.isSameNetwork(checkedInput.first)){
+                                session.allAccounts.value.find {
+                                    it.network.isSameNetwork(
+                                        checkedInput.first
+                                    )
+                                }?.also {
+                                    account = it
+                                }
+                            }
+
+                            postSideEffect(
+                                SideEffects.NavigateTo(
+                                    NavigateDestinations.Send(
+                                        accountAsset = account.accountAsset,
+                                        address = data,
+                                        addressType = if (isQr) AddressInputType.SCAN else AddressInputType.BIP21
+                                    )
+                                )
+                            )
+                        }
+                    }
+                }
+
+            } else {
+                postSideEffect(SideEffects.Snackbar(if (isQr) "id_could_not_recognized_qr_code" else "id_could_not_recognized_the_uri"))
+            }
+        }, onSuccess = {
+
+        })
     }
 
     protected suspend fun _enableLightningShortcut() {

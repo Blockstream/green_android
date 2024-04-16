@@ -21,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.blockstream.compose.theme.GreenSmallBottom
 import com.blockstream.compose.theme.GreenSmallTop
@@ -38,7 +37,7 @@ fun GreenCard(
     colors: CardColors = CardDefaults.elevatedCardColors(),
     elevation: CardElevation = CardDefaults.elevatedCardElevation(),
     enabled: Boolean = true,
-    padding: Dp = 16.dp,
+    padding: Int = 16,
     border: BorderStroke? = null,
     error: String? = null,
     errorColor: Color? = null,
@@ -62,7 +61,7 @@ fun GreenCard(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(padding),
+                        .padding(padding.dp),
                     content = content
                 )
             }
@@ -78,7 +77,7 @@ fun GreenCard(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(padding),
+                        .padding(padding.dp),
                     content = content
                 )
             }
@@ -121,7 +120,7 @@ fun GreenCardPreview() {
                 .padding(24.dp)
         ) {
 
-            GreenCard(padding = 0.dp) {
+            GreenCard(padding = 0) {
                 Text(text = "No Padding", modifier = Modifier.fillMaxWidth())
             }
 

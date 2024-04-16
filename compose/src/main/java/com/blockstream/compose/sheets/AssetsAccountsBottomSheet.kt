@@ -17,6 +17,7 @@ import com.blockstream.common.extensions.previewAccount
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenBottomSheet
@@ -32,7 +33,7 @@ data class AssetsAccountsBottomSheet(
 ) : BottomScreen(), Parcelable {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<GreenViewModel> {
+        val viewModel = getScreenModel<SimpleGreenViewModel> {
             parametersOf(greenWallet)
         }
 

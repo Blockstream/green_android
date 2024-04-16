@@ -6,6 +6,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.core.stack.Stack
 import cafe.adriel.voyager.navigator.Navigator
 import co.touchlab.kermit.Logger
 import kotlin.reflect.KClass
@@ -23,6 +24,14 @@ val KClass<*>.resultKey: String get() = "${qualifiedName ?: error("QualifiedName
 fun setNavigationResult(key: String, result: Any?) {
     Logger.d { "setResult for key $key" }
     results[key] = result
+}
+
+fun <Item : Screen> Stack<Item>.pushOrReplace(item: Item) {
+    if(lastItemOrNull?.let { it::class == item::class } == true) {
+        replace(item)
+    } else {
+        push(item)
+    }
 }
 
 fun Navigator.pushUnique(screen: Screen) {

@@ -54,6 +54,7 @@ import com.blockstream.green.ui.bottomsheets.DenominationBottomSheetDialogFragme
 import com.blockstream.green.ui.bottomsheets.DeviceInteractionRequestBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.PassphraseBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.PinMatrixBottomSheetDialogFragment
+import com.blockstream.green.ui.dialogs.AppRateDialogFragment
 import com.blockstream.green.ui.drawer.DrawerFragment
 import com.blockstream.green.utils.BannersHelper
 import com.blockstream.green.utils.copyToClipboard
@@ -364,6 +365,10 @@ abstract class AppFragment<T : ViewDataBinding>(
                 }
             }
 
+            is SideEffects.AppReview -> {
+                AppRateDialogFragment.show(childFragmentManager)
+            }
+
             is SideEffects.NavigateTo -> {
                 (sideEffect.destination as? NavigateDestinations.AddWallet)?.also {
                     navigate(NavGraphDirections.actionGlobalAddWalletFragment())
@@ -388,7 +393,7 @@ abstract class AppFragment<T : ViewDataBinding>(
                 (sideEffect.destination as? NavigateDestinations.Receive)?.also {
                     navigate(
                         NavGraphDirections.actionGlobalReceiveFragment(
-                            wallet = it.greenWallet,
+                            wallet = getGreenViewModel()!!.greenWallet,
                             accountAsset = it.accountAsset
                         )
                     )
@@ -397,7 +402,7 @@ abstract class AppFragment<T : ViewDataBinding>(
                 (sideEffect.destination as? NavigateDestinations.Sweep)?.also {
                     navigate(
                         NavGraphDirections.actionGlobalSweepFragment(
-                            wallet = it.greenWallet,
+                            wallet = getGreenViewModel()!!.greenWallet,
                             accountAsset = it.accountAsset,
                             privateKey = it.privateKey
                         )
@@ -407,9 +412,17 @@ abstract class AppFragment<T : ViewDataBinding>(
                 (sideEffect.destination as? NavigateDestinations.Send)?.also {
                     navigate(
                         NavGraphDirections.actionGlobalSendFragment(
-                            wallet = it.greenWallet,
+                            wallet = getGreenViewModel()!!.greenWallet,
                             accountAsset = it.accountAsset,
                             address = it.address
+                        )
+                    )
+                }
+
+                (sideEffect.destination as? NavigateDestinations.AccountExchange)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalAccountExchangeFragment(
+                            wallet = getGreenViewModel()!!.greenWallet
                         )
                     )
                 }
@@ -417,7 +430,7 @@ abstract class AppFragment<T : ViewDataBinding>(
                 (sideEffect.destination as? NavigateDestinations.Bump)?.also {
                     navigate(
                         NavGraphDirections.actionGlobalBumpFragment(
-                            wallet = it.greenWallet,
+                            wallet = getGreenViewModel()!!.greenWallet,
                             accountAsset = it.accountAsset,
                             transaction = it.transaction
                         )
@@ -427,9 +440,86 @@ abstract class AppFragment<T : ViewDataBinding>(
                 (sideEffect.destination as? NavigateDestinations.SendConfirm)?.also {
                     navigate(
                         NavGraphDirections.actionGlobalSendConfirmFragment(
-                            wallet = it.greenWallet,
+                            wallet = getGreenViewModel()!!.greenWallet,
                             accountAsset = it.accountAsset,
-                            transactionSegmentation = it.transactionSegmentation,
+                            denomination = it.denomination
+                        )
+                    )
+                }
+
+                (sideEffect.destination as? NavigateDestinations.TwoFactorSetup)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalTwoFactorSetupFragment(
+                            wallet = getGreenViewModel()!!.greenWallet,
+                            method = it.method,
+                            action = it.action,
+                            network = it.network,
+                            isSmsBackup = it.isSmsBackup
+                        )
+                    )
+                }
+
+                (sideEffect.destination as? NavigateDestinations.LnUrlAuth)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalLnUrlAuthFragment(
+                            wallet = getGreenViewModel()!!.greenWallet,
+                            lnUrlAuthRequest = it.lnUrlAuthRequest,
+                        )
+                    )
+                }
+
+                (sideEffect.destination as? NavigateDestinations.LnUrlWithdraw)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalLnUrlWithdrawFragment(
+                            wallet = getGreenViewModel()!!.greenWallet,
+                            lnUrlWithdrawRequest = it.lnUrlWithdrawRequest,
+                        )
+                    )
+                }
+                (sideEffect.destination as? NavigateDestinations.ArchivedAccounts)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalArchivedAccountsFragment(
+                            wallet = getGreenViewModel()!!.greenWallet
+                        )
+                    )
+                }
+                (sideEffect.destination as? NavigateDestinations.Assets)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalAssetsFragment(
+                            wallet = getGreenViewModel()!!.greenWallet
+                        )
+                    )
+                }
+                (sideEffect.destination as? NavigateDestinations.AccountOverview)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalAccountOverviewFragment(
+                            wallet = getGreenViewModel()!!.greenWallet,
+                            accountAsset = it.accountAsset
+                        )
+                    )
+                }
+                (sideEffect.destination as? NavigateDestinations.ChooseAccountType)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalChooseAccountTypeFragment(
+                            wallet = it.greenWallet
+                        )
+                    )
+                }
+                (sideEffect.destination as? NavigateDestinations.Transaction)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalTransactionDetailsFragment(
+                            wallet = getGreenViewModel()!!.greenWallet,
+                            transaction = it.transaction
+                        )
+                    )
+                }
+                (sideEffect.destination as? NavigateDestinations.RecoverFunds)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalRecoverFundsFragment(
+                            wallet = getGreenViewModel()!!.greenWallet,
+                            amount = it.satoshi,
+                            address = it.address,
+                            isSendAll = it.isSendAll
                         )
                     )
                 }

@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.AccountAssetBalance
@@ -28,11 +29,11 @@ import com.blockstream.compose.R
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.extensions.policyIcon
 import com.blockstream.compose.theme.GreenThemePreview
-import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelLarge
-import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.labelSmall
+import com.blockstream.compose.theme.titleSmall
+import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 
 @Composable
@@ -40,6 +41,8 @@ fun GreenAccountAsset(
     accountAssetBalance: AccountAssetBalance? = null,
     session: GdkSession? = null,
     title: String? = null,
+    selectText: String? = null,
+    withAsset: Boolean = true,
     withEditIcon: Boolean = false,
     onClick: (() -> Unit)? = null,
 ) {
@@ -85,7 +88,7 @@ fun GreenAccountAsset(
             ) {
                 if (accountAssetBalance == null) {
                     Text(
-                        text = stringResource(id = R.string.id_select_asset),
+                        text = selectText ?: stringResource(id = if(withAsset) R.string.id_select_account__asset else R.string.id_select_account),
                         style = labelLarge,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -96,29 +99,35 @@ fun GreenAccountAsset(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
-                            // Asset
+                            val primary = if(withAsset) accountAssetBalance.asset.name(session) else accountAssetBalance.account.name
+                            val secondary = if(withAsset) accountAssetBalance.account.name else null
+
+                            // Asset or Account
                             Text(
-                                text = accountAssetBalance.asset.name(session),
-                                style = labelLarge,
+                                text = primary,
+                                style = titleSmall,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
 
-                            // Account Name
-                            Text(
-                                text = accountAssetBalance.account.name,
-                                style = labelMedium,
-                                color = whiteMedium,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
+                            if(secondary != null) {
+                                // Account Name
+                                Text(
+                                    text = secondary,
+                                    style = labelLarge,
+                                    color = whiteMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
 
                             // Account Policy
                             Text(
                                 text = accountAssetBalance.account.type.toString().uppercase(),
-                                style = labelSmall,
+                                style = labelSmall.copy(fontSize = 8.sp, lineHeight = 12.sp),
                                 maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                overflow = TextOverflow.Ellipsis,
+                                color = whiteLow
                             )
                         }
 
@@ -171,6 +180,11 @@ fun GreenAccountAssetPreview() {
                 accountAssetBalance = previewAccountAsset().accountAssetBalance,
                 title = stringResource(id = R.string.id_account__asset)
             )
+            GreenAccountAsset(
+                accountAssetBalance = previewAccountAsset().accountAssetBalance,
+                title = stringResource(id = R.string.id_account),
+                withAsset = false
+            )
             GreenAccountAsset(accountAssetBalance = previewAccountAsset().let {
                 AccountAssetBalance(
                     account = it.account,
@@ -179,6 +193,14 @@ fun GreenAccountAssetPreview() {
                     balanceExchange = "45,000 USD"
                 )
             })
+            GreenAccountAsset(accountAssetBalance = previewAccountAsset().let {
+                AccountAssetBalance(
+                    account = it.account,
+                    asset = it.asset,
+                    balance = "123 BTC",
+                    balanceExchange = "45,000 USD"
+                )
+            }, withAsset = false)
             GreenAccountAsset(accountAssetBalance = previewAccountAsset().let {
                 AccountAssetBalance(
                     account = it.account,
@@ -200,8 +222,8 @@ fun GreenAccountAssetPreview() {
                     balanceExchange = "23,432,425,445 USD"
                 )
             }, withEditIcon = true)
-            GreenAccountAsset(accountAssetBalance = previewAccountAsset().accountAssetBalance, withEditIcon = true)
-            GreenAccountAsset(withEditIcon = true)
+            GreenAccountAsset(accountAssetBalance = previewAccountAsset().accountAssetBalance, withEditIcon = true, onClick = {})
+            GreenAccountAsset(withEditIcon = true, onClick = {})
         }
     }
 }

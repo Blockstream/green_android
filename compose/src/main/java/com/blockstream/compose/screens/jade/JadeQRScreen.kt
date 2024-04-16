@@ -54,6 +54,7 @@ import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Parcelize
@@ -61,7 +62,7 @@ data class JadeQRScreen(val isLightningMnemonicExport: Boolean = false) : Screen
 
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<JadeQRViewModel>() {
+        val viewModel = koinViewModel<JadeQRViewModel> {
             parametersOf(isLightningMnemonicExport)
         }
 

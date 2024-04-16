@@ -184,8 +184,8 @@ data class Transaction constructor(
 
                 UtxoView(
                     address = outAddress,
-                    isBlinded = it.isBlinded,
-                    isConfidential = it.isConfidential,
+                    // isBlinded = it.isBlinded,
+                    // isConfidential = it.isConfidential,
                     assetId = it.assetId,
                     satoshi = outSatoshi,
                     isChange = it.isChange ?: false

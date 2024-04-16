@@ -37,9 +37,9 @@ import org.koin.core.parameter.parametersOf
 
 @Parcelize
 data class AssetDetailsBottomSheet(
+    val greenWallet: GreenWallet,
     val assetId: String = BTC_POLICY_ASSET,
-    val accountAsset: AccountAsset? = null,
-    val greenWallet: GreenWallet
+    val accountAsset: AccountAsset? = null
 ) : BottomScreen(), Parcelable {
     @Composable
     override fun Content() {

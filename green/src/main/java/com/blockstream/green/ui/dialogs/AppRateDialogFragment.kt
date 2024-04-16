@@ -6,7 +6,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import app.rive.runtime.kotlin.core.PlayableInstance
-import com.blockstream.base.AppReview
+import com.blockstream.base.GooglePlay
 import com.blockstream.common.Urls
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.models.GreenViewModel
@@ -27,7 +27,7 @@ class AppRateDialogFragment : AbstractDialogFragment<AppRateDialogBinding, Green
 
     override val isFullWidth: Boolean = true
 
-    private val appReview: AppReview by inject()
+    private val googlePlay: GooglePlay by inject()
 
     private val settingsManager: SettingsManager by inject()
 
@@ -55,7 +55,7 @@ class AppRateDialogFragment : AbstractDialogFragment<AppRateDialogBinding, Green
                 if(rate > 0 && !handled){
                     handled = true
                     ContextCompat.getMainExecutor(binding.root.context).execute {
-                        appReview.showGooglePlayInAppReviewDialog(requireParentFragment()){
+                        googlePlay.showInAppReviewDialog(requireActivity()){
                             (requireParentFragment() as AppFragment<*>).openBrowser(Urls.BLOCKSTREAM_GOOGLE_PLAY)
                         }
                         settingsManager.setAskedAboutAppReview()

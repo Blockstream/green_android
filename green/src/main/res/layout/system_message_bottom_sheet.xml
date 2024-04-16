@@ -121,6 +121,7 @@
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:text="@string/id_success"
+                        tools:visibility="gone"
                         android:textAppearance="?attr/textAppearanceHeadlineLarge"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"

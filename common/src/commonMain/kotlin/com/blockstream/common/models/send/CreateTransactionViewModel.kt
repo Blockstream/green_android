@@ -64,21 +64,21 @@ abstract class CreateTransactionViewModelAbstract(
 
     // Gets updated when Account assets are updated
     @NativeCoroutinesState
-    open val accountAssetBalance: StateFlow<AccountAssetBalance?> =
-        combine(denomination, _network.flatMapLatest { network ->
+    val accountAssetBalance: StateFlow<AccountAssetBalance?> =
+        combine(accountAsset, denomination, _network.flatMapLatest { network ->
             network?.let {
                 accountAsset.flatMapLatest { accountAsset ->
-                    accountAsset?.let { session.accountAssets(it.account) } ?: flowOf(null)
+                    accountAsset?.let { sessionOrNull?.accountAssets(it.account) } ?: flowOf(null)
                 }
             } ?: flowOf(null)
-        }) { _, assets ->
+        }) { accountAsset, denomination, assets ->
             assets
-        }.map { assets ->
+        }.map { assets,  ->
             assets?.let {
                 accountAsset.value?.let {
                     AccountAssetBalance.create(
                         accountAsset = it,
-                        session,
+                        session = session,
                         denomination = denomination.value
                     )
                 }
@@ -121,13 +121,13 @@ abstract class CreateTransactionViewModelAbstract(
                     _feeEstimation.value = null
                 } else {
                     _feeEstimation.value = session.getFeeEstimates(it).fees
-                    _customFeeRate.value = _customFeeRate.value ?: ((_feeEstimation.value?.firstOrNull()
+                    _customFeeRate.value =  ((_feeEstimation.value?.firstOrNull()
                         ?: it.defaultFee) / 1000.0)
                 }
             }.launchIn(this)
 
-            createTransactionParams.onEach {
-                createTransaction(params = it, finalCheckBeforeContinue = false)
+            combine(createTransactionParams, denomination) { createTransactionParams, _ ->
+                createTransaction(params = createTransactionParams, finalCheckBeforeContinue = false)
             }.launchIn(this)
         }
     }

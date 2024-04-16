@@ -8,7 +8,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.data.isEmpty
-import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.login.LoginViewModel
 import com.blockstream.common.navigation.NavigateDestinations
@@ -121,13 +120,13 @@ class LoginFragment : AppFragment<ComposeViewBinding>(
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
             R.id.bip39_passphrase -> {
-                viewModel.postEvent(Events.Bip39Passphrase(viewModel.greenWallet, viewModel.bip39Passphrase.value))
+                viewModel.postEvent(NavigateDestinations.Bip39Passphrase(viewModel.bip39Passphrase.value))
             }
             R.id.delete -> {
-                viewModel.postEvent(Events.ShowDeleteWallet(viewModel.greenWallet))
+                viewModel.postEvent(NavigateDestinations.DeleteWallet(viewModel.greenWallet))
             }
             R.id.rename -> {
-                viewModel.postEvent(Events.ShowRenameWallet(viewModel.greenWallet))
+                viewModel.postEvent(NavigateDestinations.RenameWallet(viewModel.greenWallet))
             }
             R.id.show_recovery_phrase -> {
                 viewModel.postEvent(LoginViewModel.LocalEvents.EmergencyRecovery(true))

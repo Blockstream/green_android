@@ -7,9 +7,7 @@ import androidx.fragment.app.FragmentManager
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.databinding.TransactionVerifyAddressBottomSheetBinding
-import com.blockstream.green.ui.send.SendConfirmFragment
 import com.blockstream.green.utils.bounceDown
-import com.mikepenz.fastadapter.FastAdapter
 import mu.KLogging
 
 class VerifyTransactionBottomSheetDialogFragment: WalletBottomSheetDialogFragment<TransactionVerifyAddressBottomSheetBinding, GreenViewModel>() {
@@ -30,11 +28,11 @@ class VerifyTransactionBottomSheetDialogFragment: WalletBottomSheetDialogFragmen
         }
 
 
-        val fastAdapter = FastAdapter.with((parentFragment as SendConfirmFragment).createAdapter(isAddressVerificationOnDevice = true))
+//        val fastAdapter = FastAdapter.with((parentFragment as SendConfirmFragment2).createAdapter(isAddressVerificationOnDevice = true))
 
-        binding.recycler.apply {
-            adapter = fastAdapter
-        }
+//        binding.recycler.apply {
+//            adapter = fastAdapter
+//        }
 
         binding.arrow.bounceDown()
     }

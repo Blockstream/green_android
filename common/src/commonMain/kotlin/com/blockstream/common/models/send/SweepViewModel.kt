@@ -12,11 +12,11 @@ import com.blockstream.common.events.Event
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.launchIn
-import com.blockstream.common.extensions.previewAccount
 import com.blockstream.common.extensions.previewAccountAsset
+import com.blockstream.common.extensions.previewAccountAssetBalance
 import com.blockstream.common.extensions.previewWallet
-import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.params.AddressParams
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.sideeffects.SideEffects
@@ -50,7 +50,7 @@ abstract class SweepViewModelAbstract(
     }
 
     @NativeCoroutinesState
-    abstract val accounts: StateFlow<List<Account>>
+    abstract val accounts: StateFlow<List<AccountAssetBalance>>
 
     @NativeCoroutinesState
     abstract val privateKey: MutableStateFlow<String>
@@ -72,8 +72,8 @@ class SweepViewModel(greenWallet: GreenWallet, privateKey: String?, accountAsset
     private val _amountFiat: MutableStateFlow<String?> = MutableStateFlow(null)
     override val amountFiat: StateFlow<String?> = _amountFiat.asStateFlow()
 
-    override val accounts: StateFlow<List<Account>> = session.accounts.map { accounts ->
-        accounts.filter { it.isBitcoin }
+    override val accounts: StateFlow<List<AccountAssetBalance>> = session.accounts.map { accounts ->
+        accounts.filter { it.isBitcoin }.map { it.accountAssetBalance }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, listOf())
 
     private val network
@@ -267,7 +267,7 @@ class SweepViewModel(greenWallet: GreenWallet, privateKey: String?, accountAsset
 class SweepViewModelPreview(greenWallet: GreenWallet) :
     SweepViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = previewAccountAsset()) {
 
-    override val accounts: StateFlow<List<Account>> = MutableStateFlow(listOf(previewAccount(), previewAccount()))
+    override val accounts: StateFlow<List<AccountAssetBalance>> = MutableStateFlow(listOf(previewAccountAssetBalance(), previewAccountAssetBalance()))
     override val privateKey: MutableStateFlow<String> = MutableStateFlow("privatekey")
     override val amount: StateFlow<String?> = MutableStateFlow("1.0 BTC")
     override val amountFiat: StateFlow<String?> = MutableStateFlow("150.000 USD")

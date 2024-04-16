@@ -28,11 +28,11 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.events.Events
+import com.blockstream.common.looks.wallet.WalletListLook
 import com.blockstream.common.models.wallets.WalletsViewModel
 import com.blockstream.common.models.wallets.WalletsViewModelAbstract
 import com.blockstream.common.models.wallets.WalletsViewModelPreview
-import com.blockstream.common.looks.wallet.WalletListLook
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenColumn
@@ -92,9 +92,9 @@ fun WalletsScreen(
     }, onLightningShortcutDelete = {
         viewModel.postEvent(WalletsViewModel.LocalEvents.RemoveLightningShortcut(it))
     }, onWalletDelete = {
-        viewModel.postEvent(Events.ShowDeleteWallet(it))
+        viewModel.postEvent(NavigateDestinations.DeleteWallet(it))
     }, onWalletRename = {
-        viewModel.postEvent(Events.ShowRenameWallet(it))
+        viewModel.postEvent(NavigateDestinations.RenameWallet(it))
     }, hasContextMenu = viewModel.isHome)
 
     GreenColumn(
@@ -139,7 +139,7 @@ fun WalletsScreen(
             Card {
                 Row(modifier = Modifier
                     .clickable {
-                        viewModel.postEvent(Events.SetupNewWallet)
+                        viewModel.postEvent(NavigateDestinations.SetupNewWallet)
                     }
                     .height(52.dp)
                     .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {

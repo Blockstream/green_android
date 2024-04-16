@@ -29,6 +29,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal"
+            android:visibility="gone"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             isVisible="@{style == 0}">

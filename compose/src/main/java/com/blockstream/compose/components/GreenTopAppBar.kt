@@ -33,10 +33,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
-import cafe.adriel.voyager.navigator.LocalNavigator
 import com.blockstream.common.data.NavAction
 import com.blockstream.common.data.NavData
 import com.blockstream.compose.LocalAppBarState
+import com.blockstream.compose.LocalRootNavigator
 import com.blockstream.compose.screens.HomeScreen
 import com.blockstream.compose.screens.login.LoginScreen
 import com.blockstream.compose.screens.overview.WalletOverviewScreen
@@ -52,7 +52,7 @@ import com.blockstream.compose.utils.stringResourceId
 fun GreenTopAppBar(
     openDrawer: () -> Unit = { }
 ) {
-    val navigator = LocalNavigator.current
+    val navigator = LocalRootNavigator.current
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     val showDrawerNavigationIcon =
@@ -180,7 +180,7 @@ fun GreenTopAppBar(
                             )
                         }
 
-                        PopupMenu(popupState, it)
+                        PopupMenu(state = popupState, entries = it)
                     }
                 }
             }
@@ -199,7 +199,11 @@ private fun GreenTopAppScreenPreview() {
                 NavData(
                     title = "Title",
                     subtitle = "Subtitle",
-                    actions = listOf(NavAction(title = "Action"))
+                    actions = listOf(
+                        NavAction(title = "Action", isMenuEntry = false, icon = "note_pencil"),
+                        NavAction(title = "Action Menu", isMenuEntry = true, icon = "signature"),
+                        NavAction(title = "Action Menu", isMenuEntry = true, icon = "note_pencil"),
+                    )
                 )
             )
         }

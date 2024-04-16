@@ -53,6 +53,7 @@ import com.blockstream.common.events.Events
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyCredentialsViewModel
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyCredentialsViewModelAbstract
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyCredentialsViewModelPreview
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.utils.AndroidKeystore
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.LocalDialog
@@ -92,7 +93,7 @@ import org.koin.core.parameter.parametersOf
 data class WatchOnlyCredentialsScreen(val setupArgs: SetupArgs) : Screen, Parcelable {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<WatchOnlyCredentialsViewModelAbstract> {
+        val viewModel = getScreenModel<WatchOnlyCredentialsViewModel> {
             parametersOf(setupArgs)
         }
 
@@ -411,7 +412,7 @@ fun WatchOnlyCredentialsScreen(
                 modifier = Modifier
                     .align(Alignment.End)
             ) {
-                viewModel.postEvent(Events.AppSettings)
+                viewModel.postEvent(NavigateDestinations.AppSettings)
             }
         }
     }

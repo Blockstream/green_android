@@ -158,7 +158,7 @@ class SendViewModel constructor(
             }
             .launchIn(viewModelScope.coroutineScope)
 
-        recipients.value?.getOrNull(0)?.let {
+        recipients.value.getOrNull(0)?.let {
             setupChangeObserve(it)
         }
 
@@ -171,7 +171,7 @@ class SendViewModel constructor(
                 isBump -> TransactionType.BUMP
                 else -> TransactionType.SEND
             },
-            addressInputType = recipients.value.get(0)?.addressInputType,
+            addressInputType = recipients.value.get(0).addressInputType,
             sendAll = isSendAll()
         )
     }
@@ -330,7 +330,7 @@ class SendViewModel constructor(
     }
 
     fun removeRecipient(index: Int) {
-        recipients.value?.let {
+        recipients.value.let {
             if (it.size > 1) {
                 recipients.value = it.apply { it.removeAt(index) }
                 checkTransaction()
@@ -362,7 +362,6 @@ class SendViewModel constructor(
         return when{
             isBump -> {
                 CreateTransactionParams(
-                    subaccount = account.pointer,
                     feeRate = getFeeRate(),
                     utxos = unspentOutputs.unspentOutputsAsJsonElement,
                     previousTransaction = bumpTransaction,
@@ -373,7 +372,6 @@ class SendViewModel constructor(
                     it.toAddressParams(session = session, isGreedy = it.isSendAll.boolean())
                 }.let { params ->
                     CreateTransactionParams(
-                        subaccount = account.pointer,
                         addressees = params.map { it.toJsonElement() },
                         addresseesAsParams = params,
                         feeRate = getFeeRate(),
@@ -524,16 +522,16 @@ class SendViewModel constructor(
                     throw Exception(tx.error)
                 }
 
-                params to tx
+                Triple(params, tx, createTransactionSegmentation())
             }
         }, postAction = {
             // Avoid UI glitches
             onProgress.value = finalCheckBeforeContinue
-        }, onSuccess = { pair ->
+        }, onSuccess = { triple ->
             transactionError.value = null
 
             if(finalCheckBeforeContinue){
-                session.pendingTransaction = pair
+                session.pendingTransaction = triple
                 postSideEffect(SideEffects.Navigate())
             }
         }, onError = {
@@ -558,7 +556,7 @@ class SendViewModel constructor(
     }
 
     fun setUri(uri: String) {
-        recipients.value?.getOrNull(activeRecipient)?.address?.value = uri
+        recipients.value.getOrNull(activeRecipient)?.address?.value = uri
     }
 
     fun setAddress(index: Int, address: String, inputType: AddressInputType) {

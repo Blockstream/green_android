@@ -27,7 +27,7 @@ data class ConfirmTransactionLook constructor(
 ): ITransactionLook {
 
     val utxos by lazy {
-        transaction.utxoViews(showChangeOutputs)
+        transaction.utxoViewsDeprecated(showChangeOutputs)
     }
 
     override val utxoSize: Int

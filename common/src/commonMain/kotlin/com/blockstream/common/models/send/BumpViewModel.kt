@@ -125,7 +125,6 @@ class BumpViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset, transa
             val unspentOutputs = session.getUnspentOutputs(account = account, isBump = true)
 
             CreateTransactionParams(
-                subaccount = account.pointer,
                 feeRate = getFeeRate(),
                 utxos = unspentOutputs.unspentOutputsAsJsonElement,
                 previousTransaction = transaction

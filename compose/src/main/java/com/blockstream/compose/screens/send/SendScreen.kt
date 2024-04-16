@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.AddressInputType
 import com.blockstream.common.data.DenominatedValue
@@ -90,7 +91,7 @@ data class SendScreen(
 ) : Parcelable, Screen {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<SendViewModel>() {
+        val viewModel = koinScreenModel<SendViewModel> {
             // parametersOf(greenWallet, address, accountAsset)
             parametersOf(greenWallet, accountAsset, address, addressInputType)
         }
@@ -178,7 +179,12 @@ fun SendScreen(
             )
         }
 
-        GreenColumn {
+        GreenColumn(
+            padding = 0,
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(top = 8.dp, bottom = 16.dp)
+        ) {
             GreenColumn(
                 padding = 0,
                 modifier = Modifier
@@ -338,8 +344,7 @@ fun SendScreen(
             val showFeeSelector by viewModel.showFeeSelector.collectAsStateWithLifecycle()
             val feePriority by viewModel.feePriority.collectAsStateWithLifecycle()
             AnimatedVisibility(
-                visible = showFeeSelector,
-                modifier = Modifier.offset(y = (-8).dp)
+                visible = showFeeSelector
             ) {
                 GreenNetworkFee(
                     feePriority = feePriority, onClick = { onIconClicked ->

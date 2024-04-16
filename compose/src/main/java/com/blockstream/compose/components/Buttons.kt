@@ -339,7 +339,7 @@ fun AppSettingsButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
 fun GreenButtonPreview() {
     GreenThemePreview {
         GreenColumn(
-            space = 8,
+            space = 6,
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
             Text("Specific")

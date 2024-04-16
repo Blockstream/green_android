@@ -1,179 +1,68 @@
 package com.blockstream.compose.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.blockstream.common.BTC_POLICY_ASSET
-import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.GdkSession
-import com.blockstream.common.looks.AmountAssetLook
-import com.blockstream.common.utils.DecimalFormat
-import com.blockstream.compose.R
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.theme.GreenThemePreview
 import com.blockstream.compose.theme.bodyLarge
-import com.blockstream.compose.theme.green
-import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.utils.noRippleClickable
+import com.blockstream.compose.theme.titleMedium
 
 @Composable
 fun GreenAmount(
     modifier: Modifier = Modifier,
-    amounts: List<AmountAssetLook>,
+    title: String? = null,
+    amount: String,
+    amountFiat: String? = null,
+    assetId: String? = null,
+    address: String? = null,
     session: GdkSession? = null,
-    onAssetClick : ((assetId : String) -> Unit) = { _ -> }
+    showIcon: Boolean = false
 ) {
-    if (amounts.size == 1) {
-        val look = amounts.first()
-        val decimalSymbol = remember { DecimalFormat.DecimalSeparator }
+    GreenDataLayout(title = title, modifier = modifier) {
+        GreenColumn(padding = 0, space = 8) {
+            address?.also { GreenAddress(address = it) }
 
-        val (integer, fractional) = look.amount.split(decimalSymbol).let {
-            (it.firstOrNull() ?: "") to (it.getOrNull(1) ?: "")
-        }
+            Box {
+                if(showIcon) {
+                    Image(
+                        painter = assetId.assetIcon(session = session),
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .size(32.dp)
 
-        val annotatedAmount = buildAnnotatedString {
-            withStyle(style = SpanStyle(fontSize = 32.sp)) {
-                append(integer)
-            }
-            if (fractional.isNotBlank()) {
-                withStyle(style = SpanStyle(fontSize = 22.sp)) {
-                    append(decimalSymbol)
-                    append(fractional.chunked(3).joinToString(" "))
-                }
-            }
-            withStyle(style = SpanStyle(fontSize = 16.sp, color = green)) {
-                append(" ${look.ticker}")
-            }
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .then(modifier),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-
-            SelectionContainer {
-                Text(
-                    text = annotatedAmount,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.noRippleClickable {
-                        onAssetClick.invoke(look.assetId)
-                    }
-                )
-            }
-
-            look.fiat?.also { value ->
-                SelectionContainer {
-                    Text(
-                        text = value,
-                        style = bodyLarge,
-                        color = whiteMedium
                     )
                 }
-            }
 
-        }
-    } else if (amounts.isNotEmpty()) {
-        GreenColumn(
-            padding = 0,
-            space = 4,
-            modifier = Modifier
-                .fillMaxWidth()
-                .then(modifier)
-        ) {
-
-            amounts.forEach {
-                GreenRow(
-                    padding = 0,
-                    space = 0,
+                Column(
+                    horizontalAlignment = if (showIcon) Alignment.End else Alignment.CenterHorizontally,
                     modifier = Modifier
+                        .align(Alignment.Center)
                         .fillMaxWidth()
-                        .clickable {
-                            onAssetClick.invoke(it.assetId)
-                        }) {
-                    Box {
 
-                        Image(
-                            painter = it.assetId.assetIcon(session = session),
-                            contentDescription = null,
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier
-                                .padding(end = 18.dp)
-                                .padding(vertical = 8.dp)
-                                .size(32.dp)
+                ) {
 
-                        )
-
-                        Image(
-                            painter = painterResource(id = if (it.isOutgoing) R.drawable.arrow_up_right else R.drawable.arrow_down_left),
-                            contentDescription = null,
-                            modifier = Modifier.align(Alignment.BottomEnd)
-                        )
+                    SelectionContainer {
+                        Text(text = amount, style = titleMedium)
                     }
 
-                    Column {
-                        GreenRow(padding = 0, space = 4) {
-
-                            val annotatedAmount = buildAnnotatedString {
-                                withStyle(style = SpanStyle(fontSize = 24.sp)) {
-                                    append(it.amount)
-                                }
-                                withStyle(style = SpanStyle(fontSize = 16.sp, color = green)) {
-                                    append(" ${it.ticker}")
-                                }
-                            }
-
-                            SelectionContainer(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = annotatedAmount,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    fontSize = 24.sp,
-                                    modifier = Modifier
-                                        .alignByBaseline(),
-                                    textAlign = TextAlign.End
-                                )
-                            }
-                        }
-
-                        it.fiat?.also { fiat ->
-                            GreenRow(padding = 0, space = 4) {
-                                SelectionContainer(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = fiat,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        style = bodyLarge,
-                                        modifier = Modifier
-                                            .weight(1f),
-                                        textAlign = TextAlign.End,
-                                        color = whiteMedium
-                                    )
-                                }
-                            }
+                    amountFiat?.also { fiat ->
+                        SelectionContainer {
+                            Text(text = fiat, style = bodyLarge)
                         }
                     }
                 }
@@ -187,89 +76,31 @@ fun GreenAmount(
 fun GreenAmountPreview() {
     GreenThemePreview {
         GreenColumn {
-            HorizontalDivider()
             GreenAmount(
-                amounts = listOf(
-                    AmountAssetLook(
-                        "1.91080032",
-                        assetId = BTC_POLICY_ASSET,
-                        "BTC",
-                        "5,1231.23 EUR"
-                    )
-                )
+                title = "Amount",
+                amount = "1.0 BTC",
+                showIcon = true
             )
-            HorizontalDivider()
             GreenAmount(
-                amounts = listOf(
-                    AmountAssetLook(
-                        "-1,500",
-                        assetId = BTC_POLICY_ASSET,
-                        "BTC"
-                    )
-                )
+                title = "Amount",
+                amount = "1.0 BTC",
+                amountFiat = "100.000 USD",
             )
-            HorizontalDivider()
             GreenAmount(
-                amounts = listOf(
-                    AmountAssetLook(
-                        "-0.768920",
-                        assetId = BTC_POLICY_ASSET,
-                        "BTC"
-                    )
-                )
+                title = "Amount",
+                amount = "1.0 BTC",
+                amountFiat = "100.000 USD",
+                assetId = BTC_POLICY_ASSET,
+                address = "bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu"
             )
-            HorizontalDivider()
             GreenAmount(
-                amounts = listOf(
-                    AmountAssetLook(
-                        "2,420.1234",
-                        assetId = BTC_POLICY_ASSET,
-                        "BTC",
-                        "5,1231.23 EUR"
-                    )
-                )
+                title = "Send To",
+                amount = "1.0 BTC",
+                amountFiat = "100.000 USD",
+                assetId = BTC_POLICY_ASSET,
+                showIcon = true,
+                address = "bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu"
             )
-            HorizontalDivider()
-            GreenAmount(
-                amounts = listOf(
-                    AmountAssetLook(
-                        "1,232,321,543,322,420.1234567", assetId = BTC_POLICY_ASSET,
-                        "BTC",
-                        "5,1231.23 EUR"
-                    )
-                )
-            )
-
-            HorizontalDivider()
-            GreenAmount(
-                amounts = listOf(
-                    AmountAssetLook(
-                        "1.91080032",
-                        assetId = BTC_POLICY_ASSET,
-                        "BTC",
-                        "5,1231.23 EUR"
-                    ),
-                    AmountAssetLook("-2.1234", assetId = BTC_POLICY_ASSET, "L-BTC", "5,1231.23 EUR")
-                )
-            )
-
-            HorizontalDivider()
-            GreenAmount(
-                amounts = listOf(
-                    AmountAssetLook(
-                        "1,232,321,543,322,420.1234567",
-                        assetId = BTC_POLICY_ASSET,
-                        "BTC",
-                        "5,1231.23 EUR"
-                    ),
-                    AmountAssetLook(
-                        "-2,123,363,543,322,420.1234567",
-                        assetId = BTC_POLICY_ASSET,
-                        "L-BTC"
-                    )
-                )
-            )
-            HorizontalDivider()
         }
     }
 }

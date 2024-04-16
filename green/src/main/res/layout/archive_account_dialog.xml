@@ -32,6 +32,7 @@
                 android:id="@+id/rive"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                tools:visibility="gone"
                 app:riveResource="@raw/account_archived" />
 
         </FrameLayout>

@@ -10,7 +10,9 @@ import co.touchlab.kermit.Logger
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.BTC_UNIT
 import com.blockstream.common.CountlyBase
+import com.blockstream.common.TransactionSegmentation
 import com.blockstream.common.data.CountlyAsset
+import com.blockstream.common.data.DataState
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.ExceptionWithErrorReport
@@ -60,6 +62,7 @@ import com.blockstream.common.gdk.data.TwoFactorReset
 import com.blockstream.common.gdk.data.UnspentOutputs
 import com.blockstream.common.gdk.data.Utxo
 import com.blockstream.common.gdk.data.ValidateAddressees
+import com.blockstream.common.gdk.data.WalletEvents
 import com.blockstream.common.gdk.device.DeviceInterface
 import com.blockstream.common.gdk.device.DeviceState
 import com.blockstream.common.gdk.device.GdkHardwareWallet
@@ -128,7 +131,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -189,6 +191,9 @@ class GdkSession constructor(
     //  Disable notification handling until all networks are initialized
     private var _disableNotificationHandling = false
 
+    private val _eventsSharedFlow = MutableSharedFlow<WalletEvents>()
+    val eventsSharedFlow = _eventsSharedFlow.asSharedFlow()
+
     private var _walletTotalBalanceSharedFlow = MutableStateFlow(-1L)
     private var _activeAccountStateFlow: MutableStateFlow<Account?> = MutableStateFlow(null)
     private var _walletAssetsFlow : MutableStateFlow<Assets> = MutableStateFlow(Assets())
@@ -196,9 +201,9 @@ class GdkSession constructor(
     private var _walletHasHistorySharedFlow = MutableStateFlow(false)
     private var _accountAssetsFlow = mutableMapOf<AccountId, MutableStateFlow<Assets>>()
     private val _accountsAndBalanceUpdatedSharedFlow = MutableSharedFlow<Unit>(replay = 0)
-    private var _walletTransactionsStateFlow : MutableStateFlow<List<Transaction>> = MutableStateFlow(listOf(Transaction.LoadingTransaction))
-    private var _accountTransactionsStateFlow = mutableMapOf<AccountId, MutableStateFlow<List<Transaction>>>()
-    private var _accountTransactionsPagerSharedFlow = mutableMapOf<AccountId, MutableSharedFlow<Boolean>>()
+    private var _walletTransactionsStateFlow : MutableStateFlow<DataState<List<Transaction>>> = MutableStateFlow(DataState.Loading)
+    private var _accountTransactionsStateFlow = mutableMapOf<AccountId, MutableStateFlow<DataState<List<Transaction>>>>()
+    private var _accountTransactionsPagerStateFlow = mutableMapOf<AccountId, MutableStateFlow<Boolean>>()
     private var _blockStateFlow = mutableMapOf<Network, MutableStateFlow<Block>>()
     private var _settingsStateFlow = mutableMapOf<Network, MutableStateFlow<Settings?>>()
     private var _twoFactorConfigStateFlow = mutableMapOf<Network, MutableStateFlow<TwoFactorConfig?>>()
@@ -230,9 +235,10 @@ class GdkSession constructor(
 
     private fun blockStateFlow(network: Network) = _blockStateFlow.getOrPut(network) { MutableStateFlow(Block(height = 0)) }
 
-    private fun accountTransactionsPagerSharedFlow(account: Account): MutableSharedFlow<Boolean>{
-        return _accountTransactionsPagerSharedFlow.getOrPut(account.id) {
-            MutableSharedFlow(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST) }
+    private fun accountTransactionsPagerStateFlow(account: Account): MutableStateFlow<Boolean>{
+        return _accountTransactionsPagerStateFlow.getOrPut(account.id) {
+            MutableStateFlow(false)
+        }
     }
 
     private fun accountAssetsStateFlow(account: Account): MutableStateFlow<Assets> {
@@ -241,9 +247,9 @@ class GdkSession constructor(
         }
     }
 
-    private fun accountTransactionsStateFlow(account: Account): MutableStateFlow<List<Transaction>>{
+    private fun accountTransactionsStateFlow(account: Account): MutableStateFlow<DataState<List<Transaction>>>{
         return _accountTransactionsStateFlow.getOrPut(account.id) {
-            MutableStateFlow(listOf(Transaction.LoadingTransaction))
+            MutableStateFlow(DataState.Loading)
         }
     }
 
@@ -289,7 +295,7 @@ class GdkSession constructor(
 
     fun accountTransactions(account: Account) = accountTransactionsStateFlow(account).asStateFlow()
 
-    fun accountTransactionsPager(account: Account) = accountTransactionsPagerSharedFlow(account).asSharedFlow()
+    fun accountTransactionsPager(account: Account) = accountTransactionsPagerStateFlow(account).asStateFlow()
 
     fun block(network: Network): StateFlow<Block> = blockStateFlow(network).asStateFlow()
 
@@ -413,7 +419,7 @@ class GdkSession constructor(
     var xPubHashId : String? = null
         private set
 
-    var pendingTransaction: Pair<CreateTransactionParams, CreateTransaction>? = null
+    var pendingTransaction: Triple<CreateTransactionParams, CreateTransaction, TransactionSegmentation>? = null
 
     val networkAssetManager: NetworkAssetManager get() = assetManager.getNetworkAssetManager(isMainnet)
 
@@ -756,9 +762,9 @@ class GdkSession constructor(
         _enrichedAssetsFlow.value = listOf()
 
         // Clear Transactions
-        _walletTransactionsStateFlow.value = listOf(Transaction.LoadingTransaction)
+        _walletTransactionsStateFlow.value = DataState.Loading
         _accountTransactionsStateFlow = mutableMapOf()
-        _accountTransactionsPagerSharedFlow = mutableMapOf()
+        _accountTransactionsPagerStateFlow = mutableMapOf()
 
         _tempAllowedServers.clear()
 
@@ -969,7 +975,7 @@ class GdkSession constructor(
         }
     }
 
-    fun <T> initNetworkIfNeeded(network: Network, hardwareWalletResolver: HardwareWalletResolver? = null, action: () -> T) : T{
+    suspend fun <T> initNetworkIfNeeded(network: Network, hardwareWalletResolver: HardwareWalletResolver? = null, action: () -> T) : T{
         if(!activeSessions.contains(network)){
 
             try {
@@ -1519,7 +1525,7 @@ class GdkSession constructor(
         }.launchIn(scope = scope + parentJob)
     }
 
-    private fun reLogin(network: Network): LoginData {
+     private suspend fun reLogin(network: Network): LoginData {
         return authHandler(
             network,
             gdk.loginUser(
@@ -1731,7 +1737,7 @@ class GdkSession constructor(
     }
     override fun getAssets(params: GetAssetsParams) = (activeLiquid ?: liquid)?.let { gdk.getAssets(gdkSession(it), params) }
 
-    fun createAccount(
+    suspend fun createAccount(
         network: Network,
         params: SubAccountParams,
         hardwareWalletResolver: HardwareWalletResolver? = null
@@ -1771,7 +1777,7 @@ class GdkSession constructor(
         }.sorted()
     }
 
-    private fun getAccounts(network: Network, refresh: Boolean = false): List<Account> = initNetworkIfNeeded(network) {
+    suspend private fun getAccounts(network: Network, refresh: Boolean = false): List<Account> = initNetworkIfNeeded(network) {
         gdkSession(network).let {
             // Watch-only can't discover new accounts
             authHandler(network, gdk.getSubAccounts(it, SubAccountsParams(refresh = if(isWatchOnly) false else refresh)))
@@ -1811,9 +1817,10 @@ class GdkSession constructor(
         }
     }
 
-    fun updateAccount(
+    suspend fun updateAccount(
         account: Account,
         isHidden: Boolean,
+        userInitiated: Boolean = false,
         resetAccountName: String? = null
     ): Account {
         // Disable account editing for lightning accounts
@@ -1838,6 +1845,10 @@ class GdkSession constructor(
         ).resolve()
         // Update account list
         updateAccounts()
+
+        if(userInitiated && isHidden){
+            _eventsSharedFlow.emit(WalletEvents.ARCHIVED_ACCOUNT)
+        }
 
         return getAccount(account).also {
             listOf(it).also {
@@ -2024,19 +2035,15 @@ class GdkSession constructor(
     private val transactionsMutex = Mutex()
     fun getTransactions(account: Account, isReset : Boolean, isLoadMore: Boolean) {
         scope.launch(context = Dispatchers.IO + logException(countly)) {
-            val transactionsPagerSharedFlow = accountTransactionsPagerSharedFlow(account)
+            val transactionsPagerStateFlow = accountTransactionsPagerStateFlow(account)
             val transactionsStateFlow = accountTransactionsStateFlow(account)
 
             try {
-                transactionsMutex.withLock {
-                    transactionsPagerSharedFlow.emit(false)
+                transactionsPagerStateFlow.value = false
 
+                transactionsMutex.withLock {
                     val txSize = transactionsStateFlow.value.let {
-                        if(it.size == 1 && it[0].isLoadingTransaction){
-                            0
-                        }else{
-                            it.size
-                        }
+                        it.data()?.size ?: 0
                     }
 
                     var offset = 0
@@ -2053,22 +2060,24 @@ class GdkSession constructor(
                     val transactions = getTransactions(account, TransactionParams(subaccount = account.pointer, offset = offset, limit = limit)).transactions
 
                     // Update transactions
-                    transactionsStateFlow.value = if(isLoadMore){
-                        transactionsStateFlow.value + transactions
-                    }else{
-                        transactions
-                    }
+                    transactionsStateFlow.value = DataState.Success(
+                        if (isLoadMore) {
+                            (transactionsStateFlow.value.data() ?: listOf()) + transactions
+                        } else {
+                            transactions
+                        }
+                    )
 
                     // Update pager
                     if(isReset || isLoadMore){
-                        transactionsPagerSharedFlow.emit(if(account.isLightning) false else transactions.size == TRANSACTIONS_PER_PAGE)
+                        transactionsPagerStateFlow.value = if(account.isLightning) false else transactions.size == TRANSACTIONS_PER_PAGE
                     }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
 
                 // Re-set the list to unblock endless loader
-                transactionsPagerSharedFlow.emit(false)
+                transactionsPagerStateFlow.value = false
             }
         }
     }
@@ -2118,7 +2127,7 @@ class GdkSession constructor(
                     if(walletTransactions.isNotEmpty()){
                         _walletHasHistorySharedFlow.value = true
                     }
-                    _walletTransactionsStateFlow.value = walletTransactions
+                    _walletTransactionsStateFlow.value = DataState.Success(walletTransactions)
                 }
 
             } catch (e: Exception) {
@@ -2572,7 +2581,7 @@ class GdkSession constructor(
         _walletActiveEventInvalidated = true
     }
 
-    fun sendLightningTransaction(params: CreateTransaction): SendTransactionSuccess{
+    private fun sendLightningTransaction(params: CreateTransaction): SendTransactionSuccess{
         val invoiceOrLnUrl = params.addressees.first().address
         val satoshi = params.addressees.first().satoshi?.absoluteValue ?: 0L
         val comment = params.memo
@@ -2645,11 +2654,11 @@ class GdkSession constructor(
         }
     }
 
-    fun sendTransaction(
+    suspend fun sendTransaction(
         account: Account,
         signedTransaction: CreateTransaction,
         twoFactorResolver: TwoFactorResolver
-    ): SendTransactionSuccess = if (account.network.isLightning) {
+    ): SendTransactionSuccess = (if (account.network.isLightning) {
         sendLightningTransaction(signedTransaction)
     } else {
         authHandler(
@@ -2659,6 +2668,11 @@ class GdkSession constructor(
             if(signedTransaction.isSendAll){
                 _accountEmptiedEvent = account
             }
+        }
+    }).also {
+        // no Send All or Bump transaction
+        if(!signedTransaction.isSendAll && signedTransaction.previousTransaction == null) {
+            _eventsSharedFlow.emit(WalletEvents.APP_REVIEW)
         }
     }
 

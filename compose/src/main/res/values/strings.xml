@@ -493,7 +493,7 @@
   <string name="id_for_long_term_storage">For long term storage</string>
   <string name="id_for_more_information_read_more">For more information, Read More</string>
   <string name="id_for_most_users">For most users</string>
-  <string name="id_from">FROM</string>
+  <string name="id_from">From</string>
   <string name="id_funds_received">Funds Received!</string>
   <string name="id_funds_received_in_this">Funds received in this transaction are not confidential.</string>
   <string name="id_general">General</string>
@@ -1167,7 +1167,7 @@
   <string name="id_time_s">Time: %s</string>
   <string name="id_tip_we_recommend_you_enable">Tip: We recommend you enable more than one 2FA method. If you only set up one 2FA method and then lose it, you\'ll have to wait at least one year until the 2FA expires.</string>
   <string name="id_tip_you_can_use_the">Tip: You can use the xPub/yPub/zPub to view your watch-only wallet in Green, or you may import it to another platform. Each account in your wallet has a separate xPub/yPub/zPub.</string>
-  <string name="id_to">TO</string>
+  <string name="id_to">To</string>
   <string name="id_to_keep_you_in_control_of_your">To keep you in control of your funds, Two-Factor Authentication protection expires after roughly %d days since your last payment. You will be prompted to make a Two-Factor Reactivation transaction, if you don\'t move funds often enough.</string>
   <string name="id_too_many_pin_attempts">Too many PIN attempts</string>
   <string name="id_tor">Tor</string>
@@ -1510,4 +1510,13 @@
   <string name="id_closing_transaction_id">Closing Transaction ID</string>
   <string name="id_rescan_swaps_initiated">Rescan Swaps initiated</string>
   <string name="id_receive_on_address">Receive on address</string>
+  <string name="id_account_transfer">Account Transfer</string>
+  <string name="id_select_account__asset">Select account &amp; asset</string>
+  <string name="id_exchange_between_accounts">Exchange between accounts</string>
+  <string name="id_you_dont_have_a_lightning_account">You don\'t have a Lightning account</string>
+  <string name="id_rescan_swaps">Rescan Swaps</string>
+  <string name="id_share_logs">Share Logs</string>
+  <string name="id_no_available_accounts">No available accounts</string>
+  <string name="id_total_spent">Total Spent</string>
+  <string name="id_sending_">Sending…</string>
 </resources>

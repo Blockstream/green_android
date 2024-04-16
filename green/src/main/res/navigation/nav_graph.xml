@@ -247,17 +247,11 @@
             android:id="@+id/action_accountOverviewFragment_to_walletSettingsFragment"
             app:destination="@id/walletSettingsFragment" />
         <action
-            android:id="@+id/action_accountOverviewFragment_to_transactionDetailsFragment"
-            app:destination="@id/transactionDetailsFragment" />
-        <action
             android:id="@+id/action_accountOverviewFragment_to_sendFragment"
             app:destination="@id/sendFragment" />
         <argument
             android:name="accountAsset"
             app:argType="com.blockstream.common.gdk.data.AccountAsset" />
-        <action
-            android:id="@+id/action_accountOverviewFragment_to_recoverFundsFragment"
-            app:destination="@id/recoverFundsFragment" />
         <action
             android:id="@+id/action_accountOverviewFragment_to_recoveryIntroFragment"
             app:destination="@id/recoveryIntroFragment" />
@@ -273,23 +267,11 @@
             android:id="@+id/action_walletOverviewFragment_to_walletSettingsFragment"
             app:destination="@id/walletSettingsFragment" />
         <action
-            android:id="@+id/action_walletOverviewFragment_to_transactionDetailsFragment"
-            app:destination="@id/transactionDetailsFragment" />
-        <action
-            android:id="@+id/action_walletOverviewFragment_to_accountOverviewFragment"
-            app:destination="@id/accountOverviewFragment" />
-        <action
             android:id="@+id/action_walletOverviewFragment_to_receiveFragment"
             app:destination="@id/receiveFragment" />
         <action
             android:id="@+id/action_walletOverviewFragment_to_sendFragment"
             app:destination="@id/sendFragment" />
-        <action
-            android:id="@+id/action_walletOverviewFragment_to_assetsFragment"
-            app:destination="@id/assetsFragment" />
-        <action
-            android:id="@+id/action_walletOverviewFragment_to_recoverFundsFragment"
-            app:destination="@id/recoverFundsFragment" />
     </fragment>
 
     <fragment
@@ -469,12 +451,7 @@
         <action
             android:id="@+id/action_transactionDetailsFragment_to_sendFragment"
             app:destination="@id/sendFragment" />
-        <action
-            android:id="@+id/action_transactionDetailsFragment_to_accountOverviewFragment"
-            app:destination="@id/accountOverviewFragment" />
-        <action
-            android:id="@+id/action_transactionDetailsFragment_to_recoverFundsFragment"
-            app:destination="@id/recoverFundsFragment" />
+
     </fragment>
     <fragment
         android:id="@+id/sendFragment"
@@ -504,7 +481,6 @@
     <fragment
         android:id="@+id/sendConfirmFragment"
         android:name="com.blockstream.green.ui.send.SendConfirmFragment"
-        android:label="@string/id_review"
         tools:layout="@layout/send_confirm_fragment">
         <argument
             android:name="wallet"
@@ -512,9 +488,6 @@
         <argument
             android:name="accountAsset"
             app:argType="com.blockstream.common.gdk.data.AccountAsset" />
-        <argument
-            android:name="transactionSegmentation"
-            app:argType="com.blockstream.common.TransactionSegmentation" />
         <argument
             android:name="denomination"
             app:argType="com.blockstream.common.data.Denomination"
@@ -743,6 +716,20 @@
             android:name="transaction"
             app:argType="string" />
     </fragment>
-    <action android:id="@+id/action_global_sweepFragment" app:destination="@id/sweepFragment"/><action android:id="@+id/action_global_sendConfirmFragment" app:destination="@id/sendConfirmFragment"/><action android:id="@+id/action_global_bumpFragment" app:destination="@id/bumpFragment"/>
+
+
+    <fragment
+        android:id="@+id/accountExchangeFragment"
+        android:name="com.blockstream.green.ui.send.AccountExchangeFragment"
+        tools:layout="@layout/compose_view">
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.common.data.GreenWallet" />
+    </fragment>
+    <action android:id="@+id/action_global_sweepFragment" app:destination="@id/sweepFragment"/><action android:id="@+id/action_global_sendConfirmFragment" app:destination="@id/sendConfirmFragment"/><action android:id="@+id/action_global_bumpFragment" app:destination="@id/bumpFragment"/><action android:id="@+id/action_global_accountExchangeFragment" app:destination="@id/accountExchangeFragment"/>
+    <action android:id="@+id/action_global_assetsFragment" app:destination="@id/assetsFragment" />
+    <action android:id="@+id/action_global_accountOverviewFragment" app:destination="@id/accountOverviewFragment" />
+    <action android:id="@+id/action_global_transactionDetailsFragment" app:destination="@id/transactionDetailsFragment" />
+    <action android:id="@+id/action_global_recoverFundsFragment" app:destination="@id/recoverFundsFragment" />
 
 </navigation>

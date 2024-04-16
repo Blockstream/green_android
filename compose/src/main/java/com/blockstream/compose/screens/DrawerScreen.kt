@@ -16,6 +16,7 @@ import com.blockstream.common.events.Events
 import com.blockstream.common.models.drawer.DrawerViewModel
 import com.blockstream.common.models.wallets.WalletsViewModelAbstract
 import com.blockstream.common.models.wallets.WalletsViewModelPreview
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.LocalDrawer
 import com.blockstream.compose.R
@@ -61,13 +62,13 @@ fun DrawerScreen(
 
         Row(modifier = Modifier.fillMaxWidth()) {
             AboutButton {
-                viewModel.postEvent(Events.About)
+                viewModel.postEvent(NavigateDestinations.About)
             }
 
             Spacer(modifier = Modifier.weight(1f))
 
             AppSettingsButton {
-                viewModel.postEvent(Events.AppSettings)
+                viewModel.postEvent(NavigateDestinations.AppSettings)
             }
         }
     }

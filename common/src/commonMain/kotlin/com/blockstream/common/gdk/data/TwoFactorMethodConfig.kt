@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @Parcelize
-data class TwoFactorMethodConfig(
+data class TwoFactorMethodConfig constructor(
     @SerialName("confirmed") val confirmed: Boolean = false,
     @SerialName("enabled") val enabled: Boolean = false,
     @SerialName("data") val data: String = "",

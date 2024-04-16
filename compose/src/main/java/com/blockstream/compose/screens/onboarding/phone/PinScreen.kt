@@ -22,10 +22,14 @@ import cafe.adriel.voyager.koin.getScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.SetupArgs
+import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.models.onboarding.phone.PinViewModel
 import com.blockstream.common.models.onboarding.phone.PinViewModelAbstract
 import com.blockstream.common.models.onboarding.phone.PinViewModelPreview
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.LocalSnackbar
 import com.blockstream.compose.R
@@ -33,6 +37,7 @@ import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.ScreenContainer
+import com.blockstream.compose.dialogs.LightningShortcutDialog
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.utils.AppBar
@@ -61,8 +66,6 @@ data class PinScreen(val setupArgs: SetupArgs) : Screen, Parcelable {
 fun PinScreen(
     viewModel: PinViewModelAbstract
 ) {
-    HandleSideEffect(viewModel = viewModel)
-
     var pin by remember { mutableStateOf("") }
     var isVerify by remember { mutableStateOf(false) }
 
@@ -73,6 +76,24 @@ fun PinScreen(
     val rocketAnimation by viewModel.rocketAnimation.collectAsStateWithLifecycle()
     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
     val onProgressDescription by viewModel.onProgressDescription.collectAsStateWithLifecycle()
+
+    var lightningShortcutViewModel by remember {
+        mutableStateOf<GreenViewModel?>(null)
+    }
+
+    lightningShortcutViewModel?.also {
+        LightningShortcutDialog(viewModel = it) {
+            viewModel.postEvent(Events.Continue)
+            lightningShortcutViewModel = null
+        }
+    }
+
+    HandleSideEffect(viewModel = viewModel) {
+        if(it is SideEffects.LightningShortcut) {
+            lightningShortcutViewModel = SimpleGreenViewModel(viewModel.greenWallet)
+        }
+    }
+
     ScreenContainer(
         onProgress = onProgress,
         onProgressDescription = onProgressDescription,

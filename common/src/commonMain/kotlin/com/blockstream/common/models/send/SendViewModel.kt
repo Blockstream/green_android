@@ -17,7 +17,6 @@ import com.blockstream.common.extensions.isBlank
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.launchIn
-import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.extensions.startsWith
 import com.blockstream.common.gdk.data.AccountAsset
@@ -211,12 +210,13 @@ class SendViewModel(
     init {
         _addressInputType = addressType
 
+        _navData.value = NavData(title = "id_send", subtitle = greenWallet.name)
+
         session.ifConnected {
-            _navData.value = NavData(title = "id_send", subtitle = greenWallet.name)
 
             sessionManager.pendingUri.filterNotNull().onEach {
-                address.value = it
                 sessionManager.pendingUri.value = null
+                address.value = it
                 postSideEffect(SideEffects.Snackbar("id_address_was_filled_by_a_payment"))
             }.launchIn(this)
 
@@ -359,7 +359,7 @@ class SendViewModel(
                 assetId = accountAsset.value?.assetId?.takeIf { account.network.isLiquid }
             ).let { params ->
                 CreateTransactionParams(
-                    subaccount = accountAsset.value?.account?.pointer,
+                    from = accountAsset.value,
                     addressees = listOf(params.toJsonElement()),
                     addresseesAsParams = listOf(params),
                     feeRate = getFeeRate(),
@@ -433,20 +433,14 @@ class SendViewModel(
                             }
 
                             (tx.satoshi[assetId]?.absoluteValue?.let { sendAmount ->
-                                // Avoid UI glitches if isSweep and amount is zero (probably error)
-                                if (sendAmount == 0L) {
-                                    ""
-                                } else {
-                                    sendAmount.toAmountLook(
-                                        session = session,
-                                        assetId = assetId,
-                                        denomination = denomination.value,
-                                        withUnit = false,
-                                        withGrouping = false
-                                    )
-                                }
-                            }
-                                ?: tx.addressees.firstOrNull()?.bip21Params?.amount?.let { bip21Amount ->
+                                sendAmount.toAmountLook(
+                                    session = session,
+                                    assetId = assetId,
+                                    denomination = denomination.value,
+                                    withUnit = false,
+                                    withGrouping = false
+                                )
+                            } ?: tx.addressees.firstOrNull()?.bip21Params?.amount?.let { bip21Amount ->
                                     session.convert(
                                         assetId = assetId,
                                         asString = bip21Amount
@@ -505,16 +499,18 @@ class SendViewModel(
             }
 
             if(finalCheckBeforeContinue && params != null &&  it != null){
-                session.pendingTransaction = params to it
-                postSideEffect(SideEffects.Navigate())
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.SendConfirm(
-                    greenWallet = greenWallet,
-                    accountAsset = accountAsset.value!!,
-                    transactionSegmentation = TransactionSegmentation(
+                session.pendingTransaction = Triple(
+                    first = params,
+                    second = it,
+                    third = TransactionSegmentation(
                         transactionType = TransactionType.SEND,
                         addressInputType = _addressInputType,
                         sendAll = isSendAll.value ?: false
                     )
+                )
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.SendConfirm(
+                    accountAsset = accountAsset.value!!,
+                    denomination = denomination.value
                 )))
             }
         }, onError = {
@@ -547,9 +543,13 @@ class SendViewModel(
             countly.startFailedTransaction()
 
             createTransactionParams.value?.let {
-                session.sendLightningTransaction(session.createTransaction(_network.value!!, it))
+                session.sendTransaction(
+                    account = account,
+                    signedTransaction = session.createTransaction(_network.value!!, it),
+                    twoFactorResolver = this
+                )
             }?: run {
-                throw Exception("Something went wrong while creaing the Transaction")
+                throw Exception("Something went wrong while creating the Transaction")
             }
 
         }, preAction = {
@@ -670,10 +670,10 @@ class SendViewModelPreview(greenWallet: GreenWallet) :
     override val errorGeneric: StateFlow<String?> = MutableStateFlow(null)
     override val assetsAndAccounts: StateFlow<List<AccountAssetBalance>?> =
         MutableStateFlow(listOf())
-    override val accountAssetBalance: StateFlow<AccountAssetBalance?> =
-        MutableStateFlow(previewAccountAsset().let {
-            AccountAssetBalance(account = it.account, asset = it.asset)
-        })
+//    override val accountAssetBalance: StateFlow<AccountAssetBalance?> =
+//        MutableStateFlow(previewAccountAsset().let {
+//            AccountAssetBalance(account = it.account, asset = it.asset)
+//        })
 
     override val onProgressSending: StateFlow<Boolean> = MutableStateFlow(false)
 

@@ -14,29 +14,32 @@ import androidx.compose.ui.unit.dp
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.compose.R
 import com.blockstream.compose.theme.GreenThemePreview
-import com.blockstream.compose.theme.titleMedium
+import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
 
 
 @Composable
 fun GreenContentCard(
+    modifier: Modifier = Modifier,
     title: String,
     message: String,
-    painter: Painter,
+    painter: Painter? = null,
     onClick: () -> Unit = {}
 ) {
 
-    GreenCard(onClick = onClick) {
+    GreenCard(onClick = onClick, modifier = modifier) {
 
         GreenRow(padding = 0, verticalAlignment = Alignment.CenterVertically) {
-            GreenColumn(padding = 0, modifier = Modifier.weight(1f)) {
+            GreenColumn(padding = 0, space = 8, modifier = Modifier.weight(1f)) {
                 GreenRow(padding = 0, space = 8) {
-                    Image(
-                        painter = painter,
-                        contentDescription = null,
-                        modifier = Modifier.size(28.dp)
-                    )
-                    Text(text = title, style = titleMedium)
+                    painter?.also {
+                        Image(
+                            painter = painter,
+                            contentDescription = null,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+                    Text(text = title, style = titleSmall)
                 }
 
                 if (message.isNotBlank()) {

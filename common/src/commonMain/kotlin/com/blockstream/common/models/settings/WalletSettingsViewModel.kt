@@ -81,10 +81,7 @@ class WalletSettingsViewModel(
     private val _hasBiometrics = MutableStateFlow(false)
 
     class LocalEvents {
-        object DenominationExchangeRate :
-            Events.EventSideEffect(sideEffect = LocalSideEffects.OpenDenominationExchangeRate)
-
-        object ArchivedAccounts : Event
+        object DenominationExchangeRate : Events.EventSideEffect(sideEffect = SideEffects.OpenDenominationExchangeRate)
         object WatchOnly : Event
         object ChangePin : Event
         object SetupEmailRecovery : Event
@@ -101,14 +98,12 @@ class WalletSettingsViewModel(
         data class SetLimits(val limits: Limits, val twoFactorResolver: TwoFactorResolver): Event
         data class Disable2FA(val method: TwoFactorMethod, val twoFactorResolver: TwoFactorResolver): Event
         object RecoveryPhrase : Event
-        object Version : Events.NavigateTo(NavigateDestinations.About)
         object SupportId : Event
     }
 
     class LocalSideEffects {
         data class OpenAutologoutTimeout(val minutes: Int) : SideEffect
         data class OpenPgpKey(val pgp: String) : SideEffect
-        object OpenDenominationExchangeRate : SideEffect
         object LaunchBiometrics : SideEffect
     }
 
@@ -248,15 +243,6 @@ class WalletSettingsViewModel(
         super.handleEvent(event)
 
         when (event) {
-            is LocalEvents.ArchivedAccounts -> {
-                postSideEffect(
-                    SideEffects.NavigateTo(
-                        NavigateDestinations.ArchivedAccounts(
-                            greenWallet
-                        )
-                    )
-                )
-            }
 
             is LocalEvents.WatchOnly -> {
                 postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WatchOnly(greenWallet)))
@@ -267,7 +253,6 @@ class WalletSettingsViewModel(
                     postSideEffect(
                         SideEffects.NavigateTo(
                             NavigateDestinations.TwoFactorSetup(
-                                greenWallet = greenWallet,
                                 method = TwoFactorMethod.EMAIL,
                                 action = TwoFactorSetupAction.SETUP_EMAIL,
                                 network = it
@@ -313,9 +298,7 @@ class WalletSettingsViewModel(
             is LocalEvents.TwoFactorAuthentication -> {
                 postSideEffect(
                     SideEffects.NavigateTo(
-                        NavigateDestinations.TwoFactorAuthentication(
-                            greenWallet
-                        )
+                        NavigateDestinations.TwoFactorAuthentication()
                     )
                 )
             }

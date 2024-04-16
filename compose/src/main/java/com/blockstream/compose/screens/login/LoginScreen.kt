@@ -39,7 +39,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -47,7 +46,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.screen.uniqueScreenKey
 import cafe.adriel.voyager.koin.getScreenModel
-import cafe.adriel.voyager.navigator.LocalNavigator
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.GreenWallet
@@ -56,10 +54,12 @@ import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.models.login.LoginViewModel
 import com.blockstream.common.models.login.LoginViewModelAbstract
 import com.blockstream.common.models.login.LoginViewModelPreview
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.AndroidKeystore
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.LocalDialog
+import com.blockstream.compose.LocalRootNavigator
 import com.blockstream.compose.LocalSnackbar
 import com.blockstream.compose.R
 import com.blockstream.compose.components.AppSettingsButton
@@ -133,7 +133,7 @@ fun LoginScreen(
     viewModel: LoginViewModelAbstract,
     callbacks: LoginScreenCallbacks = LoginScreenCallbacks()
 ) {
-    val navigator = LocalNavigator.current
+    val navigator = LocalRootNavigator.current
     val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
 
     val pinCredentials by viewModel.pinCredentials.collectAsStateWithLifecycle()
@@ -147,8 +147,7 @@ fun LoginScreen(
 
     fun bip39Passphrase() {
         viewModel.postEvent(
-            Events.Bip39Passphrase(
-                viewModel.greenWallet,
+            NavigateDestinations.Bip39Passphrase(
                 viewModel.bip39Passphrase.value
             )
         )
@@ -662,6 +661,16 @@ fun LoginScreenPreview3() {
     GreenPreview {
         LoginScreen(viewModel = LoginViewModelPreview.previewWithLightningShortcut().also {
             it.onProgress.value = false
+        })
+    }
+}
+
+@Composable
+@Preview
+fun LoginScreenPreview4() {
+    GreenPreview {
+        LoginScreen(viewModel = LoginViewModelPreview.previewWithDevice().also {
+            it.onProgress.value = true
         })
     }
 }

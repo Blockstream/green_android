@@ -66,12 +66,7 @@ class SwapFragment : AppFragment<SwapFragmentBinding>(
                 navigate(
                     SwapFragmentDirections.actionSwapFragmentToSendConfirmFragment(
                         wallet = viewModel.greenWallet,
-                        accountAsset = viewModel.enabledAccounts.first().accountAsset,
-                        transactionSegmentation = TransactionSegmentation(
-                            transactionType = TransactionType.SWAP,
-                            addressInputType = null,
-                            sendAll = false
-                        )
+                        accountAsset = viewModel.enabledAccounts.first().accountAsset
                     )
                 )
             }

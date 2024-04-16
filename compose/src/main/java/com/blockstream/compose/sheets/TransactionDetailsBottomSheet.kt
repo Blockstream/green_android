@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.GreenWallet
@@ -36,16 +37,17 @@ import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.copyToClipboard
 import com.blockstream.compose.utils.noRippleClickable
 import com.blockstream.compose.utils.stringResourceId
+import com.blockstream.compose.views.DataListItem
 import org.koin.core.parameter.parametersOf
 
 @Parcelize
 data class TransactionDetailsBottomSheet(
-    val transaction: Transaction,
-    val greenWallet: GreenWallet
+    val greenWallet: GreenWallet,
+    val transaction: Transaction
 ) : BottomScreen(), Parcelable {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<TransactionDetailsViewModel> {
+        val viewModel = koinScreenModel<TransactionDetailsViewModel> {
             parametersOf(transaction, greenWallet)
         }
 
@@ -78,32 +80,13 @@ fun TransactionDetailsBottomSheet(
                 )
         ) {
             data.forEachIndexed { index, pair ->
-                GreenRow(padding = 0, space = 8) {
-                    GreenColumn(padding = 0, space = 8, modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = stringResourceId(id = pair.first),
-                            style = labelMedium,
-                            color = whiteHigh
-                        )
-                        Text(text = pair.second, style = bodyLarge, color = whiteMedium)
-                    }
-
-                    val context = LocalContext.current
-                    Image(
-                        painter = painterResource(id = R.drawable.copy),
-                        contentDescription = "Copy",
-                        modifier = Modifier.noRippleClickable {
-                            copyToClipboard(context = context, "Green", content = pair.second)
-                        }
-                    )
-                }
-
-                if (index < data.size - 1) {
-                    HorizontalDivider()
-                }
+                DataListItem(
+                    title = pair.first,
+                    data = pair.second,
+                    withDivider = index < data.size - 1
+                )
             }
         }
-
     }
 }
 

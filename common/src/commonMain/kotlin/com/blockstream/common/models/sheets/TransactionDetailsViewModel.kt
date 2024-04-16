@@ -34,9 +34,9 @@ class TransactionDetailsViewModel(initialTransaction: Transaction, greenWallet: 
     ) {
     override fun screenName(): String = "TransactionDetails"
 
-    var _transaction = MutableStateFlow(initialTransaction)
+    private var _transaction = MutableStateFlow(initialTransaction)
 
-    val _data: MutableStateFlow<List<Pair<String, String>>> = MutableStateFlow(listOf())
+    private val _data: MutableStateFlow<List<Pair<String, String>>> = MutableStateFlow(listOf())
     override val data = _data.asStateFlow()
 
     init {
@@ -47,8 +47,8 @@ class TransactionDetailsViewModel(initialTransaction: Transaction, greenWallet: 
                 session.block(initialTransaction.account.network)
             ) { walletTransactions, accountTransactions, _ ->
                 // Be sure to find the correct tx not just by hash but also with the correct type (cross-account transactions)
-                walletTransactions.find { it.txHash == initialTransaction.txHash && it.txType == initialTransaction.txType }
-                    ?: accountTransactions.find { it.txHash == initialTransaction.txHash }
+                walletTransactions.data()?.find { it.txHash == initialTransaction.txHash && it.txType == initialTransaction.txType }
+                    ?: accountTransactions.data()?.find { it.txHash == initialTransaction.txHash }
             }.filterNotNull().onEach {
                 _transaction.value = it
             }.launchIn(viewModelScope.coroutineScope)

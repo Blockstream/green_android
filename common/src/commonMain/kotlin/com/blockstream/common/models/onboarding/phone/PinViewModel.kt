@@ -48,16 +48,10 @@ class PinViewModel constructor(
         class SetPin(val pin: String) : Event
     }
 
-    class LocalSideEffects {
-        class ShowLightningShortcutDialog(wallet: GreenWallet) : SideEffects.SideEffectEvent(
-            Events.EventSideEffect(
-                SideEffects.NavigateTo(NavigateDestinations.WalletOverview(wallet))
-            )
-        )
-    }
-
     override val isLoginRequired: Boolean
         get() = false
+
+    private var pendingWallet: GreenWallet? = null
 
     init {
         if (setupArgs.isRestoreFlow) {
@@ -94,7 +88,10 @@ class PinViewModel constructor(
             } else {
                 postSideEffect(SideEffects.ErrorDialog(Exception("PIN should be 6 digits")))
             }
-
+        } else if(event is Events.Continue){
+            pendingWallet?.also {
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))
+            }
         }
     }
 
@@ -300,7 +297,8 @@ class PinViewModel constructor(
             rocketAnimation.value = it == null
         }, onSuccess = {
             if (session.hasLightning) {
-                postSideEffect(LocalSideEffects.ShowLightningShortcutDialog(it))
+                pendingWallet = it
+                postSideEffect(SideEffects.LightningShortcut)
             } else {
                 postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))
             }

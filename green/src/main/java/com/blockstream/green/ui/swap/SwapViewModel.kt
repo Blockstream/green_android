@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asFlow
 import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.TransactionSegmentation
+import com.blockstream.common.TransactionType
 import com.blockstream.common.data.CountlyAsset
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.assetTicker
@@ -269,7 +271,7 @@ class SwapViewModel constructor(
 
         doAsync({
             val v0List= LiquiDexV0List(
-                proposals = listOf(proposal!!)
+                proposals = listOf(proposal)
             )
             val unspentOutputs = session.getUnspentOutputs(enabledAccounts.first())
             val params = CompleteSwapParams(
@@ -286,13 +288,18 @@ class SwapViewModel constructor(
             updateTransaction(tx)
         }, onSuccess = { tx ->
             val params = CreateTransactionParams(
-                subaccount = enabledAccounts.first().pointer,
                 addressees = null,
                 feeRate = null,
                 utxos = null
             )
 
-            session.pendingTransaction = params to tx
+            session.pendingTransaction = Triple(
+                params, tx, TransactionSegmentation(
+                    transactionType = TransactionType.SWAP,
+                    addressInputType = null,
+                    sendAll = false
+                )
+            )
             postSideEffect(SideEffects.Navigate(tx))
         })
     }

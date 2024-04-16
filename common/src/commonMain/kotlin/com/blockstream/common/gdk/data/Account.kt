@@ -38,6 +38,8 @@ data class Account constructor(
         policyAsset = EnrichedAsset.create(session = session, network = network)
     }
 
+    fun balance(session: GdkSession) = session.accountAssets(this).value.policyAsset
+
     @IgnoredOnParcel
     val network
         get() = networkInjected!!
@@ -199,4 +201,10 @@ data class Account constructor(
     fun isFunded(session: GdkSession): Boolean {
         return session.accountAssets(this).value.assets.values.sum() > 0
     }
+
+    val accountBalance
+        get() = AccountBalance.create(this)
+
+    val accountAssetBalance
+        get() = AccountAssetBalance.create(this.accountAsset)
 }

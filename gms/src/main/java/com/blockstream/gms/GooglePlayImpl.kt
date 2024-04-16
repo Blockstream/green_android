@@ -1,21 +1,19 @@
 package com.blockstream.gms
 
-import android.widget.Toast
-import androidx.fragment.app.Fragment
-import com.blockstream.base.AppReview
+import android.app.Activity
+import com.blockstream.base.GooglePlay
 import com.google.android.play.core.review.ReviewManager
 
-class AppReviewImpl(private val reviewManager: ReviewManager) : AppReview() {
+class GooglePlayImpl(private val reviewManager: ReviewManager) : GooglePlay() {
 
-    override fun showGooglePlayInAppReviewDialog(fragment: Fragment, openBrowser: () -> Unit) {
-        Toast.makeText(fragment.requireContext(), "App Review", Toast.LENGTH_SHORT).show()
+    override fun showInAppReviewDialog(activity: Activity, openBrowser: () -> Unit) {
         val startTime = System.currentTimeMillis()
 
         // In some circumstances the review flow will not be shown to the user, e.g. they have already seen it recently,
         // so do not assume that calling this method will always display the review dialog.
         reviewManager.requestReviewFlow().addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                reviewManager.launchReviewFlow(fragment.requireActivity(), task.result!!)
+                reviewManager.launchReviewFlow(activity, task.result!!)
                     .addOnCompleteListener { _ ->
                         val endTime = System.currentTimeMillis()
 
@@ -26,19 +24,11 @@ class AppReviewImpl(private val reviewManager: ReviewManager) : AppReview() {
                         // As the task is always successful, we can identify if the dialog was shown if the callback is fired very quickly
                         if(endTime - startTime < 500){
                             openBrowser.invoke()
-                            // Temp fix until AppFragment moves to :base
-//                            fragment.openBrowser(
-//                                Urls.BLOCKSTREAM_GOOGLE_PLAY
-//                            )
                         }
                     }
             } else {
                 // There was some problem, log or handle the error code.
-
                 openBrowser.invoke()
-//                fragment.openBrowser(
-//                    Urls.BLOCKSTREAM_GOOGLE_PLAY
-//                )
             }
         }
     }

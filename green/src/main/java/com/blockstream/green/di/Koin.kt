@@ -30,7 +30,8 @@ fun startKoin(context: Context) {
 
     val appConfig = AppConfig.default(
         isDebug = BuildConfig.DEBUG,
-        gdkDataDir = context.filesDir.absolutePath,
+        filesDir = context.filesDir.absolutePath,
+        cacheDir = context.cacheDir.absolutePath,
         appKeys = appKeys,
         analyticsFeatureEnabled = context.resources.getBoolean(R.bool.feature_analytics),
         lightningFeatureEnabled = context.resources.getBoolean(R.bool.feature_lightning),

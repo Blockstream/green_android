@@ -67,7 +67,9 @@ val LocalAppBarState = compositionLocalOf { AppBarState() }
 val LocalSnackbar = compositionLocalOf { SnackbarHostState() }
 val LocalAppCoroutine = compositionLocalOf { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
 val LocalDrawer = compositionLocalOf { DrawerState(DrawerValue.Closed) }
-val LocalDialog: ProvidableCompositionLocal<DialogState> = staticCompositionLocalOf { error("DialogState not initialized") }
+val LocalDialog: ProvidableCompositionLocal<DialogState> =
+    staticCompositionLocalOf { error("DialogState not initialized") }
+val LocalRootNavigator: ProvidableCompositionLocal<Navigator?> = staticCompositionLocalOf { null }
 
 @Composable
 fun GreenApp() {
@@ -76,7 +78,7 @@ fun GreenApp() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val snackbarHostState = remember { SnackbarHostState() }
     val appBarState = remember { AppBarState() }
-    val dialogState = remember { DialogState(context = context)}
+    val dialogState = remember { DialogState(context = context) }
 
     CompositionLocalProvider(
         LocalSnackbar provides snackbarHostState,
@@ -85,63 +87,67 @@ fun GreenApp() {
         LocalDialog provides dialogState,
     ) {
 
-        var navigator: Navigator? = null
-
         val lifecycleManager = koinInject<LifecycleManager>()
         val isLocked by lifecycleManager.isLocked.collectAsStateWithLifecycle()
 
         Box {
-            BottomSheetNavigatorM3 { _ ->
+            Navigator(screen = HomeScreen, onBackPressed = { _ ->
+                !isLocked && appBarState.data.value.isVisible && appBarState.data.value.onBackPressed()
+            }) { navigator ->
 
-                ModalNavigationDrawer(
-                    drawerState = drawerState,
-                    drawerContent = {
-                        ModalDrawerSheet(
-                            drawerContainerColor = MaterialTheme.colorScheme.background,
+                CompositionLocalProvider(
+                    LocalRootNavigator provides navigator
+                ) {
+
+                    BottomSheetNavigatorM3 { _ ->
+
+                        // Restore LocalNavigator that was replaced from BottomSheetNavigatorM3
+                        CompositionLocalProvider(
+                            LocalNavigator provides navigator,
                         ) {
-                            val drawerViewModel = koinViewModel<DrawerViewModel>()
 
-                            CompositionLocalProvider(
-                                LocalNavigator provides navigator,
+                            ModalNavigationDrawer(
+                                drawerState = drawerState,
+                                drawerContent = {
+                                    ModalDrawerSheet(
+                                        drawerContainerColor = MaterialTheme.colorScheme.background,
+                                    ) {
+                                        val drawerViewModel = koinViewModel<DrawerViewModel>()
+                                        DrawerScreen(viewModel = drawerViewModel)
+                                    }
+                                }
                             ) {
-                                DrawerScreen(viewModel = drawerViewModel)
+
+                                Scaffold(
+                                    snackbarHost = {
+                                        SnackbarHost(hostState = snackbarHostState)
+                                    },
+                                    topBar = {
+                                        GreenTopAppBar(
+                                            openDrawer = {
+                                                scope.launch {
+                                                    // Open the drawer with animation
+                                                    // and suspend until it is fully
+                                                    // opened or animation has been canceled
+                                                    drawerState.open()
+                                                }
+                                            }
+                                        )
+                                    },
+                                    content = { innerPadding ->
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(innerPadding),
+                                        ) {
+                                            FadeSlideTransition(navigator)
+                                        }
+                                    },
+                                )
+
+                                DialogHost(state = dialogState)
                             }
                         }
                     }
-                ) {
-                    val localAppBarState = LocalAppBarState.current
-                    Navigator(screen = HomeScreen, onBackPressed = { _ ->
-                        !isLocked && localAppBarState.data.value.isVisible && localAppBarState.data.value.onBackPressed()
-                    }) {
-                        navigator = it
-                        Scaffold(
-                            snackbarHost = {
-                                SnackbarHost(hostState = snackbarHostState)
-                            },
-                            topBar = {
-                                GreenTopAppBar(
-                                    openDrawer = {
-                                        scope.launch {
-                                            // Open the drawer with animation
-                                            // and suspend until it is fully
-                                            // opened or animation has been canceled
-                                            drawerState.open()
-                                        }
-                                    }
-                                )
-                            },
-                            content = { innerPadding ->
-                                Box(
-                                    modifier = Modifier
-                                        .padding(innerPadding),
-                                ) {
-                                    FadeSlideTransition(it)
-                                }
-                            },
-                        )
-                    }
-
-                    DialogHost(state = dialogState)
                 }
             }
 
@@ -161,7 +167,7 @@ fun GreenApp() {
 @Composable
 fun AppFragmentBridge(content: @Composable () -> Unit) {
     val context = LocalContext.current
-    val dialogState = remember { DialogState(context = context)}
+    val dialogState = remember { DialogState(context = context) }
     val snackbarHostState = remember { SnackbarHostState() }
 
     GreenTheme {
@@ -192,7 +198,7 @@ fun AppFragmentBridge(content: @Composable () -> Unit) {
 @Composable
 fun GreenPreview(content: @Composable () -> Unit) {
     val context = LocalContext.current
-    val dialogState = remember { DialogState(context = context)}
+    val dialogState = remember { DialogState(context = context) }
 
     // startKoin only once
     KoinPlatformTools.defaultContext().getOrNull() ?: startKoin {
@@ -237,12 +243,19 @@ public fun FadeSlideTransition(
                 visibilityThreshold = IntOffset.VisibilityThreshold
             )
 
-            val animationSpecFade: FiniteAnimationSpec<Float> = spring(stiffness = Spring.StiffnessMediumLow)
+            val animationSpecFade: FiniteAnimationSpec<Float> =
+                spring(stiffness = Spring.StiffnessMediumLow)
 
-            if(navigator.lastEvent == StackEvent.Pop){
-                fadeIn(animationSpecFade) togetherWith slideOutHorizontally(animationSpec, targetOffset)
-            }else{
-                slideInHorizontally(animationSpec, initialOffset) togetherWith fadeOut(animationSpec = animationSpecFade)
+            if (navigator.lastEvent == StackEvent.Pop) {
+                fadeIn(animationSpecFade) togetherWith slideOutHorizontally(
+                    animationSpec,
+                    targetOffset
+                )
+            } else {
+                slideInHorizontally(
+                    animationSpec,
+                    initialOffset
+                ) togetherWith fadeOut(animationSpec = animationSpecFade)
             }
         }
     )

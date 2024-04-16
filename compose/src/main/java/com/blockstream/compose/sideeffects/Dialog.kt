@@ -3,6 +3,7 @@
 package com.blockstream.compose.sideeffects
 
 import android.content.Context
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -145,7 +146,9 @@ fun DialogHost(state: DialogState) {
                 },
                 text = data.message?.let {
                     {
-                        Text(text = stringResourceId(it))
+                        SelectionContainer {
+                            Text(text = stringResourceId(it))
+                        }
                     }
                 },
                 onDismissRequest = {

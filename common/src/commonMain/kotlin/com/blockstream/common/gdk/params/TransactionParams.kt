@@ -16,6 +16,6 @@ data class TransactionParams(
     override fun kSerializer() = serializer()
 
     companion object{
-        const val TRANSACTIONS_PER_PAGE: Int = 30
+        const val TRANSACTIONS_PER_PAGE: Int = 10
     }
 }

@@ -1,7 +1,7 @@
-package com.blockstream.green.utils
+package com.blockstream.common.utils
 
+import com.blockstream.common.CountlyBase
 import com.blockstream.common.managers.SettingsManager
-import com.blockstream.green.data.CountlyAndroid
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.monthsUntil
@@ -10,7 +10,7 @@ import kotlinx.datetime.monthsUntil
 object AppReviewHelper {
     fun shouldAskForReview(
         settingsManager: SettingsManager,
-        countly: CountlyAndroid
+        countly: CountlyBase
     ): Boolean {
         // Feature is not enabled
         if(!settingsManager.storeRateEnabled){

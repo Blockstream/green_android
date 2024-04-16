@@ -1,15 +1,20 @@
 package com.blockstream.common.navigation
 
-import com.blockstream.common.TransactionSegmentation
+import com.blockstream.common.AddressInputType
+import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.LnUrlAuthRequestDataSerializable
+import com.blockstream.common.data.LnUrlWithdrawRequestSerializable
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorSetupAction
+import com.blockstream.common.events.Event
+import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.data.Network
 
-interface NavigateDestination
+interface NavigateDestination: Event
 sealed class NavigateDestinations : NavigateDestination {
     object About : NavigateDestination
     object AppSettings : NavigateDestination
@@ -18,6 +23,7 @@ sealed class NavigateDestinations : NavigateDestination {
     object UseHardwareDevice : NavigateDestination
 
     object NewWatchOnlyWallet : NavigateDestination
+    object WalletSettings : NavigateDestination
     data class EnterRecoveryPhrase(val args: SetupArgs) : NavigateDestination
     data class RecoveryIntro(val args: SetupArgs) : NavigateDestination
     data class RecoveryWords(val args: SetupArgs) : NavigateDestination
@@ -46,53 +52,79 @@ sealed class NavigateDestinations : NavigateDestination {
     data class WalletOverview(val greenWallet: GreenWallet) : NavigateDestination
 
     data class DeviceScan(val greenWallet: GreenWallet) : NavigateDestination
-
     data class RenameWallet(val greenWallet: GreenWallet) : NavigateDestination
-
     data class DeleteWallet(val greenWallet: GreenWallet) : NavigateDestination
     data class AssetsAccounts(val greenWallet: GreenWallet, val assetsAccounts: List<AccountAssetBalance>) : NavigateDestination
-    data class Bip39Passphrase(val greenWallet: GreenWallet, val passphrase: String) : NavigateDestination
-    data class WalletSettings(val greenWallet: GreenWallet) : NavigateDestination
-    data class ArchivedAccounts(val greenWallet: GreenWallet) : NavigateDestination
+    data class Accounts(val greenWallet: GreenWallet, val accounts: List<AccountAssetBalance>, val withAsset: Boolean) : NavigateDestination
+    data class Bip39Passphrase(val passphrase: String) : NavigateDestination
+    object EnableTwoFactor : NavigateDestination
+    object ArchivedAccounts : NavigateDestination
+    object Assets : NavigateDestination
+    data class AccountOverview(val accountAsset: AccountAsset) : NavigateDestination
+    data class ChooseAccountType(val greenWallet: GreenWallet) : NavigateDestination
     data class WatchOnly(val greenWallet: GreenWallet) : NavigateDestination
     data class ChangePin(val greenWallet: GreenWallet) : NavigateDestination
-    data class TwoFactorAuthentication(val greenWallet: GreenWallet) : NavigateDestination
+    data class SystemMessage(val network: Network, val message: String) : NavigateDestination
+    data class TwoFactorReset(val network: Network, val twoFactorReset: com.blockstream.common.gdk.data.TwoFactorReset) : NavigateDestination
+    data class TwoFactorAuthentication(val network: Network? = null) : NavigateDestination
+    data class RenameAccount(val account: Account) : NavigateDestination
+    object LightningNode : NavigateDestination
+    data class TransactionDetails(val transaction: com.blockstream.common.gdk.data.Transaction) : NavigateDestination
+    data class Camera(
+        val isDecodeContinuous: Boolean = false,
+        val parentScreenName: String? = null,
+        val setupArgs: SetupArgs? = null
+    ) : NavigateDestination
+    data class AssetDetails(
+        val assetId: String,
+        val accountAsset: AccountAsset?
+    ) : NavigateDestination
     data class TwoFactorSetup(
-        val greenWallet: GreenWallet,
         val method: TwoFactorMethod,
         val action: TwoFactorSetupAction,
-        val network: Network
+        val network: Network,
+        val isSmsBackup: Boolean = false
     ) : NavigateDestination
 
     data class Send(
-        val greenWallet: GreenWallet,
         val accountAsset: AccountAsset,
         val address: String? = null,
+        val addressType: AddressInputType? = null
     ) : NavigateDestination
 
     data class Bump(
-        val greenWallet: GreenWallet,
         val accountAsset: AccountAsset,
         val transaction: String
     ) : NavigateDestination
 
     data class SendConfirm(
-        val greenWallet: GreenWallet,
         val accountAsset: AccountAsset,
-        val transactionSegmentation: TransactionSegmentation
+        val denomination: Denomination?
     ) : NavigateDestination
 
     data class RecoverFunds(
-        val greenWallet: GreenWallet,
-        val satoshi: Long,
+        val satoshi: Long = 0,
         val isSendAll: Boolean = false,
         val address: String? = null,
     ) : NavigateDestination
 
-    data class Receive(val greenWallet: GreenWallet, val accountAsset: AccountAsset) : NavigateDestination
+    data class Receive(val accountAsset: AccountAsset) : NavigateDestination
     data class Sweep(
-        val greenWallet: GreenWallet,
         val privateKey: String? = null,
         val accountAsset: AccountAsset? = null
+    ) : NavigateDestination
+
+    object AccountExchange : NavigateDestination
+
+    data class LnUrlAuth(
+        val lnUrlAuthRequest: LnUrlAuthRequestDataSerializable
+    ) : NavigateDestination
+
+    data class LnUrlWithdraw(
+        val lnUrlWithdrawRequest: LnUrlWithdrawRequestSerializable
+    ) : NavigateDestination
+
+    data class Transaction(
+        val transaction: com.blockstream.common.gdk.data.Transaction
     ) : NavigateDestination
 }

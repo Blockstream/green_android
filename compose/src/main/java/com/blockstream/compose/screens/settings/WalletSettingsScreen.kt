@@ -48,6 +48,8 @@ import com.blockstream.common.models.settings.WalletSettingsSection
 import com.blockstream.common.models.settings.WalletSettingsViewModel
 import com.blockstream.common.models.settings.WalletSettingsViewModelAbstract
 import com.blockstream.common.models.settings.WalletSettingsViewModelPreview
+import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.AndroidKeystore
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.LocalDialog
@@ -72,6 +74,7 @@ import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.stringResourceId
+import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
 
@@ -83,7 +86,7 @@ data class WalletSettingsScreen(
 ) : Screen, Parcelable {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<WalletSettingsViewModel>() {
+        val viewModel = koinViewModel<WalletSettingsViewModel> {
             parametersOf(greenWallet, section, network)
         }
 
@@ -130,11 +133,9 @@ fun WalletSettingsScreen(
             showPgpDialog = it.pgp
         } else if (it is WalletSettingsViewModel.LocalSideEffects.LaunchBiometrics) {
             biometricsState.getBiometricsCipher(viewModel)
-        } else if (it is WalletSettingsViewModel.LocalSideEffects.OpenDenominationExchangeRate) {
+        } else if (it is SideEffects.OpenDenominationExchangeRate) {
             denominationExchangeRateViewModel =
-                DenominationExchangeRateViewModel(viewModel.greenWallet).also {
-                    it.viewModelScope
-                }
+                DenominationExchangeRateViewModel(viewModel.greenWallet)
         }
     }
 
@@ -252,7 +253,7 @@ fun WalletSettingsScreen(
                         subtitle = "(${item.size})".takeIf { item.size > 0 },
                         painter = painterResource(id = R.drawable.caret_right),
                         modifier = Modifier.clickable {
-                            viewModel.postEvent(WalletSettingsViewModel.LocalEvents.ArchivedAccounts)
+                            viewModel.postEvent(NavigateDestinations.ArchivedAccounts)
                         })
                 }
 
@@ -375,7 +376,7 @@ fun WalletSettingsScreen(
                         title = "id_version",
                         subtitle = item.version,
                         modifier = Modifier.clickable {
-                            viewModel.postEvent(Events.About)
+                            viewModel.postEvent(NavigateDestinations.About)
                         }
                     )
                 }

@@ -124,9 +124,11 @@ fun WalletListItem(
     look: WalletListLook,
     callbacks: WalletListItemCallbacks = WalletListItemCallbacks.Empty
 ) {
-    val popupState = remember { PopupState(
-        offset = mutableStateOf(DpOffset(0.dp, 0.dp))
-    ) }
+    val popupState = remember {
+        PopupState(
+            offset = mutableStateOf(DpOffset(0.dp, 0.dp))
+        )
+    }
     var isLightningPopup by remember { mutableStateOf(false) }
 
     val density = LocalDensity.current
@@ -178,8 +180,8 @@ fun WalletListItem(
 
         if (callbacks.hasContextMenu) {
             PopupMenu(
-                popupState,
-                if (isLightningPopup) {
+                state = popupState,
+                entries = if (isLightningPopup) {
                     listOf(
                         MenuEntry(
                             title = stringResource(id = R.string.id_remove_lightning_shortcut),

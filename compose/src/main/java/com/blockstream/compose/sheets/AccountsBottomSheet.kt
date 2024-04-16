@@ -1,45 +1,55 @@
 package com.blockstream.compose.sheets
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.koin.getScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.extensions.previewAccount
+import com.blockstream.common.extensions.previewAccountAssetBalance
 import com.blockstream.common.extensions.previewWallet
-import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.models.login.Bip39PassphraseViewModel
+import com.blockstream.common.models.SimpleGreenViewModel
+import com.blockstream.common.models.SimpleGreenViewModelPreview
 import com.blockstream.compose.GreenPreview
-import com.blockstream.compose.components.GreenAccount
+import com.blockstream.compose.R
+import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.navigation.resultKey
 import com.blockstream.compose.navigation.setNavigationResult
+import com.blockstream.compose.theme.bodyMedium
 import org.koin.core.parameter.parametersOf
 
 @Parcelize
 data class AccountsBottomSheet(
     val greenWallet: GreenWallet,
-    val accounts: List<Account>
+    val accountsBalance: List<AccountAssetBalance>,
+    val withAsset: Boolean
 ) : BottomScreen(), Parcelable {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<GreenViewModel> {
+        val viewModel = getScreenModel<SimpleGreenViewModel> {
             parametersOf(greenWallet)
         }
 
         AccountsBottomSheet(
             viewModel = viewModel,
-            accounts = accounts,
+            accountsBalance = accountsBalance,
+            withAsset = withAsset,
             onDismissRequest = onDismissRequest()
         )
     }
@@ -49,12 +59,13 @@ data class AccountsBottomSheet(
 @Composable
 fun AccountsBottomSheet(
     viewModel: GreenViewModel,
-    accounts: List<Account>,
+    accountsBalance: List<AccountAssetBalance>,
+    withAsset: Boolean,
     onDismissRequest: () -> Unit,
 ) {
     GreenBottomSheet(
         sheetState = rememberModalBottomSheetState(
-            skipPartiallyExpanded = true,
+            skipPartiallyExpanded = false,
         ),
         onDismissRequest = onDismissRequest
     ) {
@@ -66,11 +77,24 @@ fun AccountsBottomSheet(
                     rememberScrollState()
                 )
         ) {
-            accounts.forEach { account ->
-                GreenAccount(account = account, session = viewModel.sessionOrNull) {
-                    setNavigationResult(AccountsBottomSheet::class.resultKey, account)
+            accountsBalance.forEach { accountAssetBalance ->
+                GreenAccountAsset(accountAssetBalance = accountAssetBalance, session = viewModel.sessionOrNull, withAsset = withAsset) {
+                    setNavigationResult(AccountsBottomSheet::class.resultKey, accountAssetBalance)
                     onDismissRequest()
                 }
+            }
+
+            if(accountsBalance.isEmpty()){
+                Text(
+                    text = stringResource(R.string.id_no_available_accounts),
+                    style = bodyMedium,
+                    textAlign = TextAlign.Center,
+                    fontStyle = FontStyle.Italic,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 32.dp)
+                        .padding(horizontal = 16.dp)
+                )
             }
         }
 
@@ -82,8 +106,9 @@ fun AccountsBottomSheet(
 fun AccountsBottomSheetPreview() {
     GreenPreview {
         AccountsBottomSheet(
-            viewModel = GreenViewModel(previewWallet()),
-            accounts = listOf(previewAccount()),
+            viewModel = SimpleGreenViewModelPreview(previewWallet()),
+            accountsBalance = listOf(previewAccountAssetBalance()),
+            withAsset = true,
             onDismissRequest = { }
         )
     }

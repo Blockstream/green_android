@@ -19,7 +19,7 @@ data class AccountAsset constructor(
         get() = asset.assetId
 
     val accountAssetBalance
-        get() = AccountAssetBalance(account = account, asset = asset)
+        get() = AccountAssetBalance.create(this)
 
     fun balance(session: GdkSession) = session.accountAssets(account).value.balance(assetId)
 

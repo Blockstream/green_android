@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.blockstream.compose.theme.md_theme_surfaceCircle
@@ -41,9 +42,14 @@ inline fun Modifier.noRippleClickable(
 }
 
 @Composable
-inline fun Modifier.roundBackground(horizontal: Dp = 8.dp, vertical: Dp = 4.dp): Modifier {
+inline fun Modifier.roundBackground(
+    horizontal: Dp = 8.dp,
+    vertical: Dp = 4.dp,
+    size : Dp = 16.dp,
+    color: Color = md_theme_surfaceCircle
+): Modifier {
     return this then background(
-        color = md_theme_surfaceCircle,
-        shape = RoundedCornerShape(16.dp)
+        color = color,
+        shape = RoundedCornerShape(size)
     ).padding(horizontal = horizontal, vertical = vertical)
 }

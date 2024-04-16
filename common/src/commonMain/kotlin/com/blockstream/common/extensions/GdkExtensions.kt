@@ -57,9 +57,13 @@ fun AccountType?.title(): String = when (this) {
 }
 
 fun Account.needs2faActivation(session: GdkSession): Boolean {
+    if (isSinglesig || isAmp || session.isWatchOnly) {
+        return false
+    }
+
     return try {
-        isMultisig && !isAmp && (!session.isWatchOnly && session.getTwoFactorConfig(network = network)?.anyEnabled == false)
-    }catch (e: Exception){
+        session.getTwoFactorConfig(network = network)?.anyEnabled == false
+    } catch (e: Exception) {
         e.printStackTrace()
         false
     }
@@ -89,7 +93,7 @@ fun String?.assetTickerOrNull(
 
 fun Account.hasHistory(session: GdkSession): Boolean {
     return bip44Discovered == true || isFunded(session) || session.accountTransactions(this).let {
-        it.value.isNotEmpty() && it.value.firstOrNull()?.isLoadingTransaction == false
+        it.value.isNotEmpty()
     }
 }
 

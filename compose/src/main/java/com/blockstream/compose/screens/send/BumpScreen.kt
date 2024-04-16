@@ -39,11 +39,10 @@ import com.blockstream.common.models.send.BumpViewModel
 import com.blockstream.common.models.send.BumpViewModelAbstract
 import com.blockstream.common.models.send.BumpViewModelPreview
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
-import com.blockstream.common.models.send.SweepViewModel
 import com.blockstream.common.utils.DecimalFormat
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
-import com.blockstream.compose.components.GreenAccount
+import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAddress
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenDataLayout
@@ -68,6 +67,7 @@ import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.stringResourceId
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Parcelize
@@ -78,7 +78,7 @@ data class BumpScreen(
 ) : Parcelable, Screen {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<BumpViewModel>() {
+        val viewModel = koinViewModel<BumpViewModel> {
             parametersOf(greenWallet, accountAsset, transaction)
         }
 
@@ -147,10 +147,11 @@ fun BumpScreen(
             val accountAsset by viewModel.accountAsset.collectAsStateWithLifecycle()
 
             accountAsset?.also {
-                GreenAccount(
+                GreenAccountAsset(
                     title = stringResource(R.string.id_account),
-                    account = it.account,
+                    accountAssetBalance = it.accountAssetBalance,
                     session = viewModel.sessionOrNull,
+                    withAsset = false,
                     withEditIcon = false
                 )
             }

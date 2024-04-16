@@ -40,7 +40,7 @@ class DemoFragment : AppFragment<DemoFragmentBinding>(R.layout.demo_fragment, me
         }.launchIn(lifecycleScope)
 
         viewModel.transactions.onEach {
-            binding.transactions.text = it.firstOrNull()?.txHash.toString()
+            binding.transactions.text = it.data()?.firstOrNull()?.txHash.toString()
         }.launchIn(lifecycleScope)
 
         viewModel.walletAssets.onEach {
