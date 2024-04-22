@@ -33,12 +33,13 @@ data class Convert constructor(
 
     companion object {
         fun create(
+            isPolicyAsset: Boolean,
             asset: Asset? = null,
             asString: String? = null,
             asLong: Long? = null,
             unit: String = BTC_UNIT
         ): Convert {
-            return if (asset == null) {
+            return if (isPolicyAsset || asset == null) {
                 if (asString != null) {
                     when (unit) {
                         BTC_UNIT -> Convert(btc = asString)

@@ -2346,6 +2346,7 @@ class GdkSession constructor(
 
         val convert = if (isPolicyAsset || assetId == null || asString == null) {
             Convert.create(
+                isPolicyAsset = isPolicyAsset,
                 asset = asset,
                 asString = asString,
                 asLong = asLong,

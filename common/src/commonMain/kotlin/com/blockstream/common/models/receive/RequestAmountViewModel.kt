@@ -16,6 +16,7 @@ import com.blockstream.common.utils.toAmountLook
 import com.rickclephas.kmm.viewmodel.coroutineScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -24,9 +25,8 @@ import kotlinx.coroutines.launch
 
 abstract class RequestAmountViewModelAbstract(
     greenWallet: GreenWallet,
-    accountAssetOrNull: AccountAsset?
-) :
-    GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = accountAssetOrNull) {
+    accountAsset: AccountAsset
+) : GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = accountAsset) {
 
     override fun screenName(): String = "RequestAmount"
 
@@ -43,16 +43,13 @@ abstract class RequestAmountViewModelAbstract(
 
     @NativeCoroutinesState
     abstract val exchange: MutableStateFlow<String>
-
-    @NativeCoroutinesState
-    abstract val isFiat: MutableStateFlow<Boolean>
 }
 
 class RequestAmountViewModel(
     greenWallet: GreenWallet,
     accountAsset: AccountAsset,
     val initialAmount: String
-) : RequestAmountViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = accountAsset) {
+) : RequestAmountViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
 
     override val isPolicyAsset = accountAsset.asset.assetId.isPolicyAsset(account.network)
 
@@ -60,7 +57,6 @@ class RequestAmountViewModel(
 
     override val amountCurrency = MutableStateFlow("")
     override val exchange = MutableStateFlow("")
-    override val isFiat = MutableStateFlow(false)
 
     class LocalEvents {
         object ToggleCurrency : Event
@@ -76,10 +72,11 @@ class RequestAmountViewModel(
                             assetId = accountAsset.account.network.policyAsset,
                             asString = initialAmount
                         )?.toAmountLook(
-                            session,
+                            session = session,
                             withUnit = false,
                             withGrouping = false,
-                            withMinimumDigits = false
+                            withMinimumDigits = false,
+                            denomination = denomination.value
                         ) ?: initialAmount
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -92,22 +89,20 @@ class RequestAmountViewModel(
         }
 
         if (isPolicyAsset) {
-            amount
-                .debounce(10)
-                .onEach {
-                    updateExchange()
-                }
-                .launchIn(viewModelScope.coroutineScope)
+            combine(denomination, amount.debounce(10)){ _, _ ->
+                updateExchange()
+            }.launchIn(viewModelScope.coroutineScope)
         }
 
-        isFiat
+        denomination
             .onEach {
-                amountCurrency.value = if (it) {
+                amountCurrency.value = if (it.isFiat) {
                     getFiatCurrency(session)
                 } else if (accountAsset.assetId.isPolicyAsset(accountAsset.account.network)) {
                     getBitcoinOrLiquidUnit(
                         session = session,
-                        assetId = accountAsset.account.network.policyAsset
+                        assetId = accountAsset.account.network.policyAsset,
+                        denomination = denomination.value
                     )
                 } else {
                     accountAsset.asset.ticker ?: ""
@@ -134,7 +129,7 @@ class RequestAmountViewModel(
                     session = session,
                     input = amount.value,
                     assetId = accountAsset.value!!.assetId,
-                    denomination = Denomination.defaultOrFiat(session, isFiat.value)
+                    denomination = _denomination.value
                 )
 
                 // Convert it to BTC as per BIP21 spec
@@ -161,41 +156,32 @@ class RequestAmountViewModel(
     }
 
     private fun updateExchange() {
-        amount.value.let { amount ->
-            // Convert between BTC / Fiat
-            doAsync({
-                val isFiat = isFiat.value ?: false
-
-                UserInput.parseUserInput(
-                    session,
-                    amount,
+        // Convert between BTC / Fiat
+        doAsync({
+            UserInput.parseUserInput(
+                session = session,
+                input = amount.value,
+                assetId = accountAsset.value!!.assetId,
+                denomination = _denomination.value
+            ).getBalance()?.let {
+                "≈ " + it.toAmountLook(
+                    session = session,
                     assetId = accountAsset.value!!.assetId,
-                    denomination = Denomination.defaultOrFiat(session, isFiat)
-                ).getBalance()?.let {
-                    "≈ " + it.toAmountLook(
-                        session = session,
-                        assetId = accountAsset.value!!.assetId,
-                        denomination = Denomination.defaultOrFiat(session, !isFiat),
-                        withUnit = true,
-                        withGrouping = true,
-                        withMinimumDigits = false
-                    )
-                } ?: ""
-            }, preAction = null, postAction = null, onSuccess = {
-                exchange.value = it
-            }, onError = {
-                exchange.value = ""
-            })
-        }
+                    denomination = Denomination.exchange(session, denomination.value),
+                    withUnit = true,
+                    withGrouping = true,
+                    withMinimumDigits = false
+                )
+            } ?: ""
+        }, preAction = null, postAction = null, onSuccess = {
+            exchange.value = it
+        }, onError = {
+            exchange.value = ""
+        })
     }
 
     private fun toggleCurrency() {
         viewModelScope.coroutineScope.launch {
-
-            val isFiat = isFiat.value ?: false
-
-            // Toggle it first as the amount trigger will be called with wrong isFiat value
-            this@RequestAmountViewModel.isFiat.value = !isFiat
 
             // Convert between BTC / Fiat
             amount.value = try {
@@ -203,13 +189,13 @@ class RequestAmountViewModel(
                     session,
                     amount.value,
                     assetId = accountAsset.value!!.assetId,
-                    denomination = Denomination.defaultOrFiat(session, isFiat)
+                    denomination = _denomination.value
                 ).getBalance()?.let {
                     if (it.satoshi > 0) {
                         it.toAmountLook(
                             session = session,
                             assetId = accountAsset.value!!.assetId,
-                            denomination = Denomination.defaultOrFiat(session, !isFiat),
+                            denomination = Denomination.exchange(session, _denomination.value),
                             withUnit = false,
                             withGrouping = false,
                             withMinimumDigits = false
@@ -221,6 +207,9 @@ class RequestAmountViewModel(
             } catch (e: Exception) {
                 e.printStackTrace()
                 ""
+            } finally {
+                _denomination.value =
+                    denomination.value.let { Denomination.exchange(session, it) ?: it }
             }
         }
     }
