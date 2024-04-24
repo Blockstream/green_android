@@ -953,7 +953,7 @@ class GdkSession constructor(
             }
 
             if (!hasLightning) {
-                connectToGreenlight(mnemonic = mnemonic ?: deriveLightningMnemonic())
+                connectToGreenlight(mnemonic = mnemonic ?: deriveLightningMnemonic(), restoreOnly = false)
 
                 if(!hasLightning){
                     throw Exception("Something went wrong while initiating your Lightning account")
@@ -1064,7 +1064,7 @@ class GdkSession constructor(
 
                     if (network.isLightning) {
                         // Connect SDK
-                        connectToGreenlight(mnemonic = deriveLightningMnemonic())
+                        connectToGreenlight(mnemonic = deriveLightningMnemonic(), restoreOnly = false)
                     } else {
                         try {
                             gdk.connect(gdkSession(network), createConnectionParams(network))
@@ -1446,7 +1446,7 @@ class GdkSession constructor(
                             ).xpubHashId
 
                             // Connect SDK
-                            connectToGreenlight(mnemonic = lightningMnemonic, parentXpubHashId = xPubHashId, checkCredentials = isRestore || isSmartDiscovery, quickResponse = isRestore)
+                            connectToGreenlight(mnemonic = lightningMnemonic, parentXpubHashId = xPubHashId, restoreOnly = isRestore || isSmartDiscovery, quickResponse = isRestore)
 
                             if(isRestore) {
                                 hasLightning = lightningSdk.isConnected
@@ -1493,14 +1493,19 @@ class GdkSession constructor(
     private suspend fun connectToGreenlight(
         mnemonic: String,
         parentXpubHashId: String? = null,
-        checkCredentials: Boolean = false,
+        restoreOnly: Boolean = true,
         quickResponse: Boolean = false
     ) {
         Logger.i { "Login into ${lightning?.id}" }
 
         countly.loginLightningStart()
 
-        lightningSdk.connectToGreenlight(mnemonic, parentXpubHashId ?: xPubHashId.takeIf { !isLightningShortcut }, checkCredentials, quickResponse).also {
+        lightningSdk.connectToGreenlight(
+            mnemonic = mnemonic,
+            parentXpubHashId = parentXpubHashId ?: xPubHashId.takeIf { !isLightningShortcut },
+            restoreOnly = restoreOnly,
+            quickResponse = quickResponse
+        ).also {
             hasLightning = it == true
             if (it == null) {
                 _failedNetworksStateFlow.value += listOfNotNull(lightning)

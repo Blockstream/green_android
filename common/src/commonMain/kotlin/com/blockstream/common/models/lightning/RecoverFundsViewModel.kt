@@ -208,13 +208,13 @@ class RecoverFundsViewModel(
                 }
 
                 val reverseSwapInfo = session.lightningSdk.fetchReverseSwapFees(ReverseSwapFeesRequest(maxReverseSwapAmount))
-                val estimatedFees = reverseSwapInfo.totalEstimatedFees
+                val totalFees = reverseSwapInfo.totalFees
 
-                amountToBeRefunded.value = (maxReverseSwapAmount - (estimatedFees ?: 0u)).toLong().toAmountLook(session = session, withUnit = true)
-                amountToBeRefundedFiat.value = (maxReverseSwapAmount - (estimatedFees ?: 0u)).toLong().toAmountLook(session = session, withUnit = true, denomination = Denomination.fiat(session))
+                amountToBeRefunded.value = (maxReverseSwapAmount - (totalFees ?: 0u)).toLong().toAmountLook(session = session, withUnit = true)
+                amountToBeRefundedFiat.value = (maxReverseSwapAmount - (totalFees ?: 0u)).toLong().toAmountLook(session = session, withUnit = true, denomination = Denomination.fiat(session))
 
-                fee.value = estimatedFees?.toLong().toAmountLook(session = session, withUnit = true) ?: ""
-                feeFiat.value = estimatedFees?.toLong().toAmountLook(session = session, withUnit = true, denomination = Denomination.fiat(session)) ?: ""
+                fee.value = totalFees?.toLong().toAmountLook(session = session, withUnit = true) ?: ""
+                feeFiat.value = totalFees?.toLong().toAmountLook(session = session, withUnit = true, denomination = Denomination.fiat(session)) ?: ""
 
             } else if (isRefund) {
                 // Refund from OnChain address

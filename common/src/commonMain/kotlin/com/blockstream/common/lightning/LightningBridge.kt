@@ -4,6 +4,7 @@ import breez_sdk.BlockingBreezServices
 import breez_sdk.BreezEvent
 import breez_sdk.Config
 import breez_sdk.ConfigureNodeRequest
+import breez_sdk.ConnectRequest
 import breez_sdk.EnvironmentType
 import breez_sdk.EventListener
 import breez_sdk.GreenlightCredentials
@@ -157,18 +158,19 @@ class LightningBridge constructor(
     }
 
     @NativeCoroutinesIgnore
-    suspend fun connectToGreenlight(mnemonic: String, parentXpubHashId: String? = null, checkCredentials: Boolean = false, quickResponse: Boolean = false): Boolean? {
+    suspend fun connectToGreenlight(mnemonic: String, parentXpubHashId: String? = null, restoreOnly: Boolean = true, quickResponse: Boolean = false): Boolean? {
         if (breezSdkOrNull != null) {
             return true
         }
 
-        val partnerCredentials = if (checkCredentials) null else greenlightKeys.toGreenlightCredentials()
-
         try {
             breezSdkOrNull = withTimeout(if(quickResponse) 5000L else 30000L) {
                 connect(
-                    config = createConfig(partnerCredentials),
-                    seed = mnemonicToSeed(mnemonic),
+                    req = ConnectRequest(
+                        config = createConfig(greenlightKeys.toGreenlightCredentials()),
+                        seed = mnemonicToSeed(mnemonic),
+                        restoreOnly = restoreOnly
+                    ),
                     listener = this@LightningBridge
                 )
             }
@@ -373,7 +375,7 @@ class LightningBridge constructor(
     }
 
     private fun serviceHealthCheck() = try {
-        _healthCheckStatus.value = breezSdk.serviceHealthCheck().status.also {
+        _healthCheckStatus.value = breez_sdk.serviceHealthCheck(apiKey = greenlightKeys.breezApiKey).status.also {
             logger.d { "ServiceHealthCheck: ${it}" }
         }
     } catch (e: Exception) {
@@ -540,6 +542,15 @@ class LightningBridge constructor(
             breezSdk.configureNode(ConfigureNodeRequest(closeToAddress = closeToAddress))
         } catch (e: Exception) {
             e.printStackTrace()
+        }
+    }
+
+    fun generateDiagnosticData(): String? {
+        return try {
+            breezSdk.generateDiagnosticData()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 
