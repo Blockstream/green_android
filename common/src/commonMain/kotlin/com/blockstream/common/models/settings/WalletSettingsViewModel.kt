@@ -174,48 +174,59 @@ class WalletSettingsViewModel(
                         WalletSetting.Text("id_security"),
                         WalletSetting.AutologoutTimeout(settings.altimeout)
                     )
-                } else if (!session.isLightningShortcut) {
+                } else {
 
-                    val hasMultisig =
-                        session.activeBitcoinMultisig != null || session.activeLiquidMultisig != null
-
-                    list += listOfNotNull(
+                    list += listOf(
                         WalletSetting.Text("id_general"),
                         WalletSetting.DenominationExchangeRate(
                             unit = settings.networkUnit(session),
                             currency = settings.pricing.currency,
                             exchange = settings.pricing.exchange
                         ),
-                        WalletSetting.ArchivedAccounts(session.allAccounts.value.count { it.hidden }),
-                        WalletSetting.WatchOnly,
-                        WalletSetting.Text("id_security"),
                     )
 
-                    if (!greenWallet.isEphemeral && !greenWallet.isHardware) {
-                        list += listOf(
-                            WalletSetting.ChangePin,
-                            WalletSetting.LoginWithBiometrics(
-                                enabled = _hasBiometrics.value,
-                                canEnable = greenKeystore.canUseBiometrics()
+                    if (!session.isLightningShortcut) {
+                        val hasMultisig =
+                            session.activeBitcoinMultisig != null || session.activeLiquidMultisig != null
+    
+                        list += listOfNotNull(
+                            WalletSetting.Text("id_general"),
+                            WalletSetting.DenominationExchangeRate(
+                                unit = settings.networkUnit(session),
+                                currency = settings.pricing.currency,
+                                exchange = settings.pricing.exchange
+                            ),
+                            WalletSetting.ArchivedAccounts(session.allAccounts.value.count { it.hidden }),
+                            WalletSetting.WatchOnly,
+                            WalletSetting.Text("id_security"),
+                        )
+    
+                        if (!greenWallet.isEphemeral && !greenWallet.isHardware) {
+                            list += listOf(
+                                WalletSetting.ChangePin,
+                                WalletSetting.LoginWithBiometrics(
+                                    enabled = _hasBiometrics.value,
+                                    canEnable = greenKeystore.canUseBiometrics()
+                                )
                             )
-                        )
-                    }
-
-                    if (hasMultisig) {
-                        list += listOf(WalletSetting.TwoFactorAuthentication)
-
-                        session.activeMultisig.firstOrNull()?.also {
-                            list += listOf(WalletSetting.PgpKey(enabled = session.getSettings(it)?.pgp.isNotBlank()))
                         }
-                    }
-
-                    list += listOf(WalletSetting.AutologoutTimeout(settings.altimeout))
-
-                    if (!session.isHardwareWallet) {
-                        list += listOf(
-                            WalletSetting.Text("id_recovery"),
-                            WalletSetting.RecoveryPhrase
-                        )
+    
+                        if (hasMultisig) {
+                            list += listOf(WalletSetting.TwoFactorAuthentication)
+    
+                            session.activeMultisig.firstOrNull()?.also {
+                                list += listOf(WalletSetting.PgpKey(enabled = session.getSettings(it)?.pgp.isNotBlank()))
+                            }
+                        }
+    
+                        list += listOf(WalletSetting.AutologoutTimeout(settings.altimeout))
+    
+                        if (!session.isHardwareWallet) {
+                            list += listOf(
+                                WalletSetting.Text("id_recovery"),
+                                WalletSetting.RecoveryPhrase
+                            )
+                        }
                     }
 
                 }

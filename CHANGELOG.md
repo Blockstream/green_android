@@ -3,6 +3,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.28] - 2024-05-13
+
+### Added
+- Revamp Sweep UI
+
+### Changed
+- Bump GDK to version 0.71.0
+- Bump Breez to version 0.4.1-rc2
+
+### Fixed
+- Fix v2 password login
+- Fix wrong conversion when generating an address with amount
+
 ## [4.0.27] - 2024-03-28
 
 ### Added
