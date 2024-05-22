@@ -16,6 +16,7 @@
          <trust group="^org[.]jetbrains($|([.].*))" regex="true" reason="Trust all Jetbrains artifacts"/>
          <trust group="^org[.]junit($|([.].*))" regex="true" reason="Trust all JUnit artifacts"/>
          <trust group="^org[.]codehaus($|([.].*))" name="groovy" regex="true" reason="Trust all Groovy artifacts"/>
+         <trust group="^net[.]java($|([.].*))" name="jna" regex="true" reason="Trust all Java artifacts"/>
       </trusted-artifacts>
    </configuration>
    <components>

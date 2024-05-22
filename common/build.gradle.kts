@@ -133,7 +133,8 @@ kotlin {
 
             /**  --- Breez FDroid ----------------------------------------------------------------------- */
             // Temp fix for FDroid breez dependencies
-            // api(libs.breez.sdk.android)
+            // api(libs.breez.sdk.android.get().toString()) { exclude(group = "net.java.dev.jna", module = "jna") }
+            // implementation("${libs.jna.get()}@aar")
             /** ----------------------------------------------------------------------------------------- */
         }
 

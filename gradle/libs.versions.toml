@@ -5,12 +5,12 @@ kotlinx-coroutines = "1.8.1"
 kotlinx-datetime = "0.5.0"
 kotlinx-serialization = "1.6.3"
 kotlin-ksp = "1.9.23-1.0.19"
-android-gradle-plugin = "8.4.0"
+android-gradle-plugin = "8.4.1"
 androidCompileSdk = "34"
 androidTargetSdk = "34"
 androidMinSdk = "24"
 buildTools = "34.0.0"
-breez = "0.4.1-rc2"
+breez = "0.4.1"
 activity-ktx = "1.9.0"
 androidx-junit = "1.1.5"
 annotation = "1.7.1"
@@ -82,6 +82,7 @@ activity-compose = "1.9.0"
 voyager = "1.1.0-alpha04"
 google-services = "4.4.1"
 firebase-bom = "33.0.0"
+jna = "5.14.0"
 
 [libraries]
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
@@ -113,6 +114,7 @@ breez-sdk-kmp = { module = "technology.breez:breez-sdk-kmp", version.ref = "bree
 breez-sdk-android = { module = "com.github.breez:breez-sdk", version.ref = "breez" } # Used for FDroid
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
+jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
 sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
 sqldelight-sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 sqldelight-coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
