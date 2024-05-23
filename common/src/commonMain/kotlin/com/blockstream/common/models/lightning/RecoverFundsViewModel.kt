@@ -8,6 +8,7 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnectedSuspend
+import com.blockstream.common.extensions.isBlank
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
@@ -18,8 +19,6 @@ import com.rickclephas.kmm.viewmodel.MutableStateFlow
 import com.rickclephas.kmm.viewmodel.coroutineScope
 import com.rickclephas.kmm.viewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,8 +29,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.sync.Mutex
 import kotlin.math.absoluteValue
 
 
@@ -45,7 +43,7 @@ abstract class RecoverFundsViewModelAbstract(greenWallet: GreenWallet, val isSen
     override fun screenName(): String = if(isRefund) "OnChainRefund" else if(isSendAll) "LightningSendAll" else "RedeemOnchainFunds"
 
     @NativeCoroutinesState
-    abstract val address: MutableStateFlow<String>
+    abstract val manualAddress: MutableStateFlow<String>
     @NativeCoroutinesState
     abstract val amount: StateFlow<String>
     @NativeCoroutinesState
@@ -80,9 +78,7 @@ class RecoverFundsViewModel(
     onChainAddress: String?,
     val satoshi: Long,
 ) : RecoverFundsViewModelAbstract(greenWallet = greenWallet, isSendAll = isSendAll, onChainAddress = onChainAddress) {
-    private val accountAddress = MutableStateFlow(viewModelScope, "") // cached account address
-
-    override val address: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
+    override val manualAddress: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
 
     override val amountToBeRefunded: MutableStateFlow<String?> = MutableStateFlow(viewModelScope, null)
     override val amountToBeRefundedFiat: MutableStateFlow<String?> = MutableStateFlow(viewModelScope, null)
@@ -159,41 +155,32 @@ class RecoverFundsViewModel(
         accountAsset.value = bitcoinAccounts.value.firstOrNull()?.accountAsset
         showManualAddress.value = accountAsset.value == null
 
-        // Cache account address so that switching between manual address, account address is the same
-        accountAsset.filterNotNull().onEach {
-            accountAddress.value = withContext(context = Dispatchers.IO) {
-                session.getReceiveAddress(it.account).address
-            }
-        }.launchIn(viewModelScope.coroutineScope)
-
+        var prepareJob: Job? = null
         combine(
-            accountAddress,
-            showManualAddress
-        ) { accountAddress, showManualAddress ->
-            accountAddress to showManualAddress
-        }.onEach {
-            if (!it.second) {
-                address.value = it.first
-            }
-        }.launchIn(viewModelScope.coroutineScope)
-
-        var _prepareJob: Job? = null
-        combine(
+            manualAddress,
+            accountAsset,
+            showManualAddress,
             feeSlider,
             customFee,
             recommendedFees.filterNotNull()
-        ) { feeSlider, customFee, recommendedFees ->
-            feeSlider to recommendedFees
-        }.onEach {
-            _prepareJob?.cancel()
-            _prepareJob = prepare()
+        ) {
+            prepareJob?.cancel()
+            prepareJob = prepare()
         }.launchIn(viewModelScope.coroutineScope)
 
     }
 
+    private fun address() = if(showManualAddress.value) manualAddress.value else session.getReceiveAddress(account).address
+
+    private val mutex = Mutex()
     private fun prepare(): Job {
         _feeAmountRate.value = ((getFee()?.toLong() ?: 0) * 1000).feeRateWithUnit()
-        return doAsync({
+        return doAsync(mutex = mutex, action = {
+            val address = address()
+            if(address.isBlank()){
+                return@doAsync false
+            }
+
             if (isSendAll) {
                 val maxReverseSwapAmount = session.lightningSdk.maxReverseSwapAmount().totalSat
                 val minAmount = session.lightningSdk.fetchReverseSwapFees(ReverseSwapFeesRequest()).min
@@ -216,11 +203,12 @@ class RecoverFundsViewModel(
                 fee.value = totalFees?.toLong().toAmountLook(session = session, withUnit = true) ?: ""
                 feeFiat.value = totalFees?.toLong().toAmountLook(session = session, withUnit = true, denomination = Denomination.fiat(session)) ?: ""
 
+                return@doAsync true
             } else if (isRefund) {
                 // Refund from OnChain address
                 session.lightningSdk.prepareRefund(
                     swapAddress = onChainAddress ?: "",
-                    toAddress = address.value,
+                    toAddress = address,
                     satPerVbyte = getFee()?.toUInt()
                 ).also {
                     if(satoshi - it.refundTxFeeSat.toLong() < 0){
@@ -233,10 +221,12 @@ class RecoverFundsViewModel(
                     fee.value = it.refundTxFeeSat.toLong().toAmountLook(session = session, withUnit = true)
                     feeFiat.value = it.refundTxFeeSat.toLong().toAmountLook(session = session, withUnit = true, denomination = Denomination.fiat(session))
                 }
+
+                return@doAsync true
             } else {
                 // Redeem Onchain funds from Lightning node
                 session.lightningSdk.prepareRedeemOnchainFunds(
-                    toAddress = address.value,
+                    toAddress = address,
                     satPerVbyte = getFee()?.toUInt()
                 ).also {
                     if(satoshi - it.txFeeSat.toLong() < 0){
@@ -249,13 +239,15 @@ class RecoverFundsViewModel(
                     fee.value = it.txFeeSat.toLong().toAmountLook(session = session, withUnit = true)
                     feeFiat.value = it.txFeeSat.toLong().toAmountLook(session = session, withUnit = true, denomination = Denomination.fiat(session))
                 }
+
+                return@doAsync true
             }
         }, onError = {
             error.value = it.message
             _isValid.value = false
         }, onSuccess = {
             error.value = null
-            _isValid.value = true
+            _isValid.value = it
         })
     }
 
@@ -272,10 +264,12 @@ class RecoverFundsViewModel(
 
     private fun doAction() {
         doAsync({
+            val address = if(showManualAddress.value) manualAddress.value else session.getReceiveAddress(account).address
+
             if(isSendAll){
                 // Send Onchain all funds emptying the wallet
                 session.lightningSdk.sendOnchain(
-                    address = address.value,
+                    address = address,
                     satPerVbyte = getFee()?.toUInt()
                 )
                 session.emptyLightningAccount()
@@ -283,13 +277,13 @@ class RecoverFundsViewModel(
                 // Refund from OnChain address
                 session.lightningSdk.refund(
                     swapAddress = onChainAddress ?: "",
-                    toAddress = address.value,
+                    toAddress = address,
                     satPerVbyte = getFee()?.toUInt()
                 ).refundTxId
             } else {
                 // Redeem Onchain funds from Lightning node
                 session.lightningSdk.redeemOnchainFunds(
-                    toAddress = address.value,
+                    toAddress = address,
                     satPerVbyte = getFee()?.toUInt()
                 ).txid
             }
@@ -322,7 +316,7 @@ class RecoverFundsViewModelPreview(greenWallet: GreenWallet) :
         }
     }
 
-    override val address: MutableStateFlow<String> = MutableStateFlow("")
+    override val manualAddress: MutableStateFlow<String> = MutableStateFlow("")
     override val amount: StateFlow<String> = MutableStateFlow("")
     override val error: MutableStateFlow<String?> = MutableStateFlow(null)
     override val feeSlider: MutableStateFlow<Int> = MutableStateFlow(1)

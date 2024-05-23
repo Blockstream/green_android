@@ -102,7 +102,7 @@ class RecoverFundsFragment : AppFragment<RecoverFundsFragmentBinding>(
         ) { result ->
             if (result != null) {
                 clearNavigationResult(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)
-                viewModel.address.value = result.result
+                viewModel.manualAddress.value = result.result
             }
         }
 
@@ -125,11 +125,11 @@ class RecoverFundsFragment : AppFragment<RecoverFundsFragmentBinding>(
         }
 
         binding.buttonAddressClear.setOnClickListener {
-            viewModel.address.value = ""
+            viewModel.manualAddress.value = ""
         }
 
         binding.buttonAddressPaste.setOnClickListener {
-            viewModel.address.value = getClipboard(requireContext()) ?: ""
+            viewModel.manualAddress.value = getClipboard(requireContext()) ?: ""
         }
 
         binding.buttonConfirm.setOnClickListener {

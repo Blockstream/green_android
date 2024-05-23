@@ -61,6 +61,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.koin.core.component.KoinComponent
@@ -401,6 +403,7 @@ open class GreenViewModel constructor(
 
     protected fun <T: Any?> doAsync(
         action: suspend () -> T,
+        mutex: Mutex? = null,
         timeout: Long = 0,
         preAction: (() -> Unit)? = {
             onProgress.value = true
@@ -417,28 +420,31 @@ open class GreenViewModel constructor(
         }
     ): Job {
         return viewModelScope.coroutineScope.launch {
-            try {
-                preAction?.invoke()
+            (mutex ?: Mutex()).withLock {
+                try {
+                    preAction?.invoke()
 
-                withContext(context = Dispatchers.IO) {
-                    if(timeout <= 0L) {
-                        action.invoke()
-                    }else{
-                        withTimeout(timeout) {
+                    withContext(context = Dispatchers.IO) {
+                        if (timeout <= 0L) {
                             action.invoke()
+                        } else {
+                            withTimeout(timeout) {
+                                action.invoke()
+                            }
+                        }
+                    }.also {
+                        if (this.isActive) {
+                            postAction?.invoke(null)
+                            onSuccess.invoke(it)
                         }
                     }
-                }.also {
+
+                } catch (e: Exception) {
                     if (this.isActive) {
-                        postAction?.invoke(null)
-                        onSuccess.invoke(it)
+                        countly.recordException(e)
+                        postAction?.invoke(e)
+                        onError.invoke(e)
                     }
-                }
-            } catch (e: Exception) {
-                if (this.isActive) {
-                    countly.recordException(e)
-                    postAction?.invoke(e)
-                    onError.invoke(e)
                 }
             }
         }

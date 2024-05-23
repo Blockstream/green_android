@@ -78,21 +78,19 @@
                                 android:layout_marginBottom="16dp"
                                 android:layout_weight="1"
                                 android:background="@android:color/transparent"
-                                android:enabled="@{!vm.onProgress}"
                                 android:fontFamily="@font/monospace"
                                 android:inputType="textMultiLine|textNoSuggestions"
-                                android:text="@={vm.address}"
+                                android:text="@={vm.manualAddress}"
                                 tools:text="address\nmultiline" />
 
                             <ImageButton
                                 android:id="@+id/buttonAddressClear"
-                                isVisible="@{!vm.address.empty}"
+                                isVisible="@{!vm.manualAddress.empty}"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
                                 android:adjustViewBounds="true"
                                 android:background="?attr/selectableItemBackgroundBorderless"
-                                android:enabled="@{!vm.onProgress}"
                                 android:paddingStart="12dp"
                                 android:paddingTop="12dp"
                                 android:paddingEnd="6dp"
@@ -104,13 +102,12 @@
 
                             <ImageButton
                                 android:id="@+id/buttonAddressPaste"
-                                isVisible="@{vm.address.empty}"
+                                isVisible="@{vm.manualAddress.empty}"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
                                 android:adjustViewBounds="true"
                                 android:background="?attr/selectableItemBackgroundBorderless"
-                                android:enabled="@{!vm.onProgress}"
                                 android:paddingStart="12dp"
                                 android:paddingTop="12dp"
                                 android:paddingEnd="6dp"
@@ -127,7 +124,6 @@
                                 android:layout_gravity="center_vertical"
                                 android:adjustViewBounds="true"
                                 android:background="?attr/selectableItemBackgroundBorderless"
-                                android:enabled="@{!vm.onProgress}"
                                 android:paddingStart="6dp"
                                 android:paddingTop="12dp"
                                 android:paddingEnd="12dp"
@@ -151,11 +147,11 @@
 
                     <Button
                         android:id="@+id/buttonShowAddress"
-                        style="@style/Widget.Green.Button.Outlined.Tiny"
+                        style="@style/Widget.Green.Button.Text.Tiny"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:enabled="@{!vm.onProgress}"
-                        android:text="@string/id_show_address" />
+                        android:text="@string/id_receive_on_address" />
 
                 </com.google.android.material.button.MaterialButtonToggleGroup>
 

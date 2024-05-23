@@ -1509,4 +1509,5 @@
   <string name="id_funding_transaction_id">Funding Transaction ID</string>
   <string name="id_closing_transaction_id">Closing Transaction ID</string>
   <string name="id_rescan_swaps_initiated">Rescan Swaps initiated</string>
+  <string name="id_receive_on_address">Receive on address</string>
 </resources>
