@@ -28,7 +28,9 @@ fun stringResourceId(context: Context, id: String): String {
 fun stringResourceIdOrNull(context: Context, id: String?): String? {
     if (id?.startsWith("id_") == true) {
         val res = id.substring(0, id.indexOf("|").takeIf { it != -1 } ?: id.length)
-        val formatArgs = id.split("|").drop(1).toTypedArray()
+        val formatArgs = id.split("|").drop(1).map {
+            (if(it.startsWith("id_")) stringResourceIdOrNull(context, it) else null) ?: it
+        }.toTypedArray()
 
         val resources = context.resources
 

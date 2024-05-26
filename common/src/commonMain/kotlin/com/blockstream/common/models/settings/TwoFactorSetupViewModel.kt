@@ -100,7 +100,7 @@ class TwoFactorSetupViewModel(
     init {
         val title = when (action) {
             TwoFactorSetupAction.SETUP, TwoFactorSetupAction.SETUP_EMAIL -> {
-                "id_1s_twofactor_setup|$action."
+                "id_1s_twofactor_setup|${method.localized}"
             }
 
             TwoFactorSetupAction.RESET -> {
@@ -136,13 +136,17 @@ class TwoFactorSetupViewModel(
 
             if (method == TwoFactorMethod.PHONE || method == TwoFactorMethod.SMS) {
                 combine(country, number) { country, number ->
-                    !country.isNullOrBlank() && (number?.trim()?.length ?: 0) > 7
+                    country.isNotBlank() && (number.trim().length) > 7
                 }.onEach {
                     _isValid.value = it
                 }.launchIn(this)
             } else if (method == TwoFactorMethod.EMAIL) {
                 email.onEach {
-                    _isValid.value = it?.isEmailValid() ?: false
+                    _isValid.value = it.isEmailValid()
+                }.launchIn(this)
+            } else if (method == TwoFactorMethod.AUTHENTICATOR) {
+                _authenticatorCode.onEach {
+                    _isValid.value = !it.isNullOrBlank()
                 }.launchIn(this)
             }
 
