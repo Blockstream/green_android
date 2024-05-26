@@ -87,7 +87,7 @@ fun MainMenuBottomSheetView(
             MainMenuItem(
                 title = stringResource(R.string.id_account_transfer),
                 subtitle = stringResource(
-                    R.string.id_exchange_between_accounts
+                    R.string.id_move_across_accounts
                 ),
                 icon = painterResource(R.drawable.arrows_down_up),
                 onClick = {

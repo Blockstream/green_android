@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.koin.getScreenModel
+import com.arkivanov.essenty.parcelable.IgnoredOnParcel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.GreenWallet
@@ -45,6 +46,7 @@ import com.blockstream.common.models.sheets.TransactionDetailsViewModelAbstract
 import com.blockstream.common.models.sheets.TransactionDetailsViewModelPreview
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.GreenPreview
+import com.blockstream.compose.LocalRootNavigator
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
@@ -62,6 +64,7 @@ import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.copyToClipboard
 import com.blockstream.compose.utils.noRippleClickable
 import com.blockstream.compose.utils.stringResourceId
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Parcelize
@@ -70,10 +73,19 @@ data class TwoFactorResetBottomSheet(
     val network: Network,
     val twoFactorReset: TwoFactorReset,
 ) : BottomScreen(), Parcelable {
+    @Transient
+    @IgnoredOnParcel
+    var parentViewModel: GreenViewModel? = null
+
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<SimpleGreenViewModel> {
+        val viewModel = koinViewModel<SimpleGreenViewModel> {
             parametersOf(greenWallet, null, "TwoFactorReset")
+        }.also {
+            val navigator = LocalRootNavigator.current
+            if(navigator == null) {
+                it.parentViewModel = parentViewModel
+            }
         }
 
         TwoFactorResetBottomSheet(

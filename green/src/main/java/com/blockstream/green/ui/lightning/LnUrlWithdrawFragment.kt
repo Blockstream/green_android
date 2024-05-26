@@ -2,6 +2,7 @@ package com.blockstream.green.ui.lightning
 
 import android.os.Bundle
 import android.view.View
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.events.Events
 import com.blockstream.common.lightning.domain
@@ -9,7 +10,11 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.lightning.LnUrlWithdrawViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.compose.AppFragmentBridge
+import com.blockstream.compose.screens.lightning.LnUrlAuthScreen
+import com.blockstream.compose.screens.lightning.LnUrlWithdrawScreen
 import com.blockstream.green.R
+import com.blockstream.green.databinding.ComposeViewBinding
 import com.blockstream.green.databinding.LnurlWithdrawFragmentBinding
 import com.blockstream.green.extensions.dialog
 import com.blockstream.green.extensions.hideKeyboard
@@ -19,8 +24,8 @@ import com.blockstream.green.utils.getClipboard
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class LnUrlWithdrawFragment : AppFragment<LnurlWithdrawFragmentBinding>(
-    R.layout.lnurl_withdraw_fragment,
+class LnUrlWithdrawFragment : AppFragment<ComposeViewBinding>(
+    R.layout.compose_view,
     menuRes = 0
 ) {
 
@@ -36,45 +41,25 @@ class LnUrlWithdrawFragment : AppFragment<LnurlWithdrawFragmentBinding>(
         get() = R.drawable.ic_lightning
 
     val viewModel: LnUrlWithdrawViewModel by viewModel {
-        parametersOf(
-            args.wallet,
-            requestData
-        )
+        parametersOf(args.wallet, requestData)
     }
 
-    override fun getGreenViewModel(): GreenViewModel = viewModel
+    override fun getGreenViewModel() = viewModel
 
-    override fun handleSideEffect(sideEffect: SideEffect) {
-        super.handleSideEffect(sideEffect)
-        if(sideEffect is SideEffects.Success){
-            dialog(getString(R.string.id_success), getString(R.string.id_s_will_send_you_the_funds_it, requestData.domain())){
-                popBackStack()
-            }
-        }
-    }
+    override val useCompose: Boolean = true
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.vm = viewModel
-
-        listOf(binding.buttonAmountCurrency, binding.amountCurrency).setOnClickListener {
-            if (!viewModel.onProgress.value) {
-                viewModel.postEvent(Events.SelectDenomination)
+        binding.composeView.apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            )
+            setContent {
+                AppFragmentBridge {
+                    LnUrlWithdrawScreen(viewModel = viewModel)
+                }
             }
-        }
-
-        binding.buttonAmountPaste.setOnClickListener {
-            viewModel.amount.value = getClipboard(requireContext()) ?: ""
-        }
-
-        binding.buttonAmountClear.setOnClickListener {
-            viewModel.amount.value = ""
-        }
-
-        binding.buttonRedeem.setOnClickListener {
-            viewModel.postEvent(Events.Continue)
-            hideKeyboard()
         }
     }
 }

@@ -24,8 +24,8 @@ fun GreenArrow(modifier: Modifier = Modifier, enabled: Boolean = true) {
 
     Card(
         Modifier
-            .size(40.dp)
-            .then(modifier),
+            .then(modifier)
+            .size(40.dp),
         colors = CardDefaults.cardColors(
             contentColor = whiteHigh,
             containerColor = if(enabled) green else md_theme_outline

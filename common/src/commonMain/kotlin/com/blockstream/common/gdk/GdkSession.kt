@@ -24,6 +24,7 @@ import com.blockstream.common.extensions.hasHistory
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.logException
+import com.blockstream.common.extensions.needs2faActivation
 import com.blockstream.common.extensions.networkForAsset
 import com.blockstream.common.extensions.title
 import com.blockstream.common.extensions.toSortedLinkedHashMap
@@ -214,6 +215,7 @@ class GdkSession constructor(
     private var _systemMessageStateFlow : MutableStateFlow<List<Pair<Network, String>>> = MutableStateFlow(listOf())
     private var _allAccountsStateFlow = MutableStateFlow<List<Account>>(listOf())
     private var _accountsStateFlow = MutableStateFlow<List<Account>>(listOf())
+    private var _expired2FAStateFlow = MutableStateFlow<List<Account>>(listOf())
     private val _lastInvoicePaid = MutableStateFlow<InvoicePaidDetails?>(null)
     private var _accountAssetStateFlow = MutableStateFlow<List<AccountAsset>>(listOf())
     private val _torStatusSharedFlow = MutableStateFlow<TorEvent>(TorEvent(progress = 100))
@@ -277,6 +279,8 @@ class GdkSession constructor(
 
     val accounts : StateFlow<List<Account>> get() = _accountsStateFlow.asStateFlow()
 
+    val expired2FA : StateFlow<List<Account>> get() = _expired2FAStateFlow.asStateFlow()
+
     val lastInvoicePaid = _lastInvoicePaid.asStateFlow()
 
     val accountAsset : StateFlow<List<AccountAsset>> get() = _accountAssetStateFlow.asStateFlow()
@@ -307,12 +311,6 @@ class GdkSession constructor(
     fun networkEvents(network: Network) = networkEventsStateFlow(network).asStateFlow()
 
     val hasLiquidAccount : Boolean get() = accounts.value.any { it.isLiquid }
-
-    val lightningNodeInfoStateFlow
-        get() = lightningSdk.nodeInfoStateFlow
-
-    val lspInfoStateFlow
-        get() = lightningSdk.lspInfoStateFlow
 
     var defaultNetworkOrNull: Network? = null
         private set
@@ -730,6 +728,7 @@ class GdkSession constructor(
 
         // Recreate subject so that can be sure we have fresh data, especially on shared sessions eg. HWW sessions
         _accountsStateFlow.value = listOf()
+        _expired2FAStateFlow.value = listOf()
         _allAccountsStateFlow.value = listOf()
         _accountAssetStateFlow.value = listOf()
         _systemMessageStateFlow.value = listOf()
@@ -1607,6 +1606,7 @@ class GdkSession constructor(
 
         updateSystemMessage()
         updateWalletTransactions()
+        scanExpired2FA()
     }
 
     fun updateLiquidAssets() {
@@ -2420,10 +2420,25 @@ class GdkSession constructor(
         it.fillUtxosJsonElement()
     }
 
-    fun getUnspentOutputs(account: Account, isBump: Boolean = false): UnspentOutputs {
-        return getUnspentOutputs(account.network, BalanceParams(
-            subaccount = account.pointer,
-            confirmations = if(isBump) 1 else 0)
+    fun getUnspentOutputs(
+        account: Account,
+        isBump: Boolean = false,
+        isExpired: Boolean = false
+    ): UnspentOutputs {
+        return getUnspentOutputs(
+            account.network,
+            if (isExpired) {
+                BalanceParams(
+                    subaccount = account.pointer,
+                    confirmations = 0,
+                    expiredAt = block(account.network).value.height
+                )
+            } else {
+                BalanceParams(
+                    subaccount = account.pointer,
+                    confirmations = if (isBump) 1 else 0
+                )
+            }
         )
     }
 
@@ -2723,6 +2738,18 @@ class GdkSession constructor(
         }
     }
 
+
+    private fun scanExpired2FA() {
+        scope.launch(context = Dispatchers.IO + logException(countly)) {
+            _expired2FAStateFlow.value = accounts.value.filter {
+                it.isMultisig && !it.needs2faActivation(this@GdkSession) && getUnspentOutputs(
+                    account = it,
+                    isExpired = true
+                ).unspentOutputs.isNotEmpty()
+            }
+        }
+    }
+
     fun onNewNotification(gaSession: GASession, notification: Notification) {
 
         val network = gdkSessions.firstNotNullOfOrNull { if(it.value == gaSession) it.key else null } ?: return
@@ -2753,6 +2780,10 @@ class GdkSession constructor(
 
                                 // Update wallet transactions
                                 updateWalletTransactions(updateForAccounts = accounts)
+                            }
+
+                            if(network.isMultisig && !network.needs2faActivation(this)){
+                                scanExpired2FA()
                             }
                         }
                     }

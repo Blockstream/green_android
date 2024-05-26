@@ -58,7 +58,8 @@ fun GreenAmountField(
     title: String? = null,
     assetId: String? = null,
     session: GdkSession? = null,
-    sendAll: Boolean? = null,
+    sendAll: Boolean = false,
+    supportsSendAll: Boolean = false,
     enabled: Boolean = true,
     isAmountLocked: Boolean = false,
     error: String? = null,
@@ -80,8 +81,11 @@ fun GreenAmountField(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .padding(start = if (isAmountLocked || sendAll != null) 0.dp else 16.dp)
+                    .padding(start = if (isAmountLocked || supportsSendAll) 0.dp else 16.dp)
                     .padding(vertical = 8.dp)
+                    .ifTrue(isAmountLocked){
+                        padding(end = 4.dp)
+                    }
             ) {
                 val colors = TextFieldDefaults.colors()
 
@@ -100,13 +104,13 @@ fun GreenAmountField(
                     )
                 }
 
-                if (!isAmountLocked && sendAll != null) {
+                if (!isAmountLocked && supportsSendAll) {
                     GreenIconButton(
                         modifier = Modifier.padding(start = 4.dp),
                         text = stringResource(R.string.id_send_all),
                         icon = painterResource(id = R.drawable.empty),
                         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
-                        color = if(sendAll == true) green else whiteMedium
+                        color = if(sendAll) green else whiteMedium
                     ) {
                         onSendAllClick()
                     }
@@ -150,30 +154,32 @@ fun GreenAmountField(
                     ) else labelLarge,
                     modifier = Modifier
                         .padding(start = 8.dp, end = 6.dp)
-                        .ifTrue(!isAmountLocked) {
+                        .ifTrue(isEditable) {
                             clickable {
                                 onDenominationClick()
                             }
                         }
                 )
 
-                if (value.isEmpty()) {
-                    val context = LocalContext.current
-                    IconButton(
-                        onClick = { onValueChange(getClipboard(context) ?: "") },
-                        enabled = !isAmountLocked
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.clipboard),
-                            contentDescription = "Edit"
-                        )
-                    }
-                } else {
-                    IconButton(onClick = { onValueChange("") }, enabled = !isAmountLocked) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.x_circle),
-                            contentDescription = "Clear"
-                        )
+                if(!isAmountLocked) {
+                    if (value.isEmpty()) {
+                        val context = LocalContext.current
+                        IconButton(
+                            onClick = { onValueChange(getClipboard(context) ?: "") },
+                            enabled = isEditable
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.clipboard),
+                                contentDescription = "Edit"
+                            )
+                        }
+                    } else {
+                        IconButton(onClick = { onValueChange("") }, enabled = isEditable) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.x_circle),
+                                contentDescription = "Clear"
+                            )
+                        }
                     }
                 }
             }
@@ -224,7 +230,7 @@ fun GreenAmountFieldPreview() {
             }
             GreenAmountField(amount, {
                 amount = it
-            }, sendAll = isSendAll, onSendAllClick = {
+            }, sendAll = isSendAll, supportsSendAll = true, onSendAllClick = {
                 isSendAll = !isSendAll
             }, denomination = Denomination.MBTC)
         }

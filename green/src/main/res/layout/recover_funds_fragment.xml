@@ -18,7 +18,7 @@
 
         <LinearLayout
             android:id="@+id/linearLayout6"
-            isInvisible="@{vm.onProgress &amp;&amp; vm.showLightningAnimation}"
+            isInvisible="@{vm.onProgress &amp;&amp; vm.onProgressSending}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -235,13 +235,11 @@
 
                         <TextView
                             android:id="@+id/feeRate"
-                            isInvisible="@{vm.feeAmountRate.empty}"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
                             android:layout_marginTop="16dp"
                             android:includeFontPadding="false"
-                            android:text="@{`(`+vm.feeAmountRate+`)`}"
                             android:textAppearance="?attr/textAppearanceBodySmall"
                             android:textColor="@color/color_on_surface_emphasis_medium"
                             android:textSize="11dp"
@@ -256,7 +254,6 @@
                             android:layout_marginTop="16dp"
                             android:layout_marginEnd="8dp"
                             android:includeFontPadding="false"
-                            android:text="@{vm.fee}"
                             android:textAlignment="textEnd"
                             android:textAppearance="?attr/textAppearanceBodyMedium"
                             app:layout_constraintEnd_toStartOf="@+id/buttonEditFee"
@@ -270,7 +267,6 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="1dp"
                             android:includeFontPadding="false"
-                            android:text="@{vm.feeFiat}"
                             android:textAlignment="textEnd"
                             android:textAppearance="?attr/textAppearanceBodySmall"
                             app:layout_constraintEnd_toEndOf="@+id/feeAmount"
@@ -303,7 +299,7 @@
 
                         <com.google.android.material.slider.Slider
                             android:id="@+id/feeSlider"
-                            slider="@={vm.feeSlider}"
+
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
@@ -471,7 +467,7 @@
             android:layout_marginEnd="32dp"
             android:layout_marginBottom="32dp"
             android:visibility="gone"
-            isVisible="@{vm.onProgress &amp;&amp; vm.showLightningAnimation}"
+            isVisible="@{vm.onProgress &amp;&amp; vm.onProgressSending}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -489,7 +485,7 @@
 
                 <app.rive.runtime.kotlin.RiveAnimationView
                     android:id="@+id/rive"
-                    isVisible="@{vm.onProgress &amp;&amp; vm.showLightningAnimation}"
+                    isVisible="@{vm.onProgress &amp;&amp; vm.onProgressSending}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:riveResource="@raw/lightning_transaction" />

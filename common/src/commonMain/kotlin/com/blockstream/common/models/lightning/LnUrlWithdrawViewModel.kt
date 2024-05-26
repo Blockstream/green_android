@@ -7,6 +7,7 @@ import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.NavData
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.logException
@@ -43,16 +44,13 @@ abstract class LnUrlWithdrawViewModelAbstract(greenWallet: GreenWallet) :
     @NativeCoroutinesState
     abstract val amount: MutableStateFlow<String>
 
-    @NativeCoroutinesState
-    abstract val amountCurrency: MutableStateFlow<String>
-
-    abstract val amountIsEditable: Boolean
+    abstract val isAmountLocked: Boolean
 
     @NativeCoroutinesState
     abstract val exchange: StateFlow<String>
 
     @NativeCoroutinesState
-    abstract val description : MutableStateFlow<String>
+    abstract val description: MutableStateFlow<String>
 
     @NativeCoroutinesState
     abstract val error: StateFlow<String?>
@@ -66,13 +64,13 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
 
     override val amount: MutableStateFlow<String> = MutableStateFlow("")
 
-    override val amountCurrency: MutableStateFlow<String> = MutableStateFlow(Denomination.default(session).unit(session = session))
-
-    override val amountIsEditable: Boolean = requestData.minWithdrawableSatoshi() != requestData.maxWithdrawableSatoshi()
+    override val isAmountLocked: Boolean =
+        requestData.minWithdrawableSatoshi() == requestData.maxWithdrawableSatoshi()
 
     override val exchange: MutableStateFlow<String> = MutableStateFlow("")
 
-    override val description: MutableStateFlow<String> = MutableStateFlow(requestData.defaultDescription)
+    override val description: MutableStateFlow<String> =
+        MutableStateFlow(requestData.defaultDescription)
 
     private val _error: MutableStateFlow<String?> = MutableStateFlow(null)
     override val error: StateFlow<String?> = _error.asStateFlow()
@@ -82,7 +80,7 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
     override fun handleEvent(event: Event) {
         super.handleEvent(event)
 
-        if (event is Events.Continue){
+        if (event is Events.Continue) {
             withdraw()
         }
     }
@@ -91,12 +89,14 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
     private var maxWithdraw: Long = 0
 
     init {
-        bootstrap()
+        _navData.value = NavData(title = "id_withdraw", subtitle = greenWallet.name)
 
-        logger.d { "LnUrlWithdrawRequestData: $requestData" }
+        if (appInfo.isDevelopmentOrDebug) {
+            logger.d { "LnUrlWithdrawRequestData: $requestData" }
+        }
 
         // Set amount if min/max is the same
-        if (!amountIsEditable) {
+        if (isAmountLocked) {
             viewModelScope.coroutineScope.launch(context = logException(countly)) {
                 amount.value = requestData.minWithdrawableSatoshi().toAmountLook(
                     session = session,
@@ -112,37 +112,45 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
             check()
         }.launchIn(viewModelScope.coroutineScope)
 
-        denomination.onEach {
-            amountCurrency.value = it.unit(session = session)
-        }.launchIn(viewModelScope.coroutineScope)
-
-        combine(session.lightningNodeInfoStateFlow, denomination) { nodeState, _ ->
-            nodeState
-        }.onEach {
+        combine(session.lightningSdk.nodeInfoStateFlow, denomination) { nodeState, denomination ->
             // Min
             minWithdraw = min(
-                it.maxReceivableSatoshi(),
+                nodeState.maxReceivableSatoshi(),
                 requestData.minWithdrawableSatoshi()
             )
 
             // Max
             maxWithdraw = min(
-                it.maxReceivableSatoshi(),
+                nodeState.maxReceivableSatoshi(),
                 requestData.maxWithdrawableSatoshi()
             )
 
-            withdrawaLimits.value = "id_withdraw_limits_s__s|${minWithdraw}|${maxWithdraw}"
+            withdrawaLimits.value = "id_withdraw_limits_s__s|${
+                minWithdraw.toAmountLook(
+                    session = session,
+                    withUnit = false,
+                    denomination = denomination
+                )
+            }|${
+                maxWithdraw.toAmountLook(
+                    session = session,
+                    withUnit = true,
+                    denomination = denomination
+                )
+            }"
         }.launchIn(viewModelScope.coroutineScope)
+
+        bootstrap()
     }
 
-    private suspend fun amountInSatoshi() = if (amountIsEditable) {
+    private suspend fun amountInSatoshi() = if (isAmountLocked) {
+        requestData.maxWithdrawableSatoshi()
+    } else {
         UserInput.parseUserInputSafe(
             session = session,
             input = amount.value,
             denomination = denomination.value
-        ).getBalance()?.satoshi ?: 0
-    } else {
-        requestData.maxWithdrawableSatoshi()
+        ).getBalance()?.satoshi
     }
 
     private fun updateExchange() {
@@ -153,11 +161,15 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
                     input = amount,
                     denomination = denomination.value
                 ).toAmountLookOrEmpty(
-                    denomination = Denomination.exchange(session = session, denomination = denomination.value),
+                    denomination = Denomination.exchange(
+                        session = session,
+                        denomination = denomination.value
+                    ),
                     withUnit = true,
                     withGrouping = true,
-                    withMinimumDigits = false).let {
-                    if(it.isNotBlank()) "≈ $it" else it
+                    withMinimumDigits = false
+                ).let {
+                    if (it.isNotBlank()) "≈ $it" else it
                 }
             }, preAction = null, postAction = null, onSuccess = {
                 exchange.value = it
@@ -167,27 +179,48 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
         }
     }
 
-    private suspend fun check(){
+    private suspend fun check() {
         val satoshi = amountInSatoshi()
 
-        val balance = session.accountAssets(account = session.lightningAccount).value.policyAsset
-
-        _error.value = if (satoshi <= 0L) {
-            "id_invalid_amount"
-        } else if (satoshi < minWithdraw) {
-            "id_amount_must_be_at_least_s|${minWithdraw.toAmountLook(session = session, denomination = denomination.value)}"
-        } else if (satoshi > balance) {
-            "id_insufficient_funds"
-        } else if (satoshi > maxWithdraw) {
-            "id_amount_must_be_at_most_s|${maxWithdraw.toAmountLook(session = session, denomination = denomination.value)}"
+        if (satoshi == null) {
+            _error.value = null
+            _isValid.value = false
         } else {
-            null
+            val balance =
+                session.accountAssets(account = session.lightningAccount).value.policyAsset
+
+            _error.value = if (satoshi <= 0L) {
+                "id_invalid_amount"
+            } else if (satoshi < minWithdraw) {
+                "id_amount_must_be_at_least_s|${
+                    minWithdraw.toAmountLook(
+                        session = session,
+                        denomination = denomination.value
+                    )
+                }"
+            } else if (satoshi > balance) {
+                "id_insufficient_funds"
+            } else if (satoshi > maxWithdraw) {
+                "id_amount_must_be_at_most_s|${
+                    maxWithdraw.toAmountLook(
+                        session = session,
+                        denomination = denomination.value
+                    )
+                }"
+            } else {
+                null
+            }
+            _isValid.value = _error.value == null
         }
     }
 
     private fun withdraw() {
         doAsync({
-            session.lightningSdk.withdrawLnUrl(requestData = requestData, amountInSatoshi(), description.value).also {
+            session.lightningSdk.withdrawLnUrl(
+                requestData = requestData,
+                amount = amountInSatoshi() ?: throw Exception("No amount specified"),
+                description = description.value
+            ).also {
                 if (it is LnUrlWithdrawResult.ErrorStatus) {
                     throw Exception(it.data.reason)
                 }
@@ -195,7 +228,12 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
         }, postAction = {
             onProgress.value = it == null
         }, onSuccess = {
-            postSideEffect(SideEffects.Success())
+            postSideEffect(
+                SideEffects.NavigateBack(
+                    title = "id_success",
+                    message = "id_s_will_send_you_the_funds_it|${requestData.domain()}"
+                )
+            )
         })
     }
 
@@ -219,14 +257,28 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
     }
 
     override fun errorReport(exception: Throwable): ErrorReport {
-        return ErrorReport.create(throwable = exception, network = session.lightning, session = session)
+        return ErrorReport.create(
+            throwable = exception,
+            network = session.lightning,
+            session = session
+        )
     }
 
-    companion object: Loggable()
+    companion object : Loggable()
 }
 
 class LnUrlWithdrawViewModelPreview(greenWallet: GreenWallet) :
     LnUrlWithdrawViewModelAbstract(greenWallet = greenWallet) {
+
+
+    override val withdrawaLimits: StateFlow<String> = MutableStateFlow("1 - 2 sats")
+    override val amount: MutableStateFlow<String> = MutableStateFlow("")
+    override val isAmountLocked: Boolean = false
+    override val exchange: MutableStateFlow<String> = MutableStateFlow("")
+    override val description: MutableStateFlow<String> = MutableStateFlow("")
+    override val error: MutableStateFlow<String?> = MutableStateFlow(null)
+    override val redeemMessage: String = "id_you_are_redeeming_funds_from|blockstream.com"
+
     companion object {
         fun preview(): LnUrlWithdrawViewModelPreview {
             return LnUrlWithdrawViewModelPreview(
@@ -234,14 +286,4 @@ class LnUrlWithdrawViewModelPreview(greenWallet: GreenWallet) :
             )
         }
     }
-
-    override val withdrawaLimits: StateFlow<String> = MutableStateFlow("")
-    override val amount: MutableStateFlow<String> = MutableStateFlow("")
-    override val amountCurrency: MutableStateFlow<String> = MutableStateFlow("")
-    override val amountIsEditable: Boolean = false
-    override val exchange: MutableStateFlow<String> = MutableStateFlow("")
-    override val description: MutableStateFlow<String> = MutableStateFlow("")
-    override val error: MutableStateFlow<String> = MutableStateFlow("")
-    override val redeemMessage: String = ""
-
 }

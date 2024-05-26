@@ -144,12 +144,12 @@ fun BumpScreen(
                 .verticalScroll(rememberScrollState())
         ) {
 
-            val accountAsset by viewModel.accountAsset.collectAsStateWithLifecycle()
+            val accountAssetBalance by viewModel.accountAssetBalance.collectAsStateWithLifecycle()
 
-            accountAsset?.also {
+            accountAssetBalance?.also {
                 GreenAccountAsset(
                     title = stringResource(R.string.id_account),
-                    accountAssetBalance = it.accountAssetBalance,
+                    accountAssetBalance = it,
                     session = viewModel.sessionOrNull,
                     withAsset = false,
                     withEditIcon = false

@@ -26,12 +26,6 @@ class AddWalletFragment : AppFragment<ComposeViewBinding>(R.layout.compose_view)
         super.handleSideEffect(sideEffect)
 
         (sideEffect as? SideEffects.NavigateTo)?.also { to ->
-            (to.destination as? NavigateDestinations.RecoveryIntro)?.also {
-                navigate(AddWalletFragmentDirections.actionAddWalletFragmentToRecoveryIntroFragment(
-                    setupArgs = it.args
-                ))
-            }
-
             (to.destination as? NavigateDestinations.EnterRecoveryPhrase)?.also {
                 navigate(AddWalletFragmentDirections.actionAddWalletFragmentToEnterRecoveryPhraseFragment(
                     setupArgs = it.args

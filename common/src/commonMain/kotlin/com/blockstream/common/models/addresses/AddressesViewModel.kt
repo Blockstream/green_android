@@ -2,49 +2,84 @@ package com.blockstream.common.models.addresses
 
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Event
+import com.blockstream.common.extensions.isBlank
+import com.blockstream.common.extensions.previewAccount
+import com.blockstream.common.extensions.previewAccountAsset
+import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.looks.account.AddressLook
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
+import com.rickclephas.kmm.viewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 
 
-abstract class AddressesViewModelAbstract(greenWallet: GreenWallet, account: Account) :
-    GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = account.accountAsset) {
+abstract class AddressesViewModelAbstract(greenWallet: GreenWallet, accountAsset: AccountAsset) :
+    GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = accountAsset) {
     override fun screenName(): String = "PreviousAddresses"
+
+    @NativeCoroutinesState
+    abstract val query: MutableStateFlow<String>
 
     @NativeCoroutinesState
     abstract val addresses: StateFlow<List<AddressLook>>
 
     @NativeCoroutinesState
     abstract val hasMore: StateFlow<Boolean>
+
+    @NativeCoroutinesState
+    abstract val canSign: Boolean
 }
 
-class AddressesViewModel(greenWallet: GreenWallet, account: Account) :
-    AddressesViewModelAbstract(greenWallet = greenWallet, account = account) {
+class AddressesViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
+    AddressesViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
+
+    override val query: MutableStateFlow<String> = MutableStateFlow("")
 
     private val _addresses: MutableStateFlow<List<AddressLook>> = MutableStateFlow(listOf())
-    override val addresses: StateFlow<List<AddressLook>> = _addresses.asStateFlow()
+
+    override val addresses: StateFlow<List<AddressLook>> =
+        combine(query.map { it.lowercase() }, _addresses) { query, addresses ->
+            if (query.isBlank()) {
+                addresses
+            } else {
+                addresses.filter {
+                    it.address.lowercase().contains(query)
+                }
+            }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
     private val _hasMore: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val hasMore: StateFlow<Boolean> = _hasMore.asStateFlow()
 
-    private var lastPointer : Int? = null
+    override val canSign: Boolean = account.network.canSignMessage
 
-    class LocalEvents{
-        object LoadMore: Event
-        data class AddressBlockExplorer(val address: String): Event
+    private var lastPointer: Int? = null
+
+    class LocalEvents {
+        object LoadMore : Event
+        data class AddressBlockExplorer(val address: String) : Event
+    }
+
+    init {
+        getPreviousAddresses()
+
+        bootstrap()
     }
 
     override fun handleEvent(event: Event) {
         super.handleEvent(event)
 
-        if(event is LocalEvents.LoadMore){
+        if (event is LocalEvents.LoadMore) {
             getPreviousAddresses()
-        } else if(event is LocalEvents.AddressBlockExplorer){
+        } else if (event is LocalEvents.AddressBlockExplorer) {
             postSideEffect(
                 SideEffects.OpenBrowser(
                     url = "${
@@ -58,12 +93,7 @@ class AddressesViewModel(greenWallet: GreenWallet, account: Account) :
         }
     }
 
-    init {
-        getPreviousAddresses()
-        bootstrap()
-    }
-
-    private fun getPreviousAddresses(){
+    private fun getPreviousAddresses() {
         _hasMore.value = false
 
         doAsync({
@@ -71,7 +101,7 @@ class AddressesViewModel(greenWallet: GreenWallet, account: Account) :
         }, onSuccess = { previousAddresses ->
             lastPointer = previousAddresses.lastPointer ?: 0
 
-            _addresses.value = _addresses.value + previousAddresses.addresses.map {
+            _addresses.value += previousAddresses.addresses.map {
                 AddressLook.create(it, account.network)
             }
             _hasMore.value = previousAddresses.lastPointer != null
@@ -79,12 +109,31 @@ class AddressesViewModel(greenWallet: GreenWallet, account: Account) :
     }
 }
 
-//class AddressesViewModelPreview(greenWallet: GreenWallet) :
-//    AddressesViewModelAbstract(greenWallet = greenWallet) {
-//
-//    override val addresses: StateFlow<List<Address>> = MutableStateFlow(listOf())
-//
-//    companion object {
-//        fun preview() = AddressesViewModelPreview(previewWallet(isHardware = false))
-//    }
-//}
+class AddressesViewModelPreview(greenWallet: GreenWallet, accountAsset: AccountAsset) :
+    AddressesViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
+    override val query: MutableStateFlow<String> = MutableStateFlow("")
+
+    override val addresses: StateFlow<List<AddressLook>> = MutableStateFlow(
+        listOf(
+            AddressLook(
+                address = "bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu",
+                txCount = "1",
+                canSign = true
+            ),
+            AddressLook(
+                address = "bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu",
+                txCount = "2",
+                canSign = false
+            )
+        )
+    )
+
+    override val hasMore: StateFlow<Boolean> = MutableStateFlow(false)
+    override val canSign: Boolean = true
+
+    companion object {
+        fun preview() =
+            AddressesViewModelPreview(previewWallet(isHardware = false), previewAccountAsset())
+    }
+
+}

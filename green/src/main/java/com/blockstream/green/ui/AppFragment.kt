@@ -29,6 +29,7 @@ import androidx.navigation.fragment.findNavController
 import com.blockstream.common.ScreenView
 import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.data.LogoutReason
+import com.blockstream.common.data.NavData
 import com.blockstream.common.extensions.handleException
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.Wally
@@ -44,6 +45,7 @@ import com.blockstream.compose.utils.stringResourceId
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.data.BannerView
 import com.blockstream.green.data.CountlyAndroid
+import com.blockstream.green.extensions.dialog
 import com.blockstream.green.extensions.errorDialog
 import com.blockstream.green.extensions.errorSnackbar
 import com.blockstream.green.extensions.snackbar
@@ -118,10 +120,11 @@ abstract class AppFragment<T : ViewDataBinding>(
     open val useCompose : Boolean = false
 
     open fun updateToolbar() {
-        title?.let {
+        val navData: NavData? = getGreenViewModel()?.navData?.value
+        (navData?.title ?: title)?.let {
             toolbar.title = stringResourceId(requireContext(), it)
         }
-        toolbar.subtitle = subtitle?.let { stringResourceId(requireContext(), it) }
+        toolbar.subtitle = (navData?.subtitle ?: subtitle)?.let { stringResourceId(requireContext(), it) }
         toolbar.logo = null
         // Only show toolbar icon if it's overridden eg. add account flow
         toolbarIcon?.let { toolbar.setLogo(it) }
@@ -328,12 +331,19 @@ abstract class AppFragment<T : ViewDataBinding>(
                 }
             }
             is SideEffects.NavigateBack -> {
-                if (sideEffect.error == null) {
-                        popBackStack()
-                } else {
+                if (sideEffect.error != null) {
                     errorDialog(sideEffect.error!!, errorReport = sideEffect.errorReport) {
                         popBackStack()
                     }
+                } else if (sideEffect.message != null) {
+                    dialog(
+                        title = stringResourceId(requireContext(), sideEffect.title ?: ""),
+                        message = stringResourceId(requireContext(), sideEffect.message ?: "")
+                    ) {
+                        popBackStack()
+                    }
+                } else {
+                    popBackStack()
                 }
             }
             is SideEffects.CopyToClipboard -> {
@@ -382,8 +392,16 @@ abstract class AppFragment<T : ViewDataBinding>(
                     navigate(NavGraphDirections.actionGlobalUseHardwareDeviceFragment())
                 }
 
-                (sideEffect.destination as? NavigateDestinations.NewWatchOnlyWallet)?.also {
+                (sideEffect.destination as? NavigateDestinations.WatchOnlyPolicy)?.also {
                     navigate(NavGraphDirections.actionGlobalWatchOnlyPolicyFragment())
+                }
+
+                (sideEffect.destination as? NavigateDestinations.WatchOnlyNetwork)?.also {
+                    navigate(NavGraphDirections.actionGlobalWatchOnlyNetworkFragment(setupArgs = it.args))
+                }
+
+                (sideEffect.destination as? NavigateDestinations.WatchOnlyCredentials)?.also {
+                    navigate(NavGraphDirections.actionGlobalWatchOnlyCredentialsFragment(setupArgs = it.args))
                 }
 
                 (sideEffect.destination as? NavigateDestinations.AppSettings)?.also {
@@ -413,8 +431,8 @@ abstract class AppFragment<T : ViewDataBinding>(
                     navigate(
                         NavGraphDirections.actionGlobalSendFragment(
                             wallet = getGreenViewModel()!!.greenWallet,
-                            accountAsset = it.accountAsset,
-                            address = it.address
+                            address = it.address,
+                            addressType = it.addressType
                         )
                     )
                 }
@@ -479,7 +497,31 @@ abstract class AppFragment<T : ViewDataBinding>(
                 (sideEffect.destination as? NavigateDestinations.ArchivedAccounts)?.also {
                     navigate(
                         NavGraphDirections.actionGlobalArchivedAccountsFragment(
-                            wallet = getGreenViewModel()!!.greenWallet
+                            wallet = getGreenViewModel()!!.greenWallet,
+                            navigateToOverview = it.navigateToRoot
+                        )
+                    )
+                }
+                (sideEffect.destination as? NavigateDestinations.RecoveryIntro)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalRecoveryIntroFragment(
+                            setupArgs = it.args
+                        )
+                    )
+                }
+                (sideEffect.destination as? NavigateDestinations.ReEnable2FA)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalReEnable2faFragment(
+                            wallet = getGreenViewModel()!!.greenWallet,
+                        )
+                    )
+                }
+                (sideEffect.destination as? NavigateDestinations.Redeposit)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalRedepositFragment(
+                            wallet = getGreenViewModel()!!.greenWallet,
+                            accountAsset = it.accountAsset,
+                            isRedeposit2FA = it.isRedeposit2FA
                         )
                     )
                 }
@@ -517,9 +559,17 @@ abstract class AppFragment<T : ViewDataBinding>(
                     navigate(
                         NavGraphDirections.actionGlobalRecoverFundsFragment(
                             wallet = getGreenViewModel()!!.greenWallet,
-                            amount = it.satoshi,
+                            amount = it.amount,
                             address = it.address,
                             isSendAll = it.isSendAll
+                        )
+                    )
+                }
+                (sideEffect.destination as? NavigateDestinations.TwoFactorAuthentication)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalTwoFractorAuthenticationFragment(
+                            wallet = getGreenViewModel()!!.greenWallet,
+                            network = it.network
                         )
                     )
                 }

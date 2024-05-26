@@ -103,16 +103,16 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
         } ?: DataState.Empty
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), if(account.isLiquid) DataState.Loading else DataState.Empty)
 
-    override val accountBalance: StateFlow<AccountBalance> = this.accountAsset
+    override val accountBalance: StateFlow<AccountBalance> = combine(this.accountAsset
         .filterNotNull()
-        .filter { session.isConnected }
-        .map {
-            AccountBalance.create(account = it.account, session = session)
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(),
-            accountAsset.account.accountBalance
-        )
+        .filter { session.isConnected }, session.expired2FA
+    ) { accountAsset, _ ->
+        AccountBalance.create(account = accountAsset.account, session = session)
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(),
+        accountAsset.account.accountBalance
+    )
 
     override val showAmpInfo: StateFlow<Boolean> = assets.map {
         account.isAmp && it.isEmpty()
@@ -123,11 +123,11 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
     override val lightningInfo: StateFlow<LightningInfoLook?> =
-        session.lightningNodeInfoStateFlow.map {
+        (session.lightningSdkOrNull?.nodeInfoStateFlow?.map {
             if (session.isConnected && account.isLightning) {
                 LightningInfoLook.create(session = session, nodeState = it)
             } else null
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
+        } ?: emptyFlow()).stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     override val transactions: StateFlow<DataState<List<TransactionLook>>> = combine(
         session.accountTransactions(account),
@@ -294,9 +294,7 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                                 accountAsset = accountAsset.value,
                             )
                         } else {
-                            NavigateDestinations.Send(
-                                accountAsset = accountAsset.value!!,
-                            )
+                            NavigateDestinations.Send()
                         }
                     )
                 )
@@ -330,7 +328,7 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                 postSideEffect(
                     SideEffects.NavigateTo(
                         NavigateDestinations.RecoverFunds(
-                            satoshi = session.lightningSdk.nodeInfoStateFlow.value.onchainBalanceSatoshi()
+                            amount = session.lightningSdk.nodeInfoStateFlow.value.onchainBalanceSatoshi()
                         )
                     )
                 )

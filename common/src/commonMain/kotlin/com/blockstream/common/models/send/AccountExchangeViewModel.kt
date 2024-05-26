@@ -41,16 +41,15 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.sync.withLock
 import kotlin.math.absoluteValue
 
 abstract class AccountExchangeViewModelAbstract(
     greenWallet: GreenWallet,
     accountAssetOrNull: AccountAsset? = null
 ) : CreateTransactionViewModelAbstract(
-        greenWallet = greenWallet,
-        accountAssetOrNull = accountAssetOrNull
-    ) {
+    greenWallet = greenWallet,
+    accountAssetOrNull = accountAssetOrNull
+) {
     override fun screenName(): String = "AccountExchange"
 
     override fun segmentation(): HashMap<String, Any>? {
@@ -88,7 +87,10 @@ abstract class AccountExchangeViewModelAbstract(
     abstract val amountExchange: StateFlow<String>
 
     @NativeCoroutinesState
-    abstract val isSendAll: MutableStateFlow<Boolean?>
+    abstract val isSendAll: MutableStateFlow<Boolean>
+
+    @NativeCoroutinesState
+    abstract val supportsSendAll: StateFlow<Boolean>
 
     @NativeCoroutinesState
     abstract val receiveAmount: StateFlow<String?>
@@ -100,22 +102,37 @@ abstract class AccountExchangeViewModelAbstract(
 class AccountExchangeViewModel(
     greenWallet: GreenWallet,
     val initialAccountAssetOrNull: AccountAsset? = null,
-) : AccountExchangeViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = initialAccountAssetOrNull) {
+) : AccountExchangeViewModelAbstract(
+    greenWallet = greenWallet,
+    accountAssetOrNull = initialAccountAssetOrNull
+) {
 
-    override val isSendAll: MutableStateFlow<Boolean?> = MutableStateFlow(null)
+    private val _supportsSendAll: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    override val supportsSendAll: StateFlow<Boolean> = _supportsSendAll.asStateFlow()
+
+    override val isSendAll: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val assetId: MutableStateFlow<String?> = MutableStateFlow(null)
 
     override val fromAccounts = combine(session.accountAsset.map {
         // Only same network transfers
         it.filter { !it.account.isLightning }
-    } , _denomination) { accounts, denomination ->
+    }, _denomination) { accounts, denomination ->
         accounts.mapNotNull {
-            AccountAssetBalance.createIfBalance(accountAsset = it, session = sessionOrNull, denomination = denomination)
+            AccountAssetBalance.createIfBalance(
+                accountAsset = it,
+                session = sessionOrNull,
+                denomination = denomination
+            )
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    override val toAccounts = combine(session.accounts, fromAccountAssetBalance, fromAccounts, _denomination) { accounts, fromAccountBalance, _, denomination ->
-        if(fromAccountBalance != null) {
+    override val toAccounts = combine(
+        session.accounts,
+        fromAccountAssetBalance,
+        fromAccounts,
+        _denomination
+    ) { accounts, fromAccountBalance, _, denomination ->
+        if (fromAccountBalance != null) {
             accounts.filter {
                 fromAccountBalance.account.id != it.id // exclude same account
                         && it.network.isSameNetwork(fromAccountBalance.account.network) // exclude different networks (at least for now)
@@ -183,9 +200,9 @@ class AccountExchangeViewModel(
     private var _pendingSetAccountFrom = true
 
     class LocalEvents {
-        object ToggleIsSendAll: Event
+        object ToggleIsSendAll : Event
         data class SetToAccount(val accountAsset: AccountAsset) : Event
-        data class ClickAccount(val isFrom: Boolean = false): Event
+        data class ClickAccount(val isFrom: Boolean = false) : Event
     }
 
     init {
@@ -214,10 +231,11 @@ class AccountExchangeViewModel(
             // When changing between accounts, reset isSendAll flag
             accountAsset.onEach {
                 // Reset amount if it was prefilled from isSendAll
-                if(isSendAll.value == true){
+                if (isSendAll.value) {
                     amount.value = ""
                 }
-                isSendAll.value = if(it?.account?.isLightning == false) false else null
+                isSendAll.value = false
+                _supportsSendAll.value = it?.account?.isLightning == false
             }.launchIn(this)
 
             // When changing between different asset clear amount
@@ -228,7 +246,8 @@ class AccountExchangeViewModel(
             }.launchIn(this)
 
             combine(fromAccountAsset, toAccount) { fromAccountAsset, toAccountAsset ->
-                _showFeeSelector.value = fromAccountAsset != null && fromAccountAsset.account.isLightning == false && toAccountAsset != null
+                _showFeeSelector.value =
+                    fromAccountAsset != null && fromAccountAsset.account.isLightning == false && toAccountAsset != null
             }.launchIn(this)
 
             combine(
@@ -245,8 +264,13 @@ class AccountExchangeViewModel(
 
                 // Check if the current AccountAsset operates on the same network only.
                 // That way we preserve the asset from previous action
-                if(network != null && (accountAsset.value?.let { !it.account.network.isSameNetwork(network) || it.balance(session) <= 0} != false)){
-                    accountAsset.value = findAccountAsset(network, assetId = assetId.value ?: network.policyAsset)
+                if (network != null && (accountAsset.value?.let {
+                        !it.account.network.isSameNetwork(
+                            network
+                        ) || it.balance(session) <= 0
+                    } != false)) {
+                    accountAsset.value =
+                        findAccountAsset(network, assetId = assetId.value ?: network.policyAsset)
                 }
 
                 // Prefer the real network from the account
@@ -285,19 +309,16 @@ class AccountExchangeViewModel(
                     SideEffects.NavigateTo(
                         NavigateDestinations.Accounts(
                             greenWallet = greenWallet,
-                            accounts = (if (event.isFrom) fromAccounts.value else toAccounts.value) ?: listOf(),
+                            accounts = (if (event.isFrom) fromAccounts.value else toAccounts.value)
+                                ?: listOf(),
                             withAsset = event.isFrom
-                        ).also {
-                            logger.d { "WTF from=${fromAccounts.value}" }
-                            logger.d { "WTF to=${toAccounts.value}" }
-                            logger.d { "WTF pass=${it.accounts}" }
-                        }
+                        )
                     )
                 )
             }
 
             is LocalEvents.ToggleIsSendAll -> {
-                isSendAll.value = isSendAll.value?.let { isSendAll ->
+                isSendAll.value = isSendAll.value.let { isSendAll ->
                     if (isSendAll) {
                         amount.value = ""
                     }
@@ -321,11 +342,12 @@ class AccountExchangeViewModel(
         }
     }
 
-    private suspend fun createTransactionParams(): CreateTransactionParams? {
+    override suspend fun createTransactionParams(): CreateTransactionParams? {
         val fromAccountAsset = fromAccountAsset.value
         val address = _toAddress.value
 
         if (fromAccountAsset == null || address == null) {
+            _error.value = null
             return null
         }
 
@@ -378,105 +400,117 @@ class AccountExchangeViewModel(
         }
     }
 
-    override fun createTransaction(params: CreateTransactionParams?, finalCheckBeforeContinue: Boolean) {
+    override fun createTransaction(
+        params: CreateTransactionParams?,
+        finalCheckBeforeContinue: Boolean
+    ) {
         doAsync({
-            checkTransactionMutex.withLock {
-                if (params == null) {
-                    return@doAsync null
+            if (params == null) {
+                return@doAsync null
+            }
+
+            accountAsset.value?.let { accountAsset ->
+                val network = accountAsset.account.network
+
+                val tx = session.createTransaction(network, params)
+
+                // Clear error as soon as possible
+                if (tx.error.isBlank()) {
+                    _error.value = null
                 }
 
-                accountAsset.value?.let { accountAsset ->
-                    val network = accountAsset.account.network
+                tx.addressees.firstOrNull()?.also { addressee ->
 
-                    val tx = session.createTransaction(network, params)
-
-                    // Clear error as soon as possible
-                    if (tx.error.isBlank()) {
-                        _error.value = null
+                    addressee.bip21Params?.assetId?.let { assetId ->
+                        this.assetId.value = assetId
+                        this.accountAsset.value = findAccountAsset(
+                            network = network,
+                            assetId = assetId
+                        )
+                    } ?: kotlin.run {
+                        assetId.value = null
                     }
 
-                    tx.addressees.firstOrNull()?.also { addressee ->
+                    val assetId = addressee.assetId ?: account.network.policyAsset
 
-                        addressee.bip21Params?.assetId?.let { assetId ->
-                            this.assetId.value = assetId
-                            this.accountAsset.value = findAccountAsset(network = network, assetId = assetId)
-                        } ?: kotlin.run {
-                            assetId.value = null
+                    if (addressee.isGreedy == true) {
+
+                        if (!assetId.isPolicyAsset(account.network) && denomination.value.isFiat) {
+                            _denomination.value = Denomination.default(session)
                         }
 
-                        val assetId = addressee.assetId ?: account.network.policyAsset
-
-                        if (addressee.isGreedy == true) {
-
-                            if (!assetId.isPolicyAsset(account.network) && denomination.value.isFiat) {
-                                _denomination.value = Denomination.default(session)
-                            }
-
-                            (tx.satoshi[assetId]?.absoluteValue?.let { sendAmount ->
-                                sendAmount.toAmountLook(
-                                    session = session,
-                                    assetId = assetId,
-                                    denomination = denomination.value,
-                                    withUnit = false,
-                                    withGrouping = false
-                                )
-                            }).also {
-                                amount.value = it ?: ""
-                            }
-                        }
-
-                        tx.satoshi[assetId]?.absoluteValue?.also { sendAmount ->
-                            _receiveAmount.value = sendAmount.toAmountLook(
+                        (tx.satoshi[assetId]?.absoluteValue?.let { sendAmount ->
+                            sendAmount.toAmountLook(
                                 session = session,
                                 assetId = assetId,
                                 denomination = denomination.value,
-                                withUnit = true,
+                                withUnit = false,
                                 withGrouping = false
                             )
-
-                            _receiveAmountExchange.value = sendAmount.toAmountLook(
-                                session = session,
-                                assetId = assetId,
-                                denomination = Denomination.exchange(session, denomination.value),
-                                withUnit = true,
-                                withGrouping = false,
-                            )
+                        }).also {
+                            amount.value = it ?: ""
                         }
                     }
 
-                    tx.fee?.takeIf { it != 0L || tx.error.isNullOrBlank() }.also {
-                        _feePriority.value = calculateFeePriority(
+                    tx.satoshi[assetId]?.absoluteValue?.also { sendAmount ->
+                        _receiveAmount.value = sendAmount.toAmountLook(
                             session = session,
-                            feePriority = _feePriority.value,
-                            feeAmount = it,
-                            feeRate = tx.feeRate?.feeRateWithUnit()
+                            assetId = assetId,
+                            denomination = denomination.value,
+                            withUnit = true,
+                            withGrouping = false
+                        )
+
+                        _receiveAmountExchange.value = sendAmount.toAmountLook(
+                            session = session,
+                            assetId = assetId,
+                            denomination = Denomination.exchange(session, denomination.value),
+                            withUnit = true,
+                            withGrouping = false,
                         )
                     }
+                }
 
-                    tx.error.takeIf { it.isNotBlank() }?.also {
-                        // If amount is blank and not SendAll, skip displaying an error, else user will immediately see the error when starts typing
-                        if((amount.value.isBlank() && isSendAll.value == false) && listOf("id_invalid_amount", "id_amount_below_the_dust_threshold", "id_insufficient_funds", "id_amount_must_be_at_least_s", "id_amount_must_be_at_most_s").startsWith(it)){
-                            // clear error
-                            _error.value = null
-                            return@withLock null
-                        }
+                tx.fee?.takeIf { it != 0L || tx.error.isNullOrBlank() }.also {
+                    _feePriority.value = calculateFeePriority(
+                        session = session,
+                        feePriority = _feePriority.value,
+                        feeAmount = it,
+                        feeRate = tx.feeRate?.feeRateWithUnit()
+                    )
+                }
 
-                        if (it == "id_amount_below_the_dust_threshold" && params.addresseesAsParams?.firstOrNull()
-                                ?.let { it.assetId.isPolicyAsset(session) && !it.isGreedy && it.satoshi < DustLimit } == true
-                        ) {
-                            throw Exception("id_amount_must_be_at_least_s|$DustLimit sats")
-                        } else {
-                            throw Exception(it)
-                        }
+                tx.error.takeIf { it.isNotBlank() }?.also {
+                    // If amount is blank and not SendAll, skip displaying an error, else user will immediately see the error when starts typing
+                    if ((amount.value.isBlank() && !isSendAll.value) && listOf(
+                            "id_invalid_amount",
+                            "id_amount_below_the_dust_threshold",
+                            "id_insufficient_funds",
+                            "id_amount_must_be_at_least_s",
+                            "id_amount_must_be_at_most_s"
+                        ).startsWith(it)
+                    ) {
+                        // clear error
+                        _error.value = null
+                        return@doAsync null
                     }
 
-                    tx
+                    if (it == "id_amount_below_the_dust_threshold" && params.addresseesAsParams?.firstOrNull()
+                            ?.let { it.assetId.isPolicyAsset(session) && !it.isGreedy && it.satoshi < DustLimit } == true
+                    ) {
+                        throw Exception("id_amount_must_be_at_least_s|$DustLimit sats")
+                    } else {
+                        throw Exception(it)
+                    }
                 }
+
+                tx
             }
-        }, preAction = {
+        }, mutex = createTransactionMutex, preAction = {
             onProgress.value = true
             _isValid.value = false
         }, onSuccess = {
+            createTransaction.value = it
             _isValid.value = it != null
 
             if (it == null) {
@@ -486,18 +520,24 @@ class AccountExchangeViewModel(
                 _error.value = null
             }
 
-            if(finalCheckBeforeContinue && params != null &&  it != null){
-                session.pendingTransaction = Triple(params, it, TransactionSegmentation(
-                    transactionType = TransactionType.SEND,
-                    addressInputType = _addressInputType,
-                    sendAll = isSendAll.value ?: false
-                ))
+            if (finalCheckBeforeContinue && params != null && it != null) {
+                session.pendingTransaction = Triple(
+                    params, it, TransactionSegmentation(
+                        transactionType = TransactionType.SEND,
+                        addressInputType = _addressInputType,
+                        sendAll = isSendAll.value ?: false
+                    )
+                )
 
                 postSideEffect(SideEffects.Navigate())
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.SendConfirm(
-                    accountAsset = accountAsset.value!!,
-                    denomination = denomination.value
-                )))
+                postSideEffect(
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.SendConfirm(
+                            accountAsset = accountAsset.value!!,
+                            denomination = denomination.value
+                        )
+                    )
+                )
             }
         }, onError = {
             _isValid.value = false
@@ -524,6 +564,7 @@ class AccountExchangeViewModel(
         }
 
     }
+
     override fun setDenominatedValue(denominatedValue: DenominatedValue) {
         _denomination.value = denominatedValue.denomination
         amount.value = denominatedValue.asInput ?: ""
@@ -537,7 +578,10 @@ class AccountExchangeViewModel(
         it.account.network.isSameNetwork(network) && it.assetId == assetId && it.balance(session) > 0
     }
 
-    private fun findAccountAsset(network: Network, assetId: String = network.policyAsset): AccountAsset? {
+    private fun findAccountAsset(
+        network: Network,
+        assetId: String = network.policyAsset
+    ): AccountAsset? {
         val accountsAndAssets = session.accountAsset.value
 
         // Check current selected
@@ -590,15 +634,8 @@ class AccountExchangeViewModelPreview(greenWallet: GreenWallet) :
     override val receiveAmount: StateFlow<String?> = MutableStateFlow(null)
     override val receiveAmountExchange: StateFlow<String?> = MutableStateFlow(null)
 
-    override val isSendAll: MutableStateFlow<Boolean?> = MutableStateFlow(false)
-
-
-    override fun createTransaction(
-        params: CreateTransactionParams?,
-        finalCheckBeforeContinue: Boolean
-    ) {
-        super.createTransaction(params, finalCheckBeforeContinue)
-    }
+    override val isSendAll: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    override val supportsSendAll: StateFlow<Boolean> = MutableStateFlow(true)
 
     init {
 

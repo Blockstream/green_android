@@ -4,13 +4,20 @@ import breez_sdk.RecommendedFees
 import breez_sdk.ReverseSwapFeesRequest
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.ErrorReport
+import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.NavData
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
+import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.ifConnectedSuspend
 import com.blockstream.common.extensions.isBlank
+import com.blockstream.common.extensions.previewAccountAsset
+import com.blockstream.common.extensions.previewAccountAssetBalance
 import com.blockstream.common.extensions.previewWallet
+import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.feeRateWithUnit
@@ -33,43 +40,50 @@ import kotlinx.coroutines.sync.Mutex
 import kotlin.math.absoluteValue
 
 
-abstract class RecoverFundsViewModelAbstract(greenWallet: GreenWallet, val isSendAll: Boolean, val onChainAddress: String?) :
-    GreenViewModel(greenWalletOrNull = greenWallet) {
+abstract class RecoverFundsViewModelAbstract(
+    greenWallet: GreenWallet,
+    val isSendAll: Boolean,
+    val onChainAddress: String?
+) : GreenViewModel(greenWalletOrNull = greenWallet) {
 
     val isRefund by lazy {
         onChainAddress != null
     }
 
-    override fun screenName(): String = if(isRefund) "OnChainRefund" else if(isSendAll) "LightningSendAll" else "RedeemOnchainFunds"
+    override fun screenName(): String =
+        if (isRefund) "OnChainRefund" else if (isSendAll) "LightningSendAll" else "RedeemOnchainFunds"
+
+    @NativeCoroutinesState
+    abstract val bitcoinAccounts: StateFlow<List<AccountAssetBalance>>
 
     @NativeCoroutinesState
     abstract val manualAddress: MutableStateFlow<String>
+
     @NativeCoroutinesState
     abstract val amount: StateFlow<String>
+
     @NativeCoroutinesState
     abstract val amountToBeRefunded: StateFlow<String?>
+
     @NativeCoroutinesState
     abstract val amountToBeRefundedFiat: StateFlow<String?>
-    @NativeCoroutinesState
-    abstract val error: StateFlow<String?>
-    @NativeCoroutinesState
-    abstract val fee: StateFlow<String?>
-    @NativeCoroutinesState
-    abstract val feeFiat: StateFlow<String?>
-    @NativeCoroutinesState
-    abstract val feeSlider: MutableStateFlow<Int>
-    @NativeCoroutinesState
-    abstract val feeAmountRate: StateFlow<String>
+
     @NativeCoroutinesState
     abstract val hasBitcoinAccount: StateFlow<Boolean>
+
     @NativeCoroutinesState
     abstract val showManualAddress: MutableStateFlow<Boolean>
+
     @NativeCoroutinesState
     abstract val recommendedFees: StateFlow<RecommendedFees?>
+
     @NativeCoroutinesState
-    abstract val customFee: StateFlow<Long?>
+    abstract val onProgressSending: StateFlow<Boolean>
+
     @NativeCoroutinesState
-    abstract val showLightningAnimation: StateFlow<Boolean>
+    abstract val feePriority: StateFlow<FeePriority>
+
+    abstract val error: StateFlow<String?>
 }
 
 class RecoverFundsViewModel(
@@ -77,16 +91,33 @@ class RecoverFundsViewModel(
     isSendAll: Boolean,
     onChainAddress: String?,
     val satoshi: Long,
-) : RecoverFundsViewModelAbstract(greenWallet = greenWallet, isSendAll = isSendAll, onChainAddress = onChainAddress) {
+) : RecoverFundsViewModelAbstract(
+    greenWallet = greenWallet,
+    isSendAll = isSendAll,
+    onChainAddress = onChainAddress
+) {
     override val manualAddress: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
 
-    override val amountToBeRefunded: MutableStateFlow<String?> = MutableStateFlow(viewModelScope, null)
-    override val amountToBeRefundedFiat: MutableStateFlow<String?> = MutableStateFlow(viewModelScope, null)
-    override val error: MutableStateFlow<String?> = MutableStateFlow(viewModelScope, null)
-    override val fee: MutableStateFlow<String?> = MutableStateFlow(viewModelScope,null)
-    override val feeFiat: MutableStateFlow<String?> = MutableStateFlow(viewModelScope,null)
+    override val amountToBeRefunded: MutableStateFlow<String?> =
+        MutableStateFlow(viewModelScope, null)
+    override val amountToBeRefundedFiat: MutableStateFlow<String?> =
+        MutableStateFlow(viewModelScope, null)
 
-    override val customFee: MutableStateFlow<Long> = MutableStateFlow(viewModelScope,1L)
+    private val _onProgressSending: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    override val onProgressSending: StateFlow<Boolean> = _onProgressSending.asStateFlow()
+
+    private var _customFeeRate: MutableStateFlow<Long?> = MutableStateFlow(null)
+    private val _feePriority: MutableStateFlow<FeePriority> = MutableStateFlow(FeePriority.Low())
+
+    @NativeCoroutinesState
+    override val feePriority: StateFlow<FeePriority> = _feePriority.asStateFlow()
+
+    // Used to trigger
+    private val _feePriorityPrimitive: StateFlow<FeePriority> = _feePriority.map { it.primitive() }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, FeePriority.Low())
+
+    private val _error: MutableStateFlow<String?> = MutableStateFlow(null)
+    override val error: StateFlow<String?> = _error.asStateFlow()
 
     override val amount: StateFlow<String> = flow {
         session.ifConnectedSuspend {
@@ -101,107 +132,247 @@ class RecoverFundsViewModel(
 
     override val recommendedFees: StateFlow<RecommendedFees?> = flow {
         session.ifConnectedSuspend {
-            emit(session.lightningSdk.recommendedFees().also {
-                customFee.value = it.minimumFee.toLong()
-            })
+            emit(
+                session.lightningSdk.recommendedFees().also {
+                    _customFeeRate.value = it.minimumFee.toLong()
+                }
+            )
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
-    override val feeSlider: MutableStateFlow<Int> = MutableStateFlow(viewModelScope,2)
 
-    private val _feeAmountRate: MutableStateFlow<String> = MutableStateFlow(viewModelScope,"")
-    override val feeAmountRate: StateFlow<String> = _feeAmountRate.asStateFlow()
+    override val bitcoinAccounts = session.accounts.map { accounts ->
+        accounts.filter { it.isBitcoin && !it.isLightning }.map {
+            AccountAssetBalance.create(accountAsset = it.accountAsset, session = sessionOrNull)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
-    private val bitcoinAccounts = session.accounts.map { accounts ->
-        accounts.filter { it.isBitcoin && !it.isLightning }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), session.accounts.value.filter { it.isBitcoin && !it.isLightning })
+    override val hasBitcoinAccount: StateFlow<Boolean> = bitcoinAccounts.map {
+        it.isNotEmpty()
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), true)
 
-    override val hasBitcoinAccount: StateFlow<Boolean> = session.accounts.map { accounts ->
-        accounts.any { it.isBitcoin && !it.isLightning }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), bitcoinAccounts.value.isNotEmpty())
+    override val showManualAddress: MutableStateFlow<Boolean> =
+        MutableStateFlow(viewModelScope, false)
 
-    override val showManualAddress: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, hasBitcoinAccount.value)
-
-    private val _showLightningAnimation = MutableStateFlow(false)
-    override val showLightningAnimation: StateFlow<Boolean> = _showLightningAnimation.asStateFlow()
-
-    class LocalEvents{
-        class SetCustomFee(val fee: Long?): Event
+    class LocalEvents {
+        data class ClickFeePriority(val showCustomFeeRateDialog: Boolean = false) : Event
+        data class SetFeeRate(val feePriority: FeePriority) : Event
+        data class SetCustomFeeRate(val amount: String) : Event
     }
 
-    override fun handleEvent(event: Event) {
-        super.handleEvent(event)
-
-        if (event is Events.Continue) {
-            doAction()
-        } else if (event is LocalEvents.SetCustomFee){
-            val fee = event.fee
-            val minimum = recommendedFees.value?.minimumFee?.toLong() ?: 1L
-            if (fee == null) {
-                customFee.value = minimum
-            } else if (event.fee < minimum) {
-                postSideEffect(SideEffects.Snackbar("id_fee_rate_must_be_at_least_s|$minimum"))
-                customFee.value = minimum
-            } else {
-                customFee.value = fee
-            }
-            feeSlider.value = 0
-        }
+    class LocalSideEffects {
+        data class ShowCustomFeeRate(val feeRate: Long) : SideEffect
     }
 
     init {
+        _navData.value = NavData(
+            title = when {
+                isRefund -> "id_refund"
+                isSendAll -> "id_empty_lightning_account"
+                else -> "id_sweep"
+            },
+            subtitle = greenWallet.name
+        )
+
+        sessionOrNull?.ifConnected {
+            accountAsset.value =
+                session.accounts.value.firstOrNull { it.isBitcoin && !it.isLightning }?.accountAsset
+            showManualAddress.value = accountAsset.value == null
+
+            var prepareJob: Job? = null
+            combine(
+                manualAddress,
+                accountAsset,
+                showManualAddress,
+                _feePriorityPrimitive,
+                recommendedFees.filterNotNull()
+            ) { _ ->
+                prepareJob?.cancel()
+                prepareJob = prepare()
+            }.launchIn(viewModelScope.coroutineScope)
+        }
+
         bootstrap()
-
-        accountAsset.value = bitcoinAccounts.value.firstOrNull()?.accountAsset
-        showManualAddress.value = accountAsset.value == null
-
-        var prepareJob: Job? = null
-        combine(
-            manualAddress,
-            accountAsset,
-            showManualAddress,
-            feeSlider,
-            customFee,
-            recommendedFees.filterNotNull()
-        ) {
-            prepareJob?.cancel()
-            prepareJob = prepare()
-        }.launchIn(viewModelScope.coroutineScope)
-
     }
 
-    private fun address() = if(showManualAddress.value) manualAddress.value else session.getReceiveAddress(account).address
+    private fun showCustomFeeRateDialog() {
+        postSideEffect(
+            LocalSideEffects.ShowCustomFeeRate(
+                (_customFeeRate.value ?: 0L).coerceAtLeast(minFee())
+            )
+        )
+    }
+
+    override fun handleEvent(event: Event) {
+        if (event is LocalEvents.SetFeeRate) {
+            if (event.feePriority is FeePriority.Custom && event.feePriority.customFeeRate.isNaN()) {
+
+                // Prevent replacing if rate is the same as it will clear the fee estimation data
+                val customFeeRate = _customFeeRate.value ?: minFee()
+                FeePriority.Custom(
+                    customFeeRate = customFeeRate.toDouble(),
+                    feeRate = feeRate(customFeeRate)
+                ).also {
+                    if (_feePriorityPrimitive.value != it.primitive()) {
+                        _feePriority.value = it
+                    }
+                }
+                showCustomFeeRateDialog()
+            } else {
+                _feePriority.value = event.feePriority
+            }
+        } else if (event is LocalEvents.ClickFeePriority) {
+            if (event.showCustomFeeRateDialog && feePriority.value is FeePriority.Custom) {
+                showCustomFeeRateDialog()
+            } else {
+                postSideEffect(
+                    SideEffects.OpenFeeBottomSheet(
+                        greenWallet = greenWallet,
+                        accountAsset = null,
+                        params = null,
+                        useBreezFees = true
+                    )
+                )
+            }
+        } else if (event is LocalEvents.SetCustomFeeRate) {
+            setCustomFeeRate(event.amount)
+        } else if (event is Events.Continue) {
+            doAction()
+        } else {
+            super.handleEvent(event)
+        }
+    }
+
+
+    private fun updateFee(
+        fee: String? = null,
+        feeFiat: String? = null,
+        feeRate: String? = null,
+        error: String? = null
+    ) {
+        _feePriority.value = _feePriority.value.let {
+            when (it) {
+                is FeePriority.Custom -> FeePriority.Custom(
+                    customFeeRate = it.customFeeRate,
+                    fee = fee ?: it.fee,
+                    feeFiat = feeFiat ?: it.feeFiat,
+                    feeRate = feeRate ?: it.feeRate,
+                    error = error
+                )
+
+                is FeePriority.High -> FeePriority.High(
+                    fee = fee ?: it.fee,
+                    feeFiat = feeFiat ?: it.feeFiat,
+                    feeRate = feeRate ?: it.feeRate,
+                    error = error
+                )
+
+                is FeePriority.Low -> FeePriority.Low(
+                    fee = fee ?: it.fee,
+                    feeFiat = feeFiat ?: it.feeFiat,
+                    feeRate = feeRate ?: it.feeRate,
+                    error = error
+                )
+
+                is FeePriority.Medium -> FeePriority.Medium(
+                    fee = fee ?: it.fee,
+                    feeFiat = feeFiat ?: it.feeFiat,
+                    feeRate = feeRate ?: it.feeRate,
+                    error = error
+                )
+            }
+        }
+    }
+
+    private fun address() =
+        if (showManualAddress.value) manualAddress.value else session.getReceiveAddress(account).address
+
+    private fun minFee(): Long = recommendedFees.value?.minimumFee?.toLong() ?: 0
+
+    private fun setCustomFeeRate(amount: String? = null) {
+        val minFee = minFee()
+
+        if (amount == null) {
+            _customFeeRate.value = minFee
+        } else {
+            (amount.toLongOrNull() ?: 0).also {
+                if (it < minFee) {
+                    postSideEffect(SideEffects.ErrorSnackbar(Exception("id_fee_rate_must_be_at_least_s|${minFee}")))
+                } else {
+                    _customFeeRate.value = it
+                }
+            }
+        }
+
+        // Prevent replacing if rate is the same as it will clear the fee estimation data
+        val customFeeRate = _customFeeRate.value ?: minFee
+        FeePriority.Custom(
+            customFeeRate = customFeeRate.toDouble(),
+            feeRate = (customFeeRate * 1000).feeRateWithUnit()
+        ).also {
+            if (_feePriorityPrimitive.value != it.primitive()) {
+                _feePriority.value = it
+            }
+        }
+    }
+
+    private fun feeRate(fee: Long) = (fee * 1000).feeRateWithUnit()
 
     private val mutex = Mutex()
     private fun prepare(): Job {
-        _feeAmountRate.value = ((getFee()?.toLong() ?: 0) * 1000).feeRateWithUnit()
+        val feeRate = feeRate(getFee()?.toLong() ?: 0L)
+
         return doAsync(mutex = mutex, action = {
             val address = address()
-            if(address.isBlank()){
+            if (address.isBlank()) {
                 return@doAsync false
             }
 
             if (isSendAll) {
                 val maxReverseSwapAmount = session.lightningSdk.maxReverseSwapAmount().totalSat
-                val minAmount = session.lightningSdk.fetchReverseSwapFees(ReverseSwapFeesRequest()).min
+                val minAmount =
+                    session.lightningSdk.fetchReverseSwapFees(ReverseSwapFeesRequest()).min
 
-                if(maxReverseSwapAmount < minAmount){
-                    throw Exception("id_you_can_empty_your_lightning_account_when|${minAmount.toLong().toAmountLook(
-                        session = session,
-                        denomination = Denomination.SATOSHI,
-                        withGrouping = true,
-                        withUnit = false,
-                    )}")
+                if (maxReverseSwapAmount < minAmount) {
+                    throw Exception(
+                        "id_you_can_empty_your_lightning_account_when|${
+                            minAmount.toLong().toAmountLook(
+                                session = session,
+                                denomination = Denomination.SATOSHI,
+                                withGrouping = true,
+                                withUnit = false,
+                            )
+                        }"
+                    )
                 }
 
-                val reverseSwapInfo = session.lightningSdk.fetchReverseSwapFees(ReverseSwapFeesRequest(maxReverseSwapAmount))
+                val reverseSwapInfo = session.lightningSdk.fetchReverseSwapFees(
+                    ReverseSwapFeesRequest(maxReverseSwapAmount)
+                )
                 val totalFees = reverseSwapInfo.totalFees
 
-                amountToBeRefunded.value = (maxReverseSwapAmount - (totalFees ?: 0u)).toLong().toAmountLook(session = session, withUnit = true)
-                amountToBeRefundedFiat.value = (maxReverseSwapAmount - (totalFees ?: 0u)).toLong().toAmountLook(session = session, withUnit = true, denomination = Denomination.fiat(session))
+                amountToBeRefunded.value = (maxReverseSwapAmount - (totalFees ?: 0u)).toLong()
+                    .toAmountLook(session = session, withUnit = true)
+                amountToBeRefundedFiat.value = (maxReverseSwapAmount - (totalFees ?: 0u)).toLong()
+                    .toAmountLook(
+                        session = session,
+                        withUnit = true,
+                        denomination = Denomination.fiat(session)
+                    )
 
-                fee.value = totalFees?.toLong().toAmountLook(session = session, withUnit = true) ?: ""
-                feeFiat.value = totalFees?.toLong().toAmountLook(session = session, withUnit = true, denomination = Denomination.fiat(session)) ?: ""
+                totalFees?.toLong()?.let {
+                    updateFee(
+                        fee = it.toAmountLook(session = session, withUnit = true) ?: "",
+                        feeFiat = it.toAmountLook(
+                            session = session,
+                            withUnit = true,
+                            denomination = Denomination.fiat(session)
+                        ) ?: "",
+                        feeRate = feeRate
+                    )
+                } ?: run {
+                    updateFee("", "")
+                }
 
                 return@doAsync true
             } else if (isRefund) {
@@ -211,15 +382,32 @@ class RecoverFundsViewModel(
                     toAddress = address,
                     satPerVbyte = getFee()?.toUInt()
                 ).also {
-                    if(satoshi - it.refundTxFeeSat.toLong() < 0){
+                    if (satoshi - it.refundTxFeeSat.toLong() < 0) {
                         throw Exception("id_insufficient_funds")
                     }
 
-                    amountToBeRefunded.value = (satoshi - it.refundTxFeeSat.toLong()).toAmountLook(session = session, withUnit = true)
-                    amountToBeRefundedFiat.value = (satoshi - it.refundTxFeeSat.toLong()).toAmountLook(session = session, withUnit = true, denomination = Denomination.fiat(session))
+                    amountToBeRefunded.value = (satoshi - it.refundTxFeeSat.toLong()).toAmountLook(
+                        session = session,
+                        withUnit = true
+                    )
+                    amountToBeRefundedFiat.value =
+                        (satoshi - it.refundTxFeeSat.toLong()).toAmountLook(
+                            session = session,
+                            withUnit = true,
+                            denomination = Denomination.fiat(session)
+                        )
 
-                    fee.value = it.refundTxFeeSat.toLong().toAmountLook(session = session, withUnit = true)
-                    feeFiat.value = it.refundTxFeeSat.toLong().toAmountLook(session = session, withUnit = true, denomination = Denomination.fiat(session))
+                    it.refundTxFeeSat.toLong().let {
+                        updateFee(
+                            it.toAmountLook(session = session, withUnit = true) ?: "",
+                            it.toAmountLook(
+                                session = session,
+                                withUnit = true,
+                                denomination = Denomination.fiat(session)
+                            ) ?: "",
+                            feeRate = feeRate
+                        )
+                    }
                 }
 
                 return@doAsync true
@@ -229,44 +417,73 @@ class RecoverFundsViewModel(
                     toAddress = address,
                     satPerVbyte = getFee()?.toUInt()
                 ).also {
-                    if(satoshi - it.txFeeSat.toLong() < 0){
+                    val toBeRefunded = satoshi - it.txFeeSat.toLong()
+                    if (toBeRefunded < 0) {
                         throw Exception("id_insufficient_funds")
                     }
 
-                    amountToBeRefunded.value = (satoshi - it.txFeeSat.toLong()).toAmountLook(session = session, withUnit = true)
-                    amountToBeRefundedFiat.value = (satoshi - it.txFeeSat.toLong()).toAmountLook(session = session, withUnit = true, denomination = Denomination.fiat(session))
+                    amountToBeRefunded.value = toBeRefunded.toAmountLook(
+                        session = session,
+                        withUnit = true
+                    )
+                    amountToBeRefundedFiat.value = toBeRefunded.toAmountLook(
+                        session = session,
+                        withUnit = true,
+                        denomination = Denomination.fiat(session)
+                    )
 
-                    fee.value = it.txFeeSat.toLong().toAmountLook(session = session, withUnit = true)
-                    feeFiat.value = it.txFeeSat.toLong().toAmountLook(session = session, withUnit = true, denomination = Denomination.fiat(session))
+                    it.txFeeSat.toLong().let {
+                        updateFee(
+                            fee = it.toAmountLook(session = session, withUnit = true) ?: "",
+                            feeFiat = it.toAmountLook(
+                                session = session,
+                                withUnit = true,
+                                denomination = Denomination.fiat(session)
+                            ) ?: "",
+                            feeRate = feeRate
+                        )
+                    }
                 }
 
                 return@doAsync true
             }
         }, onError = {
-            error.value = it.message
+            if (it.message?.contains("Insufficient funds to pay fees") == true) {
+                updateFee(error = "id_insufficient_funds", feeRate = feeRate)
+                _error.value = null
+            } else {
+                _error.value = it.message
+            }
             _isValid.value = false
+            amountToBeRefunded.value = null
+            amountToBeRefundedFiat.value = null
         }, onSuccess = {
-            error.value = null
+            _error.value = null
             _isValid.value = it
         })
     }
 
     private fun getFee(): ULong? {
-        return recommendedFees.value?.let {
-            customFee.value.takeIf { feeSlider.value == 0 }?.toULong() ?: when (feeSlider.value) {
-                2 -> it.hourFee
-                3 -> it.halfHourFee
-                4 -> it.fastestFee
-                else -> it.economyFee
+        return recommendedFees.value?.let { fees ->
+            feePriority.value.let {
+                when (it) {
+                    is FeePriority.High -> fees.fastestFee
+                    is FeePriority.Medium -> fees.hourFee
+                    is FeePriority.Low -> fees.economyFee
+                    is FeePriority.Custom -> it.customFeeRate.toULong()
+                }
             }
         }
     }
 
     private fun doAction() {
         doAsync({
-            val address = if(showManualAddress.value) manualAddress.value else session.getReceiveAddress(account).address
+            val address =
+                if (showManualAddress.value) manualAddress.value else session.getReceiveAddress(
+                    account
+                ).address
 
-            if(isSendAll){
+            if (isSendAll) {
                 // Send Onchain all funds emptying the wallet
                 session.lightningSdk.sendOnchain(
                     address = address,
@@ -287,27 +504,70 @@ class RecoverFundsViewModel(
                     satPerVbyte = getFee()?.toUInt()
                 ).txid
             }
-        },preAction = {
+        }, preAction = {
             onProgress.value = true
-            _showLightningAnimation.value = isSendAll
-        },
-        postAction  = {
+            _onProgressSending.value = true
+        }, postAction = {
             onProgress.value = false
-            _showLightningAnimation.value = false
+            _onProgressSending.value = it == null
         }, onSuccess = {
-            postSideEffect(SideEffects.Success())
+            if (isRefund) {
+                postSideEffect(
+                    SideEffects.NavigateBack(
+                        title = "id_refund",
+                        message = "id_refund_initiated"
+                    )
+                )
+            } else {
+                postSideEffect(
+                    SideEffects.NavigateBack(
+                        title = "id_sweep",
+                        message = "id_sweep_initiated"
+                    )
+                )
+            }
         })
     }
 
     override fun errorReport(exception: Throwable): ErrorReport {
-        return ErrorReport.create(throwable = exception, network = session.lightning, session = session)
+        return ErrorReport.create(
+            throwable = exception,
+            network = session.lightning,
+            session = session
+        )
     }
 
     companion object : Loggable()
 }
 
-class RecoverFundsViewModelPreview(greenWallet: GreenWallet) :
-    RecoverFundsViewModelAbstract(greenWallet = greenWallet, isSendAll = false, onChainAddress = null) {
+class RecoverFundsViewModelPreview(greenWallet: GreenWallet) : RecoverFundsViewModelAbstract(
+    greenWallet = greenWallet,
+    isSendAll = false,
+    onChainAddress = null
+) {
+
+
+    override val bitcoinAccounts: StateFlow<List<AccountAssetBalance>> = MutableStateFlow(
+        listOf(
+            previewAccountAssetBalance()
+        )
+    )
+
+    override val manualAddress: MutableStateFlow<String> = MutableStateFlow("")
+    override val amount: StateFlow<String> = MutableStateFlow("1 BTC")
+    override val hasBitcoinAccount: StateFlow<Boolean> = MutableStateFlow(false)
+    override val showManualAddress: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    override val recommendedFees: StateFlow<RecommendedFees?> = MutableStateFlow(null)
+    override val onProgressSending: StateFlow<Boolean> = MutableStateFlow(false)
+    override val feePriority: StateFlow<FeePriority> = MutableStateFlow(FeePriority.Low())
+    override val error: StateFlow<String?> = MutableStateFlow(null)
+    override val amountToBeRefunded: MutableStateFlow<String?> = MutableStateFlow("1 BTC")
+    override val amountToBeRefundedFiat: MutableStateFlow<String?> = MutableStateFlow("10000 USD")
+
+    init {
+        accountAsset.value = previewAccountAsset()
+    }
+
     companion object {
         fun preview(): RecoverFundsViewModelPreview {
             return RecoverFundsViewModelPreview(
@@ -315,19 +575,4 @@ class RecoverFundsViewModelPreview(greenWallet: GreenWallet) :
             )
         }
     }
-
-    override val manualAddress: MutableStateFlow<String> = MutableStateFlow("")
-    override val amount: StateFlow<String> = MutableStateFlow("")
-    override val error: MutableStateFlow<String?> = MutableStateFlow(null)
-    override val feeSlider: MutableStateFlow<Int> = MutableStateFlow(1)
-    override val feeAmountRate: StateFlow<String> = MutableStateFlow("")
-    override val hasBitcoinAccount: StateFlow<Boolean> = MutableStateFlow(false)
-    override val showManualAddress: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    override val recommendedFees: StateFlow<RecommendedFees?> = MutableStateFlow(null)
-    override val customFee: StateFlow<Long> = MutableStateFlow(0L)
-    override val showLightningAnimation: StateFlow<Boolean> = MutableStateFlow(false)
-    override val amountToBeRefunded: MutableStateFlow<String?> = MutableStateFlow(null)
-    override val amountToBeRefundedFiat: MutableStateFlow<String?> = MutableStateFlow(null)
-    override val fee: MutableStateFlow<String?> = MutableStateFlow(null)
-    override val feeFiat: MutableStateFlow<String?> = MutableStateFlow(null)
 }

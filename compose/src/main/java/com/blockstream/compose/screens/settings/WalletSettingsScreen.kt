@@ -253,7 +253,7 @@ fun WalletSettingsScreen(
                         subtitle = "(${item.size})".takeIf { item.size > 0 },
                         painter = painterResource(id = R.drawable.caret_right),
                         modifier = Modifier.clickable {
-                            viewModel.postEvent(NavigateDestinations.ArchivedAccounts)
+                            viewModel.postEvent(NavigateDestinations.ArchivedAccounts())
                         })
                 }
 

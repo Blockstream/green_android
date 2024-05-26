@@ -6,6 +6,7 @@ import com.blockstream.common.extensions.previewNetwork
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.rickclephas.kmm.viewmodel.coroutineScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
@@ -38,7 +39,7 @@ class WatchOnlyNetworkViewModel(setupArgs: SetupArgs) :
         super.handleEvent(event)
 
         if (event is LocalEvents.ChooseNetwork) {
-            postSideEffect(SideEffects.Navigate(setupArgs.copy(network = event.network)))
+            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WatchOnlyCredentials(setupArgs.copy(network = event.network))))
         }
     }
 

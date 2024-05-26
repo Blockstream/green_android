@@ -9,6 +9,7 @@ import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.params.CreateTransactionParams
+import com.blockstream.common.lightning.fee
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.feeRateWithUnit
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
@@ -20,16 +21,15 @@ import kotlinx.coroutines.flow.onEach
 
 abstract class FeeViewModelAbstract(
     greenWallet: GreenWallet,
-    accountAsset: AccountAsset
-) :
-    CreateTransactionViewModelAbstract(
-        greenWallet = greenWallet,
-        accountAssetOrNull = accountAsset
-    ) {
+    accountAssetOrNull: AccountAsset?
+) : CreateTransactionViewModelAbstract(
+    greenWallet = greenWallet,
+    accountAssetOrNull = accountAssetOrNull
+) {
     override fun screenName(): String = "Fee"
 
     override fun segmentation(): HashMap<String, Any>? {
-        return countly.accountSegmentation(session = session, account = account)
+        return countly.accountSegmentation(session = session, account = accountOrNull)
     }
 
     @NativeCoroutinesState
@@ -38,15 +38,14 @@ abstract class FeeViewModelAbstract(
 
 class FeeViewModel(
     greenWallet: GreenWallet,
-    accountAsset: AccountAsset,
-    val params: CreateTransactionParams
-) :
-    FeeViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
+    accountAssetOrNull: AccountAsset?,
+    val params: CreateTransactionParams?,
+    val useBreezFees: Boolean
+) : FeeViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = accountAssetOrNull) {
 
     private val _feePriorities: MutableStateFlow<List<FeePriority>> =
         MutableStateFlow(listOf(FeePriority.High(), FeePriority.Medium(), FeePriority.Low()))
     override val feePriorities: StateFlow<List<FeePriority>> = _feePriorities.asStateFlow()
-
 
 
     init {
@@ -55,17 +54,55 @@ class FeeViewModel(
         )
 
         session.ifConnected {
-            _network.value = accountAsset.account.network
+            _network.value = accountAssetOrNull?.account?.network
 
             _feeEstimation.filterNotNull().onEach {
                 calculateFees()
             }.launchIn(this)
+
+            if(useBreezFees){
+                calculateBreezFees()
+            }
         }
 
         bootstrap()
     }
 
+    private fun calculateBreezFees() {
+        doAsync({
+            sessionOrNull?.lightningSdkOrNull?.recommendedFees()?.let { recommendedFees ->
+                listOf(FeePriority.High(), FeePriority.Medium(), FeePriority.Low()).map {
+
+                    val feeRate = (recommendedFees.fee(it) * 1000).feeRateWithUnit()
+                    when (it) {
+                        is FeePriority.Custom -> it.copy(
+                            feeRate = feeRate,
+                        )
+
+                        is FeePriority.High -> it.copy(
+                            feeRate = feeRate,
+                        )
+
+                        is FeePriority.Low -> it.copy(
+                            feeRate = feeRate,
+                        )
+
+                        is FeePriority.Medium -> it.copy(
+                            feeRate = feeRate,
+                        )
+                    }
+                }
+            }
+        }, onSuccess = { fees ->
+            fees?.also {
+                _feePriorities.value = it
+            }
+        })
+    }
+
     private fun calculateFees() {
+        if(params == null) return
+
         doAsync({
             listOf(FeePriority.High(), FeePriority.Medium(), FeePriority.Low()).map {
                 try{
@@ -105,7 +142,7 @@ class FeeViewModel(
 }
 
 class FeeViewModelPreview(greenWallet: GreenWallet) :
-    FeeViewModelAbstract(greenWallet = greenWallet, accountAsset = previewAccountAsset()) {
+    FeeViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = previewAccountAsset()) {
 
     override val feePriorities: StateFlow<List<FeePriority>> =
         MutableStateFlow(listOf(FeePriority.High(error = "id_insufficient_funds"), FeePriority.Medium(), FeePriority.Low()))

@@ -31,34 +31,19 @@ data class CreateTransaction constructor(
     val isSendAll
         get() = addressees.all { it.isGreedy == true }
 
+    fun isBump(): Boolean = previousTransaction != null
+
     fun isSweep(): Boolean = privateKey?.isNotBlank() ?: false
 
     fun isSwap(): Boolean = signWith.containsAll(listOf("user", "green-backend")) || signWith.contains("all")
 
-    @Deprecated("Remove it")
-    fun utxoViewsDeprecated(showChangeOutputs: Boolean): List<UtxoView> {
+    suspend fun utxoViews(session: GdkSession, denomination: Denomination?, isAddressVerificationOnDevice: Boolean, showChangeOutputs: Boolean): List<UtxoView> {
         val outputs = outputs.filter {
             !it.address.isNullOrBlank()
         }
 
         return outputs.filter {
-            if (showChangeOutputs || isSweep()) {
-                true
-            } else {
-                it.isChange != true
-            }
-        }.map {
-            UtxoView.fromOutput(it)
-        }
-    }
-
-    suspend fun utxoViews(session: GdkSession, denomination: Denomination?, showChangeOutputs: Boolean): List<UtxoView> {
-        val outputs = outputs.filter {
-            !it.address.isNullOrBlank()
-        }
-
-        return outputs.filter {
-            if (showChangeOutputs || isSweep()) {
+            if (showChangeOutputs) {
                 true
             } else {
                 it.isChange != true
@@ -70,8 +55,8 @@ data class CreateTransaction constructor(
                 assetId = it.assetId,
                 withUnit = true,
                 withGrouping = true,
-                withMinimumDigits = showChangeOutputs,
-                denomination = if (showChangeOutputs) Denomination.BTC else denomination
+                withMinimumDigits = isAddressVerificationOnDevice,
+                denomination = if (isAddressVerificationOnDevice) Denomination.BTC else denomination
             )
             val amountExchange = it.satoshi.toAmountLook(
                 session = session,

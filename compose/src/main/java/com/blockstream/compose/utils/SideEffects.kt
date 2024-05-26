@@ -34,12 +34,19 @@ import com.blockstream.compose.navigation.pushOrReplace
 import com.blockstream.compose.navigation.pushUnique
 import com.blockstream.compose.screens.HomeScreen
 import com.blockstream.compose.screens.about.AboutScreen
+import com.blockstream.compose.screens.addresses.AddressesScreen
+import com.blockstream.compose.screens.archived.ArchivedAccountsScreen
+import com.blockstream.compose.screens.lightning.LnUrlAuthScreen
+import com.blockstream.compose.screens.lightning.LnUrlWithdrawScreen
+import com.blockstream.compose.screens.lightning.RecoverFundsScreen
 import com.blockstream.compose.screens.login.LoginScreen
 import com.blockstream.compose.screens.onboarding.SetupNewWalletScreen
 import com.blockstream.compose.screens.onboarding.hardware.UseHardwareDeviceScreen
 import com.blockstream.compose.screens.onboarding.phone.AddWalletScreen
 import com.blockstream.compose.screens.onboarding.phone.EnterRecoveryPhraseScreen
 import com.blockstream.compose.screens.onboarding.phone.PinScreen
+import com.blockstream.compose.screens.onboarding.watchonly.WatchOnlyCredentialsScreen
+import com.blockstream.compose.screens.onboarding.watchonly.WatchOnlyNetworkScreen
 import com.blockstream.compose.screens.onboarding.watchonly.WatchOnlyPolicyScreen
 import com.blockstream.compose.screens.overview.AccountOverviewScreen
 import com.blockstream.compose.screens.overview.WalletOverviewScreen
@@ -50,12 +57,14 @@ import com.blockstream.compose.screens.recovery.RecoveryPhraseScreen
 import com.blockstream.compose.screens.recovery.RecoveryWordsScreen
 import com.blockstream.compose.screens.send.AccountExchangeScreen
 import com.blockstream.compose.screens.send.BumpScreen
+import com.blockstream.compose.screens.send.RedepositScreen
 import com.blockstream.compose.screens.send.SendConfirmScreen
 import com.blockstream.compose.screens.send.SendScreen
 import com.blockstream.compose.screens.send.SweepScreen
 import com.blockstream.compose.screens.settings.AppSettingsScreen
 import com.blockstream.compose.screens.settings.WalletSettingsScreen
 import com.blockstream.compose.screens.transaction.TransactionScreen
+import com.blockstream.compose.screens.twofactor.ReEnable2FAScreen
 import com.blockstream.compose.sheets.AccountRenameBottomSheet
 import com.blockstream.compose.sheets.AccountsBottomSheet
 import com.blockstream.compose.sheets.AssetDetailsBottomSheet
@@ -67,9 +76,11 @@ import com.blockstream.compose.sheets.DenominationBottomSheet
 import com.blockstream.compose.sheets.FeeRateBottomSheet
 import com.blockstream.compose.sheets.LightningNodeBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
+import com.blockstream.compose.sheets.SignMessageBottomSheet
 import com.blockstream.compose.sheets.SystemMessageBottomSheet
 import com.blockstream.compose.sheets.TransactionDetailsBottomSheet
 import com.blockstream.compose.sheets.TwoFactorResetBottomSheet
+import com.blockstream.compose.sheets.VerifyTransactionBottomSheet
 import com.blockstream.compose.sheets.WalletDeleteBottomSheet
 import com.blockstream.compose.sheets.WalletRenameBottomSheet
 import com.blockstream.compose.sideeffects.OpenDialogData
@@ -188,7 +199,8 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                         FeeRateBottomSheet(
                             greenWallet = it.greenWallet,
                             accountAsset = it.accountAsset,
-                            params = it.params
+                            params = it.params,
+                            useBreezFees = it.useBreezFees
                         )
                     )
                 }
@@ -284,24 +296,39 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                     // Check if Navigator exists, else is handled by AppFragment for now
                     if(navigator != null) {
                         val error = it.error
-                        if (error == null) {
-                            navigator.pop()
-                        } else {
+                        if (error != null) {
                             appCoroutine.launch {
-                                dialog.openErrorDialog(error, it.errorReport, onErrorReport = { errorReport ->
-                                    appCoroutine.launch {
-                                        dialog.openErrorReportDialog(
-                                            errorReport = errorReport,
-                                            viewModel = viewModel,
-                                            onSubmitErrorReport = { submitErrorReport ->
-                                                viewModel.postEvent(submitErrorReport)
-                                            }
-                                        )
-                                    }
-                                }) {
+                                dialog.openErrorDialog(
+                                    error,
+                                    it.errorReport,
+                                    onErrorReport = { errorReport ->
+                                        appCoroutine.launch {
+                                            dialog.openErrorReportDialog(
+                                                errorReport = errorReport,
+                                                viewModel = viewModel,
+                                                onSubmitErrorReport = { submitErrorReport ->
+                                                    viewModel.postEvent(submitErrorReport)
+                                                }
+                                            )
+                                        }
+                                    }) {
                                     navigator.pop()
                                 }
                             }
+                        } else if (it.message != null) {
+                            appCoroutine.launch {
+                                dialog.openDialog(
+                                    OpenDialogData(
+                                        title = it.title,
+                                        message = it.message,
+                                        onPrimary = {
+                                            navigator.pop()
+                                        }
+                                    )
+                                )
+                            }
+                        } else {
+                            navigator.pop()
                         }
                     }
                 }
@@ -338,38 +365,42 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                 }
 
                 is SideEffects.TransactionSent -> {
-                    if (it.data.hasMessageOrUrl) {
-                        val message = "id_message_from_recipient_s|${it.data.message ?: ""}"
-                        val isUrl = it.data.url.isNotBlank()
+                    // Check if navigator exists or let AppFragment handle it
+                    navigator?.also { navigator ->
 
-                        dialog.openDialog(
-                            OpenDialogData(
-                                title = "id_success",
-                                message = message,
-                                primaryText = if(isUrl) "id_open" else "id_ok",
-                                secondaryText = if(isUrl) "id_cancel" else null,
-                                onPrimary = {
-                                    if(isUrl){
-                                        appCoroutine.launch {
-                                            openBrowser(
-                                                context = context,
-                                                dialogState = dialog,
-                                                isTor = viewModel.settingsManager.appSettings.tor,
-                                                url = it.data.url ?: ""
-                                            )
+                        if (it.data.hasMessageOrUrl) {
+                            val message = "id_message_from_recipient_s|${it.data.message ?: ""}"
+                            val isUrl = it.data.url.isNotBlank()
+
+                            dialog.openDialog(
+                                OpenDialogData(
+                                    title = "id_success",
+                                    message = message,
+                                    primaryText = if(isUrl) "id_open" else "id_ok",
+                                    secondaryText = if(isUrl) "id_cancel" else null,
+                                    onPrimary = {
+                                        if(isUrl){
+                                            appCoroutine.launch {
+                                                openBrowser(
+                                                    context = context,
+                                                    dialogState = dialog,
+                                                    isTor = viewModel.settingsManager.appSettings.tor,
+                                                    url = it.data.url ?: ""
+                                                )
+                                            }
                                         }
+                                        navigator.popAll()
+                                    },
+                                    onSecondary = {
+                                        navigator.popAll()
+                                    },
+                                    onDismiss = {
+                                        navigator.popAll()
                                     }
-                                    navigator?.popAll()
-                                },
-                                onSecondary = {
-                                    navigator?.popAll()
-                                },
-                                onDismiss = {
-                                    navigator?.popAll()
-                                }
-                            ))
-                    } else {
-                        navigator?.popAll()
+                                ))
+                        } else {
+                            navigator.popAll()
+                        }
                     }
                 }
 
@@ -378,8 +409,10 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                         is NavigateDestinations.LightningNode -> {
                             bottomSheetNavigator.show(
                                 LightningNodeBottomSheet(
-                                    viewModel.greenWallet
-                                )
+                                    viewModel.greenWallet,
+                                ).also {
+                                    it.parentViewModel = viewModel
+                                }
                             )
                         }
 
@@ -427,7 +460,9 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                                     greenWallet = viewModel.greenWallet,
                                     network = destination.network,
                                     twoFactorReset = destination.twoFactorReset,
-                                )
+                                ).also {
+                                    it.parentViewModel = viewModel
+                                }
                             )
                         }
                         
@@ -464,7 +499,9 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
 
                         is NavigateDestinations.EnableTwoFactor -> {
                             bottomSheetNavigator.show(
-                                Call2ActionBottomSheet(greenWallet = viewModel.greenWallet)
+                                Call2ActionBottomSheet(greenWallet = viewModel.greenWallet, network = destination.network).also {
+                                    it.parentViewModel = viewModel
+                                }
                             )
                         }
 
@@ -481,6 +518,15 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                                 AccountOverviewScreen(
                                     greenWallet = viewModel.greenWallet,
                                     accountAsset = destination.accountAsset
+                                )
+                            )
+                        }
+
+                        is NavigateDestinations.ArchivedAccounts -> {
+                            navigator?.pushUnique(
+                                ArchivedAccountsScreen(
+                                    greenWallet = viewModel.greenWallet,
+                                    navigateToRoot = destination.navigateToRoot
                                 )
                             )
                         }
@@ -502,20 +548,6 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                             )
 
                             navigator?.pushOrReplace(loginScreen)
-
-//                            (requireActivity() as MainActivity).getVisibleFragment()?.also {
-//                                if(it is LoginFragment && it.viewModel.greenWalletOrNull == directions.wallet && it.args.isLightningShortcut == directions.isLightningShortcut){
-//                                    return
-//                                }
-//                            }
-//
-//                            navigate(
-//                                NavGraphDirections.actionGlobalLoginFragment(
-//                                    wallet = directions.wallet,
-//                                    isLightningShortcut = directions.isLightningShortcut,
-//                                    autoLoginWallet = !directions.isLightningShortcut
-//                                )
-//                            )
                         }
 
                         is NavigateDestinations.DeviceScan -> {
@@ -552,9 +584,21 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                             )
                         }
 
-                        is NavigateDestinations.NewWatchOnlyWallet -> {
+                        is NavigateDestinations.WatchOnlyPolicy -> {
                             navigator?.pushUnique(
                                 WatchOnlyPolicyScreen
+                            )
+                        }
+
+                        is NavigateDestinations.WatchOnlyNetwork -> {
+                            navigator?.pushUnique(
+                                WatchOnlyNetworkScreen(destination.args)
+                            )
+                        }
+
+                        is NavigateDestinations.WatchOnlyCredentials -> {
+                            navigator?.pushUnique(
+                                WatchOnlyCredentialsScreen(destination.args)
                             )
                         }
 
@@ -613,6 +657,24 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                             )
                         }
 
+                        is NavigateDestinations.Redeposit -> {
+                            navigator?.push(
+                                RedepositScreen(
+                                    greenWallet = viewModel.greenWallet,
+                                    accountAsset = destination.accountAsset,
+                                    isRedeposit2FA = destination.isRedeposit2FA
+                                )
+                            )
+                        }
+
+                        is NavigateDestinations.ReEnable2FA -> {
+                            navigator?.push(
+                                ReEnable2FAScreen(
+                                    greenWallet = viewModel.greenWallet
+                                )
+                            )
+                        }
+
                         is NavigateDestinations.AccountExchange -> {
                             navigator?.push(
                                 AccountExchangeScreen(
@@ -641,11 +703,41 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                             )
                         }
 
+                        is NavigateDestinations.RecoverFunds -> {
+                            navigator?.push(
+                                RecoverFundsScreen(
+                                    greenWallet = viewModel.greenWallet,
+                                    isSendAll = destination.isSendAll,
+                                    amount = destination.amount,
+                                    address = destination.address
+                                )
+                            )
+                        }
+
+                        is NavigateDestinations.LnUrlAuth -> {
+                            navigator?.push(
+                                LnUrlAuthScreen(
+                                    greenWallet = viewModel.greenWallet,
+                                    requestData = destination.lnUrlAuthRequest,
+                                )
+                            )
+                        }
+
+                        is NavigateDestinations.LnUrlWithdraw -> {
+                            navigator?.push(
+                                LnUrlWithdrawScreen(
+                                    greenWallet = viewModel.greenWallet,
+                                    requestData = destination.lnUrlWithdrawRequest,
+                                )
+                            )
+                        }
+
                         is NavigateDestinations.Send -> {
                             navigator?.push(
                                 SendScreen(
                                     greenWallet = viewModel.greenWallet,
-                                    accountAsset = destination.accountAsset
+                                    address = destination.address,
+                                    addressInputType = destination.addressType
                                 )
                             )
                         }
@@ -653,6 +745,15 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                         is NavigateDestinations.Receive -> {
                             navigator?.push(
                                 ReceiveScreen(
+                                    greenWallet = viewModel.greenWallet,
+                                    accountAsset = destination.accountAsset
+                                )
+                            )
+                        }
+
+                        is NavigateDestinations.Addresses -> {
+                            navigator?.push(
+                                AddressesScreen(
                                     greenWallet = viewModel.greenWallet,
                                     accountAsset = destination.accountAsset
                                 )
@@ -676,12 +777,31 @@ fun HandleSideEffect(viewModel: GreenViewModel, handler: CoroutineScope.(sideEff
                             }
                         }
 
+                        is NavigateDestinations.SignMessage -> {
+                            bottomSheetNavigator.show(
+                                SignMessageBottomSheet(
+                                    greenWallet = viewModel.greenWallet,
+                                    accountAsset = destination.accountAsset,
+                                    address = destination.address
+                                )
+                            )
+                        }
+
                         is NavigateDestinations.Camera -> {
                             bottomSheetNavigator.show(
                                 CameraBottomSheet(
                                     isDecodeContinuous = destination.isDecodeContinuous,
                                     parentScreenName = destination.parentScreenName,
                                     setupArgs = destination.setupArgs
+                                )
+                            )
+                        }
+
+                        is NavigateDestinations.VerifyTransaction -> {
+                            bottomSheetNavigator.show(
+                                VerifyTransactionBottomSheet(
+                                    greenWallet = viewModel.greenWallet,
+                                    transactionConfirmLook = destination.transactionConfirmLook
                                 )
                             )
                         }

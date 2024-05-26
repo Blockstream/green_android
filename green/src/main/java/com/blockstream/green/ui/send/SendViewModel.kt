@@ -281,7 +281,7 @@ class SendViewModel constructor(
             .launchIn(viewModelScope.coroutineScope)
 
         if (session.hasLightning) {
-            session.lightningNodeInfoStateFlow.drop(1).onEach {
+            session.lightningSdk.nodeInfoStateFlow.drop(1).onEach {
                 if (account.isLightning) {
                     // Re-check the transaction on node_info update
                     checkTransaction()

@@ -70,6 +70,7 @@ dependencies {
 
     /**  --- Android / Google ------------------------------------------------------------------- */
     api(libs.androidx.browser)
+    implementation ("com.google.accompanist:accompanist-permissions:0.34.0")
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Voyager ---------------------------------------------------------------------------- */
@@ -95,6 +96,9 @@ dependencies {
     /**  --- Rive ------------------------------------------------------------------------------- */
     api(libs.rive.android)
     /** ----------------------------------------------------------------------------------------- */
+
+    implementation("io.github.mataku:middle-ellipsis-text3:1.1.0")
+
 
     implementation(libs.parcelable) // parcelable
     implementation(libs.state.keeper) // state keeper

@@ -10,6 +10,7 @@ import com.blockstream.common.data.NavData
 import com.blockstream.common.data.Redact
 import com.blockstream.common.events.Event
 import com.blockstream.common.extensions.ifConnected
+import com.blockstream.common.extensions.isBlank
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccountAsset
@@ -19,7 +20,6 @@ import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.params.AddressParams
 import com.blockstream.common.gdk.params.CreateTransactionParams
-import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.toAmountLook
@@ -33,7 +33,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.sync.withLock
 
 abstract class SweepViewModelAbstract(
     greenWallet: GreenWallet,
@@ -115,12 +114,25 @@ class SweepViewModel(greenWallet: GreenWallet, privateKey: String?, accountAsset
             privateKey.value = event.privateKey
             _addressInputType = if (event.isScan) AddressInputType.SCAN else AddressInputType.SCAN
         } else if (event is CreateTransactionViewModelAbstract.LocalEvents.SignTransaction) {
-            signTransaction(event.broadcastTransaction)
+            signAndSendTransaction(
+                originalParams = createTransactionParams.value,
+                originalTransaction = createTransaction.value,
+                segmentation = TransactionSegmentation(
+                    transactionType = TransactionType.SWEEP,
+                    addressInputType = _addressInputType
+                ),
+                broadcast = event.broadcastTransaction
+            )
         }
     }
 
-    private suspend fun createTransactionParams(): CreateTransactionParams? {
+    override suspend fun createTransactionParams(): CreateTransactionParams? {
         return try {
+            if (privateKey.value.isBlank()) {
+                _error.value = null
+                return null
+            }
+
             val unspentOutputs =
                 session.getUnspentOutputs(network, privateKey = privateKey.value.trim())
 
@@ -156,108 +168,58 @@ class SweepViewModel(greenWallet: GreenWallet, privateKey: String?, accountAsset
         finalCheckBeforeContinue: Boolean
     ) {
         doAsync({
-            checkTransactionMutex.withLock {
-                logger.d { "checkTransaction" }
-
-                if (params == null) {
-                    _amount.value = null
-                    _amountFiat.value = null
-                    _isValid.value = false
-                    // Error null
-                    null
-                } else {
-                    _network.value?.let { network ->
-                        val tx = session.createTransaction(network, params)
-
-                        tx.satoshi[network.policyAsset].let { amount ->
-                            _amount.value = amount.toAmountLook(
-                                session = session,
-                                withUnit = true
-                            )
-
-                            _amountFiat.value = amount.toAmountLook(
-                                session = session,
-                                withUnit = true,
-                                denomination = Denomination.fiat(session)
-                            )
-                        }
-
-                        tx.fee?.takeIf { it != 0L || tx.error.isNullOrBlank() }.also {
-                            _feePriority.value = calculateFeePriority(
-                                session = session,
-                                feePriority = _feePriority.value,
-                                feeAmount = it,
-                                feeRate = tx.feeRate?.feeRateWithUnit()
-                            )
-                        }
-
-                        tx.error.takeIf { it.isNotBlank() }?.also {
-                            throw Exception(it)
-                        }
-
-                        tx
-                    }
-                }
+            logger.d { "WTF $params" }
+            if (params == null) {
+                _amount.value = null
+                _amountFiat.value = null
+                return@doAsync null
             }
-        }, preAction = {
+
+            val network = _network.value!!
+            val tx = session.createTransaction(network, params)
+
+            tx.satoshi[network.policyAsset].let { amount ->
+                _amount.value = amount.toAmountLook(
+                    session = session,
+                    withUnit = true
+                )
+
+                _amountFiat.value = amount.toAmountLook(
+                    session = session,
+                    withUnit = true,
+                    denomination = Denomination.fiat(session)
+                )
+            }
+
+            tx.fee?.takeIf { it != 0L || tx.error.isNullOrBlank() }.also {
+                _feePriority.value = calculateFeePriority(
+                    session = session,
+                    feePriority = _feePriority.value,
+                    feeAmount = it,
+                    feeRate = tx.feeRate?.feeRateWithUnit()
+                )
+            }
+
+            tx.error.takeIf { it.isNotBlank() }?.also {
+                throw Exception(it)
+            }
+
+            tx
+
+        }, mutex = createTransactionMutex, preAction = {
             _isValid.value = false
         }, postAction = {
 
         }, onSuccess = {
+            logger.d { "WTF Success $it" }
+            createTransaction.value = it
             _isValid.value = it != null
             _error.value = null
         }, onError = {
+            logger.d { "WTF error $it" }
+            createTransaction.value = null
             _isValid.value = false
             _error.value = it.message
-        })
-    }
-
-    private fun signTransaction(broadcastTransaction: Boolean) {
-        doAsync({
-            countly.startSendTransaction()
-            countly.startFailedTransaction()
-
-            val params = createTransactionParams()!!
-            val signedTransaction = session.createTransaction(network, params).let { tx ->
-                tx.error.takeIf { it.isNotBlank() }?.also {
-                    throw Exception(it)
-                }
-                session.signTransaction(account.network, tx)
-            }
-
-            if (broadcastTransaction) {
-                session.broadcastTransaction(network, signedTransaction.transaction ?: "")
-            }
-
-            true
-        }, postAction = { exception ->
-            onProgress.value = exception == null
-        }, onSuccess = {
-            if (broadcastTransaction) {
-                countly.endSendTransaction(
-                    session = session,
-                    account = account,
-                    transactionSegmentation = TransactionSegmentation(
-                        transactionType = TransactionType.SWEEP,
-                        addressInputType = _addressInputType
-                    ),
-                    withMemo = false
-                )
-            }
-
-            postSideEffect(SideEffects.Snackbar("id_transaction_sent"))
-            postSideEffect(SideEffects.NavigateToRoot)
-        }, onError = {
-            postSideEffect(SideEffects.ErrorDialog(it))
-            countly.failedTransaction(
-                session = session,
-                account = account,
-                transactionSegmentation = TransactionSegmentation(
-                    transactionType = TransactionType.SWEEP,
-                    addressInputType = _addressInputType
-                ),
-                error = it
-            )
         })
     }
 

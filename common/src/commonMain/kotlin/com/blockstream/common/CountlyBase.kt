@@ -849,7 +849,8 @@ enum class TransactionType(val string: String) {
     SEND("send"),
     SWEEP("sweep"),
     BUMP("bump"),
-    SWAP("swap");
+    SWAP("swap"),
+    REDEPOSIT("redeposit");
 
     override fun toString(): String = string
 }

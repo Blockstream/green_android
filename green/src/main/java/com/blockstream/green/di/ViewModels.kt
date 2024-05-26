@@ -41,6 +41,7 @@ import com.blockstream.common.models.send.AccountExchangeViewModel
 import com.blockstream.common.models.send.BumpViewModel
 import com.blockstream.common.models.send.DenominationViewModel
 import com.blockstream.common.models.send.FeeViewModel
+import com.blockstream.common.models.send.RedepositViewModel
 import com.blockstream.common.models.send.SendConfirmViewModel
 import com.blockstream.common.models.send.SendViewModel
 import com.blockstream.common.models.send.SweepViewModel
@@ -57,6 +58,7 @@ import com.blockstream.common.models.sheets.NoteViewModel
 import com.blockstream.common.models.sheets.RecoveryHelpViewModel
 import com.blockstream.common.models.sheets.TransactionDetailsViewModel
 import com.blockstream.common.models.transaction.TransactionViewModel
+import com.blockstream.common.models.twofactor.ReEnable2FAViewModel
 import com.blockstream.common.models.wallet.WalletDeleteViewModel
 import com.blockstream.common.models.wallet.WalletNameViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -109,11 +111,15 @@ val viewModels = module {
     viewModelOf(::DenominationExchangeRateViewModel)
     viewModelOf(::RequestAmountViewModel)
     viewModelOf(::TwoFactorSetupViewModel)
-    viewModelOf(::FeeViewModel)
     viewModelOf(::DenominationViewModel)
     viewModelOf(::BumpViewModel)
     viewModelOf(::LightningNodeViewModel)
     viewModelOf(::AssetDetailsViewModel)
+    viewModelOf(::RedepositViewModel)
+    viewModelOf(::ReEnable2FAViewModel)
+    viewModel {
+        FeeViewModel(get(), getOrNull(), getOrNull(), get())
+    }
     viewModel {
         SendConfirmViewModel(get(), get(), getOrNull())
     }
@@ -121,7 +127,7 @@ val viewModels = module {
         AccountExchangeViewModel(get(), getOrNull())
     }
     viewModel {
-        SendViewModel(get(), getOrNull(), getOrNull(), getOrNull())
+        SendViewModel(get(), getOrNull(), getOrNull())
     }
     viewModel {
         SimpleGreenViewModel(getOrNull(), getOrNull(), getOrNull())

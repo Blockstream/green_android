@@ -15,7 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.getScreenModel
+import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyNetworkViewModel
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyNetworkViewModelAbstract
@@ -29,12 +29,16 @@ import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 
-object WatchOnlyNetworkScreen : Screen {
+data class WatchOnlyNetworkScreen(val setupArgs: SetupArgs) : Screen {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<WatchOnlyNetworkViewModel>()
+        val viewModel = koinViewModel<WatchOnlyNetworkViewModel>(){
+            parametersOf(setupArgs)
+        }
 
         val navData by viewModel.navData.collectAsStateWithLifecycle()
 

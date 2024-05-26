@@ -793,7 +793,7 @@ class LoginViewModel constructor(
             if(device == null){
                 postSideEffect(SideEffects.ErrorSnackbar(it))
             }else{
-                postSideEffect(SideEffects.NavigateBack(it))
+                postSideEffect(SideEffects.NavigateBack(error = it))
             }
 
             countly.failedWalletLogin(session, it)

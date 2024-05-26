@@ -52,13 +52,6 @@ class Account2of3Fragment : AbstractAddAccountFragment<Account2of3FragmentBindin
     override fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
         if (sideEffect is SideEffects.NavigateTo) {
-            (sideEffect.destination as? NavigateDestinations.NewRecovery)?.also {
-                navigate(
-                    Account2of3FragmentDirections.actionAccount2of3FragmentToRecoveryIntroFragment(
-                        setupArgs = it.setupArgs
-                    )
-                )
-            }
             (sideEffect.destination as? NavigateDestinations.ExistingRecovery)?.also {
                 navigate(
                     Account2of3FragmentDirections.actionAccount2of3FragmentToEnterRecoveryPhraseFragment(

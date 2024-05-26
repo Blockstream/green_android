@@ -30,15 +30,20 @@ class SideEffects : SideEffect {
     data class OpenDenomination(val denominatedValue: DenominatedValue): SideEffect
     data class OpenFeeBottomSheet(
         val greenWallet: GreenWallet,
-        val accountAsset: AccountAsset,
-        val params: CreateTransactionParams
+        val accountAsset: AccountAsset?,
+        val params: CreateTransactionParams?,
+        val useBreezFees: Boolean = false
     ) : SideEffect
     data class Success(val data: Any? = null) : SideEffect
     data class Mnemonic(val mnemonic: String) : SideEffect, Redact
     data class Navigate(val data: Any? = null) : SideEffect
     data class NavigateTo(val destination: NavigateDestination) : SideEffect
-    data class NavigateBack(val error: Throwable? = null, val errorReport: ErrorReport? = null, val title: String? = null) :
-        SideEffect
+    data class NavigateBack(
+        val title: String? = null,
+        val message: String? = null,
+        val error: Throwable? = null,
+        val errorReport: ErrorReport? = null,
+    ) : SideEffect
     object NavigateToRoot : SideEffect
     data class TransactionSent(val data: SendTransactionSuccess) : SideEffect
     data class Logout(val reason: LogoutReason) : SideEffect

@@ -56,6 +56,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
+import co.touchlab.kermit.Logger
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
 import com.blockstream.compose.theme.green
@@ -74,7 +75,11 @@ fun SlideToUnlock(
     val density = LocalDensity.current
     val hapticFeedback = LocalHapticFeedback.current
     var lastAnchor by remember { mutableStateOf(Anchor.Start) }
+    var lastIsLoading by remember { mutableStateOf(isLoading) }
 
+    LaunchedEffect(isLoading) {
+        lastIsLoading = isLoading
+    }
     val swipeState = remember {
         AnchoredDraggableState(
             initialValue = if (isLoading) Anchor.End else Anchor.Start,
@@ -82,7 +87,7 @@ fun SlideToUnlock(
             velocityThreshold = { with(density) { Track.VelocityThreshold.toDp().toPx() } },
             animationSpec = tween(),
             confirmValueChange = { anchor ->
-                if (!isLoading && lastAnchor == Anchor.Start && anchor == Anchor.End) {
+                if (!lastIsLoading && lastAnchor == Anchor.Start && anchor == Anchor.End) {
                     hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
                     onSlideComplete()
                 }
@@ -90,6 +95,10 @@ fun SlideToUnlock(
                 true
             }
         )
+    }
+
+    LaunchedEffect(isLoading) {
+       swipeState.animateTo(if (isLoading) Anchor.End else Anchor.Start)
     }
 
     val swipeFraction by remember {
@@ -102,9 +111,6 @@ fun SlideToUnlock(
         }
     }
 
-    LaunchedEffect(isLoading) {
-        swipeState.animateTo(if (isLoading) Anchor.End else Anchor.Start)
-    }
 
     Track(
         swipeState = swipeState,
@@ -355,6 +361,9 @@ private fun Preview() {
             )
             Spacer(modifier = Modifier.weight(1f))
 
+            GreenButton(text = "Load") {
+                isLoading = true
+            }
 
             GreenButton(text = "Cancel Loading") {
                 isLoading = false

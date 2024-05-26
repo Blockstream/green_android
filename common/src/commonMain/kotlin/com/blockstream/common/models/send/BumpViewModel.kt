@@ -15,7 +15,6 @@ import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.gdk.params.CreateTransactionParams
-import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.toAmountLook
@@ -25,7 +24,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
 
 abstract class BumpViewModelAbstract(
@@ -47,23 +45,31 @@ abstract class BumpViewModelAbstract(
 
     @NativeCoroutinesState
     abstract val amount: StateFlow<String?>
+
     @NativeCoroutinesState
     abstract val amountFiat: StateFlow<String?>
 
     @NativeCoroutinesState
     abstract val total: StateFlow<String?>
+
     @NativeCoroutinesState
     abstract val totalFiat: StateFlow<String?>
 
     @NativeCoroutinesState
     abstract val oldFee: StateFlow<String?>
+
     @NativeCoroutinesState
     abstract val oldFeeFiat: StateFlow<String?>
+
     @NativeCoroutinesState
     abstract val oldFeeRate: StateFlow<String?>
 }
 
-class BumpViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset, transactionAsString: String) :
+class BumpViewModel(
+    greenWallet: GreenWallet,
+    accountAsset: AccountAsset,
+    transactionAsString: String
+) :
     BumpViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
 
     private val _address: MutableStateFlow<String?> = MutableStateFlow(null)
@@ -94,7 +100,7 @@ class BumpViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset, transa
 
     init {
         _navData.value = NavData(
-            title = "id_bump",
+            title = "id_increase_fee",
             subtitle = account.name
         )
 
@@ -104,7 +110,7 @@ class BumpViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset, transa
         session.ifConnected {
             _network.value = account.network
 
-             combine(_feePriorityPrimitive, _feeEstimation.filterNotNull()) { _, _ ->
+            combine(_feePriorityPrimitive, _feeEstimation.filterNotNull()) { _, _ ->
                 createTransactionParams.value = createTransactionParams()
             }.launchIn(this)
         }
@@ -116,15 +122,23 @@ class BumpViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset, transa
         super.handleEvent(event)
 
         if (event is LocalEvents.SignTransaction) {
-            signTransaction(event.broadcastTransaction)
+            signAndSendTransaction(
+                originalParams = createTransactionParams.value,
+                originalTransaction = createTransaction.value,
+                segmentation = TransactionSegmentation(
+                    transactionType = TransactionType.BUMP
+                ),
+                broadcast = event.broadcastTransaction
+            )
         }
     }
 
-    private suspend fun createTransactionParams(): CreateTransactionParams? {
+    override suspend fun createTransactionParams(): CreateTransactionParams? {
         return try {
             val unspentOutputs = session.getUnspentOutputs(account = account, isBump = true)
 
             CreateTransactionParams(
+                subaccount = account.pointer,
                 feeRate = getFeeRate(),
                 utxos = unspentOutputs.unspentOutputsAsJsonElement,
                 previousTransaction = transaction
@@ -141,139 +155,93 @@ class BumpViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset, transa
         finalCheckBeforeContinue: Boolean
     ) {
         doAsync({
-            checkTransactionMutex.withLock {
-                logger.d { "checkTransaction" }
+            if (params == null) {
+                return@doAsync null
+            }
 
-                if(params == null){
-                    return@withLock
-                }
+            val tx = session.createTransaction(account.network, params)
 
-                val tx = session.createTransaction(account.network, params)
+            _address.value = tx.addressees.firstOrNull()?.address
 
-                _address.value = tx.addressees.firstOrNull()?.address
-
-                // Display amount info only for simple outgoing transactions
-                if(tx.previousTransaction?.txType == Transaction.Type.OUT) {
-                    (if (tx.addressees.firstOrNull()?.isGreedy == true) {
-                        tx.satoshi[account.network.policyAsset]
-                    } else {
-                        tx.addressees.firstOrNull()?.satoshi
-                    }).also {
-                        _amount.value = it.toAmountLook(
-                            session = session,
-                            withUnit = true,
-                            withDirection = true
-                        )
-
-                        _amountFiat.value = it.toAmountLook(
-                            session = session,
-                            withUnit = true,
-                            withDirection = true,
-                            denomination = Denomination.fiat(session)
-                        )
-                    }
-                }
-
-                _oldFee.value = tx.oldFee?.toAmountLook(session = session, withUnit = true)
-                _oldFeeFiat.value = tx.oldFee?.toAmountLook(session = session, withUnit = true, denomination = Denomination.fiat(session))
-                _oldFeeRate.value = tx.oldFeeRate?.feeRateWithUnit()
-
-                val feeErrors = listOf("id_invalid_replacement_fee_rate", "id_fee_rate_is_below_minimum")
-                tx.fee?.takeIf { it != 0L || tx.error.isNullOrBlank() }.also {
-                    _feePriority.value = calculateFeePriority(
+            // Display amount info only for simple outgoing transactions
+            if (tx.previousTransaction?.txType == Transaction.Type.OUT) {
+                (if (tx.addressees.firstOrNull()?.isGreedy == true) {
+                    tx.satoshi[account.network.policyAsset]
+                } else {
+                    tx.addressees.firstOrNull()?.satoshi
+                }).also {
+                    _amount.value = it.toAmountLook(
                         session = session,
-                        feePriority = _feePriority.value,
-                        feeAmount = it,
-                        feeRate = tx.feeRate?.feeRateWithUnit(),
-                        error = tx.error.takeIf { feeErrors.contains(it) }
+                        withUnit = true,
+                        withDirection = true
+                    )
+
+                    _amountFiat.value = it.toAmountLook(
+                        session = session,
+                        withUnit = true,
+                        withDirection = true,
+                        denomination = Denomination.fiat(session)
                     )
                 }
+            }
 
-                // Change fee
-                if((tx.feeRate ?: 0) < (tx.oldFeeRate ?: 0)){
-                    _customFeeRate.value = ((tx.oldFeeRate ?: account.network.defaultFee) / 1000.0 + minFee()).also {
+            _oldFee.value = tx.oldFee?.toAmountLook(session = session, withUnit = true)
+            _oldFeeFiat.value = tx.oldFee?.toAmountLook(
+                session = session,
+                withUnit = true,
+                denomination = Denomination.fiat(session)
+            )
+            _oldFeeRate.value = tx.oldFeeRate?.feeRateWithUnit()
+
+            val feeErrors =
+                listOf("id_invalid_replacement_fee_rate", "id_fee_rate_is_below_minimum")
+            tx.fee?.takeIf { it != 0L || tx.error.isNullOrBlank() }.also {
+                _feePriority.value = calculateFeePriority(
+                    session = session,
+                    feePriority = _feePriority.value,
+                    feeAmount = it,
+                    feeRate = tx.feeRate?.feeRateWithUnit(),
+                    error = tx.error.takeIf { feeErrors.contains(it) }
+                )
+            }
+
+            // Change fee
+            if ((tx.feeRate ?: 0) < (tx.oldFeeRate ?: 0)) {
+                _customFeeRate.value =
+                    ((tx.oldFeeRate ?: account.network.defaultFee) / 1000.0 + minFee()).also {
                         _feePriority.value = FeePriority.Custom(it)
                     }
-                }
-
-                tx.error.takeIf { it.isNotBlank() }?.also {
-                    throw Exception(it)
-                }
-
-                tx
             }
-        }, preAction = {
+
+            tx.error.takeIf { it.isNotBlank() }?.also {
+                throw Exception(it)
+            }
+
+            tx
+
+        }, mutex = createTransactionMutex, preAction = {
             _isValid.value = false
         }, postAction = {
 
         }, onSuccess = {
+            createTransaction.value = it
             _isValid.value = it != null
             _error.value = null
         }, onError = {
+            createTransaction.value = null
             _isValid.value = false
             _error.value = it.message
         })
     }
 
-    private fun signTransaction(broadcastTransaction: Boolean) {
-        doAsync({
-            countly.startSendTransaction()
-            countly.startFailedTransaction()
-
-            val params = createTransactionParams()!!
-            val signedTransaction = session.createTransaction(account.network, params).let { tx ->
-                tx.error.takeIf { it.isNotBlank() }?.also {
-                    throw Exception(it)
-                }
-                session.signTransaction(account.network, tx)
-            }
-
-            if (broadcastTransaction) {
-                session.sendTransaction(
-                    account = account,
-                    signedTransaction = signedTransaction,
-                    twoFactorResolver = this
-                )
-            }
-
-            true
-        }, postAction = { exception ->
-            onProgress.value = exception == null
-        }, onSuccess = {
-
-            if (broadcastTransaction) {
-                countly.endSendTransaction(
-                    session = session,
-                    account = account,
-                    transactionSegmentation = TransactionSegmentation(
-                        transactionType = TransactionType.BUMP
-                    ),
-                    withMemo = false
-                )
-            }
-
-            postSideEffect(SideEffects.Snackbar("id_transaction_sent"))
-            postSideEffect(SideEffects.NavigateToRoot)
-        }, onError = {
-            postSideEffect(SideEffects.ErrorDialog(it))
-            countly.failedTransaction(
-                session = session,
-                account = account,
-                transactionSegmentation = TransactionSegmentation(
-                    transactionType = TransactionType.BUMP
-                ),
-                error = it
-            )
-        })
-    }
-
-    companion object: Loggable()
+    companion object : Loggable()
 }
 
 class BumpViewModelPreview(greenWallet: GreenWallet) :
     BumpViewModelAbstract(greenWallet = greenWallet, accountAsset = previewAccountAsset()) {
 
-    override val address: StateFlow<String?> = MutableStateFlow("bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu")
+    override val address: StateFlow<String?> =
+        MutableStateFlow("bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu")
     override val amount: StateFlow<String?> = MutableStateFlow("1.0 BTC")
     override val amountFiat: StateFlow<String?> = MutableStateFlow("~ 150.000 USD")
     override val total: StateFlow<String?> = MutableStateFlow("150 BTC")
@@ -283,7 +251,12 @@ class BumpViewModelPreview(greenWallet: GreenWallet) :
     override val oldFeeRate: StateFlow<String?> = MutableStateFlow("1 sats/vbyte")
 
     init {
-        _feePriority.value = FeePriority.Low(fee = "0.000001 BTC", feeFiat = "13.00 USD", feeRate = 2L.feeRateWithUnit(), expectedConfirmationTime = "id_s_hours|2")
+        _feePriority.value = FeePriority.Low(
+            fee = "0.000001 BTC",
+            feeFiat = "13.00 USD",
+            feeRate = 2L.feeRateWithUnit(),
+            expectedConfirmationTime = "id_s_hours|2"
+        )
     }
 
     companion object {

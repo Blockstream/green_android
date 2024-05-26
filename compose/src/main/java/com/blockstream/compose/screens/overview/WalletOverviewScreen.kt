@@ -1,6 +1,10 @@
 package com.blockstream.compose.screens.overview
 
+import android.Manifest
+import android.os.Build
 import android.view.LayoutInflater
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -77,6 +81,7 @@ import com.blockstream.common.models.settings.DenominationExchangeRateViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.GreenPreview
+import com.blockstream.compose.LocalRootNavigator
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenAccountCard
 import com.blockstream.compose.components.GreenAlert
@@ -117,6 +122,10 @@ import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.noRippleClickable
 import com.blockstream.compose.views.LightningInfo
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import kotlinx.coroutines.delay
 import kotlinx.parcelize.IgnoredOnParcel
 import org.koin.core.parameter.parametersOf
@@ -142,10 +151,14 @@ data class WalletOverviewScreen(
     override val key = uniqueScreenKey
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun WalletOverviewScreen(
     viewModel: WalletOverviewViewModelAbstract
 ) {
+    val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
+    val navigator = LocalRootNavigator.current
+
     var denominationExchangeRateViewModel by remember {
         mutableStateOf<DenominationExchangeRateViewModel?>(null)
     }
@@ -155,7 +168,6 @@ fun WalletOverviewScreen(
     var archivedAccountsViewModel by remember {
         mutableStateOf<ArchivedAccountsViewModel?>(null)
     }
-    val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
 
     getNavigationResult<MainMenuEntry>(MainMenuBottomSheet.resultKey).value?.also {
         when (it) {
@@ -178,6 +190,28 @@ fun WalletOverviewScreen(
         viewModel.postEvent(Events.HandleUserInput(it.result, isQr = true))
     }
 
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val requestPermissionLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted) {
+                viewModel.postEvent(Events.NotificationPermissionGiven)
+            } else {
+                // Handle permission denial
+            }
+        }
+
+        val notificatioPermissionState = rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
+        LaunchedEffect(notificatioPermissionState) {
+            if (!notificatioPermissionState.status.isGranted && notificatioPermissionState.status.shouldShowRationale) {
+                // Show rationale if needed
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
     HandleSideEffect(viewModel = viewModel) {
         if (it is SideEffects.OpenDenominationExchangeRate) {
             denominationExchangeRateViewModel =
@@ -186,7 +220,11 @@ fun WalletOverviewScreen(
             appRateViewModel = SimpleGreenViewModel(viewModel.greenWallet)
         } else if(it is WalletOverviewViewModel.LocalSideEffects.AccountArchivedDialog) {
             archivedAccountsViewModel =
-                ArchivedAccountsViewModel(viewModel.greenWallet)
+                ArchivedAccountsViewModel(viewModel.greenWallet).also {
+                    if(navigator == null) {
+                        it.parentViewModel = viewModel
+                    }
+                }
         }
     }
 
@@ -288,7 +326,11 @@ fun WalletOverviewScreen(
                             } else null,
                             onWarningClick = if (it.warningTwoFactor) {
                                 {
-                                    viewModel.postEvent(NavigateDestinations.EnableTwoFactor)
+                                    if (it.hasExpiredUtxos){
+                                        viewModel.postEvent(NavigateDestinations.ReEnable2FA)
+                                    }else{
+                                        viewModel.postEvent(NavigateDestinations.EnableTwoFactor(it.account.network))
+                                    }
                                 }
                             } else null,
                             onClick = {

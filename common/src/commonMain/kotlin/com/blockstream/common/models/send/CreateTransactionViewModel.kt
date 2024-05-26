@@ -1,11 +1,15 @@
 package com.blockstream.common.models.send
 
 import com.blockstream.common.AddressInputType
+import com.blockstream.common.TransactionSegmentation
 import com.blockstream.common.data.Denomination
+import com.blockstream.common.data.ErrorReport
+import com.blockstream.common.data.ExceptionWithErrorReport
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Event
 import com.blockstream.common.extensions.ifConnected
+import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.gdk.FeeBlockHigh
 import com.blockstream.common.gdk.FeeBlockLow
@@ -13,9 +17,13 @@ import com.blockstream.common.gdk.FeeBlockMedium
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalance
+import com.blockstream.common.gdk.data.CreateTransaction
 import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.data.SendTransactionSuccess
 import com.blockstream.common.gdk.params.CreateTransactionParams
+import com.blockstream.common.looks.transaction.TransactionConfirmLook
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
@@ -62,6 +70,9 @@ abstract class CreateTransactionViewModelAbstract(
     @NativeCoroutinesState
     val showFeeSelector: StateFlow<Boolean> = _showFeeSelector.asStateFlow()
 
+    internal val _onProgressSending: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val onProgressSending: StateFlow<Boolean> = _onProgressSending.asStateFlow()
+
     // Gets updated when Account assets are updated
     @NativeCoroutinesState
     val accountAssetBalance: StateFlow<AccountAssetBalance?> =
@@ -83,12 +94,14 @@ abstract class CreateTransactionViewModelAbstract(
                     )
                 }
             }
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), accountAssetOrNull?.accountAssetBalance)
 
     internal var _customFeeRate: MutableStateFlow<Double?> = MutableStateFlow(null)
 
     @NativeCoroutinesState
     val customFeeRate: StateFlow<Double?> = _customFeeRate.asStateFlow()
+
+    val note = MutableStateFlow(session.pendingTransaction?.second?.memo ?: "")
 
     protected val _error: MutableStateFlow<String?> = MutableStateFlow(null)
 
@@ -96,8 +109,12 @@ abstract class CreateTransactionViewModelAbstract(
     val error: StateFlow<String?> = _error.asStateFlow()
 
     internal var createTransactionParams: MutableStateFlow<CreateTransactionParams?> = MutableStateFlow(null)
+    internal var createTransaction: MutableStateFlow<CreateTransaction?> = MutableStateFlow(null)
 
-    internal val checkTransactionMutex = Mutex()
+    internal val createTransactionMutex = Mutex()
+
+    open suspend fun createTransactionParams(): CreateTransactionParams? = null
+
     open fun createTransaction(params: CreateTransactionParams?, finalCheckBeforeContinue: Boolean = false) { }
 
     class LocalEvents {
@@ -113,8 +130,6 @@ abstract class CreateTransactionViewModelAbstract(
     }
 
     override fun bootstrap() {
-        super.bootstrap()
-
         session.ifConnected {
             _network.onEach {
                 if (it == null) {
@@ -130,6 +145,8 @@ abstract class CreateTransactionViewModelAbstract(
                 createTransaction(params = createTransactionParams, finalCheckBeforeContinue = false)
             }.launchIn(this)
         }
+
+        super.bootstrap()
     }
 
     override fun handleEvent(event: Event) {
@@ -169,7 +186,7 @@ abstract class CreateTransactionViewModelAbstract(
         }
     }
 
-    internal fun minFee(): Double =
+    internal open fun minFee(): Double =
         (_feeEstimation.value?.firstOrNull() ?: _network.value?.defaultFee
         ?: session.defaultNetwork.defaultFee) / 1000.0
 
@@ -291,6 +308,165 @@ abstract class CreateTransactionViewModelAbstract(
                 ?: 0
             }
         }
+
+    internal fun signAndSendTransaction(
+        originalParams: CreateTransactionParams?,
+        originalTransaction: CreateTransaction?,
+        segmentation: TransactionSegmentation,
+        broadcast: Boolean
+    ) {
+        onProgressDescription.value = if(broadcast) "id_sending_" else "id_signing__"
+
+        doAsync({
+            countly.startSendTransaction()
+            countly.startFailedTransaction()
+
+            if(originalParams == null){
+                throw Exception("No params is provided")
+            }
+
+            if(originalTransaction == null){
+                throw Exception("No transaction is provided")
+            }
+
+            val network = accountOrNull?.network ?: _network.value!!
+
+            // Create transaction with memo
+            val params = note.value.takeIf { it.isNotBlank() }?.trim()?.let {
+                originalParams.copy(memo = it)
+            } ?: originalParams
+
+            var transaction = originalTransaction
+            val isSwap = transaction.isSwap()
+
+            if (!isSwap) {
+                // Re-create transaction if not swap
+                transaction = session.createTransaction(network, params).also { tx ->
+                    tx.error.takeIf { it.isNotBlank() }?.also {
+                        throw Exception(it)
+                    }
+                }
+            }
+
+            // If liquid, blind the transaction before signing
+            if(!transaction.isBump() && !transaction.isSweep() && network.isLiquid){
+                transaction = session.blindTransaction(network, transaction)
+            }
+
+            if (session.isHardwareWallet && !account.isLightning && !transaction.isSweep()) {
+                postSideEffect(
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.VerifyTransaction(
+                            TransactionConfirmLook.create(
+                                params = params,
+                                transaction = transaction,
+                                account = account,
+                                session = session,
+                                denomination = _denomination.value,
+                                isAddressVerificationOnDevice = true
+                            )
+                        )
+                    )
+                )
+            }
+
+            // Sign transaction
+            transaction = session.signTransaction(account.network, transaction)
+
+            // Broadcast or just sign
+            if (broadcast) {
+                if (isSwap || transaction.isSweep()) {
+                    session.broadcastTransaction(
+                        network = network,
+                        transaction = transaction.transaction ?: ""
+                    )
+                } else {
+                    session.sendTransaction(
+                        account = account,
+                        signedTransaction = transaction,
+                        twoFactorResolver = this
+                    )
+                }
+            } else {
+                SendTransactionSuccess(signedTransaction = transaction.transaction ?: "")
+            }
+        },  preAction = {
+            onProgress.value = true
+            _onProgressSending.value = true
+        }, postAction = {
+            onProgress.value = broadcast && it == null
+            _onProgressSending.value = broadcast && it == null
+        }, onSuccess = {
+            // Dismiss Verify Transaction Dialog
+            postSideEffect(SideEffects.Dismiss)
+
+            if (broadcast) {
+                countly.endSendTransaction(
+                    session = session,
+                    account = account,
+                    transactionSegmentation = segmentation,
+                    withMemo = note.value.isNotBlank()
+                )
+
+                session.pendingTransaction = null // clear pending transaction
+                postSideEffect(SideEffects.Snackbar("id_transaction_sent"))
+                postSideEffect(SideEffects.NavigateToRoot)
+            } else {
+                postSideEffect(
+                    SideEffects.Dialog(
+                        title = "Signed Transaction",
+                        message = it.signedTransaction ?: ""
+                    )
+                )
+            }
+
+        }, onError = {
+            // Dismiss Verify Transaction Dialog
+            postSideEffect(SideEffects.Dismiss)
+
+            when {
+                // If the error is the Anti-Exfil validation violation we show that prominently.
+                // Otherwise show a toast of the error text.
+                it.message == "id_signature_validation_failed_if" -> {
+                    postSideEffect(
+                        SideEffects.ErrorDialog(
+                            it,
+                            errorReport = ErrorReport.create(
+                                throwable = it,
+                                network = account.network,
+                                session = session
+                            )
+                        )
+                    )
+                }
+
+                it.message == "id_transaction_already_confirmed" -> {
+                    postSideEffect(SideEffects.Snackbar("id_transaction_already_confirmed"))
+                    postSideEffect(SideEffects.NavigateToRoot)
+                }
+
+                it.message != "id_action_canceled" -> {
+                    postSideEffect(
+                        SideEffects.ErrorDialog(
+                            it, errorReport = (it as? ExceptionWithErrorReport)?.errorReport
+                                ?: ErrorReport.create(
+                                    throwable = it,
+                                    network = account.network,
+                                    session = session
+                                )
+                        )
+                    )
+                }
+            }
+
+            countly.failedTransaction(
+                session = session,
+                account = account,
+                transactionSegmentation = segmentation,
+                error = it
+            )
+        })
+    }
 
     companion object : Loggable()
 }

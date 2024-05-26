@@ -39,6 +39,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
@@ -148,7 +149,7 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
     override val accounts: StateFlow<List<AccountBalance>> =
-        combine(hideAmounts, _accountsBalance) { hideAmounts, accountsBalance ->
+        combine(hideAmounts, _accountsBalance, session.expired2FA) { hideAmounts, accountsBalance, _ ->
             if (hideAmounts) {
                 accountsBalance.map { it.asMasked }
             } else {
@@ -156,11 +157,11 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
-    override val lightningInfo: StateFlow<LightningInfoLook?> = session.lightningNodeInfoStateFlow.map {
+    override val lightningInfo: StateFlow<LightningInfoLook?> = (session.lightningSdkOrNull?.nodeInfoStateFlow?.map {
         if(session.isConnected && isLightningShortcut){
             LightningInfoLook.create(session = session, nodeState = it)
         } else null
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
+    } ?: emptyFlow()).stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
 
     private val _transactions: StateFlow<DataState<List<TransactionLook>>> =
@@ -367,9 +368,7 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
                                 accountAsset = session.activeAccount.value?.accountAsset
                             )
                         }else{
-                            NavigateDestinations.Send(
-                                accountAsset = session.activeAccount.value!!.accountAsset
-                            )
+                            NavigateDestinations.Send()
                         }
                     )
                 )

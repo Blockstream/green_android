@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
@@ -40,8 +41,7 @@ fun ScreenContainer(
     content: @Composable BoxScope.() -> Unit
 ) {
     Box(modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
+            .fillMaxSize()
             .ifTrue(onProgress) {
                 background(MaterialTheme.colorScheme.background.copy(alpha = 0.75f))
                     .blur(6.dp)

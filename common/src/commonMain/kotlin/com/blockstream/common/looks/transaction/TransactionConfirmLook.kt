@@ -79,7 +79,8 @@ data class TransactionConfirmLook(
                 utxos = transaction.utxoViews(
                     session = session,
                     denomination = denomination,
-                    showChangeOutputs = isAddressVerificationOnDevice
+                    isAddressVerificationOnDevice = isAddressVerificationOnDevice,
+                    showChangeOutputs = session.device?.isLedger == true
                 )
             }
 
@@ -132,7 +133,7 @@ data class TransactionConfirmLook(
                 fee = fee,
                 feeFiat = feeFiat,
                 feeRate = feeRate,
-                feeAssetId = params.from?.account?.network?.policyAssetOrNull,
+                feeAssetId = account.network.policyAssetOrNull,
                 total = total,
                 totalFiat = totalFiat
             )

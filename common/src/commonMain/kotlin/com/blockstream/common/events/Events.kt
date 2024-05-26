@@ -39,7 +39,7 @@ class Events : Event {
     class DeviceRequestResponse(val data: String?): Event
     class RenameAccount(val account: Account, val name: String): Event
     class ArchiveAccount constructor(val account: Account): Event
-    class UnArchiveAccount(val account: Account): Event
+    class UnArchiveAccount(val account: Account, val navigateToRoot: Boolean): Event
     class RemoveAccount(val account: Account): Event
     class SetAccountAsset(val accountAsset: AccountAsset, val setAsActive: Boolean = false): Event
     class SetBarcodeScannerResult(val scannedText : String): Event
@@ -50,4 +50,5 @@ class Events : Event {
     ) : Event
 
     data class SelectTwoFactorMethod(val method: String?): Event
+    object NotificationPermissionGiven: Event
 }

@@ -10,6 +10,7 @@ import kotlinx.serialization.json.JsonElement
 
 @Serializable
 data class CreateTransactionParams constructor(
+    @SerialName("subaccount") val subaccount: Long? = null,
     @SerialName("from") val from: AccountAsset? = null,
     @SerialName("to") val to: AccountAsset? = null,
 

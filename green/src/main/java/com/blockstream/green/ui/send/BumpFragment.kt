@@ -24,9 +24,6 @@ class BumpFragment : AppFragment<ComposeViewBinding>(
 
     override val useCompose: Boolean = true
 
-    override val title: String
-        get() = getString(R.string.id_increase_fee)
-
     private val viewModel: BumpViewModel by viewModel {
         parametersOf(args.wallet, args.accountAsset, args.transaction)
     }

@@ -36,6 +36,7 @@ import com.blockstream.compose.theme.GreenThemePreview
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.titleSmall
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Parcelize
@@ -46,7 +47,7 @@ data class DenominationBottomSheet(
     @Composable
     override fun Content() {
 
-        val viewModel = getScreenModel<DenominationViewModel> {
+        val viewModel = koinViewModel<DenominationViewModel> {
             parametersOf(greenWallet, denominatedValue)
         }
 

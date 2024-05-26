@@ -37,7 +37,7 @@ class SetupNewWalletViewModel : SetupNewWalletViewModelAbstract() {
             }
 
             is LocalEvents.WatchOnly -> {
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.NewWatchOnlyWallet))
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WatchOnlyPolicy))
                 countly.watchOnlyWallet()
             }
         }

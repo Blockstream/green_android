@@ -56,17 +56,43 @@ fun AccountType?.title(): String = when (this) {
     else -> "Unknown"
 }
 
+fun AccountType.policyRes(): String = when (this) {
+    AccountType.STANDARD -> "id_2of2"
+    AccountType.AMP_ACCOUNT -> "id_amp"
+    AccountType.TWO_OF_THREE -> "id_2of3"
+    AccountType.BIP44_LEGACY -> "id_legacy"
+    AccountType.BIP49_SEGWIT_WRAPPED -> "id_legacy_segwit"
+    AccountType.BIP84_SEGWIT -> "id_native_segwit"
+    AccountType.BIP86_TAPROOT -> "id_taproot"
+    AccountType.LIGHTNING -> "id_fastest"
+    else -> "id_unknown"
+}
+
+fun AccountType.policyAndType(): String = when {
+    this.isMutlisig() -> "id_multisig__|${policyRes()}"
+    this.isLightning() -> "id_lightning"
+    else -> "id_singlesig__|${policyRes()}"
+}
+
 fun Account.needs2faActivation(session: GdkSession): Boolean {
     if (isSinglesig || isAmp || session.isWatchOnly) {
         return false
     }
 
-    return try {
-        session.getTwoFactorConfig(network = network)?.anyEnabled == false
+    return network.needs2faActivation(session = session)
+}
+
+fun Network.needs2faActivation(session: GdkSession): Boolean {
+        return try {
+        session.getTwoFactorConfig(network = this)?.anyEnabled == false
     } catch (e: Exception) {
         e.printStackTrace()
         false
     }
+}
+
+fun Account.hasExpiredUtxos(session: GdkSession): Boolean {
+    return isMultisig && session.expired2FA.value.indexOf(this) >= 0
 }
 
 fun String?.isPolicyAsset(network: Network?): Boolean = (this == null || this == network?.policyAsset)

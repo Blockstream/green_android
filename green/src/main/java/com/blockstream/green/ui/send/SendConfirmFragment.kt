@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.common.models.send.SendConfirmViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
@@ -20,7 +21,6 @@ import com.blockstream.green.R
 import com.blockstream.green.databinding.ComposeViewBinding
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.MainActivity
-import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -94,9 +94,11 @@ class SendConfirmFragment : AppFragment<ComposeViewBinding>(
                 return true
             }
             R.id.sign_transaction -> {
-                viewModel.postEvent(SendConfirmViewModel.LocalEvents.SignTransaction(
-                    broadcastTransaction = false, twoFactorResolver = DialogTwoFactorResolver(this)
-                ))
+                viewModel.postEvent(
+                    CreateTransactionViewModelAbstract.LocalEvents.SignTransaction(
+                        broadcastTransaction = false
+                    )
+                )
             }
         }
 

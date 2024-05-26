@@ -51,19 +51,21 @@ import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.roundBackground
 import com.blockstream.compose.utils.stringResourceId
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Parcelize
 data class FeeRateBottomSheet(
     val greenWallet: GreenWallet,
-    val accountAsset: AccountAsset,
-    val params: CreateTransactionParams
+    val accountAsset: AccountAsset?,
+    val params: CreateTransactionParams?,
+    val useBreezFees: Boolean
 ) : BottomScreen(), Parcelable {
     @Composable
     override fun Content() {
 
-        val viewModel = getScreenModel<FeeViewModel> {
-            parametersOf(greenWallet, accountAsset, params)
+        val viewModel = koinViewModel<FeeViewModel> {
+            parametersOf(greenWallet, accountAsset, params, useBreezFees)
         }
 
         FeeRateBottomSheet(

@@ -15,7 +15,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.getScreenModel
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyPolicyViewModel
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyPolicyViewModelAbstract
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyPolicyViewModelPreview
@@ -27,12 +26,13 @@ import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
+import org.koin.androidx.compose.koinViewModel
 
 
 object WatchOnlyPolicyScreen : Screen {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<WatchOnlyPolicyViewModel>()
+        val viewModel = koinViewModel<WatchOnlyPolicyViewModel>()
 
         val navData by viewModel.navData.collectAsStateWithLifecycle()
 

@@ -18,13 +18,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.koin.koinScreenModel
+import com.arkivanov.essenty.parcelable.IgnoredOnParcel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.sheets.LightningNodeViewModel
 import com.blockstream.common.models.sheets.LightningNodeViewModelAbstract
 import com.blockstream.common.models.sheets.LightningNodeViewModelPreview
 import com.blockstream.compose.GreenPreview
+import com.blockstream.compose.LocalRootNavigator
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
@@ -36,12 +39,22 @@ import org.koin.core.parameter.parametersOf
 
 @Parcelize
 data class LightningNodeBottomSheet(
-    val greenWallet: GreenWallet
+    val greenWallet: GreenWallet,
 ) : BottomScreen(), Parcelable {
+    // Temp fix until fully migration to Compose
+    @Transient
+    @IgnoredOnParcel
+    var parentViewModel: GreenViewModel? = null
+
     @Composable
     override fun Content() {
         val viewModel = koinScreenModel<LightningNodeViewModel> {
             parametersOf(greenWallet)
+        }.also {
+            val navigator = LocalRootNavigator.current
+            if(navigator == null) {
+                it.parentViewModel = parentViewModel
+            }
         }
 
         LightningNodeBottomSheet(

@@ -44,13 +44,14 @@ import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.views.PinView
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Parcelize
 data class PinScreen(val setupArgs: SetupArgs) : Screen, Parcelable {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<PinViewModel>() {
+        val viewModel = koinViewModel<PinViewModel> {
             parametersOf(setupArgs)
         }
 
@@ -98,10 +99,12 @@ fun PinScreen(
         onProgress = onProgress,
         onProgressDescription = onProgressDescription,
         blurBackground = !rocketAnimation,
-        riveAnimation = R.raw.rocket
+        riveAnimation = if (viewModel.setupArgs.isRestoreFlow) R.raw.rocket else null
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp),
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             GreenColumn(padding = 0, space = 8) {

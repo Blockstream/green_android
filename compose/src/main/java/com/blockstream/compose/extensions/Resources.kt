@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.LBTC_POLICY_ASSET
+import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.WalletIcon
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.GdkSession
@@ -83,6 +84,14 @@ fun Account.policyIcon(): Int {
         isSinglesig -> R.drawable.key_singlesig
         else -> R.drawable.key_multisig
     }
+}
+
+fun TwoFactorMethod.getIcon(): Int = when (this) {
+    TwoFactorMethod.EMAIL -> R.drawable.two_factor_email
+    TwoFactorMethod.SMS -> R.drawable.two_factor_sms
+    TwoFactorMethod.PHONE -> R.drawable.two_factor_call
+    TwoFactorMethod.AUTHENTICATOR -> R.drawable.two_factor_authenticator
+    TwoFactorMethod.TELEGRAM -> R.drawable.two_factor_sms
 }
 
 fun Network.icon(): Int = network.getNetworkIcon()

@@ -40,6 +40,7 @@ import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.common.models.send.SweepViewModel
 import com.blockstream.common.models.send.SweepViewModelAbstract
 import com.blockstream.common.models.send.SweepViewModelPreview
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.utils.DecimalFormat
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
@@ -159,7 +160,6 @@ fun SweepScreen(
                 },
                 singleLine = false,
                 error = error.takeIf { listOf("id_invalid_private_key").contains(it) },
-                minLines = 2,
                 onQrClick = {
                     bottomSheetNavigator.show(
                         CameraBottomSheet(
@@ -179,10 +179,10 @@ fun SweepScreen(
                 withAsset = false,
                 withEditIcon = true
             ) {
-                bottomSheetNavigator.show(
-                    AccountsBottomSheet(
-                        viewModel.greenWallet,
-                        viewModel.accounts.value,
+                viewModel.postEvent(
+                    NavigateDestinations.Accounts(
+                        greenWallet = viewModel.greenWallet,
+                        accounts = viewModel.accounts.value,
                         withAsset = false
                     )
                 )

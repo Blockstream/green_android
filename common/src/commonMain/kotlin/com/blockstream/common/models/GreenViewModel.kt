@@ -118,6 +118,9 @@ open class GreenViewModel constructor(
     private val _sideEffectAppFragment: Channel<SideEffect> = Channel()
     // Check with Don't Keep activities if the logout event is persisted
 
+    // Used only for AppFragment Navigation from dialogs or bottom sheets
+    var parentViewModel: GreenViewModel? = null
+
     // Helper method to force the use of MutableStateFlow(viewModelScope)
     @NativeCoroutinesIgnore
     protected fun <T> MutableStateFlow(value: T) = MutableStateFlow(viewModelScope, value)
@@ -151,7 +154,7 @@ open class GreenViewModel constructor(
     override fun screenName(): String? = null
     override fun segmentation(): HashMap<String, Any>? = null
 
-    private var _greenWallet: GreenWallet? = null
+    internal var _greenWallet: GreenWallet? = null
     val greenWallet: GreenWallet
         get() = _greenWallet ?: greenWalletOrNull!!
 
@@ -171,6 +174,9 @@ open class GreenViewModel constructor(
 
     val account: Account
         get() = accountAsset.value!!.account
+
+    val accountOrNull: Account?
+        get() = accountAsset.value?.account
 
     val sessionOrNull: GdkSession? by lazy {
         if(isPreview) return@lazy null
@@ -297,11 +303,18 @@ open class GreenViewModel constructor(
         } else {
             Logger.d { "postSideEffect: $sideEffect" }
         }
-        viewModelScope.coroutineScope.launch {
-            _sideEffect.send(sideEffect)
-        }
-        viewModelScope.coroutineScope.launch {
-            _sideEffectAppFragment.send(sideEffect)
+
+        // If navigate event forward side effect to parent viewmodel
+        parentViewModel?.takeIf { sideEffect is SideEffects.NavigateTo }?.also {
+            Logger.d { "forward to parentViewModel: $sideEffect" }
+            it.postSideEffect(sideEffect)
+        } ?: run {
+            viewModelScope.coroutineScope.launch {
+                _sideEffect.send(sideEffect)
+            }
+            viewModelScope.coroutineScope.launch {
+                _sideEffectAppFragment.send(sideEffect)
+            }
         }
     }
 
@@ -339,6 +352,10 @@ open class GreenViewModel constructor(
 
     open fun handleEvent(event: Event) {
         when(event){
+            is Events.NotificationPermissionGiven -> {
+                // Todo update notifications
+                // notificationManager.notificationPermissionGiven()
+            }
             is Events.SetAccountAsset -> {
                 accountAsset.value = event.accountAsset
                 if(event.setAsActive){
@@ -352,7 +369,7 @@ open class GreenViewModel constructor(
                 updateAccount(account = event.account, isHidden = true)
             }
             is Events.UnArchiveAccount -> {
-                updateAccount(account = event.account, isHidden = false)
+                updateAccount(account = event.account, isHidden = false, navigateToRoot = event.navigateToRoot)
             }
             is Events.RemoveAccount -> {
                  removeAccount(account = event.account)
@@ -564,7 +581,7 @@ open class GreenViewModel constructor(
         })
     }
 
-    private fun updateAccount(account: Account, isHidden: Boolean){
+    private fun updateAccount(account: Account, isHidden: Boolean, navigateToRoot: Boolean = false){
         doAsync({
             session.updateAccount(account = account, isHidden = isHidden, userInitiated = true)
         }, onSuccess = {
@@ -583,6 +600,9 @@ open class GreenViewModel constructor(
                 // Make it active
                 setActiveAccount(account)
                 postSideEffect(SideEffects.AccountUnarchived(account = account))
+                if(navigateToRoot){
+                    postSideEffect(SideEffects.NavigateToRoot)
+                }
             }
         })
     }
@@ -687,7 +707,6 @@ open class GreenViewModel constructor(
                             postSideEffect(
                                 SideEffects.NavigateTo(
                                     NavigateDestinations.Send(
-                                        accountAsset = account.accountAsset,
                                         address = data,
                                         addressType = if (isQr) AddressInputType.SCAN else AddressInputType.BIP21
                                     )

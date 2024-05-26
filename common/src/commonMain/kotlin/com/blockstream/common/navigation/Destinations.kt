@@ -13,6 +13,7 @@ import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.looks.transaction.TransactionConfirmLook
 
 interface NavigateDestination: Event
 sealed class NavigateDestinations : NavigateDestination {
@@ -22,7 +23,9 @@ sealed class NavigateDestinations : NavigateDestination {
     object AddWallet : NavigateDestination
     object UseHardwareDevice : NavigateDestination
 
-    object NewWatchOnlyWallet : NavigateDestination
+    object WatchOnlyPolicy : NavigateDestination
+    data class WatchOnlyNetwork(val args: SetupArgs) : NavigateDestination
+    data class WatchOnlyCredentials(val args: SetupArgs) : NavigateDestination
     object WalletSettings : NavigateDestination
     data class EnterRecoveryPhrase(val args: SetupArgs) : NavigateDestination
     data class RecoveryIntro(val args: SetupArgs) : NavigateDestination
@@ -42,7 +45,6 @@ sealed class NavigateDestinations : NavigateDestination {
 
     object ExportLightningKey : NavigateDestination
 
-    data class NewRecovery(val setupArgs: SetupArgs) : NavigateDestination
     data class ExistingRecovery(val setupArgs: SetupArgs) : NavigateDestination
     data class Xpub(val setupArgs: SetupArgs) : NavigateDestination
     data class DeviceList(val isJade: Boolean) : NavigateDestination
@@ -57,8 +59,8 @@ sealed class NavigateDestinations : NavigateDestination {
     data class AssetsAccounts(val greenWallet: GreenWallet, val assetsAccounts: List<AccountAssetBalance>) : NavigateDestination
     data class Accounts(val greenWallet: GreenWallet, val accounts: List<AccountAssetBalance>, val withAsset: Boolean) : NavigateDestination
     data class Bip39Passphrase(val passphrase: String) : NavigateDestination
-    object EnableTwoFactor : NavigateDestination
-    object ArchivedAccounts : NavigateDestination
+    data class EnableTwoFactor(val network: Network) : NavigateDestination
+    data class ArchivedAccounts(val navigateToRoot: Boolean = false) : NavigateDestination
     object Assets : NavigateDestination
     data class AccountOverview(val accountAsset: AccountAsset) : NavigateDestination
     data class ChooseAccountType(val greenWallet: GreenWallet) : NavigateDestination
@@ -87,7 +89,6 @@ sealed class NavigateDestinations : NavigateDestination {
     ) : NavigateDestination
 
     data class Send(
-        val accountAsset: AccountAsset,
         val address: String? = null,
         val addressType: AddressInputType? = null
     ) : NavigateDestination
@@ -103,15 +104,21 @@ sealed class NavigateDestinations : NavigateDestination {
     ) : NavigateDestination
 
     data class RecoverFunds(
-        val satoshi: Long = 0,
+        val amount: Long = 0,
         val isSendAll: Boolean = false,
         val address: String? = null,
     ) : NavigateDestination
 
     data class Receive(val accountAsset: AccountAsset) : NavigateDestination
+    data class Addresses(val accountAsset: AccountAsset) : NavigateDestination
     data class Sweep(
         val privateKey: String? = null,
         val accountAsset: AccountAsset? = null
+    ) : NavigateDestination
+
+    data class SignMessage(
+        val accountAsset: AccountAsset,
+        val address: String
     ) : NavigateDestination
 
     object AccountExchange : NavigateDestination
@@ -127,4 +134,13 @@ sealed class NavigateDestinations : NavigateDestination {
     data class Transaction(
         val transaction: com.blockstream.common.gdk.data.Transaction
     ) : NavigateDestination
+
+    data class Redeposit(
+        val accountAsset: AccountAsset,
+        val isRedeposit2FA: Boolean
+    ) : NavigateDestination
+
+    object ReEnable2FA: NavigateDestination
+
+    data class VerifyTransaction(val transactionConfirmLook: TransactionConfirmLook) : NavigateDestination
 }

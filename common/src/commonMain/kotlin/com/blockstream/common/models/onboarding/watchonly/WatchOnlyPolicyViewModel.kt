@@ -4,7 +4,7 @@ import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Event
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.navigation.NavigateDestination
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import org.koin.core.component.inject
 
@@ -19,10 +19,6 @@ class WatchOnlyPolicyViewModel : WatchOnlyPolicyViewModelAbstract() {
         class SelectPolicy(val isSinglesig: Boolean) : Event
     }
 
-    class Destination : NavigateDestination {
-        data class ChooseNetwork(val setupArgs: SetupArgs) : NavigateDestination
-    }
-
     init {
         bootstrap()
     }
@@ -32,7 +28,7 @@ class WatchOnlyPolicyViewModel : WatchOnlyPolicyViewModelAbstract() {
         if (event is LocalEvents.SelectPolicy) {
             postSideEffect(
                 SideEffects.NavigateTo(
-                    Destination.ChooseNetwork(
+                    NavigateDestinations.WatchOnlyNetwork(
                         SetupArgs(
                             isRestoreFlow = true,
                             isWatchOnly = true,

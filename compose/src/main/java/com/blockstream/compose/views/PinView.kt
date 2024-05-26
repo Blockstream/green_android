@@ -237,7 +237,7 @@ fun PinView(
                     }
                 ,
                 horizontalArrangement = Arrangement.spacedBy(
-                    if (showDigits) 6.dp else 12.dp,
+                    if (showDigits) 6.dp else if(isSmall) 12.dp else 24.dp,
                     Alignment.CenterHorizontally
                 ),
                 verticalAlignment = Alignment.CenterVertically

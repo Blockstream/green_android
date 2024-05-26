@@ -138,6 +138,7 @@ fun VerifyTransactionBottomSheet(
                         title = stringResource(R.string.id_fee),
                         amount = it,
                         assetId = transactionConfirmLook.feeAssetId,
+                        session = viewModel.sessionOrNull,
                         showIcon = true
                     )
                 }

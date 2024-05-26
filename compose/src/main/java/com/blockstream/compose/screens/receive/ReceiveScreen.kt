@@ -56,6 +56,7 @@ import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.stringResourceId
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 
@@ -66,7 +67,7 @@ data class ReceiveScreen(
 ) : Screen, Parcelable {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<ReceiveViewModel>() {
+        val viewModel = koinViewModel<ReceiveViewModel> {
             parametersOf(accountAsset, greenWallet)
         }
 
@@ -177,12 +178,14 @@ fun ReceiveScreen(
                             )
 
                             Column {
+                                val receiveAddress by viewModel.receiveAddress.collectAsStateWithLifecycle()
+
                                 GreenQR(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = 48.dp)
                                         .padding(top = 48.dp),
-                                    data = "bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu",
+                                    data = receiveAddress,
                                     visibilityClick = {
                                         viewModel.postEvent(RecoveryPhraseViewModel.LocalEvents.ShowQR)
                                     }
@@ -193,9 +196,8 @@ fun ReceiveScreen(
                                     space = 8,
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    // val address = "bitcoin:bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu?amount=123"
-                                    val address = "bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu"
-                                    GreenAddress(address = address)
+
+                                    GreenAddress(address = receiveAddress ?: "")
 
                                     GreenButton(
                                         text = stringResource(id = R.string.id_edit),

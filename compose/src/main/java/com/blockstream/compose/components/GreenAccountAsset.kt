@@ -35,15 +35,18 @@ import com.blockstream.compose.theme.labelSmall
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
+import com.blockstream.compose.utils.ifTrue
 
 @Composable
 fun GreenAccountAsset(
     accountAssetBalance: AccountAssetBalance? = null,
     session: GdkSession? = null,
     title: String? = null,
+    message: String? = null,
     selectText: String? = null,
     withAsset: Boolean = true,
     withEditIcon: Boolean = false,
+    withArrow: Boolean = false,
     onClick: (() -> Unit)? = null,
 ) {
     GreenDataLayout(title = title, onClick = onClick, withPadding = false) {
@@ -82,7 +85,7 @@ fun GreenAccountAsset(
             Box(
                 modifier = Modifier
                     .padding(start = 8.dp)
-                    .padding(end = if(withEditIcon && onClick != null) 0.dp else 10.dp)
+                    .padding(end = if (withEditIcon && onClick != null) 0.dp else 10.dp)
                     .weight(1f),
                 contentAlignment = Alignment.CenterStart
             ) {
@@ -98,7 +101,11 @@ fun GreenAccountAsset(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Column(modifier = Modifier.weight(1f)) {
+                        Column(modifier = Modifier
+                            .weight(1f)
+                            .ifTrue(message != null) {
+                                padding(vertical = 16.dp)
+                            }) {
                             val primary = if(withAsset) accountAssetBalance.asset.name(session) else accountAssetBalance.account.name
                             val secondary = if(withAsset) accountAssetBalance.account.name else null
 
@@ -129,6 +136,16 @@ fun GreenAccountAsset(
                                 overflow = TextOverflow.Ellipsis,
                                 color = whiteLow
                             )
+
+                            message?.also {
+                                Text(
+                                    text = it,
+                                    style = labelSmall,
+                                    color = whiteMedium,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                            }
                         }
 
                         if (accountAssetBalance.balance != null) {
@@ -166,6 +183,10 @@ fun GreenAccountAsset(
                         modifier = Modifier.minimumInteractiveComponentSize()
                     )
                 }
+            }
+
+            if(withArrow) {
+                GreenArrow(modifier = Modifier.padding(end = 16.dp))
             }
         }
     }
@@ -224,6 +245,7 @@ fun GreenAccountAssetPreview() {
             }, withEditIcon = true)
             GreenAccountAsset(accountAssetBalance = previewAccountAsset().accountAssetBalance, withEditIcon = true, onClick = {})
             GreenAccountAsset(withEditIcon = true, onClick = {})
+            GreenAccountAsset(accountAssetBalance = previewAccountAsset().accountAssetBalance, message = "Redeposit Expired 2FA coins", withAsset = false, withArrow = true, onClick = {})
         }
     }
 }

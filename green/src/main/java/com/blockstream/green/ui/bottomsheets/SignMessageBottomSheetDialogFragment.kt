@@ -24,7 +24,7 @@ class SignMessageBottomSheetDialogFragment :
         get() = requireArguments().getString(ADDRESS, "")
 
     private val signMessageViewModel: SignMessageViewModel by viewModel {
-        parametersOf(viewModel.greenWallet, viewModel.account, address)
+        parametersOf(viewModel.greenWallet, viewModel.account.accountAsset, address)
     }
 
     override val isAdjustResize: Boolean = true

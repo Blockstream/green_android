@@ -24,9 +24,6 @@ class SweepFragment : AppFragment<ComposeViewBinding>(
 
     override val useCompose: Boolean = true
 
-    override val title: String
-        get() = getString(R.string.id_sweep)
-
     private val viewModel: SweepViewModel by viewModel {
         parametersOf(args.wallet, args.privateKey, args.accountAsset)
     }

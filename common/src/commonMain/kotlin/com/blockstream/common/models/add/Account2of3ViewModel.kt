@@ -28,8 +28,8 @@ class Account2of3ViewModel(setupArgs: SetupArgs) :
             is LocalEvents.NewRecovery -> {
                 postSideEffect(
                     SideEffects.NavigateTo(
-                        NavigateDestinations.NewRecovery(
-                            setupArgs = setupArgs.copy(
+                        NavigateDestinations.RecoveryIntro(
+                            args = setupArgs.copy(
                                 mnemonic = ""
                             )
                         )

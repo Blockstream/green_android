@@ -3,6 +3,7 @@ package com.blockstream.common.gdk.data
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.Denomination
+import com.blockstream.common.extensions.hasExpiredUtxos
 import com.blockstream.common.extensions.hasHistory
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.needs2faActivation
@@ -19,7 +20,8 @@ data class AccountBalance constructor(
     val balance: String? = null,
     val balanceExchange: String? = null,
     val assets: List<String>? = null,
-    val warningTwoFactor: Boolean = false
+    val warningTwoFactor: Boolean = false,
+    val hasExpiredUtxos: Boolean = false
 ) : GreenJson<AccountBalance>(), Parcelable {
     override fun kSerializer() = serializer()
 
@@ -95,7 +97,8 @@ data class AccountBalance constructor(
                             "unknown"
                         }
                     }.distinct().takeIf { account.hasHistory(session) },
-                    warningTwoFactor = account.needs2faActivation(session)
+                    warningTwoFactor = account.needs2faActivation(session),
+                    hasExpiredUtxos = account.hasExpiredUtxos(session)
                 )
             }
         }

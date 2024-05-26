@@ -47,6 +47,7 @@ import androidx.compose.ui.zIndex
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.LBTC_POLICY_ASSET
 import com.blockstream.common.extensions.previewAccountBalance
+import com.blockstream.common.extensions.policyAndType
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.AccountBalance
 import com.blockstream.compose.R
@@ -62,6 +63,7 @@ import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.ifTrue
 import com.blockstream.compose.utils.noRippleClickable
 import com.blockstream.compose.utils.roundBackground
+import com.blockstream.compose.utils.stringResourceId
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -117,7 +119,7 @@ fun GreenAccountCard(
                         )
 
                         Text(
-                            "Singlesig / segwit".uppercase(),
+                            text = stringResourceId(account.account.type.policyAndType()).uppercase(),
                             style = bodySmall,
                             color = whiteMedium
                         )
@@ -368,6 +370,9 @@ fun GreenAccountCardPreview() {
             GreenAccountCard(
                 account = previewAccountBalance(),
                 isExpanded = expanded == 4,
+                onWarningClick = {
+
+                },
                 onClick = {
                     expanded = 4
                 })

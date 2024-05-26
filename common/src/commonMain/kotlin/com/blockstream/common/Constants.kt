@@ -40,6 +40,7 @@ object Urls {
     const val HELP_AMP_ASSETS = "https://help.blockstream.com/hc/en-us/articles/5301732614169-How-do-I-receive-AMP-assets-"
     const val HELP_QR_PIN_UNLOCK = "https://blockstream.zendesk.com/hc/en-us/articles/28264425434265"
     const val HELP_MASTER_BLINDING_KEY = "https://help.blockstream.com/hc/en-us/articles/4403675941017-What-are-the-implications-of-exporting-the-master-blinding-key"
+    const val HELP_2FA_PROTECTION = "https://help.blockstream.com/hc/en-us/articles/900001391763-How-does-Blockstream-Green-s-2FA-multisig-protection-work#h_01HRYKB9YRHWX02REXYY34VPV9"
     const val HELP_CENTER = "https://help.blockstream.com/hc/en-us/categories/900000056183-Blockstream-Green/"
     const val RECOVERY_TOOL = "https://github.com/greenaddress/garecovery"
     const val JADE_STORE = "https://store.blockstream.com/product/blockstream-jade/"

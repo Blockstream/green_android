@@ -171,6 +171,7 @@ fun AccountExchangeScreen(
     val denomination by viewModel.denomination.collectAsStateWithLifecycle()
     val errorAmount by viewModel.errorAmount.collectAsStateWithLifecycle()
     val isSendAll by viewModel.isSendAll.collectAsStateWithLifecycle()
+    val supportsSendAll by viewModel.supportsSendAll.collectAsStateWithLifecycle()
     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
 
     AnimatedVisibility(visible = onProgress) {
@@ -213,6 +214,7 @@ fun AccountExchangeScreen(
                         error = errorAmount,
                         denomination = denomination,
                         sendAll = isSendAll,
+                        supportsSendAll = supportsSendAll,
                         onSendAllClick = {
                             viewModel.postEvent(AccountExchangeViewModel.LocalEvents.ToggleIsSendAll)
                         },

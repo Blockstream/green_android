@@ -30,20 +30,6 @@ class WatchOnlyNetworkFragment :
 
     override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override fun handleSideEffect(sideEffect: SideEffect) {
-        super.handleSideEffect(sideEffect)
-
-        if (sideEffect is SideEffects.Navigate) {
-            (sideEffect.data as? SetupArgs)?.also {
-                navigate(
-                    WatchOnlyNetworkFragmentDirections.actionChooseNetworkFragmentToWatchOnlyCredentialsFragment(
-                        it
-                    )
-                )
-            }
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

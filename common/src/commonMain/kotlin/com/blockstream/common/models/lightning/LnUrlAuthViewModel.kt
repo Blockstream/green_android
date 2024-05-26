@@ -4,22 +4,27 @@ import breez_sdk.LnUrlAuthRequestData
 import breez_sdk.LnUrlCallbackStatus
 import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.NavData
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
 
-abstract class LnUrlAuthViewModelAbstract(greenWallet: GreenWallet) :
+abstract class LnUrlAuthViewModelAbstract(
+    greenWallet: GreenWallet,
+    val requestData: LnUrlAuthRequestData
+) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
 
     override fun screenName(): String = "LNURLAuth"
 }
 
-class LnUrlAuthViewModel(greenWallet: GreenWallet, val requestData: LnUrlAuthRequestData) :
-    LnUrlAuthViewModelAbstract(greenWallet = greenWallet) {
+class LnUrlAuthViewModel(greenWallet: GreenWallet, requestData: LnUrlAuthRequestData) :
+    LnUrlAuthViewModelAbstract(greenWallet = greenWallet, requestData = requestData) {
 
     init {
+        _navData.value = NavData(title = "LNURL Auth", subtitle = greenWallet.name)
         bootstrap()
     }
 
@@ -45,20 +50,31 @@ class LnUrlAuthViewModel(greenWallet: GreenWallet, val requestData: LnUrlAuthReq
             postSideEffect(
                 SideEffects.NavigateBack(
                     error = it,
-                    ErrorReport.create(throwable = it, network = session.lightning, session = session)
+                    errorReport = ErrorReport.create(
+                        throwable = it,
+                        network = session.lightning,
+                        session = session
+                    )
                 )
             )
         })
     }
 
     override fun errorReport(exception: Throwable): ErrorReport {
-        return ErrorReport.create(throwable = exception, network = session.lightning, session = session)
+        return ErrorReport.create(
+            throwable = exception,
+            network = session.lightning,
+            session = session
+        )
     }
 }
 
 
 class LnUrlAuthViewModelPreview(greenWallet: GreenWallet) :
-    LnUrlAuthViewModelAbstract(greenWallet = greenWallet) {
+    LnUrlAuthViewModelAbstract(
+        greenWallet = greenWallet,
+        requestData = LnUrlAuthRequestData("k1", "domain", "url", "action")
+    ) {
     companion object {
         fun preview(): LnUrlAuthViewModelPreview {
             return LnUrlAuthViewModelPreview(

@@ -47,7 +47,7 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
     private val _data: MutableStateFlow<List<Pair<String, String>>> = MutableStateFlow(listOf())
     override val data = _data.asStateFlow()
 
-    override val showEmptyAccount = session.lightningNodeInfoStateFlow.map {
+    override val showEmptyAccount = session.lightningSdk.nodeInfoStateFlow.map {
         it.channelsBalanceSatoshi() > 0
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
@@ -63,7 +63,7 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
     init {
         if (session.isConnected) {
 
-            session.lightningNodeInfoStateFlow.onEach {
+            session.lightningSdk.nodeInfoStateFlow.onEach {
                 val list = mutableListOf(
                     "ID" to it.id,
                     "id_account_balance" to it.channelsBalanceSatoshi().toAmountLookOrNa(

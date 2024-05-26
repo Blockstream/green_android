@@ -1512,11 +1512,17 @@
   <string name="id_receive_on_address">Receive on address</string>
   <string name="id_account_transfer">Account Transfer</string>
   <string name="id_select_account__asset">Select account &amp; asset</string>
-  <string name="id_exchange_between_accounts">Exchange between accounts</string>
+  <string name="id_move_across_accounts">Move across accounts</string>
   <string name="id_you_dont_have_a_lightning_account">You don\'t have a Lightning account</string>
   <string name="id_rescan_swaps">Rescan Swaps</string>
   <string name="id_share_logs">Share Logs</string>
   <string name="id_no_available_accounts">No available accounts</string>
   <string name="id_total_spent">Total Spent</string>
   <string name="id_sending_">Sending…</string>
+  <string name="id_re_enable_2fa">Re-enable 2FA</string>
+  <string name="id_some_coins_in_your_wallet">Some coins in your wallet haven\'t moved for a long time, so 2FA expired to keep you in control. To reactivate 2FA:\n\n• Send normally and refresh the 2FA on change coins (optimizes fees)\n• Redeposit all your expired 2FA coins</string>
+  <string name="id_redeposit_expired_2fa_coins">Redeposit Expired 2FA Coins</string>
+  <string name="id_multisig__">Multisig / %s</string>
+  <string name="id_singlesig__">Singlesig / %s</string>
+  <string name="id_signing__">Signing…</string>
 </resources>

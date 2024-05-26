@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import app.rive.runtime.kotlin.RiveAnimationView
-import com.blockstream.common.events.Events
 import com.blockstream.common.models.archived.ArchivedAccountsViewModelAbstract
 import com.blockstream.common.models.archived.ArchivedAccountsViewModelPreview
 import com.blockstream.common.navigation.NavigateDestinations
@@ -97,12 +96,12 @@ fun ArchivedAccountsDialog(
                     GreenButton(
                         text = stringResource(
                             R.string.id_see_archived_accounts_s,
-                            archivedAccounts.size.toString()
+                            archivedAccounts.data()?.size?.toString() ?: "-"
                         ),
                         type = GreenButtonType.OUTLINE,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        viewModel.postEvent(NavigateDestinations.ArchivedAccounts)
+                        viewModel.postEvent(NavigateDestinations.ArchivedAccounts())
                         onDismissRequest()
                     }
                 }

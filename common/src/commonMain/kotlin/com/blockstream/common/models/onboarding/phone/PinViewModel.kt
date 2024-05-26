@@ -51,8 +51,6 @@ class PinViewModel constructor(
     override val isLoginRequired: Boolean
         get() = false
 
-    private var pendingWallet: GreenWallet? = null
-
     init {
         if (setupArgs.isRestoreFlow) {
             checkRecoveryPhrase(
@@ -89,7 +87,7 @@ class PinViewModel constructor(
                 postSideEffect(SideEffects.ErrorDialog(Exception("PIN should be 6 digits")))
             }
         } else if(event is Events.Continue){
-            pendingWallet?.also {
+            _greenWallet?.also {
                 postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))
             }
         }
@@ -130,11 +128,11 @@ class PinViewModel constructor(
 
         }, onError = {
             if (it.message?.startsWith("id_wallet_already_restored") == true || it.message?.startsWith("id_the_recovery_phrase_doesnt") == true) {
-                postSideEffect(SideEffects.NavigateBack(it))
+                postSideEffect(SideEffects.NavigateBack(error = it))
             } else if (it.message == "id_login_failed") {
-                postSideEffect(SideEffects.NavigateBack(Exception("id_no_multisig_shield_wallet")))
+                postSideEffect(SideEffects.NavigateBack(error = Exception("id_no_multisig_shield_wallet")))
             } else if (it.message?.lowercase()?.contains("decrypt_mnemonic") == true || it.message?.lowercase()?.contains("invalid checksum") == true) {
-                postSideEffect(SideEffects.NavigateBack(Exception("id_error_passphrases_do_not_match")))
+                postSideEffect(SideEffects.NavigateBack(error = Exception("id_error_passphrases_do_not_match")))
             } else {
                 postSideEffect(SideEffects.ErrorDialog(it))
             }
@@ -142,6 +140,7 @@ class PinViewModel constructor(
     }
 
     private fun createNewWallet(setupArgs: SetupArgs, pin: String) {
+        onProgressDescription.value = "id_creating_wallet"
         doAsync({
             val loginData = session.loginWithMnemonic(
                 isTestnet = setupArgs.isTestnet == true,
@@ -297,7 +296,7 @@ class PinViewModel constructor(
             rocketAnimation.value = it == null
         }, onSuccess = {
             if (session.hasLightning) {
-                pendingWallet = it
+                _greenWallet = it
                 postSideEffect(SideEffects.LightningShortcut)
             } else {
                 postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))

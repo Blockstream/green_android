@@ -65,6 +65,7 @@ import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.stringResourceId
 import org.koin.core.parameter.parametersOf
 
 @Parcelize
@@ -93,6 +94,8 @@ fun SendConfirmScreen(
 ) {
     val look by viewModel.transactionConfirmLook.collectAsStateWithLifecycle()
     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
+    val onProgressSending by viewModel.onProgressSending.collectAsStateWithLifecycle()
+    val onProgressDescription by viewModel.onProgressDescription.collectAsStateWithLifecycle()
 
     getNavigationResult<String>(NoteBottomSheet::class.resultKey).value?.also {
         viewModel.postEvent(SendConfirmViewModel.LocalEvents.SetNote(it))
@@ -114,30 +117,14 @@ fun SendConfirmScreen(
             is SideEffects.Dismiss -> {
                 bottomSheetNavigator.hide()
             }
-            is SendConfirmViewModel.LocalSideEffects.DeviceAddressValidation -> {
-                bottomSheetNavigator.show(
-                    VerifyTransactionBottomSheet(
-                        greenWallet = viewModel.greenWallet,
-                        transactionConfirmLook = it.transactionConfirmLook
-                    )
-                )
-            }
         }
     }
 
     ScreenContainer(
-        onProgress = onProgress,
-        onProgressDescription = stringResource(R.string.id_sending_),
+        onProgress = onProgressSending,
+        onProgressDescription = onProgressDescription,
         blurBackground = true
     ) {
-
-        AnimatedVisibility(visible = onProgress, modifier = Modifier.align(Alignment.TopCenter)) {
-            LinearProgressIndicator(
-                modifier = Modifier
-                    .height(1.dp)
-                    .fillMaxWidth()
-            )
-        }
 
         GreenColumn(
             padding = 0,
@@ -269,11 +256,11 @@ fun SendConfirmScreen(
 
             SlideToUnlock(
                 modifier = Modifier.padding(top = 8.dp),
-                isLoading = onProgress,
+                isLoading = onProgressSending,
                 enabled = buttonEnabled,
                 onSlideComplete = {
                     viewModel.postEvent(
-                        SendConfirmViewModel.LocalEvents.SignTransaction(
+                        CreateTransactionViewModelAbstract.LocalEvents.SignTransaction(
                             broadcastTransaction = true
                         )
                     )

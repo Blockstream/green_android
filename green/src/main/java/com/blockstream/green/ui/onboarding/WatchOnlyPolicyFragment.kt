@@ -5,6 +5,7 @@ import android.view.View
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyPolicyViewModel
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.AppFragmentBridge
@@ -22,20 +23,6 @@ class WatchOnlyPolicyFragment : AppFragment<ComposeViewBinding>(
     override fun getGreenViewModel(): GreenViewModel = viewModel
 
     override val useCompose: Boolean = true
-
-    override fun handleSideEffect(sideEffect: SideEffect) {
-        super.handleSideEffect(sideEffect)
-        if(sideEffect is SideEffects.NavigateTo){
-
-            (sideEffect.destination as? WatchOnlyPolicyViewModel.Destination.ChooseNetwork)?.also {
-                navigate(
-                    WatchOnlyPolicyFragmentDirections.actionWatchOnlyPolicyFragmentToChooseNetworkFragment(
-                        it.setupArgs
-                    )
-                )
-            }
-        }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

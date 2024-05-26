@@ -55,14 +55,6 @@ class WalletSettingsFragment : AppFragment<ComposeViewBinding>(R.layout.compose_
                         )
                     )
                 }
-                (sideEffect.destination as? NavigateDestinations.TwoFactorAuthentication)?.also {
-                    navigate(
-                        WalletSettingsFragmentDirections.actionWalletSettingsFragmentToTwoFractorAuthenticationFragment(
-                            wallet = viewModel.greenWallet,
-                            network = it.network
-                        )
-                    )
-                }
                 (sideEffect.destination as? NavigateDestinations.ChangePin)?.also {
                     navigate(
                         WalletSettingsFragmentDirections.actionWalletSettingsFragmentToChangePinFragment(

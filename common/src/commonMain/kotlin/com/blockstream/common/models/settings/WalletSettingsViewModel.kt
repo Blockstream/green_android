@@ -108,7 +108,7 @@ class WalletSettingsViewModel(
     }
 
     init {
-        _navData.value = NavData(title = "id_settings")
+        _navData.value = NavData(title = "id_settings", subtitle = greenWallet.name)
 
         session.ifConnected {
             database.getLoginCredentialsFlow(greenWallet.id).onEach {

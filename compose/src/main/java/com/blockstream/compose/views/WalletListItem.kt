@@ -125,9 +125,7 @@ fun WalletListItem(
     callbacks: WalletListItemCallbacks = WalletListItemCallbacks.Empty
 ) {
     val popupState = remember {
-        PopupState(
-            offset = mutableStateOf(DpOffset(0.dp, 0.dp))
-        )
+        PopupState()
     }
     var isLightningPopup by remember { mutableStateOf(false) }
 

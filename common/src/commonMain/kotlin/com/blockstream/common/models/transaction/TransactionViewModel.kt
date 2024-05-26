@@ -211,7 +211,7 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
             postSideEffect(
                 SideEffects.NavigateTo(
                     NavigateDestinations.RecoverFunds(
-                        satoshi = transaction.value.satoshiPolicyAsset,
+                        amount = transaction.value.satoshiPolicyAsset,
                         address = transaction.value.onChainAddress
                     )
                 )

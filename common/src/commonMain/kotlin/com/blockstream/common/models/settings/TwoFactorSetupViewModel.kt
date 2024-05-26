@@ -131,7 +131,7 @@ class TwoFactorSetupViewModel(
                 _qr.value = it.gauth.data
                 _authenticatorCode.value = it.gauth.data.split("=").getOrNull(1)
             }, onError = {
-                postSideEffect(SideEffects.NavigateBack(it))
+                postSideEffect(SideEffects.NavigateBack(error = it))
             })
 
             if (method == TwoFactorMethod.PHONE || method == TwoFactorMethod.SMS) {
@@ -261,7 +261,7 @@ class TwoFactorSetupViewModel(
         }, onSuccess = {
             postSideEffect(SideEffects.NavigateBack())
         }, onError = {
-            postSideEffect(SideEffects.NavigateBack(it, errorReport = errorReport(it)))
+            postSideEffect(SideEffects.NavigateBack(error = it, errorReport = errorReport(it)))
         })
     }
 }

@@ -13,10 +13,12 @@ import breez_sdk.Payment
 import breez_sdk.PaymentDetails
 import breez_sdk.PaymentType
 import breez_sdk.ReceivePaymentResponse
+import breez_sdk.RecommendedFees
 import breez_sdk.ReverseSwapInfo
 import breez_sdk.SuccessActionProcessed
 import breez_sdk.SwapInfo
 import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.data.FeePriority
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.Addressee
@@ -248,4 +250,15 @@ fun AppGreenlightCredentials.Companion.fromGreenlightCredentials(greenlightCrede
         deviceKey = greenlightCredentials.deviceKey,
         deviceCert = greenlightCredentials.deviceCert
     )
+}
+
+fun RecommendedFees.fee(feePriority: FeePriority): Long{
+    return feePriority.let {
+        when (it) {
+            is FeePriority.High -> fastestFee
+            is FeePriority.Medium -> hourFee
+            is FeePriority.Low -> economyFee
+            is FeePriority.Custom -> it.customFeeRate.toULong().coerceAtLeast(minimumFee)
+        }
+    }.toLong()
 }

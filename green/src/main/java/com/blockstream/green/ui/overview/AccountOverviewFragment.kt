@@ -13,7 +13,6 @@ import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.needs2faActivation
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.overview.AccountOverviewViewModel
-import com.blockstream.common.models.send.SendConfirmViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
@@ -23,11 +22,8 @@ import com.blockstream.green.R
 import com.blockstream.green.databinding.ComposeViewBinding
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.ui.bottomsheets.RenameAccountBottomSheetDialogFragment
 import com.blockstream.green.utils.openBrowser
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.GenericItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -43,11 +39,6 @@ class AccountOverviewFragment : AppFragment<ComposeViewBinding>(
     }
 
     override fun getGreenViewModel(): GreenViewModel = viewModel
-
-    var fastAdapter: FastAdapter<GenericItem>? = null
-
-    override val title: String
-        get() = viewModel.greenWallet.name
 
     override val useCompose: Boolean = true
 

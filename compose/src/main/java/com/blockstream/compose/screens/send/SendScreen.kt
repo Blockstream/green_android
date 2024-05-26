@@ -85,15 +85,13 @@ import org.koin.core.parameter.parametersOf
 @Parcelize
 data class SendScreen(
     val greenWallet: GreenWallet,
-    val accountAsset: AccountAsset? = null,
     val address: String? = null,
     val addressInputType: AddressInputType? = null
 ) : Parcelable, Screen {
     @Composable
     override fun Content() {
         val viewModel = koinScreenModel<SendViewModel> {
-            // parametersOf(greenWallet, address, accountAsset)
-            parametersOf(greenWallet, accountAsset, address, addressInputType)
+            parametersOf(greenWallet, address, addressInputType)
         }
 
         val navData by viewModel.navData.collectAsStateWithLifecycle()
@@ -202,7 +200,7 @@ fun SendScreen(
                         viewModel.address.value = it
                     },
                     singleLine = false,
-                    maxLines = 3,
+                    maxLines = 4,
                     error = errorAddress,
                     onQrClick = {
                         bottomSheetNavigator.show(
@@ -237,6 +235,7 @@ fun SendScreen(
                 val errorAmount by viewModel.errorAmount.collectAsStateWithLifecycle()
                 val isAmountLocked by viewModel.isAmountLocked.collectAsStateWithLifecycle()
                 val isSendAll by viewModel.isSendAll.collectAsStateWithLifecycle()
+                val supportsSendAll by viewModel.supportsSendAll.collectAsStateWithLifecycle()
 
                 AnimatedNullableVisibility(value = accountAssetBalance) {
                     GreenAmountField(
@@ -251,6 +250,7 @@ fun SendScreen(
                         error = errorAmount,
                         denomination = denomination,
                         sendAll = isSendAll,
+                        supportsSendAll = supportsSendAll,
                         onSendAllClick = {
                             viewModel.postEvent(SendViewModel.LocalEvents.ToggleIsSendAll)
                         },
@@ -366,7 +366,8 @@ fun SendScreen(
                         enabled = buttonEnabled,
                         onSlideComplete = {
                             viewModel.postEvent(SendViewModel.LocalEvents.SendLightningTransaction)
-                        })
+                        }
+                    )
                 } else {
                     GreenButton(
                         text = stringResource(id = R.string.id_next),

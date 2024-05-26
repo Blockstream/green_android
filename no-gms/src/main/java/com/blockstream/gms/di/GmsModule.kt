@@ -1,7 +1,6 @@
 package com.blockstream.gms.di
 
 import com.blockstream.base.GooglePlay
-import com.blockstream.compose.AppReview
 import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.fcm.Firebase
 import org.koin.core.annotation.ComponentScan

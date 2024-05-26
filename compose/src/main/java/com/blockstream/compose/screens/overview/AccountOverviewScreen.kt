@@ -53,6 +53,7 @@ import com.blockstream.common.models.overview.AccountOverviewViewModelPreview
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.GreenPreview
+import com.blockstream.compose.LocalRootNavigator
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenAccountCard
 import com.blockstream.compose.components.GreenAlert
@@ -202,7 +203,11 @@ fun AccountOverviewScreen(
                     } else null,
                     onWarningClick = if (accountBalance.warningTwoFactor) {
                         {
-                            viewModel.postEvent(NavigateDestinations.EnableTwoFactor)
+                            if(accountBalance.hasExpiredUtxos){
+                                viewModel.postEvent(NavigateDestinations.ReEnable2FA)
+                            }else{
+                                viewModel.postEvent(NavigateDestinations.EnableTwoFactor(accountBalance.account.network))
+                            }
                         }
                     } else null,
                     onClick = {
@@ -253,7 +258,7 @@ fun AccountOverviewScreen(
                     GreenContentCard(
                         modifier = Modifier
                             .padding(horizontal = 16.dp)
-                            .padding(top = 8.dp),
+                            .padding(top = 8.dp, bottom = 8.dp),
                         title = stringResource(R.string.id_learn_more_about_amp_the_assets),
                         message = stringResource(
                             R.string.id_check_our_6_easy_steps_to_be
