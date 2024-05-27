@@ -233,12 +233,15 @@ sign_google_play:
 gcp_auth:
   extends: .gcp_prep
   when: manual
+  id_tokens:
+    GITLAB_OIDC_TOKEN:
+      aud: https://gl.blockstream.io
   variables:
     POOL_ID: gitlab-2f4bb583
     PROVIDER_ID: gitlab
     SERVICE_ACCOUNT_EMAIL: green-android-builds-uploader@green-backend.iam.gserviceaccount.com
   script:
-    - echo ${CI_JOB_JWT_V2} > .ci_job_jwt_file
+    - echo ${GITLAB_OIDC_TOKEN} > .ci_job_jwt_file
     - gcloud iam workload-identity-pools create-cred-config "projects/697214616889/locations/global/workloadIdentityPools/${POOL_ID}/providers/${PROVIDER_ID}"
       --service-account="${SERVICE_ACCOUNT_EMAIL}"
       --output-file=.gcp_temp_cred.json
