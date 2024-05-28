@@ -31,7 +31,7 @@ import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteLow
 
 enum class MainMenuEntry {
-    ACCOUNT_TRANSFER, SCAN;
+    ACCOUNT_TRANSFER, SCAN, REDEPOSIT;
 }
 
 object MainMenuBottomSheet : BottomScreen() {
@@ -92,6 +92,13 @@ fun MainMenuBottomSheetView(
                 icon = painterResource(R.drawable.arrows_down_up),
                 onClick = {
                     onSelect(MainMenuEntry.ACCOUNT_TRANSFER)
+                }
+            )
+            MainMenuItem(
+                title = stringResource(R.string.id_redeposit),
+                subtitle = stringResource(R.string.id_redeposit_expired_2fa_coins),
+                icon = painterResource(R.drawable.arrow_u_left_down), onClick = {
+                    onSelect(MainMenuEntry.REDEPOSIT)
                 }
             )
             MainMenuItem(

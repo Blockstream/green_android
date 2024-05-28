@@ -51,9 +51,6 @@ class SendFragment : AppFragment<ComposeViewBinding>(
     override fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
         when (sideEffect) {
-            is SideEffects.NavigateToRoot -> {
-                findNavController().popBackStack(R.id.walletOverviewFragment, false)
-            }
             is SideEffects.TransactionSent -> {
                 val sendTransactionSuccess = sideEffect.data
 

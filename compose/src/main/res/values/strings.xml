@@ -1525,4 +1525,6 @@
   <string name="id_multisig__">Multisig / %s</string>
   <string name="id_singlesig__">Singlesig / %s</string>
   <string name="id_signing__">Signing…</string>
+  <string name="id_consolidate_into">Consolidate into</string>
+  <string name="id_your_redeposit_address">Your Redeposit Address</string>
 </resources>

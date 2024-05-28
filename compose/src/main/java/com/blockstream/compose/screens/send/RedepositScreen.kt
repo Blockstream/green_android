@@ -86,6 +86,7 @@ import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.stringResourceId
 import cafe.adriel.voyager.koin.koinScreenModel
+import com.blockstream.compose.components.GreenAddress
 import org.koin.core.parameter.parametersOf
 
 @Parcelize
@@ -123,23 +124,6 @@ fun RedepositScreen(
 
     getNavigationResult<DenominatedValue>(DenominationBottomSheet::class.resultKey).value?.also {
         viewModel.postEvent(Events.SetDenominatedValue(it))
-    }
-
-    getNavigationResult<MainMenuEntry>(MainMenuBottomSheet.resultKey).value?.also {
-        when (it) {
-            MainMenuEntry.SCAN -> {
-                viewModel.postEvent(
-                    NavigateDestinations.Camera(
-                        isDecodeContinuous = true,
-                        parentScreenName = viewModel.screenName()
-                    )
-                )
-            }
-
-            MainMenuEntry.ACCOUNT_TRANSFER -> {
-                viewModel.postEvent(NavigateDestinations.AccountExchange)
-            }
-        }
     }
 
     var customFeeDialog by remember { mutableStateOf<String?>(null) }
@@ -266,18 +250,13 @@ fun RedepositScreen(
             }
 
             val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
-
-            SlideToUnlock(
-                isLoading = onProgressSending,
+            GreenButton(
+                text = stringResource(id = R.string.id_next),
                 enabled = buttonEnabled,
-                onSlideComplete = {
-                    viewModel.postEvent(
-                        CreateTransactionViewModelAbstract.LocalEvents.SignTransaction(
-                            broadcastTransaction = false
-                        )
-                    )
-                }
-            )
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                viewModel.postEvent(Events.Continue)
+            }
         }
     }
 }

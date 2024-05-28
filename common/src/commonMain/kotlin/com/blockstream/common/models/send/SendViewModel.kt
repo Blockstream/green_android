@@ -298,7 +298,7 @@ class SendViewModel(
                 }
                 !isSendAll
             }
-        }else if (event is Events.Continue) {
+        } else if (event is Events.Continue) {
             createTransactionParams.value?.also {
                 createTransaction(params = it, finalCheckBeforeContinue = true)
             }

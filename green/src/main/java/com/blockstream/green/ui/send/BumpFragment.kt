@@ -30,14 +30,6 @@ class BumpFragment : AppFragment<ComposeViewBinding>(
 
     override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override fun handleSideEffect(sideEffect: SideEffect) {
-        if (sideEffect is SideEffects.NavigateToRoot) {
-            findNavController().popBackStack(R.id.walletOverviewFragment, false)
-        } else {
-            super.handleSideEffect(sideEffect)
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

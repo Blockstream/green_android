@@ -51,15 +51,6 @@ class SendConfirmFragment : AppFragment<ComposeViewBinding>(
         }
     }
 
-    override fun handleSideEffect(sideEffect: SideEffect) {
-        super.handleSideEffect(sideEffect)
-        when (sideEffect) {
-            is SideEffects.NavigateToRoot -> {
-                findNavController().popBackStack(R.id.walletOverviewFragment, false)
-            }
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

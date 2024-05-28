@@ -3,6 +3,7 @@ package com.blockstream.compose.screens.twofactor
 import android.os.Parcelable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -48,7 +49,7 @@ data class ReEnable2FAScreen(
     @Composable
     override fun Content() {
         val viewModel = koinScreenModel<ReEnable2FAViewModel>(){
-            parametersOf(GreenWallet)
+            parametersOf(greenWallet)
         }
 
         val navData by viewModel.navData.collectAsStateWithLifecycle()
@@ -94,6 +95,7 @@ fun ReEnable2FAScreen(
         GreenColumn(
             modifier = Modifier
                 .weight(1f)
+                .fillMaxWidth()
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

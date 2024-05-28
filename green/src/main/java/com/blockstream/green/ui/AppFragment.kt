@@ -43,6 +43,7 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 import com.blockstream.compose.utils.stringResourceId
 import com.blockstream.green.NavGraphDirections
+import com.blockstream.green.R
 import com.blockstream.green.data.BannerView
 import com.blockstream.green.data.CountlyAndroid
 import com.blockstream.green.extensions.dialog
@@ -330,6 +331,11 @@ abstract class AppFragment<T : ViewDataBinding>(
                     )
                 }
             }
+
+            is SideEffects.NavigateToRoot -> {
+                findNavController().popBackStack(R.id.walletOverviewFragment, false)
+            }
+
             is SideEffects.NavigateBack -> {
                 if (sideEffect.error != null) {
                     errorDialog(sideEffect.error!!, errorReport = sideEffect.errorReport) {

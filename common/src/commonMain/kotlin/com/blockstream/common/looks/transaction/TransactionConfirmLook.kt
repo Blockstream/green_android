@@ -24,6 +24,8 @@ data class TransactionConfirmLook(
     val from: AccountAsset? = null,
     val to: AccountAsset? = null,
 
+    val isRedeposit: Boolean = false,
+
     val utxos: List<UtxoView>? = null,
 
     val amount: String? = null,
@@ -49,6 +51,7 @@ data class TransactionConfirmLook(
             isAddressVerificationOnDevice: Boolean = false
         ): TransactionConfirmLook {
 
+            val isRedeposit = params.isRedeposit
             var amount: String? = null
             var amountFiat: String? = null
             var utxos: List<UtxoView>? = null
@@ -107,7 +110,7 @@ data class TransactionConfirmLook(
             val totalPolicy = (transaction.satoshi[account.network.policyAsset]
                 ?: 0).absoluteValue + (transaction.fee ?: 0)
 
-            val total = totalPolicy.toAmountLookOrNa(
+            val total = if(isRedeposit) fee else totalPolicy.toAmountLookOrNa(
                 session = session,
                 assetId = account.network.policyAsset,
                 withUnit = true,
@@ -115,7 +118,8 @@ data class TransactionConfirmLook(
                 withMinimumDigits = true,
                 denomination = if (isAddressVerificationOnDevice) Denomination.BTC else denomination
             )
-            val totalFiat: String = totalPolicy.toAmountLookOrNa(
+
+            val totalFiat = if(isRedeposit) feeFiat else totalPolicy.toAmountLookOrNa(
                 session = session,
                 assetId = account.network.policyAsset,
                 withUnit = true,
@@ -127,6 +131,7 @@ data class TransactionConfirmLook(
             return TransactionConfirmLook(
                 from = params.from,
                 to = params.to,
+                isRedeposit = isRedeposit,
                 amount = amount,
                 amountFiat = amountFiat,
                 utxos = utxos,

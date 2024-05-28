@@ -13,6 +13,7 @@ data class CreateTransactionParams constructor(
     @SerialName("subaccount") val subaccount: Long? = null,
     @SerialName("from") val from: AccountAsset? = null,
     @SerialName("to") val to: AccountAsset? = null,
+    @SerialName("isRedeposit") val isRedeposit: Boolean = false,
 
     @kotlin.jvm.Transient
     @SerialName("addressees") val addressees: List<JsonElement>? = null, // This can also be a BIP21 URI

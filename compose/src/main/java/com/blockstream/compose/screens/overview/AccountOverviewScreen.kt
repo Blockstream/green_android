@@ -125,6 +125,10 @@ fun AccountOverviewScreen(
             MainMenuEntry.ACCOUNT_TRANSFER -> {
                 viewModel.postEvent(NavigateDestinations.AccountExchange)
             }
+
+            MainMenuEntry.REDEPOSIT -> {
+                viewModel.postEvent(NavigateDestinations.Redeposit(accountAsset = viewModel.accountAsset.value!!, isRedeposit2FA = false))
+            }
         }
     }
 
@@ -202,7 +206,7 @@ fun AccountOverviewScreen(
                             viewModel.postEvent(AccountOverviewViewModel.LocalEvents.CopyAccountId)
                         }
                     } else null,
-                    onWarningClick = if (accountBalance.warningTwoFactor) {
+                    onWarningClick = if (accountBalance.warningTwoFactor || accountBalance.hasExpiredUtxos) {
                         {
                             if(accountBalance.hasExpiredUtxos){
                                 viewModel.postEvent(NavigateDestinations.ReEnable2FA)

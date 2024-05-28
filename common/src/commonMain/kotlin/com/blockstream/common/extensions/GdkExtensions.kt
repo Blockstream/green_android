@@ -92,7 +92,7 @@ fun Network.needs2faActivation(session: GdkSession): Boolean {
 }
 
 fun Account.hasExpiredUtxos(session: GdkSession): Boolean {
-    return isMultisig && session.expired2FA.value.indexOf(this) >= 0
+    return isMultisig && session.expired2FA.value.contains(this)
 }
 
 fun String?.isPolicyAsset(network: Network?): Boolean = (this == null || this == network?.policyAsset)

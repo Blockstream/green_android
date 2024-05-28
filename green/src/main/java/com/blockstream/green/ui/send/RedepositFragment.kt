@@ -15,8 +15,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class RedepositFragment : AppFragment<ComposeViewBinding>(
-    layout = R.layout.compose_view,
-    menuRes = 0
+    layout = R.layout.compose_view
 ) {
     val args: RedepositFragmentArgs by navArgs()
 

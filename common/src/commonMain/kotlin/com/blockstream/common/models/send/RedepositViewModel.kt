@@ -6,6 +6,7 @@ import com.blockstream.common.data.Banner
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavData
 import com.blockstream.common.events.Event
+import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isBlank
 import com.blockstream.common.extensions.isNotBlank
@@ -33,7 +34,6 @@ abstract class RedepositViewModelAbstract(
     override fun segmentation(): HashMap<String, Any>? {
         return countly.accountSegmentation(session = session, account = account)
     }
-
 }
 
 class RedepositViewModel(
@@ -43,10 +43,9 @@ class RedepositViewModel(
 ) : RedepositViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
 
     init {
-
         _navData.value = NavData(
             title = if (isRedeposit2FA) "id_re_enable_2fa" else "id_redeposit",
-            subtitle = greenWallet.name
+            subtitle = greenWallet.name,
         )
 
         if (account.isLightning) {
@@ -75,15 +74,10 @@ class RedepositViewModel(
         super.handleEvent(event)
 
         when (event) {
-            is LocalEvents.SignTransaction -> {
-                signAndSendTransaction(
-                    originalParams = createTransactionParams.value,
-                    originalTransaction = createTransaction.value,
-                    segmentation = TransactionSegmentation(
-                        transactionType = TransactionType.REDEPOSIT,
-                    ),
-                    broadcast = event.broadcastTransaction
-                )
+            is Events.Continue -> {
+                createTransactionParams.value?.also {
+                    createTransaction(params = it, finalCheckBeforeContinue = true)
+                }
             }
         }
     }
@@ -91,16 +85,20 @@ class RedepositViewModel(
     override suspend fun createTransactionParams(): CreateTransactionParams {
         val unspentOutputs = session.getUnspentOutputs(account = account, isExpired = isRedeposit2FA)
 
-        return AddressParams(
-            address = session.getReceiveAddress(account).address,
-            satoshi = 0,
-            isGreedy = true,
-            assetId = account.network.policyAssetOrNull?.takeIf { account.isLiquid }
-        ).let { params ->
+        // For each assetId, create an output. TODO handle case where no lbtc utxo is available to cover the fees
+        return unspentOutputs.unspentOutputs.keys.map { key ->
+            AddressParams(
+                address = session.getReceiveAddress(account).address,
+                satoshi = 0,
+                isGreedy = true,
+                assetId = key.takeIf { account.isLiquid }
+            )
+        }.let { params ->
             CreateTransactionParams(
                 from = accountAsset.value,
-                addressees = listOf(params.toJsonElement()),
-                addresseesAsParams = listOf(params),
+                isRedeposit = true,
+                addressees = params.map { it.toJsonElement() },
+                addresseesAsParams = params,
                 feeRate = getFeeRate(),
                 utxos = unspentOutputs.unspentOutputsAsJsonElement
             )
@@ -153,11 +151,11 @@ class RedepositViewModel(
             _error.value = null
 
             if(finalCheckBeforeContinue && params != null && it != null){
-                session.pendingTransaction = Triple(params, it, TransactionSegmentation(
-                    transactionType = TransactionType.SEND,
-                    addressInputType = _addressInputType,
-                    sendAll = true
-                ))
+                session.pendingTransaction = Triple(
+                    params, it, TransactionSegmentation(
+                        transactionType = TransactionType.REDEPOSIT,
+                    )
+                )
 
                 postSideEffect(SideEffects.NavigateTo(NavigateDestinations.SendConfirm(
                     accountAsset = accountAsset.value!!,
@@ -172,13 +170,13 @@ class RedepositViewModel(
     }
 }
 
-class RedepositViewModelPreview(greenWallet: GreenWallet, accountAsset: AccountAsset) : RedepositViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
+class RedepositViewModelPreview(greenWallet: GreenWallet, accountAsset: AccountAsset) :
+    RedepositViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
 
     init {
         _showFeeSelector.value = true
         banner.value = Banner.preview3
     }
-
 
     companion object {
         fun preview() = RedepositViewModelPreview(previewWallet(), previewAccountAsset())

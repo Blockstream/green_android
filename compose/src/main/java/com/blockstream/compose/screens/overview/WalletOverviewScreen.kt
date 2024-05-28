@@ -175,6 +175,9 @@ fun WalletOverviewScreen(
             MainMenuEntry.ACCOUNT_TRANSFER -> {
                 viewModel.postEvent(NavigateDestinations.AccountExchange)
             }
+            MainMenuEntry.REDEPOSIT -> {
+                viewModel.postEvent(NavigateDestinations.Redeposit(accountAsset = viewModel.session.activeAccount.value!!.accountAsset, isRedeposit2FA = false))
+            }
         }
     }
 
@@ -316,7 +319,7 @@ fun WalletOverviewScreen(
                                     )
                                 }
                             } else null,
-                            onWarningClick = if (it.warningTwoFactor) {
+                            onWarningClick = if (it.warningTwoFactor || it.hasExpiredUtxos) {
                                 {
                                     if (it.hasExpiredUtxos){
                                         viewModel.postEvent(NavigateDestinations.ReEnable2FA)

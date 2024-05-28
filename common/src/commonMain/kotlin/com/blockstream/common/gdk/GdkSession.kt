@@ -303,7 +303,8 @@ class GdkSession constructor(
 
     fun block(network: Network): StateFlow<Block> = blockStateFlow(network).asStateFlow()
 
-    fun settings(network: Network = defaultNetwork) = settingsStateFlow(network).asStateFlow()
+    fun settings(network: Network? = null) = (network ?: defaultNetworkOrNull)?.let { settingsStateFlow(it).asStateFlow() } ?: MutableStateFlow(null)
+
     fun twoFactorConfig(network: Network = defaultNetwork) = twoFactorConfigStateFlow(network).asStateFlow()
 
     fun twoFactorReset(network: Network) = twoFactorResetStateFlow(network).asStateFlow()
@@ -419,7 +420,7 @@ class GdkSession constructor(
 
     var pendingTransaction: Triple<CreateTransactionParams, CreateTransaction, TransactionSegmentation>? = null
 
-    val networkAssetManager: NetworkAssetManager get() = assetManager.getNetworkAssetManager(isMainnet)
+    val networkAssetManager: NetworkAssetManager get() = assetManager.getNetworkAssetManager(defaultNetworkOrNull?.let { isMainnet } ?: true)
 
     val hideAmounts: Boolean get() = settingsManager.appSettings.hideAmounts
 
@@ -2002,6 +2003,12 @@ class GdkSession constructor(
                             }
                     }
 
+                    // Mark it if necessary
+                    if(!walletHasHistory){
+                        if(walletAssets.size > 2 || walletAssets.values.sum() > 0L) {
+                            _walletHasHistorySharedFlow.value = true
+                        }
+                    }
 
                     walletAssets.toSortedLinkedHashMap(::sortAssets).also {
                         _walletAssetsFlow.value = Assets(it)
@@ -2009,13 +2016,6 @@ class GdkSession constructor(
 
                     val accountAndAssets = accounts.value.flatMap {
                         this@GdkSession.accountAssets(it).value.toAccountAsset(it, this@GdkSession)
-                    }
-
-                    // Mark it if necessary
-                    if(!walletHasHistory){
-                        if(walletAssets.size > 2 || walletAssets.values.sum() > 0L) {
-                            _walletHasHistorySharedFlow.value = true
-                        }
                     }
 
                     _accountAssetStateFlow.value = accountAndAssets.sortedWith(::sortAccountAssets)
@@ -2742,7 +2742,8 @@ class GdkSession constructor(
     private fun scanExpired2FA() {
         scope.launch(context = Dispatchers.IO + logException(countly)) {
             _expired2FAStateFlow.value = accounts.value.filter {
-                it.isMultisig && !it.needs2faActivation(this@GdkSession) && getUnspentOutputs(
+                // Enable only for Bitcoin until clear instructions to redeposit asset based utxos
+                it.isMultisig && it.isBitcoin && !it.needs2faActivation(this@GdkSession) && getUnspentOutputs(
                     account = it,
                     isExpired = true
                 ).unspentOutputs.isNotEmpty()
@@ -2857,6 +2858,10 @@ class GdkSession constructor(
 
                             // Update wallet transactions
                             updateWalletTransactions(updateForAccounts = accounts)
+                        }
+
+                        if(network.isMultisig && !network.needs2faActivation(this)){
+                            scanExpired2FA()
                         }
                     }
                 }

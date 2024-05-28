@@ -101,7 +101,7 @@ abstract class CreateTransactionViewModelAbstract(
     @NativeCoroutinesState
     val customFeeRate: StateFlow<Double?> = _customFeeRate.asStateFlow()
 
-    val note = MutableStateFlow(session.pendingTransaction?.second?.memo ?: "")
+    val note = MutableStateFlow(sessionOrNull?.pendingTransaction?.second?.memo ?: "")
 
     protected val _error: MutableStateFlow<String?> = MutableStateFlow(null)
 

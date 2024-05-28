@@ -18,8 +18,6 @@ abstract class ReEnable2FAViewModelAbstract(greenWallet: GreenWallet) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
     override fun screenName(): String = "ReEnable2FA"
 
-    override val isLoginRequired: Boolean = false
-
     @NativeCoroutinesState
     abstract val accounts: StateFlow<List<Account>>
 }
@@ -43,7 +41,6 @@ class ReEnable2FAViewModel(greenWallet: GreenWallet) :
         super.handleEvent(event)
 
         if (event is LocalEvents.SelectAccount) {
-
             if (session.accountAssets(event.account).value.policyAsset == 0L) {
                 postSideEffect(
                     SideEffects.Dialog(

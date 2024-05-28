@@ -113,23 +113,6 @@ fun AccountExchangeScreen(
         viewModel.postEvent(Events.SetDenominatedValue(it))
     }
 
-    getNavigationResult<MainMenuEntry>(MainMenuBottomSheet.resultKey).value?.also {
-        when (it) {
-            MainMenuEntry.SCAN -> {
-                viewModel.postEvent(
-                    NavigateDestinations.Camera(
-                        isDecodeContinuous = true,
-                        parentScreenName = viewModel.screenName()
-                    )
-                )
-            }
-
-            MainMenuEntry.ACCOUNT_TRANSFER -> {
-                viewModel.postEvent(NavigateDestinations.AccountExchange)
-            }
-        }
-    }
-
     var customFeeDialog by remember { mutableStateOf<String?>(null) }
 
     HandleSideEffect(viewModel) {

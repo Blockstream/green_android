@@ -42,13 +42,6 @@ class AccountOverviewFragment : AppFragment<ComposeViewBinding>(
 
     override val useCompose: Boolean = true
 
-    override fun handleSideEffect(sideEffect: SideEffect) {
-        super.handleSideEffect(sideEffect)
-        if (sideEffect is SideEffects.NavigateToRoot) {
-            findNavController().popBackStack(R.id.walletOverviewFragment, false)
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

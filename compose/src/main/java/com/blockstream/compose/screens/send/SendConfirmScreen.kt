@@ -169,7 +169,7 @@ fun SendConfirmScreen(
 
                 look?.utxos?.forEach {
                     GreenAmount(
-                        title = stringResource(R.string.id_sent_to),
+                        title = stringResource(if(look?.isRedeposit == true) R.string.id_your_redeposit_address else R.string.id_sent_to),
                         amount = it.amount ?: "",
                         amountFiat = it.amountExchange,
                         assetId = it.assetId,
@@ -232,22 +232,23 @@ fun SendConfirmScreen(
                     }
                 }
             }
+            look?.total?.also { total ->
+                HorizontalDivider()
 
-            HorizontalDivider()
+                Row {
+                    Text(
+                        stringResource(R.string.id_total_spent),
+                        color = whiteHigh,
+                        modifier = Modifier.weight(1f),
+                        style = titleSmall
+                    )
+                    Column(horizontalAlignment = Alignment.End) {
 
-            Row {
-                Text(
-                    stringResource(R.string.id_total_spent),
-                    color = whiteHigh,
-                    modifier = Modifier.weight(1f),
-                    style = titleSmall
-                )
-                Column(horizontalAlignment = Alignment.End) {
-                    look?.total?.also {
-                        Text(it, color = whiteHigh, style = titleSmall)
-                    }
-                    look?.totalFiat?.also {
-                        Text(it, color = whiteMedium, style = labelLarge)
+                        Text(total, color = whiteHigh, style = titleSmall)
+
+                        look?.totalFiat?.also {
+                            Text(it, color = whiteMedium, style = labelLarge)
+                        }
                     }
                 }
             }
