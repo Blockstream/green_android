@@ -18,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.GreenWallet
@@ -35,7 +35,6 @@ import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.navigation.resultKey
 import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.utils.OpenKeyboard
-import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Parcelize
@@ -46,7 +45,7 @@ data class NoteBottomSheet(
 ) : BottomScreen(), Parcelable {
     @Composable
     override fun Content() {
-        val viewModel = koinViewModel<NoteViewModel>{
+        val viewModel = koinScreenModel<NoteViewModel>{
             parametersOf(note, isLightning, greenWallet)
         }
 

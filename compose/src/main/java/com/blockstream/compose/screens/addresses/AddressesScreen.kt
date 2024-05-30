@@ -79,7 +79,7 @@ import com.blockstream.compose.utils.getClipboard
 import com.blockstream.compose.utils.reachedBottom
 import com.blockstream.compose.utils.stringResourceId
 import io.github.mataku.middleellipsistext3.MiddleEllipsisText
-import org.koin.androidx.compose.koinViewModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import org.koin.core.parameter.parametersOf
 
 
@@ -90,7 +90,7 @@ data class AddressesScreen(
 ) : Parcelable, Screen {
     @Composable
     override fun Content() {
-        val viewModel = koinViewModel<AddressesViewModel>() {
+        val viewModel = koinScreenModel<AddressesViewModel>() {
             parametersOf(greenWallet, accountAsset)
         }
 

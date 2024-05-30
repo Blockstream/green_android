@@ -37,7 +37,7 @@ import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
-import org.koin.androidx.compose.koinViewModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import org.koin.core.parameter.parametersOf
 
 
@@ -47,7 +47,7 @@ data class ReEnable2FAScreen(
 ) : Parcelable, Screen {
     @Composable
     override fun Content() {
-        val viewModel = koinViewModel<ReEnable2FAViewModel>(){
+        val viewModel = koinScreenModel<ReEnable2FAViewModel>(){
             parametersOf(GreenWallet)
         }
 

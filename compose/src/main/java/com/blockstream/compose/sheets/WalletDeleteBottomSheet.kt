@@ -13,7 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
@@ -36,7 +36,7 @@ import org.koin.core.parameter.parametersOf
 data class WalletDeleteBottomSheet(val greenWallet: GreenWallet) : BottomScreen(), Parcelable {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<WalletDeleteViewModel>{
+        val viewModel = koinScreenModel<WalletDeleteViewModel>{
             parametersOf(greenWallet)
         }
 

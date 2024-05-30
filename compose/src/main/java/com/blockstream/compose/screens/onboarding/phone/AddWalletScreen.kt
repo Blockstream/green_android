@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.blockstream.common.models.onboarding.phone.AddWalletViewModel
 import com.blockstream.common.models.onboarding.phone.AddWalletViewModelAbstract
 import com.blockstream.common.models.onboarding.phone.AddWalletViewModelPreview
@@ -45,7 +45,7 @@ import com.blockstream.compose.utils.HandleSideEffect
 object AddWalletScreen : Screen {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<AddWalletViewModel>()
+        val viewModel = koinScreenModel<AddWalletViewModel>()
 
         val navData by viewModel.navData.collectAsStateWithLifecycle()
 

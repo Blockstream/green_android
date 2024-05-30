@@ -131,7 +131,6 @@ kotlin {
 
         androidMain.dependencies {
             implementation(project(":gdk"))
-            implementation(libs.androidx.lifecycle.viewmodel.ktx)
             implementation(libs.sqldelight.android.driver)
             api(libs.koin.android)
             api(libs.androidx.biometric)

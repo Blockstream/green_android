@@ -79,6 +79,9 @@ abstract class TransactionViewModelAbstract(
     abstract val feeRate: StateFlow<String?>
 
     @NativeCoroutinesState
+    abstract val total: StateFlow<String?>
+
+    @NativeCoroutinesState
     abstract val canReplaceByFee: StateFlow<Boolean>
 
     @NativeCoroutinesState
@@ -134,6 +137,9 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
 
     val _feeRate: MutableStateFlow<String?> = MutableStateFlow(null)
     override val feeRate: StateFlow<String?> = _feeRate.asStateFlow()
+
+    val _total: MutableStateFlow<String?> = MutableStateFlow(null)
+    override val total: StateFlow<String?> = _total.asStateFlow()
 
     val _canReplaceByFee: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val canReplaceByFee: StateFlow<Boolean> = _canReplaceByFee.asStateFlow()
@@ -269,6 +275,14 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
 
         _feeRate.value = transaction.feeRate.takeIf { _fee.value != null && !transaction.account.isLightning && it > 0}?.feeRateWithUnit()
 
+        _total.value = when {
+            transaction.txType == Transaction.Type.OUT -> {
+                // TODO calculate total spent
+                null
+            }
+            else -> null
+        }
+
         val utxoViews = transaction.utxoViews
         _address.value = when {
             utxoViews.size == 1 && (transaction.txType == Transaction.Type.IN || transaction.txType == Transaction.Type.OUT) -> {
@@ -342,6 +356,7 @@ class TransactionViewModelPreview(status : TransactionStatus) : TransactionViewM
     override val transactionId: StateFlow<String> = MutableStateFlow("tx_id")
     override val fee: StateFlow<String> = MutableStateFlow("56.960 sats")
     override val feeRate: StateFlow<String> = MutableStateFlow("8.34 sats / vbyte")
+    override val total: StateFlow<String> = MutableStateFlow("2 BTC")
     override val canReplaceByFee: StateFlow<Boolean> = MutableStateFlow(true)
     override val address: StateFlow<String?> = MutableStateFlow("bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu")
     override val note: StateFlow<String?> =

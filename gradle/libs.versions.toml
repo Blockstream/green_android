@@ -13,11 +13,10 @@ buildTools = "34.0.0"
 breez = "0.4.1"
 activity-ktx = "1.9.0"
 androidx-junit = "1.1.5"
-annotation = "1.7.1"
 biometric = "1.2.0-alpha05"
 browser = "1.8.0"
 constraintlayout = "2.1.4"
-appcompat = "1.6.1"
+appcompat = "1.7.0"
 core-ktx = "1.13.1"
 core-testing = "2.2.0"
 countly-sdk-android = "4626cb98b65ef9769296956022474d7658b3b116"
@@ -55,7 +54,6 @@ rxandroidble = "1.18.1"
 rxjava = "3.1.8"
 rxkotlin = "3.0.1"
 slf4j = "2.0.4"
-slidetoact = "0.10.0"
 startup-runtime = "1.1.1"
 uriKmp = "0.0.16"
 workRuntimeKtx = "2.9.0"
@@ -67,7 +65,7 @@ turbine = "1.0.0"
 usb-serial = "6.0.6"
 uuid = "0.8.4"
 desugar = "2.0.4"
-viewpager2 = "1.1.0-rc01"
+viewpager2 = "1.1.0"
 composeQrCode = "1.0.1"
 zxing-android-embedded = "4.3.0"
 kmp-nativecoroutines = "1.0.0-ALPHA-26"
@@ -84,13 +82,13 @@ firebase-bom = "33.0.0"
 jna = "5.14.0"
 
 [libraries]
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 compose-qr-code = { module = "com.lightspark:compose-qr-code", version.ref = "composeQrCode" }
 desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar" }
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activity-ktx" }
-androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "annotation" }
 androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
@@ -99,11 +97,6 @@ androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx
 androidx-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "core-testing" }
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso-core" }
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-junit" }
-androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
-androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "lifecycle" }
-androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
-androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
-androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preference-ktx" }
 androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
 androidx-startup-runtime = { module = "androidx.startup:startup-runtime", version.ref = "startup-runtime" }
@@ -175,7 +168,6 @@ rxandroidble = { module = "com.polidea.rxandroidble3:rxandroidble", version.ref 
 rxjava = { module = "io.reactivex.rxjava3:rxjava", version.ref = "rxjava" }
 rxkotlin = { module = "io.reactivex.rxjava3:rxkotlin", version.ref = "rxkotlin" }
 slf4j-simple = { module = "com.gitlab.mvysny.slf4j:slf4j-handroid", version.ref = "slf4j" }
-slidetoact = { module = "com.ncorti:slidetoact", version.ref = "slidetoact" }
 uri-kmp = { module = "com.eygraber:uri-kmp", version.ref = "uriKmp" }
 zendesk-support-providers = { module = "com.zendesk:support-providers", version.ref = "zendesk" }
 state-keeper = { module = "com.arkivanov.essenty:state-keeper", version.ref = "essenty" }

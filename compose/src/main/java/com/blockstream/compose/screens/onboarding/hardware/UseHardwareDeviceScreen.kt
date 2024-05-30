@@ -30,7 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.blockstream.common.models.onboarding.hardware.UseHardwareDeviceViewModel
 import com.blockstream.common.models.onboarding.hardware.UseHardwareDeviceViewModelAbstract
 import com.blockstream.common.models.onboarding.hardware.UseHardwareDeviceViewModelPreview
@@ -56,7 +56,7 @@ import com.blockstream.compose.utils.noRippleClickable
 object UseHardwareDeviceScreen : Screen {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<UseHardwareDeviceViewModel>()
+        val viewModel = koinScreenModel<UseHardwareDeviceViewModel>()
 
         val navData by viewModel.navData.collectAsStateWithLifecycle()
 

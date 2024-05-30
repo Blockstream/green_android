@@ -52,8 +52,8 @@ dependencies {
     implementation(platform(libs.compose.bom))
     androidTestImplementation(platform(libs.compose.bom))
 
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.constraint)
 

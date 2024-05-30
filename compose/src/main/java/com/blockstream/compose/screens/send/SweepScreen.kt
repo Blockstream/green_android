@@ -3,12 +3,10 @@ package com.blockstream.compose.screens.send
 import android.os.Parcelable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -18,7 +16,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -27,7 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.AddressInputType
 import com.blockstream.common.data.FeePriority
@@ -47,7 +44,6 @@ import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAmount
 import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.components.GreenNetworkFee
 import com.blockstream.compose.components.GreenTextField
 import com.blockstream.compose.components.SlideToUnlock
@@ -58,15 +54,12 @@ import com.blockstream.compose.sheets.AccountsBottomSheet
 import com.blockstream.compose.sheets.CameraBottomSheet
 import com.blockstream.compose.sheets.FeeRateBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
-import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.md_theme_onError
 import com.blockstream.compose.theme.md_theme_onErrorContainer
-import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.stringResourceId
-import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Parcelize
@@ -77,7 +70,7 @@ data class SweepScreen(
 ) : Parcelable, Screen {
     @Composable
     override fun Content() {
-        val viewModel = koinViewModel<SweepViewModel> {
+        val viewModel = koinScreenModel<SweepViewModel> {
             parametersOf(greenWallet, privateKey, accountAsset)
         }
 

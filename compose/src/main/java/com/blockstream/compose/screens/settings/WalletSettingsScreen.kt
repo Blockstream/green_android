@@ -35,7 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.GreenWallet
@@ -74,7 +74,7 @@ import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.stringResourceId
-import org.koin.androidx.compose.koinViewModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
 
@@ -86,7 +86,7 @@ data class WalletSettingsScreen(
 ) : Screen, Parcelable {
     @Composable
     override fun Content() {
-        val viewModel = koinViewModel<WalletSettingsViewModel> {
+        val viewModel = koinScreenModel<WalletSettingsViewModel> {
             parametersOf(greenWallet, section, network)
         }
 

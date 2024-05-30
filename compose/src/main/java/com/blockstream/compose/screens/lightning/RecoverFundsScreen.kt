@@ -61,7 +61,7 @@ import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.stringResourceId
-import org.koin.androidx.compose.koinViewModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import org.koin.core.parameter.parametersOf
 
 
@@ -73,7 +73,7 @@ data class RecoverFundsScreen(
 ) : Screen {
     @Composable
     override fun Content() {
-        val viewModel = koinViewModel<RecoverFundsViewModel>() {
+        val viewModel = koinScreenModel<RecoverFundsViewModel>() {
             parametersOf(greenWallet, isSendAll, address, amount)
         }
 

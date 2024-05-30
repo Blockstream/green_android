@@ -23,7 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.jade.JadeQRViewModel
@@ -54,7 +54,7 @@ import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.koin.androidx.compose.koinViewModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import org.koin.core.parameter.parametersOf
 
 @Parcelize
@@ -62,7 +62,7 @@ data class JadeQRScreen(val isLightningMnemonicExport: Boolean = false) : Screen
 
     @Composable
     override fun Content() {
-        val viewModel = koinViewModel<JadeQRViewModel> {
+        val viewModel = koinScreenModel<JadeQRViewModel> {
             parametersOf(isLightningMnemonicExport)
         }
 

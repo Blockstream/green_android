@@ -36,7 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.blockstream.common.data.ScreenLockSetting
 import com.blockstream.common.models.settings.AppSettingsViewModel
 import com.blockstream.common.models.settings.AppSettingsViewModelAbstract
@@ -63,7 +63,7 @@ import kotlinx.coroutines.launch
 object AppSettingsScreen : Screen {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<AppSettingsViewModel>()
+        val viewModel = koinScreenModel<AppSettingsViewModel>()
 
         val navData by viewModel.navData.collectAsStateWithLifecycle()
 

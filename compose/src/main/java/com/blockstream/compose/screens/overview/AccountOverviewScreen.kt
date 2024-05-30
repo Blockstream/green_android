@@ -55,6 +55,7 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.LocalRootNavigator
 import com.blockstream.compose.R
+import com.blockstream.compose.components.BottomNav
 import com.blockstream.compose.components.GreenAccountCard
 import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenAsset
@@ -378,7 +379,13 @@ fun AccountOverviewScreen(
                 }, onReceiveClick = {
                     viewModel.postEvent(AccountOverviewViewModel.LocalEvents.Receive)
                 }, onCircleClick = {
-                    bottomSheetNavigator.show(MainMenuBottomSheet)
+                    // bottomSheetNavigator.show(MainMenuBottomSheet)
+                    viewModel.postEvent(
+                        NavigateDestinations.Camera(
+                            isDecodeContinuous = true,
+                            parentScreenName = viewModel.screenName()
+                        )
+                    )
                 }
             )
         }

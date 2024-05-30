@@ -24,7 +24,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.GreenWallet
@@ -46,7 +46,7 @@ import org.koin.core.parameter.parametersOf
 data class WalletRenameBottomSheet(val greenWallet: GreenWallet) : BottomScreen(), Parcelable {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<WalletNameViewModel>{
+        val viewModel = koinScreenModel<WalletNameViewModel>{
             parametersOf(greenWallet)
         }
 

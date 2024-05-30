@@ -50,12 +50,6 @@ dependencies {
     api(libs.androidx.work.runtime.ktx)
     /** ----------------------------------------------------------------------------------------- */
 
-    /**  --- Lifecycle -------------------------------------------------------------------------- */
-    api(libs.androidx.lifecycle.livedata.ktx)
-
-    api(libs.androidx.lifecycle.runtime.ktx)
-    api(libs.androidx.lifecycle.process)
-    /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Logging ---------------------------------------------------------------------------- */
     api(libs.slf4j.simple)

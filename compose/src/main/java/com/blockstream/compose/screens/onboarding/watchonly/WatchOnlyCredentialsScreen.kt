@@ -44,7 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.ScanResult
@@ -93,7 +93,7 @@ import org.koin.core.parameter.parametersOf
 data class WatchOnlyCredentialsScreen(val setupArgs: SetupArgs) : Screen, Parcelable {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<WatchOnlyCredentialsViewModel> {
+        val viewModel = koinScreenModel<WatchOnlyCredentialsViewModel> {
             parametersOf(setupArgs)
         }
 

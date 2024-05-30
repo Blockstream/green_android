@@ -26,7 +26,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.screen.ScreenKey
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.SetupArgs
@@ -60,7 +60,7 @@ data class RecoveryCheckScreen(val setupArgs: SetupArgs) : Screen, Parcelable {
 
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<RecoveryCheckViewModel>() {
+        val viewModel = koinScreenModel<RecoveryCheckViewModel>() {
             parametersOf(setupArgs)
         }
 

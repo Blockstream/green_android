@@ -2,7 +2,6 @@ package com.blockstream.compose.sheets
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.FeePriority
@@ -51,7 +50,6 @@ import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.roundBackground
 import com.blockstream.compose.utils.stringResourceId
-import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Parcelize
@@ -64,7 +62,7 @@ data class FeeRateBottomSheet(
     @Composable
     override fun Content() {
 
-        val viewModel = koinViewModel<FeeViewModel> {
+        val viewModel = koinScreenModel<FeeViewModel> {
             parametersOf(greenWallet, accountAsset, params, useBreezFees)
         }
 

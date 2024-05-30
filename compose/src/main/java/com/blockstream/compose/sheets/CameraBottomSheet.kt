@@ -5,7 +5,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.blockstream.common.data.ScanResult
 import com.blockstream.common.data.SetupArgs
@@ -31,7 +31,7 @@ data class CameraBottomSheet(
 ) : BottomScreen(), Parcelable {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<CameraViewModel>() {
+        val viewModel = koinScreenModel<CameraViewModel>() {
             parametersOf(isDecodeContinuous, parentScreenName, setupArgs)
         }
         CameraBottomSheet(viewModel = viewModel, onDismissRequest = onDismissRequest())

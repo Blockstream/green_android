@@ -10,7 +10,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -23,11 +22,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
@@ -83,6 +77,7 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.LocalRootNavigator
 import com.blockstream.compose.R
+import com.blockstream.compose.components.BottomNav
 import com.blockstream.compose.components.GreenAccountCard
 import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenButton
@@ -104,12 +99,9 @@ import com.blockstream.compose.sheets.CameraBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
 import com.blockstream.compose.sheets.MainMenuBottomSheet
 import com.blockstream.compose.sheets.MainMenuEntry
-import com.blockstream.compose.theme.GreenSmallEnd
-import com.blockstream.compose.theme.GreenSmallStart
 import com.blockstream.compose.theme.GreenThemePreview
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
-import com.blockstream.compose.theme.bottom_nav_bg
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.md_theme_background
@@ -487,12 +479,22 @@ fun WalletOverviewScreen(
                     .padding(bottom = 16.dp),
                 isWatchOnly = viewModel.session.isWatchOnly,
                 isSweepEnabled = viewModel.session.defaultNetworkOrNull?.isBitcoin == true,
+                showMenu = viewModel.appInfo.isDevelopmentOrDebug,
                 onSendClick = {
                     viewModel.postEvent(WalletOverviewViewModel.LocalEvents.Send)
                 }, onReceiveClick = {
                     viewModel.postEvent(WalletOverviewViewModel.LocalEvents.Receive)
                 }, onCircleClick = {
-                    bottomSheetNavigator.show(MainMenuBottomSheet)
+                    if (viewModel.appInfo.isDevelopmentOrDebug) {
+                        bottomSheetNavigator.show(MainMenuBottomSheet)
+                    } else {
+                        viewModel.postEvent(
+                            NavigateDestinations.Camera(
+                                isDecodeContinuous = true,
+                                parentScreenName = viewModel.screenName()
+                            )
+                        )
+                    }
                 }
             )
         }
@@ -670,122 +672,6 @@ fun WalletAssets(viewModel: WalletOverviewViewModelAbstract, onClick: () -> Unit
                     }
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun BottomNav(
-    modifier: Modifier = Modifier,
-    isWatchOnly: Boolean = false,
-    isSweepEnabled: Boolean = false,
-    onSendClick: () -> Unit,
-    onReceiveClick: () -> Unit,
-    onCircleClick: () -> Unit
-) {
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(modifier)
-    ) {
-        Row(
-            modifier = Modifier.align(Alignment.Center),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-
-            Card(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(50.dp),
-                shape = GreenSmallEnd,
-                colors = CardDefaults.cardColors(containerColor = bottom_nav_bg),
-                onClick = onSendClick,
-                enabled = !isWatchOnly || isSweepEnabled
-            ) {
-                GreenRow(
-                    padding = 0,
-                    space = 8,
-                    modifier = Modifier
-                        .weight(1f)
-                        .align(Alignment.CenterHorizontally)
-                        .padding(end = 30.dp)
-                ) {
-                    Icon(
-                        painterResource(if (isWatchOnly && isSweepEnabled) R.drawable.broom else R.drawable.arrow_line_up),
-                        contentDescription = null,
-                        tint = green,
-                    )
-                    Text(text = stringResource(if (isWatchOnly && isSweepEnabled) R.string.id_sweep else R.string.id_send))
-                }
-            }
-
-            Card(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(50.dp),
-                shape = GreenSmallStart,
-                colors = CardDefaults.cardColors(containerColor = bottom_nav_bg),
-                onClick = onReceiveClick
-            ) {
-                GreenRow(
-                    padding = 0,
-                    space = 8,
-                    modifier = Modifier
-                        .weight(1f)
-                        .align(Alignment.CenterHorizontally)
-                        .padding(start = 30.dp)
-                ) {
-                    Icon(
-                        painterResource(id = R.drawable.arrow_line_down),
-                        contentDescription = null,
-                        tint = green
-                    )
-                    Text(text = stringResource(id = R.string.id_receive))
-                }
-            }
-        }
-
-        FloatingActionButton(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .size(60.dp),
-            shape = CircleShape,
-            onClick = onCircleClick,
-        ) {
-            Icon(Icons.Filled.Add, "Floating action button.")
-        }
-    }
-}
-
-@Composable
-@Preview
-fun BottomNavPreview() {
-    GreenThemePreview {
-        GreenColumn {
-            BottomNav(modifier = Modifier, onSendClick = {
-
-            }, onReceiveClick = {
-
-            }, onCircleClick = {
-
-            })
-
-            BottomNav(modifier = Modifier, isSweepEnabled = true, onSendClick = {
-
-            }, onReceiveClick = {
-
-            }, onCircleClick = {
-
-            })
-
-            BottomNav(modifier = Modifier, isSweepEnabled = false, isWatchOnly = true, onSendClick = {
-
-            }, onReceiveClick = {
-
-            }, onCircleClick = {
-
-            })
         }
     }
 }

@@ -246,10 +246,6 @@ dependencies {
     implementation(libs.countly.sdk.android)
     /** ----------------------------------------------------------------------------------------- */
 
-    /**  --- Slide To Act ----------------------------------------------------------------------- */
-    implementation(libs.slidetoact)
-    /** ----------------------------------------------------------------------------------------- */
-
     testImplementation(libs.junit)
     testImplementation(libs.androidx.core.testing)
     testImplementation(libs.kotlinx.coroutines.test)

@@ -45,7 +45,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.screen.uniqueScreenKey
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.GreenWallet
@@ -114,7 +114,7 @@ data class LoginScreen(
 ) : Screen, Parcelable {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<LoginViewModel>() {
+        val viewModel = koinScreenModel<LoginViewModel>() {
             parametersOf(greenWallet, isLightningShortcut, autoLoginWallet, deviceId)
         }
 

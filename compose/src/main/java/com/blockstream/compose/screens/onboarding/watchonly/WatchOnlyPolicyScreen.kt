@@ -26,13 +26,13 @@ import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
-import org.koin.androidx.compose.koinViewModel
+import cafe.adriel.voyager.koin.koinScreenModel
 
 
 object WatchOnlyPolicyScreen : Screen {
     @Composable
     override fun Content() {
-        val viewModel = koinViewModel<WatchOnlyPolicyViewModel>()
+        val viewModel = koinScreenModel<WatchOnlyPolicyViewModel>()
 
         val navData by viewModel.navData.collectAsStateWithLifecycle()
 

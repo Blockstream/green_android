@@ -41,7 +41,7 @@ import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.stringResourceId
-import org.koin.androidx.compose.koinViewModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import org.koin.core.parameter.parametersOf
 
 
@@ -51,7 +51,7 @@ data class LnUrlWithdrawScreen(
 ) : Screen {
     @Composable
     override fun Content() {
-        val viewModel = koinViewModel<LnUrlWithdrawViewModel>() {
+        val viewModel = koinScreenModel<LnUrlWithdrawViewModel>() {
             parametersOf(greenWallet, requestData.deserialize())
         }
 

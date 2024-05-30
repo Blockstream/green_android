@@ -50,7 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.arkivanov.essenty.statekeeper.stateKeeper
@@ -99,7 +99,7 @@ data class EnterRecoveryPhraseScreen(val setupArgs: SetupArgs) : Screen, Parcela
     @Composable
     override fun Content() {
         val savedStateRegistryOwner = LocalSavedStateRegistryOwner.current
-        val viewModel = getScreenModel<EnterRecoveryPhraseViewModel>() {
+        val viewModel = koinScreenModel<EnterRecoveryPhraseViewModel>() {
             parametersOf(setupArgs, savedStateRegistryOwner.stateKeeper())
         }
 

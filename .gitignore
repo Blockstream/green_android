@@ -31,3 +31,5 @@ green/src/main/res/raw/app_keys.txt
 
 common/src/include
 common/src/libs
+
+.kotlin/

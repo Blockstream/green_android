@@ -35,7 +35,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.isNotBlank
@@ -82,7 +82,7 @@ data class RecoveryPhraseScreen(
 ) : Screen, Parcelable {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<RecoveryPhraseViewModel>() {
+        val viewModel = koinScreenModel<RecoveryPhraseViewModel>() {
             parametersOf(isLightning, providedCredentials, greenWallet)
         }
 

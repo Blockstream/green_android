@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.blockstream.common.models.sheets.RecoveryHelpViewModel
 import com.blockstream.common.models.sheets.RecoveryHelpViewModelAbstract
 import com.blockstream.common.models.sheets.RecoveryHelpViewModelPreview
@@ -24,7 +24,7 @@ import com.blockstream.compose.components.GreenBottomSheet
 object RecoveryHelpBottomSheet : BottomScreen() {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<RecoveryHelpViewModel>()
+        val viewModel = koinScreenModel<RecoveryHelpViewModel>()
         RecoveryHelpBottomSheet(viewModel = viewModel, onDismissRequest = onDismissRequest())
     }
 }

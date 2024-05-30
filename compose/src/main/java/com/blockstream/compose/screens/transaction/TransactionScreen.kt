@@ -29,7 +29,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.GreenWallet
@@ -66,6 +66,7 @@ import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.headlineSmall
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.monospaceFont
+import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.AppBar
@@ -82,7 +83,7 @@ data class TransactionScreen(val transaction: Transaction, val greenWallet: Gree
 
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<TransactionViewModel>() {
+        val viewModel = koinScreenModel<TransactionViewModel> {
             parametersOf(transaction, greenWallet)
         }
 
@@ -247,6 +248,7 @@ fun TransactionScreen(
 
         val fee by viewModel.fee.collectAsStateWithLifecycle()
         val feeRate by viewModel.feeRate.collectAsStateWithLifecycle()
+        val total by viewModel.total.collectAsStateWithLifecycle()
         val address by viewModel.address.collectAsStateWithLifecycle()
         val transactionId by viewModel.transactionId.collectAsStateWithLifecycle()
         val note by viewModel.note.collectAsStateWithLifecycle()
@@ -263,6 +265,12 @@ fun TransactionScreen(
 
                 feeRate?.also {
                     Detail(label = R.string.id_fee_rate) {
+                        Text(text = it)
+                    }
+                }
+
+                total?.also {
+                    Detail(label = R.string.id_total_spent) {
                         Text(text = it)
                     }
                 }

@@ -33,6 +33,8 @@ import com.blockstream.common.utils.ifNotNull
 import com.blockstream.common.utils.toAmountLook
 import com.rickclephas.kmm.viewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -41,6 +43,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.withContext
 import kotlin.math.absoluteValue
 
 abstract class AccountExchangeViewModelAbstract(
@@ -135,7 +138,7 @@ class AccountExchangeViewModel(
         if (fromAccountBalance != null) {
             accounts.filter {
                 fromAccountBalance.account.id != it.id // exclude same account
-                        && it.network.isSameNetwork(fromAccountBalance.account.network) // exclude different networks (at least for now)
+                        && (it.network.isSameNetwork(fromAccountBalance.account.network) || (fromAccountBalance.account.isBitcoin && it.isLightning)) // exclude different networks (at least for now)
                         && (!fromAccountBalance.asset.isAmp || it.isAmp) // if AMP asset, only AMP accounts
             }.map {
                 AccountAssetBalance.create(
@@ -188,7 +191,13 @@ class AccountExchangeViewModel(
     private val _toAddress: StateFlow<String?> = toAccountAsset.map {
         it?.let {
             try {
-                session.getReceiveAddress(it.account).address
+                withContext(Dispatchers.IO) {
+                    if (it.account.isLightning) {
+                        session.receiveOnchain().bitcoinAddress
+                    } else {
+                        session.getReceiveAddress(it.account).address
+                    }
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
                 _error.value = e.message
@@ -370,7 +379,7 @@ class AccountExchangeViewModel(
 //                )
 //            }
         } else {
-            val isGreedy = isSendAll.value ?: false
+            val isGreedy = isSendAll.value
             val satoshi = if (isGreedy) 0 else UserInput.parseUserInputSafe(
                 session = session,
                 input = amount.value,

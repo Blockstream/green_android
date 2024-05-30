@@ -30,7 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
@@ -67,7 +67,7 @@ import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.stringResourceId
-import org.koin.androidx.compose.koinViewModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import org.koin.core.parameter.parametersOf
 
 @Parcelize
@@ -78,7 +78,7 @@ data class BumpScreen(
 ) : Parcelable, Screen {
     @Composable
     override fun Content() {
-        val viewModel = koinViewModel<BumpViewModel> {
+        val viewModel = koinScreenModel<BumpViewModel> {
             parametersOf(greenWallet, accountAsset, transaction)
         }
 

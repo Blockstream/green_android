@@ -14,7 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.BTC_POLICY_ASSET
@@ -43,7 +43,7 @@ data class AssetDetailsBottomSheet(
 ) : BottomScreen(), Parcelable {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<AssetDetailsViewModel> {
+        val viewModel = koinScreenModel<AssetDetailsViewModel> {
             parametersOf(assetId, accountAsset, greenWallet)
         }
 

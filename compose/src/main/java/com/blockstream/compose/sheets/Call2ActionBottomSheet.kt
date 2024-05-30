@@ -8,30 +8,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import cafe.adriel.voyager.koin.getScreenModel
 import com.arkivanov.essenty.parcelable.IgnoredOnParcel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.previewNetwork
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.models.sheets.AnalyticsViewModelPreview
-import com.blockstream.common.models.sheets.AssetDetailsViewModel
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.LocalRootNavigator
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.compose.navigation.resultKey
-import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.utils.HandleSideEffect
-import com.blockstream.compose.utils.HandleSideEffectDialog
-import org.koin.androidx.compose.koinViewModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import org.koin.core.parameter.parametersOf
 
 
@@ -47,7 +40,7 @@ data class Call2ActionBottomSheet(
 
     @Composable
     override fun Content() {
-        val viewModel = koinViewModel<SimpleGreenViewModel> {
+        val viewModel = koinScreenModel<SimpleGreenViewModel> {
             parametersOf(greenWallet)
         }.also {
             val navigator = LocalRootNavigator.current

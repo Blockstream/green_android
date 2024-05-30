@@ -17,7 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.DenominatedValue
@@ -36,7 +36,6 @@ import com.blockstream.compose.theme.GreenThemePreview
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.titleSmall
-import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Parcelize
@@ -47,7 +46,7 @@ data class DenominationBottomSheet(
     @Composable
     override fun Content() {
 
-        val viewModel = koinViewModel<DenominationViewModel> {
+        val viewModel = koinScreenModel<DenominationViewModel> {
             parametersOf(greenWallet, denominatedValue)
         }
 

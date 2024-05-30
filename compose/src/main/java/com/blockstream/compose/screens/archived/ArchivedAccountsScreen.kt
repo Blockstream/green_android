@@ -46,7 +46,7 @@ import com.blockstream.compose.components.ScreenContainer
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
-import org.koin.androidx.compose.koinViewModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import org.koin.core.parameter.parametersOf
 
 
@@ -57,7 +57,7 @@ data class ArchivedAccountsScreen(
 ) : Parcelable, Screen {
     @Composable
     override fun Content() {
-        val viewModel = koinViewModel<ArchivedAccountsViewModel>() {
+        val viewModel = koinScreenModel<ArchivedAccountsViewModel>() {
             parametersOf(greenWallet, navigateToRoot)
         }
 

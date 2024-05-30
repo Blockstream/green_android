@@ -24,30 +24,24 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.koin.koinScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.extensions.previewAccount
 import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.models.SimpleGreenViewModelPreview
-import com.blockstream.common.models.wallet.WalletNameViewModel
-import com.blockstream.common.models.wallet.WalletNameViewModelAbstract
-import com.blockstream.common.models.wallet.WalletNameViewModelPreview
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
+import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.extensions.onTextFieldValueChange
 import com.blockstream.compose.utils.OpenKeyboard
-import com.blockstream.compose.components.GreenBottomSheet
 import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)

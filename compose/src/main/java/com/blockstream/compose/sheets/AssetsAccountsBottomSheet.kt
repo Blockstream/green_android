@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.GreenWallet
@@ -33,7 +33,7 @@ data class AssetsAccountsBottomSheet(
 ) : BottomScreen(), Parcelable {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<SimpleGreenViewModel> {
+        val viewModel = koinScreenModel<SimpleGreenViewModel> {
             parametersOf(greenWallet)
         }
 

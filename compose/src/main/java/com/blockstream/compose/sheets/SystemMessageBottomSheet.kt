@@ -1,6 +1,5 @@
 package com.blockstream.compose.sheets
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -9,7 +8,6 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,44 +16,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cafe.adriel.voyager.koin.getScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.previewNetwork
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.models.SimpleGreenViewModelPreview
-import com.blockstream.common.models.sheets.TransactionDetailsViewModel
-import com.blockstream.common.models.sheets.TransactionDetailsViewModelAbstract
-import com.blockstream.common.models.sheets.TransactionDetailsViewModelPreview
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenRow
-import com.blockstream.compose.extensions.onValueChange
-import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
-import com.blockstream.compose.theme.bodySmall
-import com.blockstream.compose.theme.labelMedium
-import com.blockstream.compose.theme.whiteHigh
-import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.utils.copyToClipboard
-import com.blockstream.compose.utils.noRippleClickable
-import com.blockstream.compose.utils.stringResourceId
-import org.koin.androidx.compose.koinViewModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import org.koin.core.parameter.parametersOf
 
 @Parcelize
@@ -66,7 +47,7 @@ data class SystemMessageBottomSheet(
 ) : BottomScreen(), Parcelable {
     @Composable
     override fun Content() {
-        val viewModel = koinViewModel<SimpleGreenViewModel> {
+        val viewModel = koinScreenModel<SimpleGreenViewModel> {
             parametersOf(greenWallet, null, "SystemMessage")
         }
 

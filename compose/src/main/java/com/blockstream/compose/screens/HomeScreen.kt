@@ -50,13 +50,13 @@ import com.blockstream.compose.theme.displayLarge
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
-import org.koin.androidx.compose.koinViewModel
+import cafe.adriel.voyager.koin.koinScreenModel
 
 object HomeScreen : Screen {
 
     @Composable
     override fun Content() {
-        val viewModel = koinViewModel<HomeViewModel>()
+        val viewModel = koinScreenModel<HomeViewModel>()
 
         val navData by viewModel.navData.collectAsStateWithLifecycle()
         AppBar(navData)

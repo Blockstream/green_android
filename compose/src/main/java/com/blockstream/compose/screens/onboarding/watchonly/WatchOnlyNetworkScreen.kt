@@ -29,14 +29,14 @@ import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
-import org.koin.androidx.compose.koinViewModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import org.koin.core.parameter.parametersOf
 
 
 data class WatchOnlyNetworkScreen(val setupArgs: SetupArgs) : Screen {
     @Composable
     override fun Content() {
-        val viewModel = koinViewModel<WatchOnlyNetworkViewModel>(){
+        val viewModel = koinScreenModel<WatchOnlyNetworkViewModel>(){
             parametersOf(setupArgs)
         }
 

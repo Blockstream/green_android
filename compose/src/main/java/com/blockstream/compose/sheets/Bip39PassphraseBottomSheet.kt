@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -18,7 +16,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -27,7 +24,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cafe.adriel.voyager.koin.getScreenModel
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.blockstream.common.data.GreenWallet
@@ -37,6 +33,7 @@ import com.blockstream.common.models.login.Bip39PassphraseViewModelAbstract
 import com.blockstream.common.models.login.Bip39PassphraseViewModelPreview
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
+import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenColumn
@@ -48,7 +45,7 @@ import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.TextInputPassword
-import com.blockstream.compose.components.GreenBottomSheet
+import cafe.adriel.voyager.koin.koinScreenModel
 import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,7 +56,7 @@ data class Bip39PassphraseBottomSheet(
 ) : BottomScreen(), Parcelable {
     @Composable
     override fun Content() {
-        val viewModel = getScreenModel<Bip39PassphraseViewModel> {
+        val viewModel = koinScreenModel<Bip39PassphraseViewModel> {
             parametersOf(greenWallet, passphrase)
         }
 

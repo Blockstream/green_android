@@ -74,7 +74,7 @@ import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.stringResourceId
-import org.koin.androidx.compose.koinViewModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import org.koin.core.parameter.parametersOf
 
 @Parcelize
@@ -84,7 +84,7 @@ data class AccountExchangeScreen(
 ) : Parcelable, Screen {
     @Composable
     override fun Content() {
-        val viewModel = koinViewModel<AccountExchangeViewModel> {
+        val viewModel = koinScreenModel<AccountExchangeViewModel> {
             parametersOf(greenWallet, accountAsset)
         }
 
