@@ -34,7 +34,7 @@ import com.blockstream.common.utils.UserInput
 import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.ifNotNull
 import com.blockstream.common.utils.toAmountLook
-import com.rickclephas.kmm.viewmodel.stateIn
+import com.rickclephas.kmp.observableviewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

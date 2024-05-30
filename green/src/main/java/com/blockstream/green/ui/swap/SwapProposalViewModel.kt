@@ -10,7 +10,7 @@ import com.blockstream.common.gdk.data.SwapProposal
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.utils.createQrBitmap
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
-import com.rickclephas.kmm.viewmodel.coroutineScope
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel

@@ -27,9 +27,9 @@ class HelpBottomSheetDialogFragment: RecyclerBottomSheetDialogFragment() {
         val list = mutableListOf<ActionListItem>()
 
         list += ActionListItem(
-            StringHolder(R.string.id_i_typed_all_my_recovery_phrase),
-            StringHolder(R.string.id_1_double_check_all_of_your),
-            StringHolder(R.string.id_visit_the_blockstream_help)
+            StringHolder(requireContext(),R.string.id_i_typed_all_my_recovery_phrase),
+            StringHolder(requireContext(),R.string.id_1_double_check_all_of_your),
+            StringHolder(requireContext(),R.string.id_visit_the_blockstream_help)
         )
 
         itemAdapter.add(list)

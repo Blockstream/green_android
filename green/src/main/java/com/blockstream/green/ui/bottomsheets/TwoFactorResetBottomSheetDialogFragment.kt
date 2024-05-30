@@ -7,13 +7,13 @@ import androidx.core.os.BundleCompat
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.blockstream.common.data.TwoFactorMethod
+import com.blockstream.common.data.TwoFactorSetupAction
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.TwoFactorReset
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
-import com.blockstream.common.data.TwoFactorMethod
-import com.blockstream.common.data.TwoFactorSetupAction
 import com.blockstream.green.databinding.ListItemActionBinding
 import com.blockstream.green.databinding.RecyclerBottomSheetBinding
 import com.blockstream.green.extensions.navigate
@@ -73,20 +73,20 @@ class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<
 
         if(twoFactorReset.isDisputed == true){
             list += ActionListItem(
-                StringHolder(R.string.id_your_wallet_is_locked_under_2fa),
-                StringHolder(R.string.id_the_1_year_2fa_reset_process),
+                StringHolder(requireContext(),R.string.id_your_wallet_is_locked_under_2fa),
+                StringHolder(requireContext(),R.string.id_the_1_year_2fa_reset_process),
             )
 
             list += ActionListItem(
-                message = StringHolder(R.string.id_if_you_are_the_rightful_owner),
-                button = StringHolder(R.string.id_cancel_2fa_reset),
+                message = StringHolder(requireContext(),R.string.id_if_you_are_the_rightful_owner),
+                button = StringHolder(requireContext(),R.string.id_cancel_2fa_reset),
             ).also {
                 cancelItem = it
             }
 
             list += ActionListItem(
-                message = StringHolder(R.string.id_if_you_initiated_the_2fa_reset),
-                button = StringHolder(R.string.id_undo_2fa_dispute),
+                message = StringHolder(requireContext(),R.string.id_if_you_initiated_the_2fa_reset),
+                button = StringHolder(requireContext(),R.string.id_undo_2fa_dispute),
             ).also {
                 disputeItem = it
             }
@@ -95,21 +95,21 @@ class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<
 
             list += ActionListItem(
                 title = StringHolder(getString(R.string.id_your_wallet_is_locked_for_a, twoFactorReset.daysRemaining)),
-                message = StringHolder(R.string.id_the_waiting_period_is_necessary),
+                message = StringHolder(requireContext(),R.string.id_the_waiting_period_is_necessary),
             )
 
             list += ActionListItem(
-                title = StringHolder(R.string.id_how_to_stop_this_reset),
+                title = StringHolder(requireContext(),R.string.id_how_to_stop_this_reset),
                 message = StringHolder(getString(R.string.id_if_you_have_access_to_a, twoFactorReset.daysRemaining)),
-                button = StringHolder(R.string.id_cancel_twofactor_reset)
+                button = StringHolder(requireContext(),R.string.id_cancel_twofactor_reset)
             ).also {
                 cancelItem = it
             }
 
             list += ActionListItem(
-                title = StringHolder(R.string.id_permanently_block_this_wallet),
-                message = StringHolder(R.string.id_if_you_did_not_request_the),
-                button = StringHolder(R.string.id_dispute_twofactor_reset),
+                title = StringHolder(requireContext(),R.string.id_permanently_block_this_wallet),
+                message = StringHolder(requireContext(),R.string.id_if_you_did_not_request_the),
+                button = StringHolder(requireContext(),R.string.id_dispute_twofactor_reset),
             ).also {
                 disputeItem = it
             }

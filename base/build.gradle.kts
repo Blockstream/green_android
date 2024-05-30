@@ -35,7 +35,6 @@ dependencies {
 
     /**  --- Android / Google ------------------------------------------------------------------- */
     api(libs.androidx.core.ktx)
-    api(libs.androidx.activity.ktx)
     api(libs.androidx.appcompat)
     api(libs.material)
     api(libs.androidx.constraintlayout)
@@ -49,7 +48,6 @@ dependencies {
     api(libs.compose.material3)
     api(libs.androidx.work.runtime.ktx)
     /** ----------------------------------------------------------------------------------------- */
-
 
     /**  --- Logging ---------------------------------------------------------------------------- */
     api(libs.slf4j.simple)

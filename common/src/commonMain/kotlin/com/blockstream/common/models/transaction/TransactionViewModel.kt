@@ -27,8 +27,8 @@ import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.toAmountLook
 import com.blockstream.common.utils.toAmountLookOrNa
-import com.rickclephas.kmm.viewmodel.coroutineScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -113,44 +113,44 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
         CONFIDENTIAL_TRANSACTION, NON_CONFIDENTIAL_TRANSACTION, UNBLINDING_DATA;
     }
 
-    val _transaction = MutableStateFlow(transaction)
+    private val _transaction = MutableStateFlow(transaction)
     override val transaction: StateFlow<Transaction> = _transaction.asStateFlow()
 
-    val _status: MutableStateFlow<TransactionStatus> = MutableStateFlow(Failed())
+    private val _status: MutableStateFlow<TransactionStatus> = MutableStateFlow(Failed())
     override val status: StateFlow<TransactionStatus> = _status.asStateFlow()
 
     override val type: StateFlow<Transaction.Type> = MutableStateFlow(transaction.txType)
 
     override val createdAtTs: StateFlow<Long> = MutableStateFlow(transaction.createdAtTs)
 
-    val _spv: MutableStateFlow<Transaction.SPVResult> = MutableStateFlow(Transaction.SPVResult.Disabled)
+    private val _spv: MutableStateFlow<Transaction.SPVResult> = MutableStateFlow(Transaction.SPVResult.Disabled)
     override val spv: StateFlow<Transaction.SPVResult> = _spv.asStateFlow()
 
-    val _amounts: MutableStateFlow<List<AmountAssetLook>> = MutableStateFlow(listOf())
+    private val _amounts: MutableStateFlow<List<AmountAssetLook>> = MutableStateFlow(listOf())
     override val amounts: StateFlow<List<AmountAssetLook>> = _amounts.asStateFlow()
 
-    val _transactionId: MutableStateFlow<String?> = MutableStateFlow(null)
+    private val _transactionId: MutableStateFlow<String?> = MutableStateFlow(null)
     override val transactionId: StateFlow<String?> = _transactionId.asStateFlow()
 
-    val _fee: MutableStateFlow<String?> = MutableStateFlow(null)
+    private val _fee: MutableStateFlow<String?> = MutableStateFlow(null)
     override val fee: StateFlow<String?> = _fee.asStateFlow()
 
-    val _feeRate: MutableStateFlow<String?> = MutableStateFlow(null)
+    private val _feeRate: MutableStateFlow<String?> = MutableStateFlow(null)
     override val feeRate: StateFlow<String?> = _feeRate.asStateFlow()
 
     val _total: MutableStateFlow<String?> = MutableStateFlow(null)
     override val total: StateFlow<String?> = _total.asStateFlow()
 
-    val _canReplaceByFee: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val _canReplaceByFee: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val canReplaceByFee: StateFlow<Boolean> = _canReplaceByFee.asStateFlow()
 
-    val _address: MutableStateFlow<String?> = MutableStateFlow(null)
+    private val _address: MutableStateFlow<String?> = MutableStateFlow(null)
     override val address: StateFlow<String?> = _address.asStateFlow()
 
-    val _note: MutableStateFlow<String?> = MutableStateFlow(null)
+    private val _note: MutableStateFlow<String?> = MutableStateFlow(null)
     override val note: StateFlow<String?> = _note.asStateFlow()
 
-    val _hasMoreDetails: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val _hasMoreDetails: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val hasMoreDetails: StateFlow<Boolean> = _hasMoreDetails.asStateFlow()
 
     init {

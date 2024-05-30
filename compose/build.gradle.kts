@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlinParcelize)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.google.devtools.ksp)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -18,6 +19,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     packaging {
         jniLibs.pickFirsts.add("**/*.so")
     }
@@ -25,13 +27,18 @@ android {
         compose = true
         buildConfig = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
-    }
 }
+
+composeCompiler {
+    enableStrongSkippingMode = true
+    }
 
 kotlin {
     jvmToolchain(17)
+
+    compilerOptions {
+        freeCompilerArgs.addAll("-P", "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.blockstream.common.Parcelize")
+    }
 
     sourceSets {
         all {
@@ -51,7 +58,6 @@ dependencies {
     /**  --- Compose ---------------------------------------------------------------------------- */
     implementation(platform(libs.compose.bom))
     androidTestImplementation(platform(libs.compose.bom))
-
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
@@ -99,7 +105,5 @@ dependencies {
 
     implementation("io.github.mataku:middle-ellipsis-text3:1.1.0")
 
-
-    implementation(libs.parcelable) // parcelable
     implementation(libs.state.keeper) // state keeper
 }

@@ -1,10 +1,10 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 
 plugins {
-    id("com.android.library")
+    alias(libs.plugins.androidLibrary)
     id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.parcelize")
-    id("kotlinx-serialization")
+    alias(libs.plugins.kotlinParcelize)
+    alias(libs.plugins.kotlinxSerialization)
 }
 
 android {

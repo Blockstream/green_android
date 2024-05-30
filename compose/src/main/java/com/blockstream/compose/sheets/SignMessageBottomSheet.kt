@@ -25,8 +25,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.rive.runtime.kotlin.RiveAnimationView
 import cafe.adriel.voyager.koin.koinScreenModel
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
+import com.blockstream.common.Parcelable
+import com.blockstream.common.Parcelize
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.data.AccountAsset

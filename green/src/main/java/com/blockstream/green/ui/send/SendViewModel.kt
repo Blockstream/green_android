@@ -28,7 +28,7 @@ import com.blockstream.green.extensions.boolean
 import com.blockstream.green.extensions.lnUrlPayBitmap
 import com.blockstream.green.ui.bottomsheets.DenominationListener
 import com.blockstream.green.utils.feeRateWithUnit
-import com.rickclephas.kmm.viewmodel.coroutineScope
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -49,12 +49,12 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
-import com.rickclephas.kmm.viewmodel.KMMViewModel
-import com.rickclephas.kmm.viewmodel.MutableStateFlow
-import com.rickclephas.kmm.viewmodel.coroutineScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
+import com.rickclephas.kmp.observableviewmodel.ViewModel
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -68,7 +68,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.isActive
@@ -81,7 +80,6 @@ import kotlinx.coroutines.withTimeout
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.native.ObjCName
-
 
 class SimpleGreenViewModel(
     greenWalletOrNull: GreenWallet? = null,
@@ -101,7 +99,7 @@ class SimpleGreenViewModelPreview(greenWalletOrNull: GreenWallet? = null, accoun
 open class GreenViewModel constructor(
     val greenWalletOrNull: GreenWallet? = null,
     accountAssetOrNull: AccountAsset? = null,
-) : ScreenModel, KMMViewModel(), KoinComponent, ViewModelView, HardwareWalletInteraction, TwoFactorResolver {
+) : ScreenModel, ViewModel(), KoinComponent, ViewModelView, HardwareWalletInteraction, TwoFactorResolver {
     val appInfo: AppInfo by inject()
     protected val database: Database by inject()
     protected val countly: CountlyBase by inject()
@@ -252,7 +250,7 @@ open class GreenViewModel constructor(
 
         _event.onEach {
             handleEvent(it)
-        }.launchIn(viewModelScope.coroutineScope)
+        }.launchIn(this)
 
         countly.viewModel(this)
 
@@ -265,7 +263,7 @@ open class GreenViewModel constructor(
             isValid && !onProgress
         }.onEach {
             _buttonEnabled.value = it
-        }.launchIn(viewModelScope.coroutineScope)
+        }.launchIn(this)
 
         initBanner()
     }
@@ -321,7 +319,7 @@ open class GreenViewModel constructor(
     private fun listenForNetworksEvents(){
         session.networkErrors.onEach {
             postSideEffect(SideEffects.ErrorDialog(Exception("id_your_personal_electrum_server_for_s|${it.first.canonicalName}")))
-        }.launchIn(viewModelScope.coroutineScope)
+        }.launchIn(this)
     }
 
     private fun initBanner() {
@@ -347,7 +345,7 @@ open class GreenViewModel constructor(
                     // Set banner to ViewModel
                     banner.value = it
                 }
-        }.launchIn(viewModelScope.coroutineScope)
+        }.launchIn(this)
     }
 
     open fun handleEvent(event: Event) {

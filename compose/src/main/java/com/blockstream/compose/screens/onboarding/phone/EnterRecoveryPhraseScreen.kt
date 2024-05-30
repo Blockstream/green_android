@@ -51,9 +51,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
 import com.arkivanov.essenty.statekeeper.stateKeeper
+import com.blockstream.common.Parcelable
+import com.blockstream.common.Parcelize
 import com.blockstream.common.data.ScanResult
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Events
@@ -76,7 +76,6 @@ import com.blockstream.compose.navigation.resultKey
 import com.blockstream.compose.sheets.CameraBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
 import com.blockstream.compose.sheets.RecoveryHelpBottomSheet
-import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.GreenThemePreview
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium

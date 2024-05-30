@@ -3,16 +3,14 @@ package com.blockstream.common.models.addresses
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Event
 import com.blockstream.common.extensions.isBlank
-import com.blockstream.common.extensions.previewAccount
 import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewWallet
-import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.looks.account.AddressLook
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
-import com.rickclephas.kmm.viewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -34,7 +32,6 @@ abstract class AddressesViewModelAbstract(greenWallet: GreenWallet, accountAsset
     @NativeCoroutinesState
     abstract val hasMore: StateFlow<Boolean>
 
-    @NativeCoroutinesState
     abstract val canSign: Boolean
 }
 

@@ -46,18 +46,16 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.rickclephas.kmm.viewmodel.MutableStateFlow
-import com.rickclephas.kmm.viewmodel.coroutineScope
-import com.rickclephas.kmm.viewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import kotlinx.coroutines.delay
+import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
+import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -265,7 +263,7 @@ class LoginViewModel constructor(
                     handleFirstTime = false
                 }
 
-            }.launchIn(viewModelScope.coroutineScope)
+            }.launchIn(this)
 
             combine(pinCredentials, passwordCredentials) { pinCredentials, passwordCredentials ->
                 pinCredentials.data() ?: passwordCredentials.data()
@@ -281,7 +279,7 @@ class LoginViewModel constructor(
                         null
                     }
                 }
-            }.launchIn(viewModelScope.coroutineScope)
+            }.launchIn(this)
         }
 
         val check1 = !isLightningShortcut && !greenWallet.isHardware

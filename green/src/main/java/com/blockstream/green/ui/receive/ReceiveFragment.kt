@@ -168,11 +168,11 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
                 requestCode = 1, title = getString(R.string.id_share), menuItems = listOf(
                     MenuListItem(
                         icon = R.drawable.ic_baseline_text_fields_24,
-                        title = StringHolder(R.string.id_address)
+                        title = StringHolder(requireContext(),R.string.id_address)
                     ),
                     MenuListItem(
                         icon = R.drawable.ic_qr_code,
-                        title = StringHolder(R.string.id_qr_code)
+                        title = StringHolder(requireContext(),R.string.id_qr_code)
                     )
                 ), fragmentManager = childFragmentManager
             )
@@ -183,10 +183,10 @@ class ReceiveFragment : AbstractAssetWalletFragment<ReceiveFragmentBinding>(
                 requestCode = 2,
                 title = getString(R.string.id_more_options),
                 menuItems = buildList {
-                    add(MenuListItem(id = 0, title = StringHolder(R.string.id_request_amount)))
-                    add(MenuListItem(id = 1, title = StringHolder(R.string.id_list_of_addresses)))
+                    add(MenuListItem(id = 0, title = StringHolder(requireContext(),R.string.id_request_amount)))
+                    add(MenuListItem(id = 1, title = StringHolder(requireContext(),R.string.id_list_of_addresses)))
                     if (!viewModel.account.network.isLiquid) {
-                        add(MenuListItem(id = 2, title = StringHolder(R.string.id_sweep_from_paper_wallet)))
+                        add(MenuListItem(id = 2, title = StringHolder(requireContext(),R.string.id_sweep_from_paper_wallet)))
                     }
                 },
                 fragmentManager = childFragmentManager

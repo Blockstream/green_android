@@ -1,6 +1,6 @@
 package com.blockstream.compose.screens.send
 
-import android.os.Parcelable
+import com.blockstream.common.Parcelable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
-import com.arkivanov.essenty.parcelable.Parcelize
+import com.blockstream.common.Parcelize
 import com.blockstream.common.AddressInputType
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.FeePriority

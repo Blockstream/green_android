@@ -1,6 +1,6 @@
 package com.blockstream.compose.screens.twofactor
 
-import android.os.Parcelable
+import com.blockstream.common.Parcelable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
-import com.arkivanov.essenty.parcelable.Parcelize
+import com.blockstream.common.Parcelize
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.models.GreenViewModel

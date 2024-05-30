@@ -5,8 +5,8 @@ import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.looks.wallet.WatchOnlyLook
 import com.blockstream.common.models.GreenViewModel
-import com.rickclephas.kmm.viewmodel.MutableStateFlow
-import com.rickclephas.kmm.viewmodel.stateIn
+import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
+import com.rickclephas.kmp.observableviewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

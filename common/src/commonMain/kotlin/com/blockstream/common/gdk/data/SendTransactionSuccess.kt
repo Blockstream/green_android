@@ -3,8 +3,8 @@ package com.blockstream.common.gdk.data
 import breez_sdk.AesSuccessActionDataResult
 import breez_sdk.LnUrlPaySuccessData
 import breez_sdk.SuccessActionProcessed
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
+import com.blockstream.common.Parcelable
+import com.blockstream.common.Parcelize
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName

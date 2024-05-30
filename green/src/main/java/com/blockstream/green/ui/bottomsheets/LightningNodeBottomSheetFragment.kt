@@ -21,7 +21,6 @@ import com.blockstream.green.databinding.ListItemActionBinding
 import com.blockstream.green.extensions.shareTextFile
 import com.blockstream.green.ui.items.ActionListItem
 import com.blockstream.green.ui.items.OverlineTextListItem
-import com.blockstream.green.ui.overview.AccountOverviewFragment
 import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.blockstream.green.utils.toAmountLookOrNa
@@ -51,7 +50,7 @@ class LightningNodeBottomSheetFragment :
         val itemAdapter = FastItemAdapter<GenericItem>()
 
         val buttonActions1 = ActionListItem(
-            button = StringHolder(R.string.id_show_recovery_phrase)
+            button = StringHolder(requireContext(), R.string.id_show_recovery_phrase)
         )
 
         val buttonActions2 = ActionListItem()
@@ -61,7 +60,7 @@ class LightningNodeBottomSheetFragment :
             list += OverlineTextListItem(StringHolder("ID"), StringHolder(it.id))
 
             list += OverlineTextListItem(
-                StringHolder(R.string.id_account_balance),
+                StringHolder(requireContext(),R.string.id_account_balance),
                 StringHolder(it.channelsBalanceSatoshi().toAmountLookOrNa(
                     session = session,
                     withUnit = true,
@@ -70,7 +69,7 @@ class LightningNodeBottomSheetFragment :
             )
 
             list += OverlineTextListItem(
-                StringHolder(R.string.id_inbound_liquidity),
+                StringHolder(requireContext(),R.string.id_inbound_liquidity),
                 StringHolder(it.inboundLiquiditySatoshi().toAmountLookOrNa(
                     session = session,
                     withUnit = true,
@@ -79,7 +78,7 @@ class LightningNodeBottomSheetFragment :
             )
 
             list += OverlineTextListItem(
-                StringHolder(R.string.id_max_payable_amount),
+                StringHolder(requireContext(),R.string.id_max_payable_amount),
                 StringHolder(it.maxPayableSatoshi().toAmountLookOrNa(
                     session = session,
                     withUnit = true,
@@ -88,7 +87,7 @@ class LightningNodeBottomSheetFragment :
             )
 
             list += OverlineTextListItem(
-                StringHolder(R.string.id_max_single_payment_amount),
+                StringHolder(requireContext(),R.string.id_max_single_payment_amount),
                 StringHolder(it.maxSinglePaymentAmountSatoshi().toAmountLookOrNa(
                     session = session,
                     withUnit = true,
@@ -97,7 +96,7 @@ class LightningNodeBottomSheetFragment :
             )
 
             list += OverlineTextListItem(
-                StringHolder(R.string.id_max_receivable_amount),
+                StringHolder(requireContext(),R.string.id_max_receivable_amount),
                 StringHolder(it.maxReceivableSatoshi().toAmountLookOrNa(
                     session = session,
                     withUnit = true,
@@ -116,7 +115,7 @@ class LightningNodeBottomSheetFragment :
 
             list += buttonActions2
 
-            buttonActions1.buttonOutline = if(it.channelsBalanceSatoshi() > 0) StringHolder(R.string.id_empty_lightning_account) else StringHolder()
+            buttonActions1.buttonOutline = if(it.channelsBalanceSatoshi() > 0) StringHolder(requireContext(),R.string.id_empty_lightning_account) else StringHolder()
 
             buttonActions2.buttonOutline = StringHolder("Rescan Swaps")
 

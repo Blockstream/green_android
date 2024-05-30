@@ -6,7 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import cafe.adriel.voyager.koin.koinScreenModel
-import com.arkivanov.essenty.parcelable.Parcelable
+import com.blockstream.common.Parcelable
+import com.blockstream.common.Parcelize
 import com.blockstream.common.data.ScanResult
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.models.camera.CameraViewModel
@@ -19,7 +20,6 @@ import com.blockstream.compose.components.BarcodeScanner
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.navigation.resultKey
 import com.blockstream.compose.navigation.setNavigationResult
-import kotlinx.parcelize.Parcelize
 import org.koin.core.parameter.parametersOf
 
 

@@ -44,20 +44,20 @@ class AssetDetailsBottomSheetFragment: WalletBottomSheetDialogFragment<AssetDeta
 
         val list = mutableListOf<GenericItem>()
 
-        list += OverlineTextListItem(StringHolder(R.string.id_name), StringHolder(if(isPolicyAsset) look.name else asset?.name ?: getString(R.string.id_no_registered_name_for_this)))
+        list += OverlineTextListItem(StringHolder(requireContext(), R.string.id_name), StringHolder(if(isPolicyAsset) look.name else asset?.name ?: getString(R.string.id_no_registered_name_for_this)))
 
-        val balanceListItem = OverlineTextListItem(StringHolder(if(accountOrNull == null) R.string.id_total_balance else R.string.id_account_balance), StringHolder("-"))
-        val blockHeightListItem = OverlineTextListItem(StringHolder(R.string.id_block_height), StringHolder("-"))
+        val balanceListItem = OverlineTextListItem(StringHolder(requireContext(),if(accountOrNull == null) R.string.id_total_balance else R.string.id_account_balance), StringHolder("-"))
+        val blockHeightListItem = OverlineTextListItem(StringHolder(requireContext(),R.string.id_block_height), StringHolder("-"))
 
         if(isPolicyAsset){
             list += blockHeightListItem
             list += balanceListItem
         }else{
-            list += OverlineTextListItem(StringHolder(R.string.id_asset_id), StringHolder(assetId))
+            list += OverlineTextListItem(StringHolder(requireContext(),R.string.id_asset_id), StringHolder(assetId))
             list += balanceListItem
-            list += OverlineTextListItem(StringHolder(R.string.id_precision), StringHolder((asset?.precision ?: 0).toString()))
-            list += OverlineTextListItem(StringHolder(R.string.id_ticker), StringHolder(asset?.ticker ?: getString(R.string.id_no_registered_ticker_for_this)))
-            list += OverlineTextListItem(StringHolder(R.string.id_issuer), StringHolder(asset?.entity?.domain ?: getString(R.string.id_unknown)))
+            list += OverlineTextListItem(StringHolder(requireContext(),R.string.id_precision), StringHolder((asset?.precision ?: 0).toString()))
+            list += OverlineTextListItem(StringHolder(requireContext(),R.string.id_ticker), StringHolder(asset?.ticker ?: getString(R.string.id_no_registered_ticker_for_this)))
+            list += OverlineTextListItem(StringHolder(requireContext(),R.string.id_issuer), StringHolder(asset?.entity?.domain ?: getString(R.string.id_unknown)))
         }
 
         val itemAdapter = FastItemAdapter<GenericItem>()

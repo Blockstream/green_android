@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.kotlinParcelize)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.google.devtools.ksp)
+    alias(libs.plugins.compose.compiler)
     id("kotlin-kapt") // until @BindingAdapter supports KSP
     id("androidx.navigation.safeargs.kotlin")
     id("com.adarshr.test-logger") version "3.2.0"
@@ -111,9 +112,6 @@ android {
         dataBinding = true
         buildConfig = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
-    }
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
@@ -156,6 +154,10 @@ android {
 // For KSP, configure using KSP extension:
 ksp {
     arg(RoomSchemaArgProvider(File(projectDir, "schemas")))
+}
+
+composeCompiler {
+    enableStrongSkippingMode = true
 }
 
 kotlin {

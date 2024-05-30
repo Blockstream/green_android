@@ -3,8 +3,8 @@ package com.blockstream.common.jade
 import com.arkivanov.essenty.parcelable.CommonParceler
 import com.arkivanov.essenty.parcelable.ParcelReader
 import com.arkivanov.essenty.parcelable.ParcelWriter
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
+import com.blockstream.common.Parcelable
+import com.blockstream.common.Parcelize
 import com.arkivanov.essenty.parcelable.TypeParceler
 import com.arkivanov.essenty.parcelable.readStringOrNull
 import com.arkivanov.essenty.parcelable.writeStringOrNull

@@ -31,7 +31,7 @@ import com.blockstream.common.utils.UserInput
 import com.blockstream.green.extensions.toggle
 import com.blockstream.green.utils.exchangeRate
 import com.blockstream.green.utils.toAmountLook
-import com.rickclephas.kmm.viewmodel.coroutineScope
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.combine

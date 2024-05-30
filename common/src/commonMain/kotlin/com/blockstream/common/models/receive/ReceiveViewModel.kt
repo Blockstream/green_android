@@ -15,6 +15,7 @@ import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isBlank
 import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAsset
@@ -33,8 +34,8 @@ import com.blockstream.common.utils.UserInput
 import com.blockstream.common.utils.toAmountLook
 import com.blockstream.common.utils.toAmountLookOrNa
 import com.eygraber.uri.Uri
-import com.rickclephas.kmm.viewmodel.KMMViewModel
-import com.rickclephas.kmm.viewmodel.coroutineScope
+import com.rickclephas.kmp.observableviewmodel.ViewModel
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -115,9 +116,6 @@ abstract class ReceiveViewModelAbstract(greenWallet: GreenWallet, accountAssetOr
     abstract val showLedgerAssetWarning: StateFlow<Boolean>
 
 }
-
-public fun <T> Flow<T>.launchIn(viewModel: KMMViewModel) =
-    launchIn(viewModel.viewModelScope.coroutineScope)
 
 class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWallet) :
     ReceiveViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = initialAccountAsset) {

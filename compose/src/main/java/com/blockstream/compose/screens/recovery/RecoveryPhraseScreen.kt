@@ -2,14 +2,9 @@ package com.blockstream.compose.screens.recovery
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -36,7 +31,8 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
-import com.arkivanov.essenty.parcelable.Parcelable
+import com.blockstream.common.Parcelable
+import com.blockstream.common.Parcelize
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.Credentials
@@ -45,31 +41,21 @@ import com.blockstream.common.models.recovery.RecoveryPhraseViewModelAbstract
 import com.blockstream.common.models.recovery.RecoveryPhraseViewModelPreview
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.R
-import com.blockstream.compose.components.GreenButton
-import com.blockstream.compose.components.GreenButtonSize
-import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenQR
 import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.LearnMoreButton
-import com.blockstream.compose.extensions.random
-import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.GreenThemePreview
-import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.green20
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium
-import com.blockstream.compose.theme.labelSmall
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AlphaPulse
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
-import com.blockstream.compose.utils.Pulsating
-import kotlinx.parcelize.Parcelize
 import org.koin.core.parameter.parametersOf
 import kotlin.math.ceil
 

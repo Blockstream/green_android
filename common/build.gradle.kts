@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.kotlinParcelize)
     alias(libs.plugins.google.devtools.ksp)
@@ -26,6 +27,9 @@ kotlin {
     applyDefaultHierarchyTemplate()
 
     androidTarget {
+        compilerOptions {
+            freeCompilerArgs.addAll("-P", "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.blockstream.common.Parcelize")
+        }
         compilations.configureEach {
             kotlinOptions {
                 jvmTarget = JavaVersion.VERSION_17.majorVersion
@@ -105,14 +109,13 @@ kotlin {
 
             /**  --- Misc. ------------------------------------------------------------------------------ */
             api(libs.sqldelight.coroutines.extensions)
-            api(libs.kmm.viewmodel)
+            api(libs.kmp.observableviewmodel)
             api(libs.stately.concurrent.collections)
             api(libs.uri.kmp)
             api(libs.uuid)
             api(libs.multiplatform.settings)
             api(libs.okio) // Filesystem
             api(libs.kermit) //Add latest version
-            api(libs.parcelable) // parcelable
             api(libs.state.keeper)
             api(libs.kase64) // base64
             api(libs.ksoup.entites) // html entities

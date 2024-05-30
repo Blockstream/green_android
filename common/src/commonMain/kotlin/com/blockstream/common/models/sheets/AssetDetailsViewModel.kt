@@ -9,7 +9,8 @@ import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.utils.toAmountLookOrNa
-import com.rickclephas.kmm.viewmodel.coroutineScope
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,6 +24,7 @@ abstract class AssetDetailsViewModelAbstract(
     greenWalletOrNull = greenWallet,
     accountAssetOrNull = accountAsset
 ) {
+    @NativeCoroutinesState
     abstract val data: StateFlow<List<Pair<String, String>>>
 }
 
@@ -34,7 +36,7 @@ class AssetDetailsViewModel(
     override fun screenName(): String = "AssetDetails"
 
 
-    val _data: MutableStateFlow<List<Pair<String, String>>> = MutableStateFlow(listOf())
+    private val _data: MutableStateFlow<List<Pair<String, String>>> = MutableStateFlow(listOf())
     override val data = _data.asStateFlow()
 
     init {

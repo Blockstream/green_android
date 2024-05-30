@@ -6,7 +6,7 @@ import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.Wally
 import com.blockstream.common.sideeffects.SideEffects
-import com.rickclephas.kmm.viewmodel.coroutineScope
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO

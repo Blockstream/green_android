@@ -4,8 +4,6 @@ import cafe.adriel.voyager.core.lifecycle.JavaSerializable
 import com.arkivanov.essenty.parcelable.CommonParceler
 import com.arkivanov.essenty.parcelable.ParcelReader
 import com.arkivanov.essenty.parcelable.ParcelWriter
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
 import com.arkivanov.essenty.parcelable.TypeParceler
 import com.arkivanov.essenty.parcelable.readBoolean
 import com.arkivanov.essenty.parcelable.readLong
@@ -15,6 +13,9 @@ import com.arkivanov.essenty.parcelable.writeBoolean
 import com.arkivanov.essenty.parcelable.writeLong
 import com.arkivanov.essenty.parcelable.writeString
 import com.arkivanov.essenty.parcelable.writeStringOrNull
+import com.blockstream.common.Parcelize
+import com.blockstream.common.Parcelable
+
 import com.blockstream.common.database.GetWalletsWithCredentialType
 import com.blockstream.common.database.Wallet
 import com.blockstream.common.extensions.isBlank

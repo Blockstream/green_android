@@ -13,7 +13,7 @@ import com.blockstream.common.utils.UserInput
 import com.blockstream.common.utils.getBitcoinOrLiquidUnit
 import com.blockstream.common.utils.getFiatCurrency
 import com.blockstream.common.utils.toAmountLook
-import com.rickclephas.kmm.viewmodel.coroutineScope
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine

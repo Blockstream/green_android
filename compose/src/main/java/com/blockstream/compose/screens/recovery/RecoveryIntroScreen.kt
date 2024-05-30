@@ -29,8 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
+import com.blockstream.common.Parcelable
+import com.blockstream.common.Parcelize
 import com.arkivanov.essenty.statekeeper.stateKeeper
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Events
@@ -57,6 +57,7 @@ import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
+
 
 @Parcelize
 data class RecoveryIntroScreen(val setupArgs: SetupArgs) : Screen, Parcelable {

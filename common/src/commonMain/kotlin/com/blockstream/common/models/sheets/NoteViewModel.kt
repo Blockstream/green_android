@@ -6,9 +6,11 @@ import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.MutableStateFlow
 
 abstract class NoteViewModelAbstract(val isLightning: Boolean, greenWallet : GreenWallet) : GreenViewModel(greenWalletOrNull = greenWallet) {
+    @NativeCoroutinesState
     abstract val note : MutableStateFlow<String>
 }
 

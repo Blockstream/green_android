@@ -5,9 +5,9 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
+import com.blockstream.common.looks.wallet.WatchOnlyLook
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.settings.WatchOnlyViewModel
-import com.blockstream.common.looks.wallet.WatchOnlyLook
 import com.blockstream.green.R
 import com.blockstream.green.databinding.BaseRecyclerViewBinding
 import com.blockstream.green.databinding.ListItemOutputDescriptorsBinding
@@ -54,7 +54,7 @@ class WatchOnlyFragment :
             it.set(
                 listOf(
                     TitleListItem(
-                        StringHolder(R.string.id_multisig),
+                        StringHolder(requireContext(),R.string.id_multisig),
                         iconLeft = ContextCompat.getDrawable(
                             requireContext(),
                             R.drawable.key_multisig
@@ -68,7 +68,7 @@ class WatchOnlyFragment :
             it.set(
                 listOf(
                     TitleListItem(
-                        StringHolder(R.string.id_singlesig),
+                        StringHolder(requireContext(),R.string.id_singlesig),
                         iconLeft = ContextCompat.getDrawable(
                             requireContext(),
                             R.drawable.key_singlesig
@@ -179,12 +179,12 @@ class WatchOnlyFragment :
             (if (it.isNotEmpty()) {
                 listOf(
                     TextListItem(
-                        text = StringHolder(R.string.id_extended_public_keys),
+                        text = StringHolder(requireContext(),R.string.id_extended_public_keys),
                         textAppearance = R.style.TextAppearance_Green_TitleSmall,
                         paddingBottom = R.dimen.dp0,
                     ),
                     TextListItem(
-                        text = StringHolder(R.string.id_tip_you_can_use_the),
+                        text = StringHolder(requireContext(),R.string.id_tip_you_can_use_the),
                         textColor = R.color.color_on_surface_emphasis_low,
                         textAppearance = R.style.TextAppearance_Green_BodySmall,
                         paddingTop = R.dimen.dp0,
@@ -209,7 +209,7 @@ class WatchOnlyFragment :
             (if (it.isNotEmpty()) {
                 listOf(
                     TextListItem(
-                        text = StringHolder(R.string.id_output_descriptors),
+                        text = StringHolder(requireContext(),R.string.id_output_descriptors),
                         textAppearance = R.style.TextAppearance_Green_TitleSmall,
                         paddingBottom = R.dimen.dp8,
                     )

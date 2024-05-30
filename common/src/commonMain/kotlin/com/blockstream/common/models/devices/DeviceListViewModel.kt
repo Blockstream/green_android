@@ -3,7 +3,7 @@ package com.blockstream.common.models.devices
 import com.blockstream.common.gdk.device.DeviceInterface
 import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.models.GreenViewModel
-import com.rickclephas.kmm.viewmodel.stateIn
+import com.rickclephas.kmp.observableviewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

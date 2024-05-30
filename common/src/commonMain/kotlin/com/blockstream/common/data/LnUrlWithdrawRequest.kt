@@ -2,8 +2,8 @@ package com.blockstream.common.data
 
 import breez_sdk.LnUrlWithdrawRequestData
 import cafe.adriel.voyager.core.lifecycle.JavaSerializable
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
+import com.blockstream.common.Parcelable
+import com.blockstream.common.Parcelize
 
 @Parcelize
 data class LnUrlWithdrawRequestSerializable(

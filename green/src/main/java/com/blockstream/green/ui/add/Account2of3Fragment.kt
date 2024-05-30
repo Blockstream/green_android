@@ -115,24 +115,24 @@ class Account2of3Fragment : AbstractAddAccountFragment<Account2of3FragmentBindin
         adapter.add(
             ContentCardListItem(
                 key = TwoOfThreeRecovery.NEW_RECOVERY,
-                title = StringHolder(R.string.id_new_recovery_phrase),
-                caption = StringHolder(R.string.id_generate_a_new_recovery_phrase)
+                title = StringHolder(getString(R.string.id_new_recovery_phrase)),
+                caption = StringHolder(getString(R.string.id_generate_a_new_recovery_phrase))
             )
         )
 
         adapter.add(
             ContentCardListItem(
                 key = TwoOfThreeRecovery.EXISTING_RECOVERY,
-                title = StringHolder(R.string.id_existing_recovery_phrase),
-                caption = StringHolder(R.string.id_use_an_existing_recovery_phrase)
+                title = StringHolder(getString(R.string.id_existing_recovery_phrase)),
+                caption = StringHolder(getString(R.string.id_use_an_existing_recovery_phrase))
             )
         )
 
         adapter.add(
             ContentCardListItem(
                 key = TwoOfThreeRecovery.XPUB,
-                title = StringHolder(R.string.id_use_a_public_key),
-                caption = StringHolder(R.string.id_use_an_xpub_for_which_you_own)
+                title = StringHolder(getString(R.string.id_use_a_public_key)),
+                caption = StringHolder(getString(R.string.id_use_an_xpub_for_which_you_own))
             )
         )
 

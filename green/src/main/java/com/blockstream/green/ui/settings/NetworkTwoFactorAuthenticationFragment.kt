@@ -112,17 +112,17 @@ class NetworkTwoFactorAuthenticationFragment :
 
         binding.vm = viewModel
 
-        emailPreference = PreferenceListItem(StringHolder(R.string.id_email), withSwitch = true)
-        smsPreference = PreferenceListItem(StringHolder(R.string.id_sms), withSwitch = true)
-        callPreference = PreferenceListItem(StringHolder(R.string.id_call), withSwitch = true)
-        toptPreference = PreferenceListItem(StringHolder(R.string.id_authenticator_app), withSwitch = true)
-        telegramPreference = PreferenceListItem(StringHolder(R.string.id_telegram), withSwitch = true)
+        emailPreference = PreferenceListItem(StringHolder(requireContext(),R.string.id_email), withSwitch = true)
+        smsPreference = PreferenceListItem(StringHolder(requireContext(),R.string.id_sms), withSwitch = true)
+        callPreference = PreferenceListItem(StringHolder(requireContext(),R.string.id_call), withSwitch = true)
+        toptPreference = PreferenceListItem(StringHolder(requireContext(),R.string.id_authenticator_app), withSwitch = true)
+        telegramPreference = PreferenceListItem(StringHolder(requireContext(),R.string.id_telegram), withSwitch = true)
 
-        thresholdPreference = PreferenceListItem(StringHolder(R.string.id_2fa_threshold))
+        thresholdPreference = PreferenceListItem(StringHolder(requireContext(),R.string.id_2fa_threshold))
 
         recoveryTransactionsPreference = PreferenceListItem(
-            StringHolder(R.string.id_recovery_transactions),
-            StringHolder(R.string.id_legacy_script_coins),
+            StringHolder(requireContext(),R.string.id_recovery_transactions),
+            StringHolder(requireContext(),R.string.id_legacy_script_coins),
             isInnerMenu = true
         )
 
@@ -253,7 +253,7 @@ class NetworkTwoFactorAuthenticationFragment :
 
         val list = mutableListOf<GenericItem>()
         if(viewModel.session.walletExistsAndIsUnlocked(network)) {
-            list += TitleListItem(StringHolder(R.string.id_2fa_methods))
+            list += TitleListItem(StringHolder(requireContext(),R.string.id_2fa_methods))
 
             twoFactorConfig.allMethods.also { methods ->
                 if (methods.contains(TwoFactorMethod.EMAIL.gdkType)) {
@@ -294,8 +294,8 @@ class NetworkTwoFactorAuthenticationFragment :
             }
 
             if (!network.isLiquid) {
-                list += TitleListItem(StringHolder(R.string.id_2fa_threshold))
-                list += ActionListItem(message = StringHolder(R.string.id_spend_your_bitcoin_without_2fa))
+                list += TitleListItem(StringHolder(requireContext(),R.string.id_2fa_threshold))
+                list += ActionListItem(message = StringHolder(requireContext(),R.string.id_spend_your_bitcoin_without_2fa))
 
                 list += thresholdPreference.also {
                     it.subtitle = StringHolder(twoFactorConfig.limits.let { limits ->
@@ -317,10 +317,10 @@ class NetworkTwoFactorAuthenticationFragment :
                 }
             }
 
-            list += TitleListItem(StringHolder(R.string.id_2fa_expiry))
+            list += TitleListItem(StringHolder(requireContext(),R.string.id_2fa_expiry))
 
             if (!network.isLiquid) {
-                list += ActionListItem(message = StringHolder(R.string.id_customize_2fa_expiration_of))
+                list += ActionListItem(message = StringHolder(requireContext(),R.string.id_customize_2fa_expiration_of))
                 list += csvBucketPreferences
 
                 val selectedIndex = network.csvBuckets.indexOf(settings.csvTime)
@@ -331,20 +331,20 @@ class NetworkTwoFactorAuthenticationFragment :
             }
 
             list += ActionListItem(
-                message = StringHolder(R.string.id_your_2fa_expires_so_that_if_you),
-                button = StringHolder(R.string.id_recovery_tool)
+                message = StringHolder(requireContext(),R.string.id_your_2fa_expires_so_that_if_you),
+                button = StringHolder(requireContext(),R.string.id_recovery_tool)
             )
 
             if(network.isBitcoin && viewModel.session.walletExistsAndIsUnlocked(network)) {
                 list += recoveryTransactionsPreference
             }
         }else{
-            list += TitleListItem(StringHolder(R.string.id_2fa_reset_in_progress))
+            list += TitleListItem(StringHolder(requireContext(),R.string.id_2fa_reset_in_progress))
 
             viewModel.session.getTwoFactorReset(network)?.also {
                 list += ActionListItem(
                     message = StringHolder(getString(R.string.id_your_wallet_is_locked_for_a, it.daysRemaining)),
-                    button = StringHolder(R.string.id_learn_more)
+                    button = StringHolder(requireContext(),R.string.id_learn_more)
                 )
             }
         }

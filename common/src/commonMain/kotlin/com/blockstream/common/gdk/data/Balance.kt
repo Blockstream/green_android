@@ -1,7 +1,7 @@
 package com.blockstream.common.gdk.data
 
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
+import com.blockstream.common.Parcelable
+import com.blockstream.common.Parcelize
 import com.blockstream.common.BITS_UNIT
 import com.blockstream.common.BTC_UNIT
 import com.blockstream.common.MBTC_UNIT

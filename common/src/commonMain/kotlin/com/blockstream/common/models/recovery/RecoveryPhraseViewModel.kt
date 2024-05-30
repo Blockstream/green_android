@@ -9,7 +9,7 @@ import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.Credentials
 import com.blockstream.common.models.GreenViewModel
-import com.rickclephas.kmm.viewmodel.MutableStateFlow
+import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.MutableStateFlow
 

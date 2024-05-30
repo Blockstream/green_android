@@ -1,7 +1,7 @@
 package com.blockstream.common.gdk.data
 
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
+import com.blockstream.common.Parcelable
+import com.blockstream.common.Parcelize
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.extensions.hasExpiredUtxos
 import com.blockstream.common.extensions.hasHistory
