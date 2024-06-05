@@ -59,7 +59,7 @@ class AccountAssetBottomSheetDialogFragment : FilterBottomSheetDialogFragment(),
             { item: AccountAssetListItem, constraint: CharSequence? ->
                 item.accountAsset.account.name.lowercase().contains(
                     constraint.toString().lowercase()
-                ) || item.accountAsset.asset.name(session).lowercase().contains(
+                ) || item.accountAsset.asset.name(session).fallbackString().lowercase().contains(
                     constraint.toString().lowercase()
                 ) || item.accountAsset.asset.ticker?.lowercase()?.contains(
                     constraint.toString().lowercase()

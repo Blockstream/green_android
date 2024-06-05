@@ -1,6 +1,9 @@
 package com.blockstream.common.models.addresses
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_addresses
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.NavData
 import com.blockstream.common.events.Event
 import com.blockstream.common.extensions.isBlank
 import com.blockstream.common.extensions.previewAccountAsset
@@ -10,6 +13,7 @@ import com.blockstream.common.looks.account.AddressLook
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.launch
 import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,6 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import org.jetbrains.compose.resources.getString
 
 
 abstract class AddressesViewModelAbstract(greenWallet: GreenWallet, accountAsset: AccountAsset) :
@@ -66,12 +71,15 @@ class AddressesViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
     }
 
     init {
+        viewModelScope.launch {
+            _navData.value = NavData(title = getString(Res.string.id_addresses), subtitle = greenWallet.name)
+        }
         getPreviousAddresses()
 
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         if (event is LocalEvents.LoadMore) {

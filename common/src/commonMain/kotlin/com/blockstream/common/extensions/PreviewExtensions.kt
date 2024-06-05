@@ -14,9 +14,10 @@ import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.Transaction
-import com.blockstream.common.looks.transaction.Confirmed
+import com.blockstream.common.looks.transaction.Completed
 import com.blockstream.common.looks.transaction.TransactionLook
 import com.blockstream.common.looks.wallet.WalletListLook
+import kotlinx.datetime.Clock
 
 fun previewWallet(
     isHardware: Boolean = false,
@@ -80,12 +81,12 @@ fun previewWalletListView(
 fun previewLoginCredentials() =
     LoginCredentials("", CredentialType.BIOMETRICS_PINDATA, "", null, null, null, 0)
 
-fun previewEnrichedAsset() = EnrichedAsset.PreviewBTC
+fun previewEnrichedAsset(isLiquid: Boolean = false) = if(isLiquid) EnrichedAsset.PreviewLBTC else EnrichedAsset.PreviewBTC
 
-fun previewAccount() = Account(
+fun previewAccount(isLightning:Boolean = false) = Account(
     gdkName = "Account #1",
     pointer = 0,
-    type = AccountType.BIP84_SEGWIT,
+    type = if(isLightning) AccountType.LIGHTNING else AccountType.BIP84_SEGWIT,
     networkInjected = previewNetwork(),
     policyAsset = previewEnrichedAsset()
 )
@@ -93,8 +94,8 @@ fun previewAccount() = Account(
 fun previewAccountBalance() =
     AccountBalance(previewAccount(), Denomination.BTC, "1 BTC", "150.000 USD")
 
-fun previewAccountAsset() = AccountAsset(
-    account = previewAccount(),
+fun previewAccountAsset(isLightning : Boolean = false) = AccountAsset(
+    account = previewAccount(isLightning = isLightning),
     asset = EnrichedAsset.PreviewBTC
 )
 
@@ -110,9 +111,9 @@ fun previewAccountAssetBalance() = AccountAssetBalance(
 )
 
 fun previewTransaction() = Transaction(
-    blockHeight = 0,
+    blockHeight = 123,
     canRBF = true,
-    createdAtTs = 0L,
+    createdAtTs = Clock.System.now().toEpochMilliseconds() * 1000,
     inputs = listOf(),
     outputs = listOf(),
     fee = 0,
@@ -126,4 +127,4 @@ fun previewTransaction() = Transaction(
     it.accountInjected = previewAccount()
 }
 
-fun previewTransactionLook() = TransactionLook(Confirmed(1), 1, previewTransaction(), listOf("12311.123 BTC"))
+fun previewTransactionLook() = TransactionLook(Completed, 1, previewTransaction(), listOf("12311.123 BTC"))

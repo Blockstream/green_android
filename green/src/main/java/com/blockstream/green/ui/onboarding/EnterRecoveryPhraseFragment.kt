@@ -15,9 +15,7 @@ import com.blockstream.compose.AppFragmentBridge
 import com.blockstream.compose.screens.onboarding.phone.EnterRecoveryPhraseScreen
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ComposeViewBinding
-import com.blockstream.green.gdk.getNetworkIcon
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.ui.bottomsheets.HelpBottomSheetDialogFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -29,12 +27,6 @@ class EnterRecoveryPhraseFragment : AppFragment<ComposeViewBinding>(
 
     val args: EnterRecoveryPhraseFragmentArgs by navArgs()
 
-    override val title: String?
-        get() = args.setupArgs.network?.canonicalName
-
-    override val toolbarIcon: Int?
-        get() = args.setupArgs.network?.getNetworkIcon()
-
     val viewModel: EnterRecoveryPhraseViewModel by viewModel {
         parametersOf(args.setupArgs, stateKeeper())
     }
@@ -43,22 +35,14 @@ class EnterRecoveryPhraseFragment : AppFragment<ComposeViewBinding>(
 
     override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override fun handleSideEffect(sideEffect: SideEffect) {
+    override suspend fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
 
         (sideEffect as? SideEffects.NavigateTo)?.also {
             (it.destination as? NavigateDestinations.SetPin)?.also {
                 navigate(
                     EnterRecoveryPhraseFragmentDirections.actionEnterRecoveryPhraseFragmentToPinFragment(
-                        setupArgs = it.args,
-                    )
-                )
-            }
-
-            (it.destination as? NavigateDestinations.AddAccount)?.also {
-                navigate(
-                    EnterRecoveryPhraseFragmentDirections.actionGlobalReviewAddAccountFragment(
-                        setupArgs = it.args,
+                        setupArgs = it.setupArgs,
                     )
                 )
             }
@@ -83,7 +67,7 @@ class EnterRecoveryPhraseFragment : AppFragment<ComposeViewBinding>(
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
             R.id.help -> {
-                HelpBottomSheetDialogFragment.show(childFragmentManager)
+                viewModel.postEvent(EnterRecoveryPhraseViewModel.LocalEvents.LaunchHelp)
                 return true
             }
         }

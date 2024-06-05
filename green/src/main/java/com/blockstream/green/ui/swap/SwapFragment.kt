@@ -50,7 +50,7 @@ class SwapFragment : AppFragment<SwapFragmentBinding>(
 
     override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override fun handleSideEffect(sideEffect: SideEffect) {
+    override suspend fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
 
         if (sideEffect is SideEffects.Navigate) {

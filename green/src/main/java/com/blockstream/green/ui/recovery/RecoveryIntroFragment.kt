@@ -32,22 +32,15 @@ class RecoveryIntroFragment : AppFragment<ComposeViewBinding>(
 
     override val useCompose: Boolean = true
 
-    override fun handleSideEffect(sideEffect: SideEffect) {
+    override suspend fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
         if(sideEffect is SideEffects.NavigateTo){
-            (sideEffect.destination as? NavigateDestinations.RecoveryWords)?.also {
-                navigate(
-                    RecoveryIntroFragmentDirections.actionRecoveryIntroFragmentToRecoveryWordsFragment(
-                        args = it.args
-                    )
-                )
-            }
 
             (sideEffect.destination as? NavigateDestinations.RecoveryPhrase)?.also {
                 navigate(
                     RecoveryIntroFragmentDirections.actionRecoveryIntroFragmentToRecoveryPhraseFragment(
-                        wallet = it.args.greenWallet,
-                        isLightning = it.args.isLightning
+                        wallet = it.setupArgs.greenWallet,
+                        isLightning = it.setupArgs.isLightning
                     ), navOptionsBuilder = NavOptions.Builder().also {
                         it.setPopUpTo(R.id.recoveryIntroFragment, true)
                     }

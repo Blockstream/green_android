@@ -35,7 +35,7 @@ class WalletNameViewModel(greenWallet: GreenWallet) : WalletNameViewModelAbstrac
         }.launchIn(viewModelScope.coroutineScope)
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
         if (event is Events.Continue) {
             renameWallet()

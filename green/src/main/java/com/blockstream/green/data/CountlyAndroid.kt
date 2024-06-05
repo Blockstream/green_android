@@ -31,7 +31,7 @@ abstract class CountlyAndroid constructor(
 
     abstract fun  onStop()
 
-    abstract fun  onConfigurationChanged(newConfig: Configuration)
+    abstract fun onConfigurationChanged(newConfig: Configuration)
 
     abstract fun sendFeedbackWidgetData(widget: ModuleFeedback.CountlyFeedbackWidget, data: Map<String, Any>?)
 

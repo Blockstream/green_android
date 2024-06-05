@@ -1,5 +1,8 @@
 package com.blockstream.common.models.recovery
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_backup_recovery_phrase
+import blockstream_green.common.generated.resources.id_lightning
 import com.blockstream.common.Urls
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavData
@@ -9,9 +12,11 @@ import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.Credentials
 import com.blockstream.common.models.GreenViewModel
-import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.jetbrains.compose.resources.getString
 
 abstract class RecoveryPhraseViewModelAbstract(
     val isLightning: Boolean,
@@ -64,15 +69,17 @@ class RecoveryPhraseViewModel(
     }
 
     init {
-        _navData.value = NavData(
-            title = "id_backup_recovery_phrase",
-            subtitle = if (isLightning) "id_lightning" else null
-        )
+        viewModelScope.launch {
+            _navData.value = NavData(
+                title = getString(Res.string.id_backup_recovery_phrase),
+                subtitle = if (isLightning) getString(Res.string.id_lightning) else null
+            )
+        }
 
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         if (event is LocalEvents.ShowQR) {

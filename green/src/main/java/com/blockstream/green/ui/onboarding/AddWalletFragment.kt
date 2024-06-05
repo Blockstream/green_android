@@ -5,9 +5,6 @@ import android.view.View
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.onboarding.phone.AddWalletViewModel
-import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.sideeffects.SideEffect
-import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.AppFragmentBridge
 import com.blockstream.compose.screens.onboarding.phone.AddWalletScreen
 import com.blockstream.green.R
@@ -21,18 +18,6 @@ class AddWalletFragment : AppFragment<ComposeViewBinding>(R.layout.compose_view)
     override val useCompose: Boolean = true
 
     override fun getGreenViewModel(): GreenViewModel = viewModel
-
-    override fun handleSideEffect(sideEffect: SideEffect) {
-        super.handleSideEffect(sideEffect)
-
-        (sideEffect as? SideEffects.NavigateTo)?.also { to ->
-            (to.destination as? NavigateDestinations.EnterRecoveryPhrase)?.also {
-                navigate(AddWalletFragmentDirections.actionAddWalletFragmentToEnterRecoveryPhraseFragment(
-                    setupArgs = it.args
-                ))
-            }
-        }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

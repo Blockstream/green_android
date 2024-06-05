@@ -1,5 +1,7 @@
 package com.blockstream.common.models.about
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_thank_you_for_your_feedback
 import com.blockstream.common.Urls
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
@@ -7,6 +9,7 @@ import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.StringHolder
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -75,7 +78,7 @@ class AboutViewModel : AboutViewModelAbstract() {
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         if (event is LocalEvents.ClickLogo) {
@@ -89,11 +92,11 @@ class AboutViewModel : AboutViewModelAbstract() {
             postSideEffect(SideEffects.OpenDialog())
         } else if (event is LocalEvents.CountlyResetDeviceId) {
             countly.resetDeviceId()
-            postSideEffect(SideEffects.Snackbar("DeviceID reset. New DeviceId ${countly.getDeviceId()}"))
+            postSideEffect(SideEffects.Snackbar(text = StringHolder.create("DeviceID reset. New DeviceId ${countly.getDeviceId()}")))
         } else if (event is LocalEvents.CountlyZeroOffset) {
             settingsManager.zeroCountlyOffset()
             countly.updateOffset()
-            postSideEffect(SideEffects.Snackbar("Countly offset reset to zero"))
+            postSideEffect(SideEffects.Snackbar(text = StringHolder.create("Countly offset reset to zero")))
         } else if (event is LocalEvents.CountlyCopyDeviceId) {
             countly.getDeviceId().let { deviceId ->
                 postSideEffect(
@@ -109,7 +112,7 @@ class AboutViewModel : AboutViewModelAbstract() {
                 email = email.value.trim(),
                 comment = feedback.value
             )
-            postSideEffect(SideEffects.Snackbar("id_thank_you_for_your_feedback"))
+            postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_thank_you_for_your_feedback)))
             postSideEffect(SideEffects.Dismiss)
 
             rate.value = 0

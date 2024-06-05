@@ -1,11 +1,15 @@
 package com.blockstream.common.looks.account
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_you_can_sweep_s_of_your_funds
+import blockstream_green.common.generated.resources.id_your_current_receive_capacity
 import breez_sdk.NodeState
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.lightning.inboundLiquiditySatoshi
 import com.blockstream.common.lightning.isLoading
 import com.blockstream.common.lightning.onchainBalanceSatoshi
 import com.blockstream.common.utils.toAmountLook
+import org.jetbrains.compose.resources.getString
 
 
 data class LightningInfoLook constructor(val sweep: String? = null, val capacity: String? = null) {
@@ -16,18 +20,16 @@ data class LightningInfoLook constructor(val sweep: String? = null, val capacity
                 return null
             }
 
-            val sweep = if (session.isLightningShortcut || nodeState.onchainBalanceSatoshi() == 0L) null else {
-                    "id_you_can_sweep_s_of_your_funds|${
-                        nodeState.onchainBalanceSatoshi().toAmountLook(session = session)
-                    }"
+            val sweep =
+                if (session.isLightningShortcut || nodeState.onchainBalanceSatoshi() == 0L) null else {
+                    getString(
+                        Res.string.id_you_can_sweep_s_of_your_funds,
+                        nodeState.onchainBalanceSatoshi().toAmountLook(session = session) ?: ""
+                    )
                 }
 
             val capacity = if (nodeState.inboundLiquiditySatoshi() == 0L) null else {
-                "id_your_current_receive_capacity|${
-                    nodeState.inboundLiquiditySatoshi().toAmountLook(
-                        session = session
-                    )
-                }"
+                getString(Res.string.id_your_current_receive_capacity, nodeState.inboundLiquiditySatoshi().toAmountLook(session = session) ?: "")
             }
 
             return LightningInfoLook(sweep = sweep, capacity = capacity)

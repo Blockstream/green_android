@@ -5,6 +5,7 @@ import com.blockstream.common.Parcelize
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.extensions.hasExpiredUtxos
 import com.blockstream.common.extensions.hasHistory
+import com.blockstream.common.extensions.hasTwoFactorReset
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.needs2faActivation
 import com.blockstream.common.gdk.GdkSession
@@ -20,8 +21,9 @@ data class AccountBalance constructor(
     val balance: String? = null,
     val balanceExchange: String? = null,
     val assets: List<String>? = null,
-    val warningTwoFactor: Boolean = false,
-    val hasExpiredUtxos: Boolean = false
+    val hasNoTwoFactor: Boolean = false,
+    val hasExpiredUtxos: Boolean = false,
+    val hasTwoFactorReset: Boolean = false,
 ) : GreenJson<AccountBalance>(), Parcelable {
     override fun kSerializer() = serializer()
 
@@ -97,8 +99,9 @@ data class AccountBalance constructor(
                             "unknown"
                         }
                     }.distinct().takeIf { account.hasHistory(session) },
-                    warningTwoFactor = account.needs2faActivation(session),
-                    hasExpiredUtxos = account.hasExpiredUtxos(session)
+                    hasNoTwoFactor = account.needs2faActivation(session),
+                    hasExpiredUtxos = account.hasExpiredUtxos(session),
+                    hasTwoFactorReset = account.hasTwoFactorReset(session)
                 )
             }
         }

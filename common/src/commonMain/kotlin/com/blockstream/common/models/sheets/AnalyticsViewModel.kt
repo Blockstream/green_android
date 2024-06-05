@@ -26,7 +26,7 @@ class AnalyticsViewModel : AnalyticsViewModelAbstract() {
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         if (event is LocalEvents.ClickDataCollection) {

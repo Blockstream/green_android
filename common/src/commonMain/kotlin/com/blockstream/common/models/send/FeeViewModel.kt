@@ -1,5 +1,7 @@
 package com.blockstream.common.models.send
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_network_fee
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavData
@@ -13,11 +15,13 @@ import com.blockstream.common.lightning.fee
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.feeRateWithUnit
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onEach
+import org.jetbrains.compose.resources.getString
 
 abstract class FeeViewModelAbstract(
     greenWallet: GreenWallet,
@@ -49,9 +53,12 @@ class FeeViewModel(
 
 
     init {
-        _navData.value = NavData(
-            title = "id_network_fee"
-        )
+
+        viewModelScope.launch {
+            _navData.value = NavData(
+                title = getString(Res.string.id_network_fee)
+            )
+        }
 
         session.ifConnected {
             _network.value = accountAssetOrNull?.account?.network

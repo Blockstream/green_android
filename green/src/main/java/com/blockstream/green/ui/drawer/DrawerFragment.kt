@@ -5,11 +5,8 @@ import android.view.View
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.blockstream.common.models.drawer.DrawerViewModel
 import com.blockstream.common.sideeffects.SideEffect
-import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.AppFragmentBridge
 import com.blockstream.compose.screens.DrawerScreen
-import com.blockstream.compose.sheets.BottomSheetNavigatorM3
-import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ComposeViewBinding
 import com.blockstream.green.ui.wallet.AbstractWalletsFragment
@@ -25,7 +22,7 @@ class DrawerFragment :
 
     override val useCompose: Boolean = true
 
-    override fun handleSideEffect(sideEffect: SideEffect) {
+    override suspend fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
 
         closeDrawer()

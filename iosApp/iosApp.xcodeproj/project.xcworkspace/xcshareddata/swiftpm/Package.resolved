@@ -1,0 +1,14 @@
+{
+  "originHash" : "6f7f935927c2b58f9c78f2db5b3773a08722ddb48fcea675ab67d99aeabc789d",
+  "pins" : [
+    {
+      "identity" : "countly-sdk-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/angelix/countly-sdk-ios",
+      "state" : {
+        "revision" : "1892410d13fceccd7cf91f803f06f110efc215b3"
+      }
+    }
+  ],
+  "version" : 3
+}

@@ -1,5 +1,10 @@
 package com.blockstream.common.models.send
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_sending
+import blockstream_green.common.generated.resources.id_signing
+import blockstream_green.common.generated.resources.id_transaction_already_confirmed
+import blockstream_green.common.generated.resources.id_transaction_sent
 import com.blockstream.common.AddressInputType
 import com.blockstream.common.TransactionSegmentation
 import com.blockstream.common.data.Denomination
@@ -27,6 +32,7 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
+import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.ifNotNull
 import com.blockstream.common.utils.toAmountLook
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
@@ -42,6 +48,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.sync.Mutex
+import org.jetbrains.compose.resources.getString
 
 
 abstract class CreateTransactionViewModelAbstract(
@@ -154,7 +161,7 @@ abstract class CreateTransactionViewModelAbstract(
         super.bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         if (event is LocalEvents.SetFeeRate) {
@@ -320,9 +327,9 @@ abstract class CreateTransactionViewModelAbstract(
         segmentation: TransactionSegmentation,
         broadcast: Boolean
     ) {
-        onProgressDescription.value = if(broadcast) "id_sending_" else "id_signing__"
-
         doAsync({
+            onProgressDescription.value = getString(if(broadcast) Res.string.id_sending else Res.string.id_signing)
+
             countly.startSendTransaction()
             countly.startFailedTransaction()
 
@@ -360,8 +367,8 @@ abstract class CreateTransactionViewModelAbstract(
             if (session.isHardwareWallet && !account.isLightning && !transaction.isSweep()) {
                 postSideEffect(
                     SideEffects.NavigateTo(
-                        NavigateDestinations.VerifyTransaction(
-                            TransactionConfirmLook.create(
+                        NavigateDestinations.VerifyOnDevice(
+                            transactionConfirmLook = TransactionConfirmLook.create(
                                 params = params,
                                 transaction = transaction,
                                 account = account,
@@ -413,13 +420,13 @@ abstract class CreateTransactionViewModelAbstract(
                 )
 
                 session.pendingTransaction = null // clear pending transaction
-                postSideEffect(SideEffects.Snackbar("id_transaction_sent"))
-                postSideEffect(SideEffects.NavigateToRoot)
+                postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_transaction_sent)))
+                postSideEffect(SideEffects.NavigateToRoot())
             } else {
                 postSideEffect(
                     SideEffects.Dialog(
-                        title = "Signed Transaction",
-                        message = it.signedTransaction ?: ""
+                        title = StringHolder.create("Signed Transaction"),
+                        message = StringHolder.create(it.signedTransaction ?: "")
                     )
                 )
             }
@@ -445,8 +452,8 @@ abstract class CreateTransactionViewModelAbstract(
                 }
 
                 it.message == "id_transaction_already_confirmed" -> {
-                    postSideEffect(SideEffects.Snackbar("id_transaction_already_confirmed"))
-                    postSideEffect(SideEffects.NavigateToRoot)
+                    postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_transaction_already_confirmed)))
+                    postSideEffect(SideEffects.NavigateToRoot())
                 }
 
                 it.message != "id_action_canceled" -> {

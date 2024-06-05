@@ -1,5 +1,7 @@
 package com.blockstream.common.models.settings
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_app_settings
 import com.blockstream.common.data.ApplicationSettings
 import com.blockstream.common.data.NavData
 import com.blockstream.common.data.ScreenLockSetting
@@ -13,9 +15,11 @@ import com.blockstream.common.utils.Loggable
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import org.jetbrains.compose.resources.getString
 
 abstract class AppSettingsViewModelAbstract() :
     GreenViewModel() {
@@ -183,14 +187,16 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
 
     init {
 
-        _navData.value = NavData(title = "id_app_settings", onBackPressed = {
-            if(areSettingsDirty()){
-                postEvent(LocalEvents.OnBack)
-                false
-            } else {
-                true
-            }
-        })
+        viewModelScope.launch {
+            _navData.value = NavData(title = getString(Res.string.id_app_settings), onBackPressed = {
+                if(areSettingsDirty()){
+                    postEvent(LocalEvents.OnBack)
+                    false
+                } else {
+                    true
+                }
+            })
+        }
 
         spvEnabled.onEach {
             if (!it && multiServerValidationEnabled.value) {
@@ -207,7 +213,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         when (event) {

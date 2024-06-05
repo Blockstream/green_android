@@ -13,7 +13,7 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.fcm.Firebase
 import com.blockstream.common.managers.LifecycleManager
-import com.blockstream.green.di.startKoin
+import com.blockstream.green.di.initKoinAndroid
 import com.blockstream.green.lifecycle.ActivityLifecycle
 import com.blockstream.green.settings.AndroidMigrator
 import com.blockstream.green.ui.MainActivity
@@ -36,7 +36,7 @@ class GreenApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        startKoin(this)
+        initKoinAndroid(this)
 
         val lifecycleManager: LifecycleManager = get()
 

@@ -1,5 +1,7 @@
 package com.blockstream.common.models.send
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_enter_amount_in
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
@@ -10,10 +12,12 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.utils.Loggable
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 abstract class DenominationViewModelAbstract(
     greenWallet: GreenWallet,
@@ -40,9 +44,12 @@ class DenominationViewModel(
 
 
     init {
-        _navData.value = NavData(
-            title = "id_enter_amount_in"
-        )
+
+        viewModelScope.launch {
+            _navData.value = NavData(
+                title = getString(Res.string.id_enter_amount_in)
+            )
+        }
 
         _denomination.value = denominatedValue.denomination
 

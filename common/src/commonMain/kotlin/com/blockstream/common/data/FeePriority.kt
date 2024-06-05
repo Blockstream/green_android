@@ -1,5 +1,11 @@
 package com.blockstream.common.data
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_custom
+import blockstream_green.common.generated.resources.id_high
+import blockstream_green.common.generated.resources.id_low
+import blockstream_green.common.generated.resources.id_medium
+
 sealed class FeePriority(
     open val fee: String? = null,
     open val feeFiat: String? = null,
@@ -76,10 +82,10 @@ sealed class FeePriority(
 
     val title
         get() = when (this) {
-            is Custom -> "id_custom"
-            is Low -> "id_low"
-            is Medium -> "id_medium"
-            is High -> "id_high"
+            is Custom -> Res.string.id_custom
+            is Low -> Res.string.id_low
+            is Medium -> Res.string.id_medium
+            is High -> Res.string.id_high
         }
 
     val enabled

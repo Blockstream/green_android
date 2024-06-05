@@ -1,5 +1,7 @@
 package com.blockstream.common.models.add
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_creating_your_s_account
 import com.blockstream.common.SATOSHI_UNIT
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.EnrichedAsset
@@ -8,15 +10,16 @@ import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.cleanup
 import com.blockstream.common.extensions.createLoginCredentials
 import com.blockstream.common.extensions.hasHistory
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.gdk.params.SubAccountParams
+import com.blockstream.common.looks.AccountTypeLook
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
-import com.blockstream.common.looks.AccountTypeLook
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -25,20 +28,20 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.getString
 
 
-abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet) :
+abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet, val assetId: String?, val isReceive: Boolean) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
 
     internal val _accountTypeBeingCreated: MutableStateFlow<AccountTypeLook?> = MutableStateFlow(null)
+    internal var _pendingSideEffect: SideEffect? = null
 
-    class LocalSideEffects{
-        class LightningShortcutDialog(sideEffect: SideEffect): SideEffects.SideEffectEvent(Events.EventSideEffect(sideEffect))
-    }
+    open fun assetId() = assetId
 
     init {
         _accountTypeBeingCreated.filterNotNull().onEach {
-            onProgressDescription.value = "id_creating_your_s_account|${it.accountType}"
+            onProgressDescription.value = getString(Res.string.id_creating_your_s_account, it.accountType.toString())
         }.launchIn(viewModelScope.coroutineScope)
     }
 
@@ -162,10 +165,24 @@ abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet) :
         }, postAction = {
             onProgress.value = it == null
         }, onSuccess = {
+
+            val accountAsset = AccountAsset.fromAccountAsset(
+                account = it,
+                assetId = assetId() ?: it.network.policyAsset,
+                session = session
+            )
+
+            // or setActiveAccount
+            postEvent(Events.SetAccountAsset(accountAsset, setAsActive = true))
+            postSideEffect(SideEffects.AccountCreated(accountAsset))
+
+            val navigateToRoot = SideEffects.NavigateToRoot(popToReceive = isReceive)
+
             if (it.isLightning && !greenWallet.isEphemeral) {
-                postSideEffect(LocalSideEffects.LightningShortcutDialog(SideEffects.Navigate(it)))
+                postSideEffect(SideEffects.LightningShortcut)
+                _pendingSideEffect = navigateToRoot
             } else {
-                postSideEffect(SideEffects.Navigate(it))
+                postSideEffect(navigateToRoot)
             }
 
             countly.createAccount(session, it)

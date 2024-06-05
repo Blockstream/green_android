@@ -13,10 +13,18 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 
 interface TwoFactorResolver {
-    suspend fun selectMethod(availableMethods: List<String>): CompletableDeferred<String>
+    suspend fun withSelectMethod(availableMethods: List<String>): CompletableDeferred<String>
 
     suspend fun getCode(network: Network, enable2faCallMethod: Boolean, authHandlerStatus: AuthHandlerStatus): CompletableDeferred<String>
 }
+
+fun TwoFactorResolver.withSelectMethod(method: String): TwoFactorResolver {
+    return object : TwoFactorResolver by this {
+        override suspend fun withSelectMethod(availableMethods: List<String>): CompletableDeferred<String> =
+            CompletableDeferred(method)
+    }
+}
+
 
 interface HardwareWalletResolver {
     fun requestDataFromDevice(network: Network, requiredData: DeviceRequiredData): CompletableDeferred<String>
@@ -70,7 +78,7 @@ class AuthHandler constructor(
                                 requestCode(authHandlerStatus.methods.first())
                             }else{
                                 try {
-                                    requestCode(runBlocking { it.selectMethod(authHandlerStatus.methods).await() })
+                                    requestCode(runBlocking { it.withSelectMethod(authHandlerStatus.methods).await() })
                                 }catch (e: Exception){
                                     throw Exception("id_action_canceled")
                                 }

@@ -12,8 +12,10 @@ import com.blockstream.common.events.Event
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalance
+import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.looks.transaction.TransactionConfirmLook
+import com.blockstream.common.models.settings.WalletSettingsSection
 
 interface NavigateDestination: Event
 sealed class NavigateDestinations : NavigateDestination {
@@ -24,50 +26,49 @@ sealed class NavigateDestinations : NavigateDestination {
     object UseHardwareDevice : NavigateDestination
 
     object WatchOnlyPolicy : NavigateDestination
-    data class WatchOnlyNetwork(val args: SetupArgs) : NavigateDestination
-    data class WatchOnlyCredentials(val args: SetupArgs) : NavigateDestination
-    object WalletSettings : NavigateDestination
-    data class EnterRecoveryPhrase(val args: SetupArgs) : NavigateDestination
-    data class RecoveryIntro(val args: SetupArgs) : NavigateDestination
-    data class RecoveryWords(val args: SetupArgs) : NavigateDestination
+    data class WatchOnlyNetwork(val setupArgs: SetupArgs) : NavigateDestination
+    data class WatchOnlyCredentials(val setupArgs: SetupArgs) : NavigateDestination
+    data class WatchOnlyCredentialsSettings(val network: Network) : NavigateDestination
+    data class WalletSettings(val section: WalletSettingsSection = WalletSettingsSection.General, val network: Network? = null) : NavigateDestination
+    data class EnterRecoveryPhrase(val setupArgs: SetupArgs) : NavigateDestination
+    data class RecoveryIntro(val setupArgs: SetupArgs) : NavigateDestination
+    data class RecoveryWords(val setupArgs: SetupArgs) : NavigateDestination
 
-    data class RecoveryCheck(val args: SetupArgs) : NavigateDestination
+    data class RecoveryCheck(val setupArgs: SetupArgs) : NavigateDestination
 
-    data class SetPin(val args: SetupArgs) : NavigateDestination
+    data class SetPin(val setupArgs: SetupArgs) : NavigateDestination
 
-    data class AddAccount(val args: SetupArgs) : NavigateDestination
+    data class AddAccount(val setupArgs: SetupArgs) : NavigateDestination
 
-    data class RecoveryPhrase(val args: SetupArgs) : NavigateDestination
+    data class RecoveryPhrase(val setupArgs: SetupArgs) : NavigateDestination
 
     data class AddAccount2of3(val setupArgs: SetupArgs) : NavigateDestination
 
     data class ReviewAddAccount(val setupArgs: SetupArgs) : NavigateDestination
 
-    object ExportLightningKey : NavigateDestination
-
-    data class ExistingRecovery(val setupArgs: SetupArgs) : NavigateDestination
     data class Xpub(val setupArgs: SetupArgs) : NavigateDestination
     data class DeviceList(val isJade: Boolean) : NavigateDestination
 
-    data class WalletLogin(val greenWallet: GreenWallet, val isLightningShortcut: Boolean = false) : NavigateDestination
+    data class Login(val greenWallet: GreenWallet, val isLightningShortcut: Boolean = false, val deviceId: String? = null) : NavigateDestination
 
     data class WalletOverview(val greenWallet: GreenWallet) : NavigateDestination
 
     data class DeviceScan(val greenWallet: GreenWallet) : NavigateDestination
     data class RenameWallet(val greenWallet: GreenWallet) : NavigateDestination
     data class DeleteWallet(val greenWallet: GreenWallet) : NavigateDestination
-    data class AssetsAccounts(val greenWallet: GreenWallet, val assetsAccounts: List<AccountAssetBalance>) : NavigateDestination
-    data class Accounts(val greenWallet: GreenWallet, val accounts: List<AccountAssetBalance>, val withAsset: Boolean) : NavigateDestination
+    data class AssetsAccounts(val assetsAccounts: List<AccountAssetBalance>) : NavigateDestination
+    data class Accounts(val accounts: List<AccountAssetBalance>, val withAsset: Boolean) : NavigateDestination
+    object Assets : NavigateDestination
     data class Bip39Passphrase(val passphrase: String) : NavigateDestination
     data class EnableTwoFactor(val network: Network) : NavigateDestination
     data class ArchivedAccounts(val navigateToRoot: Boolean = false) : NavigateDestination
-    object Assets : NavigateDestination
+    object WalletAssets : NavigateDestination
     data class AccountOverview(val accountAsset: AccountAsset) : NavigateDestination
-    data class ChooseAccountType(val greenWallet: GreenWallet) : NavigateDestination
-    data class WatchOnly(val greenWallet: GreenWallet) : NavigateDestination
-    data class ChangePin(val greenWallet: GreenWallet) : NavigateDestination
+    data class ChooseAccountType(val assetBalance: AssetBalance? = null, val isReceive: Boolean = false) : NavigateDestination
+    object WatchOnly : NavigateDestination
+    object ChangePin : NavigateDestination
     data class SystemMessage(val network: Network, val message: String) : NavigateDestination
-    data class TwoFactorReset(val network: Network, val twoFactorReset: com.blockstream.common.gdk.data.TwoFactorReset) : NavigateDestination
+    data class TwoFactorReset(val network: Network) : NavigateDestination
     data class TwoFactorAuthentication(val network: Network? = null) : NavigateDestination
     data class RenameAccount(val account: Account) : NavigateDestination
     object LightningNode : NavigateDestination
@@ -79,7 +80,7 @@ sealed class NavigateDestinations : NavigateDestination {
     ) : NavigateDestination
     data class AssetDetails(
         val assetId: String,
-        val accountAsset: AccountAsset?
+        val accountAsset: AccountAsset? = null
     ) : NavigateDestination
     data class TwoFactorSetup(
         val method: TwoFactorMethod,
@@ -140,7 +141,27 @@ sealed class NavigateDestinations : NavigateDestination {
         val isRedeposit2FA: Boolean
     ) : NavigateDestination
 
+    data class JadeQR(
+        val isLightningMnemonicExport: Boolean = false
+    ) : NavigateDestination
+
+    data class Qr(
+        val title: String? = null,
+        val subtitle: String? = null,
+        val data: String
+    ) : NavigateDestination
+
     object ReEnable2FA: NavigateDestination
 
-    data class VerifyTransaction(val transactionConfirmLook: TransactionConfirmLook) : NavigateDestination
+    object Countries: NavigateDestination
+    object JadeGuide: NavigateDestination
+
+    object ChooseAssetAccounts: NavigateDestination
+
+    data class Note(val note: String, val isLightning: Boolean) : NavigateDestination
+
+    data class VerifyOnDevice(
+        val transactionConfirmLook: TransactionConfirmLook? = null,
+        val address: String? = null
+    ) : NavigateDestination
 }

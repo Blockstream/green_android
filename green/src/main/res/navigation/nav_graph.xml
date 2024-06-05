@@ -98,9 +98,6 @@
         <action
             android:id="@+id/action_twoFractorAuthenticationFragment_to_twoFactorSetupFragment"
             app:destination="@id/twoFactorSetupFragment" />
-        <action
-            android:id="@+id/action_twoFractorAuthenticationFragment_to_walletSettingsFragment"
-            app:destination="@id/walletSettingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/twoFactorSetupFragment"
@@ -194,9 +191,6 @@
         android:id="@+id/recoveryIntroFragment"
         android:name="com.blockstream.green.ui.recovery.RecoveryIntroFragment"
         android:label="@string/id_before_you_backup">
-        <action
-            android:id="@+id/action_recoveryIntroFragment_to_recoveryWordsFragment"
-            app:destination="@id/recoveryWordsFragment" />
         <argument
             android:name="setupArgs"
             app:argType="com.blockstream.common.data.SetupArgs" />
@@ -207,12 +201,6 @@
     <fragment
         android:id="@+id/recoveryWordsFragment"
         android:name="com.blockstream.green.ui.recovery.RecoveryWordsFragment">
-        <action
-            android:id="@+id/action_recoveryWordsFragment_self"
-            app:destination="@id/recoveryWordsFragment" />
-        <action
-            android:id="@+id/action_recoveryWordsFragment_to_recoveryCheckFragment"
-            app:destination="@id/recoveryCheckFragment" />
         <argument
             android:name="args"
             app:argType="com.blockstream.common.data.SetupArgs" />
@@ -221,9 +209,6 @@
         android:id="@+id/recoveryCheckFragment"
         android:name="com.blockstream.green.ui.recovery.RecoveryCheckFragment">
 
-        <action
-            android:id="@+id/action_recoveryCheckFragment_self"
-            app:destination="@id/recoveryCheckFragment" />
         <argument
             android:name="args"
             app:argType="com.blockstream.common.data.SetupArgs" />
@@ -242,9 +227,6 @@
         <action
             android:id="@+id/action_accountOverviewFragment_to_receiveFragment"
             app:destination="@id/receiveFragment" />
-        <action
-            android:id="@+id/action_accountOverviewFragment_to_walletSettingsFragment"
-            app:destination="@id/walletSettingsFragment" />
         <action
             android:id="@+id/action_accountOverviewFragment_to_sendFragment"
             app:destination="@id/sendFragment" />
@@ -324,17 +306,13 @@
             android:name="wallet"
             app:argType="com.blockstream.common.data.GreenWallet" />
         <argument
-            android:name="accountType"
-            android:defaultValue="UNKNOWN"
-            app:argType="com.blockstream.common.gdk.data.AccountType" />
+            android:name="isReceive"
+            app:argType="boolean" />
         <argument
             android:name="asset"
             android:defaultValue="@null"
             app:argType="com.blockstream.common.data.EnrichedAsset"
             app:nullable="true" />
-        <action
-            android:id="@+id/action_chooseAccountTypeFragment_to_account2of3Fragment"
-            app:destination="@id/account2of3Fragment" />
     </fragment>
     <fragment
         android:id="@+id/account2of3Fragment"
@@ -343,12 +321,6 @@
         <argument
             android:name="setupArgs"
             app:argType="com.blockstream.common.data.SetupArgs" />
-        <action
-            android:id="@+id/action_account2of3Fragment_to_xpubFragment"
-            app:destination="@id/xpubFragment" />
-        <action
-            android:id="@+id/action_account2of3Fragment_to_enterRecoveryPhraseFragment"
-            app:destination="@id/enterRecoveryPhraseFragment" />
     </fragment>
     <fragment
         android:id="@+id/reviewAddAccountFragment"
@@ -376,9 +348,6 @@
         <action
             android:id="@+id/action_receiveFragment_to_sendFragment"
             app:destination="@id/sendFragment" />
-        <action
-            android:id="@+id/action_receiveFragment_to_previousAddressesFragment"
-            app:destination="@id/previousAddressesFragment" />
     </fragment>
 
     <fragment
@@ -791,5 +760,10 @@
     <action
         android:id="@+id/action_global_watchOnlyNetworkFragment"
         app:destination="@id/watchOnlyNetworkFragment" />
+    <action android:id="@+id/action_global_account2of3Fragment" app:destination="@id/account2of3Fragment" />
+    <action android:id="@+id/action_global_xpubFragment" app:destination="@id/xpubFragment" /><action android:id="@+id/action_global_enterRecoveryPhraseFragment" app:destination="@id/enterRecoveryPhraseFragment"/>
+    <action android:id="@+id/action_global_recoveryCheckFragment" app:destination="@id/recoveryCheckFragment" />
+    <action android:id="@+id/action_global_recoveryWordsFragment" app:destination="@id/recoveryWordsFragment" />
+    <action android:id="@+id/action_global_walletSettingsFragment" app:destination="@id/walletSettingsFragment" /><action android:id="@+id/action_global_previousAddressesFragment" app:destination="@id/previousAddressesFragment"/>
 
 </navigation>

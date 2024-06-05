@@ -1,5 +1,10 @@
 package com.blockstream.common.models.transaction
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_received
+import blockstream_green.common.generated.resources.id_redeposited
+import blockstream_green.common.generated.resources.id_sent
+import blockstream_green.common.generated.resources.id_swap
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.SATOSHI_UNIT
 import com.blockstream.common.data.Denomination
@@ -26,10 +31,12 @@ import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.feeRateWithUnit
+import com.blockstream.common.utils.formatFullWithTime
 import com.blockstream.common.utils.toAmountLook
 import com.blockstream.common.utils.toAmountLookOrNa
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,10 +45,12 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
+import org.jetbrains.compose.resources.getString
 
 abstract class TransactionViewModelAbstract(
     accountAssetOrNull: AccountAsset? = null,
@@ -62,7 +71,7 @@ abstract class TransactionViewModelAbstract(
     abstract val type: StateFlow<Transaction.Type>
 
     @NativeCoroutinesState
-    abstract val createdAtTs: StateFlow<Long>
+    abstract val createdAt: StateFlow<String?>
 
     @NativeCoroutinesState
     abstract val spv: StateFlow<Transaction.SPVResult>
@@ -122,7 +131,7 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
 
     override val type: StateFlow<Transaction.Type> = MutableStateFlow(transaction.txType)
 
-    override val createdAtTs: StateFlow<Long> = MutableStateFlow(transaction.createdAtTs)
+    override val createdAt: StateFlow<String?> = MutableStateFlow(transaction.createdAtInstant?.formatFullWithTime())
 
     private val _spv: MutableStateFlow<Transaction.SPVResult> = MutableStateFlow(Transaction.SPVResult.Disabled)
     override val spv: StateFlow<Transaction.SPVResult> = _spv.asStateFlow()
@@ -157,17 +166,19 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
     init {
         logger.d { "Transaction $transaction" }
 
-        if(session.isConnected) {
+        viewModelScope.launch {
             _navData.value = NavData(
-                title = when (transaction.txType) {
-                    Transaction.Type.OUT -> "id_sent"
-                    Transaction.Type.REDEPOSIT -> "id_redeposited"
-                    Transaction.Type.MIXED -> "id_swap"
-                    else -> "id_received"
-                },
+                title = getString(when (transaction.txType) {
+                    Transaction.Type.OUT -> Res.string.id_sent
+                    Transaction.Type.REDEPOSIT -> Res.string.id_redeposited
+                    Transaction.Type.MIXED -> Res.string.id_swap
+                    else -> Res.string.id_received
+                }),
                 subtitle = account.name
             )
+        }
 
+        if(session.isConnected) {
             combine(
                 session.walletTransactions,
                 session.accountTransactions(transaction.account),
@@ -188,7 +199,7 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         if (event is LocalEvents.SetNote) {
@@ -350,7 +361,7 @@ class TransactionViewModelPreview(status : TransactionStatus) : TransactionViewM
 
     override val status: StateFlow<TransactionStatus> = MutableStateFlow(status)
     override val type: StateFlow<Transaction.Type> = MutableStateFlow(Transaction.Type.IN)
-    override val createdAtTs: StateFlow<Long> = MutableStateFlow(Clock.System.now().toEpochMilliseconds() * 1000L)
+    override val createdAt: StateFlow<String?> = MutableStateFlow(Clock.System.now().formatFullWithTime())
     override val spv: StateFlow<Transaction.SPVResult> = MutableStateFlow(Transaction.SPVResult.Disabled)
     override val amounts: StateFlow<List<AmountAssetLook>> =
         MutableStateFlow(listOf(AmountAssetLook("121.91080032", assetId = BTC_POLICY_ASSET ,ticker = "BTC", fiat = "32.1231 EUR")))

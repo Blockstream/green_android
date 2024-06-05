@@ -1,5 +1,21 @@
 package com.blockstream.common.models.login
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_bip39_passphrase_login
+import blockstream_green.common.generated.resources.id_emergency_recovery_phrase
+import blockstream_green.common.generated.resources.id_help
+import blockstream_green.common.generated.resources.id_if_for_any_reason_you_cant
+import blockstream_green.common.generated.resources.id_invalid_pin_you_have_1d
+import blockstream_green.common.generated.resources.id_last_attempt_if_failed_you_will
+import blockstream_green.common.generated.resources.id_lightning_account
+import blockstream_green.common.generated.resources.id_remove_wallet
+import blockstream_green.common.generated.resources.id_rename_wallet
+import blockstream_green.common.generated.resources.id_show_recovery_phrase
+import blockstream_green.common.generated.resources.key
+import blockstream_green.common.generated.resources.password
+import blockstream_green.common.generated.resources.question
+import blockstream_green.common.generated.resources.text_aa
+import blockstream_green.common.generated.resources.trash
 import com.blockstream.common.Urls
 import com.blockstream.common.crypto.PlatformCipher
 import com.blockstream.common.data.ApplicationSettings
@@ -46,6 +62,7 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.StringHolder
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
@@ -59,6 +76,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 import kotlin.io.encoding.Base64
 
@@ -202,12 +220,8 @@ class LoginViewModel constructor(
     }
 
     class LocalSideEffects {
-        class LaunchWalletRename(val greenWallet: GreenWallet): SideEffect
-        class LaunchWalletDelete(val greenWallet: GreenWallet): SideEffect
-        object LaunchBip39Passphrase: SideEffect
         class LaunchBiometrics(val loginCredentials: LoginCredentials): SideEffect
         object LaunchUserPresenceForLightning : SideEffect
-        object AskBip39Passphrase : SideEffect
     }
 
     init {
@@ -221,7 +235,7 @@ class LoginViewModel constructor(
             postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(greenWallet)))
         } else {
             if (greenWallet.askForBip39Passphrase) {
-                postSideEffect(LocalSideEffects.AskBip39Passphrase)
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Bip39Passphrase(bip39Passphrase.value)))
             }
 
             device?.let {
@@ -271,9 +285,9 @@ class LoginViewModel constructor(
                 _error.value = dataState?.let {
                     if (it.counter > 0) {
                         if (it.counter == 2L) {
-                            "id_last_attempt_if_failed_you_will"
+                            getString(Res.string.id_last_attempt_if_failed_you_will)
                         } else {
-                            "id_invalid_pin_you_have_s|${3 - it.counter}"
+                            getString(Res.string.id_invalid_pin_you_have_1d, 3 - it.counter)
                         }
                     } else {
                         null
@@ -290,44 +304,45 @@ class LoginViewModel constructor(
         }.onEach {
             _navData.value = NavData(
                 title = it.name,
-                subtitle = if (isLightningShortcut) "id_lightning_account" else null,
+                subtitle = if (isLightningShortcut) getString(
+                    Res.string.id_lightning_account) else null,
                 actions = listOfNotNull(
                     NavAction(
-                        title = "id_help",
-                        icon = "question",
+                        title = getString(Res.string.id_help),
+                        icon = Res.drawable.question,
                         isMenuEntry = true,
 
                         ) {
                         postEvent(LocalEvents.ClickHelp)
                     }.takeIf { check2 && pinCredentials.isEmpty() && passwordCredentials.isEmpty() },
                     NavAction(
-                        title = "id_bip39_passphrase_login",
-                        icon = "password",
+                        title = getString(Res.string.id_bip39_passphrase_login),
+                        icon = Res.drawable.password,
                         isMenuEntry = true,
                     ) {
-                        postSideEffect(LocalSideEffects.LaunchBip39Passphrase)
+                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Bip39Passphrase(bip39Passphrase.value)))
                     }.takeIf { check2 && (pinCredentials.value.isNotEmpty() || passwordCredentials.value.isNotEmpty()) },
                     NavAction(
-                        title = "id_show_recovery_phrase",
-                        icon = "key",
+                        title = getString(Res.string.id_show_recovery_phrase),
+                        icon = Res.drawable.key,
                         isMenuEntry = true,
                     ) {
                         postEvent(LocalEvents.EmergencyRecovery(true))
                     }.takeIf { check2 && (pinCredentials.value.isNotEmpty() || passwordCredentials.value.isNotEmpty()) },
                     NavAction(
-                        title = "id_rename_wallet",
-                        icon = "text_aa",
+                        title = getString(Res.string.id_rename_wallet),
+                        icon = Res.drawable.text_aa,
                         isMenuEntry = true,
                     ) {
-                        postSideEffect(LocalSideEffects.LaunchWalletRename(it))
+                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.RenameWallet(it)))
                     }.takeIf { check1 },
 
                     NavAction(
-                        title = "id_remove_wallet",
-                        icon = "trash",
+                        title = getString(Res.string.id_remove_wallet),
+                        icon = Res.drawable.trash,
                         isMenuEntry = true,
                     ) {
-                        postSideEffect(LocalSideEffects.LaunchWalletDelete(it))
+                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.DeleteWallet(it)))
                     }.takeIf { check1 },
 
                     )
@@ -338,7 +353,7 @@ class LoginViewModel constructor(
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
         when (event) {
             is LocalEvents.LoginLightningShortcut -> {
@@ -371,7 +386,7 @@ class LoginViewModel constructor(
                 bip39Passphrase.value = ""
                 isEmergencyRecoveryPhrase.value = event.isEmergencyRecovery
                 if(event.isEmergencyRecovery){
-                    postSideEffect(SideEffects.Dialog("id_emergency_recovery_phrase", "id_if_for_any_reason_you_cant"))
+                    postSideEffect(SideEffects.Dialog(StringHolder.create(Res.string.id_emergency_recovery_phrase), StringHolder.create(Res.string.id_if_for_any_reason_you_cant)))
                 }
             }
             is LocalEvents.Bip39Passphrase -> {
@@ -384,7 +399,7 @@ class LoginViewModel constructor(
             }
             is LocalEvents.ClickRestoreWithRecovery -> {
                 postSideEffect(SideEffects.NavigateTo(NavigateDestinations.EnterRecoveryPhrase(
-                    args = SetupArgs.restoreMnemonic(greenWallet)
+                    setupArgs = SetupArgs.restoreMnemonic(greenWallet)
                 )))
             }
             is LocalEvents.LoginWatchOnly -> {

@@ -1,5 +1,14 @@
 package com.blockstream.common.models.onboarding.phone
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_enter_your_12_24_or_27_words
+import blockstream_green.common.generated.resources.id_enter_your_24_or_27_words
+import blockstream_green.common.generated.resources.id_enter_your_27_words_recovery
+import blockstream_green.common.generated.resources.id_help
+import blockstream_green.common.generated.resources.id_invalid_mnemonic_continue
+import blockstream_green.common.generated.resources.id_well_done_you_can_continue
+import blockstream_green.common.generated.resources.id_well_done_you_can_continue_with
+import blockstream_green.common.generated.resources.question
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
 import com.blockstream.common.data.NavAction
@@ -16,14 +25,16 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.serialization.Serializable
+import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 import kotlin.math.ceil
 import kotlin.math.max
@@ -108,6 +119,7 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
         data class SetActiveWord(val index: Int) : Event
         data class MnemonicEncryptionPassword(val password: String) : Event, Redact
         data class KeyAction(val key: String) : Event
+        object LaunchHelp: Events.EventSideEffect(sideEffect = LocalSideEffects.LaunchHelp)
     }
 
     class LocalSideEffects {
@@ -126,22 +138,26 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
             setRecoveryPhrase(it)
         }
 
-        _navData.value = NavData(
-            actions = listOf(NavAction(
-                title = "id_help",
-                icon = "question",
-                onClick = {
-                    postSideEffect(LocalSideEffects.LaunchHelp)
-                }
-            ))
-        )
+        viewModelScope.launch {
+            _navData.value = NavData(
+                title = setupArgs.accountType?.toString(),
+                subtitle = greenWalletOrNull?.name,
+                actions = listOf(NavAction(
+                    title = getString(Res.string.id_help),
+                    icon = Res.drawable.question,
+                    onClick = {
+                        postSideEffect(LocalSideEffects.LaunchHelp)
+                    }
+                ))
+            )
+        }
 
         combine(recoveryPhrase,recoveryPhraseSize, activeWord) { _, _, _ ->
             checkRecoveryPhrase()
         }.launchIn(viewModelScope.coroutineScope)
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         if (event is Events.Continue) {
@@ -177,7 +193,7 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
     private fun proceed(setupArgs: SetupArgs) {
         setupArgs.let { args ->
             if (args.isAddAccount()) {
-                NavigateDestinations.AddAccount(args)
+                NavigateDestinations.ReviewAddAccount(args)
             } else {
                 NavigateDestinations.SetPin(args)
             }
@@ -193,7 +209,7 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
     private fun activeWord(): String? =
         if (hasActiveWord()) recoveryPhrase.value[activeWord.value] else null
 
-    private fun checkRecoveryPhrase() {
+    private suspend fun checkRecoveryPhrase() {
         val isEditMode = activeWord.value != -1
 
         var len = recoveryPhrase.value.size
@@ -206,24 +222,24 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
         }
 
         val hint = if (len < 12) {
-            "id_enter_your_12_24_or_27_words"
+            Res.string.id_enter_your_12_24_or_27_words
         } else if (valid) {
-            "id_well_done_you_can_continue"
+            Res.string.id_well_done_you_can_continue
         } else if (len < 24) {
-            "id_enter_your_24_or_27_words"
+            Res.string.id_enter_your_24_or_27_words
         } else if (valid && len == 27) {
-            "id_well_done_you_can_continue_with"
+            Res.string.id_well_done_you_can_continue_with
         } else if (!valid && len == 24) {
-            "id_invalid_mnemonic_continue"
+            Res.string.id_invalid_mnemonic_continue
         } else if (len < 27) {
-            "id_enter_your_27_words_recovery"
+            Res.string.id_enter_your_27_words_recovery
         } else {
-            ""
+            null
         }
 
         val showHelp = !valid && (len >= 12 && len % 3 == 0)
 
-        hintMessage.value = hint
+        hintMessage.value = hint?.let { getString(it) } ?: ""
 
         isRecoveryPhraseValid.value = valid
         showInvalidMnemonicError.value = showHelp && !isEditMode && len >= recoveryPhraseSize.value

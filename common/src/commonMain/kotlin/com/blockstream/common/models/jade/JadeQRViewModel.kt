@@ -1,5 +1,13 @@
 package com.blockstream.common.models.jade
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.arrows_counter_clockwise
+import blockstream_green.common.generated.resources.id_initiate_oracle_communication
+import blockstream_green.common.generated.resources.id_jade_will_securely_create_and
+import blockstream_green.common.generated.resources.id_reset
+import blockstream_green.common.generated.resources.id_scan_qr_on_jade
+import blockstream_green.common.generated.resources.id_scan_qr_with_jade
+import blockstream_green.common.generated.resources.id_validate_pin_and_unlock
 import com.blockstream.common.Urls
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavAction
@@ -17,12 +25,13 @@ import com.blockstream.common.jade.HandshakeInitResponse
 import com.blockstream.common.jade.QrData
 import com.blockstream.common.jade.QrDataResponse
 import com.blockstream.common.models.abstract.AbstractScannerViewModel
-import com.blockstream.common.models.jade.JadeQRViewModel.Companion.ExportLightningScenario
+import com.blockstream.common.models.jade.JadeQRViewModel.Companion.PinUnlockScenarioDuo
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,15 +43,15 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.getString
 
 data class StepInfo(
-    val title: String = "id_scan_qr_on_jade",
-    val message: String = "id_initiate_oracle_communication",
+    val title: StringResource = Res.string.id_scan_qr_on_jade,
+    val message: StringResource = Res.string.id_initiate_oracle_communication,
     val step: Int = 1,
     val isScan: Boolean = false
-) {
-    val stepMessage = "id_step_s|$step"
-}
+)
 
 data class Scenario(val steps: List<StepInfo>, val showStepCounter: Boolean = true)
 
@@ -94,16 +103,18 @@ class JadeQRViewModel(
 
     init {
 
-        _navData.value = NavData(
-            actions = listOf(NavAction(
-                title = "Restart",
-                icon = "arrows_counter_clockwise",
-                isMenuEntry = false,
-                onClick = {
-                    restart()
-                }
-            ))
-        )
+        viewModelScope.launch {
+            _navData.value = NavData(
+                actions = listOf(NavAction(
+                    title = getString(Res.string.id_reset),
+                    icon = Res.drawable.arrows_counter_clockwise,
+                    isMenuEntry = false,
+                    onClick = {
+                        restart()
+                    }
+                ))
+            )
+        }
 
         _urParts.onEach { parts ->
             _job?.cancel()
@@ -167,7 +178,7 @@ class JadeQRViewModel(
         }
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
         if (event is Events.Continue) {
             nextStep()
@@ -231,14 +242,14 @@ class JadeQRViewModel(
     companion object : Loggable() {
         val ExportLightningScenario = Scenario(listOf(
             StepInfo(
-                title = "id_scan_qr_with_jade",
-                message = "id_jade_will_securely_create_and_transfer",
+                title = Res.string.id_scan_qr_with_jade,
+                message = Res.string.id_jade_will_securely_create_and,
                 step = 1,
                 isScan = false
             ),
             StepInfo(
-                title = "id_scan_qr_on_jade",
-                message = "id_jade_will_securely_create_and_transfer",
+                title = Res.string.id_scan_qr_on_jade,
+                message = Res.string.id_jade_will_securely_create_and,
                 step = 1,
                 isScan = true
             ),
@@ -246,26 +257,26 @@ class JadeQRViewModel(
 
         val PinUnlockScenarioQuatro = Scenario(listOf(
             StepInfo(
-                title = "id_scan_qr_on_jade",
-                message = "id_initiate_oracle_communication",
+                title = Res.string.id_scan_qr_on_jade,
+                message = Res.string.id_initiate_oracle_communication,
                 step = 1,
                 isScan = true
             ),
             StepInfo(
-                title = "id_scan_qr_with_jade",
-                message = "id_validate_pin_and_unlock",
+                title = Res.string.id_scan_qr_with_jade,
+                message = Res.string.id_validate_pin_and_unlock,
                 step = 2,
                 isScan = false
             ),
             StepInfo(
-                title = "id_scan_qr_on_jade",
-                message = "id_initiate_oracle_communication",
+                title = Res.string.id_scan_qr_on_jade,
+                message = Res.string.id_initiate_oracle_communication,
                 step = 3,
                 isScan = true
             ),
             StepInfo(
-                title = "id_scan_qr_with_jade",
-                message = "id_validate_pin_and_unlock",
+                title = Res.string.id_scan_qr_with_jade,
+                message = Res.string.id_validate_pin_and_unlock,
                 step = 4,
                 isScan = false
             )
@@ -273,14 +284,14 @@ class JadeQRViewModel(
 
         val PinUnlockScenarioDuo = Scenario(listOf(
             StepInfo(
-                title = "id_scan_qr_on_jade",
-                message = "id_initiate_oracle_communication",
+                title = Res.string.id_scan_qr_on_jade,
+                message = Res.string.id_initiate_oracle_communication,
                 step = 1,
                 isScan = true
             ),
             StepInfo(
-                title = "id_scan_qr_with_jade",
-                message = "id_validate_pin_and_unlock",
+                title = Res.string.id_scan_qr_with_jade,
+                message = Res.string.id_validate_pin_and_unlock,
                 step = 2,
                 isScan = false
             )
@@ -289,11 +300,11 @@ class JadeQRViewModel(
 }
 
 class JadeQRViewModelPreview() : JadeQRViewModelAbstract() {
-    override val stepInfo: StateFlow<StepInfo> = MutableStateFlow(StepInfo())
+    override val stepInfo: StateFlow<StepInfo> = MutableStateFlow(PinUnlockScenarioDuo.steps.first())
     override val urPart: StateFlow<String?> =
         MutableStateFlow("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
 
-    override val scenario = MutableStateFlow(ExportLightningScenario)
+    override val scenario = MutableStateFlow(PinUnlockScenarioDuo)
 
     override fun setScanResult(scanResult: ScanResult) {
 

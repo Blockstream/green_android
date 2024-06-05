@@ -464,7 +464,7 @@
                                         <com.google.android.material.button.MaterialButton
                                             android:id="@+id/buttonEdit"
                                             style="@style/Widget.Green.Button.Outlined"
-                                            isVisible="@{vm.requestAmount != null}"
+                                            isVisible="@{vm.amount != null}"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:layout_marginBottom="4dp"

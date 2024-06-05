@@ -9,8 +9,6 @@ import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.AppFragmentBridge
 import com.blockstream.compose.screens.jade.JadeQRScreen
-import com.blockstream.compose.sheets.BottomSheetNavigatorM3
-import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ComposeViewBinding
 import com.blockstream.green.extensions.setNavigationResult
@@ -34,7 +32,7 @@ class JadeQRFragment : AppFragment<ComposeViewBinding>(R.layout.compose_view, me
 
     override val useCompose: Boolean = true
 
-    override fun handleSideEffect(sideEffect: SideEffect) {
+    override suspend fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
 
         if (sideEffect is SideEffects.Mnemonic) {

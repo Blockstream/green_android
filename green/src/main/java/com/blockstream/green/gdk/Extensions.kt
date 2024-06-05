@@ -18,7 +18,6 @@ import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Device
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.managers.SessionManager
-import com.blockstream.compose.extensions.getNetworkIcon
 import com.blockstream.green.R
 import com.blockstream.green.extensions.toBitmap
 import com.blockstream.green.extensions.toBitmapDrawable
@@ -73,8 +72,16 @@ fun AccountType.withPolicy(context: Context): String = policyRes().let {
     }
 }
 
+@Deprecated("Use StringResouces")
 fun Network.getNetworkIcon(): Int{
-    return id.getNetworkIcon()
+    return with(id) {
+        if (Network.isBitcoinMainnet(this)) return R.drawable.bitcoin
+        if (Network.isLiquidMainnet(this)) return R.drawable.liquid
+        if (Network.isBitcoinTestnet(this)) return R.drawable.bitcoin_testnet
+        if (Network.isLiquidTestnet(this)) return R.drawable.liquid_testnet
+        if (Network.isLightningMainnet(this)) return R.drawable.bitcoin_lightning
+        R.drawable.unknown
+    }
 }
 
 fun Long?.getDirectionColor(context: Context, isFailed: Boolean = false): Int =

@@ -63,7 +63,7 @@ class DeviceInfoFragment : AbstractDeviceFragment<DeviceInfoFragmentBinding>(
         }
     }
 
-    override fun handleSideEffect(sideEffect: SideEffect) {
+    override suspend fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
         if (sideEffect is SideEffects.Navigate){
             (sideEffect.data as? GreenWallet)?.also {

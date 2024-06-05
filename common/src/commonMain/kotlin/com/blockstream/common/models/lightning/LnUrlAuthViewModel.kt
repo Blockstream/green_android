@@ -1,5 +1,7 @@
 package com.blockstream.common.models.lightning
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_authentication_successful
 import breez_sdk.LnUrlAuthRequestData
 import breez_sdk.LnUrlCallbackStatus
 import com.blockstream.common.data.ErrorReport
@@ -10,6 +12,8 @@ import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.StringHolder
+import com.rickclephas.kmp.observableviewmodel.launch
 
 abstract class LnUrlAuthViewModelAbstract(
     greenWallet: GreenWallet,
@@ -24,11 +28,13 @@ class LnUrlAuthViewModel(greenWallet: GreenWallet, requestData: LnUrlAuthRequest
     LnUrlAuthViewModelAbstract(greenWallet = greenWallet, requestData = requestData) {
 
     init {
-        _navData.value = NavData(title = "LNURL Auth", subtitle = greenWallet.name)
+        viewModelScope.launch {
+            _navData.value = NavData(title = "LNURL Auth", subtitle = greenWallet.name)
+        }
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         if (event is Events.Continue) {
@@ -44,7 +50,7 @@ class LnUrlAuthViewModel(greenWallet: GreenWallet, requestData: LnUrlAuthRequest
                 }
             }
         }, postAction = {}, onSuccess = {
-            postSideEffect(SideEffects.Snackbar("id_authentication_successful"))
+            postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_authentication_successful)))
             postSideEffect(SideEffects.NavigateBack())
         }, onError = {
             postSideEffect(

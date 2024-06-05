@@ -1,6 +1,9 @@
 package com.blockstream.common.models.recovery
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_wrong_choice_check_your
 import com.blockstream.common.data.AppInfo
+import com.blockstream.common.data.NavData
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Event
 import com.blockstream.common.gdk.Wally
@@ -9,7 +12,9 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
+import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.getSecureRandom
+import com.rickclephas.kmp.observableviewmodel.launch
 import org.koin.core.component.get
 import org.koin.core.component.inject
 
@@ -71,29 +76,33 @@ class RecoveryCheckViewModel(setupArgs: SetupArgs) : RecoveryCheckViewModelAbstr
         wordRight = mnemonicWords[offset + wordIndex + 1]
         checkWordIndex = offset + wordIndex + 1
 
+        viewModelScope.launch {
+            _navData.value = NavData(title = setupArgs.accountType?.toString(), subtitle = greenWalletOrNull?.name)
+        }
+
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
         if(event is LocalEvents.SelectWord){
             if (correctWord == event.word) {
 
                 (if(isLastPage){
                     if(setupArgs.greenWallet == null){
-                        NavigateDestinations.SetPin(args = setupArgs.pageOne())
+                        NavigateDestinations.SetPin(setupArgs = setupArgs.pageOne())
                     }else{
-                        NavigateDestinations.AddAccount(args = setupArgs.pageOne())
+                        NavigateDestinations.ReviewAddAccount(setupArgs = setupArgs.pageOne())
                     }
                 }else{
-                    NavigateDestinations.RecoveryCheck(args = setupArgs.nextPage())
+                    NavigateDestinations.RecoveryCheck(setupArgs = setupArgs.nextPage())
                 }).also {
                     postSideEffect(SideEffects.NavigateTo(it))
                 }
 
             } else {
                 countly.recoveryPhraseCheckFailed(page = setupArgs.page)
-                postSideEffect(SideEffects.Snackbar("id_wrong_choice_check_your"))
+                postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_wrong_choice_check_your)))
                 postSideEffect(SideEffects.NavigateBack())
             }
         }

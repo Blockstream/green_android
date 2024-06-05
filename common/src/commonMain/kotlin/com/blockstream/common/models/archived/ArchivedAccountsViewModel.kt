@@ -1,5 +1,7 @@
 package com.blockstream.common.models.archived
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_archived_accounts
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavData
@@ -9,9 +11,12 @@ import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.models.GreenViewModel
 import com.rickclephas.kmp.observableviewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import org.jetbrains.compose.resources.getString
+import kotlin.coroutines.coroutineContext
 
 
 abstract class ArchivedAccountsViewModelAbstract(
@@ -38,7 +43,9 @@ class ArchivedAccountsViewModel(greenWallet: GreenWallet, navigateToRoot: Boolea
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), DataState.Loading)
 
     init {
-        _navData.value = NavData(title = "id_archived_accounts", subtitle = greenWallet.name)
+        viewModelScope.launch {
+            _navData.value = NavData(title = getString(Res.string.id_archived_accounts), subtitle = greenWallet.name)
+        }
 
         bootstrap()
     }

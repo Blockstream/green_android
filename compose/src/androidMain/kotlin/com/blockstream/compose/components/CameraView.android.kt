@@ -1,0 +1,167 @@
+package com.blockstream.compose.components
+
+import android.app.Activity
+import android.util.TypedValue
+import android.view.LayoutInflater
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import co.touchlab.kermit.Logger
+import com.blockstream.common.events.Events
+import com.blockstream.common.models.abstract.AbstractScannerViewModel
+import com.blockstream.common.models.camera.CameraViewModelPreview
+import com.blockstream.compose.GreenAndroidPreview
+import com.blockstream.compose.R
+import com.blockstream.compose.android.views.ViewFinderView
+import com.google.zxing.client.android.Intents
+import com.journeyapps.barcodescanner.BarcodeCallback
+import com.journeyapps.barcodescanner.CaptureManager
+import com.journeyapps.barcodescanner.DecoratedBarcodeView
+import com.journeyapps.barcodescanner.DefaultDecoderFactory
+
+private const val DEFAULT_FRAME_THICKNESS_DP = 3f
+private const val DEFAULT_MASK_COLOR = 0x22000000
+private const val DEFAULT_FRAME_COLOR = android.graphics.Color.WHITE
+private const val DEFAULT_FRAME_CORNER_SIZE_DP = 50f
+private const val DEFAULT_FRAME_SIZE = 0.65f
+
+@Composable
+actual fun CameraView(
+    modifier: Modifier,
+    isFlashOn: Boolean,
+    isDecodeContinuous: Boolean,
+    showScanFromImage: Boolean,
+    viewModel: AbstractScannerViewModel
+) {
+
+    var captureManager by remember {
+        mutableStateOf<CaptureManager?>(null)
+    }
+
+    AndroidView(
+        modifier = Modifier
+            .fillMaxSize()
+            .clip(RoundedCornerShape(8.dp)),
+        factory = { context ->
+            LayoutInflater.from(context).inflate(R.layout.camera, null).apply {
+
+                val decoratedBarcode =
+                    findViewById<DecoratedBarcodeView>(R.id.decorated_barcode)
+                val viewFinder = findViewById<ViewFinderView>(R.id.view_finder)
+
+                viewFinder.maskColor = DEFAULT_MASK_COLOR
+                viewFinder.frameColor = DEFAULT_FRAME_COLOR
+                viewFinder.frameThickness = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    DEFAULT_FRAME_THICKNESS_DP,
+                    resources.displayMetrics
+                ).toInt()
+                viewFinder.frameCornersSize = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    DEFAULT_FRAME_CORNER_SIZE_DP,
+                    resources.displayMetrics
+                ).toInt()
+                viewFinder.frameSize = DEFAULT_FRAME_SIZE
+
+                decoratedBarcode.apply {
+                    this.viewFinder.isVisible = false
+                    this.statusView.isVisible = false
+                    // Scan black/white or inverted
+                    this.barcodeView.decoderFactory =
+                        DefaultDecoderFactory(null, null, null, Intents.Scan.MIXED_SCAN)
+                }
+
+                decoratedBarcode.cameraSettings.apply {
+                    isMeteringEnabled = true
+                    isExposureEnabled = true
+                    isContinuousFocusEnabled = true
+                }
+
+                val callback = BarcodeCallback { result ->
+                    viewModel.postEvent(Events.SetBarcodeScannerResult(result.text))
+                }
+
+                if (isDecodeContinuous) {
+                    decoratedBarcode.decodeContinuous(callback)
+                } else {
+                    decoratedBarcode.decodeSingle(callback)
+                }
+
+                captureManager =
+                    CaptureManager(context as Activity, decoratedBarcode).also {
+                        it.setShowMissingCameraPermissionDialog(true)
+                    }
+
+            }
+        }, update = { view ->
+            val decoratedBarcode =
+                view.findViewById<DecoratedBarcodeView>(R.id.decorated_barcode)
+
+            if (isFlashOn) {
+                decoratedBarcode.setTorchOn()
+            } else {
+                decoratedBarcode.setTorchOff()
+            }
+        })
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        // Create an observer that triggers our remembered callbacks
+        // for sending analytics events
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> {
+                    Logger.d { "BarcodeScanner OnResume" }
+                    captureManager?.onResume()
+                }
+
+                Lifecycle.Event.ON_PAUSE -> {
+                    Logger.d { "BarcodeScanner OnPause" }
+                    captureManager?.onPause()
+                }
+
+                else -> {}
+            }
+        }
+
+        // Add the observer to the lifecycle
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        // When the effect leaves the Composition, remove the observer
+        onDispose {
+            Logger.d { "BarcodeScanner onDispose" }
+            captureManager?.onPause()
+            captureManager?.onDestroy()
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+}
+
+@Composable
+@Preview
+fun BarcodeScannerPreview() {
+    GreenAndroidPreview {
+        GreenColumn {
+            CameraView(
+                isDecodeContinuous = false, viewModel = CameraViewModelPreview.preview(),
+                modifier = Modifier.aspectRatio(1f)
+            )
+        }
+    }
+}

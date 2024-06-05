@@ -34,12 +34,12 @@ class AddWalletViewModel : AddWalletViewModelAbstract() {
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         when (event) {
             is LocalEvents.NewWallet -> {
-                SideEffects.NavigateTo(NavigateDestinations.RecoveryIntro(args = SetupArgs(isRestoreFlow = false))).also {
+                SideEffects.NavigateTo(NavigateDestinations.RecoveryIntro(setupArgs = SetupArgs(isRestoreFlow = false))).also {
                     if(isTestnetEnabled){
                         pendingDestination = it.destination
                         postSideEffect(LocalSideEffects.SelectEnvironment)
@@ -51,7 +51,7 @@ class AddWalletViewModel : AddWalletViewModelAbstract() {
             }
 
             is LocalEvents.RestoreWallet -> {
-                SideEffects.NavigateTo(NavigateDestinations.EnterRecoveryPhrase(args = SetupArgs(isRestoreFlow = true))).also {
+                SideEffects.NavigateTo(NavigateDestinations.EnterRecoveryPhrase(setupArgs = SetupArgs(isRestoreFlow = true))).also {
                     if(isTestnetEnabled){
                         pendingDestination = it.destination
                         postSideEffect(LocalSideEffects.SelectEnvironment)
@@ -67,7 +67,7 @@ class AddWalletViewModel : AddWalletViewModelAbstract() {
                     when (it) {
                         is NavigateDestinations.RecoveryIntro -> {
                             it.copy(
-                                args = it.args.copy(
+                                setupArgs = it.setupArgs.copy(
                                     isTestnet = event.isTestnet, network = event.customNetwork
                                 )
                             )
@@ -75,7 +75,7 @@ class AddWalletViewModel : AddWalletViewModelAbstract() {
 
                         is NavigateDestinations.EnterRecoveryPhrase -> {
                             it.copy(
-                                args = it.args.copy(
+                                setupArgs = it.setupArgs.copy(
                                     isTestnet = event.isTestnet, network = event.customNetwork
                                 )
                             )

@@ -1,16 +1,21 @@
 
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.kotlinParcelize)
-    alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.kmp.nativecoroutines)
     alias(libs.plugins.app.cash.sqldelight)
+    alias(libs.plugins.nativeCocoapods)
+}
+
+compose.resources {
+    publicResClass = true
 }
 
 sqldelight {
@@ -37,6 +42,8 @@ kotlin {
         }
     }
 
+    jvm()
+
     val xcf = XCFramework()
     listOf(
         iosArm64(),
@@ -44,7 +51,7 @@ kotlin {
         iosX64(),
     ).forEach {
         it.binaries.framework {
-            baseName = "common"
+            baseName = "Common"
             xcf.add(this)
             isStatic = true
         }
@@ -64,7 +71,23 @@ kotlin {
         }
     }
 
+    cocoapods {
+        version = "2.0"
+        ios.deploymentTarget = "15.3"
+
+        pod("Countly") {
+            source = git("https://github.com/angelix/countly-sdk-ios") {
+                commit = "1892410d13fceccd7cf91f803f06f110efc215b3"
+            }
+
+            // Support for Objective-C headers with @import directives﻿
+            // https://kotlinlang.org/docs/native-cocoapods-libraries.html#support-for-objective-c-headers-with-import-directives
+            extraOpts += listOf("-compiler-option", "-fmodules")
+        }
+    }
+
     sourceSets {
+
         all {
             languageSettings.apply {
                 optIn("kotlin.RequiresOptIn")
@@ -85,16 +108,14 @@ kotlin {
             api(libs.kotlinx.datetime)
             /** ----------------------------------------------------------------------------------------- */
 
+            /**  --- Compose ---------------------------------------------------------------------------- */
+            api(compose.components.resources)
+            /** ----------------------------------------------------------------------------------------- */
+
             /**  --- Koin   ----------------------------------------------------------------------------- */
             api(libs.koin.core)
             api(libs.koin.annotations)
             /** ----------------------------------------------------------------------------------------- */
-
-//            /**  --- Koin   ----------------------------------------------------------------------------- */
-//            implementation("io.ktor:ktor-client-core:2.3.11")
-//            implementation("io.ktor:ktor-client-cio:2.3.11")
-//            implementation("io.ktor:ktor-client-websockets:2.3.11")
-//            /** ----------------------------------------------------------------------------------------- */
 
             /**  --- Voyager ---------------------------------------------------------------------------- */
             api(libs.voyager.screenmodel)
@@ -117,6 +138,7 @@ kotlin {
             api(libs.okio) // Filesystem
             api(libs.kermit) //Add latest version
             api(libs.state.keeper)
+            api(libs.parcelable)
             api(libs.kase64) // base64
             api(libs.ksoup.entites) // html entities
             /** ----------------------------------------------------------------------------------------- */
@@ -132,11 +154,20 @@ kotlin {
             compileOnly(compose.runtimeSaveable)
         }
 
+        val jvmMain by getting
+        jvmMain.dependencies {
+            api(libs.kotlinx.coroutines.swing)
+            implementation(compose.desktop.currentOs)
+            implementation(libs.sqldelight.sqlite.driver)
+        }
+
         androidMain.dependencies {
             implementation(project(":gdk"))
             implementation(libs.sqldelight.android.driver)
             api(libs.koin.android)
             api(libs.androidx.biometric)
+
+            api(libs.androidx.preference.ktx)
 
 
             /**  --- Breez FDroid ----------------------------------------------------------------------- */
@@ -198,6 +229,43 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 }
+
+
+compose.desktop {
+    application {
+        mainClass = "MainKt"
+
+        nativeDistributions {
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            packageName = "com.blockstream.rover"
+            packageVersion = "1.0.0"
+        }
+    }
+}
+
+
+task("useBlockstreamKeys") {
+    doLast {
+        println("AppKeys: Use Blockstream Keys")
+        rootProject.file("contrib/blockstream_keys.txt")
+            .copyTo(project.file("src/commonMain/composeResources/files/app_keys.txt"), overwrite = true)
+    }
+}
+
+task("appKeys") {
+    doFirst {
+        val appKeys = project.file("src/commonMain/composeResources/files/app_keys.txt")
+        if (appKeys.exists()) {
+            println("AppKeys: ✔")
+        } else {
+            println("AppKeys: Use empty key file")
+            appKeys.createNewFile()
+        }
+    }
+    outputs.upToDateWhen { false }
+}
+
+tasks.getByName("preBuild").dependsOn(tasks.getByName("appKeys"))
 
 tasks.getByName("clean").doFirst {
     delete(project.file("src/include"))

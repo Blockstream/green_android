@@ -1,5 +1,7 @@
 package com.blockstream.common.models.send
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_sweep
 import com.blockstream.common.AddressInputType
 import com.blockstream.common.TransactionSegmentation
 import com.blockstream.common.TransactionType
@@ -25,6 +27,7 @@ import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.toAmountLook
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.stateIn
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -33,6 +36,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import org.jetbrains.compose.resources.getString
 
 abstract class SweepViewModelAbstract(
     greenWallet: GreenWallet,
@@ -84,9 +88,12 @@ class SweepViewModel(greenWallet: GreenWallet, privateKey: String?, accountAsset
     }
 
     init {
-        _navData.value = NavData(
-            title = "id_sweep"
-        )
+
+        viewModelScope.launch {
+            _navData.value = NavData(
+                title = getString(Res.string.id_sweep)
+            )
+        }
 
         session.ifConnected {
             if(accountAsset.value == null) {
@@ -110,7 +117,7 @@ class SweepViewModel(greenWallet: GreenWallet, privateKey: String?, accountAsset
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         if (event is LocalEvents.SetPrivateKey) {

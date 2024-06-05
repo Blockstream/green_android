@@ -1,8 +1,11 @@
 package com.blockstream.common.models.add
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_add_new_account
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.NavData
 import com.blockstream.common.data.Redact
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Event
@@ -11,28 +14,31 @@ import com.blockstream.common.extensions.hasHistory
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountType
+import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.looks.AccountTypeLook
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.looks.AccountTypeLook
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import org.jetbrains.compose.resources.getString
 
 
 abstract class ChooseAccountTypeViewModelAbstract(
-    greenWallet: GreenWallet
-) : AddAccountViewModelAbstract(greenWallet = greenWallet) {
+    greenWallet: GreenWallet, assetId: String?, isReceive: Boolean
+) : AddAccountViewModelAbstract(greenWallet = greenWallet, assetId = assetId, isReceive = isReceive) {
     override fun screenName(): String = "AddAccountChooseType"
 
     @NativeCoroutinesState
-    abstract val asset: MutableStateFlow<EnrichedAsset>
+    abstract val asset: MutableStateFlow<AssetBalance>
 
     @NativeCoroutinesState
     abstract val accountTypes: StateFlow<List<AccountTypeLook>>
@@ -47,12 +53,10 @@ abstract class ChooseAccountTypeViewModelAbstract(
     abstract val hasAdvancedOptions: MutableStateFlow<Boolean>
 }
 
-class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: EnrichedAsset? = null) :
-    ChooseAccountTypeViewModelAbstract(greenWallet = greenWallet) {
-    override val asset: MutableStateFlow<EnrichedAsset> =
-        MutableStateFlow(initAsset ?: session.ifConnected {
-            EnrichedAsset.create(session = session, assetId = BTC_POLICY_ASSET)
-        } ?: EnrichedAsset.Empty)
+class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalance?, isReceive: Boolean) :
+    ChooseAccountTypeViewModelAbstract(greenWallet = greenWallet, assetId = initAsset?.assetId, isReceive = isReceive) {
+    override val asset: MutableStateFlow<AssetBalance> =
+        MutableStateFlow(initAsset ?:EnrichedAsset.Empty.let { AssetBalance.create(it) })
 
     private val _accountTypes: MutableStateFlow<List<AccountTypeLook>> = MutableStateFlow(listOf())
     override val accountTypes: StateFlow<List<AccountTypeLook>> = _accountTypes.asStateFlow()
@@ -65,7 +69,7 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: EnrichedAs
     private val defaultAccountTypes = MutableStateFlow<List<AccountTypeLook>>(listOf())
 
     class LocalEvents {
-        data class SetAsset(val asset: EnrichedAsset) : Event
+        data class SetAsset(val asset: AssetBalance) : Event
         data class ChooseAccountType(val accountType: AccountType) : Event
         data class CreateAccount(val accountType: AccountType) : Event
         data class CreateLightningAccount(val lightningMnemonic: String) : Event, Redact
@@ -81,16 +85,27 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: EnrichedAs
         }
     }
 
+    override fun assetId(): String = asset.value.assetId
+
     init {
         bootstrap()
 
+        viewModelScope.launch {
+            _navData.value = NavData(title = getString(Res.string.id_add_new_account), subtitle = greenWallet.name)
+        }
+
         session.ifConnected {
+
+            viewModelScope.launch {
+                asset.value = initAsset ?: AssetBalance.create(assetId = BTC_POLICY_ASSET, session = session)
+            }
+
             asset.onEach { asset ->
                 val list = mutableListOf<AccountTypeLook>()
 
-                val isBitcoin = asset.isBitcoin
+                val isBitcoin = asset.asset.isBitcoin
 
-                if (asset.isAmp) {
+                if (asset.asset.isAmp) {
                     list += AccountTypeLook(AccountType.AMP_ACCOUNT)
                 } else {
                     // Check if singlesig networks are available in this session
@@ -120,7 +135,7 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: EnrichedAs
                 }
 
                 defaultAccountTypes.value = list.filter {
-                    it.accountType == AccountType.BIP84_SEGWIT || it.accountType == AccountType.STANDARD || it.accountType == AccountType.LIGHTNING || (it.accountType == AccountType.AMP_ACCOUNT && asset.isAmp)
+                    it.accountType == AccountType.BIP84_SEGWIT || it.accountType == AccountType.STANDARD || it.accountType == AccountType.LIGHTNING || (it.accountType == AccountType.AMP_ACCOUNT && asset.asset.isAmp)
                 }
 
                 allAccountTypes.value = list
@@ -141,10 +156,15 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: EnrichedAs
         }
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         when (event) {
+            is Events.Continue -> {
+                _pendingSideEffect?.also {
+                    postSideEffect(it)
+                }
+            }
             is LocalEvents.SetAsset -> {
                 asset.value = event.asset
             }
@@ -157,7 +177,7 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: EnrichedAs
                 createAccount(
                     accountType = event.accountType,
                     accountName = event.accountType.toString(),
-                    network = networkForAccountType(event.accountType, asset.value),
+                    network = networkForAccountType(event.accountType, asset.value.asset),
                 )
             }
 
@@ -173,9 +193,7 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: EnrichedAs
     }
 
     private fun chooseAccountType(accountType: AccountType) {
-        val network = networkForAccountType(accountType, asset.value)
-
-        SideEffects.SideEffectEvent(LocalEvents.CreateAccount(accountType))
+        val network = networkForAccountType(accountType, asset.value.asset)
 
         var sideEffect: SideEffect? = null
         var event: Event? = null
@@ -187,7 +205,8 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: EnrichedAs
                         greenWallet = greenWallet,
                         assetId = asset.value.assetId,
                         network = network,
-                        accountType = AccountType.TWO_OF_THREE
+                        accountType = AccountType.TWO_OF_THREE,
+                        isReceive = isReceive
                     )
                 )
             )
@@ -196,7 +215,7 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: EnrichedAs
                 sideEffect = if (session.isHardwareWallet) {
                     LocalSideEffects.ExperimentalFeaturesDialog(
                         SideEffects.NavigateTo(
-                            NavigateDestinations.ExportLightningKey
+                            NavigateDestinations.JadeQR(isLightningMnemonicExport = true)
                         )
                     )
                 } else {
@@ -239,10 +258,18 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: EnrichedAs
 }
 
 class ChooseAccountTypeViewModelPreview(greenWallet: GreenWallet) :
-    ChooseAccountTypeViewModelAbstract(greenWallet) {
+    ChooseAccountTypeViewModelAbstract(greenWallet, assetId = null, isReceive = false) {
 
-    override val asset: MutableStateFlow<EnrichedAsset> = MutableStateFlow(EnrichedAsset.Empty)
-    override val accountTypes: StateFlow<List<AccountTypeLook>> = MutableStateFlow(listOf())
+    override val asset: MutableStateFlow<AssetBalance> = MutableStateFlow(EnrichedAsset.Empty.let { AssetBalance.create(it) })
+    override val accountTypes: StateFlow<List<AccountTypeLook>> = MutableStateFlow(listOf(
+        AccountTypeLook(AccountType.BIP49_SEGWIT_WRAPPED, true),
+        AccountTypeLook(AccountType.BIP84_SEGWIT, true),
+        AccountTypeLook(AccountType.BIP86_TAPROOT, true),
+        AccountTypeLook(AccountType.LIGHTNING, true),
+        AccountTypeLook(AccountType.LIGHTNING, false),
+        AccountTypeLook(AccountType.STANDARD, true),
+        AccountTypeLook(AccountType.AMP_ACCOUNT, true)
+    ))
     override val accountTypeBeingCreated: StateFlow<AccountTypeLook?> = MutableStateFlow(null)
     override val isShowingAdvancedOptions: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val hasAdvancedOptions: MutableStateFlow<Boolean> = MutableStateFlow(false)

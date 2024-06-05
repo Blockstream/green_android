@@ -34,7 +34,7 @@ class DialogTwoFactorResolver(
 ) : TwoFactorResolver {
     private val context: Context = appFragment.requireContext()
 
-    override suspend fun selectMethod(availableMethods: List<String>): CompletableDeferred<String> {
+    override suspend fun withSelectMethod(availableMethods: List<String>): CompletableDeferred<String> {
         return withContext(context = Dispatchers.Main) {
             CompletableDeferred<String>().also { deferred ->
 

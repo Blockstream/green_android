@@ -2,7 +2,6 @@ package com.blockstream.common.gdk
 
 import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
 import com.blockstream.common.gdk.data.AuthHandlerStatus
-import com.blockstream.common.gdk.data.Balance
 import com.blockstream.common.gdk.data.FeeEstimation
 import com.blockstream.common.gdk.data.LiquidAssets
 import com.blockstream.common.gdk.data.LoginData
@@ -17,7 +16,6 @@ import com.blockstream.common.gdk.params.BalanceParams
 import com.blockstream.common.gdk.params.BcurDecodeParams
 import com.blockstream.common.gdk.params.BcurEncodeParams
 import com.blockstream.common.gdk.params.ConnectionParams
-import com.blockstream.common.gdk.params.Convert
 import com.blockstream.common.gdk.params.CredentialsParams
 import com.blockstream.common.gdk.params.CsvParams
 import com.blockstream.common.gdk.params.DecryptWithPinParams
@@ -42,11 +40,9 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 
 class AndroidGdk(log: Boolean, config: InitConfig) : GdkBinding {
-    private val _dataDir: String
+    private val _dataDir: String = config.datadir
 
     init {
-        _dataDir = config.datadir
-
         // Set maskSensitiveFields always as true for QA peace of mind
         GDKJNI.init(
             GdkJsonConverter(JsonConverter(log = log, maskSensitiveFields = true)),
@@ -341,5 +337,5 @@ class AndroidGdk(log: Boolean, config: InitConfig) : GdkBinding {
 actual fun getGdkBinding(log: Boolean, config: InitConfig): GdkBinding = AndroidGdk(log, config)
 
 actual val GA_ERROR: Int = GDKJNI.GA_ERROR
-actual val GA_RECONNECT: Int = GDKJNI.GA_ERROR
+actual val GA_RECONNECT: Int = GDKJNI.GA_RECONNECT
 actual val GA_NOT_AUTHORIZED: Int = GDKJNI.GA_NOT_AUTHORIZED

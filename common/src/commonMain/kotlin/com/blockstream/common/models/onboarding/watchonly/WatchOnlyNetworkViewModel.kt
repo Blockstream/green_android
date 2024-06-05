@@ -35,7 +35,7 @@ class WatchOnlyNetworkViewModel(setupArgs: SetupArgs) :
     private val _networks: MutableStateFlow<List<Network>> = MutableStateFlow(listOf())
     override val networks: StateFlow<List<Network>> = _networks.asStateFlow()
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         if (event is LocalEvents.ChooseNetwork) {

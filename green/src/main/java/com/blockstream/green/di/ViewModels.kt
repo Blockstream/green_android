@@ -29,7 +29,7 @@ import com.blockstream.common.models.onboarding.watchonly.WatchOnlyCredentialsVi
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyNetworkViewModel
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyPolicyViewModel
 import com.blockstream.common.models.overview.AccountOverviewViewModel
-import com.blockstream.common.models.overview.AssetsViewModel
+import com.blockstream.common.models.overview.WalletAssetsViewModel
 import com.blockstream.common.models.overview.WalletOverviewViewModel
 import com.blockstream.common.models.receive.ReceiveViewModel
 import com.blockstream.common.models.receive.RequestAmountViewModel
@@ -50,6 +50,7 @@ import com.blockstream.common.models.settings.DenominationExchangeRateViewModel
 import com.blockstream.common.models.settings.TwoFactorAuthenticationViewModel
 import com.blockstream.common.models.settings.TwoFactorSetupViewModel
 import com.blockstream.common.models.settings.WalletSettingsViewModel
+import com.blockstream.common.models.settings.WatchOnlyCredentialsSettingsViewModel
 import com.blockstream.common.models.settings.WatchOnlyViewModel
 import com.blockstream.common.models.sheets.AnalyticsViewModel
 import com.blockstream.common.models.sheets.AssetDetailsViewModel
@@ -79,7 +80,6 @@ val viewModels = module {
     viewModelOf(::DrawerViewModel)
     viewModelOf(::EnterRecoveryPhraseViewModel)
     viewModelOf(::PinViewModel)
-    viewModelOf(::RecoveryIntroViewModel)
     viewModelOf(::RecoveryWordsViewModel)
     viewModelOf(::RecoveryCheckViewModel)
     viewModelOf(::LnUrlAuthViewModel)
@@ -92,7 +92,7 @@ val viewModels = module {
     viewModelOf(::ReviewAddAccountViewModel)
     viewModelOf(::Account2of3ViewModel)
     viewModelOf(::TwoFactorAuthenticationViewModel)
-    viewModelOf(::AssetsViewModel)
+    viewModelOf(::WalletAssetsViewModel)
     viewModelOf(::ArchivedAccountsViewModel)
     viewModelOf(::UseHardwareDeviceViewModel)
     viewModelOf(::JadeGuideViewModel)
@@ -105,8 +105,6 @@ val viewModels = module {
     viewModelOf(::Bip39PassphraseViewModel)
     viewModelOf(::ReceiveViewModel)
     viewModelOf(::RecoveryHelpViewModel)
-    viewModelOf(::TransactionViewModel)
-    viewModelOf(::AssetDetailsViewModel)
     viewModelOf(::AccountOverviewViewModel)
     viewModelOf(::DenominationExchangeRateViewModel)
     viewModelOf(::RequestAmountViewModel)
@@ -114,9 +112,12 @@ val viewModels = module {
     viewModelOf(::DenominationViewModel)
     viewModelOf(::BumpViewModel)
     viewModelOf(::LightningNodeViewModel)
-    viewModelOf(::AssetDetailsViewModel)
     viewModelOf(::RedepositViewModel)
     viewModelOf(::ReEnable2FAViewModel)
+    viewModelOf(::WatchOnlyCredentialsSettingsViewModel)
+    viewModel {
+        AssetDetailsViewModel(get(), get(), getOrNull())
+    }
     viewModel {
         FeeViewModel(get(), getOrNull(), getOrNull(), get())
     }
@@ -150,7 +151,7 @@ val viewModels = module {
     }
     viewModel {
         // https://github.com/InsertKoinIO/koin/issues/1352
-        ChooseAccountTypeViewModel(get(), getOrNull())
+        ChooseAccountTypeViewModel(get(), getOrNull(), get())
     }
     viewModel {
         // https://github.com/InsertKoinIO/koin/issues/1352

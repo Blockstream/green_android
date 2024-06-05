@@ -37,11 +37,12 @@ import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.settings.WalletSettingsSection
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
-import com.blockstream.compose.utils.stringResourceId
+import com.blockstream.common.utils.getStringFromId
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.data.BannerView
@@ -57,7 +58,6 @@ import com.blockstream.green.ui.bottomsheets.DenominationBottomSheetDialogFragme
 import com.blockstream.green.ui.bottomsheets.DeviceInteractionRequestBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.PassphraseBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.PinMatrixBottomSheetDialogFragment
-import com.blockstream.green.ui.dialogs.AppRateDialogFragment
 import com.blockstream.green.ui.drawer.DrawerFragment
 import com.blockstream.green.utils.BannersHelper
 import com.blockstream.green.utils.copyToClipboard
@@ -123,9 +123,9 @@ abstract class AppFragment<T : ViewDataBinding>(
     open fun updateToolbar() {
         val navData: NavData? = getGreenViewModel()?.navData?.value
         (navData?.title ?: title)?.let {
-            toolbar.title = stringResourceId(requireContext(), it)
+            toolbar.title = it
         }
-        toolbar.subtitle = (navData?.subtitle ?: subtitle)?.let { stringResourceId(requireContext(), it) }
+        toolbar.subtitle = (navData?.subtitle ?: subtitle)
         toolbar.logo = null
         // Only show toolbar icon if it's overridden eg. add account flow
         toolbarIcon?.let { toolbar.setLogo(it) }
@@ -253,7 +253,7 @@ abstract class AppFragment<T : ViewDataBinding>(
         findNavController().popBackStack(destinationId, inclusive)
     }
 
-    open fun handleSideEffect(sideEffect: SideEffect){
+    open suspend fun handleSideEffect(sideEffect: SideEffect){
         when (sideEffect){
             is SideEffects.OpenBrowser -> {
                 if(!useCompose) {
@@ -262,21 +262,24 @@ abstract class AppFragment<T : ViewDataBinding>(
             }
             is SideEffects.Snackbar -> {
                 // Snackbar is implemented in compose but LocalSnackbar is only available in GreenApp
-                view?.also {
-                    Snackbar.make(
-                        it,
-                        requireContext().stringFromIdentifier(sideEffect.text),
-                        Snackbar.LENGTH_SHORT
-                    ).show()
+
+                lifecycleScope.launch {
+                    view?.also {
+                        Snackbar.make(
+                            it,
+                            sideEffect.text.getString(),
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             }
             is SideEffects.Dialog -> {
                 if (!useCompose) {
                     MaterialAlertDialogBuilder(requireContext()).setTitle(
                             requireContext().stringFromIdentifierOrNull(
-                                sideEffect.title
+                                sideEffect.title?.getString()
                             )
-                        ).setMessage(requireContext().stringFromIdentifier(sideEffect.message))
+                        ).setMessage(requireContext().stringFromIdentifier(sideEffect.message.getString()))
                         .setPositiveButton(android.R.string.ok, null).show()
                 }
             }
@@ -333,7 +336,11 @@ abstract class AppFragment<T : ViewDataBinding>(
             }
 
             is SideEffects.NavigateToRoot -> {
-                findNavController().popBackStack(R.id.walletOverviewFragment, false)
+                if (sideEffect.popToReceive) {
+                    findNavController().popBackStack(R.id.receiveFragment, false)
+                } else {
+                    findNavController().popBackStack(R.id.walletOverviewFragment, false)
+                }
             }
 
             is SideEffects.NavigateBack -> {
@@ -343,8 +350,8 @@ abstract class AppFragment<T : ViewDataBinding>(
                     }
                 } else if (sideEffect.message != null) {
                     dialog(
-                        title = stringResourceId(requireContext(), sideEffect.title ?: ""),
-                        message = stringResourceId(requireContext(), sideEffect.message ?: "")
+                        title = sideEffect.title?.getString() ?: "",
+                        message = sideEffect.message?.getString() ?: ""
                     ) {
                         popBackStack()
                     }
@@ -381,10 +388,6 @@ abstract class AppFragment<T : ViewDataBinding>(
                 }
             }
 
-            is SideEffects.AppReview -> {
-                AppRateDialogFragment.show(childFragmentManager)
-            }
-
             is SideEffects.NavigateTo -> {
                 (sideEffect.destination as? NavigateDestinations.AddWallet)?.also {
                     navigate(NavGraphDirections.actionGlobalAddWalletFragment())
@@ -403,11 +406,11 @@ abstract class AppFragment<T : ViewDataBinding>(
                 }
 
                 (sideEffect.destination as? NavigateDestinations.WatchOnlyNetwork)?.also {
-                    navigate(NavGraphDirections.actionGlobalWatchOnlyNetworkFragment(setupArgs = it.args))
+                    navigate(NavGraphDirections.actionGlobalWatchOnlyNetworkFragment(setupArgs = it.setupArgs))
                 }
 
                 (sideEffect.destination as? NavigateDestinations.WatchOnlyCredentials)?.also {
-                    navigate(NavGraphDirections.actionGlobalWatchOnlyCredentialsFragment(setupArgs = it.args))
+                    navigate(NavGraphDirections.actionGlobalWatchOnlyCredentialsFragment(setupArgs = it.setupArgs))
                 }
 
                 (sideEffect.destination as? NavigateDestinations.AppSettings)?.also {
@@ -511,7 +514,7 @@ abstract class AppFragment<T : ViewDataBinding>(
                 (sideEffect.destination as? NavigateDestinations.RecoveryIntro)?.also {
                     navigate(
                         NavGraphDirections.actionGlobalRecoveryIntroFragment(
-                            setupArgs = it.args
+                            setupArgs = it.setupArgs
                         )
                     )
                 }
@@ -531,7 +534,7 @@ abstract class AppFragment<T : ViewDataBinding>(
                         )
                     )
                 }
-                (sideEffect.destination as? NavigateDestinations.Assets)?.also {
+                (sideEffect.destination as? NavigateDestinations.WalletAssets)?.also {
                     navigate(
                         NavGraphDirections.actionGlobalAssetsFragment(
                             wallet = getGreenViewModel()!!.greenWallet
@@ -549,7 +552,9 @@ abstract class AppFragment<T : ViewDataBinding>(
                 (sideEffect.destination as? NavigateDestinations.ChooseAccountType)?.also {
                     navigate(
                         NavGraphDirections.actionGlobalChooseAccountTypeFragment(
-                            wallet = it.greenWallet
+                            wallet = getGreenViewModel()!!.greenWallet,
+                            isReceive = it.isReceive,
+                            asset = it.assetBalance?.asset
                         )
                     )
                 }
@@ -576,6 +581,83 @@ abstract class AppFragment<T : ViewDataBinding>(
                         NavGraphDirections.actionGlobalTwoFractorAuthenticationFragment(
                             wallet = getGreenViewModel()!!.greenWallet,
                             network = it.network
+                        )
+                    )
+                }
+
+                (sideEffect.destination as? NavigateDestinations.JadeQR)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalJadeQrFragment(
+                            wallet = getGreenViewModel()!!.greenWallet,
+                            isLightningMnemonicExport = it.isLightningMnemonicExport
+                        )
+                    )
+                }
+
+                (sideEffect.destination as? NavigateDestinations.ReviewAddAccount)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalReviewAddAccountFragment(
+                            setupArgs = it.setupArgs,
+                        )
+                    )
+                }
+
+                (sideEffect.destination as? NavigateDestinations.AddAccount2of3)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalAccount2of3Fragment(
+                            setupArgs = it.setupArgs,
+                        )
+                    )
+                }
+
+                (sideEffect.destination as? NavigateDestinations.Xpub)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalXpubFragment(
+                            setupArgs = it.setupArgs
+                        )
+                    )
+                }
+                (sideEffect.destination as? NavigateDestinations.EnterRecoveryPhrase)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalEnterRecoveryPhraseFragment(
+                            setupArgs = it.setupArgs
+                        )
+                    )
+                }
+
+                (sideEffect.destination as? NavigateDestinations.RecoveryWords)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalRecoveryWordsFragment(
+                            args = it.setupArgs
+                        )
+                    )
+                }
+
+                (sideEffect.destination as? NavigateDestinations.RecoveryCheck)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalRecoveryCheckFragment(
+                            args = it.setupArgs,
+                        ), navOptionsBuilder = NavOptions.Builder().also {
+                            it.setPopUpTo(R.id.recoveryIntroFragment, false)
+                        }
+                    )
+                }
+
+                (sideEffect.destination as? NavigateDestinations.WalletSettings)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalWalletSettingsFragment(
+                            wallet = getGreenViewModel()!!.greenWallet,
+                            showRecoveryTransactions = it.section == WalletSettingsSection.RecoveryTransactions,
+                            network = it.network
+                        )
+                    )
+                }
+
+                (sideEffect.destination as? NavigateDestinations.Addresses)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalPreviousAddressesFragment(
+                            wallet = getGreenViewModel()!!.greenWallet,
+                            account = it.accountAsset.account,
                         )
                     )
                 }

@@ -2,7 +2,9 @@ package com.blockstream.common.models.devices
 
 import com.blockstream.common.models.GreenViewModel
 
-open class JadeGuideViewModel : GreenViewModel(
+abstract class JadeGuideViewModelAbstract : GreenViewModel()
+
+class JadeGuideViewModel : JadeGuideViewModelAbstract(
 ) {
     override fun screenName(): String = "JadeSetupGuide"
 
@@ -11,8 +13,8 @@ open class JadeGuideViewModel : GreenViewModel(
     }
 }
 
-class JadeGuideViewModelPreview : JadeGuideViewModel() {
+class JadeGuideViewModelPreview : JadeGuideViewModelAbstract() {
     companion object {
-        fun preview() = JadeGuideViewModel()
+        fun preview() = JadeGuideViewModelPreview()
     }
 }

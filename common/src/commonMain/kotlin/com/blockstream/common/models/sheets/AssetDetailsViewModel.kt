@@ -1,5 +1,15 @@
 package com.blockstream.common.models.sheets
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_account_balance
+import blockstream_green.common.generated.resources.id_asset_id
+import blockstream_green.common.generated.resources.id_block_height
+import blockstream_green.common.generated.resources.id_issuer
+import blockstream_green.common.generated.resources.id_name
+import blockstream_green.common.generated.resources.id_no_registered_name_for_this
+import blockstream_green.common.generated.resources.id_precision
+import blockstream_green.common.generated.resources.id_ticker
+import blockstream_green.common.generated.resources.id_total_balance
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.isPolicyAsset
@@ -8,6 +18,7 @@ import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.toAmountLookOrNa
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
@@ -25,18 +36,18 @@ abstract class AssetDetailsViewModelAbstract(
     accountAssetOrNull = accountAsset
 ) {
     @NativeCoroutinesState
-    abstract val data: StateFlow<List<Pair<String, String>>>
+    abstract val data: StateFlow<List<Pair<StringHolder, StringHolder>>>
 }
 
 class AssetDetailsViewModel(
+    greenWallet: GreenWallet,
     assetId: String,
-    accountAsset: AccountAsset?,
-    greenWallet: GreenWallet
+    accountAsset: AccountAsset?
 ) : AssetDetailsViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
     override fun screenName(): String = "AssetDetails"
 
 
-    private val _data: MutableStateFlow<List<Pair<String, String>>> = MutableStateFlow(listOf())
+    private val _data: MutableStateFlow<List<Pair<StringHolder, StringHolder>>> = MutableStateFlow(listOf())
     override val data = _data.asStateFlow()
 
     init {
@@ -50,27 +61,36 @@ class AssetDetailsViewModel(
                 _data.value = buildList {
                     EnrichedAsset.create(session = session, assetId = assetId).also {
                         val isPolicyAsset = it.assetId.isPolicyAsset(session = session)
-                        add("id_name" to (it.nameOrNull(session) ?: "id_no_registered_name_for_this"))
+                        add(
+                            StringHolder(stringResource = Res.string.id_name)
+                                    to (it.nameOrNull(session) ?: StringHolder(stringResource = Res.string.id_no_registered_name_for_this))
+                        )
 
                         if (!isPolicyAsset) {
-                            add("id_asset_id" to it.assetId)
+                            add(StringHolder.create(Res.string.id_asset_id) to StringHolder.create(it.assetId))
                         }
 
-                        add("id_block_height" to "${block.height}")
+                        add(StringHolder.create(Res.string.id_block_height) to StringHolder.create(block.height))
 
-                        add((if(accountAsset == null) "id_total_balance" else "id_account_balance") to assets.balance(assetId).toAmountLookOrNa(
-                            session = session,
-                            assetId = assetId,
-                            withUnit = true
-                        ))
+                        add(
+                            (if (accountAsset == null) StringHolder.create(Res.string.id_total_balance) else StringHolder.create(
+                                Res.string.id_account_balance
+                            )) to StringHolder.create(
+                                assets.balance(assetId).toAmountLookOrNa(
+                                    session = session,
+                                    assetId = assetId,
+                                    withUnit = true
+                                )
+                            )
+                        )
 
                         if (!isPolicyAsset) {
-                            add("id_precision" to "${it.precision}")
+                            add(StringHolder.create(Res.string.id_precision) to StringHolder.create(it.precision))
                             it.ticker(session)?.also {
-                                add("id_ticker" to it)
+                                add(StringHolder.create(Res.string.id_ticker) to StringHolder.create(it))
                             }
                             it.entity?.domain?.also {
-                                add("id_issuer" to it)
+                                add(StringHolder.create(Res.string.id_issuer) to StringHolder.create(it))
                             }
                         }
                     }
@@ -86,14 +106,14 @@ class AssetDetailsViewModel(
 
 class AssetDetailsViewModelPreview : AssetDetailsViewModelAbstract(accountAsset = previewAccountAsset(),  greenWallet = previewWallet()) {
 
-    override val data: StateFlow<List<Pair<String, String>>> = MutableStateFlow(
+    override val data: StateFlow<List<Pair<StringHolder, StringHolder>>> = MutableStateFlow(
         listOf(
-            "Name" to "Tether USD",
-            "Asset ID" to "Asset ID",
-            "Account Balance" to "0.0500000 USDt",
-            "Precision" to "8",
-            "Ticker" to "USDt",
-            "Issuer" to "tether.io",
+            StringHolder.create("Name") to StringHolder.create("Tether USD"),
+            StringHolder.create("Asset ID") to StringHolder.create("Asset ID"),
+            StringHolder.create("Account Balance") to StringHolder.create("0.0500000 USDt"),
+            StringHolder.create("Precision") to StringHolder.create("8"),
+            StringHolder.create("Ticker") to StringHolder.create("USDt"),
+            StringHolder.create("Issuer") to StringHolder.create("tether.io"),
         )
     )
 

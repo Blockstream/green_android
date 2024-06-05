@@ -1,5 +1,13 @@
 package com.blockstream.common.models.overview
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.gear_six
+import blockstream_green.common.generated.resources.id_create_new_account
+import blockstream_green.common.generated.resources.id_lightning_account
+import blockstream_green.common.generated.resources.id_log_out
+import blockstream_green.common.generated.resources.id_settings
+import blockstream_green.common.generated.resources.plus_circle
+import blockstream_green.common.generated.resources.sign_out
 import breez_sdk.HealthCheckStatus
 import com.blockstream.common.Urls
 import com.blockstream.common.data.AlertType
@@ -31,8 +39,8 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.AppReviewHelper
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.toAmountLook
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -46,6 +54,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
+import org.jetbrains.compose.resources.getString
 
 abstract class WalletOverviewViewModelAbstract(
     greenWallet: GreenWallet
@@ -229,12 +238,12 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
             isWalletOnboarding.onEach {
                 _navData.value = NavData(
                     title = greenWallet.name,
-                    subtitle = if(session.isLightningShortcut) "id_lightning_account" else null,
+                    subtitle = if(session.isLightningShortcut) getString(Res.string.id_lightning_account) else null,
                     isVisible = !it,
                     actions = listOfNotNull(
                         NavAction(
-                            title = "id_create_new_account",
-                            icon = "plus_circle",
+                            title = getString(Res.string.id_create_new_account),
+                            icon = Res.drawable.plus_circle,
                             isMenuEntry = true,
                             onClick = {
                                 postEvent(Events.ChooseAccountType())
@@ -242,16 +251,16 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
                             }
                         ).takeIf { !session.isWatchOnly && !greenWallet.isLightning },
                         NavAction(
-                            title = "id_settings",
-                            icon = "gear_six",
+                            title = getString(Res.string.id_settings),
+                            icon = Res.drawable.gear_six,
                             isMenuEntry = true,
                             onClick = {
-                                postEvent(NavigateDestinations.WalletSettings)
+                                postEvent(NavigateDestinations.WalletSettings())
                             }
                         ),
                         NavAction(
-                            title = "id_log_out",
-                            icon = "sign_out",
+                            title = getString(Res.string.id_log_out),
+                            icon = Res.drawable.sign_out,
                             isMenuEntry = true,
                             onClick = {
                                 postEvent(Events.Logout(reason = LogoutReason.USER_ACTION))
@@ -344,7 +353,7 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
         }
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         when (event) {

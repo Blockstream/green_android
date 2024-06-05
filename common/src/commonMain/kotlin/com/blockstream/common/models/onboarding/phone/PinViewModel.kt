@@ -1,5 +1,9 @@
 package com.blockstream.common.models.onboarding.phone
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_creating_wallet
+import blockstream_green.common.generated.resources.id_recovery_phrase_check
+import blockstream_green.common.generated.resources.id_restoring_your_wallet
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SetupArgs
@@ -24,6 +28,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.getString
 
 abstract class PinViewModelAbstract(
     val setupArgs: SetupArgs
@@ -67,7 +72,7 @@ class PinViewModel constructor(
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         if (event is LocalEvents.SetPin) {
@@ -94,8 +99,9 @@ class PinViewModel constructor(
     }
 
     private fun checkRecoveryPhrase(isTestnet: Boolean, mnemonic: String, password: String?) {
-        onProgressDescription.value = "id_recovery_phrase_check"
         doAsync({
+            onProgressDescription.value = getString(Res.string.id_recovery_phrase_check)
+
             session.loginWithMnemonic(
                 isTestnet = isTestnet,
                 loginCredentialsParams = LoginCredentialsParams(
@@ -140,8 +146,9 @@ class PinViewModel constructor(
     }
 
     private fun createNewWallet(setupArgs: SetupArgs, pin: String) {
-        onProgressDescription.value = "id_creating_wallet"
         doAsync({
+            onProgressDescription.value = getString(Res.string.id_creating_wallet)
+
             val loginData = session.loginWithMnemonic(
                 isTestnet = setupArgs.isTestnet == true,
                 loginCredentialsParams = LoginCredentialsParams(mnemonic = setupArgs.mnemonic),
@@ -203,8 +210,9 @@ class PinViewModel constructor(
         setupArgs: SetupArgs,
         pin: String,
     ) {
-        onProgressDescription.value = "id_restoring_your_wallet"
         doAsync({
+            onProgressDescription.value = getString(Res.string.id_restoring_your_wallet)
+
             session.loginWithMnemonic(
                 isTestnet = setupArgs.isTestnet == true,
                 loginCredentialsParams = LoginCredentialsParams(
@@ -295,7 +303,7 @@ class PinViewModel constructor(
             onProgress.value = it == null
             rocketAnimation.value = it == null
         }, onSuccess = {
-            if (session.hasLightning) {
+            if (session.hasLightning && !setupArgs.isRecoveryFlow) {
                 _greenWallet = it
                 postSideEffect(SideEffects.LightningShortcut)
             } else {

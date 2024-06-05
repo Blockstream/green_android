@@ -1,5 +1,22 @@
 package com.blockstream.common.models.overview
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.box_arrow_down
+import blockstream_green.common.generated.resources.id_add_lightning_shortcut
+import blockstream_green.common.generated.resources.id_archive_account
+import blockstream_green.common.generated.resources.id_copied_to_clipboard
+import blockstream_green.common.generated.resources.id_help
+import blockstream_green.common.generated.resources.id_node_info
+import blockstream_green.common.generated.resources.id_remove
+import blockstream_green.common.generated.resources.id_remove_lightning_shortcut
+import blockstream_green.common.generated.resources.id_rename_account
+import blockstream_green.common.generated.resources.id_rescan_swaps_initiated
+import blockstream_green.common.generated.resources.info
+import blockstream_green.common.generated.resources.lightning
+import blockstream_green.common.generated.resources.lightning_slash
+import blockstream_green.common.generated.resources.question
+import blockstream_green.common.generated.resources.text_aa
+import blockstream_green.common.generated.resources.trash
 import breez_sdk.HealthCheckStatus
 import com.blockstream.common.Urls
 import com.blockstream.common.data.AlertType
@@ -31,8 +48,10 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
+import com.blockstream.common.utils.StringHolder
 import com.rickclephas.kmp.observableviewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -43,6 +62,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import org.jetbrains.compose.resources.getString
 
 abstract class AccountOverviewViewModelAbstract(
     greenWallet: GreenWallet, accountAsset: AccountAsset
@@ -195,56 +215,57 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                     subtitle = accountAsset?.account?.name,
                     actions = listOfNotNull(
                         NavAction(
-                            title = "id_help",
-                            icon = "question",
+                            title = getString(
+                                Res.string.id_help),
+                            icon = Res.drawable.question,
                             isMenuEntry = true,
                             onClick = {
                                 postEvent(Events.OpenBrowser(Urls.HELP_AMP_ASSETS))
                             }
                         ).takeIf { account.isAmp },
                         NavAction(
-                            title = "id_rename_account",
-                            icon = "text_aa",
+                            title = getString(Res.string.id_rename_account),
+                            icon = Res.drawable.text_aa,
                             isMenuEntry = true,
                             onClick = {
                                 postEvent(NavigateDestinations.RenameAccount(account))
                             }
                         ).takeIf { !session.isWatchOnly && !account.isLightning },
                         NavAction(
-                            title = "id_archive_account",
-                            icon = "box_arrow_down",
+                            title = getString(Res.string.id_archive_account),
+                            icon = Res.drawable.box_arrow_down,
                             isMenuEntry = true,
                             onClick = {
                                 postEvent(Events.ArchiveAccount(account))
                             }
                         ).takeIf { !session.isWatchOnly && !account.isLightning && accounts.size > 1 },
                         NavAction(
-                            title = "id_node_info",
-                            icon = "info",
+                            title = getString(Res.string.id_node_info),
+                            icon = Res.drawable.info,
                             isMenuEntry = true,
                             onClick = {
                                 postEvent(NavigateDestinations.LightningNode)
                             }
                         ).takeIf { account.isLightning },
                         NavAction(
-                            title = "id_add_lightning_shortcut",
-                            icon = "lightning",
+                            title = getString(Res.string.id_add_lightning_shortcut),
+                            icon = Res.drawable.lightning,
                             isMenuEntry = true,
                             onClick = {
                                 postEvent(LocalEvents.EnableLightningShortcut)
                             }
                         ).takeIf { account.isLightning && hasLightningShortcut == false },
                         NavAction(
-                            title = "id_remove_lightning_shortcut",
-                            icon = "ic_lightning_slash",
+                            title = getString(Res.string.id_remove_lightning_shortcut),
+                            icon = Res.drawable.lightning_slash,
                             isMenuEntry = true,
                             onClick = {
                                 postEvent(LocalEvents.RemoveLightningShortcut)
                             }
                         ).takeIf { account.isLightning &&  hasLightningShortcut == true },
                         NavAction(
-                            title = "id_remove",
-                            icon = "trash",
+                            title = getString(Res.string.id_remove),
+                            icon = Res.drawable.trash,
                             isMenuEntry = true,
                             onClick = {
                                 postEvent(Events.RemoveAccount(account))
@@ -272,7 +293,7 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         when (event) {
@@ -321,7 +342,7 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
             }
 
             is LocalEvents.CopyAccountId -> {
-                postSideEffect(SideEffects.CopyToClipboard(value = account.receivingId, message = "id_copied_to_clipboard", label = "Account ID"))
+                postSideEffect(SideEffects.CopyToClipboard(value = account.receivingId, message = getString(Res.string.id_copied_to_clipboard), label = "Account ID"))
             }
 
             is LocalEvents.ClickLightningSweep -> {
@@ -362,7 +383,7 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
     }
 
     private fun rescanSwaps() {
-        postSideEffect(SideEffects.Snackbar("id_rescan_swaps_initiated"))
+        postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_rescan_swaps_initiated)))
 
         doAsync({
             session.lightningSdkOrNull?.rescanSwaps()

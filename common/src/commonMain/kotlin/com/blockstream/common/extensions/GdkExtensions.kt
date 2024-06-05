@@ -1,6 +1,13 @@
 package com.blockstream.common.extensions
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_authenticator_app
+import blockstream_green.common.generated.resources.id_call
+import blockstream_green.common.generated.resources.id_email
+import blockstream_green.common.generated.resources.id_sms
+import blockstream_green.common.generated.resources.id_telegram
 import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.data.AlertType
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.gdk.GA_ERROR
 import com.blockstream.common.gdk.GA_NOT_AUTHORIZED
@@ -12,6 +19,7 @@ import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.utils.getBitcoinOrLiquidUnit
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
+import org.jetbrains.compose.resources.StringResource
 
 inline fun <T : Any> GdkSession.ifConnected(block: () -> T?): T? {
     return if (this.isConnected) {
@@ -39,8 +47,8 @@ fun ByteArray.reverseBytes(): ByteArray {
     return this
 }
 
-fun Transaction.getConfirmationsMax(session: GdkSession): Int {
-    return getConfirmations(session.block(network).value.height).coerceAtMost((if (network.isLiquid) 3 else 7)).toInt()
+fun Transaction.getConfirmationsMax(session: GdkSession): Long {
+    return getConfirmations(session.block(network).value.height).coerceAtMost((if (network.isLiquid) 3 else 7))
 }
 
 fun AccountType?.title(): String = when (this) {
@@ -53,24 +61,6 @@ fun AccountType?.title(): String = when (this) {
     AccountType.BIP86_TAPROOT -> "Taproot"
     AccountType.LIGHTNING -> "Lightning"
     else -> "Unknown"
-}
-
-fun AccountType.policyRes(): String = when (this) {
-    AccountType.STANDARD -> "id_2of2"
-    AccountType.AMP_ACCOUNT -> "id_amp"
-    AccountType.TWO_OF_THREE -> "id_2of3"
-    AccountType.BIP44_LEGACY -> "id_legacy"
-    AccountType.BIP49_SEGWIT_WRAPPED -> "id_legacy_segwit"
-    AccountType.BIP84_SEGWIT -> "id_native_segwit"
-    AccountType.BIP86_TAPROOT -> "id_taproot"
-    AccountType.LIGHTNING -> "id_fastest"
-    else -> "id_unknown"
-}
-
-fun AccountType.policyAndType(): String = when {
-    this.isMutlisig() -> "id_multisig__|${policyRes()}"
-    this.isLightning() -> "id_lightning"
-    else -> "id_singlesig__|${policyRes()}"
 }
 
 fun Account.needs2faActivation(session: GdkSession): Boolean {
@@ -92,6 +82,10 @@ fun Network.needs2faActivation(session: GdkSession): Boolean {
 
 fun Account.hasExpiredUtxos(session: GdkSession): Boolean {
     return !session.isWatchOnly && isMultisig && session.expired2FA.value.contains(this)
+}
+
+fun Account.hasTwoFactorReset(session: GdkSession): Boolean {
+    return isMultisig && session.twoFactorReset(network).value?.isActive == true
 }
 
 fun String?.isPolicyAsset(network: Network?): Boolean = (this == null || this == network?.policyAsset)
@@ -122,14 +116,14 @@ fun Account.hasHistory(session: GdkSession): Boolean {
     }
 }
 
-fun String.getAssetNameOrNull(session: GdkSession): String? {
-    return if(this.isPolicyAsset(session)) {
+fun String.getAssetNameOrNull(session: GdkSession?): String? {
+    return if(session == null || this.isPolicyAsset(session)) {
         if(this == BTC_POLICY_ASSET){
             "Bitcoin"
         }else{
             "Liquid Bitcoin"
         }.let {
-            if(session.isTestnet) "Testnet $it" else it
+            if(session?.isTestnet == true) "Testnet $it" else it
         }
     }else{
         session.liquid?.let { session.getAsset(this)?.name }
@@ -176,7 +170,7 @@ fun Throwable.isNotAuthorized() =
 
 fun Throwable.isConnectionError() = message?.contains("failed to connect") ?: false
 
-fun String.twoFactorMethodsLocalized(): String = when (this) {
+fun String.twoFactorMethodsLocalizedDeprecated(): String = when (this) {
     "phone" -> "id_call"
     "gauth" -> "id_authenticator_app"
     else -> {
@@ -184,6 +178,18 @@ fun String.twoFactorMethodsLocalized(): String = when (this) {
     }
 }
 
-fun List<String>.twoFactorMethodsLocalized(): List<String> = map {
+fun String.twoFactorMethodsLocalized(): StringResource = when (this) {
+    "email" -> Res.string.id_email
+    "phone" -> Res.string.id_call
+    "telegram" -> Res.string.id_telegram
+    "gauth" -> Res.string.id_authenticator_app
+    else -> Res.string.id_sms
+}
+
+fun List<String>.twoFactorMethodsLocalizedDeprecated(): List<String> = map {
+    it.twoFactorMethodsLocalizedDeprecated()
+}
+
+fun List<String>.twoFactorMethodsLocalized(): List<StringResource> = map {
     it.twoFactorMethodsLocalized()
 }

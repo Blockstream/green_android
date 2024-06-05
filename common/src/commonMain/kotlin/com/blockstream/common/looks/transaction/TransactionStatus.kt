@@ -20,7 +20,7 @@ sealed interface TransactionStatus {
                 }
 
                 confirmations < transaction.network.confirmationsRequired -> {
-                    Confirmed(confirmations = confirmations.toInt(), transaction.network.confirmationsRequired)
+                    Confirmed(confirmations = confirmations, transaction.network.confirmationsRequired)
                 }
 
                 confirmations >= transaction.network.confirmationsRequired -> {
@@ -35,7 +35,7 @@ sealed interface TransactionStatus {
     }
 }
 
-class Unconfirmed(val confirmationsRequired: Int = 6) : TransactionStatus
-class Confirmed(val confirmations: Int, val confirmationsRequired : Int = 6) : TransactionStatus
+class Unconfirmed(val confirmationsRequired: Long = 6) : TransactionStatus
+class Confirmed(val confirmations: Long, val confirmationsRequired : Long = 6) : TransactionStatus
 object Completed : TransactionStatus
 class Failed(val error: String = "") : TransactionStatus

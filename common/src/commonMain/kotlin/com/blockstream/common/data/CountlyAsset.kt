@@ -15,7 +15,7 @@ data class CountlyAsset constructor(
     @SerialName("id") val assetId: String,
     @SerialName("amp") val isAmp: Boolean = false,
     @SerialName("weight") val weight: Int = 0,
-    @SerialName("isSendable") val isSendable: Boolean = true, // Display "Any Liquid Asset" UI element
+//    @SerialName("isSendable") val isSendable: Boolean = true, // Display "Any Liquid Asset" UI element/**/
     @SerialName("isAnyLiquid") val isAnyLiquidAsset: Boolean = false, // Display "Any Liquid Asset" UI element
     @SerialName("isAnyAmp") val isAnyAmpAsset: Boolean = false // Display "Any AMP Asset" UI element
 ) : GreenJson<CountlyAsset>(), Parcelable {
@@ -31,7 +31,7 @@ data class CountlyAsset constructor(
             CountlyAsset( // Any Liquid Asset
                 assetId = it.policyAsset,
                 weight = -10,
-                isSendable = false,
+//                isSendable = false,
                 isAnyLiquidAsset = true
             )
         }
@@ -40,7 +40,7 @@ data class CountlyAsset constructor(
             CountlyAsset( // Any Liquid Asset
                 assetId = it.policyAsset,
                 weight = -20,
-                isSendable = false,
+//                isSendable = false,
                 isAmp = true,
                 isAnyAmpAsset = true
             )

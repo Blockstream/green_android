@@ -19,7 +19,7 @@ class WalletDeleteViewModel(greenWallet: GreenWallet) : WalletDeleteViewModelAbs
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
         if (event is Events.Continue) {
             deleteWallet()

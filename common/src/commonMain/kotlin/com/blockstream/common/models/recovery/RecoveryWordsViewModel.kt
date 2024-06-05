@@ -1,13 +1,15 @@
 package com.blockstream.common.models.recovery
 
+import com.blockstream.common.data.NavData
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.models.recovery.RecoveryCheckViewModel.Companion.RecoveryPhraseChecks
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.recovery.RecoveryCheckViewModel.Companion.RecoveryPhraseChecks
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
+import com.rickclephas.kmp.observableviewmodel.launch
 
 abstract class RecoveryWordsViewModelAbstract(val setupArgs: SetupArgs) :
     GreenViewModel(greenWalletOrNull = setupArgs.greenWallet) {
@@ -38,16 +40,20 @@ class RecoveryWordsViewModel(setupArgs: SetupArgs) : RecoveryWordsViewModelAbstr
 
         words = mnemonicWords.subList(from, from + WORDS_PER_PAGE)
 
+        viewModelScope.launch {
+            _navData.value = NavData(title = setupArgs.accountType?.toString(), subtitle = greenWalletOrNull?.name)
+        }
+
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
         if(event is Events.Continue){
             (if(isLastPage){
-                NavigateDestinations.RecoveryCheck(args = setupArgs.pageOne())
+                NavigateDestinations.RecoveryCheck(setupArgs = setupArgs.pageOne())
             }else{
-                NavigateDestinations.RecoveryWords(args = setupArgs.nextPage())
+                NavigateDestinations.RecoveryWords(setupArgs = setupArgs.nextPage())
             }).also {
                 postSideEffect(SideEffects.NavigateTo(it))
             }

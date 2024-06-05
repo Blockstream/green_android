@@ -10,11 +10,10 @@ import com.blockstream.common.looks.wallet.WalletListLook
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.stateIn
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -105,7 +104,7 @@ abstract class WalletsViewModel(isHome: Boolean) : WalletsViewModelAbstract(isHo
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
         if (event is LocalEvents.SelectWallet) {
             val parentWallet = event.greenWallet
@@ -125,7 +124,7 @@ abstract class WalletsViewModel(isHome: Boolean) : WalletsViewModelAbstract(isHo
             } else {
                 postSideEffect(
                     SideEffects.NavigateTo(
-                        NavigateDestinations.WalletLogin(
+                        NavigateDestinations.Login(
                             greenWallet = parentWallet,
                             isLightningShortcut = event.isLightningShortcut
                         )

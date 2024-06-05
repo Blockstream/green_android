@@ -2,75 +2,71 @@ package com.blockstream.green.ui.settings
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.Fragment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
-import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.settings.TwoFactorAuthenticationViewModel
+import com.blockstream.common.models.settings.WalletSettingsSection
+import com.blockstream.common.models.settings.WalletSettingsViewModel
+import com.blockstream.compose.AppFragmentBridge
+import com.blockstream.compose.screens.settings.TwoFactorAuthenticationScreen
 import com.blockstream.green.R
-import com.blockstream.green.databinding.TwofactorAuthenticationFragmentBinding
+import com.blockstream.green.databinding.ComposeViewBinding
 import com.blockstream.green.ui.AppFragment
-import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class TwoFactorAuthenticationFragment : AppFragment<TwofactorAuthenticationFragmentBinding>(
-    R.layout.twofactor_authentication_fragment,
+class TwoFactorAuthenticationFragment : AppFragment<ComposeViewBinding>(
+    R.layout.compose_view,
     0
 ) {
     val args: TwoFactorAuthenticationFragmentArgs by navArgs()
 
-    override val subtitle: String
-        get() = getString(R.string.id_multisig)
-
     val viewModel: TwoFactorAuthenticationViewModel by viewModel {
-        parametersOf(args.wallet)
+        parametersOf(
+            args.wallet
+        )
     }
 
-    override fun getGreenViewModel(): GreenViewModel = viewModel
+    override fun getGreenViewModel() = viewModel
+
+    override val useCompose: Boolean = true
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val networks = listOfNotNull(viewModel.session.activeBitcoinMultisig, viewModel.session.activeLiquidMultisig)
-
-        binding.showTabs = networks.size > 1
-
-        val adapter = TwoFactorAuthenticationPagerAdapter(
-            wallet = viewModel.greenWallet,
-            fragment = this,
-            networks = networks
-        )
-
-        binding.viewPager.adapter = adapter
-
-        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            tab.text = networks[position].canonicalName
-        }.attach()
-
-        args.network?.also {
-            binding.viewPager.setCurrentItem(networks.indexOf(it), false)
+        val networkViewModels = viewModel.networks.map {
+            WalletSettingsViewModel(
+                greenWallet = viewModel.greenWallet,
+                section = WalletSettingsSection.TwoFactor,
+                network = it
+            ).also {
+                it.parentViewModel = viewModel
+            }
         }
-    }
-}
 
-class TwoFactorAuthenticationPagerAdapter(
-    val wallet: GreenWallet,
-    val fragment: Fragment,
-    val networks: List<Network>
-) : FragmentStateAdapter(fragment) {
-    override fun getItemCount(): Int {
-        return networks.size
-    }
+        binding.composeView.apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            )
+            setContent {
+                AppFragmentBridge {
 
-    override fun createFragment(position: Int): Fragment {
-        return NetworkTwoFactorAuthenticationFragment().also {
-            it.arguments = TwoFactorAuthenticationFragmentArgs(
-                wallet = wallet,
-                network = networks[position]
-            ).toBundle()
+                    TwoFactorAuthenticationScreen(
+                        viewModel = viewModel,
+                        networkViewModels = networkViewModels,
+                        network = args.network
+                    )
+                }
+            }
         }
     }
 }

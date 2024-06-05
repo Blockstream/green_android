@@ -24,10 +24,10 @@ class UseHardwareDeviceFragment : AppFragment<ComposeViewBinding>(
 
     override val useCompose: Boolean = true
 
-    override fun handleSideEffect(sideEffect: SideEffect) {
+    override suspend fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
 
-        if(sideEffect is SideEffects.NavigateTo){
+        if (sideEffect is SideEffects.NavigateTo) {
             (sideEffect.destination as? NavigateDestinations.DeviceList)?.also {
                 navigate(UseHardwareDeviceFragmentDirections.actionGlobalDeviceListFragment(isJade = it.isJade))
             }

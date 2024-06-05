@@ -1,5 +1,19 @@
 package com.blockstream.common.models.settings
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_1s_twofactor_setup
+import blockstream_green.common.generated.resources.id_2fa_call_is_now_enabled
+import blockstream_green.common.generated.resources.id_cancel_2fa_reset
+import blockstream_green.common.generated.resources.id_continue
+import blockstream_green.common.generated.resources.id_dispute_twofactor_reset
+import blockstream_green.common.generated.resources.id_if_you_did_not_request_the
+import blockstream_green.common.generated.resources.id_if_you_initiated_the_2fa_reset
+import blockstream_green.common.generated.resources.id_insert_your_email_to_receive
+import blockstream_green.common.generated.resources.id_insert_your_phone_number_to
+import blockstream_green.common.generated.resources.id_request_twofactor_reset
+import blockstream_green.common.generated.resources.id_resetting_your_twofactor_takes
+import blockstream_green.common.generated.resources.id_undo_2fa_dispute
+import blockstream_green.common.generated.resources.id_use_your_email_to_receive
 import com.blockstream.common.Urls
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavData
@@ -17,13 +31,16 @@ import com.blockstream.common.gdk.data.SettingsNotification
 import com.blockstream.common.gdk.data.TwoFactorMethodConfig
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.isEmailValid
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
+import org.jetbrains.compose.resources.getString
 
 abstract class TwoFactorSetupViewModelAbstract(
     greenWallet: GreenWallet,
@@ -51,13 +68,19 @@ abstract class TwoFactorSetupViewModelAbstract(
     }
 
     @NativeCoroutinesState
-    abstract val country: StateFlow<String?>
+    abstract val messageText: StateFlow<String?>
 
     @NativeCoroutinesState
-    abstract val number: StateFlow<String?>
+    abstract val actionText: StateFlow<String?>
 
     @NativeCoroutinesState
-    abstract val email: StateFlow<String?>
+    abstract val country: MutableStateFlow<String>
+
+    @NativeCoroutinesState
+    abstract val number: MutableStateFlow<String>
+
+    @NativeCoroutinesState
+    abstract val email: MutableStateFlow<String>
 
     @NativeCoroutinesState
     abstract val qr: StateFlow<String?>
@@ -73,6 +96,12 @@ class TwoFactorSetupViewModel(
     action: TwoFactorSetupAction,
     private val isSmsBackup: Boolean = false
 ) : TwoFactorSetupViewModelAbstract(greenWallet = greenWallet, network = network, method = method, action = action) {
+
+    private val _messageText: MutableStateFlow<String?> = MutableStateFlow(null)
+    override val messageText: StateFlow<String?> = _messageText.asStateFlow()
+
+    private val _actionText: MutableStateFlow<String?> = MutableStateFlow(null)
+    override val actionText: StateFlow<String?> = _actionText.asStateFlow()
 
     override val country: MutableStateFlow<String> = MutableStateFlow("")
     override val number: MutableStateFlow<String> = MutableStateFlow("")
@@ -98,31 +127,69 @@ class TwoFactorSetupViewModel(
     }
 
     init {
-        val title = when (action) {
-            TwoFactorSetupAction.SETUP, TwoFactorSetupAction.SETUP_EMAIL -> {
-                "id_1s_twofactor_setup|${method.localized}"
+
+        viewModelScope.launch {
+            val title = when (action) {
+                TwoFactorSetupAction.SETUP, TwoFactorSetupAction.SETUP_EMAIL -> {
+                    getString(Res.string.id_1s_twofactor_setup, getString(method.localized))
+                }
+
+                TwoFactorSetupAction.RESET -> {
+                    getString(Res.string.id_request_twofactor_reset)
+                }
+
+                TwoFactorSetupAction.CANCEL -> {
+                    getString(Res.string.id_cancel_2fa_reset)
+                }
+
+                TwoFactorSetupAction.DISPUTE -> {
+                    getString(Res.string.id_dispute_twofactor_reset)
+                }
+
+                TwoFactorSetupAction.UNDO_DISPUTE -> {
+                    getString(Res.string.id_undo_2fa_dispute)
+                }
             }
 
-            TwoFactorSetupAction.RESET -> {
-                "id_request_twofactor_reset"
+            when(action){
+                TwoFactorSetupAction.SETUP -> {
+                    _messageText.value =  if(method == TwoFactorMethod.EMAIL){
+                        getString(Res.string.id_insert_your_email_to_receive)
+                    }else if(method != TwoFactorMethod.AUTHENTICATOR){
+                        getString(Res.string.id_insert_your_phone_number_to)
+                    } else null
+                    _actionText.value = getString(Res.string.id_continue)
+                }
+                TwoFactorSetupAction.SETUP_EMAIL -> {
+                    _messageText.value = getString(Res.string.id_use_your_email_to_receive)
+                    _actionText.value = getString(Res.string.id_continue)
+                }
+                TwoFactorSetupAction.RESET -> {
+                    _messageText.value = getString(Res.string.id_resetting_your_twofactor_takes)
+                    _actionText.value = getString(Res.string.id_request_twofactor_reset)
+                }
+                TwoFactorSetupAction.DISPUTE -> {
+                    _messageText.value = getString(Res.string.id_if_you_did_not_request_the)
+                    _actionText.value = getString(Res.string.id_dispute_twofactor_reset)
+                }
+                TwoFactorSetupAction.UNDO_DISPUTE -> {
+                    _messageText.value = getString(Res.string.id_if_you_initiated_the_2fa_reset)
+                    _actionText.value = getString(Res.string.id_undo_2fa_dispute)
+                }
+                TwoFactorSetupAction.CANCEL -> {
+                    // Cancel action init
+                }
             }
 
-            TwoFactorSetupAction.CANCEL -> {
-                "id_cancel_2fa_reset"
-            }
-
-            TwoFactorSetupAction.DISPUTE -> {
-                "id_dispute_twofactor_reset"
-            }
-
-            TwoFactorSetupAction.UNDO_DISPUTE -> {
-                "id_undo_2fa_dispute"
-            }
+            _navData.value = NavData(title = title, subtitle = greenWallet.name)
         }
 
-        _navData.value = NavData(title = title)
-
         session.ifConnected {
+
+            if(action == TwoFactorSetupAction.CANCEL){
+                cancel2FA()
+            }
+
             doAsync({
                 session.getTwoFactorConfig(network)
                     ?: throw Exception("Two Factor Config couldn't resolved")
@@ -156,30 +223,36 @@ class TwoFactorSetupViewModel(
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         when (event) {
 
-            is LocalEvents.Enable2FA -> {
-                enable2FA(event.twoFactorResolver)
-            }
-
-            is LocalEvents.Reset2FA -> {
-                reset2FA(event.twoFactorResolver)
-            }
-
-            is LocalEvents.UndoReset2FA -> {
-                undoReset2FA(event.twoFactorResolver)
-            }
-
             is LocalEvents.Cancel2FA -> {
-                cancel2FA(event.twoFactorResolver)
+                cancel2FA()
+            }
+
+            is Events.Continue -> {
+                when(action){
+                    TwoFactorSetupAction.RESET, TwoFactorSetupAction.DISPUTE -> {
+                        reset2FA()
+                    }
+
+                    TwoFactorSetupAction.UNDO_DISPUTE -> {
+                        undoReset2FA()
+                    }
+                    TwoFactorSetupAction.SETUP,TwoFactorSetupAction.SETUP_EMAIL  -> {
+                        enable2FA()
+                    }
+                    TwoFactorSetupAction.CANCEL -> {
+                        // Cancel is triggered immediately
+                    }
+                }
             }
         }
     }
 
-    private fun enable2FA(twoFactorResolver: TwoFactorResolver) {
+    private fun enable2FA() {
         val data = when(method){
             TwoFactorMethod.SMS, TwoFactorMethod.PHONE, TwoFactorMethod.TELEGRAM -> {
                 "${country.value}${number.value}"
@@ -203,7 +276,7 @@ class TwoFactorSetupViewModel(
                         data = data,
                         isSmsBackup = isSmsBackup
                     ),
-                    twoFactorResolver = twoFactorResolver
+                    twoFactorResolver = this
                 )
 
             // Enable legacy recovery emails
@@ -220,44 +293,42 @@ class TwoFactorSetupViewModel(
             }
         }, onSuccess = {
             if (isSmsBackup) {
-                postSideEffect(SideEffects.Snackbar("id_2fa_call_is_now_enabled"))
+                postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_2fa_call_is_now_enabled)))
             }
             postSideEffect(SideEffects.NavigateBack())
         })
     }
 
-    private fun reset2FA(
-        twoFactorResolver: TwoFactorResolver
-    ) {
+    private fun reset2FA() {
         doAsync({
             session
                 .twoFactorReset(
                     network = network,
                     email = email.value,
                     isDispute = action == TwoFactorSetupAction.DISPUTE,
-                    twoFactorResolver = twoFactorResolver
+                    twoFactorResolver = this
                 )
         }, onSuccess = {
             postSideEffect(SideEffects.NavigateBack())
         })
     }
 
-    private fun undoReset2FA(twoFactorResolver: TwoFactorResolver) {
+    private fun undoReset2FA() {
         doAsync({
             session
                 .twoFactorUndoReset(
                     network = network,
                     email = email.value,
-                    twoFactorResolver = twoFactorResolver
+                    twoFactorResolver = this
                 )
         }, onSuccess = {
             postSideEffect(SideEffects.NavigateBack())
         })
     }
 
-    private fun cancel2FA(twoFactorResolver: TwoFactorResolver) {
+    private fun cancel2FA() {
         doAsync({
-            session.twoFactorCancelReset(network = network, twoFactorResolver = twoFactorResolver)
+            session.twoFactorCancelReset(network = network, twoFactorResolver = this)
         }, onSuccess = {
             postSideEffect(SideEffects.NavigateBack())
         }, onError = {
@@ -272,15 +343,17 @@ class TwoFactorSetupViewModelPreview(
     TwoFactorSetupViewModelAbstract(
         greenWallet = greenWallet,
         network = previewNetwork(),
-        method = TwoFactorMethod.SMS,
+        method = TwoFactorMethod.AUTHENTICATOR,
         action = TwoFactorSetupAction.SETUP
     ) {
+    override val messageText: StateFlow<String?> = MutableStateFlow(null)
+    override val actionText: StateFlow<String?> = MutableStateFlow("Continue")
 
-    override val country: StateFlow<String> = MutableStateFlow("")
-    override val number: StateFlow<String> = MutableStateFlow("")
-    override val email: StateFlow<String> = MutableStateFlow("")
-    override val qr: StateFlow<String?> = MutableStateFlow(null)
-    override val authenticatorCode: StateFlow<String?> = MutableStateFlow(null)
+    override val country: MutableStateFlow<String> = MutableStateFlow("+237")
+    override val number: MutableStateFlow<String> = MutableStateFlow("")
+    override val email: MutableStateFlow<String> = MutableStateFlow("")
+    override val qr: StateFlow<String?> = MutableStateFlow("This is a QR")
+    override val authenticatorCode: StateFlow<String?> = MutableStateFlow("This is the code")
 
     companion object {
         fun preview() = TwoFactorSetupViewModelPreview(previewWallet(isHardware = false))

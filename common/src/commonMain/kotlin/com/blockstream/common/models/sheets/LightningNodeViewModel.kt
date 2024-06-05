@@ -1,5 +1,13 @@
 package com.blockstream.common.models.sheets
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_account_balance
+import blockstream_green.common.generated.resources.id_completed
+import blockstream_green.common.generated.resources.id_inbound_liquidity
+import blockstream_green.common.generated.resources.id_max_payable_amount
+import blockstream_green.common.generated.resources.id_max_receivable_amount
+import blockstream_green.common.generated.resources.id_max_single_payment_amount
+import blockstream_green.common.generated.resources.id_rescan_swaps_initiated
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Event
@@ -15,9 +23,10 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
+import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.toAmountLookOrNa
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -32,7 +41,7 @@ abstract class LightningNodeViewModelAbstract(
     greenWalletOrNull = greenWallet
 ) {
     @NativeCoroutinesState
-    abstract val data: StateFlow<List<Pair<String, String>>>
+    abstract val data: StateFlow<List<Pair<StringHolder, StringHolder>>>
 
     @NativeCoroutinesState
     abstract val showEmptyAccount: StateFlow<Boolean>
@@ -44,7 +53,7 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
     ) {
     override fun screenName(): String = "LightningNodeState"
 
-    private val _data: MutableStateFlow<List<Pair<String, String>>> = MutableStateFlow(listOf())
+    private val _data: MutableStateFlow<List<Pair<StringHolder, StringHolder>>> = MutableStateFlow(listOf())
     override val data = _data.asStateFlow()
 
     override val showEmptyAccount = session.lightningSdk.nodeInfoStateFlow.map {
@@ -65,39 +74,39 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
 
             session.lightningSdk.nodeInfoStateFlow.onEach {
                 val list = mutableListOf(
-                    "ID" to it.id,
-                    "id_account_balance" to it.channelsBalanceSatoshi().toAmountLookOrNa(
+                    StringHolder.create("ID") to StringHolder.create(it.id),
+                    StringHolder.create(Res.string.id_account_balance) to StringHolder.create(it.channelsBalanceSatoshi().toAmountLookOrNa(
                         session = session,
                         withUnit = true,
                         withGrouping = true
-                    ),
-                    "id_inbound_liquidity" to it.inboundLiquiditySatoshi().toAmountLookOrNa(
+                    )),
+                    StringHolder.create(Res.string.id_inbound_liquidity) to StringHolder.create(it.inboundLiquiditySatoshi().toAmountLookOrNa(
                         session = session,
                         withUnit = true,
                         withGrouping = true
-                    ),
-                    "id_max_payable_amount" to it.maxPayableSatoshi().toAmountLookOrNa(
+                    )),
+                    StringHolder.create(Res.string.id_max_payable_amount) to StringHolder.create(it.maxPayableSatoshi().toAmountLookOrNa(
                         session = session,
                         withUnit = true,
                         withGrouping = true
-                    ),
-                    "id_max_single_payment_amount" to it.maxSinglePaymentAmountSatoshi()
+                    )),
+                    StringHolder.create(Res.string.id_max_single_payment_amount) to StringHolder.create(it.maxSinglePaymentAmountSatoshi()
                         .toAmountLookOrNa(
                             session = session,
                             withUnit = true,
                             withGrouping = true
-                        ),
-                    "id_max_receivable_amount" to it.maxReceivableSatoshi().toAmountLookOrNa(
+                        )),
+                    StringHolder.create(Res.string.id_max_receivable_amount) to StringHolder.create(it.maxReceivableSatoshi().toAmountLookOrNa(
                         session = session,
                         withUnit = true,
                         withGrouping = true
-                    )
+                    ))
                 )
 
 
                 if (appInfo.isDevelopmentOrDebug) {
                     list += listOf(
-                        "Connected Peers" to it.connectedPeers.joinToString(", ")
+                        StringHolder.create("Connected Peers") to StringHolder.create(it.connectedPeers.joinToString(", "))
                     )
                 }
 
@@ -109,7 +118,7 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         when (event) {
@@ -117,7 +126,7 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
                 postSideEffect(
                     SideEffects.NavigateTo(
                         NavigateDestinations.RecoveryIntro(
-                            args = SetupArgs(
+                            setupArgs = SetupArgs(
                                 mnemonic = "",
                                 isLightning = true,
                                 isShowRecovery = true,
@@ -152,10 +161,10 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
 
     private fun rescanSwaps() {
         doAsync({
-            postSideEffect(SideEffects.Snackbar("id_rescan_swaps_initiated"))
+            postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_rescan_swaps_initiated)))
             session.lightningSdkOrNull?.rescanSwaps()
         }, onSuccess = {
-            postSideEffect(SideEffects.Snackbar("id_completed"))
+            postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_completed)))
         })
     }
 
@@ -164,7 +173,7 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
             val file = lightningManager.createLogs()
             postSideEffect(SideEffects.ShareFile(file))
         }, onSuccess = {
-            postSideEffect(SideEffects.Snackbar("id_completed"))
+            postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_completed)))
         })
     }
 
@@ -175,11 +184,7 @@ class LightningNodeViewModelPreview : LightningNodeViewModelAbstract(
     greenWallet = previewWallet()
 ) {
 
-    override val data: StateFlow<List<Pair<String, String>>> = MutableStateFlow(
-        listOf(
-
-        )
-    )
+    override val data: StateFlow<List<Pair<StringHolder, StringHolder>>> = MutableStateFlow(listOf())
     override val showEmptyAccount: StateFlow<Boolean> = MutableStateFlow(true)
 
     companion object {

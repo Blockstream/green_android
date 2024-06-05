@@ -43,7 +43,7 @@ class LoginFragment : AppFragment<ComposeViewBinding>(
 
     override val useCompose: Boolean = true
 
-    override fun handleSideEffect(sideEffect: SideEffect) {
+    override suspend fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
         when (sideEffect) {
             is SideEffects.WalletDelete -> {
@@ -53,20 +53,13 @@ class LoginFragment : AppFragment<ComposeViewBinding>(
             }
 
             is SideEffects.NavigateTo -> {
-                (sideEffect.destination as? NavigateDestinations.EnterRecoveryPhrase)?.also {
-                    navigate(
-                        LoginFragmentDirections.actionLoginFragmentToEnterRecoveryPhraseFragment(
-                            setupArgs = it.args,
-                        )
-                    )
-                }
 
                 (sideEffect.destination as? NavigateDestinations.WalletOverview)?.also {
                     navigate(LoginFragmentDirections.actionGlobalWalletOverviewFragment(wallet = it.greenWallet))
                 }
 
 
-                (sideEffect.destination as? NavigateDestinations.RecoveryPhrase)?.args?.credentials?.also {
+                (sideEffect.destination as? NavigateDestinations.RecoveryPhrase)?.setupArgs?.credentials?.also {
                     logger.i { "Emergency Recovery Phrase" }
                     navigate(
                         LoginFragmentDirections.actionGlobalRecoveryPhraseFragment(

@@ -1,12 +1,16 @@
 package com.blockstream.common.gdk.data
 
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_address
+import blockstream_green.common.generated.resources.id_amount
 import com.arkivanov.essenty.parcelable.IgnoredOnParcel
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.GreenJson
+import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.toAmountLookOrNa
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
@@ -75,7 +79,11 @@ data class Transaction constructor(
     }
 
     @IgnoredOnParcel
-    val createdAtInstant: Instant by lazy { Instant.fromEpochMilliseconds(createdAtTs / 1000) }
+    val createdAtInstant: Instant? by lazy {
+        if (createdAtTs > 0) Instant.fromEpochMilliseconds(
+            createdAtTs / 1000
+        ) else null
+    }
 
     val txType: Type
         get() = Type.from(type)
@@ -269,18 +277,21 @@ data class Transaction constructor(
         )
     }
 
-    suspend fun details(session: GdkSession): List<Pair<String, String>> = extras ?: run {
+    suspend fun details(session: GdkSession): List<Pair<StringHolder, StringHolder>> = extras?.map {
+        StringHolder.create(it.first) to StringHolder.create(it.second)
+    } ?: run {
 //        listOf("id_transaction_id" to txHash) +
-                buildList<Pair<String, String>> {
+                buildList<Pair<StringHolder, StringHolder>> {
             utxoViews.takeIf { it.size > 1 }?.forEach { utxo ->
                 utxo.address?.also {
-                    add("id_address" to it)
-                    add("id_amount" to utxo.satoshi.toAmountLookOrNa(
+                    add(StringHolder.create(
+                        Res.string.id_address) to StringHolder.create(it))
+                    add(StringHolder.create(Res.string.id_amount) to StringHolder.create(utxo.satoshi.toAmountLookOrNa(
                         session = session,
                         assetId = utxo.assetId,
                         withUnit = true,
                         withDirection = true
-                    ))
+                    )))
                 }
             }
         }

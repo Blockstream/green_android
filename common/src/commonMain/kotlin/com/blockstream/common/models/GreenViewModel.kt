@@ -1,5 +1,15 @@
 package com.blockstream.common.models
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_account_has_been_archived
+import blockstream_green.common.generated.resources.id_account_has_been_removed
+import blockstream_green.common.generated.resources.id_auto_logout_timeout_expired
+import blockstream_green.common.generated.resources.id_could_not_recognized_qr_code
+import blockstream_green.common.generated.resources.id_could_not_recognized_the_uri
+import blockstream_green.common.generated.resources.id_swap_is_in_progress
+import blockstream_green.common.generated.resources.id_unstable_internet_connection
+import blockstream_green.common.generated.resources.id_you_dont_have_a_lightning
+import blockstream_green.common.generated.resources.id_your_device_was_disconnected
 import breez_sdk.InputType
 import cafe.adriel.voyager.core.model.ScreenModel
 import co.touchlab.kermit.Logger
@@ -49,6 +59,7 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
+import com.blockstream.common.utils.StringHolder
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
@@ -116,7 +127,7 @@ open class GreenViewModel constructor(
     private val _sideEffectAppFragment: Channel<SideEffect> = Channel()
     // Check with Don't Keep activities if the logout event is persisted
 
-    // Used only for AppFragment Navigation from dialogs or bottom sheets
+    // Used only for AppFragment Navigation from dialogs, tabs or bottom sheets
     var parentViewModel: GreenViewModel? = null
 
     // Helper method to force the use of MutableStateFlow(viewModelScope)
@@ -150,7 +161,7 @@ open class GreenViewModel constructor(
     val buttonEnabled = _buttonEnabled.asStateFlow()
 
     override fun screenName(): String? = null
-    override fun segmentation(): HashMap<String, Any>? = null
+    override fun segmentation(): HashMap<String, Any>? = sessionOrNull?.let { countly.sessionSegmentation(session = session) }
 
     internal var _greenWallet: GreenWallet? = null
     val greenWallet: GreenWallet
@@ -348,7 +359,7 @@ open class GreenViewModel constructor(
         }.launchIn(this)
     }
 
-    open fun handleEvent(event: Event) {
+    open suspend fun handleEvent(event: Event) {
         when(event){
             is Events.NotificationPermissionGiven -> {
                 // Todo update notifications
@@ -469,7 +480,7 @@ open class GreenViewModel constructor(
             }
             is Events.Transaction -> {
                 if(event.transaction.isLightningSwap && !event.transaction.isRefundableSwap){
-                    postSideEffect(SideEffects.Snackbar("id_swap_is_in_progress"))
+                    postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_swap_is_in_progress)))
                 }else{
                     postSideEffect(
                         SideEffects.NavigateTo(
@@ -483,9 +494,7 @@ open class GreenViewModel constructor(
             is Events.ChooseAccountType -> {
                 postSideEffect(
                     SideEffects.NavigateTo(
-                        NavigateDestinations.ChooseAccountType(
-                            greenWallet = greenWallet
-                        )
+                        NavigateDestinations.ChooseAccountType(isReceive = event.isReceive)
                     )
                 )
 
@@ -500,13 +509,13 @@ open class GreenViewModel constructor(
         postSideEffect(SideEffects.Logout(reason))
         when(reason){
             LogoutReason.CONNECTION_DISCONNECTED -> {
-                postSideEffect(SideEffects.Snackbar("id_unstable_internet_connection"))
+                postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_unstable_internet_connection)))
             }
             LogoutReason.AUTO_LOGOUT_TIMEOUT -> {
-                postSideEffect(SideEffects.Snackbar("id_auto_logout_timeout_expired"))
+                postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_auto_logout_timeout_expired)))
             }
             LogoutReason.DEVICE_DISCONNECTED -> {
-                postSideEffect(SideEffects.Snackbar("id_your_device_was_disconnected"))
+                postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_your_device_was_disconnected)))
             }
             else -> {}
         }
@@ -522,8 +531,8 @@ open class GreenViewModel constructor(
         postAction: ((Exception?) -> Unit)? = {
             onProgress.value = false
         },
-        onSuccess: (T) -> Unit,
-        onError: ((Throwable) -> Unit) = {
+        onSuccess: suspend (T) -> Unit,
+        onError: suspend ((Throwable) -> Unit) = {
             if (appInfo.isDebug) {
                 it.printStackTrace()
             }
@@ -590,16 +599,16 @@ open class GreenViewModel constructor(
                 }
 
                 postSideEffect(SideEffects.AccountArchived(account = account))
-                postSideEffect(SideEffects.Snackbar("id_account_has_been_archived"))
+                postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_account_has_been_archived)))
                 
                 // This only have effect on AccountOverview
-                postSideEffect(SideEffects.NavigateToRoot)
+                postSideEffect(SideEffects.NavigateToRoot())
             }else{
                 // Make it active
                 setActiveAccount(account)
                 postSideEffect(SideEffects.AccountUnarchived(account = account))
                 if(navigateToRoot){
-                    postSideEffect(SideEffects.NavigateToRoot)
+                    postSideEffect(SideEffects.NavigateToRoot())
                 }
             }
         })
@@ -614,10 +623,10 @@ open class GreenViewModel constructor(
             }, onSuccess = {
                 // Update active account from Session if it was archived
                 setActiveAccount(session.activeAccount.value!!)
-                postSideEffect(SideEffects.Snackbar("id_account_has_been_removed"))
+                postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_account_has_been_removed)))
 
                 // This only have effect on AccountOverview
-                postSideEffect(SideEffects.NavigateToRoot)
+                postSideEffect(SideEffects.NavigateToRoot())
             })
         }
     }
@@ -669,7 +678,7 @@ open class GreenViewModel constructor(
                                 )
                             )
                         } else {
-                            postSideEffect(SideEffects.Snackbar("id_you_dont_have_a_lightning_account"))
+                            postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_you_dont_have_a_lightning)))
                         }
                     }
 
@@ -683,7 +692,7 @@ open class GreenViewModel constructor(
                                 )
                             )
                         }else{
-                            postSideEffect(SideEffects.Snackbar("id_you_dont_have_a_lightning_account"))
+                            postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_you_dont_have_a_lightning)))
                         }
                     }
 
@@ -715,7 +724,7 @@ open class GreenViewModel constructor(
                 }
 
             } else {
-                postSideEffect(SideEffects.Snackbar(if (isQr) "id_could_not_recognized_qr_code" else "id_could_not_recognized_the_uri"))
+                postSideEffect(SideEffects.Snackbar(StringHolder.create(if (isQr) Res.string.id_could_not_recognized_qr_code else Res.string.id_could_not_recognized_the_uri)))
             }
         }, onSuccess = {
 
@@ -770,7 +779,7 @@ open class GreenViewModel constructor(
     protected open fun errorReport(exception: Throwable): ErrorReport? { return null}
 
     var _twoFactorDeferred: CompletableDeferred<String>? = null
-    override suspend fun selectMethod(availableMethods: List<String>): CompletableDeferred<String> {
+    override suspend fun withSelectMethod(availableMethods: List<String>): CompletableDeferred<String> {
         return CompletableDeferred<String>().also {
             _twoFactorDeferred = it
             postSideEffect(SideEffects.TwoFactorResolver(TwoFactorResolverData.selectMethod(availableMethods)))

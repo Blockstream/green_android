@@ -114,7 +114,7 @@ class CountlyNoOp constructor(
         return null
     }
 
-    override fun recordException(throwable: Throwable) {
+    override fun recordExceptionImpl(throwable: Throwable) {
 
     }
 

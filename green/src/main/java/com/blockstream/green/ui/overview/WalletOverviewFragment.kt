@@ -75,7 +75,8 @@ class WalletOverviewFragment : AppFragment<ComposeViewBinding>(
             R.id.create_account -> {
                 navigate(
                     WalletOverviewFragmentDirections.actionGlobalChooseAccountTypeFragment(
-                        viewModel.greenWallet
+                        wallet = viewModel.greenWallet,
+                        isReceive = false
                     )
                 )
                 countly.accountNew(viewModel.session)

@@ -5,8 +5,8 @@ import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Transaction
 
 data class TransactionStatusLook(
-    val confirmations: Int,
-    val confirmationsRequired: Int,
+    val confirmations: Long,
+    val confirmationsRequired: Long,
     val spv: Transaction.SPVResult,
     val isPendingCloseChannel: Boolean,
     val isRefundableSwap: Boolean,
@@ -19,7 +19,7 @@ data class TransactionStatusLook(
                 "id_failed"
             }
 
-            confirmations == 0 -> {
+            confirmations == 0L -> {
                 "id_unconfirmed"
             }
 

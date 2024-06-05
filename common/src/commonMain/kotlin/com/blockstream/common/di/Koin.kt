@@ -28,8 +28,20 @@ import kotlin.io.encoding.Base64
 
 typealias ApplicationScope = kotlinx.coroutines.CoroutineScope
 
-fun initKoin(appConfig: AppConfig, vararg appModules: Module): KoinApplication {
+expect val platformModule: Module
+
+fun initKoin(appInfo: AppInfo, appConfig: AppConfig, doOnStartup: () -> Unit = {}, vararg appModules: Module): KoinApplication {
     val koinApplication = startKoin {
+        modules(
+            module {
+                single {
+                    appInfo
+                }
+                single {
+                    doOnStartup
+                }
+            }
+        )
         modules(*appModules)
         modules(platformModule)
         modules(commonModules(appConfig))
@@ -121,7 +133,7 @@ private fun commonModules(appConfig: AppConfig): List<Module> {
         )
 
         factory { (tag: String?) -> if (tag != null) baseLogger.withTag(tag) else baseLogger }
-    })
+    }, factoryViewModels)
 }
 
-expect val platformModule: Module
+

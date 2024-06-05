@@ -1,9 +1,9 @@
 package com.blockstream.common.gdk.data
 
 import com.arkivanov.essenty.parcelable.IgnoredOnParcel
+import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
-import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -94,14 +94,12 @@ data class Network(
     }
 
     @IgnoredOnParcel
-    val blocksPerHour by lazy {
-        if (isLiquid) 60 else 6
-    }
+    val blocksPerHour
+        get() = if (isLiquid) 60 else 6
 
     @IgnoredOnParcel
-    val confirmationsRequired by lazy {
-        if(isLiquid) 2 else 6
-    }
+    val confirmationsRequired: Long
+        get() = if(isLiquid) 2L else 6L
 
     fun getVerPublic(): Int {
         return if (isMainnet) BIP32_VER_MAIN_PUBLIC else BIP32_VER_TEST_PUBLIC

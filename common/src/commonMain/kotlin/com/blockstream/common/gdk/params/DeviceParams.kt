@@ -14,6 +14,7 @@ data class DeviceParams constructor(
     override fun kSerializer() = serializer()
 
     companion object {
+        val Empty = DeviceParams()
         fun fromDeviceOrEmpty(device: Device?) = device?.let { DeviceParams(device = it) } ?: DeviceParams()
     }
 }

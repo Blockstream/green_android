@@ -22,11 +22,12 @@ class Events : Event {
         override val sideEffect
             get() = SideEffects.NavigateTo(destination)
     }
+    object NavigateBack: EventSideEffect(SideEffects.NavigateBack())
     class AckSystemMessage(val network: Network, val message: String) : Event
     object DismissSystemMessage : Event
     object ReconnectFailedNetworks : Event
     data class Transaction(val transaction: com.blockstream.common.gdk.data.Transaction): Event
-    data class ChooseAccountType(val isFirstAccount: Boolean = false) : Event
+    data class ChooseAccountType(val isFirstAccount: Boolean = false, val isReceive: Boolean = false) : Event
     data class HandleUserInput(val data: String, val isQr: Boolean = false) : Event
     object Continue : Event
     object BannerDismiss : Event

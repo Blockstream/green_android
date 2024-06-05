@@ -34,7 +34,7 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
         parametersOf(
             viewModel.greenWallet,
             viewModel.accountAsset.value!!,
-            viewModel.requestAmount.value ?: ""
+            viewModel.amount.value
         )
     }
 

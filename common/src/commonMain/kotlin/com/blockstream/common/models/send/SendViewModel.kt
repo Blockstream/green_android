@@ -1,5 +1,11 @@
 package com.blockstream.common.models.send
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_address_was_filled_by_a_payment
+import blockstream_green.common.generated.resources.id_limits_s__s
+import blockstream_green.common.generated.resources.id_payment_requested_by_s
+import blockstream_green.common.generated.resources.id_send
+import blockstream_green.common.generated.resources.id_transaction_sent
 import com.blockstream.common.AddressInputType
 import com.blockstream.common.TransactionSegmentation
 import com.blockstream.common.TransactionType
@@ -30,11 +36,15 @@ import com.blockstream.common.lightning.lnUrlPayImage
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
+import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.UserInput
 import com.blockstream.common.utils.feeRateWithUnit
+import com.blockstream.common.utils.getStringFromId
+import com.blockstream.common.utils.getStringFromIdOrNull
 import com.blockstream.common.utils.ifNotNull
 import com.blockstream.common.utils.toAmountLook
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.launch
 import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -48,6 +58,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.json.buildJsonObject
+import org.jetbrains.compose.resources.getString
 import saschpe.kase64.base64DecodedBytes
 import kotlin.math.absoluteValue
 
@@ -199,14 +210,16 @@ class SendViewModel(
     init {
         _addressInputType = addressType
 
-        _navData.value = NavData(title = "id_send", subtitle = greenWallet.name)
+        viewModelScope.launch {
+            _navData.value = NavData(title = getString(Res.string.id_send), subtitle = greenWallet.name)
+        }
 
         session.ifConnected {
 
             sessionManager.pendingUri.filterNotNull().onEach {
                 sessionManager.pendingUri.value = null
                 address.value = it
-                postSideEffect(SideEffects.Snackbar("id_address_was_filled_by_a_payment"))
+                postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_address_was_filled_by_a_payment)))
             }.launchIn(this)
 
             // When changing between accounts, reset isSendAll flag
@@ -266,7 +279,7 @@ class SendViewModel(
             }.launchIn(this)
 
             error.onEach {
-                _errorAddress.value = it.takeIf { listOf("id_invalid_address", "id_invoice_expired").contains(it) }
+                _errorAddress.value = it.takeIf { listOf("id_invalid_address", "id_invoice_expired").contains(it) }?.let { getStringFromId(it) }
                 _errorAmount.value = it.takeIf {
                     listOf(
                         "id_invalid_amount",
@@ -277,22 +290,23 @@ class SendViewModel(
                         "id_amount_above_maximum_allowed",
                         "id_amount_below_minimum_allowed"
                     ).startsWith(it)
+                }?.let { getStringFromId(it) }
+                _errorGeneric.value = it.takeIf { _errorAmount.value.isNullOrBlank() && _errorAddress.value.isNullOrBlank() }?.let {
+                    getStringFromId(it)
                 }
-                _errorGeneric.value = it.takeIf { _errorAmount.value.isNullOrBlank() && _errorAddress.value.isNullOrBlank() }
             }.launchIn(this)
         }
 
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         if(event is LocalEvents.ClickAssetsAccounts){
             postSideEffect(
                 SideEffects.NavigateTo(
                     NavigateDestinations.AssetsAccounts(
-                        greenWallet = greenWallet,
                         assetsAccounts = assetsAndAccounts.value ?: listOf()
                     )
                 )
@@ -401,7 +415,7 @@ class SendViewModel(
                         assetId.value = null
                     }
 
-                    _metadataDomain.value = addressee.domain?.let { "id_payment_requested_by_s|$it" }
+                    _metadataDomain.value = addressee.domain?.let { getString(Res.string.id_payment_requested_by_s, it) }
                     _metadataImage.value = addressee.metadata.lnUrlPayImage()
                     _metadataDescription.value = addressee.metadata.lnUrlPayDescription()
 
@@ -410,17 +424,15 @@ class SendViewModel(
                             addressee.minAmount,
                             addressee.maxAmount
                         ) { minAmount, maxAmount ->
-                            "id_limits_s__s|${
-                                minAmount.toAmountLook(
+                            getString(
+                                Res.string.id_limits_s__s, minAmount.toAmountLook(
                                     session = session,
                                     withUnit = false
-                                )
-                            }|${
-                                maxAmount.toAmountLook(
+                                ) ?: "", maxAmount.toAmountLook(
                                     session = session,
                                     withUnit = true
-                                )
-                            }"
+                                ) ?: ""
+                            )
                         }
                     } else null
 
@@ -579,9 +591,9 @@ class SendViewModel(
             if(it.hasMessageOrUrl){
                 postSideEffect(SideEffects.TransactionSent(it))
             }else{
-                postSideEffect(SideEffects.NavigateToRoot)
+                postSideEffect(SideEffects.NavigateToRoot())
             }
-            postSideEffect(SideEffects.Snackbar("id_transaction_sent"))
+            postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_transaction_sent)))
 
         }, onError = {
 

@@ -15,7 +15,6 @@ import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Utxo
-import com.blockstream.compose.utils.stringResourceId
 import com.blockstream.green.R
 import com.blockstream.green.databinding.AccountAssetLayoutBinding
 import com.blockstream.green.databinding.AccountCardLayoutBinding
@@ -105,7 +104,7 @@ fun AssetLayoutBinding.bind(
     showBalance: Boolean = false,
     showEditIcon: Boolean = false,
 ) {
-    this.name = stringResourceId(context(), asset.name(session))
+    this.name = asset.name(session).fallbackString()
     this.showBalance = showBalance
     this.showEditIcon = showEditIcon
 

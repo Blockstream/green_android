@@ -6,7 +6,6 @@ import com.blockstream.common.Parcelize
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Credentials
 import com.blockstream.common.gdk.data.Network
-import kotlinx.serialization.Serializable
 
 
 @Parcelize
@@ -25,7 +24,8 @@ data class SetupArgs constructor(
     val xpub: String? = null,
     val page: Int = 1,
     val isShowRecovery: Boolean = false,
-    val isLightning: Boolean = false
+    val isLightning: Boolean = false,
+    val isReceive: Boolean = false
 ) : Parcelable, JavaSerializable {
 
     val mnemonicAsWords
@@ -34,11 +34,16 @@ data class SetupArgs constructor(
     val isGenerateMnemonic
         get() = mnemonic.isEmpty() && !isShowRecovery
 
+    val isRecoveryFlow
+        get() = isRestoreFlow && greenWallet != null
+
     fun nextPage() = copy(page = page + 1)
 
     fun pageOne() = copy(page = 1)
 
     fun isAddAccount() = greenWallet != null && network != null && assetId != null
+
+
 
     override fun toString(): String {
         return "SetupArgs(mnemonic=**Redacted**, password=**Redacted**, isRestoreFlow=$isRestoreFlow, isWatchOnly=$isWatchOnly, isTestnet=$isTestnet, isSinglesig=$isSinglesig, greenWallet=$greenWallet, assetId=$assetId, network=$network, accountType=$accountType, xpub=**Redacted**, page=$page, isShowRecovery=$isShowRecovery, isLightning=$isLightning)"

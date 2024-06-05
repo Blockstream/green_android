@@ -20,7 +20,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-abstract class FcmCommon(val applicationScope: ApplicationScope) : KoinComponent {
+abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : KoinComponent {
     private val database: Database by inject()
     private val greenKeystore: GreenKeystore by inject()
     private val sessionManager: SessionManager by inject()

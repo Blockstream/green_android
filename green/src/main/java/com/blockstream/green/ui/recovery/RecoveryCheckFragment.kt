@@ -16,7 +16,6 @@ import com.blockstream.compose.screens.recovery.RecoveryCheckScreen
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ComposeViewBinding
 import com.blockstream.green.extensions.snackbar
-import com.blockstream.green.gdk.getNetworkIcon
 import com.blockstream.green.ui.AppFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -26,15 +25,7 @@ class RecoveryCheckFragment : AppFragment<ComposeViewBinding>(
 ) {
     private val args: RecoveryCheckFragmentArgs by navArgs()
 
-    private val networkOrNull by lazy { args.args.network }
-
     override val useCompose: Boolean = true
-
-    override val title: String
-        get() = networkOrNull?.canonicalName ?: ""
-
-    override val toolbarIcon: Int?
-        get() = networkOrNull?.getNetworkIcon()
 
     private val viewModel: RecoveryCheckViewModel by viewModel {
         parametersOf(args.args)
@@ -43,18 +34,12 @@ class RecoveryCheckFragment : AppFragment<ComposeViewBinding>(
     // If wallet is null, WalletFragment will give the viewModel to AppFragment, guard this behavior and return null
     override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override fun handleSideEffect(sideEffect: SideEffect) {
+    override suspend fun handleSideEffect(sideEffect: SideEffect) {
+        super.handleSideEffect(sideEffect)
+
         if (sideEffect is SideEffects.NavigateTo) {
-            if (sideEffect.destination is NavigateDestinations.RecoveryCheck) {
-                navigate(
-                    RecoveryCheckFragmentDirections.actionRecoveryCheckFragmentSelf(
-                        args = (sideEffect.destination as NavigateDestinations.RecoveryCheck).args,
-                    ), navOptionsBuilder = NavOptions.Builder().also {
-                        it.setPopUpTo(R.id.recoveryIntroFragment, false)
-                    }
-                )
-            } else if (sideEffect.destination is NavigateDestinations.SetPin) {
-                val recoveryArgs = (sideEffect.destination as NavigateDestinations.SetPin).args
+            if (sideEffect.destination is NavigateDestinations.SetPin) {
+                val recoveryArgs = (sideEffect.destination as NavigateDestinations.SetPin).setupArgs
                 navigate(
                     RecoveryCheckFragmentDirections.actionRecoveryCheckFragmentToPinFragment(
                         setupArgs = recoveryArgs
@@ -63,7 +48,7 @@ class RecoveryCheckFragment : AppFragment<ComposeViewBinding>(
                     }
                 )
             } else if (sideEffect.destination is NavigateDestinations.AddAccount) {
-                val recoveryArgs = (sideEffect.destination as NavigateDestinations.AddAccount).args
+                val recoveryArgs = (sideEffect.destination as NavigateDestinations.AddAccount).setupArgs
                 navigate(
                     RecoveryCheckFragmentDirections.actionGlobalReviewAddAccountFragment(
                         setupArgs = recoveryArgs

@@ -48,7 +48,7 @@ abstract class AbstractDeviceFragment<T : ViewDataBinding>(
         // Nothing to do here, it's already handled by DeviceManager
     }
 
-    override fun handleSideEffect(sideEffect: SideEffect) {
+    override suspend fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
 
         when (sideEffect) {
@@ -144,7 +144,7 @@ abstract class AbstractDeviceFragment<T : ViewDataBinding>(
     ) {
         viewModel.askForFirmwareUpgradeEmitter?.also { askForFirmwareUpgradeEmitter ->
             if (request.deviceBrand == DeviceBrand.Blockstream) {
-                val usbIsRequired = !request.isUsb && request.hardwareVersion == "JADE_V1.1" && JadeVersion(request.currentVersion) < JadeVersion("0.1.28")
+                val usbIsRequired = !request.isUsb && request.hardwareVersion == "JADE_V1.1" && JadeVersion(request.currentVersion ?: "") < JadeVersion("0.1.28")
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle(if (request.isUpgradeRequired) R.string.id_new_jade_firmware_required else R.string.id_new_jade_firmware_available)
                     .setCancelable(false)

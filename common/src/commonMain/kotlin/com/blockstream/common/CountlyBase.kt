@@ -55,7 +55,7 @@ abstract class CountlyBase(
      abstract fun getRemoteConfigValueAsString(key: String): String?
      abstract fun getRemoteConfigValueAsBoolean(key: String): Boolean?
      abstract fun getRemoteConfigValueAsNumber(key: String): Long?
-     abstract fun recordException(throwable: Throwable)
+     abstract fun recordExceptionImpl(throwable: Throwable)
      abstract fun recordFeedback(rating: Int, email: String?, comment :String)
 
 
@@ -132,6 +132,7 @@ abstract class CountlyBase(
      }
 
      fun remoteConfigUpdated(){
+         logger.d { "remoteConfigUpdated" }
          _cachedBanners = null
          _remoteConfigUpdateEvent.tryEmit(Unit)
      }
@@ -626,6 +627,7 @@ abstract class CountlyBase(
      }
 
      fun getRemoteConfigValueForBanners(): List<Banner>? {
+         logger.d { "getRemoteConfigValueForBanners" }
          if(_cachedBanners == null){
              _cachedBanners = try {
                  getRemoteConfigValueAsString("banners")?.let {
@@ -677,6 +679,16 @@ abstract class CountlyBase(
              segmentation[PARAM_SELECTED_VERSION] = version
          })
      }
+
+    fun recordException(throwable: Throwable) {
+        if(!skipExceptionRecording.contains(throwable.message)) {
+            exceptionCounter++
+            recordExceptionImpl(throwable)
+        }
+        if(appInfo.isDevelopmentOrDebug){
+            throwable.printStackTrace()
+        }
+    }
 
      enum class Events(val event: String) {
          HWW_CONNECT("hww_connect"),

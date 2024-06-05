@@ -24,7 +24,7 @@ class UseHardwareDeviceViewModel : UseHardwareDeviceViewModelAbstract() {
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         when (event) {

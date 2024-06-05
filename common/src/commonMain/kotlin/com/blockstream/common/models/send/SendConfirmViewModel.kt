@@ -1,5 +1,11 @@
 package com.blockstream.common.models.send
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_add_note
+import blockstream_green.common.generated.resources.id_review
+import blockstream_green.common.generated.resources.id_sign_transaction
+import blockstream_green.common.generated.resources.note_pencil
+import blockstream_green.common.generated.resources.signature
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.data.Banner
 import com.blockstream.common.data.Denomination
@@ -7,21 +13,25 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavAction
 import com.blockstream.common.data.NavData
 import com.blockstream.common.events.Event
+import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.UtxoView
 import com.blockstream.common.looks.transaction.TransactionConfirmLook
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 
 abstract class SendConfirmViewModelAbstract(greenWallet: GreenWallet, accountAsset: AccountAsset) :
@@ -56,33 +66,35 @@ class SendConfirmViewModel constructor(
         data class SetNote(val note: String) : Event
     }
 
-    class LocalSideEffects {
-        data class Note(val note: String) : SideEffect
-    }
-
     init {
-        _navData.value = NavData(
-            title = "id_review", subtitle = greenWallet.name,
-            onBackPressed = {
-                !(onProgress.value)
-            },
-            actions = listOfNotNull(
-                NavAction(
-                    title = "id_add_note",
-                    icon = "note_pencil",
-                    isMenuEntry = false
-                ) {
-                    postEvent(LocalEvents.Note)
+        viewModelScope.launch {
+            _navData.value = NavData(
+                title = getString(Res.string.id_review), subtitle = greenWallet.name,
+                onBackPressed = {
+                    !(onProgress.value)
                 },
-                (NavAction(
-                    title = "id_sign_transaction",
-                    icon = "signature",
-                    isMenuEntry = true
-                ) {
-                    postEvent(CreateTransactionViewModelAbstract.LocalEvents.SignTransaction(broadcastTransaction = false))
-                }).takeIf { appInfo.isDevelopmentOrDebug },
+                actions = listOfNotNull(
+                    NavAction(
+                        title = getString(Res.string.id_add_note),
+                        icon = Res.drawable.note_pencil,
+                        isMenuEntry = false
+                    ) {
+                        postEvent(LocalEvents.Note)
+                    },
+                    (NavAction(
+                        title = getString(Res.string.id_sign_transaction),
+                        icon = Res.drawable.signature,
+                        isMenuEntry = true
+                    ) {
+                        postEvent(
+                            CreateTransactionViewModelAbstract.LocalEvents.SignTransaction(
+                                broadcastTransaction = false
+                            )
+                        )
+                    }).takeIf { appInfo.isDevelopmentOrDebug },
+                )
             )
-        )
+        }
 
         session.ifConnected {
             if (denomination != null && !denomination.isFiat) {
@@ -116,7 +128,7 @@ class SendConfirmViewModel constructor(
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         when (event) {
@@ -136,7 +148,7 @@ class SendConfirmViewModel constructor(
             }
 
             is LocalEvents.Note -> {
-                postSideEffect(LocalSideEffects.Note(note.value))
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Note(note = note.value, isLightning = account.isLightning)))
             }
         }
     }

@@ -1,15 +1,19 @@
 package com.blockstream.common.data
 
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_receive_any_amp_asset
+import blockstream_green.common.generated.resources.id_receive_any_liquid_asset
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.LBTC_POLICY_ASSET
+import com.blockstream.common.Parcelable
+import com.blockstream.common.Parcelize
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.Entity
 import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.utils.StringHolder
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -24,28 +28,27 @@ data class EnrichedAsset constructor(
     @SerialName("entity") val entity: Entity? = null,
     @SerialName("amp") val isAmp: Boolean = false,
     @SerialName("weight") val weight: Int = 0,
-    @SerialName("isSendable") val isSendable: Boolean = false, // Display "Any Liquid Asset" UI element
+    // @SerialName("isSendable") val isSendable: Boolean = true, // Display "Any Liquid Asset" UI element
     @SerialName("isAnyAsset") val isAnyAsset: Boolean = false, // Display "Any Liquid/Amp Asset" UI element
 ) : GreenJson<EnrichedAsset>(), Parcelable {
 
-
-    fun nameOrNull(session: GdkSession?): String? {
+    fun nameOrNull(session: GdkSession?): StringHolder? {
         return if (isAnyAsset) {
-            if (isAmp) "id_receive_any_amp_asset" else "id_receive_any_liquid_asset"
+            StringHolder(stringResource = if (isAmp) Res.string.id_receive_any_amp_asset else Res.string.id_receive_any_liquid_asset)
         } else if (session != null && assetId.isPolicyAsset(session)) {
             if (assetId == BTC_POLICY_ASSET) {
                 "Bitcoin"
             } else {
                 "Liquid Bitcoin"
             }.let {
-                if (session.isTestnet) "Testnet $it" else it
+                StringHolder(string = if (session.isTestnet) "Testnet $it" else it)
             }
         } else {
-            name
+            name?.let { StringHolder.create(it) }
         }
     }
 
-    fun name(session: GdkSession?): String = nameOrNull(session) ?: assetId
+    fun name(session: GdkSession?): StringHolder = nameOrNull(session) ?: StringHolder(string = assetId)
 
     fun ticker(session: GdkSession): String? {
         return if (assetId.isPolicyAsset(session)) {
@@ -64,7 +67,6 @@ data class EnrichedAsset constructor(
     fun sortWeight(session: GdkSession) = when {
         assetId == BTC_POLICY_ASSET -> Int.MAX_VALUE
         isLiquid(session) -> Int.MAX_VALUE - 1
-        isSendable -> Int.MIN_VALUE
         isAnyAsset -> Int.MIN_VALUE + 1
         else -> {
             val hasAssetIcon = session.hasAssetIcon(assetId)
@@ -129,7 +131,6 @@ data class EnrichedAsset constructor(
                 entity = asset?.entity,
 
                 weight = if(isAmp) -20 else -10,
-                isSendable = false,
                 isAmp = isAmp,
                 isAnyAsset = true
             )

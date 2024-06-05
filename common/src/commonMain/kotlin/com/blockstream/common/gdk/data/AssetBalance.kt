@@ -22,22 +22,26 @@ data class AssetBalance constructor(
         get() = asset.assetId
 
     companion object {
+
+        fun create(
+            asset: EnrichedAsset
+        ): AssetBalance = AssetBalance(asset = asset)
+
         suspend fun create(
             assetId: String,
-            balance: Long,
+            balance: Long? = null,
             session: GdkSession,
             denomination: Denomination? = null
         ): AssetBalance {
-
             return AssetBalance(
                 asset = EnrichedAsset.create(session, assetId),
-                balance = balance.toAmountLook(
+                balance = balance?.toAmountLook(
                     session = session,
                     assetId = assetId,
                     withUnit = true,
                     denomination = denomination
                 ),
-                balanceExchange = balance.toAmountLook(
+                balanceExchange = balance?.toAmountLook(
                     session = session,
                     assetId = assetId,
                     withUnit = true,

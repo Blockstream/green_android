@@ -1,10 +1,14 @@
 package com.blockstream.common.data
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_lock_after_1_minute
+import blockstream_green.common.generated.resources.id_lock_immediately
 import cafe.adriel.voyager.core.lifecycle.JavaSerializable
 import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
 import com.blockstream.common.gdk.data.Network
 import com.russhwolf.settings.Settings
+import org.jetbrains.compose.resources.StringResource
 
 fun Settings.putStringOrRemove(key: String, value: String?) {
     if (value == null) {
@@ -181,8 +185,8 @@ enum class ScreenLockSetting constructor(val seconds: Int){
             return entries[position]
         }
 
-        fun getStringList(): List<String>{
-            return listOf("id_lock_immediately", "id_lock_after_1_minute")
+        fun getStringList(): List<StringResource>{
+            return listOf(Res.string.id_lock_immediately, Res.string.id_lock_after_1_minute)
         }
     }
 }

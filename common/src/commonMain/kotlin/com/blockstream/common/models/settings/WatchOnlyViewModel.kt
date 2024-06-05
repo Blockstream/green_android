@@ -1,28 +1,29 @@
 package com.blockstream.common.models.settings
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_watchonly
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.NavData
 import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.common.extensions.previewAccount
+import com.blockstream.common.extensions.previewNetwork
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.looks.wallet.WatchOnlyLook
 import com.blockstream.common.models.GreenViewModel
-import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
+import com.rickclephas.kmp.observableviewmodel.launch
+import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import org.jetbrains.compose.resources.getString
 
 
 abstract class WatchOnlyViewModelAbstract(greenWallet: GreenWallet) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
     override fun screenName(): String = "WalletSettingsWatchOnly"
-
-    @NativeCoroutinesState
-    abstract val hasMultisig: StateFlow<Boolean>
-
-    @NativeCoroutinesState
-    abstract val hasSinglesig: StateFlow<Boolean>
 
     @NativeCoroutinesState
     abstract val multisigWatchOnly: StateFlow<List<WatchOnlyLook>>
@@ -36,14 +37,11 @@ abstract class WatchOnlyViewModelAbstract(greenWallet: GreenWallet) :
 
 class WatchOnlyViewModel(greenWallet: GreenWallet) :
     WatchOnlyViewModelAbstract(greenWallet = greenWallet) {
-    override val hasMultisig: StateFlow<Boolean> =
-        MutableStateFlow(viewModelScope, session.activeMultisig.isNotEmpty())
 
-    override val hasSinglesig: StateFlow<Boolean> =
-        MutableStateFlow(viewModelScope, session.activeSinglesig.isNotEmpty())
-
-
-    override val multisigWatchOnly: StateFlow<List<WatchOnlyLook>> = combine(session.multisigBitcoinWatchOnly, session.multisigLiquidWatchOnly) { bitcoin, liquid ->
+    override val multisigWatchOnly: StateFlow<List<WatchOnlyLook>> = combine(
+        session.multisigBitcoinWatchOnly,
+        session.multisigLiquidWatchOnly
+    ) { bitcoin, liquid ->
         listOfNotNull(
             bitcoin?.let { WatchOnlyLook(network = session.bitcoinMultisig, username = it) },
             liquid?.let { WatchOnlyLook(network = session.liquidMultisig, username = it) }
@@ -71,6 +69,14 @@ class WatchOnlyViewModel(greenWallet: GreenWallet) :
                 WatchOnlyLook(account = it, outputDescriptors = it.outputDescriptors)
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
+
+    init {
+        viewModelScope.launch {
+            _navData.value = NavData(title = getString(Res.string.id_watchonly), subtitle = greenWallet.name)
+        }
+
+        bootstrap()
+    }
 }
 
 class WatchOnlyViewModelPreview(greenWallet: GreenWallet) :
@@ -79,16 +85,26 @@ class WatchOnlyViewModelPreview(greenWallet: GreenWallet) :
         fun preview() = WatchOnlyViewModelPreview(previewWallet(isHardware = false))
     }
 
-    override val hasMultisig: StateFlow<Boolean> = MutableStateFlow(viewModelScope, false)
-
-    override val hasSinglesig: StateFlow<Boolean> = MutableStateFlow(viewModelScope, false)
-
     override val multisigWatchOnly: StateFlow<List<WatchOnlyLook>> =
-        MutableStateFlow(viewModelScope, listOf())
+        MutableStateFlow(
+            viewModelScope, listOf(
+                WatchOnlyLook(
+                    network = previewNetwork(),
+                    username = "username"
+                ),
+                WatchOnlyLook(
+                    network = previewNetwork(isMainnet = false),
+                    username = "username_testnet"
+                )
+            )
+        )
 
     override val extendedPublicKeysAccounts: StateFlow<List<WatchOnlyLook>> =
-        MutableStateFlow(viewModelScope, listOf())
+        MutableStateFlow(
+            viewModelScope,
+            listOf(WatchOnlyLook(account = previewAccount(), extendedPubkey = "xpub6C364rGP9RCtg8FLop5qQG4eqJ4P34wSpypM4Xw1pZea5WC8ZrUtVCcwDGYMeyyCvSUUjzfimRKh2qsiDbxu9RGx999dKRZKyQPEyiqFUFu"))
+        )
 
     override val outputDescriptorsAccounts: StateFlow<List<WatchOnlyLook>> =
-        MutableStateFlow(viewModelScope, listOf())
+        MutableStateFlow(viewModelScope, listOf(WatchOnlyLook(account = previewAccount(), outputDescriptors = "Ypub6f7htZneT3L1PnbFwdsNzApam7MpwUHAFMf8NyeuK2ioojZMT5qQshsVB2q5kCnpkYVyNxo4XKKnofHYotzWzzHXCjiBSfJ71m3EC6vGYym")))
 }

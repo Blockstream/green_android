@@ -1,14 +1,20 @@
 package com.blockstream.common.models.add
 
+import com.blockstream.common.data.NavData
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Event
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
+import com.rickclephas.kmp.observableviewmodel.launch
 
 abstract class Account2of3ViewModelAbstract(
     val setupArgs: SetupArgs
-) : AddAccountViewModelAbstract(greenWallet = setupArgs.greenWallet!!) {
+) : AddAccountViewModelAbstract(
+    greenWallet = setupArgs.greenWallet!!,
+    assetId = setupArgs.assetId,
+    isReceive = setupArgs.isReceive
+) {
     override fun screenName(): String = "AddAccountChooseRecovery"
 }
 
@@ -21,7 +27,7 @@ class Account2of3ViewModel(setupArgs: SetupArgs) :
         object Xpub : Event
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         when (event) {
@@ -29,7 +35,7 @@ class Account2of3ViewModel(setupArgs: SetupArgs) :
                 postSideEffect(
                     SideEffects.NavigateTo(
                         NavigateDestinations.RecoveryIntro(
-                            args = setupArgs.copy(
+                            setupArgs = setupArgs.copy(
                                 mnemonic = ""
                             )
                         )
@@ -40,7 +46,7 @@ class Account2of3ViewModel(setupArgs: SetupArgs) :
             is LocalEvents.ExistingRecovery -> {
                 postSideEffect(
                     SideEffects.NavigateTo(
-                        NavigateDestinations.ExistingRecovery(
+                        NavigateDestinations.EnterRecoveryPhrase(
                             setupArgs = setupArgs
                         )
                     )
@@ -54,6 +60,10 @@ class Account2of3ViewModel(setupArgs: SetupArgs) :
     }
 
     init {
+        viewModelScope.launch {
+            _navData.value = NavData(title = setupArgs.accountType?.toString(), subtitle = greenWallet.name)
+        }
+
         bootstrap()
     }
 }

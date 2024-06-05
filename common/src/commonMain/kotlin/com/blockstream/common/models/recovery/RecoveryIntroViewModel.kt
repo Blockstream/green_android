@@ -1,5 +1,7 @@
 package com.blockstream.common.models.recovery
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_before_you_backup
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
 import com.blockstream.common.data.NavData
@@ -14,11 +16,13 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.Serializable
+import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
 abstract class RecoveryIntroViewModelAbstract(val setupArgs: SetupArgs) :
@@ -32,7 +36,7 @@ abstract class RecoveryIntroViewModelAbstract(val setupArgs: SetupArgs) :
     abstract val mnemonic: MutableStateFlow<String>
 }
 
-class RecoveryIntroViewModel constructor(setupArgs: SetupArgs, stateKeeper: StateKeeper = StateKeeperDispatcher()) :
+class RecoveryIntroViewModel(setupArgs: SetupArgs, stateKeeper: StateKeeper = StateKeeperDispatcher()) :
     RecoveryIntroViewModelAbstract(setupArgs = setupArgs) {
     private val gdk: Gdk by inject()
 
@@ -64,12 +68,14 @@ class RecoveryIntroViewModel constructor(setupArgs: SetupArgs, stateKeeper: Stat
             }.launchIn(viewModelScope.coroutineScope)
         }
 
-        _navData.value = NavData(title = "id_before_you_backup")
+        viewModelScope.launch {
+            _navData.value = NavData(title = getString(Res.string.id_before_you_backup), subtitle = greenWalletOrNull?.name)
+        }
 
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         if(event is Events.Continue) {

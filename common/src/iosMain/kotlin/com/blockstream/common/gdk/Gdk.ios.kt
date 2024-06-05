@@ -2,7 +2,6 @@ package com.blockstream.common.gdk
 
 import co.touchlab.kermit.Logger
 import com.blockstream.common.gdk.data.AuthHandlerStatus
-import com.blockstream.common.gdk.data.Balance
 import com.blockstream.common.gdk.data.FeeEstimation
 import com.blockstream.common.gdk.data.LiquidAssets
 import com.blockstream.common.gdk.data.LoginData
@@ -17,7 +16,6 @@ import com.blockstream.common.gdk.params.BalanceParams
 import com.blockstream.common.gdk.params.BcurDecodeParams
 import com.blockstream.common.gdk.params.BcurEncodeParams
 import com.blockstream.common.gdk.params.ConnectionParams
-import com.blockstream.common.gdk.params.Convert
 import com.blockstream.common.gdk.params.CredentialsParams
 import com.blockstream.common.gdk.params.CsvParams
 import com.blockstream.common.gdk.params.DecryptWithPinParams
@@ -236,7 +234,7 @@ inline fun <R> Int.okOrThrow(block: () -> R): R {
 
 
 class NotifyContext constructor(
-    val session: CPointer<CPointerVar<GA_session>>,
+    val session: CPointer<GA_session>,
     val notificationHandler: ((session: GASession, jsonObject: JsonElement) -> Unit)? = null
 )
 
@@ -268,11 +266,9 @@ private val _gdkNotificationHandler = staticCFunction { context: COpaquePointer?
 class IOSGdkBinding constructor(config: InitConfig) : GdkBinding {
     private val _notifyContexts = mutableMapOf<CPointer<GA_session>, StableRef<NotifyContext>>()
     private var _notificationHandler: ((session: GASession, jsonObject: JsonElement) -> Unit)? = null
-    private val _dataDir: String
+    private val _dataDir: String = config.datadir
 
     init {
-        _dataDir = config.datadir
-
         memScoped {
             GA_init(config.toGaJson(this))
         }
@@ -288,20 +284,22 @@ class IOSGdkBinding constructor(config: InitConfig) : GdkBinding {
     @Throws(Exception::class)
     override fun createSession(): GASession {
         memScoped {
-            val gaSession = allocPointerTo<GA_session>()
-            return GA_create_session(gaSession.ptr).okOrThrow {
+            val gaSessionPointer = allocPointerTo<GA_session>()
+            return GA_create_session(gaSessionPointer.ptr).okOrThrow {
+                val gaSession = gaSessionPointer.value!!
 
-                val notify: StableRef<NotifyContext> = StableRef.create(NotifyContext(gaSession.ptr, _notificationHandler)).also { notifyContext ->
-                    _notifyContexts[gaSession.value!!] = notifyContext
+                val notify: StableRef<NotifyContext> = StableRef.create(NotifyContext(gaSession, _notificationHandler)).also { notifyContext ->
+                    _notifyContexts[gaSession] = notifyContext
                 }
 
-                gaSession.value!!.also {
-                    GA_set_notification_handler(
-                        session = gaSession.value,
-                        handler = _gdkNotificationHandler,
-                        context = notify.asCPointer()
-                    )
-                }
+                GA_set_notification_handler(
+                    session = gaSession,
+                    handler = _gdkNotificationHandler,
+                    context = notify.asCPointer()
+                )
+
+                // Return gaSession
+                gaSession
             }
         }
     }

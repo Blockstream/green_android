@@ -2,6 +2,7 @@ package com.blockstream.common.gdk.data
 
 import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
+import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -26,6 +27,14 @@ data class TwoFactorConfig(
     @SerialName("twofactor_reset") val twoFactorReset: TwoFactorReset,
 ): GreenJson<TwoFactorConfig>(), Parcelable {
     override fun kSerializer() = serializer()
+
+    fun twoFactorMethodConfig(method: TwoFactorMethod) = when(method){
+        TwoFactorMethod.EMAIL -> email
+        TwoFactorMethod.SMS -> sms
+        TwoFactorMethod.PHONE -> phone
+        TwoFactorMethod.AUTHENTICATOR -> gauth
+        TwoFactorMethod.TELEGRAM -> telegram
+    }
 
     companion object{
         // Emtpy object in case of 2FA bug in GDK

@@ -1,5 +1,11 @@
 package com.blockstream.common.models.lightning
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_empty_lightning_account
+import blockstream_green.common.generated.resources.id_refund
+import blockstream_green.common.generated.resources.id_refund_initiated
+import blockstream_green.common.generated.resources.id_sweep
+import blockstream_green.common.generated.resources.id_sweep_initiated
 import breez_sdk.RecommendedFees
 import breez_sdk.ReverseSwapFeesRequest
 import com.blockstream.common.data.Denomination
@@ -20,12 +26,16 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
+import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.feeRateWithUnit
+import com.blockstream.common.utils.getStringFromId
+import com.blockstream.common.utils.getStringFromIdOrNull
 import com.blockstream.common.utils.toAmountLook
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
+import com.rickclephas.kmp.observableviewmodel.launch
 import com.rickclephas.kmp.observableviewmodel.stateIn
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -37,6 +47,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
+import org.jetbrains.compose.resources.getString
 import kotlin.math.absoluteValue
 
 
@@ -165,14 +176,16 @@ class RecoverFundsViewModel(
     }
 
     init {
-        _navData.value = NavData(
-            title = when {
-                isRefund -> "id_refund"
-                isSendAll -> "id_empty_lightning_account"
-                else -> "id_sweep"
-            },
-            subtitle = greenWallet.name
-        )
+        viewModelScope.launch {
+            _navData.value = NavData(
+                title = getString(when {
+                    isRefund -> Res.string.id_refund
+                    isSendAll -> Res.string.id_empty_lightning_account
+                    else -> Res.string.id_sweep
+                }),
+                subtitle = greenWallet.name
+            )
+        }
 
         sessionOrNull?.ifConnected {
             accountAsset.value =
@@ -203,7 +216,7 @@ class RecoverFundsViewModel(
         )
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         if (event is LocalEvents.SetFeeRate) {
             if (event.feePriority is FeePriority.Custom && event.feePriority.customFeeRate.isNaN()) {
 
@@ -452,7 +465,7 @@ class RecoverFundsViewModel(
                 updateFee(error = "id_insufficient_funds", feeRate = feeRate)
                 _error.value = null
             } else {
-                _error.value = it.message
+                _error.value = getStringFromIdOrNull(it.message)
             }
             _isValid.value = false
             amountToBeRefunded.value = null
@@ -514,15 +527,15 @@ class RecoverFundsViewModel(
             if (isRefund) {
                 postSideEffect(
                     SideEffects.NavigateBack(
-                        title = "id_refund",
-                        message = "id_refund_initiated"
+                        title = StringHolder.create(Res.string.id_refund),
+                        message = StringHolder.create(Res.string.id_refund_initiated)
                     )
                 )
             } else {
                 postSideEffect(
                     SideEffects.NavigateBack(
-                        title = "id_sweep",
-                        message = "id_sweep_initiated"
+                        title = StringHolder.create(Res.string.id_sweep),
+                        message = StringHolder.create(Res.string.id_sweep_initiated)
                     )
                 )
             }

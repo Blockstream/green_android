@@ -1,5 +1,9 @@
 package com.blockstream.common.models.twofactor
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_insufficient_lbtc_for_fees
+import blockstream_green.common.generated.resources.id_insufficient_lbtc_to_send_a
+import blockstream_green.common.generated.resources.id_reenable_2fa
 import com.blockstream.common.Urls
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavData
@@ -11,8 +15,11 @@ import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.StringHolder
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.StateFlow
+import org.jetbrains.compose.resources.getString
 
 abstract class ReEnable2FAViewModelAbstract(greenWallet: GreenWallet) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
@@ -33,19 +40,22 @@ class ReEnable2FAViewModel(greenWallet: GreenWallet) :
     }
 
     init {
-        _navData.value = NavData(title = "id_re_enable_2fa", subtitle = greenWallet.name)
+
+        viewModelScope.launch {
+            _navData.value = NavData(title = getString(Res.string.id_reenable_2fa), subtitle = greenWallet.name)
+        }
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         if (event is LocalEvents.SelectAccount) {
             if (session.accountAssets(event.account).value.policyAsset == 0L) {
                 postSideEffect(
                     SideEffects.Dialog(
-                        title = "id_insufficient_lbtc_for_fees",
-                        message = "id_insufficient_lbtc_to_send_a"
+                        title = StringHolder.create(Res.string.id_insufficient_lbtc_for_fees),
+                        message = StringHolder.create(Res.string.id_insufficient_lbtc_to_send_a)
                     )
                 )
             } else {

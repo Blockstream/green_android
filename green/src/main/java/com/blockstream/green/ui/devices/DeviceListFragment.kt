@@ -60,7 +60,7 @@ class DeviceListFragment : AbstractDeviceFragment<DeviceListFragmentBinding>(
     override val title: String
         get() = if (args.isJade) "Blockstream Jade" else ""
 
-    override fun handleSideEffect(sideEffect: SideEffect) {
+    override suspend fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
         if (sideEffect is SideEffects.Navigate){
             (sideEffect.data as? Device)?.also {

@@ -52,6 +52,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/wrap"
+                tools:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -69,7 +70,6 @@
 
                 <TextView
                     android:id="@+id/nameTextView"
-                    idText="@{accountTypeLook.title}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -86,7 +86,6 @@
 
                 <TextView
                     android:id="@+id/descriptionTextView"
-                    idText="@{accountTypeLook.description}"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -103,7 +102,6 @@
 
                 <TextView
                     android:id="@+id/accountTypeTextView"
-                    idText="@{accountTypeLook.security}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -128,7 +126,6 @@
 
                 <TextView
                     android:id="@+id/accountPolicyTextView"
-                    idText="@{accountTypeLook.policy}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"

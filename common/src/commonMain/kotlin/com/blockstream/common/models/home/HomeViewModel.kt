@@ -8,7 +8,9 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
+import org.koin.core.annotation.Factory
 
+@Factory
 class HomeViewModel: WalletsViewModel(isHome = true){
 
     class LocalEvents {
@@ -21,7 +23,7 @@ class HomeViewModel: WalletsViewModel(isHome = true){
         class ShowConsent(sideEffect: SideEffect): SideEffects.SideEffectEvent(Events.EventSideEffect(sideEffect))
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         when (event) {

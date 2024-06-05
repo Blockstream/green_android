@@ -2205,7 +2205,7 @@ class GdkSession constructor(
             return w2.compareTo(w1)
         }
 
-        return a1.name(this).compareTo(a2.name(this))
+        return a1.name(this).fallbackString().compareTo(a2.name(this).fallbackString())
     }
 
     private fun sortAccountAssets(a1: AccountAsset, a2: AccountAsset): Int = when {
@@ -2254,12 +2254,23 @@ class GdkSession constructor(
 
     private fun getWatchOnlyUsername(network: Network) = gdk.getWatchOnlyUsername(gdkSession(network))
 
-    fun setWatchOnly(network: Network, username: String, password: String) = gdk.setWatchOnly(
-        gdkSession(network),
-        username,
-        password
-    ).also {
-        updateWatchOnlyUsername(network)
+    fun setWatchOnly(
+        network: Network,
+        username: String,
+        password: String
+    ) {
+        logger.d { "setWatchOnly: ${network.id} user: '$username' pass: '$password'" }
+        gdk.setWatchOnly(
+            session = gdkSession(network),
+            username = username,
+            password = password
+        ).also {
+            updateWatchOnlyUsername(network)
+        }
+    }
+
+    fun deleteWatchOnly(network: Network) {
+        setWatchOnly(network = network, username = "", password = "")
     }
 
     fun watchOnlyUsername(network: Network): StateFlow<String?> {

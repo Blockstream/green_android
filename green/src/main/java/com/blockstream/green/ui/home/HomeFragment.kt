@@ -6,8 +6,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.blockstream.common.models.home.HomeViewModel
 import com.blockstream.compose.AppFragmentBridge
 import com.blockstream.compose.screens.HomeScreen
-import com.blockstream.compose.sheets.BottomSheetNavigatorM3
-import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ComposeViewBinding
 import com.blockstream.green.ui.wallet.AbstractWalletsFragment

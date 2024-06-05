@@ -1,5 +1,15 @@
 package com.blockstream.common.models.lightning
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_amount_must_be_at_least_s
+import blockstream_green.common.generated.resources.id_amount_must_be_at_most_s
+import blockstream_green.common.generated.resources.id_insufficient_funds
+import blockstream_green.common.generated.resources.id_invalid_amount
+import blockstream_green.common.generated.resources.id_s_will_send_you_the_funds_it
+import blockstream_green.common.generated.resources.id_success
+import blockstream_green.common.generated.resources.id_withdraw
+import blockstream_green.common.generated.resources.id_withdraw_limits_s__s
+import blockstream_green.common.generated.resources.id_you_are_redeeming_funds_from_s
 import breez_sdk.LnUrlWithdrawRequestData
 import breez_sdk.LnUrlWithdrawResult
 import com.blockstream.common.BTC_POLICY_ASSET
@@ -19,10 +29,12 @@ import com.blockstream.common.lightning.minWithdrawableSatoshi
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
+import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.UserInput
 import com.blockstream.common.utils.toAmountLook
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,6 +42,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 import kotlin.math.min
 
 
@@ -75,9 +88,9 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
     private val _error: MutableStateFlow<String?> = MutableStateFlow(null)
     override val error: StateFlow<String?> = _error.asStateFlow()
 
-    override val redeemMessage = "id_you_are_redeeming_funds_from_s|${requestData.domain()}"
+    override var redeemMessage = ""
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         if (event is Events.Continue) {
@@ -89,7 +102,11 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
     private var maxWithdraw: Long = 0
 
     init {
-        _navData.value = NavData(title = "id_withdraw", subtitle = greenWallet.name)
+        viewModelScope.launch {
+            _navData.value = NavData(title = getString(Res.string.id_withdraw), subtitle = greenWallet.name)
+
+            redeemMessage = getString(Res.string.id_you_are_redeeming_funds_from_s, requestData.domain())
+        }
 
         if (appInfo.isDevelopmentOrDebug) {
             logger.d { "LnUrlWithdrawRequestData: $requestData" }
@@ -125,19 +142,17 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
                 requestData.maxWithdrawableSatoshi()
             )
 
-            withdrawaLimits.value = "id_withdraw_limits_s__s|${
-                minWithdraw.toAmountLook(
+            withdrawaLimits.value = getString(
+                Res.string.id_withdraw_limits_s__s, minWithdraw.toAmountLook(
                     session = session,
                     withUnit = false,
                     denomination = denomination
-                )
-            }|${
-                maxWithdraw.toAmountLook(
+                ) ?: "", maxWithdraw.toAmountLook(
                     session = session,
                     withUnit = true,
                     denomination = denomination
-                )
-            }"
+                ) ?: ""
+            )
         }.launchIn(viewModelScope.coroutineScope)
 
         bootstrap()
@@ -190,23 +205,19 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
                 session.accountAssets(account = session.lightningAccount).value.policyAsset
 
             _error.value = if (satoshi <= 0L) {
-                "id_invalid_amount"
+                getString(Res.string.id_invalid_amount)
             } else if (satoshi < minWithdraw) {
-                "id_amount_must_be_at_least_s|${
-                    minWithdraw.toAmountLook(
-                        session = session,
-                        denomination = denomination.value
-                    )
-                }"
+                getString(Res.string.id_amount_must_be_at_least_s, minWithdraw.toAmountLook(
+                    session = session,
+                    denomination = denomination.value
+                ) ?: "")
             } else if (satoshi > balance) {
-                "id_insufficient_funds"
+                getString(Res.string.id_insufficient_funds)
             } else if (satoshi > maxWithdraw) {
-                "id_amount_must_be_at_most_s|${
-                    maxWithdraw.toAmountLook(
-                        session = session,
-                        denomination = denomination.value
-                    )
-                }"
+                getString(Res.string.id_amount_must_be_at_most_s, maxWithdraw.toAmountLook(
+                    session = session,
+                    denomination = denomination.value
+                ) ?: "")
             } else {
                 null
             }
@@ -230,8 +241,8 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
         }, onSuccess = {
             postSideEffect(
                 SideEffects.NavigateBack(
-                    title = "id_success",
-                    message = "id_s_will_send_you_the_funds_it|${requestData.domain()}"
+                    title = StringHolder.create(Res.string.id_success),
+                    message = StringHolder(string = getString(Res.string.id_s_will_send_you_the_funds_it, requestData.domain()))
                 )
             )
         })

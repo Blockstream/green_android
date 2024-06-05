@@ -53,8 +53,8 @@
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
 
         <!--Platform attributes-->
-        <item name="android:navigationBarColor">@color/brand_background</item>
-        <item name="android:statusBarColor">@color/brand_background</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item> <!-- Make the status bar aware of our dark theme  -->
         <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
         <item name="android:navigationBarDividerColor" tools:ignore="NewApi">@null</item><!-- Remove the divider   -->

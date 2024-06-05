@@ -49,7 +49,7 @@ class SignMessageViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset,
         object TryAgain : Event
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         if (event is Events.Continue) {

@@ -31,7 +31,7 @@ class WatchOnlyCredentialsFragment : AppFragment<ComposeViewBinding>(
 
     override val useCompose: Boolean = true
 
-    override fun handleSideEffect(sideEffect: SideEffect) {
+    override suspend fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
         ((sideEffect as? SideEffects.NavigateTo)?.destination as? NavigateDestinations.WalletOverview)?.also {
             navigate(NavGraphDirections.actionGlobalWalletOverviewFragment(it.greenWallet))

@@ -1,6 +1,6 @@
 package com.blockstream.common.data
 
-class AppInfo constructor(
+class AppInfo(
     val userAgent: String,
     val version: String,
     val isDebug: Boolean,

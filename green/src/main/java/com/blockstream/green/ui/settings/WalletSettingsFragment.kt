@@ -43,29 +43,22 @@ class WalletSettingsFragment : AppFragment<ComposeViewBinding>(R.layout.compose_
     override val toolbarIcon: Int?
         get() = args.network?.getNetworkIcon()
 
-    override fun handleSideEffect(sideEffect: SideEffect) {
+    override suspend fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
 
         when (sideEffect) {
             is SideEffects.NavigateTo -> {
-                (sideEffect.destination as? NavigateDestinations.RecoveryIntro)?.also {
-                    navigate(
-                        WalletSettingsFragmentDirections.actionWalletSettingsFragmentToRecoveryIntroFragment(
-                            setupArgs = it.args
-                        )
-                    )
-                }
                 (sideEffect.destination as? NavigateDestinations.ChangePin)?.also {
                     navigate(
                         WalletSettingsFragmentDirections.actionWalletSettingsFragmentToChangePinFragment(
-                            wallet = it.greenWallet
+                            wallet = viewModel.greenWallet
                         )
                     )
                 }
                 (sideEffect.destination as? NavigateDestinations.WatchOnly)?.also {
                     navigate(
                         WalletSettingsFragmentDirections.actionWalletSettingsFragmentToWatchOnlyFragment(
-                            wallet = it.greenWallet
+                            wallet = viewModel.greenWallet
                         )
                     )
                 }

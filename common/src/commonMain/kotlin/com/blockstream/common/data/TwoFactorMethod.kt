@@ -1,5 +1,13 @@
 package com.blockstream.common.data
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_authenticator_app
+import blockstream_green.common.generated.resources.id_call
+import blockstream_green.common.generated.resources.id_email
+import blockstream_green.common.generated.resources.id_sms
+import blockstream_green.common.generated.resources.id_telegram
+import org.jetbrains.compose.resources.StringResource
+
 
 enum class TwoFactorMethod(val gdkType: String) {
     EMAIL("email"),
@@ -10,13 +18,13 @@ enum class TwoFactorMethod(val gdkType: String) {
 
     override fun toString(): String = gdkType
 
-    val localized : String
+    val localized : StringResource
         get() = when(this){
-            EMAIL -> "id_email"
-            SMS -> "id_sms"
-            PHONE -> "id_call"
-            AUTHENTICATOR -> "id_authenticator_app"
-            TELEGRAM -> "id_telegram"
+            EMAIL -> Res.string.id_email
+            SMS -> Res.string.id_sms
+            PHONE -> Res.string.id_call
+            AUTHENTICATOR -> Res.string.id_authenticator_app
+            TELEGRAM -> Res.string.id_telegram
         }
 
     companion object {

@@ -281,29 +281,6 @@ task("verifyDependencies", GradleBuild::class) {
     tasks = listOf("lintDevelopmentRelease", "assembleProductionRelease")
 }
 
-task("appKeys") {
-    doFirst {
-        val appKeys = project.file("src/main/res/raw/app_keys.txt")
-        if (appKeys.exists()) {
-            println("AppKeys: ✔")
-        } else {
-            println("AppKeys: Use empty key file")
-            appKeys.createNewFile()
-        }
-    }
-    outputs.upToDateWhen { false }
-}
-
-task("useBlockstreamKeys") {
-    doLast {
-        println("AppKeys: Use Blockstream Keys")
-        rootProject.file("contrib/blockstream_keys.txt")
-            .copyTo(project.file("src/main/res/raw/app_keys.txt"), overwrite = true)
-    }
-}
-
-tasks.getByName("preBuild").dependsOn(tasks.getByName("appKeys"))
-
 // Disable Google Services Plugin for FDroid flavor
 afterEvaluate {
     tasks.matching {

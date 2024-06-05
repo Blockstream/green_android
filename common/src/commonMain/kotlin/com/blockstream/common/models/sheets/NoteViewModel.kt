@@ -23,7 +23,7 @@ class NoteViewModel(initialNote: String, isLightning: Boolean, greenWallet: Gree
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         if(event is Events.Continue){

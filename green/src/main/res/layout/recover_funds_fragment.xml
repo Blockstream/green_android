@@ -488,7 +488,7 @@
                     isVisible="@{vm.onProgress &amp;&amp; vm.onProgressSending}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:riveResource="@raw/lightning_transaction" />
+                    />
 
                 <TextView
                     android:layout_width="match_parent"

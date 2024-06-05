@@ -33,7 +33,7 @@ class DemoViewModel : GreenViewModel() {
         object SideEffectTwo : SideEffect
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         when (event) {
             is LocalEvents.EventOpenBrowser -> {
                 postSideEffect(SideEffects.OpenBrowser(Urls.BLOCKSTREAM_GREEN_WEBSITE))

@@ -48,7 +48,7 @@ class SendFragment : AppFragment<ComposeViewBinding>(
         }
     }
 
-    override fun handleSideEffect(sideEffect: SideEffect) {
+    override suspend fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
         when (sideEffect) {
             is SideEffects.TransactionSent -> {

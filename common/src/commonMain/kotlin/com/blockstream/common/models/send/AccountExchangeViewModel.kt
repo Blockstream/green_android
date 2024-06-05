@@ -1,5 +1,7 @@
 package com.blockstream.common.models.send
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_account_transfer
 import com.blockstream.common.TransactionSegmentation
 import com.blockstream.common.TransactionType
 import com.blockstream.common.data.Banner
@@ -30,10 +32,12 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.UserInput
 import com.blockstream.common.utils.feeRateWithUnit
+import com.blockstream.common.utils.getStringFromId
 import com.blockstream.common.utils.ifNotNull
 import com.blockstream.common.utils.toAmountLook
 import com.rickclephas.kmp.observableviewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,6 +49,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.getString
 import kotlin.math.absoluteValue
 
 abstract class AccountExchangeViewModelAbstract(
@@ -217,8 +222,11 @@ class AccountExchangeViewModel(
 
     init {
 
+        viewModelScope.launch {
+            _navData.value = NavData(title = getString(Res.string.id_account_transfer), subtitle = greenWallet.name)
+        }
+
         session.ifConnected {
-            _navData.value = NavData(title = "id_account_transfer", subtitle = greenWallet.name)
 
             fromAccountAsset.onEach { fromAccount ->
                 _network.value = fromAccount?.account?.network
@@ -305,8 +313,8 @@ class AccountExchangeViewModel(
                         "id_amount_above_maximum_allowed",
                         "id_amount_below_minimum_allowed"
                     ).startsWith(it)
-                }
-                _errorGeneric.value = it.takeIf { _errorAmount.value.isNullOrBlank() }
+                }?.let { getStringFromId(it) }
+                _errorGeneric.value = it.takeIf { _errorAmount.value.isNullOrBlank() }?.let { getStringFromId(it) }
             }.launchIn(this)
         }
 
@@ -314,7 +322,7 @@ class AccountExchangeViewModel(
     }
 
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         when (event) {
@@ -323,7 +331,6 @@ class AccountExchangeViewModel(
                 postSideEffect(
                     SideEffects.NavigateTo(
                         NavigateDestinations.Accounts(
-                            greenWallet = greenWallet,
                             accounts = (if (event.isFrom) fromAccounts.value else toAccounts.value)
                                 ?: listOf(),
                             withAsset = event.isFrom

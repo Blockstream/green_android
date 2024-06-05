@@ -1,5 +1,7 @@
 package com.blockstream.common.models.send
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_increase_fee
 import com.blockstream.common.TransactionSegmentation
 import com.blockstream.common.TransactionType
 import com.blockstream.common.data.Denomination
@@ -19,12 +21,14 @@ import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.toAmountLook
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.serialization.json.Json
+import org.jetbrains.compose.resources.getString
 
 abstract class BumpViewModelAbstract(
     greenWallet: GreenWallet,
@@ -99,10 +103,13 @@ class BumpViewModel(
     private val transaction = Json.parseToJsonElement(transactionAsString)
 
     init {
-        _navData.value = NavData(
-            title = "id_increase_fee",
-            subtitle = account.name
-        )
+
+        viewModelScope.launch {
+            _navData.value = NavData(
+                title = getString(Res.string.id_increase_fee),
+                subtitle = account.name
+            )
+        }
 
         // Always show fee selector
         _showFeeSelector.value = true
@@ -118,7 +125,7 @@ class BumpViewModel(
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         if (event is LocalEvents.SignTransaction) {

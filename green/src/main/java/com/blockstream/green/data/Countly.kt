@@ -323,15 +323,8 @@ class Countly constructor(
         _requestQueue.proxy = proxyUrl
     }
 
-
-    override fun recordException(throwable: Throwable) {
-        if(!skipExceptionRecording.contains(throwable.message)) {
-            exceptionCounter++
-            _crashes.recordHandledException(throwable)
-        }
-        if(isDevelopmentOrDebug){
-            throwable.printStackTrace()
-        }
+    override fun recordExceptionImpl(throwable: Throwable) {
+        _crashes.recordHandledException(throwable)
     }
 
     fun recordRating(rating: Int, comment :String){

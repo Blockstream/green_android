@@ -17,7 +17,7 @@ abstract class AbstractWalletsFragment<T : ViewDataBinding> constructor(
     @MenuRes menuRes: Int
 ) : AppFragment<T>(layout, menuRes) {
 
-    override fun handleSideEffect(sideEffect: SideEffect) {
+    override suspend fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
         (sideEffect as? SideEffects.NavigateTo)?.also {
             navigate(it.destination)
@@ -41,7 +41,7 @@ abstract class AbstractWalletsFragment<T : ViewDataBinding> constructor(
                 )
             )
 
-            is NavigateDestinations.WalletLogin -> {
+            is NavigateDestinations.Login -> {
                 (requireActivity() as MainActivity).getVisibleFragment()?.also {
                     if(it is LoginFragment && it.viewModel.greenWalletOrNull == directions.greenWallet && it.args.isLightningShortcut == directions.isLightningShortcut){
                         return

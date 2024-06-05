@@ -1,5 +1,7 @@
 package com.blockstream.common.models.settings
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_s_from_s
 import com.blockstream.common.BTC_UNIT
 import com.blockstream.common.BitcoinUnits
 import com.blockstream.common.TestnetUnits
@@ -18,6 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onEach
+import org.jetbrains.compose.resources.getString
 
 
 abstract class DenominationExchangeRateViewModelAbstract(greenWallet: GreenWallet) :
@@ -64,11 +67,11 @@ class DenominationExchangeRateViewModel(greenWallet: GreenWallet) :
                 _selectedUnit.value = settings.networkUnit(session)
 
                 _exchangeAndCurrencies.value = availablePricing.map {
-                    "id_s_from_s|${it.currency}|${it.exchange}"
+                    getString(Res.string.id_s_from_s, it.currency, it.exchange)
                 }
 
                 _selectedExchangeAndCurrency.value = settings.pricing.let {
-                    "id_s_from_s|${it.currency}|${it.exchange}"
+                    getString(Res.string.id_s_from_s, it.currency, it.exchange)
                 }
             }.launchIn(this)
         }
@@ -76,7 +79,7 @@ class DenominationExchangeRateViewModel(greenWallet: GreenWallet) :
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         if (event is LocalEvents.Set) {

@@ -1,5 +1,8 @@
 package com.blockstream.common.models.send
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_reenable_2fa
+import blockstream_green.common.generated.resources.id_redeposit
 import com.blockstream.common.TransactionSegmentation
 import com.blockstream.common.TransactionType
 import com.blockstream.common.data.Banner
@@ -19,9 +22,12 @@ import com.blockstream.common.gdk.params.AddressParams
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.feeRateWithUnit
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import org.jetbrains.compose.resources.getString
 
 abstract class RedepositViewModelAbstract(
     greenWallet: GreenWallet,
@@ -44,16 +50,18 @@ class RedepositViewModel(
 ) : RedepositViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
 
     init {
-        _navData.value = NavData(
-            title = if (isRedeposit2FA) "id_re_enable_2fa" else "id_redeposit",
-            subtitle = greenWallet.name,
-        )
+        viewModelScope.launch {
+            _navData.value = NavData(
+                title = getString(if (isRedeposit2FA) Res.string.id_reenable_2fa else Res.string.id_redeposit),
+                subtitle = greenWallet.name,
+            )
+        }
 
         if (account.isLightning) {
             postSideEffect(
                 SideEffects.NavigateBack(
-                    title = "Lightning",
-                    message = "Lightning redeposit is not supported"
+                    title = StringHolder.create("Lightning"),
+                    message = StringHolder.create("Lightning redeposit is not supported")
                 )
             )
         } else {
@@ -73,7 +81,7 @@ class RedepositViewModel(
     }
 
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         when (event) {

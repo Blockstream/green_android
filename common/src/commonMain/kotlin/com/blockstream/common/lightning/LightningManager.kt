@@ -38,17 +38,19 @@ class LightningManager constructor(
     val logs = StringBuilder()
 
     init {
-        setLogStream(object : LogStream {
-            override fun log(l: LogEntry) {
-                if(l.level == "DEBUG") {
-                    logs.append("${Clock.System.now()} - ${l.line}\n")
-                    if(logs.length > 2_000_000){
-                        logger.d { "Clear Lightning Logs" }
-                        logs.deleteRange(0, 1_000_000)
+        if(appConfig.lightningFeatureEnabled) {
+            setLogStream(object : LogStream {
+                override fun log(l: LogEntry) {
+                    if (l.level == "DEBUG") {
+                        logs.append("${Clock.System.now()} - ${l.line}\n")
+                        if (logs.length > 2_000_000) {
+                            logger.d { "Clear Lightning Logs" }
+                            logs.deleteRange(0, 1_000_000)
+                        }
                     }
                 }
-            }
-        })
+            })
+        }
     }
 
     @NativeCoroutinesIgnore

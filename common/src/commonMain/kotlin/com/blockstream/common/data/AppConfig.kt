@@ -1,8 +1,12 @@
 package com.blockstream.common.data
 
+import blockstream_green.common.generated.resources.Res
 import com.blockstream.common.utils.Loggable
+import kotlinx.coroutines.runBlocking
+import okio.internal.commonToUtf8String
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 
-data class AppConfig constructor(
+data class AppConfig(
     val isDebug: Boolean,
     val filesDir: String,
     val cacheDir: String,
@@ -14,16 +18,21 @@ data class AppConfig constructor(
     val lightningFeatureEnabled: Boolean = true,
     val storeRateEnabled: Boolean = false
 ) {
+    @OptIn(ExperimentalResourceApi::class)
     companion object: Loggable() {
         fun default(
             isDebug: Boolean,
             filesDir: String,
             cacheDir: String,
-            appKeys: AppKeys?,
             analyticsFeatureEnabled: Boolean,
             lightningFeatureEnabled: Boolean,
             storeRateEnabled: Boolean
         ): AppConfig {
+            val appKeys: AppKeys? = runBlocking {
+                Res.readBytes("files/app_keys.txt").commonToUtf8String().let {
+                    AppKeys.fromText(it)
+                }
+            }
 
             if (lightningFeatureEnabled && (appKeys?.greenlightCert == null || appKeys.greenlightKey == null || appKeys.breezApiKey == null)) {
                 logger.i { "Lightning Feature turned off" }

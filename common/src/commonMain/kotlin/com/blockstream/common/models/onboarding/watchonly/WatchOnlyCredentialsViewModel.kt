@@ -15,6 +15,7 @@ import com.blockstream.common.extensions.objectId
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.platformFileSystem
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.generateWalletName
@@ -36,6 +37,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import okio.Path.Companion.toPath
 import okio.Source
 import okio.buffer
 import okio.use
@@ -141,7 +143,7 @@ class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs) :
         bootstrap()
     }
 
-    override fun handleEvent(event: Event) {
+    override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
         when (event) {
             is Events.Continue -> {
