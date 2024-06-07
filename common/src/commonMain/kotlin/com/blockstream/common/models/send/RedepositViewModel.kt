@@ -3,6 +3,7 @@ package com.blockstream.common.models.send
 import com.blockstream.common.TransactionSegmentation
 import com.blockstream.common.TransactionType
 import com.blockstream.common.data.Banner
+import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavData
 import com.blockstream.common.events.Event
@@ -57,7 +58,9 @@ class RedepositViewModel(
             )
         } else {
             session.ifConnected {
-                _showFeeSelector.value = true
+                _showFeeSelector.value = accountAsset.account.network.isBitcoin
+                        || (accountAsset.account.network.isLiquid && getFeeRate(FeePriority.High()) > accountAsset.account.network.defaultFee)
+
                 _network.value = accountAsset.account.network
 
                 combine(_feeEstimation.filterNotNull(), _feePriorityPrimitive) { _ ->

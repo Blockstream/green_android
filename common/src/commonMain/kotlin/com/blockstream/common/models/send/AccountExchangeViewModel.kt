@@ -5,6 +5,7 @@ import com.blockstream.common.TransactionType
 import com.blockstream.common.data.Banner
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
+import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavData
 import com.blockstream.common.events.Event
@@ -254,9 +255,14 @@ class AccountExchangeViewModel(
                 amount.value = ""
             }.launchIn(this)
 
-            combine(fromAccountAsset, toAccount) { fromAccountAsset, toAccountAsset ->
+            combine(fromAccountAsset, toAccount, _feeEstimation) { fromAccountAsset, toAccountAsset, _ ->
+                val fromNetwork = fromAccountAsset?.account?.network
+
                 _showFeeSelector.value =
-                    fromAccountAsset != null && fromAccountAsset.account.isLightning == false && toAccountAsset != null
+                    fromAccountAsset != null
+                            && toAccountAsset != null
+                            && (fromNetwork?.isBitcoin == true || (fromNetwork?.isLiquid == true && getFeeRate(FeePriority.High()) > fromNetwork.defaultFee))
+
             }.launchIn(this)
 
             combine(

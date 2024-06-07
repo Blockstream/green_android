@@ -98,8 +98,11 @@ class SweepViewModel(greenWallet: GreenWallet, privateKey: String?, accountAsset
                 _network.value = it.account.network
             }.launchIn(this)
 
-            combine(accountAsset, this.privateKey, _feePriorityPrimitive) { accountAsset, privateKey, _ ->
-                _showFeeSelector.value = accountAsset != null && privateKey.isNotBlank()
+            combine(accountAsset, this.privateKey, _feePriorityPrimitive, _feeEstimation) { accountAsset, privateKey, _, _ ->
+                _showFeeSelector.value = accountAsset != null
+                        && privateKey.isNotBlank()
+                        && (accountAsset.account.network.isBitcoin || (accountAsset.account.network.isLiquid && getFeeRate(FeePriority.High()) > accountAsset.account.network.defaultFee))
+
                 createTransactionParams.value = createTransactionParams()
             }.launchIn(this)
         }

@@ -8,6 +8,7 @@ import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.ExceptionWithErrorReport
+import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavData
 import com.blockstream.common.events.Event
@@ -221,14 +222,15 @@ class SendViewModel(
 
             combine(
                 address,
+                _feeEstimation,
                 session.accountAsset,
                 accountAsset,
                 amount,
                 isSendAll,
+
                 _feePriorityPrimitive,
             ) { arr ->
                 val address = arr[0] as String
-                val accountAssets = arr[1] as List<AccountAsset>
 
                 if (address.isBlank()) {
                     // Clear all errors and amount
@@ -245,7 +247,9 @@ class SendViewModel(
                             }
                         }
 
-                _showFeeSelector.value = address.isNotBlank() && network?.isLightning == false && accountAsset.value != null
+                _showFeeSelector.value = (address.isNotBlank()
+                        && accountAsset.value != null
+                        && (network?.isBitcoin == true || (network?.isLiquid == true && getFeeRate(FeePriority.High()) > network.defaultFee)))
 
                 // Check if the current AccountAsset operates on the same network only.
                 // That way we preserve the asset from previous action

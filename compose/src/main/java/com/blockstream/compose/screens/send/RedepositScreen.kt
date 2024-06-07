@@ -228,8 +228,9 @@ fun RedepositScreen(
                 }
             }
 
+            val showFeeSelector by viewModel.showFeeSelector.collectAsStateWithLifecycle()
             val feePriority by viewModel.feePriority.collectAsStateWithLifecycle()
-            AnimatedNullableVisibility(value = feePriority) {
+            AnimatedVisibility(visible = showFeeSelector) {
                 Row {
                     Text(
                         stringResource(R.string.id_total_spent),
