@@ -527,10 +527,15 @@ class GdkSession constructor(
         var config = if(useCache) twoFactorConfigStateFlow(network).value else null
 
         if(config == null){
-            gdk.getTwoFactorConfig(gdkSession(network)).also {
-                twoFactorConfigStateFlow(network).value = it
-                twoFactorResetStateFlow(network).value = it.twoFactorReset
-                config = it
+            try {
+                gdk.getTwoFactorConfig(gdkSession(network)).also {
+                    twoFactorConfigStateFlow(network).value = it
+                    twoFactorResetStateFlow(network).value = it.twoFactorReset
+                    config = it
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                countly.recordException(e)
             }
         }
 
@@ -1242,7 +1247,7 @@ class GdkSession constructor(
         }
 
         return loginWithLoginCredentials(
-            prominentNetwork = supportedNetworks.first(),
+            prominentNetwork = initNetworks.first(),
             initNetworks = initNetworks,
             wallet = wallet,
             loginCredentialsParams = LoginCredentialsParams.empty,
@@ -1275,10 +1280,14 @@ class GdkSession constructor(
         _disableNotificationHandling = true
         _walletActiveEventInvalidated = true
 
+        logger.d { "loginWithLoginCredentials prominentNetwork: ${prominentNetwork.id} initNetworks: ${initNetworks?.joinToString(",") { it.id }} " }
+
         val connectedNetworks = connect(
             network = prominentNetwork,
             initNetworks = initNetworks,
         )
+
+        logger.d { "loginWithLoginCredentials connected: ${gdkSessions.keys.joinToString(",") { it.id }} " }
 
         device?.deviceState?.onEach {
             // Device went offline
@@ -1951,7 +1960,7 @@ class GdkSession constructor(
     private fun getLightningTransactions() = lightningSdkOrNull?.getTransactions()?.map {
         Transaction.fromPayment(it)
     }.let {
-        Transactions(transactions = it ?: listOf(Transaction.LoadingTransaction))
+        Transactions(transactions = it ?: listOf())
     }
 
     private val accountsAndBalancesMutex = Mutex()

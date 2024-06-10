@@ -115,7 +115,13 @@ class DeviceInfoViewModel constructor(
                     xPubHashId = walletHashId,
                     isTestnet = network.isTestnet,
                     isHardware = true
-                ) ?: run {
+                )?.let {
+                    if(device.isLedger){
+                        // Change network based on user applet
+                        it.activeNetwork = network.id
+                    }
+                    it
+                } ?: run {
                     isNewWallet = true
                     GreenWallet.createWallet(
                         xPubHashId = walletHashId,

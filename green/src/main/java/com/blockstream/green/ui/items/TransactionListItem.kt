@@ -3,12 +3,12 @@ package com.blockstream.green.ui.items
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.size
+import com.blockstream.common.extensions.getConfirmationsMax
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemTransactionBinding
 import com.blockstream.green.databinding.TransactionAssetLayoutBinding
-import com.blockstream.common.gdk.GdkSession
-import com.blockstream.common.extensions.getConfirmationsMax
 import com.blockstream.green.looks.TransactionLook
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,12 +40,6 @@ data class TransactionListItem constructor(
     }
 
     override fun bindView(binding: ListItemTransactionBinding, payloads: List<Any>) {
-
-        if (tx.isLoadingTransaction) {
-            binding.isLoading = true
-            return
-        }
-
         binding.isLoading = false
         binding.confirmations = confirmations
         binding.confirmationsRequired = tx.network.confirmationsRequired

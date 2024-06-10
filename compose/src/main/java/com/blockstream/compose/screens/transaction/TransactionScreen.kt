@@ -309,18 +309,20 @@ fun TransactionScreen(
             }
 
             if (!viewModel.account.isLightning) {
-                HorizontalDivider()
-                MenuListItem(
-                    stringResource(id = if (note.isNullOrBlank()) R.string.id_add_note else R.string.id_edit_note),
-                    painterResource(id = R.drawable.pencil_simple_line)
-                ) {
-                    bottomSheetNavigator.show(
-                        NoteBottomSheet(
-                            note = viewModel.note.value ?: "",
-                            isLightning = viewModel.account.isLightning,
-                            greenWallet = viewModel.greenWallet
+                if(!viewModel.session.isWatchOnly) {
+                    HorizontalDivider()
+                    MenuListItem(
+                        stringResource(id = if (note.isNullOrBlank()) R.string.id_add_note else R.string.id_edit_note),
+                        painterResource(id = R.drawable.pencil_simple_line)
+                    ) {
+                        bottomSheetNavigator.show(
+                            NoteBottomSheet(
+                                note = viewModel.note.value ?: "",
+                                isLightning = viewModel.account.isLightning,
+                                greenWallet = viewModel.greenWallet
+                            )
                         )
-                    )
+                    }
                 }
 
                 HorizontalDivider()

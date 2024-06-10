@@ -34,8 +34,8 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.randomChars
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.StateFlow
@@ -170,7 +170,6 @@ class WalletSettingsViewModel(
                         WalletSetting.AutologoutTimeout(settings.altimeout)
                     )
                 } else {
-
                     list += listOf(
                         WalletSetting.Text("id_general"),
                         WalletSetting.DenominationExchangeRate(
@@ -185,12 +184,6 @@ class WalletSettingsViewModel(
                             session.activeBitcoinMultisig != null || session.activeLiquidMultisig != null
     
                         list += listOfNotNull(
-                            WalletSetting.Text("id_general"),
-                            WalletSetting.DenominationExchangeRate(
-                                unit = settings.networkUnit(session),
-                                currency = settings.pricing.currency,
-                                exchange = settings.pricing.exchange
-                            ),
                             WalletSetting.ArchivedAccounts(session.allAccounts.value.count { it.hidden }),
                             WalletSetting.WatchOnly,
                             WalletSetting.Text("id_security"),

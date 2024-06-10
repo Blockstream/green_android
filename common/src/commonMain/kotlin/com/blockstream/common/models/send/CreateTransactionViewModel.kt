@@ -29,8 +29,8 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.ifNotNull
 import com.blockstream.common.utils.toAmountLook
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -39,6 +39,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.sync.Mutex
 
@@ -141,7 +142,11 @@ abstract class CreateTransactionViewModelAbstract(
                 }
             }.launchIn(this)
 
-            combine(createTransactionParams, denomination) { createTransactionParams, _ ->
+            combine(
+                createTransactionParams,
+                denomination,
+                merge(flowOf(Unit), session.accountsAndBalanceUpdated), // there is a case where params are equal (lightning), so we need to re-create the transaction
+            ) { createTransactionParams, _, _ ->
                 createTransaction(params = createTransactionParams, finalCheckBeforeContinue = false)
             }.launchIn(this)
         }
@@ -336,17 +341,16 @@ abstract class CreateTransactionViewModelAbstract(
                 originalParams.copy(memo = it)
             } ?: originalParams
 
-            var transaction = originalTransaction
-            val isSwap = transaction.isSwap()
+            val isSwap = originalTransaction.isSwap()
 
-            if (!isSwap) {
+            var transaction = if (!isSwap) {
                 // Re-create transaction if not swap
-                transaction = session.createTransaction(network, params).also { tx ->
+                session.createTransaction(network, params).also { tx ->
                     tx.error.takeIf { it.isNotBlank() }?.also {
                         throw Exception(it)
                     }
                 }
-            }
+            } else originalTransaction
 
             // If liquid, blind the transaction before signing
             if(!transaction.isBump() && !transaction.isSweep() && network.isLiquid){

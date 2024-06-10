@@ -3,6 +3,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.30] - 2024-06-10
+
+### Added
+- Re-enable expired 2FA UTXOs
+ 
+### Changed
+- Update to Kotlin 2.0.0
+- Updated project dependencies
+- Bump GDK to version 0.71.3
+- Bump Breez to version 0.4.2-rc1
+- Hide fee selection on Liquid if fee estimation is network default
+- Refactor various UI elements
+
+### Fixed
+- Fix Authenticator app 2FA setup
+
 ## [4.0.29] - 2024-05-23
 
 ### Changed

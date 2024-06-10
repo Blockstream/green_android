@@ -40,7 +40,6 @@ fun ByteArray.reverseBytes(): ByteArray {
 }
 
 fun Transaction.getConfirmationsMax(session: GdkSession): Int {
-    if(isLoadingTransaction) return 0
     return getConfirmations(session.block(network).value.height).coerceAtMost((if (network.isLiquid) 3 else 7)).toInt()
 }
 
@@ -92,7 +91,7 @@ fun Network.needs2faActivation(session: GdkSession): Boolean {
 }
 
 fun Account.hasExpiredUtxos(session: GdkSession): Boolean {
-    return isMultisig && session.expired2FA.value.contains(this)
+    return !session.isWatchOnly && isMultisig && session.expired2FA.value.contains(this)
 }
 
 fun String?.isPolicyAsset(network: Network?): Boolean = (this == null || this == network?.policyAsset)

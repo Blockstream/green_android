@@ -2,9 +2,9 @@ package com.blockstream.common.gdk.data
 
 
 import com.arkivanov.essenty.parcelable.IgnoredOnParcel
+import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
-import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.utils.toAmountLookOrNa
@@ -230,12 +230,8 @@ data class Transaction constructor(
     }
 
     fun getConfirmations(session: GdkSession): Long {
-        if (isLoadingTransaction) return -1
         return getConfirmations(session.block(network).value.height)
     }
-
-    val isLoadingTransaction
-        get() = blockHeight == -1L
 
     fun getUnblindedString() = (inputs.mapNotNull { it.getUnblindedString() } + outputs.mapNotNull { it.getUnblindedString() }).joinToString(",")
 
@@ -288,23 +284,5 @@ data class Transaction constructor(
                 }
             }
         }
-    }
-
-    companion object {
-        // Create a dummy transaction to describe the loading state (blockHeight == -1)
-        val LoadingTransaction = Transaction(
-            blockHeight = -1,
-            canRBF = false,
-            createdAtTs = 0,
-            inputs = listOf(),
-            outputs = listOf(),
-            fee = 0,
-            feeRate = 0,
-            memo = "",
-            spvVerified = "",
-            txHash = "",
-            type = "",
-            satoshi = mapOf()
-        )
     }
 }

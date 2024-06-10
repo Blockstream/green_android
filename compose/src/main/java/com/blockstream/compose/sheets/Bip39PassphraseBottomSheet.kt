@@ -111,13 +111,6 @@ fun Bip39PassphraseBottomSheet(
                 }
             ),
             label = { Text(stringResource(id = R.string.id_passphrase)) },
-            supportingText = {
-                Text(
-                    text = "${passphrase.length} / 100",
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.End,
-                )
-            },
             trailingIcon = {
                 TextInputPassword(passwordVisibility)
             }

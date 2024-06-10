@@ -9,6 +9,7 @@ import com.blockstream.common.events.Event
 import com.blockstream.common.extensions.assetTickerOrNull
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.previewAccountAsset
+import com.blockstream.common.extensions.previewTransaction
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Transaction
@@ -236,7 +237,7 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
 
         _amounts.value = transaction.utxoViews.map {
             AmountAssetLook(
-                amount = it.satoshi.toAmountLookOrNa(
+                amount = session.starsOrNull ?: it.satoshi.toAmountLookOrNa(
                     session = session,
                     assetId = it.assetId,
                     withUnit = false,
@@ -244,7 +245,7 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
                     withMinimumDigits = true
                 ),
                 ticker = it.assetId.assetTickerOrNull(session) ?: it.assetId?.substring(0 until 6) ?: "",
-                fiat = it.satoshi.toAmountLook(
+                fiat = session.starsOrNull ?: it.satoshi.toAmountLook(
                     session = session,
                     assetId = it.assetId,
                     withUnit = true,
@@ -345,7 +346,7 @@ class TransactionViewModelPreview(status : TransactionStatus) : TransactionViewM
     accountAssetOrNull = previewAccountAsset(),
     greenWallet = previewWallet(isHardware = false)
 ) {
-    override val transaction: StateFlow<Transaction> = MutableStateFlow(Transaction.LoadingTransaction)
+    override val transaction: StateFlow<Transaction> = MutableStateFlow(previewTransaction())
 
     override val status: StateFlow<TransactionStatus> = MutableStateFlow(status)
     override val type: StateFlow<Transaction.Type> = MutableStateFlow(Transaction.Type.IN)

@@ -1,11 +1,11 @@
 package com.blockstream.common.data
 
 import cafe.adriel.voyager.core.lifecycle.JavaSerializable
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.BITS_UNIT
 import com.blockstream.common.BTC_UNIT
 import com.blockstream.common.MBTC_UNIT
+import com.blockstream.common.Parcelable
+import com.blockstream.common.Parcelize
 import com.blockstream.common.SATOSHI_UNIT
 import com.blockstream.common.UBTC_UNIT
 import com.blockstream.common.extensions.assetTicker

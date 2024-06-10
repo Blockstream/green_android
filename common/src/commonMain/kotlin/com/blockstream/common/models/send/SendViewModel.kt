@@ -34,8 +34,8 @@ import com.blockstream.common.utils.UserInput
 import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.ifNotNull
 import com.blockstream.common.utils.toAmountLook
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -45,7 +45,9 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
+import kotlinx.serialization.json.buildJsonObject
 import saschpe.kase64.base64DecodedBytes
 import kotlin.math.absoluteValue
 
@@ -227,8 +229,8 @@ class SendViewModel(
                 accountAsset,
                 amount,
                 isSendAll,
-
                 _feePriorityPrimitive,
+                merge(flowOf(Unit), session.accountsAndBalanceUpdated), // set initial value, watch for wallet balance updates, especially on wallet startup like bip39 uris
             ) { arr ->
                 val address = arr[0] as String
 
@@ -329,11 +331,15 @@ class SendViewModel(
             ).let { params ->
                 CreateTransactionParams(
                     addressees = listOf(params.toJsonElement()),
-                    addresseesAsParams = listOf(params)
+                    addresseesAsParams = listOf(params),
+                    utxos = buildJsonObject {
+                        // a hack to re-create params when balance changes
+                        session.accountAssets(account).value.policyAsset
+                    }
                 )
             }
         } else {
-            val isGreedy = isSendAll.value ?: false
+            val isGreedy = isSendAll.value
             val satoshi = if (isGreedy) 0 else UserInput.parseUserInputSafe(
                 session = session,
                 input = amount.value,

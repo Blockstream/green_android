@@ -23,8 +23,8 @@ import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.toAmountLook
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -171,7 +171,6 @@ class SweepViewModel(greenWallet: GreenWallet, privateKey: String?, accountAsset
         finalCheckBeforeContinue: Boolean
     ) {
         doAsync({
-            logger.d { "WTF $params" }
             if (params == null) {
                 _amount.value = null
                 _amountFiat.value = null
@@ -214,12 +213,10 @@ class SweepViewModel(greenWallet: GreenWallet, privateKey: String?, accountAsset
         }, postAction = {
 
         }, onSuccess = {
-            logger.d { "WTF Success $it" }
             createTransaction.value = it
             _isValid.value = it != null
             _error.value = null
         }, onError = {
-            logger.d { "WTF error $it" }
             createTransaction.value = null
             _isValid.value = false
             _error.value = it.message

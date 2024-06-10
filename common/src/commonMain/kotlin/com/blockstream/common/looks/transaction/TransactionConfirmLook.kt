@@ -83,7 +83,7 @@ data class TransactionConfirmLook(
                     session = session,
                     denomination = denomination,
                     isAddressVerificationOnDevice = isAddressVerificationOnDevice,
-                    showChangeOutputs = session.device?.isLedger == true
+                    showChangeOutputs = isAddressVerificationOnDevice && session.device?.isLedger == true
                 )
             }
 

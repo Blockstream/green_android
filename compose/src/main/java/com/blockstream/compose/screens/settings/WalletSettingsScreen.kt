@@ -73,6 +73,7 @@ import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.ifTrue
 import com.blockstream.compose.utils.stringResourceId
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
@@ -242,8 +243,8 @@ fun WalletSettingsScreen(
                         ),
                         modifier = Modifier.clickable {
                             viewModel.postEvent(WalletSettingsViewModel.LocalEvents.DenominationExchangeRate)
-                        })
-
+                        }
+                    )
                 }
 
                 is WalletSetting.ArchivedAccounts -> {
@@ -428,6 +429,9 @@ fun Setting(
                 modifier = Modifier
                     .padding(vertical = 16.dp)
                     .padding(start = 16.dp)
+                    .ifTrue(painter == null && checked == null){
+                        padding(end = 16.dp)
+                    }
                     .weight(1f)
             ) {
                 Text(
