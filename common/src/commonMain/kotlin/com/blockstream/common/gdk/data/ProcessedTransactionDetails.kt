@@ -12,14 +12,16 @@ import kotlinx.serialization.Serializable
 
 @Parcelize
 @Serializable
-data class SendTransactionSuccess constructor(
+data class ProcessedTransactionDetails constructor(
     @SerialName("txhash") val txHash: String? = null,
     @SerialName("send_all") val isSendAll: Boolean = false,
+    @SerialName("transaction") val transaction: String? = null,
     @SerialName("signed_transaction") val signedTransaction: String? = null,
+    @SerialName("psbt") val psbt: String? = null,
     @SerialName("payment_id") val paymentId: String? = null,
     @SerialName("message") val message: String? = null,
     @SerialName("url") val url: String? = null,
-) : GreenJson<SendTransactionSuccess>(), Parcelable {
+) : GreenJson<ProcessedTransactionDetails>(), Parcelable {
 
     val hasMessageOrUrl
         get() = message.isNotBlank() || url.isNotBlank()
@@ -27,7 +29,7 @@ data class SendTransactionSuccess constructor(
     override fun kSerializer() = serializer()
 
     companion object {
-        fun create(successData: LnUrlPaySuccessData): SendTransactionSuccess{
+        fun create(successData: LnUrlPaySuccessData): ProcessedTransactionDetails{
 
             val message = successData.successAction?.let {
                 when(it){
@@ -47,7 +49,7 @@ data class SendTransactionSuccess constructor(
 
             val url = (successData.successAction as? SuccessActionProcessed.Url)?.data?.url
 
-            return SendTransactionSuccess(message = message, url = url)
+            return ProcessedTransactionDetails(message = message, url = url)
         }
     }
 }

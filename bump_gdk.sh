@@ -69,11 +69,14 @@ sed -i '' -e "s/TAGNAME=.*/TAGNAME=\"${TAGNAME}\"/" common/fetch_ios_binaries.sh
 TEMP=$(mktemp)
 
 # Android
-TARURL=$(echo $GH | jq -r .assets[].browser_download_url | grep gdk-android-jni.)
+TARURL=$(echo $GH | jq -r .assets[].browser_download_url | grep gdk-release_)
 curl -sL -o $TEMP $TARURL
 SHA256=$(shasum -a256 $TEMP | awk '{print $1;}')
 echo $TARURL $SHA256
 sed -i '' -e "s/SHA256=.*/SHA256=\"${SHA256}\"/" gdk/fetch_android_binaries.sh
+FILE=$(basename $(basename $TARURL))
+FILE=${FILE%.tar.gz}
+sed -i '' -e "s/$NAME=.*/$NAME=\"${FILE}\"/" gdk/fetch_android_binaries.sh
 
 # iOS Arm
 TARURL=$(echo $GH | jq -r .assets[].browser_download_url | grep "gdk-iphone.tar.gz")

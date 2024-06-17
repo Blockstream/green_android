@@ -25,7 +25,7 @@ class JadeQRFragment : AppFragment<ComposeViewBinding>(R.layout.compose_view, me
         get() = if(args.isLightningMnemonicExport) getString(R.string.id_export_lightning_key_to_green) else null
 
     val viewModel: JadeQRViewModel by viewModel {
-        parametersOf(args.isLightningMnemonicExport, args.wallet)
+        parametersOf(args.wallet, args.psbt, args.isLightningMnemonicExport)
     }
 
     override fun getGreenViewModel() = viewModel
@@ -40,6 +40,12 @@ class JadeQRFragment : AppFragment<ComposeViewBinding>(R.layout.compose_view, me
                 result = sideEffect.mnemonic,
                 key = MNEMONIC_RESULT,
                 destinationId = R.id.chooseAccountTypeFragment
+            )
+        } else if (sideEffect is SideEffects.Success) {
+            setNavigationResult(
+                result = sideEffect.data as String,
+                key = PSBT,
+                destinationId = R.id.sendConfirmFragment
             )
         }
     }
@@ -61,5 +67,6 @@ class JadeQRFragment : AppFragment<ComposeViewBinding>(R.layout.compose_view, me
 
     companion object {
         const val MNEMONIC_RESULT = "MNEMONIC_RESULT"
+        const val PSBT = "PSBT"
     }
 }

@@ -13,4 +13,10 @@
         android:title="@string/id_sign_transaction"
         android:icon="@drawable/ic_signature"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/psbt"
+        android:title="PSBT"
+        android:icon="@drawable/puzzle_piece"
+        app:showAsAction="never"/>
 </menu>

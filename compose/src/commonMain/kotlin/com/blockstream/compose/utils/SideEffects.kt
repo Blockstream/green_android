@@ -852,6 +852,7 @@ fun HandleSideEffect(
                         is NavigateDestinations.JadeQR -> {
                             navigator?.push(
                                 JadeQRScreen(
+                                    psbt = destination.psbt,
                                     isLightningMnemonicExport = destination.isLightningMnemonicExport
                                 )
                             )

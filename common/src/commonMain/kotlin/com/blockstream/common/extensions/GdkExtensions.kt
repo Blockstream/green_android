@@ -72,8 +72,8 @@ fun Account.needs2faActivation(session: GdkSession): Boolean {
 }
 
 fun Network.needs2faActivation(session: GdkSession): Boolean {
-        return try {
-        session.getTwoFactorConfig(network = this)?.anyEnabled == false
+    return try {
+        !session.isWatchOnly && session.getTwoFactorConfig(network = this)?.anyEnabled == false
     } catch (e: Exception) {
         e.printStackTrace()
         false

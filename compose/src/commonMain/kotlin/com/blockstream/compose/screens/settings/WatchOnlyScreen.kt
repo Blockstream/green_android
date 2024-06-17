@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.copy
+import blockstream_green.common.generated.resources.eye
 import blockstream_green.common.generated.resources.id_enabled_1s
 import blockstream_green.common.generated.resources.id_extended_public_key
 import blockstream_green.common.generated.resources.id_extended_public_keys
@@ -48,6 +49,9 @@ import com.blockstream.common.models.settings.WatchOnlyViewModelAbstract
 import com.blockstream.common.models.settings.WatchOnlyViewModelPreview
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.GreenPreview
+import com.blockstream.compose.components.GreenButton
+import com.blockstream.compose.components.GreenButtonColor
+import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.extensions.icon
@@ -91,6 +95,7 @@ fun WatchOnlyScreen(
     val scope = rememberCoroutineScope()
     val platformManager = LocalPlatformManager.current
 
+    val richWatchOnly by viewModel.richWatchOnly.collectAsStateWithLifecycle()
     val multisigWatchOnly by viewModel.multisigWatchOnly.collectAsStateWithLifecycle()
     val extendedPublicKeysAccounts by viewModel.extendedPublicKeysAccounts.collectAsStateWithLifecycle()
     val outputDescriptorsAccounts by viewModel.outputDescriptorsAccounts.collectAsStateWithLifecycle()
@@ -101,6 +106,46 @@ fun WatchOnlyScreen(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
+
+        richWatchOnly?.also {
+            item {
+                GreenRow(
+                    padding = 0,
+                    space = 4,
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(Res.drawable.eye),
+                        contentDescription = null
+                    )
+
+                    Text(
+                        text = "Rich Watch Only",
+                        style = titleMedium,
+                    )
+                }
+            }
+
+            if (it.isEmpty()) {
+                item {
+                    GreenButton("Create RWO" , modifier = Modifier.fillMaxWidth()) {
+                        viewModel.postEvent(WatchOnlyViewModel.LocalEvents.CreateRichWatchOnly)
+                    }
+                }
+            } else {
+                item {
+                    Column {
+                        GreenButton("Create RWO for new networks" , modifier = Modifier.fillMaxWidth(), type = GreenButtonType.OUTLINE) {
+                            viewModel.postEvent(WatchOnlyViewModel.LocalEvents.CreateRichWatchOnly)
+                        }
+
+                        GreenButton("Delete RWO (${it.size})", color = GreenButtonColor.RED, modifier = Modifier.fillMaxWidth()) {
+                            viewModel.postEvent(WatchOnlyViewModel.LocalEvents.DeleteRichWatchOnly)
+                        }
+                    }
+                }
+            }
+        }
 
         if (multisigWatchOnly.isNotEmpty()) {
             item {

@@ -138,7 +138,20 @@ class SendConfirmViewModel constructor(
                         originalParams = it.first,
                         originalTransaction = it.second,
                         segmentation = it.third,
-                        broadcast = event.broadcastTransaction
+                        broadcast = event.broadcastTransaction,
+                        createPsbt = event.createPsbt
+                    )
+                }
+            }
+
+            is CreateTransactionViewModelAbstract.LocalEvents.BroadcastTransaction -> {
+                session.pendingTransaction?.also {
+                    signAndSendTransaction(
+                        originalParams = it.first,
+                        originalTransaction = it.second,
+                        segmentation = it.third,
+                        psbt = event.psbt,
+                        broadcast = event.broadcastTransaction,
                     )
                 }
             }

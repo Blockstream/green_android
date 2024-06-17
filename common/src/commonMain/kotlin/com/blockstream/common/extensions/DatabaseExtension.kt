@@ -1,10 +1,14 @@
 package com.blockstream.common.extensions
 
 import com.benasher44.uuid.Uuid
+import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.EncryptedData
+import com.blockstream.common.data.RichWatchOnly
+import com.blockstream.common.data.toRichWatchOnly
 import com.blockstream.common.database.LoginCredentials
 import com.blockstream.common.gdk.data.PinData
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.getSecureRandom
 import kotlinx.datetime.Clock
 
@@ -50,7 +54,35 @@ val List<LoginCredentials>.watchOnlyCredentials
 val List<LoginCredentials>.biometricsWatchOnlyCredentials
     get() = find { it.credential_type == CredentialType.BIOMETRICS_WATCHONLY_CREDENTIALS }
 
+val List<LoginCredentials>.richWatchOnly
+    get() = find { it.credential_type == CredentialType.RICH_WATCH_ONLY }
 
+fun LoginCredentials.lightningMnemonic(
+    greenKeystore: GreenKeystore,
+    onError: ((exception: Exception) -> Unit) = {}
+): String? {
+    return try {
+        if(credential_type != CredentialType.LIGHTNING_MNEMONIC) throw Exception("credential_type is not LIGHTNING_MNEMONIC")
+        greenKeystore.decryptData(encrypted_data!!).decodeToString()
+    } catch (e: Exception) {
+        e.printStackTrace()
+        onError.invoke(e)
+        null
+    }
+}
+
+fun LoginCredentials.richWatchOnly(
+    greenKeystore: GreenKeystore,
+    onError: ((exception: Exception) -> Unit) = {}
+): List<RichWatchOnly>? {
+    return try {
+        greenKeystore.decryptData(encrypted_data!!).decodeToString().toRichWatchOnly()
+    } catch (e: Exception) {
+        e.printStackTrace()
+        onError.invoke(e)
+        null
+    }
+}
 
 
 // Time-based UUID similar to MongoDB ObjectId

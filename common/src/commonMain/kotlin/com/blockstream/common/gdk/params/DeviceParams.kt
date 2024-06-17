@@ -15,6 +15,7 @@ data class DeviceParams constructor(
 
     companion object {
         val Empty = DeviceParams()
+
         fun fromDeviceOrEmpty(device: Device?) = device?.let { DeviceParams(device = it) } ?: DeviceParams()
     }
 }

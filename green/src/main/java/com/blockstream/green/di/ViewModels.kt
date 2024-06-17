@@ -140,7 +140,7 @@ val viewModels = module {
         WalletSettingsViewModel(get(), get(), getOrNull())
     }
     viewModel {
-        JadeQRViewModel(get(), getOrNull())
+        JadeQRViewModel(getOrNull(), getOrNull(), get())
     }
     viewModel {
         CameraViewModel(get(), getOrNull(), getOrNull())

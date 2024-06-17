@@ -39,8 +39,8 @@ import kotlin.collections.set
 import kotlin.properties.Delegates
 
 class SessionManager constructor(
-    appInfo: AppInfo,
-    lifecycleManager: LifecycleManager,
+    private val appInfo: AppInfo,
+    private val lifecycleManager: LifecycleManager,
     private val lightningManager: LightningManager,
     private val settingsManager: SettingsManager,
     private val assetManager: AssetManager,
@@ -261,6 +261,7 @@ class SessionManager constructor(
         val session = GdkSession(
             userAgent = userAgent,
             sessionManager = this,
+            appInfo = appInfo,
             lightningManager = lightningManager,
             settingsManager = settingsManager,
             assetManager = assetManager,

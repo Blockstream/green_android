@@ -18,12 +18,12 @@ _EOF_
 }
 
 # ----- Vars
-NAME="gdk-android-jni"
+NAME="gdk-release_0.72.2"
 TARBALL="${NAME}.tar.gz"
 # The version of gdk to fetch and its sha256 checksum for integrity checking
-TAGNAME="release_0.71.3"
+TAGNAME="release_0.72.2"
 URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${TARBALL}"
-SHA256="6c379748f218493757cd7b1a49e5a032bd61c254e76928292c03601546b6baae"
+SHA256="a091a5e37f3ce69e1281d28bd2ea5a4898a5d48b6fb8059f412058b5e842b783"
 VALIDATE_CHECKSUM=true
 COMMIT=false
 GCLOUD_URL="https://storage.googleapis.com/green-gdk-builds/gdk-"
@@ -74,8 +74,8 @@ JNI_LIBS_DIR=${GDK_MODULE_ROOT}/src/main/jniLibs
 GDK_JAVA_DIR="${GDK_MODULE_ROOT}/src/main/java/com/blockstream"
 
 # Clean up any previous install
-rm -rf gdk-android-jni* ${GDK_JAVA_DIR}/src/main/jniLibs \
-  ${GDK_JAVA_DIR}/libgreenaddress/GDKJNI.java \
+rm -rf gdk.tar.gz ${GDK_JAVA_DIR}/src/main/jniLibs \
+  ${GDK_JAVA_DIR}/green_gdk/GDK.java \
   ${GDK_JAVA_DIR}/libwally/Wally.java
 
 # Remove gdk_commit file if exists
@@ -102,15 +102,15 @@ tar xvf ${TARBALL}
 rm ${TARBALL}
 
 # Move the libraries and Java wrapper where we need them
-mkdir -p ${GDK_JAVA_DIR}/libgreenaddress
+mkdir -p ${GDK_JAVA_DIR}/green_gdk
 mkdir -p ${GDK_JAVA_DIR}/libwally
 
 rm -rf $JNI_LIBS_DIR
 
 mv ${NAME}/lib/ $JNI_LIBS_DIR
-rm -rf $JNI_LIBS_DIR/*/gdk # remove unnecessary files
+rm -rf $JNI_LIBS_DIR/*/gdk $JNI_LIBS_DIR/*-linux-gnu # remove unnecessary files
 
-mv ${NAME}/share/java/com/blockstream/libgreenaddress/GDKJNI.java ${GDK_JAVA_DIR}/libgreenaddress/GDKJNI.java
+mv ${NAME}/share/java/com/blockstream/green_gdk/GDK.java ${GDK_JAVA_DIR}/green_gdk/GDK.java
 mv ${NAME}/share/java/com/blockstream/libwally/Wally.java ${GDK_JAVA_DIR}/libwally/Wally.java
 
 # Cleanup

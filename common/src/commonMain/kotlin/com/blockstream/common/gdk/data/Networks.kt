@@ -18,7 +18,7 @@ import kotlinx.serialization.json.putJsonObject
 
 @Serializable
 data class Networks(
-    @SerialName("networks") val networks: MutableMap<String, Network>
+    @SerialName("networks") val networks: Map<String, Network>
 ) : GreenJson<Networks>() {
     override fun kSerializer(): KSerializer<Networks> = serializer()
 
@@ -64,10 +64,6 @@ data class Networks(
     }
 
     fun getNetworkAsJsonElement(id: String): JsonElement? = jsonElement?.jsonObject?.get("networks")?.jsonObject?.get(id)
-
-    fun setCustomNetwork(network: Network) {
-        networks[network.id] = network
-    }
 
     fun getNetworkByType(networkTypeOrId: String, isElectrum: Boolean): Network {
         if(networkTypeOrId == CustomNetworkId){

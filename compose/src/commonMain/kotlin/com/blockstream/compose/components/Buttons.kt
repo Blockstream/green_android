@@ -32,6 +32,7 @@ import blockstream_green.common.generated.resources.id_increase_qr_size
 import blockstream_green.common.generated.resources.id_learn_more
 import blockstream_green.common.generated.resources.id_paste
 import blockstream_green.common.generated.resources.id_scan_qr_code
+import blockstream_green.common.generated.resources.id_watchonly
 import blockstream_green.common.generated.resources.magnifying_glass_plus
 import blockstream_green.common.generated.resources.qr_code
 import blockstream_green.common.generated.resources.question
@@ -328,10 +329,21 @@ fun AboutButton(onClick: () -> Unit) {
 }
 
 @Composable
-fun BiometricsButton(onClick: () -> Unit) {
+fun BiometricsButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
     TextButton(onClick = onClick) {
         Text(
             text = stringResource(Res.string.id_biometrics),
+            style = labelMedium,
+            color = whiteMedium
+        )
+    }
+}
+
+@Composable
+fun RichWatchOnlyButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
+    TextButton(onClick = onClick, modifier = modifier) {
+        Text(
+            text = "RWO",
             style = labelMedium,
             color = whiteMedium
         )

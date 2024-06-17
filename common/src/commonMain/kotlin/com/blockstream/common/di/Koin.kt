@@ -1,8 +1,9 @@
 package com.blockstream.common.di
 
+import co.touchlab.kermit.chunked
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
-import co.touchlab.kermit.StaticConfig
+import co.touchlab.kermit.chunked
 import co.touchlab.kermit.platformLogWriter
 import com.blockstream.common.data.AppConfig
 import com.blockstream.common.data.AppInfo
@@ -120,19 +121,11 @@ private fun commonModules(appConfig: AppConfig): List<Module> {
             LightningManager(greenlightKeys, get(), get(), get(), get(), get())
         }
 
-        val minSeverity = if (appConfig.isDebug) Severity.Debug else Severity.Info
-
         // Set minSeverity to Global Logger
-        Logger.setMinSeverity(minSeverity)
+        Logger.setMinSeverity(if (appConfig.isDebug) Severity.Debug else Severity.Info)
+        Logger.setLogWriters(platformLogWriter().chunked())
 
-        val baseLogger = Logger(
-            config = StaticConfig(
-                minSeverity = minSeverity,
-                logWriterList = listOf(platformLogWriter())
-            ), "Green"
-        )
-
-        factory { (tag: String?) -> if (tag != null) baseLogger.withTag(tag) else baseLogger }
+        factory { (tag: String?) -> if (tag != null) Logger.withTag(tag) else Logger }
     }, factoryViewModels)
 }
 

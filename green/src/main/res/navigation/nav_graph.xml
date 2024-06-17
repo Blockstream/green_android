@@ -637,6 +637,11 @@
             app:argType="com.blockstream.common.data.GreenWallet"
             app:nullable="true" />
         <argument
+            android:name="psbt"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
             android:name="isLightningMnemonicExport"
             android:defaultValue="false"
             app:argType="boolean" />

@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class BcurEncodeParams constructor(
     @SerialName("ur_type") val urType: String,
-    @SerialName("data") val data: String? = null,
+    @SerialName("data") val data: String? = null, // cbor hex or base64 for crypto-psbt
     @SerialName("json") val jsonString: String? = null,
     @SerialName("num_words") val numWords: Int? = null,
     @SerialName("index") val index: Int? = null,

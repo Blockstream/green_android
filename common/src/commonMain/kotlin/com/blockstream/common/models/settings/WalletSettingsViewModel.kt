@@ -293,7 +293,7 @@ class WalletSettingsViewModel(
             list += WalletSetting.Logout
 
             if (settings != null) {
-                if (greenWallet.isWatchOnly) {
+                if (session.isWatchOnly) {
                     list += listOfNotNull(
                         WalletSetting.Text(getString(Res.string.id_general)),
                         WalletSetting.DenominationExchangeRate(

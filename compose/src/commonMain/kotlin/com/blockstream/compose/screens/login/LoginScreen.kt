@@ -79,9 +79,9 @@ import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.GreenSpacer
+import com.blockstream.compose.components.RichWatchOnlyButton
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.extensions.onValueChange
-import com.blockstream.compose.screens.settings.AppSettingsScreen
 import com.blockstream.compose.sheets.Bip39PassphraseBottomSheet
 import com.blockstream.compose.sideeffects.rememberBiometricsState
 import com.blockstream.compose.theme.bodySmall
@@ -571,23 +571,28 @@ fun LoginScreen(
                 }
             }
 
-            Row(
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .fillMaxWidth()
             ) {
 
                 val biometricsCredentials by viewModel.biometricsCredentials.collectAsStateWithLifecycle()
                 if (!viewModel.isLightningShortcut && biometricsCredentials.isNotEmpty() && !onProgress) {
-                    BiometricsButton {
+                    BiometricsButton(modifier = Modifier.align(Alignment.CenterStart)) {
                         viewModel.postEvent(LoginViewModel.LocalEvents.ClickBiometrics)
                     }
-                } else {
-                    GreenSpacer()
+                }
+
+                val richWatchOnlyCredentials by viewModel.richWatchOnlyCredentials.collectAsStateWithLifecycle()
+
+                if(!onProgress && richWatchOnlyCredentials.isNotEmpty()){
+                    RichWatchOnlyButton(modifier = Modifier.align(Alignment.Center)) {
+                        viewModel.postEvent(LoginViewModel.LocalEvents.LoginWatchOnly)
+                    }
                 }
 
                 if (!onProgress) {
-                    AppSettingsButton {
+                    AppSettingsButton(modifier = Modifier.align(Alignment.CenterEnd)) {
                         viewModel.postEvent(NavigateDestinations.AppSettings)
                     }
                 }

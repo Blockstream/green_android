@@ -68,7 +68,7 @@ data class TransactionStatusLook(
                 spv = transaction.spv,
                 isPendingCloseChannel = transaction.isPendingCloseChannel,
                 isRefundableSwap = transaction.isRefundableSwap,
-                canRBF = transaction.canRBF && !transaction.isIn && !session.isWatchOnly
+                canRBF = transaction.canRBF && !transaction.isIn && !session.isNoBlobWatchOnly
             )
         }
     }

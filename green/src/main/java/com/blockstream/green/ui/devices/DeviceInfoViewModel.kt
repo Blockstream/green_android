@@ -167,7 +167,6 @@ class DeviceInfoViewModel constructor(
     }
 
     override fun onDeviceReady(device: Device, isJadeUninitialized: Boolean?) {
-
         if (deviceConnectionManager.needsAndroid14BleUpdate) {
             postSideEffect(SideEffects.OpenDialog(0))
         }

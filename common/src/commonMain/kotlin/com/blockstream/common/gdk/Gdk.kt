@@ -15,6 +15,7 @@ import com.blockstream.common.gdk.params.AssetsParams
 import com.blockstream.common.gdk.params.BalanceParams
 import com.blockstream.common.gdk.params.BcurDecodeParams
 import com.blockstream.common.gdk.params.BcurEncodeParams
+import com.blockstream.common.gdk.params.BroadcastTransactionParams
 import com.blockstream.common.gdk.params.ConnectionParams
 import com.blockstream.common.gdk.params.CredentialsParams
 import com.blockstream.common.gdk.params.CsvParams
@@ -36,6 +37,7 @@ import com.blockstream.common.gdk.params.UnspentOutputsPrivateKeyParams
 import com.blockstream.common.gdk.params.UpdateSubAccountParams
 import com.blockstream.common.gdk.params.ValidateAddresseesParams
 import com.blockstream.common.platformFileSystem
+import com.blockstream.common.utils.Loggable
 import com.russhwolf.settings.set
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.buildJsonObject
@@ -145,9 +147,6 @@ interface GdkBinding {
     fun getWatchOnlyUsername(session: GASession): String?
 
     @Throws(Exception::class)
-    fun setWatchOnly(session: GASession, username: String, password: String)
-
-    @Throws(Exception::class)
     fun changeSettings(session: GASession, settings: Settings): GAAuthHandler
 
     @Throws(Exception::class)
@@ -223,6 +222,12 @@ interface GdkBinding {
     fun signTransaction(session: GASession, createTransaction: JsonElement): GAAuthHandler
 
     @Throws(Exception::class)
+    fun psbtFromJson(session: GASession, transaction: JsonElement): GAAuthHandler
+
+//    @Throws(Exception::class)
+//    fun broadcastTransaction(session: GASession, broadcastTransactionParams: BroadcastTransactionParams): GAAuthHandler
+
+    @Throws(Exception::class)
     fun broadcastTransaction(session: GASession, transaction: String): String
 
     @Throws(Exception::class)
@@ -284,7 +289,7 @@ class Gdk constructor(
                 val jsonElement = JsonConverter.JsonDeserializer.parseToJsonElement(it)
                 val network = JsonConverter.JsonDeserializer.decodeFromJsonElement<Network>(jsonElement)
                 registerNetwork(network.id, jsonElement)
-                networks().setCustomNetwork(network)
+                setCustomNetwork(network)
             }catch (e: Exception){
                 e.printStackTrace()
             }
@@ -319,14 +324,26 @@ class Gdk constructor(
             }.also { jsonElement ->
                 val network = JsonConverter.JsonDeserializer.decodeFromJsonElement<Network>(jsonElement)
                 registerNetwork(network.id, jsonElement)
-                networks().setCustomNetwork(network)
+                setCustomNetwork(network)
                 // Save settings
                 settings[KEY_CUSTOM_NETWORK] = jsonElement.toString()
             }
         }
     }
 
-    companion object {
+    private var _networks: Networks? = null
+    private var _customNetworks: MutableMap<String,Network> = mutableMapOf()
+
+    private fun setCustomNetwork(network: Network) {
+        _customNetworks[network.id] = network
+        _networks = null
+    }
+
+    override fun networks(): Networks {
+        return _networks ?: gdkBinding.networks()
+    }
+
+    companion object : Loggable() {
         const val KEY_CUSTOM_NETWORK = "custom_network"
     }
 }

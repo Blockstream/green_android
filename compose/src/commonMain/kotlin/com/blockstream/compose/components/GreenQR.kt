@@ -2,6 +2,7 @@ package com.blockstream.compose.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
@@ -21,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
@@ -33,6 +36,8 @@ import blockstream_green.common.generated.resources.qr_code
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.md_theme_surfaceTint
+import com.blockstream.compose.theme.whiteHigh
+import com.blockstream.compose.utils.ifTrue
 import io.github.alexzhirkevich.qrose.options.QrErrorCorrectionLevel
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import org.jetbrains.compose.resources.painterResource
@@ -50,7 +55,8 @@ fun GreenQR(
 ) {
     var isFullscreen by remember { mutableStateOf(false) }
     val isVisibleAndNotBlank = isVisible && data.isNotBlank()
-    val qrPadding = if(isJadeQR) 24.dp else 12.dp
+    val qrPadding = if(isJadeQR) 28.dp else 18.dp
+    val qrCodePainter = rememberQrCodePainter(data = data ?: "", errorCorrectionLevel = if(isJadeQR) QrErrorCorrectionLevel.Low else QrErrorCorrectionLevel.Auto)
 
     Column(
         modifier = Modifier
@@ -64,28 +70,37 @@ fun GreenQR(
                 Dialog(
                     onDismissRequest = { isFullscreen = false },
                     properties = DialogProperties(
-                        usePlatformDefaultWidth = false
+                        usePlatformDefaultWidth = false,
                     )
                 ) {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.White,
-                            contentColor = Color.Black
-                        ),
-                        modifier = Modifier
-                            .aspectRatio(1f)
-                            .fillMaxWidth()
-                            .fillMaxHeight()
-                            .clickable { isFullscreen = false }
+
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .clickable { isFullscreen = false }
+                        .ifTrue(isJadeQR) {
+                            background(Color.White)
+                        }
                     ) {
-                        Image(
-                            painter = rememberQrCodePainter(data = data ?: "", errorCorrectionLevel = if(isJadeQR) QrErrorCorrectionLevel.Low else QrErrorCorrectionLevel.Auto),
-                            contentDescription = "QR",
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color.White,
+                                contentColor = Color.Black
+                            ),
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight()
-                                .padding(qrPadding)
-                        )
+                                .align(Alignment.Center)
+                                .aspectRatio(1f)
+                                .fillMaxSize()
+
+                        ) {
+                            Image(
+                                painter = qrCodePainter,
+                                contentDescription = "QR",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .fillMaxHeight()
+                                    .padding(qrPadding)
+                            )
+                        }
                     }
                 }
             }
@@ -129,7 +144,7 @@ fun GreenQR(
 
                     if (isVisibleAndNotBlank) {
                         Image(
-                            painter = rememberQrCodePainter(data = data ?: "", errorCorrectionLevel = if(isJadeQR) QrErrorCorrectionLevel.Low else QrErrorCorrectionLevel.Auto),
+                            painter = qrCodePainter,
                             contentDescription = "QR",
                             modifier = Modifier
                                 .fillMaxWidth()

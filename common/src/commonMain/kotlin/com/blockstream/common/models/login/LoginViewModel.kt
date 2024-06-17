@@ -32,6 +32,7 @@ import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.data.data
 import com.blockstream.common.data.isEmpty
+import com.blockstream.common.data.toLoginCredentials
 import com.blockstream.common.database.LoginCredentials
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
@@ -47,6 +48,7 @@ import com.blockstream.common.extensions.passwordPinData
 import com.blockstream.common.extensions.pinPinData
 import com.blockstream.common.extensions.previewLoginCredentials
 import com.blockstream.common.extensions.previewWallet
+import com.blockstream.common.extensions.richWatchOnly
 import com.blockstream.common.extensions.watchOnlyCredentials
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.TorEvent
@@ -62,6 +64,7 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.StringHolder
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
@@ -115,6 +118,8 @@ abstract class LoginViewModelAbstract(
     @NativeCoroutinesState
     abstract val biometricsCredentials: StateFlow<DataState<LoginCredentials>>
     @NativeCoroutinesState
+    abstract val richWatchOnlyCredentials: StateFlow<DataState<LoginCredentials>>
+    @NativeCoroutinesState
     abstract val watchOnlyCredentials: StateFlow<DataState<LoginCredentials>>
     @NativeCoroutinesState
     abstract val pinCredentials: StateFlow<DataState<LoginCredentials>>
@@ -162,23 +167,26 @@ class LoginViewModel constructor(
 
     private val _biometricsCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Loading)
     private val _watchOnlyCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Loading)
+    private val _richWatchOnlyCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Loading)
     private val _pinCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Loading)
     private val _passwordCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Loading)
     private val _lightningCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Loading)
     private val _lightningMnemonic: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Loading)
 
     @NativeCoroutinesState
-    override val biometricsCredentials: StateFlow<DataState<LoginCredentials>> = _biometricsCredentials.asStateFlow()
+    override val biometricsCredentials: StateFlow<DataState<LoginCredentials>> = _biometricsCredentials
     @NativeCoroutinesState
-    override val watchOnlyCredentials: StateFlow<DataState<LoginCredentials>> = _watchOnlyCredentials.asStateFlow()
+    override val richWatchOnlyCredentials: StateFlow<DataState<LoginCredentials>> = _richWatchOnlyCredentials
     @NativeCoroutinesState
-    override val pinCredentials: StateFlow<DataState<LoginCredentials>> = _pinCredentials.asStateFlow()
+    override val watchOnlyCredentials: StateFlow<DataState<LoginCredentials>> = _watchOnlyCredentials
     @NativeCoroutinesState
-    override val passwordCredentials: StateFlow<DataState<LoginCredentials>> = _passwordCredentials.asStateFlow()
+    override val pinCredentials: StateFlow<DataState<LoginCredentials>> = _pinCredentials
     @NativeCoroutinesState
-    override val lightningCredentials: StateFlow<DataState<LoginCredentials>> = _lightningCredentials.asStateFlow()
+    override val passwordCredentials: StateFlow<DataState<LoginCredentials>> = _passwordCredentials
     @NativeCoroutinesState
-    override val lightningMnemonic: StateFlow<DataState<LoginCredentials>> = _lightningMnemonic.asStateFlow()
+    override val lightningCredentials: StateFlow<DataState<LoginCredentials>> = _lightningCredentials
+    @NativeCoroutinesState
+    override val lightningMnemonic: StateFlow<DataState<LoginCredentials>> = _lightningMnemonic
 
     @NativeCoroutinesState
     override val isWatchOnlyLoginEnabled: StateFlow<Boolean> = combine(watchOnlyPassword, watchOnlyCredentials, onProgress) { watchOnlyPassword, _, onProgress ->
@@ -224,7 +232,7 @@ class LoginViewModel constructor(
             null
         }}
 
-        if (session.isConnected && !isLightningShortcut){
+        if (session.isConnected && !isLightningShortcut) {
             postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(greenWallet)))
         } else {
             if (greenWallet.askForBip39Passphrase) {
@@ -241,6 +249,7 @@ class LoginViewModel constructor(
             database.getLoginCredentialsFlow(greenWallet.id).onEach {
                 _biometricsCredentials.value = DataState.successOrEmpty(it.biometricsPinData)
                 _watchOnlyCredentials.value = DataState.successOrEmpty(it.watchOnlyCredentials)
+                _richWatchOnlyCredentials.value = DataState.successOrEmpty(it.richWatchOnly)
                 _pinCredentials.value = DataState.successOrEmpty(it.pinPinData)
                 _passwordCredentials.value = DataState.successOrEmpty(it.passwordPinData)
                 _lightningCredentials.value = DataState.successOrEmpty(it.lightningCredentials)
@@ -394,7 +403,7 @@ class LoginViewModel constructor(
                 )))
             }
             is LocalEvents.LoginWatchOnly -> {
-                watchOnlyCredentials.data().also {
+                (richWatchOnlyCredentials.data() ?: watchOnlyCredentials.data()).also {
                     if (it?.credential_type == CredentialType.BIOMETRICS_WATCHONLY_CREDENTIALS) {
                         postSideEffect(LocalSideEffects.LaunchBiometrics(it))
                     } else {
@@ -475,14 +484,11 @@ class LoginViewModel constructor(
             login {
 
                 // Do a database query as the StateFlow is not yet initialized
-                val derivedLightningMnemonic = database.getLoginCredentials(greenWallet.id).lightningMnemonic?.encrypted_data?.let {
-                    try{
-                        greenKeystore.decryptData(it).decodeToString()
-                    }catch (e: Exception){
-                        e.printStackTrace()
-                        postSideEffect(SideEffects.ErrorSnackbar(e))
-                        null
-                    }
+                val derivedLightningMnemonic = database.getLoginCredential(
+                    id = greenWallet.id,
+                    credentialType = CredentialType.LIGHTNING_MNEMONIC
+                )?.lightningMnemonic(greenKeystore) {
+                    postSideEffect(SideEffects.ErrorSnackbar(it))
                 }
 
                 session.loginWithDevice(
@@ -532,17 +538,30 @@ class LoginViewModel constructor(
 
         loginCredentials.encrypted_data?.let { encryptedData ->
             login(loginCredentials, isWatchOnly = true, updateWatchOnlyPassword = false) {
-                val watchOnlyCredentials = greenKeystore.decryptData(encryptedData).let {
-                    if(loginCredentials.credential_type == CredentialType.KEYSTORE_PASSWORD){
-                        WatchOnlyCredentials(
-                            password = it.decodeToString()
-                        )
-                    }else{
-                        WatchOnlyCredentials.fromByteArray(it)
-                    }
-                }
 
-                session.loginWatchOnly(wallet = greenWallet, username = greenWallet.watchOnlyUsername ?: "", watchOnlyCredentials)
+                if (loginCredentials.credential_type == CredentialType.RICH_WATCH_ONLY) {
+
+                    loginCredentials.richWatchOnly(greenKeystore)?.also {
+                        session.loginRichWatchOnly(wallet = greenWallet, loginCredentials = loginCredentials, richWatchOnly = it)
+                    }
+
+                } else {
+                    val watchOnlyCredentials = greenKeystore.decryptData(encryptedData).let {
+                        if(loginCredentials.credential_type == CredentialType.KEYSTORE_PASSWORD){
+                            WatchOnlyCredentials(
+                                password = it.decodeToString()
+                            )
+                        }else{
+                            WatchOnlyCredentials.fromByteArray(it)
+                        }
+                    }
+
+                    session.loginWatchOnly(
+                        wallet = greenWallet,
+                        username = greenWallet.watchOnlyUsername ?: "",
+                        watchOnlyCredentials = watchOnlyCredentials
+                    )
+                }
             }
         }
     }
@@ -808,7 +827,7 @@ class LoginViewModel constructor(
         }
     }
 
-
+    companion object: Loggable()
 }
 
 class LoginViewModelPreview(
@@ -830,6 +849,7 @@ class LoginViewModelPreview(
     override val showWatchOnlyUsername: StateFlow<Boolean> = MutableStateFlow(viewModelScope, false)
     override val showWatchOnlyPassword: StateFlow<Boolean> = MutableStateFlow(viewModelScope, false)
     override val biometricsCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
+    override val richWatchOnlyCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
     override val watchOnlyCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
     override val pinCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, if(withPinCredentials) DataState.Success(previewLoginCredentials()) else DataState.Empty)
     override val passwordCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, if(withPasswprdCredentials) DataState.Success(previewLoginCredentials()) else DataState.Empty)

@@ -24,7 +24,8 @@ import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.data.CreateTransaction
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.gdk.data.SendTransactionSuccess
+import com.blockstream.common.gdk.data.ProcessedTransactionDetails
+import com.blockstream.common.gdk.params.BroadcastTransactionParams
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.looks.transaction.TransactionConfirmLook
 import com.blockstream.common.models.GreenViewModel
@@ -130,7 +131,8 @@ abstract class CreateTransactionViewModelAbstract(
         data class SetFeeRate(val feePriority: FeePriority) : Event
         data class SetCustomFeeRate(val amount: String) : Event
         data class SetAddressInputType(val inputType: AddressInputType): Event
-        data class SignTransaction(val broadcastTransaction: Boolean = true) : Event
+        data class SignTransaction(val broadcastTransaction: Boolean = true, val createPsbt: Boolean = false) : Event
+        data class BroadcastTransaction(val broadcastTransaction: Boolean = true, val psbt: String) : Event
     }
 
     class LocalSideEffects {
@@ -324,24 +326,35 @@ abstract class CreateTransactionViewModelAbstract(
     internal fun signAndSendTransaction(
         originalParams: CreateTransactionParams?,
         originalTransaction: CreateTransaction?,
+        psbt: String? = null,
         segmentation: TransactionSegmentation,
-        broadcast: Boolean
+        broadcast: Boolean,
+        createPsbt: Boolean = false
     ) {
         doAsync({
-            onProgressDescription.value = getString(if(broadcast) Res.string.id_sending else Res.string.id_signing)
-
-            countly.startSendTransaction()
-            countly.startFailedTransaction()
-
-            if(originalParams == null){
-                throw Exception("No params is provided")
+            if(originalParams == null || originalTransaction == null){
+                throw Exception("No params/transaction is provided")
             }
 
-            if(originalTransaction == null){
-                throw Exception("No transaction is provided")
+            onProgressDescription.value = getString(if(broadcast) Res.string.id_sending else Res.string.id_signing)
+
+            if(broadcast) {
+                countly.startSendTransaction()
+                countly.startFailedTransaction()
             }
 
             val network = accountOrNull?.network ?: _network.value!!
+
+            // broadcast is handled with simulateOnly flag
+            if (psbt != null) {
+                return@doAsync session.broadcastTransaction(
+                    network = network,
+                    broadcastTransaction = BroadcastTransactionParams(
+                        psbt = psbt,
+                        simulateOnly = !broadcast
+                    )
+                )
+            }
 
             // Create transaction with memo
             val params = note.value.takeIf { it.isNotBlank() }?.trim()?.let {
@@ -364,43 +377,54 @@ abstract class CreateTransactionViewModelAbstract(
                 transaction = session.blindTransaction(network, transaction)
             }
 
-            if (session.isHardwareWallet && !account.isLightning && !transaction.isSweep()) {
-                postSideEffect(
-                    SideEffects.NavigateTo(
-                        NavigateDestinations.VerifyOnDevice(
-                            transactionConfirmLook = TransactionConfirmLook.create(
-                                params = params,
-                                transaction = transaction,
-                                account = account,
-                                session = session,
-                                denomination = _denomination.value,
-                                isAddressVerificationOnDevice = true
+
+            if ((session.isWatchOnly) || createPsbt) {
+                // Create PSBT
+                ProcessedTransactionDetails(psbt = session.psbtFromJson(account.network, transaction).psbt)
+            } else {
+                if (session.isHardwareWallet && !account.isLightning && !transaction.isSweep() && !session.isWatchOnly) {
+                    postSideEffect(
+                        SideEffects.NavigateTo(
+                            NavigateDestinations.VerifyOnDevice(
+                                transactionConfirmLook = TransactionConfirmLook.create(
+                                    params = params,
+                                    transaction = transaction,
+                                    account = account,
+                                    session = session,
+                                    denomination = _denomination.value,
+                                    isAddressVerificationOnDevice = true
+                                )
                             )
                         )
                     )
-                )
-            }
-
-            // Sign transaction
-            transaction = session.signTransaction(account.network, transaction)
-
-            // Broadcast or just sign
-            if (broadcast) {
-                if (isSwap || transaction.isSweep()) {
-                    session.broadcastTransaction(
-                        network = network,
-                        transaction = transaction.transaction ?: ""
-                    )
-                } else {
-                    session.sendTransaction(
-                        account = account,
-                        signedTransaction = transaction,
-                        twoFactorResolver = this
-                    )
                 }
-            } else {
-                SendTransactionSuccess(signedTransaction = transaction.transaction ?: "")
+
+                if(!isSwap) {
+                    // Sign transaction
+                    transaction = session.signTransaction(account.network, transaction)
+                }
+
+                // Broadcast or just sign
+                if (broadcast) {
+                    if (isSwap || transaction.isSweep()) {
+                        session.broadcastTransaction(
+                            network = network,
+                            broadcastTransaction = BroadcastTransactionParams(
+                                transaction = transaction.transaction ?: ""
+                            )
+                        )
+                    } else {
+                        session.sendTransaction(
+                            account = account,
+                            signedTransaction = transaction,
+                            twoFactorResolver = this
+                        )
+                    }
+                } else {
+                    ProcessedTransactionDetails(signedTransaction = transaction.transaction ?: "")
+                }
             }
+
         },  preAction = {
             onProgress.value = true
             _onProgressSending.value = true
@@ -411,7 +435,11 @@ abstract class CreateTransactionViewModelAbstract(
             // Dismiss Verify Transaction Dialog
             postSideEffect(SideEffects.Dismiss)
 
-            if (broadcast) {
+            if (it.psbt != null) {
+                onProgress.value = false
+                _onProgressSending.value = false
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.JadeQR(psbt = it.psbt)))
+            } else if (broadcast) {
                 countly.endSendTransaction(
                     session = session,
                     account = account,
@@ -426,7 +454,7 @@ abstract class CreateTransactionViewModelAbstract(
                 postSideEffect(
                     SideEffects.Dialog(
                         title = StringHolder.create("Signed Transaction"),
-                        message = StringHolder.create(it.signedTransaction ?: "")
+                        message = StringHolder.create(it.signedTransaction ?: it.transaction)
                     )
                 )
             }

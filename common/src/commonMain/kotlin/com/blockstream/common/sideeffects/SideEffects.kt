@@ -10,14 +10,13 @@ import com.blockstream.common.events.Event
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Device
-import com.blockstream.common.gdk.data.SendTransactionSuccess
+import com.blockstream.common.gdk.data.ProcessedTransactionDetails
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.navigation.NavigateDestination
 import com.blockstream.common.utils.StringHolder
 import kotlinx.coroutines.CompletableDeferred
 import okio.Path
 import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.StringResource
 
 
 class SideEffects : SideEffect {
@@ -48,7 +47,7 @@ class SideEffects : SideEffect {
         val errorReport: ErrorReport? = null,
     ) : SideEffect
     data class NavigateToRoot(val popToReceive: Boolean = false) : SideEffect
-    data class TransactionSent(val data: SendTransactionSuccess) : SideEffect
+    data class TransactionSent(val data: ProcessedTransactionDetails) : SideEffect
     data class Logout(val reason: LogoutReason) : SideEffect
     object WalletDelete : SideEffect
     data class CopyToClipboard(val value: String, val message: String? = null, val label: String? = null, val isSensitive: Boolean = false) : SideEffect

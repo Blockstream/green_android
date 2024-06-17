@@ -29,6 +29,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
+import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.jade.JadeQRViewModel
 import com.blockstream.common.models.jade.JadeQRViewModelAbstract
@@ -55,12 +56,12 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 
 @Parcelize
-data class JadeQRScreen(val isLightningMnemonicExport: Boolean = false) : Screen, Parcelable {
+data class JadeQRScreen(val greenWallet: GreenWallet? = null, val psbt: String? = null, val isLightningMnemonicExport: Boolean = false) : Screen, Parcelable {
 
     @Composable
     override fun Content() {
         val viewModel = koinScreenModel<JadeQRViewModel> {
-            parametersOf(isLightningMnemonicExport)
+            parametersOf(psbt, isLightningMnemonicExport, greenWallet)
         }
 
         val navData by viewModel.navData.collectAsStateWithLifecycle()
@@ -72,9 +73,9 @@ data class JadeQRScreen(val isLightningMnemonicExport: Boolean = false) : Screen
 
     companion object {
         @Composable
-        fun getNavigationResult(fn: (String) -> Unit) = getNavigationResult(this::class, fn)
+        fun getResult(fn: (String) -> Unit) = getNavigationResult(this::class, fn)
 
-        internal fun setNavigationResult(result: String) =
+        internal fun setResult(result: String) =
             setNavigationResult(this::class, result)
     }
 }
@@ -87,8 +88,10 @@ fun JadeQRScreen(
     val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
     HandleSideEffect(viewModel = viewModel) {
 
-        if (it is SideEffects.Mnemonic) {
-            JadeQRScreen.setNavigationResult(it.mnemonic)
+        if (it is SideEffects.Success) {
+            JadeQRScreen.setResult(it.data as String)
+        } else if (it is SideEffects.Mnemonic) {
+            JadeQRScreen.setResult(it.mnemonic)
         } else if (it is JadeQRViewModel.LocalSideEffects.ScanQr) {
             bottomSheetNavigator?.show(
                 CameraBottomSheet(
@@ -117,13 +120,14 @@ fun JadeQRScreen(
                         modifier = Modifier.size(50.dp)
                     )
 
-
-                    Text(
-                        text = stringResource(Res.string.id_step_1s, step.step).uppercase(),
-                        style = labelLarge,
-                        textAlign = TextAlign.Center,
-                        color = green
-                    )
+                    step.step?.also {
+                        Text(
+                            text = stringResource(Res.string.id_step_1s, it).uppercase(),
+                            style = labelLarge,
+                            textAlign = TextAlign.Center,
+                            color = green
+                        )
+                    }
                 }
             }
 

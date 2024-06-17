@@ -14,6 +14,7 @@ import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.data.Psbt
 import com.blockstream.common.looks.transaction.TransactionConfirmLook
 import com.blockstream.common.models.settings.WalletSettingsSection
 import com.blockstream.common.models.sheets.NoteType
@@ -143,6 +144,7 @@ sealed class NavigateDestinations : NavigateDestination {
     ) : NavigateDestination
 
     data class JadeQR(
+        val psbt: String? = null,
         val isLightningMnemonicExport: Boolean = false
     ) : NavigateDestination
 

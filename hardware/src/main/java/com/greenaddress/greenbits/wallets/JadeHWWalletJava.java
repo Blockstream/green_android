@@ -30,6 +30,7 @@ import com.blockstream.jade.entities.TxInput;
 import com.blockstream.jade.entities.TxInputBtc;
 import com.blockstream.jade.entities.TxInputLiquid;
 import com.blockstream.libwally.Wally;
+import com.google.common.collect.Lists;
 import com.google.common.io.BaseEncoding;
 import com.greenaddress.greenapi.HWWallet;
 
@@ -550,21 +551,19 @@ abstract public class JadeHWWalletJava extends HWWallet {
                 final int pathlen = path.size();
                 final long branch = path.get(pathlen - 2);
                 final long pointer = path.get(pathlen - 1);
-                String recoveryxpub = null;
+                String recoveryXpub = account.getRecoveryXpub();
 
                 Log.d(TAG,"getGreenAddress() (multisig shield) for subaccount: " + account.getPointer() + ", branch: "
                         + branch + ", pointer " + pointer);
 
                 // Jade expects any 'recoveryxpub' to be at the subact/branch level, consistent with tx outputs - but gdk
                 // subaccount data has the base subaccount chain code and pubkey - so we apply the branch derivation here.
-                if (account.getRecoveryChainCode() != null && account.getRecoveryChainCode().length() > 0) {
-                    final Object subactkey = Wally.bip32_pub_key_init(
-                            network.getVerPublic(), 0, 0,
-                            account.getRecoveryChainCodeAsBytes(), account.getRecoveryPubKeyAsBytes());
+                if (recoveryXpub != null && !recoveryXpub.isEmpty()) {
+                    Object subactkey = Wally.bip32_key_from_base58(recoveryXpub);
                     final Object branchkey = Wally.bip32_key_from_parent(subactkey, branch,
                             Wally.BIP32_FLAG_KEY_PUBLIC |
                                     Wally.BIP32_FLAG_SKIP_HASH);
-                    recoveryxpub = Wally.bip32_key_to_base58(branchkey, Wally.BIP32_FLAG_KEY_PUBLIC);
+                    recoveryXpub = Wally.bip32_key_to_base58(branchkey, Wally.BIP32_FLAG_KEY_PUBLIC);
                     Wally.bip32_key_free(branchkey);
                     Wally.bip32_key_free(subactkey);
                 }
@@ -572,7 +571,7 @@ abstract public class JadeHWWalletJava extends HWWallet {
                 // Get receive address from Jade for the path elements given
                 final String address = this.jade.getReceiveAddress(canonicalNetworkId,
                         account.getPointer(), branch, pointer,
-                        recoveryxpub, csvBlocks);
+                        recoveryXpub, csvBlocks);
                 Log.d(TAG, "Got green address for branch: " + branch + ", pointer: " + pointer + ": " + address);
                 return address;
             } else {

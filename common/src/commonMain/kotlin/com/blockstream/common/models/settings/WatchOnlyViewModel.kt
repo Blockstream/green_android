@@ -2,14 +2,23 @@ package com.blockstream.common.models.settings
 
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_watchonly
+import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavData
+import com.blockstream.common.data.RichWatchOnly
+import com.blockstream.common.data.toJson
+import com.blockstream.common.data.toLoginCredentials
+import com.blockstream.common.events.Event
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.previewAccount
 import com.blockstream.common.extensions.previewNetwork
 import com.blockstream.common.extensions.previewWallet
+import com.blockstream.common.extensions.richWatchOnly
 import com.blockstream.common.looks.wallet.WatchOnlyLook
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.Loggable
+import com.blockstream.common.utils.StringHolder
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.launch
@@ -18,12 +27,16 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import org.jetbrains.compose.resources.getString
 
 
 abstract class WatchOnlyViewModelAbstract(greenWallet: GreenWallet) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
     override fun screenName(): String = "WalletSettingsWatchOnly"
+
+    @NativeCoroutinesState
+    abstract val richWatchOnly: StateFlow<List<RichWatchOnly>?>
 
     @NativeCoroutinesState
     abstract val multisigWatchOnly: StateFlow<List<WatchOnlyLook>>
@@ -37,6 +50,11 @@ abstract class WatchOnlyViewModelAbstract(greenWallet: GreenWallet) :
 
 class WatchOnlyViewModel(greenWallet: GreenWallet) :
     WatchOnlyViewModelAbstract(greenWallet = greenWallet) {
+
+    override val richWatchOnly: StateFlow<List<RichWatchOnly>?> = if (appInfo.isDevelopment)
+        database.getLoginCredentialsFlow(greenWallet.id).map {
+            it.richWatchOnly?.richWatchOnly(greenKeystore) ?: listOf()
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf()) else MutableStateFlow(null)
 
     override val multisigWatchOnly: StateFlow<List<WatchOnlyLook>> = combine(
         session.multisigBitcoinWatchOnly,
@@ -70,13 +88,41 @@ class WatchOnlyViewModel(greenWallet: GreenWallet) :
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
+    class LocalEvents {
+        object CreateRichWatchOnly: Event
+        object DeleteRichWatchOnly: Event
+    }
+
     init {
         viewModelScope.launch {
-            _navData.value = NavData(title = getString(Res.string.id_watchonly), subtitle = greenWallet.name)
+            _navData.value =
+                NavData(title = getString(Res.string.id_watchonly), subtitle = greenWallet.name)
         }
 
         bootstrap()
     }
+
+    override suspend fun handleEvent(event: Event) {
+        super.handleEvent(event)
+
+        if(event is LocalEvents.CreateRichWatchOnly){
+            doAsync({
+                val rwo = database.getLoginCredential(greenWallet.id, CredentialType.RICH_WATCH_ONLY)?.richWatchOnly(greenKeystore)
+                 session.updateRichWatchOnly(rwo ?: listOf()).also {
+                    database.replaceLoginCredential(it.toLoginCredentials(session = session, greenWallet = greenWallet, greenKeystore = greenKeystore))
+                }
+
+            }, onSuccess = {
+                postSideEffect(SideEffects.Dialog(StringHolder.create("DEBUG"), StringHolder.create(it.toJson())))
+            })
+        }else if (event is LocalEvents.DeleteRichWatchOnly){
+            doAsync({
+                database.deleteLoginCredentials(greenWallet.id, CredentialType.RICH_WATCH_ONLY)
+            }, onSuccess = {})
+        }
+    }
+
+    companion object: Loggable()
 }
 
 class WatchOnlyViewModelPreview(greenWallet: GreenWallet) :
@@ -84,6 +130,12 @@ class WatchOnlyViewModelPreview(greenWallet: GreenWallet) :
     companion object {
         fun preview() = WatchOnlyViewModelPreview(previewWallet(isHardware = false))
     }
+
+    override val richWatchOnly: StateFlow<List<RichWatchOnly>> = MutableStateFlow(
+        listOf(
+            RichWatchOnly("id", "username", "password", "data")
+        )
+    )
 
     override val multisigWatchOnly: StateFlow<List<WatchOnlyLook>> =
         MutableStateFlow(
@@ -102,9 +154,22 @@ class WatchOnlyViewModelPreview(greenWallet: GreenWallet) :
     override val extendedPublicKeysAccounts: StateFlow<List<WatchOnlyLook>> =
         MutableStateFlow(
             viewModelScope,
-            listOf(WatchOnlyLook(account = previewAccount(), extendedPubkey = "xpub6C364rGP9RCtg8FLop5qQG4eqJ4P34wSpypM4Xw1pZea5WC8ZrUtVCcwDGYMeyyCvSUUjzfimRKh2qsiDbxu9RGx999dKRZKyQPEyiqFUFu"))
+            listOf(
+                WatchOnlyLook(
+                    account = previewAccount(),
+                    extendedPubkey = "xpub6C364rGP9RCtg8FLop5qQG4eqJ4P34wSpypM4Xw1pZea5WC8ZrUtVCcwDGYMeyyCvSUUjzfimRKh2qsiDbxu9RGx999dKRZKyQPEyiqFUFu"
+                )
+            )
         )
 
     override val outputDescriptorsAccounts: StateFlow<List<WatchOnlyLook>> =
-        MutableStateFlow(viewModelScope, listOf(WatchOnlyLook(account = previewAccount(), outputDescriptors = "Ypub6f7htZneT3L1PnbFwdsNzApam7MpwUHAFMf8NyeuK2ioojZMT5qQshsVB2q5kCnpkYVyNxo4XKKnofHYotzWzzHXCjiBSfJ71m3EC6vGYym")))
+        MutableStateFlow(
+            viewModelScope,
+            listOf(
+                WatchOnlyLook(
+                    account = previewAccount(),
+                    outputDescriptors = "Ypub6f7htZneT3L1PnbFwdsNzApam7MpwUHAFMf8NyeuK2ioojZMT5qQshsVB2q5kCnpkYVyNxo4XKKnofHYotzWzzHXCjiBSfJ71m3EC6vGYym"
+                )
+            )
+        )
 }

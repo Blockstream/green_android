@@ -104,6 +104,9 @@ abstract class TransactionViewModelAbstract(
     abstract val note: StateFlow<String?>
 
     @NativeCoroutinesState
+    abstract val canEditNote: StateFlow<Boolean>
+
+    @NativeCoroutinesState
     abstract val hasMoreDetails: StateFlow<Boolean>
 }
 
@@ -165,6 +168,8 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
 
     private val _note: MutableStateFlow<String?> = MutableStateFlow(null)
     override val note: StateFlow<String?> = _note
+
+    override val canEditNote: StateFlow<Boolean> = MutableStateFlow(!account.isLightning && sessionOrNull?.isWatchOnly == false)
 
     private val _hasMoreDetails: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val hasMoreDetails: StateFlow<Boolean> = _hasMoreDetails
@@ -317,7 +322,7 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
             else -> null
         }
 
-        _canReplaceByFee.value = transaction.canRBF && !transaction.isIn && !session.isWatchOnly
+        _canReplaceByFee.value = transaction.canRBF && !transaction.isIn && !session.isNoBlobWatchOnly
 
         _note.value = transaction.memo.takeIf { it.isNotBlank()}
 
@@ -388,6 +393,7 @@ class TransactionViewModelPreview(status : TransactionStatus) : TransactionViewM
     override val address: StateFlow<String?> = MutableStateFlow("bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu")
     override val note: StateFlow<String?> =
         MutableStateFlow("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+    override val canEditNote: StateFlow<Boolean> = MutableStateFlow(true)
     override val hasMoreDetails: StateFlow<Boolean> = MutableStateFlow(true)
 
     companion object {

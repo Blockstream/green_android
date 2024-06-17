@@ -6,10 +6,12 @@ import com.blockstream.common.SATOSHI_UNIT
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.toLoginCredentials
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.cleanup
 import com.blockstream.common.extensions.createLoginCredentials
 import com.blockstream.common.extensions.hasHistory
+import com.blockstream.common.extensions.richWatchOnly
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Network
@@ -122,6 +124,17 @@ abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet, val assetId
                     network = network,
                     hardwareWalletResolver = DeviceResolver.createIfNeeded(session.gdkHwWallet, this)
                 ) { }
+
+                // Update rich watch only credentials if needed
+                database.getLoginCredential(greenWallet.id, CredentialType.RICH_WATCH_ONLY)?.richWatchOnly(greenKeystore)?.also {
+                    session.updateRichWatchOnly(it).toLoginCredentials(
+                        session = session,
+                        greenWallet = greenWallet,
+                        greenKeystore = greenKeystore
+                    ).also {
+                        database.replaceLoginCredential(it)
+                    }
+                }
             }
 
             val accountsWithSameType =

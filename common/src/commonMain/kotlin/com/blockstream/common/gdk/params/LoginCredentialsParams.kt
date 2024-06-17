@@ -2,6 +2,7 @@ package com.blockstream.common.gdk.params
 
 import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.gdk.data.Credentials
+import com.blockstream.common.gdk.data.LoginData
 import com.blockstream.common.gdk.data.PinData
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -15,6 +16,7 @@ data class LoginCredentialsParams(
     @SerialName("pin_data") val pinData: PinData? = null,
     @SerialName("username") val username: String? = null,
     @SerialName("password") val password: String? = null,
+    @SerialName("watch_only_data") val watchOnlyData: String? = null,
     @SerialName("master_xpub") val masterXpub: String? = null,
     @SerialName("core_descriptors") val coreDescriptors: List<String>? = null,
     @SerialName("slip132_extended_pubkeys") val slip132ExtendedPubkeys: List<String>? = null,

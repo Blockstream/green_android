@@ -310,7 +310,7 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
             is LocalEvents.Send -> {
                 postSideEffect(
                     SideEffects.NavigateTo(
-                        if (greenWallet.isWatchOnly) {
+                        if (session.isNoBlobWatchOnly) {
                             NavigateDestinations.Sweep(
                                 accountAsset = accountAsset.value,
                             )

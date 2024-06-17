@@ -55,9 +55,9 @@ class RecoveryPhraseViewModel(
         } ?: Credentials.empty()
     }
 
-    override val mnemonic = MutableStateFlow(viewModelScope, credentials.mnemonic)
+    override val mnemonic = MutableStateFlow(viewModelScope, credentials.mnemonic ?: "")
 
-    override val mnemonicWords = MutableStateFlow(viewModelScope, credentials.mnemonic.split(" "))
+    override val mnemonicWords = MutableStateFlow(viewModelScope, credentials.mnemonic?.split(" ") ?: listOf())
 
     override val passphrase = MutableStateFlow(viewModelScope, credentials.bip39Passphrase)
 

@@ -15,6 +15,7 @@ import com.blockstream.common.gdk.params.AssetsParams
 import com.blockstream.common.gdk.params.BalanceParams
 import com.blockstream.common.gdk.params.BcurDecodeParams
 import com.blockstream.common.gdk.params.BcurEncodeParams
+import com.blockstream.common.gdk.params.BroadcastTransactionParams
 import com.blockstream.common.gdk.params.ConnectionParams
 import com.blockstream.common.gdk.params.CredentialsParams
 import com.blockstream.common.gdk.params.CsvParams
@@ -90,6 +91,7 @@ import gdk.GA_get_watch_only_username
 import gdk.GA_http_request
 import gdk.GA_init
 import gdk.GA_login_user
+import gdk.GA_psbt_from_json
 import gdk.GA_reconnect_hint
 import gdk.GA_refresh_assets
 import gdk.GA_register_network
@@ -575,15 +577,6 @@ class IOSGdkBinding constructor(config: InitConfig) : GdkBinding {
     }
 
     @Throws(Exception::class)
-    override fun setWatchOnly(session: GASession, username: String, password: String) {
-        memScoped {
-            GA_set_watch_only(
-                session = session.asGASession(), username = username, password = password
-            ).okOrThrow()
-        }
-    }
-
-    @Throws(Exception::class)
     override fun changeSettings(session: GASession, settings: Settings): GAAuthHandler {
         return memScoped {
             gaAuthHandler().let { gaAuthHandler ->
@@ -877,6 +870,19 @@ class IOSGdkBinding constructor(config: InitConfig) : GdkBinding {
     }
 
     @Throws(Exception::class)
+    override fun psbtFromJson(session: GASession, transaction: JsonElement): GAAuthHandler {
+        return memScoped {
+            gaAuthHandler().let { gaAuthHandler ->
+                GA_psbt_from_json(
+                    session = session.asGASession(),
+                    details = transaction.toGaJson(this),
+                    call = gaAuthHandler.ptr
+                ).okOrThrow(gaAuthHandler)
+            }
+        }
+    }
+
+    @Throws(Exception::class)
     override fun broadcastTransaction(session: GASession, transaction: String): String {
         return memScoped {
             gdkString {
@@ -886,6 +892,17 @@ class IOSGdkBinding constructor(config: InitConfig) : GdkBinding {
             }
         }
     }
+//    // GDK 0.73.0
+//    @Throws(Exception::class)
+//    override fun broadcastTransaction(session: GASession, broadcastTransactionParams: BroadcastTransactionParams): GAAuthHandler {
+//        return memScoped {
+//            gaAuthHandler().let { gaAuthHandler ->
+//                GA_broadcast_transaction(
+//                    session = session.asGASession(), transaction_hex = transaction
+//                ).okOrThrow(gaAuthHandler)
+//            }
+//        }
+//    }
 
     @Throws(Exception::class)
     override fun sendTransaction(session: GASession, transaction: JsonElement): GAAuthHandler {

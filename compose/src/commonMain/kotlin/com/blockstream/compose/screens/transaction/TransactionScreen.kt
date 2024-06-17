@@ -287,6 +287,7 @@ fun TransactionScreen(
         val address by viewModel.address.collectAsStateWithLifecycle()
         val transactionId by viewModel.transactionId.collectAsStateWithLifecycle()
         val note by viewModel.note.collectAsStateWithLifecycle()
+        val canEditNote by viewModel.canEditNote.collectAsStateWithLifecycle()
 
         if(listOfNotNull(fee, feeRate, address, transactionId, note).isNotEmpty()) {
             HorizontalDivider()
@@ -354,7 +355,7 @@ fun TransactionScreen(
             }
 
             if (!viewModel.account.isLightning) {
-                if(!viewModel.greenWallet.isWatchOnly) {
+                if(canEditNote) {
                     HorizontalDivider()
                     MenuListItem(
                         stringResource(if (note.isNullOrBlank()) Res.string.id_add_note else Res.string.id_edit_note),

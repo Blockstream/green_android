@@ -15,6 +15,7 @@ import com.blockstream.common.gdk.params.AssetsParams
 import com.blockstream.common.gdk.params.BalanceParams
 import com.blockstream.common.gdk.params.BcurDecodeParams
 import com.blockstream.common.gdk.params.BcurEncodeParams
+import com.blockstream.common.gdk.params.BroadcastTransactionParams
 import com.blockstream.common.gdk.params.ConnectionParams
 import com.blockstream.common.gdk.params.CredentialsParams
 import com.blockstream.common.gdk.params.CsvParams
@@ -35,7 +36,7 @@ import com.blockstream.common.gdk.params.TransactionParams
 import com.blockstream.common.gdk.params.UnspentOutputsPrivateKeyParams
 import com.blockstream.common.gdk.params.UpdateSubAccountParams
 import com.blockstream.common.gdk.params.ValidateAddresseesParams
-import com.blockstream.libgreenaddress.GDKJNI
+import com.blockstream.green_gdk.GDK
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 
@@ -44,7 +45,7 @@ class AndroidGdk(log: Boolean, config: InitConfig) : GdkBinding {
 
     init {
         // Set maskSensitiveFields always as true for QA peace of mind
-        GDKJNI.init(
+        GDK.init(
             GdkJsonConverter(JsonConverter(log = log, maskSensitiveFields = true)),
             config
         )
@@ -54,103 +55,102 @@ class AndroidGdk(log: Boolean, config: InitConfig) : GdkBinding {
         get() = _dataDir
 
     override fun setNotificationHandler(notificationHandler: (session: GASession, jsonObject: Any) -> Unit) {
-        GDKJNI.setNotificationHandler(notificationHandler)
+        GDK.setNotificationHandler(notificationHandler)
     }
 
-    override fun createSession(): GASession = GDKJNI.create_session()
+    override fun createSession(): GASession = GDK.create_session()
 
-    override fun destroySession(session: GASession) = GDKJNI.destroy_session(session)
+    override fun destroySession(session: GASession) = GDK.destroy_session(session)
 
+    override fun connect(session: GASession, params: ConnectionParams) = GDK.connect(session, params)
 
-    override fun connect(session: GASession, params: ConnectionParams) = GDKJNI.connect(session, params)
-
-    override fun reconnectHint(session: GASession, hint: ReconnectHintParams) = GDKJNI.reconnect_hint(session, hint)
+    override fun reconnectHint(session: GASession, hint: ReconnectHintParams) = GDK.reconnect_hint(session, hint)
 
     override fun getProxySettings(session: GASession): ProxySettings {
-        return JsonDeserializer.decodeFromJsonElement(GDKJNI.get_proxy_settings(session) as JsonElement)
+        return JsonDeserializer.decodeFromJsonElement(GDK.get_proxy_settings(session) as JsonElement)
     }
 
     override fun registerUser(
         session: GASession,
         deviceParams: DeviceParams,
         loginCredentialsParams: LoginCredentialsParams
-    ): GAAuthHandler = GDKJNI.register_user(session, deviceParams, loginCredentialsParams)
+    ): GAAuthHandler = GDK.register_user(session, deviceParams, loginCredentialsParams)
 
 
     override fun loginUser(
         session: GASession,
         deviceParams: DeviceParams,
         loginCredentialsParams: LoginCredentialsParams
-    ): GAAuthHandler = GDKJNI.login_user(session, deviceParams, loginCredentialsParams)
+    ): GAAuthHandler = GDK.login_user(session, deviceParams, loginCredentialsParams)
 
     override fun getWalletIdentifier(
         connectionParams: ConnectionParams,
         loginCredentialsParams: LoginCredentialsParams
     ): LoginData {
         return JsonDeserializer.decodeFromJsonElement(
-            GDKJNI.get_wallet_identifier(
+            GDK.get_wallet_identifier(
             connectionParams,
             loginCredentialsParams
         ) as JsonElement)
     }
 
     override fun validate(session: GASession, params: JsonElement): GAAuthHandler {
-        return GDKJNI.validate(session, params)
+        return GDK.validate(session, params)
     }
 
     override fun validate(session: GASession, params: ValidateAddresseesParams): GAAuthHandler {
-        return GDKJNI.validate(session, params)
+        return GDK.validate(session, params)
     }
 
     override fun encryptWithPin(
         session: GASession,
         encryptWithPinParams: EncryptWithPinParams
     ): GAAuthHandler {
-        return GDKJNI.encrypt_with_pin(session, encryptWithPinParams)
+        return GDK.encrypt_with_pin(session, encryptWithPinParams)
     }
 
     override fun decryptWithPin(
         session: GASession,
         decryptWithPinParams: DecryptWithPinParams
     ): GAAuthHandler {
-        return GDKJNI.decrypt_with_pin(session, decryptWithPinParams)
+        return GDK.decrypt_with_pin(session, decryptWithPinParams)
     }
 
     override fun getCredentials(session: GASession, params: CredentialsParams): GAAuthHandler {
-        return GDKJNI.get_credentials(session, params)
+        return GDK.get_credentials(session, params)
     }
 
     override fun getReceiveAddress(
         session: GASession,
         params: ReceiveAddressParams
     ): GAAuthHandler {
-        return GDKJNI.get_receive_address(session, params)
+        return GDK.get_receive_address(session, params)
     }
 
     override fun getPreviousAddress(
         session: GASession,
         params: PreviousAddressParams
     ): GAAuthHandler {
-        return GDKJNI.get_previous_addresses(session, params)
+        return GDK.get_previous_addresses(session, params)
     }
 
-    override fun refreshAssets(session: GASession, params: AssetsParams) = GDKJNI.refresh_assets(session, params)
+    override fun refreshAssets(session: GASession, params: AssetsParams) = GDK.refresh_assets(session, params)
 
 
     override fun getAssets(session: GASession, params: GetAssetsParams): LiquidAssets {
         return JsonDeserializer.decodeFromJsonElement(
-            GDKJNI.get_assets(
+            GDK.get_assets(
                 session,
                 params
             ) as JsonElement)
     }
 
     override fun getTransactions(session: GASession, details: TransactionParams): GAAuthHandler {
-        return GDKJNI.get_transactions(session, details)
+        return GDK.get_transactions(session, details)
     }
 
     override fun getTwoFactorConfig(session: GASession): TwoFactorConfig {
-        return JsonDeserializer.decodeFromJsonElement(GDKJNI.get_twofactor_config(session) as JsonElement)
+        return JsonDeserializer.decodeFromJsonElement(GDK.get_twofactor_config(session) as JsonElement)
     }
 
     override fun changeSettingsTwoFactor(
@@ -158,184 +158,188 @@ class AndroidGdk(log: Boolean, config: InitConfig) : GdkBinding {
         method: String,
         methodConfig: TwoFactorMethodConfig
     ): GAAuthHandler {
-        return GDKJNI.change_settings_twofactor(session, method, methodConfig)
+        return GDK.change_settings_twofactor(session, method, methodConfig)
     }
 
     override fun getWatchOnlyUsername(session: GASession): String? {
-        return GDKJNI.get_watch_only_username(session)
+        return GDK.get_watch_only_username(session)
     }
 
-    override fun setWatchOnly(session: GASession, username: String, password: String) = GDKJNI.set_watch_only(session, username, password)
-
-
     override fun changeSettings(session: GASession, settings: Settings): GAAuthHandler {
-        return GDKJNI.change_settings(session, settings)
+        return GDK.change_settings(session, settings)
     }
 
     override fun setCsvTime(session: GASession, value: CsvParams): GAAuthHandler {
-        return GDKJNI.set_csvtime(session, value)
+        return GDK.set_csvtime(session, value)
     }
 
     override fun getSettings(session: GASession): Settings {
-        return JsonDeserializer.decodeFromJsonElement(GDKJNI.get_settings(session) as JsonElement)
+        return JsonDeserializer.decodeFromJsonElement(GDK.get_settings(session) as JsonElement)
     }
 
     @Throws
     override fun getAvailableCurrencies(session: GASession): List<Pricing> {
-        return Pricing.fromJsonElement(GDKJNI.get_available_currencies(session) as JsonElement)
+        return Pricing.fromJsonElement(GDK.get_available_currencies(session) as JsonElement)
     }
 
     override fun getAuthHandlerStatus(gaAuthHandler: GAAuthHandler): AuthHandlerStatus {
-        return JsonDeserializer.decodeFromJsonElement(GDKJNI.auth_handler_get_status(gaAuthHandler) as JsonElement)
+        return JsonDeserializer.decodeFromJsonElement(GDK.auth_handler_get_status(gaAuthHandler) as JsonElement)
     }
 
-    override fun authHandlerCall(gaAuthHandler: GAAuthHandler) = GDKJNI.auth_handler_call(gaAuthHandler)
+    override fun authHandlerCall(gaAuthHandler: GAAuthHandler) = GDK.auth_handler_call(gaAuthHandler)
 
-    override fun authHandlerRequestCode(method: String, gaAuthHandler: GAAuthHandler) = GDKJNI.auth_handler_request_code(gaAuthHandler, method)
+    override fun authHandlerRequestCode(method: String, gaAuthHandler: GAAuthHandler) = GDK.auth_handler_request_code(gaAuthHandler, method)
 
-    override fun authHandlerResolveCode(code: String, gaAuthHandler: GAAuthHandler) = GDKJNI.auth_handler_resolve_code(gaAuthHandler, code)
+    override fun authHandlerResolveCode(code: String, gaAuthHandler: GAAuthHandler) = GDK.auth_handler_resolve_code(gaAuthHandler, code)
 
-    override fun destroyAuthHandler(gaAuthHandler: GAAuthHandler) = GDKJNI.destroy_auth_handler(gaAuthHandler)
+    override fun destroyAuthHandler(gaAuthHandler: GAAuthHandler) = GDK.destroy_auth_handler(gaAuthHandler)
 
     override fun twoFactorReset(
         session: GASession,
         email: String,
         isDispute: Boolean
     ): GAAuthHandler {
-        return GDKJNI.twofactor_reset(session, email,
-            (if(isDispute) GDKJNI.GA_TRUE else GDKJNI.GA_FALSE).toLong()
+        return GDK.twofactor_reset(session, email,
+            (if(isDispute) GDK.GA_TRUE else GDK.GA_FALSE).toLong()
         )
     }
 
     override fun twoFactorUndoReset(session: GASession, email: String): GAAuthHandler {
-        return GDKJNI.twofactor_undo_reset(session, email)
+        return GDK.twofactor_undo_reset(session, email)
     }
 
     override fun twoFactorCancelReset(session: GASession): GAAuthHandler {
-        return GDKJNI.twofactor_cancel_reset(session)
+        return GDK.twofactor_cancel_reset(session)
     }
 
     override fun twoFactorChangeLimits(session: GASession, limits: Limits): GAAuthHandler {
-        return GDKJNI.twofactor_change_limits(session, limits)
+        return GDK.twofactor_change_limits(session, limits)
     }
 
     override fun bcurEncode(session: GASession, params: BcurEncodeParams): GAAuthHandler {
-        return GDKJNI.bcur_encode(session, params)
+        return GDK.bcur_encode(session, params)
     }
 
     override fun bcurDecode(session: GASession, params: BcurDecodeParams): GAAuthHandler {
-        return GDKJNI.bcur_decode(session, params)
+        return GDK.bcur_decode(session, params)
     }
 
-    override fun sendNlocktimes(session: GASession) = GDKJNI.send_nlocktimes(session)
+    override fun sendNlocktimes(session: GASession) = GDK.send_nlocktimes(session)
 
 
     override fun getFeeEstimates(session: GASession): FeeEstimation {
-        return JsonDeserializer.decodeFromJsonElement(GDKJNI.get_fee_estimates(session) as JsonElement)
+        return JsonDeserializer.decodeFromJsonElement(GDK.get_fee_estimates(session) as JsonElement)
     }
 
     override fun getSystemMessage(session: GASession): String? {
-        return GDKJNI.get_system_message(session)
+        return GDK.get_system_message(session)
     }
 
     override fun ackSystemMessage(session: GASession, message: String): GAAuthHandler {
-        return GDKJNI.ack_system_message(session, message)
+        return GDK.ack_system_message(session, message)
     }
 
     override fun setTransactionMemo(session: GASession, txHash: String, memo: String) {
-        return GDKJNI.set_transaction_memo(session, txHash, memo, 0)
+        return GDK.set_transaction_memo(session, txHash, memo, 0)
     }
 
     override fun convertAmount(session: GASession, convert: JsonElement): JsonElement {
-        return GDKJNI.convert_amount(session, convert) as JsonElement
+        return GDK.convert_amount(session, convert) as JsonElement
     }
 
     private var _cachedNetworks: Networks? = null
     override fun networks(): Networks {
-        return _cachedNetworks ?: Networks.fromJsonElement(GDKJNI.get_networks() as JsonElement).also {
+        return _cachedNetworks ?: Networks.fromJsonElement(GDK.get_networks() as JsonElement).also {
             _cachedNetworks = it
         }
     }
 
     override fun registerNetwork(id: String, network: JsonElement) {
-        GDKJNI.register_network(id, network)
+        GDK.register_network(id, network)
     }
 
     override fun blindTransaction(session: GASession, createTransaction: JsonElement): GAAuthHandler =
-        GDKJNI.blind_transaction(session, createTransaction)
+        GDK.blind_transaction(session, createTransaction)
 
     override fun signTransaction(session: GASession, createTransaction: JsonElement): GAAuthHandler =
-        GDKJNI.sign_transaction(session, createTransaction)
+        GDK.sign_transaction(session, createTransaction)
+
+    override fun psbtFromJson(session: GASession, transaction: JsonElement): GAAuthHandler = GDK.psbt_from_json(session, transaction)
+
+//    // GDK 0.73.0
+//    override fun broadcastTransaction(session: GASession, broadcastTransactionParams: BroadcastTransactionParams): GAAuthHandler =
+//        GDK.broadcast_transaction(session, broadcastTransactionParams)
 
     override fun broadcastTransaction(session: GASession, transaction: String): String =
-        GDKJNI.broadcast_transaction(session, transaction)
+        GDK.broadcast_transaction(session, transaction)
 
     override fun sendTransaction(session: GASession, transaction: JsonElement): GAAuthHandler =
-        GDKJNI.send_transaction(session, transaction)
+        GDK.send_transaction(session, transaction)
 
     override fun signMessage(session: GASession, params: SignMessageParams): GAAuthHandler =
-        GDKJNI.sign_message(session, params)
+        GDK.sign_message(session, params)
 
     override fun createSubAccount(session: GASession, params: SubAccountParams): GAAuthHandler {
-        return GDKJNI.create_subaccount(session, params)
+        return GDK.create_subaccount(session, params)
     }
 
     override fun getSubAccounts(session: GASession, params: SubAccountsParams): GAAuthHandler {
-        return GDKJNI.get_subaccounts(session, params)
+        return GDK.get_subaccounts(session, params)
     }
 
     override fun getSubAccount(session: GASession, index: Long): GAAuthHandler {
-        return GDKJNI.get_subaccount(session, index)
+        return GDK.get_subaccount(session, index)
     }
 
     override fun updateSubAccount(
         session: GASession,
         params: UpdateSubAccountParams
     ): GAAuthHandler {
-        return GDKJNI.update_subaccount(session, params)
+        return GDK.update_subaccount(session, params)
     }
 
     override fun getBalance(session: GASession, details: BalanceParams): GAAuthHandler {
-        return GDKJNI.get_balance(session, details)
+        return GDK.get_balance(session, details)
     }
 
     override fun getUnspentOutputs(session: GASession, details: BalanceParams): GAAuthHandler {
-        return GDKJNI.get_unspent_outputs(session, details)
+        return GDK.get_unspent_outputs(session, details)
     }
 
     override fun getUnspentOutputsForPrivateKey(session: GASession, details: UnspentOutputsPrivateKeyParams): GAAuthHandler {
-        return GDKJNI.get_unspent_outputs_for_private_key(session, details)
+        return GDK.get_unspent_outputs_for_private_key(session, details)
     }
 
     override fun createTransaction(session: GASession, params: GreenJson<*>): GAAuthHandler {
-        return GDKJNI.create_transaction(session, params)
+        return GDK.create_transaction(session, params)
     }
 
     override fun createSwapTransaction(session: GASession, params: GreenJson<*>): GAAuthHandler {
-        return GDKJNI.create_swap_transaction(session, params)
+        return GDK.create_swap_transaction(session, params)
     }
 
     override fun completeSwapTransaction(session: GASession, params: GreenJson<*>): GAAuthHandler {
-        return GDKJNI.complete_swap_transaction(session, params)
+        return GDK.complete_swap_transaction(session, params)
     }
 
 
     override fun httpRequest(session: GASession, data: JsonElement): JsonElement {
-        return GDKJNI.http_request(session, data) as JsonElement
+        return GDK.http_request(session, data) as JsonElement
     }
 
-    override fun generateMnemonic12(): String = GDKJNI.generate_mnemonic_12()
+    override fun generateMnemonic12(): String = GDK.generate_mnemonic_12()
 
-    override fun generateMnemonic24(): String = GDKJNI.generate_mnemonic()
+    override fun generateMnemonic24(): String = GDK.generate_mnemonic()
 
     override fun getRandomBytes(size: Int): ByteArray {
-        return GDKJNI.get_random_bytes(size.toLong())
+        return GDK.get_random_bytes(size.toLong())
     }
 }
 
 
+
 actual fun getGdkBinding(log: Boolean, config: InitConfig): GdkBinding = AndroidGdk(log, config)
 
-actual val GA_ERROR: Int = GDKJNI.GA_ERROR
-actual val GA_RECONNECT: Int = GDKJNI.GA_RECONNECT
-actual val GA_NOT_AUTHORIZED: Int = GDKJNI.GA_NOT_AUTHORIZED
+actual val GA_ERROR: Int = GDK.GA_ERROR
+actual val GA_RECONNECT: Int = GDK.GA_RECONNECT
+actual val GA_NOT_AUTHORIZED: Int = GDK.GA_NOT_AUTHORIZED

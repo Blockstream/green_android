@@ -1,6 +1,6 @@
 headers = gdk.h wally_wrapper.h
 package = gdk
-staticLibraries = libgreenaddress_full.a
+staticLibraries = libgreen_gdk_full.a
 libraryPaths.ios_arm64 = src/libs/ios_arm64
 libraryPaths.ios_simulator_arm64 = src/libs/ios_simulator_arm64
 libraryPaths.ios_x64 = src/libs/ios_simulator_x86

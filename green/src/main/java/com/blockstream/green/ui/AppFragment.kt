@@ -591,6 +591,7 @@ abstract class AppFragment<T : ViewDataBinding>(
                     navigate(
                         NavGraphDirections.actionGlobalJadeQrFragment(
                             wallet = getGreenViewModel()!!.greenWallet,
+                            psbt = it.psbt,
                             isLightningMnemonicExport = it.isLightningMnemonicExport
                         )
                     )

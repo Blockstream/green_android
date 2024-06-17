@@ -8,7 +8,8 @@ enum class CredentialType(val value: Long) {
     KEYSTORE_WATCHONLY_CREDENTIALS(4),
     BIOMETRICS_WATCHONLY_CREDENTIALS(5),
     KEYSTORE_GREENLIGHT_CREDENTIALS(6),
-    LIGHTNING_MNEMONIC(7);
+    LIGHTNING_MNEMONIC(7),
+    RICH_WATCH_ONLY(8);
 
     companion object{
         fun byPosition(position: Long): CredentialType {

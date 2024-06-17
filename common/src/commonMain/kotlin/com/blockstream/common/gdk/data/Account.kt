@@ -20,8 +20,6 @@ data class Account constructor(
     @SerialName("pointer") val pointer: Long,
     @SerialName("hidden") val hidden: Boolean = false,
     @SerialName("receiving_id") val receivingId: String = "",
-    @SerialName("recovery_pub_key") val recoveryPubKey: String = "",
-    @SerialName("recovery_chain_code") val recoveryChainCode: String = "",
     @SerialName("recovery_xpub") val recoveryXpub: String? = null,
     @Serializable(with = AccountTypeSerializer::class)
     @SerialName("type") val type: AccountType,
@@ -181,14 +179,6 @@ data class Account constructor(
 
     private val accountNumber: Long
         get() = bip32Pointer + 1
-
-    fun getRecoveryChainCodeAsBytes(): ByteArray {
-        return recoveryChainCode.hexToByteArray()
-    }
-
-    fun getRecoveryPubKeyAsBytes(): ByteArray {
-        return recoveryPubKey.hexToByteArray()
-    }
 
     override fun compareTo(other: Account): Int {
         return if (weight == other.weight) {

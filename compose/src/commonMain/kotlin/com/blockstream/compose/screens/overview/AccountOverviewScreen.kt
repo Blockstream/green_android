@@ -374,7 +374,7 @@ fun AccountOverviewScreen(
                     .align(Alignment.BottomCenter)
                     .padding(horizontal = 16.dp)
                     .padding(bottom = 16.dp),
-                isWatchOnly = viewModel.greenWallet.isWatchOnly,
+                isWatchOnly = viewModel.sessionOrNull?.isNoBlobWatchOnly == true,
                 isSweepEnabled = viewModel.sessionOrNull?.defaultNetworkOrNull?.isBitcoin == true,
                 onSendClick = {
                     viewModel.postEvent(AccountOverviewViewModel.LocalEvents.Send)

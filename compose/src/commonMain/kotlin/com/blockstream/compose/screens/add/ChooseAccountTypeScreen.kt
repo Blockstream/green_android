@@ -184,7 +184,7 @@ fun ChooseAccountTypeScreen(
         viewModel.asset.value = it
     }
 
-    JadeQRScreen.getNavigationResult {
+    JadeQRScreen.getResult {
         viewModel.postEvent(ChooseAccountTypeViewModel.LocalEvents.CreateLightningAccount(it))
     }
 

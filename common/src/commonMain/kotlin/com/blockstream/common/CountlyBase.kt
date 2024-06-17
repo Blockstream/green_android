@@ -372,7 +372,7 @@ abstract class CountlyBase(
                          loginCredentials?.credential_type == CredentialType.BIOMETRICS_PINDATA -> {
                              LOGIN_TYPE_BIOMETRICS
                          }
-                         wallet.isWatchOnly -> {
+                         session.isWatchOnly -> {
                              LOGIN_TYPE_WATCH_ONLY
                          }
                          wallet.isHardware -> {

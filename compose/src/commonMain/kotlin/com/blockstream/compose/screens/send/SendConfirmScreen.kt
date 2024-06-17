@@ -35,6 +35,7 @@ import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.models.add.ChooseAccountTypeViewModel
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.common.models.send.SendConfirmViewModel
 import com.blockstream.common.models.send.SendConfirmViewModelAbstract
@@ -46,6 +47,7 @@ import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.components.ScreenContainer
 import com.blockstream.compose.components.SlideToUnlock
+import com.blockstream.compose.screens.jade.JadeQRScreen
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
 import com.blockstream.compose.sheets.NoteBottomSheet
 import com.blockstream.compose.theme.bodySmall
@@ -91,6 +93,14 @@ fun SendConfirmScreen(
 
     NoteBottomSheet.getResult {
         viewModel.note.value = it
+    }
+
+    JadeQRScreen.getResult {
+        viewModel.postEvent(
+            CreateTransactionViewModelAbstract.LocalEvents.BroadcastTransaction(
+                psbt = it
+            )
+        )
     }
 
     val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current

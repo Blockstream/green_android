@@ -10,9 +10,10 @@ import kotlinx.serialization.Serializable
 @Parcelize
 @Serializable
 data class Credentials constructor(
-    @SerialName("mnemonic") val mnemonic: String,
+    @SerialName("mnemonic") val mnemonic: String? = null,
     @SerialName("bip39_passphrase") val bip39Passphrase: String? = null,
     @SerialName("seed") val seed: String? = null,
+    @SerialName("username") val username: String? = null,
 ) : GreenJson<Credentials>(), Parcelable {
 
     override fun encodeDefaultsValues() = false

@@ -162,10 +162,6 @@ actual fun getGdkBinding(
             TODO("Not yet implemented")
         }
 
-        override fun setWatchOnly(session: GASession, username: String, password: String) {
-            TODO("Not yet implemented")
-        }
-
         override fun changeSettings(session: GASession, settings: Settings): GAAuthHandler {
             TODO("Not yet implemented")
         }

@@ -125,7 +125,7 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
     }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     override val isWalletOnboarding: StateFlow<Boolean> = combine(session.zeroAccounts, session.failedNetworks) { zeroAccounts, failedNetworks ->
-        zeroAccounts && failedNetworks.isEmpty()
+        zeroAccounts && failedNetworks.isEmpty() && !session.isWatchOnly
     }.filter { session.isConnected }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     override val assetIcons: StateFlow<List<String>> = session.walletAssets
@@ -373,16 +373,15 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
             is LocalEvents.Send -> {
                 postSideEffect(
                     SideEffects.NavigateTo(
-                        if(session.isWatchOnly){
+                        if (session.isNoBlobWatchOnly) {
                             NavigateDestinations.Sweep(
                                 accountAsset = session.activeAccount.value?.accountAsset
                             )
-                        }else{
+                        } else {
                             NavigateDestinations.Send()
                         }
                     )
                 )
-
             }
 
             is LocalEvents.Receive -> {

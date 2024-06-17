@@ -453,7 +453,7 @@ fun WalletOverviewScreen(
                     .align(Alignment.BottomCenter)
                     .padding(horizontal = 16.dp)
                     .padding(bottom = 16.dp),
-                isWatchOnly = viewModel.sessionOrNull?.isWatchOnly == true,
+                isWatchOnly = viewModel.sessionOrNull?.isNoBlobWatchOnly == true,
                 isSweepEnabled = viewModel.sessionOrNull?.defaultNetworkOrNull?.isBitcoin == true,
                 showMenu = viewModel.appInfo.isDevelopmentOrDebug,
                 onSendClick = {

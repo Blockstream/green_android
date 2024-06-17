@@ -139,7 +139,7 @@ val factoryViewModels = module {
         WalletSettingsViewModel(get(), get(), getOrNull())
     }
     factory {
-        JadeQRViewModel(get(), getOrNull())
+        JadeQRViewModel(getOrNull(), getOrNull(), get())
     }
     factory {
         CameraViewModel(get(), getOrNull(), getOrNull())

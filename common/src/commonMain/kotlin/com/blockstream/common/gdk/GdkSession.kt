@@ -11,6 +11,7 @@ import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.BTC_UNIT
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.TransactionSegmentation
+import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.CountlyAsset
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.EnrichedAsset
@@ -18,6 +19,7 @@ import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.ExceptionWithErrorReport
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
+import com.blockstream.common.data.RichWatchOnly
 import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.database.LoginCredentials
 import com.blockstream.common.extensions.hasHistory
@@ -51,7 +53,8 @@ import com.blockstream.common.gdk.data.NetworkEvent
 import com.blockstream.common.gdk.data.Notification
 import com.blockstream.common.gdk.data.Output
 import com.blockstream.common.gdk.data.PreviousAddresses
-import com.blockstream.common.gdk.data.SendTransactionSuccess
+import com.blockstream.common.gdk.data.Psbt
+import com.blockstream.common.gdk.data.ProcessedTransactionDetails
 import com.blockstream.common.gdk.data.Settings
 import com.blockstream.common.gdk.data.SignMessage
 import com.blockstream.common.gdk.data.TorEvent
@@ -72,6 +75,7 @@ import com.blockstream.common.gdk.params.AssetsParams
 import com.blockstream.common.gdk.params.BalanceParams
 import com.blockstream.common.gdk.params.BcurDecodeParams
 import com.blockstream.common.gdk.params.BcurEncodeParams
+import com.blockstream.common.gdk.params.BroadcastTransactionParams
 import com.blockstream.common.gdk.params.CompleteSwapParams
 import com.blockstream.common.gdk.params.ConnectionParams
 import com.blockstream.common.gdk.params.Convert
@@ -118,6 +122,7 @@ import com.blockstream.common.managers.NetworkAssetManager
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.utils.Loggable
+import com.blockstream.common.utils.randomChars
 import com.blockstream.common.utils.server
 import com.blockstream.common.utils.toAmountLook
 import com.blockstream.common.utils.toHex
@@ -168,6 +173,7 @@ typealias AccountId = String
 /* Handles multiple GDK sessions per network */
 class GdkSession constructor(
     private val userAgent: String,
+    private val appInfo: AppInfo,
     private val sessionManager: SessionManager,
     private val lightningManager: LightningManager,
     private val settingsManager: SettingsManager,
@@ -190,6 +196,11 @@ class GdkSession constructor(
         get() = !isTestnet
 
     var isWatchOnly: Boolean = false
+        private set
+    var isNoBlobWatchOnly: Boolean = false
+        private set
+    var isRichWatchOnly: Boolean = false
+        private set
 
     //  Disable notification handling until all networks are initialized
     private var _disableNotificationHandling = false
@@ -469,7 +480,7 @@ class GdkSession constructor(
         )
 
     private fun updateEnrichedAssets() {
-        if (isNetworkInitialized && !isWatchOnly) {
+        if (isNetworkInitialized && !isNoBlobWatchOnly) {
             countly.getRemoteConfigValueForAssets(if (isMainnet) LIQUID_ASSETS_KEY else LIQUID_ASSETS_TESTNET_KEY)?.also {
                 cacheAssets(it.map { it.assetId })
             }.also {
@@ -654,6 +665,8 @@ class GdkSession constructor(
             electrumTls = if(electrumUrl.isNotBlank()) applicationSettings.personalElectrumServerTls else true,
             electrumUrl = electrumUrl,
             electrumOnionUrl = electrumUrl.takeIf { useTor },
+            blobServerUrl = "wss://green-blobserver.staging.blockstream.com/ws".takeIf { appInfo.isDevelopment && network.isSinglesig && network.isTestnet },
+            blobServerOnionUrl = null,
             spvServers = spvServers
         ).also {
             logger.d { "Connection Params: $it" }
@@ -1155,11 +1168,12 @@ class GdkSession constructor(
         }else{
             null
         }
+
         return loginWithLoginCredentials(
             prominentNetwork = prominentNetwork(wallet, loginCredentials),
             initNetworks = initNetworks,
             wallet = wallet,
-            loginCredentialsParams = LoginCredentialsParams(pin = pin, pinData = loginCredentials.pin_data),
+            walletLoginCredentialsParams = LoginCredentialsParams(pin = pin, pinData = loginCredentials.pin_data),
             appGreenlightCredentials = appGreenlightCredentials,
             isRestore = isRestore,
             initializeSession = initializeSession
@@ -1179,7 +1193,7 @@ class GdkSession constructor(
         return loginWithLoginCredentials(
             prominentNetwork = prominentNetwork(isTestnet),
             wallet = wallet,
-            loginCredentialsParams = loginCredentialsParams,
+            walletLoginCredentialsParams = loginCredentialsParams,
             initNetworks = initNetworks,
             isSmartDiscovery = isSmartDiscovery,
             isCreate = isCreate,
@@ -1196,7 +1210,7 @@ class GdkSession constructor(
             prominentNetwork = prominentNetwork(false),
             initNetworks = listOf(prominentNetwork(false), networks.lightning),
             wallet = wallet,
-            loginCredentialsParams = LoginCredentialsParams(mnemonic = mnemonic),
+            walletLoginCredentialsParams = LoginCredentialsParams(mnemonic = mnemonic),
         )
     }
 
@@ -1218,18 +1232,31 @@ class GdkSession constructor(
 
         return loginWatchOnly(
             network = network,
-            loginCredentialsParams = loginCredentialsParams,
-            isRestore = false, // No need to do restore procedures for wo
+            loginCredentialsParams = loginCredentialsParams
         )
     }
 
-    private suspend fun loginWatchOnly(network: Network, loginCredentialsParams: LoginCredentialsParams, isRestore: Boolean): LoginData {
+    // RWO Login
+    suspend fun loginRichWatchOnly(wallet: GreenWallet, loginCredentials: LoginCredentials, richWatchOnly: List<RichWatchOnly>): LoginData {
+        val networks = richWatchOnly.map {
+            networkBy(it.network)
+        }
+
+        return loginWithLoginCredentials(
+            prominentNetwork = prominentNetwork(wallet = wallet, loginCredentials = loginCredentials),
+            initNetworks = networks,
+            wallet = wallet,
+            walletLoginCredentialsParams = richWatchOnly.first().toLoginCredentialsParams(),
+            richWatchOnly = richWatchOnly
+        )
+    }
+
+    // WO Login
+    private suspend fun loginWatchOnly(network: Network, loginCredentialsParams: LoginCredentialsParams): LoginData {
         return loginWithLoginCredentials(
             prominentNetwork = network,
             initNetworks = listOf(network),
-            loginCredentialsParams = loginCredentialsParams,
-            isRestore = isRestore,
-            initializeSession = true
+            walletLoginCredentialsParams = loginCredentialsParams
         )
     }
 
@@ -1262,7 +1289,7 @@ class GdkSession constructor(
             prominentNetwork = initNetworks.first(),
             initNetworks = initNetworks,
             wallet = wallet,
-            loginCredentialsParams = LoginCredentialsParams.empty,
+            walletLoginCredentialsParams = LoginCredentialsParams.empty,
             derivedLightningMnemonic = derivedLightningMnemonic,
             device = device,
             isSmartDiscovery = true,
@@ -1275,7 +1302,8 @@ class GdkSession constructor(
         prominentNetwork: Network,
         initNetworks: List<Network>? = null,
         wallet: GreenWallet? = null,
-        loginCredentialsParams: LoginCredentialsParams,
+        walletLoginCredentialsParams: LoginCredentialsParams,
+        richWatchOnly: List<RichWatchOnly>? = null,
         appGreenlightCredentials: AppGreenlightCredentials? = null,
         derivedLightningMnemonic: String? = null,
         device: DeviceInterface? = null,
@@ -1286,7 +1314,10 @@ class GdkSession constructor(
         hardwareWalletResolver: HardwareWalletResolver? = null,
         hwInteraction: HardwareWalletInteraction? = null,
     ): LoginData {
-        this.isWatchOnly = loginCredentialsParams.isWatchOnly
+        isWatchOnly = walletLoginCredentialsParams.isWatchOnly
+        isNoBlobWatchOnly = isWatchOnly && richWatchOnly == null
+        isRichWatchOnly = isWatchOnly && richWatchOnly != null
+
         this.device = device
 
         _disableNotificationHandling = true
@@ -1325,19 +1356,22 @@ class GdkSession constructor(
         }
 
         // If it's a pin login, check if the prominent network is connected
-        if(loginCredentialsParams.pin.isNotBlank() && !connectedNetworks.contains(prominentNetwork)){
+        if(walletLoginCredentialsParams.pin.isNotBlank() && !connectedNetworks.contains(prominentNetwork)){
             throw Exception("id_connection_failed")
         }
 
         @Suppress("NAME_SHADOWING")
         // If it's a pin login, get the credentials from the prominent network
-        val loginCredentialsParams =
-            if (loginCredentialsParams.pin.isNullOrBlank()) loginCredentialsParams else decryptCredentialsWithPin(
-                prominentNetwork,
-                DecryptWithPinParams.fromLoginCredentials(loginCredentialsParams)
+        val loginCredentialsParams = if (walletLoginCredentialsParams.pin.isNullOrBlank()) {
+            walletLoginCredentialsParams
+        } else {
+            decryptCredentialsWithPin(
+                network = prominentNetwork,
+                decryptWithPinParams = DecryptWithPinParams.fromLoginCredentials(walletLoginCredentialsParams)
             ).let {
                 LoginCredentialsParams.fromCredentials(it)
             }
+        }
 
         val failedNetworkLogins = mutableListOf<Network>()
 
@@ -1347,16 +1381,21 @@ class GdkSession constructor(
         hasLightning = isLightningShortcut || appGreenlightCredentials != null || derivedLightningMnemonic != null
 
         return (enabledGdkSessions.mapNotNull { gdkSession ->
+
+
             scope.async(context = Dispatchers.IO, start = CoroutineStart.LAZY) {
                 val isProminent = gdkSession.key == prominentNetwork
                 val network = gdkSession.key
+
+                val networkLoginCredentialsParams = richWatchOnly?.find { it.network == network.id }?.toLoginCredentialsParams() ?: loginCredentialsParams
+
                 try {
-                    val hasGdkCache = if(isHardwareWallet || loginCredentialsParams.mnemonic.isNotBlank()){
+                    val hasGdkCache = if(isHardwareWallet || networkLoginCredentialsParams.mnemonic.isNotBlank()){
                         try {
                             gdk.hasGdkCache(
                                 getWalletIdentifier(
                                     network = network,
-                                    loginCredentialsParams = loginCredentialsParams,
+                                    loginCredentialsParams = networkLoginCredentialsParams,
                                     hwInteraction = hwInteraction
                                 )
                             )
@@ -1386,7 +1425,7 @@ class GdkSession constructor(
                         gdk.loginUser(
                             session = gdkSession.value,
                             deviceParams = deviceParams,
-                            loginCredentialsParams = loginCredentialsParams
+                            loginCredentialsParams = networkLoginCredentialsParams
                         )
                     ).result<LoginData>(hardwareWalletResolver = hardwareWalletResolver).also { loginData ->
                         // Mark it as active
@@ -1483,7 +1522,7 @@ class GdkSession constructor(
                             updateWalletTransactions(updateForNetwork = lightning)
                         } catch (e: Exception) {
                             e.printStackTrace()
-                            _failedNetworksStateFlow.value = _failedNetworksStateFlow.value + listOfNotNull(lightning)
+                            _failedNetworksStateFlow.value += listOfNotNull(lightning)
                         }
                     }
 
@@ -1573,7 +1612,7 @@ class GdkSession constructor(
         initializeSession: Boolean
     ) {
         _isConnectedState.value = true
-        xPubHashId = if(isWatchOnly) loginData.networkHashId else loginData.xpubHashId
+        xPubHashId = if(isNoBlobWatchOnly) loginData.networkHashId else loginData.xpubHashId
 
         if(initializeSession) {
             countly.activeWalletStart()
@@ -1621,9 +1660,10 @@ class GdkSession constructor(
             }
         }
 
+        // RWO: update accounts, if this is not done here, newly created rwo wallet won't scan for accounts
         updateAccountsAndBalances(
             isInitialize = true,
-            refresh = false,
+            refresh = isRichWatchOnly,
         )
 
         updateSystemMessage()
@@ -1719,10 +1759,10 @@ class GdkSession constructor(
 
         return (credentials ?: getCredentials()).let{
             if (isLightningShortcut || isHardwareWallet) {
-                it.mnemonic // Already derived
+                it.mnemonic!! // Already derived
             } else {
                 wally.bip85FromMnemonic(
-                    mnemonic = it.mnemonic,
+                    mnemonic = it.mnemonic!!,
                     passphrase = it.bip39Passphrase,
                     index = 0,
                     isTestnet = isTestnet
@@ -1802,7 +1842,7 @@ class GdkSession constructor(
     suspend private fun getAccounts(network: Network, refresh: Boolean = false): List<Account> = initNetworkIfNeeded(network) {
         gdkSession(network).let {
             // Watch-only can't discover new accounts
-            authHandler(network, gdk.getSubAccounts(it, SubAccountsParams(refresh = if(isWatchOnly) false else refresh)))
+            authHandler(network, gdk.getSubAccounts(it, SubAccountsParams(refresh = if(isNoBlobWatchOnly) false else refresh)))
                 .result<Accounts>().accounts.onEach { account ->
                     account.setup(this, network)
                 }
@@ -2270,15 +2310,50 @@ class GdkSession constructor(
         network: Network,
         username: String,
         password: String
-    ) {
+    ): LoginData {
         logger.d { "setWatchOnly: ${network.id} user: '$username' pass: '$password'" }
-        gdk.setWatchOnly(
-            session = gdkSession(network),
-            username = username,
-            password = password
-        ).also {
+
+        return authHandler(
+            network,
+            gdk.registerUser(
+                session = gdkSession(network),
+                deviceParams = DeviceParams.Empty,
+                loginCredentialsParams = LoginCredentialsParams(
+                    username = username,
+                    password = password
+                )
+            )
+        ).result<LoginData>().also {
             updateWatchOnlyUsername(network)
         }
+    }
+
+    private fun createWatchOnly(
+        networks: List<Network>,
+        username: String,
+        password: String
+    ): List<RichWatchOnly> {
+        return networks.filter { !it.isLightning }.mapNotNull { network ->
+            try {
+                RichWatchOnly(
+                    network = network.id,
+                    username = username,
+                    password = password,
+                    watchOnlyData = setWatchOnly(network, username, password).watchOnlyData
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
+    }
+
+    fun updateRichWatchOnly(rwo: List<RichWatchOnly>): List<RichWatchOnly> {
+        return rwo + (activeSessions.filter { network ->
+            !network.isLightning && rwo.find { it.network == network.id } == null
+        }.let {
+            createWatchOnly(it, randomChars(16), randomChars(32))
+        })
     }
 
     fun deleteWatchOnly(network: Network) {
@@ -2617,16 +2692,36 @@ class GdkSession constructor(
         ).result<CreateTransaction>()
     }
 
-    fun broadcastTransaction(network: Network, transaction: String) = SendTransactionSuccess(
+    fun psbtFromJson(network: Network, transaction: CreateTransaction): Psbt =
+        authHandler(
+            network,
+            gdk.psbtFromJson(gdkSession(network), transaction = transaction.jsonElement!!)
+        ).result<Psbt>()
+
+//    // GDK 0.73.0
+//    fun broadcastTransaction(
+//        network: Network,
+//        broadcastTransaction: BroadcastTransactionParams
+//    ): ProcessedTransactionDetails =
+//        authHandler(
+//            network, gdk.broadcastTransaction(
+//                session = gdkSession(network),
+//                broadcastTransactionParams = broadcastTransaction
+//            )
+//        ).result<ProcessedTransactionDetails>().also {
+//            _walletActiveEventInvalidated = true
+//        }
+
+    fun broadcastTransaction(network: Network, broadcastTransaction: BroadcastTransactionParams) = ProcessedTransactionDetails(
         txHash = gdk.broadcastTransaction(
             gdkSession(network),
-            transaction
+            broadcastTransaction.transaction ?: ""
         )
     ).also {
         _walletActiveEventInvalidated = true
     }
 
-    fun sendLightningTransaction(params: CreateTransaction, comment: String?): SendTransactionSuccess{
+    fun sendLightningTransaction(params: CreateTransaction, comment: String?): ProcessedTransactionDetails{
         val invoiceOrLnUrl = params.addressees.first().address
         val satoshi = params.addressees.first().satoshi?.absoluteValue ?: 0L
 
@@ -2649,7 +2744,7 @@ class GdkSession constructor(
                         satoshi.takeIf { inputType.invoice.amountMsat == null }
                     )
 
-                    SendTransactionSuccess(paymentId = response.payment.id)
+                    ProcessedTransactionDetails(paymentId = response.payment.id)
                 } catch (e: Exception){
                     throw ExceptionWithErrorReport(
                         throwable = e,
@@ -2671,7 +2766,7 @@ class GdkSession constructor(
                 ).let {
                     when (it) {
                         is LnUrlPayResult.EndpointSuccess -> {
-                            SendTransactionSuccess.create(it.data)
+                            ProcessedTransactionDetails.create(it.data)
                         }
                         is LnUrlPayResult.EndpointError -> {
                             throw Exception(it.data.reason)
@@ -2702,13 +2797,13 @@ class GdkSession constructor(
         account: Account,
         signedTransaction: CreateTransaction,
         twoFactorResolver: TwoFactorResolver
-    ): SendTransactionSuccess = (if (account.network.isLightning) {
+    ): ProcessedTransactionDetails = (if (account.network.isLightning) {
         throw Exception("Use sendLightningTransaction")
     } else {
         authHandler(
             account.network,
             gdk.sendTransaction(gdkSession(account.network), transaction = signedTransaction.jsonElement!!)
-        ).result<SendTransactionSuccess>(twoFactorResolver = twoFactorResolver).also {
+        ).result<ProcessedTransactionDetails>(twoFactorResolver = twoFactorResolver).also {
             if(signedTransaction.isSendAll){
                 _accountEmptiedEvent = account
             }
@@ -2920,6 +3015,17 @@ class GdkSession constructor(
         } while (!wally.ecPrivateKeyVerify(privateKey))
 
         return privateKey
+    }
+
+    @NativeCoroutinesIgnore
+    suspend fun jadePsbtRequest(psbt: String): BcurEncodedData {
+
+        val params = BcurEncodeParams(
+            urType = "crypto-psbt",
+            data = psbt
+        )
+
+        return bcurEncode(params)
     }
 
     @NativeCoroutinesIgnore
