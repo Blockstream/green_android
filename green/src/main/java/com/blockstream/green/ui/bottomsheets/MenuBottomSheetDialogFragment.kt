@@ -14,7 +14,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
-import mu.KLogging
+import com.blockstream.common.utils.Loggable
 
 class MenuBottomSheetDialogFragment : AbstractBottomSheetDialogFragment<MenuBottomSheetBinding>() {
     override val screenName: String? = null
@@ -65,7 +65,7 @@ class MenuBottomSheetDialogFragment : AbstractBottomSheetDialogFragment<MenuBott
         }
     }
 
-    companion object : KLogging() {
+    companion object : Loggable() {
         const val REQUEST_CODE = "REQUEST_CODE"
         const val TITLE = "TITLE"
         const val SUBTITLE = "SUBTITLE"

@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.CountlyIOS
 import com.blockstream.common.database.DriverFactory
+import com.blockstream.common.managers.BluetoothManager
 import com.blockstream.common.managers.LifecycleManager
 import com.russhwolf.settings.NSUserDefaultsSettings
 import com.russhwolf.settings.Settings
@@ -21,6 +22,8 @@ actual val platformModule = module {
         CountlyIOS(get(), get(), get(), get())
     }
     single<Settings> { NSUserDefaultsSettings(NSUserDefaults.standardUserDefaults()) }
+
+    single<BluetoothManager> { BluetoothManager() }
 }
 
 

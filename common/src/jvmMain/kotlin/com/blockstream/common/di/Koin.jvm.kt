@@ -1,6 +1,7 @@
 package com.blockstream.common.di
 
 import com.blockstream.common.database.DriverFactory
+import com.blockstream.common.managers.BluetoothManager
 import com.russhwolf.settings.PreferencesSettings
 import com.russhwolf.settings.Settings
 import org.koin.dsl.module
@@ -14,5 +15,6 @@ actual val platformModule = module {
         val preferences : Preferences = Preferences.userRoot()
         PreferencesSettings(preferences)
     }
+    single<BluetoothManager> { BluetoothManager() }
 }
 

@@ -40,7 +40,7 @@ public class Dump {
 		return dump(buffer, 0, buffer.length);
 	}
 
-	/*
+	/**
 	 * Convert an hexadecimal representation to a binary array
 	 * @param src hexadecimal string to convert
 	 */

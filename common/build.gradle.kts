@@ -28,9 +28,6 @@ sqldelight {
 }
 
 kotlin {
-    // Enable the default target hierarchy:
-    applyDefaultHierarchyTemplate()
-
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
@@ -144,6 +141,8 @@ kotlin {
             api(libs.parcelable)
             api(libs.kase64) // base64
             api(libs.ksoup.entites) // html entities
+            api(libs.kable.core)
+            implementation("com.juul.tuulbox:coroutines:8.0.0")
             /** ----------------------------------------------------------------------------------------- */
         }
 

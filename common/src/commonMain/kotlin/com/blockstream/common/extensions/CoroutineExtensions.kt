@@ -4,7 +4,11 @@ import com.blockstream.common.CountlyBase
 import com.blockstream.common.data.AppInfo
 import com.rickclephas.kmp.observableviewmodel.ViewModel
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -56,3 +60,10 @@ fun MutableStateFlow<Boolean>.toggle() {
 }
 
 public fun <T> Flow<T>.launchIn(viewModel: ViewModel) = launchIn(viewModel.viewModelScope.coroutineScope)
+
+fun CoroutineScope.childScope() =
+    CoroutineScope(coroutineContext + Job(coroutineContext[Job]))
+
+fun CoroutineScope.cancelChildren(
+    cause: CancellationException? = null
+) = coroutineContext[Job]?.cancelChildren(cause)

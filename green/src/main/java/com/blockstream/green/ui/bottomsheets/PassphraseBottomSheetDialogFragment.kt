@@ -7,7 +7,7 @@ import androidx.fragment.app.FragmentManager
 import com.blockstream.common.events.Events
 import com.blockstream.green.databinding.PassphraseBottomSheetBinding
 import com.blockstream.green.ui.AppFragment
-import mu.KLogging
+import com.blockstream.common.utils.Loggable
 
 
 class PassphraseBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<PassphraseBottomSheetBinding>(){
@@ -28,7 +28,7 @@ class PassphraseBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<Pas
         }
     }
 
-    companion object : KLogging() {
+    companion object : Loggable() {
         fun show(fragmentManager: FragmentManager){
             show(PassphraseBottomSheetDialogFragment(), fragmentManager)
         }

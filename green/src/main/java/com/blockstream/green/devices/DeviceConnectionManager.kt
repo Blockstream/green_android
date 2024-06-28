@@ -1,34 +1,31 @@
 package com.blockstream.green.devices
 
-import android.content.Context
+import android.bluetooth.BluetoothAdapter
 import android.os.Build
-import com.blockstream.HardwareQATester
 import com.blockstream.JadeHWWallet
-import com.blockstream.common.CountlyBase
+import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.Gdk
+import com.blockstream.common.gdk.Wally
 import com.blockstream.common.gdk.data.DeviceSupportsAntiExfilProtocol
 import com.blockstream.common.gdk.data.DeviceSupportsLiquid
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.gdk.device.DeviceBrand
+import com.blockstream.common.devices.DeviceBrand
+import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.gdk.device.GdkHardwareWallet
-import com.blockstream.common.interfaces.HttpRequestProvider
-import com.blockstream.common.managers.SettingsManager
+import com.blockstream.common.interfaces.HttpRequestHandler
 import com.blockstream.green.R
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.blockstream.jade.JadeAPI
-import com.blockstream.jade.JadeAPI.Companion.createBle
-import com.blockstream.jade.JadeAPI.Companion.createSerial
 import com.blockstream.jade.data.JadeNetworks
 import com.blockstream.jade.data.JadeState
-import com.blockstream.jade.data.VersionInfo
-import com.blockstream.jade.entities.JadeError
-import com.blockstream.jade.entities.JadeVersion
+import com.blockstream.jade.api.VersionInfo
+import com.blockstream.jade.data.JadeError
+import com.blockstream.jade.data.JadeVersion
 import com.btchip.BTChipDongle
 import com.btchip.BTChipException
 import com.btchip.comm.BTChipTransport
 import com.btchip.comm.android.BTChipTransportAndroid
-import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenbits.wallets.BTChipHWWallet
 import com.greenaddress.greenbits.wallets.FirmwareUpgradeRequest
 import com.greenaddress.greenbits.wallets.JadeFirmwareManager
@@ -37,26 +34,27 @@ import com.greenaddress.greenbits.wallets.TrezorHWWallet
 import com.satoshilabs.trezor.Trezor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import mu.KLogging
+import com.blockstream.common.utils.Loggable
+import com.blockstream.jade.fromUsb
+import kotlinx.coroutines.runBlocking
 
 class DeviceConnectionManager constructor(
-    countly: CountlyBase,
     val gdk: Gdk,
-    val settingsManager: SettingsManager,
-    private val httpRequestProvider: HttpRequestProvider,
+    val wally: Wally,
+    val scope: CoroutineScope,
+    val applicationScope: ApplicationScope,
+    val bluetoothAdapter: BluetoothAdapter,
+    private val httpRequestHandler: HttpRequestHandler,
     private val interaction: HardwareConnectInteraction,
-    private val qaTester: HardwareQATester
 ) {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO + logException(countly))
 
     private val jadeFirmwareManager by lazy {
         JadeFirmwareManager(
             interaction,
-            httpRequestProvider,
+            httpRequestHandler,
             JadeFirmwareManager.JADE_FW_VERSIONS_LATEST,
             false
         )
@@ -65,20 +63,20 @@ class DeviceConnectionManager constructor(
     var needsAndroid14BleUpdate:Boolean = false
         private set
 
-    fun connectDevice(context: Context, device: Device) {
+    fun connectDevice(device: GreenDevice) {
         scope.launch(context = Dispatchers.IO + logException()) {
             try {
                 when {
                     device.deviceBrand.isJade -> {
-                        connectJadeDevice(context, device)
+                        connectJadeDevice(device)
                     }
 
                     device.deviceBrand.isTrezor -> {
-                        connectTrezorDevice(device)
+                        device.toAndroidDevice()?.let { connectTrezorDevice(it) }
                     }
 
                     device.deviceBrand.isLedger -> {
-                        connectLedgerDevice(context, device)
+                        device.toAndroidDevice()?.let { connectLedgerDevice(it) }
                     }
                 }
             } catch (e: Exception) {
@@ -89,33 +87,39 @@ class DeviceConnectionManager constructor(
         }
     }
 
-    private suspend fun connectJadeDevice(context: Context, device: Device) {
+    private suspend fun connectJadeDevice(device: GreenDevice) {
+        try {
+            (device.peripheral?.let { peripheral ->
+                JadeAPI.fromBle(
+                    peripheral = peripheral,
+                    isBonded = device.isBonded,
+                    scope = applicationScope,
+                    httpRequestHandler = httpRequestHandler
+                )
+            } ?: device.toAndroidDevice()?.usbDevice?.let { usbDevice ->
+                JadeAPI.fromUsb(
+                    usbDevice = usbDevice,
+                    usbManager = device.toAndroidDevice()!!.usbManager,
+                    httpRequestHandler = httpRequestHandler
+                )
+            })?.also { jadeApi ->
 
-        if (device.deviceBrand.isJade) {
-            try {
-                (device.usbDevice?.let { usbDevice ->
-                    createSerial(httpRequestProvider, device.usbManager, usbDevice, 115200)
-                } ?: device.bleDevice?.let { bleDevice ->
-                    createBle(context, httpRequestProvider, bleDevice)
-                })?.also { jadeApi ->
+                val version = jadeApi.connect()
 
-                    val version = jadeApi.connect()
-
-                    if (version != null) {
-                        onJadeConnected(device, version, jadeApi)
-                    } else {
-                        closeJadeAndFail(device, jadeApi)
-                    }
-
+                if (version != null) {
+                    onJadeConnected(device, version, jadeApi)
+                } else {
+                    closeJadeAndFail(device, jadeApi)
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                closeJadeAndFail(device, null)
+
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            closeJadeAndFail(device, null)
         }
     }
 
-    suspend fun authenticateDeviceIfNeeded(gdkHardwareWallet: GdkHardwareWallet, jadeFirmwareManager: JadeFirmwareManager? = null){
+    suspend fun authenticateDeviceIfNeeded(gdkHardwareWallet: GdkHardwareWallet, jadeFirmwareManager: JadeFirmwareManager? = null) {
         if(gdkHardwareWallet is JadeHWWallet && gdkHardwareWallet.getVersionInfo().jadeState != JadeState.READY){
             try {
                 gdkHardwareWallet.authenticate(interaction, jadeFirmwareManager ?: this.jadeFirmwareManager)
@@ -140,39 +144,43 @@ class DeviceConnectionManager constructor(
                     interaction.showInstructions(R.string.id_please_reconnect_your_hardware)
                 }
             }
+        } else if(jadeFirmwareManager != null && gdkHardwareWallet is JadeHWWallet) {
+            // force update if needed
+            jadeFirmwareManager.checkFirmware(jade = gdkHardwareWallet.jade)
         }
     }
 
-    private suspend fun onJadeConnected(device: Device, verInfo: VersionInfo, jade: JadeAPI) {
+    private suspend fun onJadeConnected(device: GreenDevice, verInfo: VersionInfo, jade: JadeAPI) {
         try {
             val version = JadeVersion(verInfo.jadeVersion)
-            val supportsExternalBlinding = JADE_VERSION_SUPPORTS_EXTERNAL_BLINDING <= version
 
             val jadeDevice = com.blockstream.common.gdk.data.Device(
                 name = "Jade",
                 supportsArbitraryScripts = true,
                 supportsLowR = true,
                 supportsHostUnblinding = true,
-                supportsExternalBlinding = supportsExternalBlinding,
+                supportsExternalBlinding = true,
                 supportsLiquid = DeviceSupportsLiquid.Lite,
                 supportsAntiExfilProtocol = DeviceSupportsAntiExfilProtocol.Optional
             )
 
-            val jadeWallet = JadeHWWallet(gdk, jade, jadeDevice, verInfo, qaTester)
+            val jadeWallet = JadeHWWallet(gdk, wally, jade, jadeDevice)
 
             if (version.isLessThan(JadeVersion("1.0.25")) && device.isBle && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 needsAndroid14BleUpdate = true
             }
 
-            onHWalletCreated(device, jadeWallet, jadeWallet.isUninitialized)
+            onHWalletCreated(device, jadeWallet, jadeWallet.isUninitializedOrUnsaved)
         } catch (e: Exception) {
             closeJadeAndFail(device, jade)
         }
     }
 
-    private fun closeJadeAndFail(device: Device, jadeApi: JadeAPI?) {
+    private fun closeJadeAndFail(device: GreenDevice, jadeApi: JadeAPI?) {
         try {
-            jadeApi?.disconnect()
+            runBlocking {
+                jadeApi?.disconnect()
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
@@ -180,7 +188,7 @@ class DeviceConnectionManager constructor(
         }
     }
 
-    private suspend fun connectTrezorDevice(device: Device) {
+    private suspend fun connectTrezorDevice(device: AndroidDevice) {
         try {
             val trezor = Trezor.getDevice(device.usbManager, listOf(device.usbDevice!!))
 
@@ -188,7 +196,7 @@ class DeviceConnectionManager constructor(
             val firmware = version[0].toString() + "." + version[1] + "." + version[2]
             val vendorId: Int = trezor.vendorId
 
-            logger.info { "Trezor Version: " + version + " vendorid:" + vendorId + " productid:" + trezor.productId }
+            logger.i { "Trezor Version: " + version + " vendorid:" + vendorId + " productid:" + trezor.productId }
 
             // Min allowed: v1.6.0 & v2.1.0
             val isFirmwareOutdated = version[0] < 1 ||
@@ -224,8 +232,8 @@ class DeviceConnectionManager constructor(
         }
     }
 
-    private fun onTrezorConnected(device: Device, trezor: Trezor, firmwareVersion: String?) {
-        logger.debug { "Creating Trezor HW wallet" }
+    private fun onTrezorConnected(device: AndroidDevice, trezor: Trezor, firmwareVersion: String?) {
+        logger.d { "Creating Trezor HW wallet" }
 
         val trezorDevice = com.blockstream.common.gdk.data.Device(
             name = "Trezor",
@@ -237,23 +245,26 @@ class DeviceConnectionManager constructor(
             supportsAntiExfilProtocol = DeviceSupportsAntiExfilProtocol.None
         )
 
-        onHWalletCreated(device, TrezorHWWallet(gdk, trezor, trezorDevice, firmwareVersion))
+        onHWalletCreated(device, TrezorHWWallet(trezor, trezorDevice, firmwareVersion))
     }
 
-    private fun closeTrezorAndFail(device: Device) {
+    private fun closeTrezorAndFail(device: AndroidDevice) {
         interaction.onDeviceFailed(device)
     }
 
-    private fun connectLedgerDevice(context: Context, device: Device) {
+    private fun connectLedgerDevice(device: AndroidDevice) {
         if (device.isBle) {
+
+            val bluetoothDevice = bluetoothAdapter.getRemoteDevice(device.peripheral!!.identifier)
+
             // Ledger (Nano X)
             // Ledger BLE adapter will call the 'onLedger' function when the BLE connection is established
             // LedgerBLEAdapter.connectLedgerBLE(this, btDevice, this::onLedger, this::onLedgerError);
             LedgerBLEAdapter.connectLedgerBLE(
-                context,
-                device.bleDevice!!.bluetoothDevice,
+                device.context,
+                bluetoothDevice,
                 { transport: BTChipTransport, hasScreen: Boolean, disconnectEvent: MutableStateFlow<Boolean> ->
-                    scope.launch {
+                    scope.launch(context = Dispatchers.IO) {
                         onLedger(
                             device,
                             transport,
@@ -297,7 +308,7 @@ class DeviceConnectionManager constructor(
     }
 
     private suspend fun onLedger(
-        device: Device,
+        device: AndroidDevice,
         transport: BTChipTransport,
         hasScreen: Boolean,
         disconnectEvent: MutableStateFlow<Boolean>?
@@ -308,7 +319,7 @@ class DeviceConnectionManager constructor(
 
             val dongle = BTChipDongle(transport, hasScreen)
             val application = dongle.application
-            logger.info { "Ledger application $application" }
+            logger.i { "Ledger application $application" }
 
             val isLegacy = application.name.lowercase().contains("legacy")
             val isTestnet = application.name.lowercase().contains("test")
@@ -344,7 +355,7 @@ class DeviceConnectionManager constructor(
 
             // We don't ask for firmware version while in the dashboard, since the Ledger Nano X would return invalid status
             val fw = dongle.firmwareVersion
-            logger.info { "Ledger firmware version $fw" }
+            logger.i { "Ledger firmware version $fw" }
 
             var isFirmwareOutdated = true
             if (fw.architecture == BTChipDongle.BTCHIP_ARCH_LEDGER_1.toInt() && fw.major > 0) {
@@ -400,7 +411,7 @@ class DeviceConnectionManager constructor(
     }
 
     private fun onLedgerConnected(
-        device: Device,
+        device: AndroidDevice,
         network: Network,
         dongle: BTChipDongle,
         firmwareVersion: String,
@@ -413,7 +424,7 @@ class DeviceConnectionManager constructor(
                 null
             }
 
-        logger.info { "Creating Ledger HW wallet" + if (pin != null) " with PIN" else "" }
+        logger.i { "Creating Ledger HW wallet" + if (pin != null) " with PIN" else "" }
 
         val ledgerDevice = com.blockstream.common.gdk.data.Device(
             name = "Ledger",
@@ -427,11 +438,11 @@ class DeviceConnectionManager constructor(
 
         onHWalletCreated(
             device,
-            BTChipHWWallet(gdk, dongle, pin, network, ledgerDevice, firmwareVersion, disconnectEvent)
+            BTChipHWWallet(dongle, pin, network, ledgerDevice, firmwareVersion, disconnectEvent)
         )
     }
 
-    private fun closeLedgerAndFail(device: Device, transport: BTChipTransport?) {
+    private fun closeLedgerAndFail(device: AndroidDevice, transport: BTChipTransport?) {
         try {
             transport?.close()
         } catch (e: Exception) {
@@ -441,7 +452,7 @@ class DeviceConnectionManager constructor(
         }
     }
 
-    private fun onHWalletCreated(device: Device, hwWallet: HWWallet, isJadeUninitialized: Boolean? = null) {
+    private fun onHWalletCreated(device: GreenDevice, hwWallet: GdkHardwareWallet, isJadeUninitialized: Boolean? = null) {
         device.gdkHardwareWallet = hwWallet
         interaction.onDeviceReady(device, isJadeUninitialized)
     }
@@ -507,11 +518,5 @@ class DeviceConnectionManager constructor(
         } ?: throw Exception("id_action_canceled")
     }
 
-    fun onDestroy() {
-//        scope.cancel()
-    }
-
-    companion object : KLogging() {
-        val JADE_VERSION_SUPPORTS_EXTERNAL_BLINDING = JadeVersion("0.1.48")
-    }
+    companion object : Loggable()
 }

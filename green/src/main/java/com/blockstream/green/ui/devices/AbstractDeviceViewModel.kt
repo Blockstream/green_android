@@ -2,28 +2,32 @@ package com.blockstream.green.ui.devices
 
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.HwWalletLogin
-import com.blockstream.JadeHWWallet
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.gdk.device.DeviceBrand
+import com.blockstream.common.devices.DeviceBrand
+import com.blockstream.common.devices.GreenDevice
+import com.blockstream.common.managers.BluetoothState
 import com.blockstream.common.managers.DeviceManager
+import com.blockstream.common.managers.toAndroidBluetoothState
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.ConsumableEvent
 import com.blockstream.common.utils.Loggable
-import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceConnectionManager
 import com.blockstream.green.devices.DeviceManagerAndroid
 import com.blockstream.green.devices.HardwareConnectInteraction
 import com.blockstream.green.utils.QATester
 import com.greenaddress.greenbits.wallets.FirmwareFileData
 import com.greenaddress.greenbits.wallets.FirmwareUpgradeRequest
+import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -56,12 +60,18 @@ abstract class AbstractDeviceViewModel constructor(
     }
 
     abstract val deviceConnectionManagerOrNull : DeviceConnectionManager?
-    abstract val device: Device?
+    abstract val device: GreenDevice?
 
     val deviceConnectionManager : DeviceConnectionManager
         get() = deviceConnectionManagerOrNull!!
 
-    val bleAdapterState = (deviceManager as DeviceManagerAndroid).bleAdapterState
+    val bluetoothState = (deviceManager as DeviceManagerAndroid).bluetoothState.map {
+        it.toAndroidBluetoothState()
+    }.stateIn(
+        viewModelScope = viewModelScope,
+        SharingStarted.WhileSubscribed(),
+        BluetoothState.Unavailable
+    )
 
     val onInstructions = MutableLiveData<ConsumableEvent<Int>>()
 
@@ -69,7 +79,7 @@ abstract class AbstractDeviceViewModel constructor(
 
     var askForFirmwareUpgradeEmitter: CompletableDeferred<Int?>? = null
 
-    fun getWalletHashId(session: GdkSession, network: Network, device: Device): String {
+    fun getWalletHashId(session: GdkSession, network: Network, device: GreenDevice): String {
         return session.getWalletIdentifier(
             network = network, // xPub generation is network agnostic
             gdkHwWallet = device.gdkHardwareWallet,
@@ -86,11 +96,11 @@ abstract class AbstractDeviceViewModel constructor(
         onInstructions.postValue(ConsumableEvent(resId))
     }
 
-    override fun onDeviceReady(device: Device, isJadeUninitialized: Boolean?) {
+    override fun onDeviceReady(device: GreenDevice, isJadeUninitialized: Boolean?) {
         onProgress.value = true
     }
 
-    override fun onDeviceFailed(device: Device) {
+    override fun onDeviceFailed(device: GreenDevice) {
         onProgress.value = false
     }
 
@@ -171,11 +181,8 @@ abstract class AbstractDeviceViewModel constructor(
     override fun firmwareComplete(success: Boolean, firmwareFileData: FirmwareFileData) {
         logger.i { "firmwareComplete: $success" }
 
-        (device?.gdkHardwareWallet as? JadeHWWallet)?.also {
-            it.updateFirmwareVersion(firmwareFileData.image.version)
-        }
-
         postSideEffect(LocalSideEffects.FirmwareUpdateComplete(success))
+
         if(success) {
             device?.also {
                 countly.jadeOtaComplete(it, firmwareFileData.image.config, firmwareFileData.image.patchSize != null, firmwareFileData.image.version)

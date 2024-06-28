@@ -10,7 +10,10 @@ import com.blockstream.common.di.initKoin
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.fcm.Firebase
 import com.blockstream.common.lightning.BreezNotification
+import com.blockstream.common.managers.DeviceManager
+import com.blockstream.common.managers.DeviceManager.Companion.JADE
 import kotlinx.cinterop.ExperimentalForeignApi
+import org.koin.dsl.binds
 import org.koin.dsl.module
 import platform.Foundation.NSApplicationSupportDirectory
 import platform.Foundation.NSBundle
@@ -63,6 +66,13 @@ fun startKoin(doOnStartup: () -> Unit = {}) {
             }
             single {
                 Firebase()
+            }
+            single {
+                DeviceManager(
+                    get(),
+                    get(),
+                    listOf(JADE)
+                )
             }
             single<FcmCommon> {
                 object : FcmCommon(get()){

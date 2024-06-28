@@ -264,8 +264,7 @@
         android:label="@string/id_app_settings" />
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.blockstream.green.ui.login.LoginFragment"
-        >
+        android:name="com.blockstream.green.ui.login.LoginFragment">
         <argument
             android:name="wallet"
             app:argType="com.blockstream.common.data.GreenWallet" />
@@ -475,6 +474,7 @@
     <action
         android:id="@+id/action_global_archivedAccountsFragment"
         app:destination="@id/archivedAccountsFragment" />
+
     <action
         android:id="@+id/action_global_reviewAddAccountFragment"
         app:destination="@id/reviewAddAccountFragment" />
@@ -720,10 +720,26 @@
     <action
         android:id="@+id/action_global_watchOnlyNetworkFragment"
         app:destination="@id/watchOnlyNetworkFragment" />
-    <action android:id="@+id/action_global_account2of3Fragment" app:destination="@id/account2of3Fragment" />
-    <action android:id="@+id/action_global_xpubFragment" app:destination="@id/xpubFragment" /><action android:id="@+id/action_global_enterRecoveryPhraseFragment" app:destination="@id/enterRecoveryPhraseFragment"/>
-    <action android:id="@+id/action_global_recoveryCheckFragment" app:destination="@id/recoveryCheckFragment" />
-    <action android:id="@+id/action_global_recoveryWordsFragment" app:destination="@id/recoveryWordsFragment" />
-    <action android:id="@+id/action_global_walletSettingsFragment" app:destination="@id/walletSettingsFragment" /><action android:id="@+id/action_global_previousAddressesFragment" app:destination="@id/previousAddressesFragment"/>
+    <action
+        android:id="@+id/action_global_account2of3Fragment"
+        app:destination="@id/account2of3Fragment" />
+    <action
+        android:id="@+id/action_global_xpubFragment"
+        app:destination="@id/xpubFragment" />
+    <action
+        android:id="@+id/action_global_enterRecoveryPhraseFragment"
+        app:destination="@id/enterRecoveryPhraseFragment" />
+    <action
+        android:id="@+id/action_global_recoveryCheckFragment"
+        app:destination="@id/recoveryCheckFragment" />
+    <action
+        android:id="@+id/action_global_recoveryWordsFragment"
+        app:destination="@id/recoveryWordsFragment" />
+    <action
+        android:id="@+id/action_global_walletSettingsFragment"
+        app:destination="@id/walletSettingsFragment" />
+    <action
+        android:id="@+id/action_global_previousAddressesFragment"
+        app:destination="@id/previousAddressesFragment" />
 
 </navigation>

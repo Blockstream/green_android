@@ -1,6 +1,5 @@
 package com.blockstream.green.ui.devices
 
-import android.Manifest
 import android.bluetooth.BluetoothAdapter
 import android.content.DialogInterface
 import android.content.Intent
@@ -17,7 +16,8 @@ import androidx.annotation.MenuRes
 import androidx.core.app.ActivityCompat
 import androidx.databinding.ViewDataBinding
 import com.blockstream.common.Urls
-import com.blockstream.common.gdk.device.DeviceBrand
+import com.blockstream.common.devices.DeviceBrand
+import com.blockstream.common.managers.BluetoothManager
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.green.R
 import com.blockstream.green.databinding.PinTextDialogBinding
@@ -26,10 +26,9 @@ import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.bottomsheets.EnvironmentBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.JadeFirmwareUpdateBottomSheetDialogFragment
 import com.blockstream.green.utils.openBrowser
-import com.blockstream.jade.entities.JadeVersion
+import com.blockstream.jade.data.JadeVersion
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.greenaddress.greenbits.wallets.FirmwareUpgradeRequest
-import mu.KLogging
 import org.koin.android.ext.android.inject
 
 
@@ -38,14 +37,18 @@ abstract class AbstractDeviceFragment<T : ViewDataBinding>(
     @MenuRes menuRes: Int
 ) : AppFragment<T>(layout, menuRes) {
 
+    private val bluetoothManager: BluetoothManager by inject()
     private val bluetoothAdapter: BluetoothAdapter? by inject()
 
     abstract val viewModel: AbstractDeviceViewModel
 
-    var requestPermission: ActivityResultLauncher<Array<String>> = registerForActivityResult(
+    private val requestPermission: ActivityResultLauncher<Array<String>> = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
-    ) {
-        // Nothing to do here, it's already handled by DeviceManager
+    ) { results ->
+        if (results.values.all { it }) {
+            // tell bluetooth manager to recheck permissions
+            bluetoothManager.permissionsGranted()
+        }
     }
 
     override suspend fun handleSideEffect(sideEffect: SideEffect) {
@@ -81,21 +84,21 @@ abstract class AbstractDeviceFragment<T : ViewDataBinding>(
         }
     }
 
-    protected fun requestLocationPermission(){
-        // Also RxBleClient.getRecommendedScanRuntimePermissions can be used
-        requestPermission.launch(BLE_LOCATION_PERMISSION)
+    protected fun requestPermissions(){
+        requestPermission.launch(BluetoothManager.BLE_PERMISSIONS)
     }
+
     protected fun enableBluetooth(){
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            if (bluetoothAdapter?.isEnabled == false && ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    BLE_LOCATION_PERMISSION.first()
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                bluetoothAdapter?.enable()
+        if(bluetoothAdapter?.isEnabled == false){
+            if(BluetoothManager.BLE_PERMISSIONS.all { ActivityCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED }){
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                    bluetoothAdapter?.enable()
+                } else {
+                    startActivity(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
+                }
+            } else {
+                requestPermissions()
             }
-        } else {
-            startActivity(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
         }
     }
 
@@ -198,20 +201,5 @@ abstract class AbstractDeviceFragment<T : ViewDataBinding>(
                 // Send error?
             }
         }
-    }
-
-    companion object : KLogging() {
-        // NOTE: BLE_LOCATION_PERMISSION should be set to FINE for Android 10 and above, or COARSE for 9 and below
-        // See: https://developer.android.com/about/versions/10/privacy/changes#location-telephony-bluetooth-wifi
-        val BLE_LOCATION_PERMISSION =
-            when {
-                Build.VERSION.SDK_INT > Build.VERSION_CODES.R -> listOf(
-                    Manifest.permission.BLUETOOTH_CONNECT,
-                    Manifest.permission.BLUETOOTH_SCAN
-                )
-
-                Build.VERSION.SDK_INT > Build.VERSION_CODES.P -> listOf(Manifest.permission.ACCESS_FINE_LOCATION)
-                else -> listOf(Manifest.permission.ACCESS_COARSE_LOCATION)
-            }.toTypedArray()
     }
 }

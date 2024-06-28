@@ -27,10 +27,10 @@ class DeviceResolver constructor(
             "get_xpubs" -> {
                 gdkHardwareWallet.getXpubs(
                     network = network,
-                    hwInteraction = hwInteraction,
                     paths = requiredData.paths?.map {
                         it.map { it.toInt() }
-                    } ?: listOf()
+                    } ?: listOf(),
+                    hwInteraction = hwInteraction
                 ).let {
                     DeviceResolvedData(xpubs = it)
                 }
@@ -55,12 +55,12 @@ class DeviceResolver constructor(
             "sign_tx" -> {
                 gdkHardwareWallet.signTransaction(
                     network = network,
-                    hwInteraction = hwInteraction,
                     transaction = requiredData.transaction!!,
                     inputs = requiredData.transactionInputs!!,
                     outputs = requiredData.transactionOutputs!!,
                     transactions = requiredData.signingTransactions,
-                    useAeProtocol = requiredData.useAeProtocol ?: false
+                    useAeProtocol = requiredData.useAeProtocol ?: false,
+                    hwInteraction = hwInteraction,
                 ).let {
                     DeviceResolvedData(
                         signatures = it.signatures,
@@ -72,8 +72,8 @@ class DeviceResolver constructor(
             "get_blinding_factors" -> {
                 gdkHardwareWallet.getBlindingFactors(
                     hwInteraction = hwInteraction,
-                    inputs = requiredData.transactionInputs,
-                    outputs = requiredData.transactionOutputs
+                    inputs = requiredData.transactionInputs!!,
+                    outputs = requiredData.transactionOutputs!!
                 ).let {
                     DeviceResolvedData(
                         assetBlinders = it.assetblinders,
@@ -100,7 +100,7 @@ class DeviceResolver constructor(
                         nonces.add(
                             gdkHardwareWallet.getBlindingNonce(
                                 hwInteraction = hwInteraction,
-                                pubkey = publicKeys[i],
+                                pubKey = publicKeys[i],
                                 scriptHex = scripts[i]
                             )
                         )

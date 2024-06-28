@@ -6,7 +6,6 @@ import breez_sdk.InvoicePaidDetails
 import breez_sdk.LnUrlPayResult
 import breez_sdk.ReceivePaymentResponse
 import breez_sdk.SwapInfo
-import co.touchlab.kermit.Logger
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.BTC_UNIT
 import com.blockstream.common.CountlyBase
@@ -21,6 +20,8 @@ import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.RichWatchOnly
 import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.database.LoginCredentials
+import com.blockstream.common.devices.DeviceState
+import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.extensions.hasHistory
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.isPolicyAsset
@@ -67,8 +68,6 @@ import com.blockstream.common.gdk.data.UnspentOutputs
 import com.blockstream.common.gdk.data.Utxo
 import com.blockstream.common.gdk.data.ValidateAddressees
 import com.blockstream.common.gdk.data.WalletEvents
-import com.blockstream.common.gdk.device.DeviceInterface
-import com.blockstream.common.gdk.device.DeviceState
 import com.blockstream.common.gdk.device.GdkHardwareWallet
 import com.blockstream.common.gdk.device.HardwareWalletInteraction
 import com.blockstream.common.gdk.params.AssetsParams
@@ -101,11 +100,11 @@ import com.blockstream.common.gdk.params.UnspentOutputsPrivateKeyParams
 import com.blockstream.common.gdk.params.UpdateSubAccountParams
 import com.blockstream.common.gdk.params.ValidateAddresseesParams
 import com.blockstream.common.interfaces.HttpRequestHandler
-import com.blockstream.common.interfaces.HttpRequestProvider
 import com.blockstream.common.interfaces.JadeHttpRequestUrlValidator
 import com.blockstream.common.lightning.AppGreenlightCredentials
 import com.blockstream.common.lightning.LightningBridge
 import com.blockstream.common.lightning.LightningManager
+import com.blockstream.common.lightning.expireIn
 import com.blockstream.common.lightning.fromInvoice
 import com.blockstream.common.lightning.fromLnUrlPay
 import com.blockstream.common.lightning.fromPayment
@@ -178,7 +177,7 @@ class GdkSession constructor(
     private val gdk: Gdk,
     private val wally: Wally,
     private val countly: CountlyBase
-) : HttpRequestHandler, HttpRequestProvider, AssetsProvider {
+) : HttpRequestHandler, AssetsProvider {
     fun createScope(dispatcher: CoroutineDispatcher = Dispatchers.Default) = CoroutineScope(SupervisorJob() + dispatcher + logException(countly))
 
     private val scope = createScope(Dispatchers.Default)
@@ -404,7 +403,7 @@ class GdkSession constructor(
     val gdkHwWallet: GdkHardwareWallet?
         get() = device?.gdkHardwareWallet
 
-    var device: DeviceInterface? = null
+    var device: GreenDevice? = null
         private set
 
     var ephemeralWallet: GreenWallet? = null
@@ -674,11 +673,11 @@ class GdkSession constructor(
     // Use it only for connected sessions
     fun supportsLightning() = supportsLightning(isWatchOnly = isWatchOnly, device = device)
 
-    private fun supportsLightning(isWatchOnly: Boolean, device: DeviceInterface?) :Boolean {
+    private fun supportsLightning(isWatchOnly: Boolean, device: GreenDevice?) :Boolean {
         return !isWatchOnly && (device == null || device.isJade)
     }
 
-    fun networks(isTestnet: Boolean, isWatchOnly: Boolean, device: DeviceInterface?): List<Network> {
+    fun networks(isTestnet: Boolean, isWatchOnly: Boolean, device: GreenDevice?): List<Network> {
         return if (isTestnet) {
             listOfNotNull(
                 networks.testnetBitcoinElectrum,
@@ -834,7 +833,7 @@ class GdkSession constructor(
         }
     }
 
-    fun disconnectAsync(reason: LogoutReason = LogoutReason.USER_ACTION) {
+    fun disconnectAsync(reason: LogoutReason = LogoutReason.USER_ACTION): Boolean {
         // Disconnect only if needed
         if(isConnected) {
             logoutReason = reason
@@ -855,14 +854,15 @@ class GdkSession constructor(
                     }
                 }
             }
+
+            return true
         }
+
+        return false
     }
 
-    override val httpRequest: HttpRequestHandler
-        get() = this
-
     override fun prepareHttpRequest() {
-        Logger.i { "Prepare HTTP Request Provider" }
+        logger.i { "Prepare HTTP Request Provider" }
         disconnect()
 
         networks.bitcoinElectrum.also {
@@ -1094,7 +1094,7 @@ class GdkSession constructor(
             // Network with failed logins
             networks.forEach { network ->
                 try{
-                    Logger.i { "Login into ${network.id}" }
+                    logger.i { "Login into ${network.id}" }
 
                     if (network.isLightning) {
                         // Connect SDK
@@ -1260,7 +1260,7 @@ class GdkSession constructor(
 
     suspend fun loginWithDevice(
         wallet: GreenWallet,
-        device: DeviceInterface,
+        device: GreenDevice,
         derivedLightningMnemonic: String?,
         hardwareWalletResolver: HardwareWalletResolver,
         hwInteraction: HardwareWalletInteraction? = null,
@@ -1304,7 +1304,7 @@ class GdkSession constructor(
         richWatchOnly: List<RichWatchOnly>? = null,
         appGreenlightCredentials: AppGreenlightCredentials? = null,
         derivedLightningMnemonic: String? = null,
-        device: DeviceInterface? = null,
+        device: GreenDevice? = null,
         isCreate: Boolean = false,
         isRestore: Boolean = false,
         isSmartDiscovery: Boolean = false,
@@ -1406,17 +1406,17 @@ class GdkSession constructor(
                     }
 
                     if (gdkSession.key.isSinglesig && !isProminent && !isRestore && !isSmartDiscovery && !hasGdkCache){
-                        Logger.i { "Skip login in ${network.id}" }
+                        logger.i { "Skip login in ${network.id}" }
                         return@async null
                     }
 
                     // On Create just login into Bitcoin network
                     if(isCreate && (gdkSession.key.isMultisig || gdkSession.key.isLiquid)){
-                        Logger.i { "Skip login in ${network.id}" }
+                        logger.i { "Skip login in ${network.id}" }
                         return@async null
                     }
 
-                    Logger.i { "Login into ${network.id}" }
+                    logger.i { "Login into ${network.id}" }
 
                     authHandler(
                         gdkSession.key,
@@ -1432,7 +1432,7 @@ class GdkSession constructor(
                         // Do a refresh
                         if (network.isElectrum && initializeSession && (isRestore || isSmartDiscovery)) {
                              if(isRestore || !hasGdkCache){
-                                Logger.i { "BIP44 Discovery for ${network.id}" }
+                                logger.i { "BIP44 Discovery for ${network.id}" }
 
                                 val networkAccounts = getAccounts(network = network, refresh = true)
                                 val walletIsFunded = networkAccounts.find { account -> account.bip44Discovered == true } != null
@@ -1561,7 +1561,7 @@ class GdkSession constructor(
         restoreOnly: Boolean = true,
         quickResponse: Boolean = false
     ) {
-        Logger.i { "Login into ${lightning?.id}" }
+        logger.i { "Login into ${lightning?.id}" }
 
         countly.loginLightningStart()
 
@@ -1707,7 +1707,7 @@ class GdkSession constructor(
         loginCredentialsParams = loginCredentialsParams?.takeIf { !it.mnemonic.isNullOrBlank() }
             ?: (gdkHwWallet ?: this.gdkHwWallet)?.let {
                 LoginCredentialsParams(
-                    masterXpub = it.getXpubs(network, hwInteraction, listOf(listOf())).first()
+                    masterXpub = it.getXpubs(network, listOf(listOf()), hwInteraction).first()
                 )
             }
             ?: loginCredentialsParams
@@ -1721,7 +1721,7 @@ class GdkSession constructor(
     ): String? {
         return (gdkHwWallet ?: this.gdkHwWallet)?.let {
             wally.bip32Fingerprint(
-                it.getXpubs(network, hwInteraction, listOf(listOf())).first()
+                it.getXpubs(network, listOf(listOf()), hwInteraction).first()
             )
         }
     }
@@ -2609,6 +2609,8 @@ class GdkSession constructor(
             is InputType.Bolt11 -> {
                 val invoice = lightningInputType.invoice
 
+                logger.d { "Expire in ${invoice.expireIn()}" }
+
                 var sendableSatoshi = invoice.sendableSatoshi(userInputSatoshi)
 
                 var error = generateLightningError(account = lightningAccount, satoshi = sendableSatoshi)
@@ -2720,8 +2722,6 @@ class GdkSession constructor(
         val invoiceOrLnUrl = params.addressees.first().address
         val satoshi = params.addressees.first().satoshi?.absoluteValue ?: 0L
 
-        Logger.d { "invoiceOrLnUrl: $invoiceOrLnUrl satoshi: $satoshi comment: $comment " }
-
         _walletActiveEventInvalidated = true
 
         return when (val inputType = lightningSdk.parseBoltOrLNUrlAndCache(invoiceOrLnUrl)) {
@@ -2731,7 +2731,7 @@ class GdkSession constructor(
                     throw Exception("id_invoice_expired")
                 }
 
-                Logger.d { "Sending invoice ${inputType.invoice.bolt11}" }
+                logger.d { "Sending invoice ${inputType.invoice.bolt11}" }
 
                 try {
                     val response = lightningSdk.sendPayment(
@@ -2876,7 +2876,7 @@ class GdkSession constructor(
 
         val network = gdkSessions.firstNotNullOfOrNull { if(it.value == gaSession) it.key else null } ?: return
 
-        Logger.d { "onNewNotification ${network.id} \t $notification" }
+        logger.d { "onNewNotification ${network.id} \t $notification" }
 
         when (notification.event) {
             "block" -> {
@@ -2992,7 +2992,7 @@ class GdkSession constructor(
 
     private fun cacheAssets(assetIds: Collection<String>) {
         assetIds.filter { it != BTC_POLICY_ASSET }.takeIf { it.isNotEmpty() }?.also {
-            Logger.d { "Cache assets: $it" }
+            logger.d { "Cache assets: $it" }
             networkAssetManager.cacheAssets(it, this)
         }
     }

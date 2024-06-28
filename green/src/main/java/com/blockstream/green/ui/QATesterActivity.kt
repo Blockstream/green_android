@@ -28,7 +28,7 @@ import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.GenericFastItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import kotlinx.coroutines.delay
-import mu.KLogging
+import com.blockstream.common.utils.Loggable
 import org.koin.android.ext.android.inject
 import java.io.File
 import kotlin.system.exitProcess
@@ -108,7 +108,7 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
         binding.buttonClearGdk.setOnClickListener {
             @Suppress("DEPRECATION")
             lifecycleScope.launchWhenStarted {
-                logger.info { "Deleting ${applicationContext.filesDir.absolutePath}" }
+                logger.i { "Deleting ${applicationContext.filesDir.absolutePath}" }
                 File(applicationContext.filesDir.absolutePath).deleteRecursively()
 
                 Snackbar.make(binding.root, "Restarting application", Snackbar.LENGTH_SHORT).show()
@@ -157,5 +157,5 @@ class QATesterActivity : AppCompatActivity(), FilterableDataProvider {
             .show()
     }
 
-    companion object: KLogging()
+    companion object: Loggable()
 }

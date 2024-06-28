@@ -6,7 +6,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
-import com.blockstream.common.events.Event
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.onboarding.phone.PinViewModel
 import com.blockstream.common.navigation.NavigateDestinations
@@ -19,7 +18,6 @@ import com.blockstream.green.R
 import com.blockstream.green.databinding.ComposeViewBinding
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.MainActivity
-import com.blockstream.green.ui.dialogs.EnableLightningShortcut
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel

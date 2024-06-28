@@ -16,7 +16,6 @@ import kotlin.time.toDuration
 /*
  * Emulate different scenarios, useful for QA
  */
-@Single
 class QATester(val context: Context) : HardwareQATester {
     val corruptedHardwareMessageSign = MutableLiveData(false)
     val corruptedHardwareTxSign = MutableLiveData(false)

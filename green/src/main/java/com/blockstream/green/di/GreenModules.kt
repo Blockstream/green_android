@@ -2,7 +2,6 @@
 
 package com.blockstream.green.di
 
-import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.hardware.usb.UsbManager
 import com.blockstream.common.fcm.FcmCommon
@@ -10,7 +9,6 @@ import com.blockstream.common.managers.DeviceManager
 import com.blockstream.green.devices.DeviceManagerAndroid
 import com.blockstream.green.managers.FcmAndroid
 import com.blockstream.green.managers.NotificationManager
-import com.polidea.rxandroidble3.RxBleClient
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.binds
 import org.koin.dsl.module
@@ -43,12 +41,6 @@ val greenModules = module {
         androidContext().getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
     }
     single {
-        RxBleClient.create(androidContext())
-    }
-    single {
         androidContext().getSystemService(Context.USB_SERVICE) as UsbManager
-    }
-    single {
-        (androidContext().getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
     }
 }

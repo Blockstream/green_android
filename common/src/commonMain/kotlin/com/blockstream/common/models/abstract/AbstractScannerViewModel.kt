@@ -1,6 +1,5 @@
 package com.blockstream.common.models.abstract
 
-import co.touchlab.kermit.Logger
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.ScanResult
 import com.blockstream.common.events.Event
@@ -28,7 +27,7 @@ abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false,
 
     private fun barcodeScannerResult(scanResult: ScanResult){
         if (appInfo.isDevelopmentOrDebug) {
-            Logger.d { "QR (DevelopmentOrDebug): $scanResult" }
+            logger.d { "QR (DevelopmentOrDebug): $scanResult" }
         }
 
         isScanComplete = true

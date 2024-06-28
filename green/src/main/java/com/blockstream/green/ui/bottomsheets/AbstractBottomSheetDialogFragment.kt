@@ -10,19 +10,16 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.ScreenView
+import com.blockstream.common.utils.Loggable
 import com.blockstream.green.data.CountlyAndroid
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import mu.KLogging
 import org.koin.android.ext.android.inject
 
 abstract class AbstractBottomSheetDialogFragment<T : ViewDataBinding>: BottomSheetDialogFragment(),
     ScreenView {
     protected val countly: CountlyAndroid by inject()
-
-    private val disposables = CompositeDisposable()
 
     protected lateinit var binding: T
 
@@ -70,12 +67,7 @@ abstract class AbstractBottomSheetDialogFragment<T : ViewDataBinding>: BottomShe
         countly.screenView(this)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        disposables.clear()
-    }
-
-    companion object : KLogging() {
+    companion object : Loggable() {
         fun show(instance: AbstractBottomSheetDialogFragment<*>, fragmentManager: FragmentManager){
             instance.show(fragmentManager, instance.javaClass.simpleName)
         }
@@ -86,7 +78,7 @@ abstract class AbstractBottomSheetDialogFragment<T : ViewDataBinding>: BottomShe
             if (fragmentManager.findFragmentByTag(tag) == null) {
                 show(instance, fragmentManager)
             } else {
-                logger.info { "There is already an open instance of ${instance.javaClass.simpleName}" }
+                logger.i { "There is already an open instance of ${instance.javaClass.simpleName}" }
             }
         }
 
@@ -97,8 +89,4 @@ abstract class AbstractBottomSheetDialogFragment<T : ViewDataBinding>: BottomShe
             }
         }
     }
-}
-
-interface DismissBottomSheetDialogListener{
-    fun dialogDismissed(dialog: AbstractBottomSheetDialogFragment<*>)
 }

@@ -1,9 +1,11 @@
 package com.blockstream.common.di
 
+import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import androidx.preference.PreferenceManager
 import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.database.DriverFactory
+import com.blockstream.common.managers.BluetoothManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.utils.AndroidKeystore
 import com.russhwolf.settings.Settings
@@ -30,4 +32,7 @@ actual val platformModule: Module = module {
     single {
         AndroidKeystore(androidContext())
     } binds (arrayOf(GreenKeystore::class))
+
+    single<BluetoothManager> { BluetoothManager(androidContext(), get()) }
+    single<BluetoothAdapter?> { (androidContext().getSystemService(Context.BLUETOOTH_SERVICE) as? android.bluetooth.BluetoothManager)?.adapter }
 }

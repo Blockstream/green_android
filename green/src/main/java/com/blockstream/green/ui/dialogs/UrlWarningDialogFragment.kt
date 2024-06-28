@@ -11,7 +11,7 @@ import com.blockstream.green.R
 import com.blockstream.green.databinding.UrlWarningDialogBinding
 import com.blockstream.green.ui.MainActivity
 import com.blockstream.green.utils.openNewTicket
-import mu.KLogging
+import com.blockstream.common.utils.Loggable
 import org.koin.android.ext.android.inject
 
 class UrlWarningDialogFragment : AbstractDialogFragment<UrlWarningDialogBinding, GreenViewModel>() {
@@ -70,7 +70,7 @@ class UrlWarningDialogFragment : AbstractDialogFragment<UrlWarningDialogBinding,
         dismiss()
     }
 
-    companion object : KLogging() {
+    companion object : Loggable() {
         private const val URLS = "URLS"
         fun show(urls: List<String>, fragmentManager: FragmentManager) {
             showSingle(UrlWarningDialogFragment().also {

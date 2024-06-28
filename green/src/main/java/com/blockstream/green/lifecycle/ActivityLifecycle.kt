@@ -7,11 +7,9 @@ import androidx.lifecycle.LifecycleObserver
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.green.managers.NotificationManager
 import com.blockstream.green.ui.MainActivity
-import mu.KLogging
-import org.koin.core.annotation.Single
+import com.blockstream.common.utils.Loggable
 
 
-@Single
 class ActivityLifecycle(
     private val sessionManager: SessionManager,
     private val notificationManager: NotificationManager
@@ -42,12 +40,12 @@ class ActivityLifecycle(
     }
 
     override fun onActivityDestroyed(activity: Activity) {
-        logger.info { "onActivityDestroyed" }
+        logger.i { "onActivityDestroyed" }
         if (activity is MainActivity) {
             sessionManager.disconnectAll()
             notificationManager.cancelAll()
         }
     }
 
-    companion object : KLogging()
+    companion object : Loggable()
 }

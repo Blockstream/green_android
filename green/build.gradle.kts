@@ -221,12 +221,6 @@ dependencies {
     testImplementation(libs.koin.test.junit4)
     /** ----------------------------------------------------------------------------------------- */
 
-    /**  --- RxJava  ---------------------------------------------------------------------------- */
-    implementation(libs.rxjava)
-    implementation(libs.rxandroid)
-    implementation(libs.rxkotlin)
-    /** ----------------------------------------------------------------------------------------- */
-
     /**  --- FastAdapter  ----------------------------------------------------------------------- */
     implementation(libs.fastadapter)
     implementation(libs.fastadapter.extensions.diff) // diff util helpers

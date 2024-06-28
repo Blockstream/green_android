@@ -56,7 +56,7 @@ abstract class AppActivity : AppCompatActivity() {
             if(destination.id == R.id.deviceListFragment || destination.id == R.id.deviceScanFragment){
                 deviceManager.startBluetoothScanning()
             }else{
-                deviceManager.pauseBluetoothScanning()
+                deviceManager.stopBluetoothScanning()
             }
         }
         settingsManager.appSettingsStateFlow.onEach {

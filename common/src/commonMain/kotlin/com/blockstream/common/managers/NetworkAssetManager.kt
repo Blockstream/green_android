@@ -1,6 +1,5 @@
 package com.blockstream.common.managers
 
-import co.touchlab.kermit.Logger
 import com.blockstream.common.gdk.data.Asset
 import com.blockstream.common.gdk.params.AssetsParams
 import com.blockstream.common.gdk.params.GetAssetsParams
@@ -61,7 +60,7 @@ class NetworkAssetManager constructor() {
         // Asset from GDK (cache or up2date)
         if (!metadata.containsKey(assetId)) {
             try {
-                Logger.i { "Cache Asset Metadata Missed: $assetId" }
+                logger.i { "Cache Asset Metadata Missed: $assetId" }
                 // If null save it in cache either way
                 assetsProvider.getAssets(GetAssetsParams(listOf(assetId)))?.assets?.get(assetId).let {
                     metadata[assetId] = it
@@ -77,7 +76,7 @@ class NetworkAssetManager constructor() {
     fun getAssetIcon(assetId: String, assetsProvider: AssetsProvider): ByteArray? {
         if (!icons.containsKey(assetId)) {
             try {
-                Logger.i { "Cache Asset Icon Missed: $assetId" }
+                logger.i { "Cache Asset Icon Missed: $assetId" }
                 // If null save it in cache either way
                 assetsProvider.getAssets(GetAssetsParams(listOf(assetId)))?.icons?.get(assetId).let {
                     icons[assetId] = it

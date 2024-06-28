@@ -1,5 +1,6 @@
 package com.blockstream.common.gdk.device
 
+import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.Device
 import com.blockstream.common.gdk.data.InputOutput
@@ -25,35 +26,35 @@ abstract class GdkHardwareWallet {
     // Return the base58check encoded xpubs for each path in paths
     abstract fun getXpubs(
         network: Network,
-        hwInteraction: HardwareWalletInteraction?,
-        paths: List<List<Int>>
+        paths: List<List<Int>>,
+        hwInteraction: HardwareWalletInteraction?
     ): List<String>
 
     // Sign message with the key resulting from path, and return it as hex encoded DER
     // If using Anti-Exfil protocol, also return the signerCommitment (if not this can be null).
     abstract fun signMessage(
-        hwInteraction: HardwareWalletInteraction?,
         path: List<Int>,
         message: String,
         useAeProtocol: Boolean,
         aeHostCommitment: String?,
-        aeHostEntropy: String?
+        aeHostEntropy: String?,
+        hwInteraction: HardwareWalletInteraction?
     ): SignMessageResult
 
     abstract fun signTransaction(
         network: Network,
-        hwInteraction: HardwareWalletInteraction?,
         transaction: String,
-        inputs: List<InputOutput?>,
-        outputs: List<InputOutput?>,
+        inputs: List<InputOutput>,
+        outputs: List<InputOutput>,
         transactions: Map<String, String>?,
-        useAeProtocol: Boolean
+        useAeProtocol: Boolean,
+        hwInteraction: HardwareWalletInteraction?
     ): SignTransactionResult
 
     abstract fun getBlindingFactors(
-        hwInteraction: HardwareWalletInteraction?,
-        inputs: List<InputOutput?>?,
-        outputs: List<InputOutput?>?
+        inputs: List<InputOutput>,
+        outputs: List<InputOutput>,
+        hwInteraction: HardwareWalletInteraction?
     ): BlindingFactorsResult
 
     abstract fun getMasterBlindingKey(
@@ -61,20 +62,23 @@ abstract class GdkHardwareWallet {
     ): String
 
     abstract fun getBlindingNonce(
-        hwInteraction: HardwareWalletInteraction?,
-        pubkey: String, scriptHex: String): String
+        pubKey: String,
+        scriptHex: String,
+        hwInteraction: HardwareWalletInteraction?
+    ): String
 
     abstract fun getBlindingKey(
-        hwInteraction: HardwareWalletInteraction?,
-        scriptHex: String): String
+        scriptHex: String,
+        hwInteraction: HardwareWalletInteraction?
+    ): String
 
     @Throws(Exception::class)
     abstract fun getGreenAddress(
         network: Network,
-        hwInteraction: HardwareWalletInteraction?,
         account: Account,
         path: List<Long>,
-        csvBlocks: Long
+        csvBlocks: Long,
+        hwInteraction: HardwareWalletInteraction?
     ): String
 
     abstract fun disconnect()

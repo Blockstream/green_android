@@ -1,6 +1,9 @@
 package com.blockstream.green.di
 
+import android.app.Application
 import android.content.Context
+import androidx.lifecycle.LifecycleObserver
+import com.blockstream.HardwareQATester
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.data.AppConfig
 import com.blockstream.common.data.AppInfo
@@ -11,10 +14,14 @@ import com.blockstream.green.R
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.CountlyAndroid
 import com.blockstream.green.data.CountlyNoOp
+import com.blockstream.green.lifecycle.ActivityLifecycle
+import com.blockstream.green.settings.AndroidMigrator
+import com.blockstream.green.utils.QATester
 import com.blockstream.green.utils.isDevelopmentFlavor
 import org.koin.dsl.binds
 import org.koin.dsl.module
 import org.koin.ksp.generated.com_blockstream_green_di_AndroidModule
+
 
 fun initKoinAndroid(context: Context, doOnStartup: () -> Unit = {}) {
     val appInfo = AppInfo(
@@ -48,6 +55,15 @@ fun initKoinAndroid(context: Context, doOnStartup: () -> Unit = {}) {
                     CountlyNoOp(get(), get(), get(), get())
                 }
             } binds (arrayOf(CountlyBase::class, CountlyAndroid::class))
+            single {
+                AndroidMigrator(get(), get(), get(), get(), get(), get())
+            }
+            single {
+                QATester(get())
+            } binds (arrayOf(HardwareQATester::class))
+            single {
+                ActivityLifecycle(get(), get())
+            } binds (arrayOf(Application.ActivityLifecycleCallbacks::class, LifecycleObserver::class))
         },
         com_blockstream_green_di_AndroidModule,
         databaseModule,

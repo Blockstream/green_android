@@ -133,7 +133,7 @@ typealias GA_session = cnames.structs.GA_session
 typealias GA_json = cnames.structs.GA_json
 typealias GA_auth_handler = cnames.structs.GA_auth_handler
 
-inline fun JsonElement.toGaJson(memScope: MemScope): CPointer<cnames.structs.GA_json>? {
+fun JsonElement.toGaJson(memScope: MemScope): CPointer<cnames.structs.GA_json>? {
     val gaJson = memScope.allocPointerTo<cnames.structs.GA_json>()
     GA_convert_string_to_json(Json.encodeToString(this), gaJson.ptr)
     memScope.defer {
@@ -142,7 +142,7 @@ inline fun JsonElement.toGaJson(memScope: MemScope): CPointer<cnames.structs.GA_
     return gaJson.value
 }
 
-inline fun <T : GreenJson<*>> T.toGaJson(memScope: MemScope): CPointer<cnames.structs.GA_json>? {
+fun <T : GreenJson<*>> T.toGaJson(memScope: MemScope): CPointer<cnames.structs.GA_json>? {
     val gaJson = memScope.allocPointerTo<cnames.structs.GA_json>()
     GA_convert_string_to_json(this.toJson(), gaJson.ptr)
     memScope.defer {
@@ -151,7 +151,7 @@ inline fun <T : GreenJson<*>> T.toGaJson(memScope: MemScope): CPointer<cnames.st
     return gaJson.value
 }
 
-inline fun <R> CPointer<cnames.structs.GA_json>?.destroyGAJson(memScope: MemScope, use: (CPointer<cnames.structs.GA_json>?) -> R): R {
+fun <R> CPointer<cnames.structs.GA_json>?.destroyGAJson(memScope: MemScope, use: (CPointer<cnames.structs.GA_json>?) -> R): R {
     memScope.defer {
         GA_destroy_json(this)
     }
@@ -160,15 +160,15 @@ inline fun <R> CPointer<cnames.structs.GA_json>?.destroyGAJson(memScope: MemScop
 
 
 @Suppress("UNCHECKED_CAST")
-inline fun GASession.asGASession(): CPointer<cnames.structs.GA_session> =
+fun GASession.asGASession(): CPointer<cnames.structs.GA_session> =
     this as CPointer<GA_session>
 
 @Suppress("UNCHECKED_CAST")
-inline fun GAAuthHandler.asGAAuthHandler(): CPointer<cnames.structs.GA_auth_handler> =
+fun GAAuthHandler.asGAAuthHandler(): CPointer<cnames.structs.GA_auth_handler> =
     this as CPointer<GA_auth_handler>
 
 
-inline fun MemScope.gdkStringOrNull(block: (CPointerVar<ByteVar>) -> Unit): String? {
+fun MemScope.gdkStringOrNull(block: (CPointerVar<ByteVar>) -> Unit): String? {
     return allocPointerTo<ByteVar>().let { pointer ->
         block(pointer)
 
@@ -178,43 +178,43 @@ inline fun MemScope.gdkStringOrNull(block: (CPointerVar<ByteVar>) -> Unit): Stri
     }
 }
 
-inline fun MemScope.gdkString(block: (CPointerVar<ByteVar>) -> Unit): String {
+fun MemScope.gdkString(block: (CPointerVar<ByteVar>) -> Unit): String {
     return gdkStringOrNull(block) ?: ""
 }
 
-inline fun MemScope.gaAuthHandler(): CPointerVar<GA_auth_handler> {
+fun MemScope.gaAuthHandler(): CPointerVar<GA_auth_handler> {
     return allocPointerTo()
 }
 
-inline fun MemScope.gaJson(): CPointerVar<GA_json> {
+fun MemScope.gaJson(): CPointerVar<GA_json> {
     return allocPointerTo()
 }
 
-inline fun CPointerVar<GA_json>.toJsonString(memScope: MemScope): String {
+fun CPointerVar<GA_json>.toJsonString(memScope: MemScope): String {
     return this.value!!.toJsonString(memScope)
 }
 
-inline fun CPointer<GA_json>.toJsonString(memScope: MemScope): String {
+fun CPointer<GA_json>.toJsonString(memScope: MemScope): String {
     return memScope.gdkString {
         GA_convert_json_to_string(this, it.ptr)
     }
 }
 
-inline fun Boolean.boolean(): Int {
+fun Boolean.boolean(): Int {
     return if (this) GA_TRUE else GA_FALSE
 }
 
-inline fun Int.okOrThrow(gaAuthHandler: CPointerVar<GA_auth_handler>): CPointer<GA_auth_handler> {
+fun Int.okOrThrow(gaAuthHandler: CPointerVar<GA_auth_handler>): CPointer<GA_auth_handler> {
     return okOrThrow {
         gaAuthHandler.value!!
     }
 }
 
-inline fun Int.okOrThrow() {
+fun Int.okOrThrow() {
     okOrThrow { }
 }
 
-inline fun <R> Int.okOrThrow(block: () -> R): R {
+fun <R> Int.okOrThrow(block: () -> R): R {
     if (this == GA_OK) {
         return block.invoke()
     } else {
@@ -244,7 +244,6 @@ private val _gdkNotificationHandler = staticCFunction { context: COpaquePointer?
     val notifyContext = ref?.get()
 
     if(ref != null && gaJson != null && notifyContext != null){
-
         memScoped {
             gaJson.destroyGAJson(this) {
                 gaJson.toJsonString(this).also {
@@ -257,8 +256,8 @@ private val _gdkNotificationHandler = staticCFunction { context: COpaquePointer?
                 }
             }
         }
-    }else{
-        Logger.d { "context == null && gaJson == null" }
+    } else {
+        Logger.e { "context == null && gaJson == null" }
     }
 
     Unit

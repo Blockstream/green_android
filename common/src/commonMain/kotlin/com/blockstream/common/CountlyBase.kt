@@ -10,13 +10,13 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.database.Database
 import com.blockstream.common.database.LoginCredentials
+import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.JsonConverter
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.gdk.device.DeviceInterface
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.utils.Loggable
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
@@ -785,6 +785,7 @@ abstract class CountlyBase(
                 segmentation[PARAM_SELECTED_VERSION] = version
             })
     }
+
 
     fun recordException(throwable: Throwable) {
         if (!skipExceptionRecording.contains(throwable.message)) {

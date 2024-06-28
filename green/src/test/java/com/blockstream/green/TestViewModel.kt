@@ -36,9 +36,6 @@ open class TestViewModel<VM : GreenViewModel>: KoinTest {
     @get:Rule
     val taskExecutorRule = InstantTaskExecutorRule()
 
-    @get:Rule
-    val schedulersRule = ImmediateSchedulersRule()
-
     @Mock
     protected lateinit var gdkSession: GdkSession
 

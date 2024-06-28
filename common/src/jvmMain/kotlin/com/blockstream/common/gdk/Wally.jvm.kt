@@ -10,8 +10,27 @@ actual fun getWally(): Wally {
             get() = TODO("Not yet implemented")
         override val bip39TotalWords: Int
             get() = TODO("Not yet implemented")
+        override val blindingFactorLen: Int
+            get() = TODO("Not yet implemented")
+        override val ecSignatureRecoverableLen: Int
+            get() = TODO("Not yet implemented")
+
+        override fun recoveryChainCodeBranchDerivation(
+            version: Int,
+            depth: Int,
+            childNum: Int,
+            chainCode: ByteArray,
+            publicKey: ByteArray,
+            branch: Long
+        ): String {
+            TODO("Not yet implemented")
+        }
 
         override fun ecPrivateKeyVerify(privateKey: ByteArray): Boolean {
+            TODO("Not yet implemented")
+        }
+
+        override fun ecSigToDer(signature: ByteArray): String {
             TODO("Not yet implemented")
         }
 
@@ -28,6 +47,10 @@ actual fun getWally(): Wally {
         }
 
         override fun bip32Fingerprint(bip32xPub: String): String? {
+            TODO("Not yet implemented")
+        }
+
+        override fun hashPrevouts(txHashes: ByteArray, utxoIndexes: List<Int>): ByteArray {
             TODO("Not yet implemented")
         }
 

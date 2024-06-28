@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
@@ -12,17 +11,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.blockstream.common.Urls
-import com.blockstream.common.gdk.device.DeviceInterface
+import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.Loggable
 import com.blockstream.green.R
 import com.blockstream.green.databinding.DeviceListFragmentBinding
 import com.blockstream.green.databinding.HwConnectStepBinding
 import com.blockstream.green.databinding.JadeConnectStepBinding
-import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceManagerAndroid
-import com.blockstream.green.devices.toAndroidDevice
 import com.blockstream.green.ui.items.DeviceListItem
 import com.blockstream.green.utils.observeList
 import com.blockstream.green.utils.openBrowser
@@ -31,7 +29,6 @@ import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import mu.KLogging
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -63,7 +60,7 @@ class DeviceListFragment : AbstractDeviceFragment<DeviceListFragmentBinding>(
     override suspend fun handleSideEffect(sideEffect: SideEffect) {
         super.handleSideEffect(sideEffect)
         if (sideEffect is SideEffects.Navigate){
-            (sideEffect.data as? Device)?.also {
+            (sideEffect.data as? GreenDevice)?.also {
                 selectDevice(it)
             }
         }
@@ -74,13 +71,8 @@ class DeviceListFragment : AbstractDeviceFragment<DeviceListFragmentBinding>(
 
         binding.vm = viewModel
 
-        requestPermission =
-            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { _ ->
-                // Nothing to do here, it's already handled by DeviceManager
-            }
-
-        val devicesAdapter = ModelAdapter<DeviceInterface, DeviceListItem>() {
-            DeviceListItem(it.toAndroidDevice())
+        val devicesAdapter = ModelAdapter<GreenDevice, DeviceListItem>() {
+            DeviceListItem(it)
         }.observeList(viewLifecycleOwner, viewModel.devices)
 
         val fastAdapter = FastAdapter.with(devicesAdapter)
@@ -88,10 +80,10 @@ class DeviceListFragment : AbstractDeviceFragment<DeviceListFragmentBinding>(
         fastAdapter.onClickListener = { _, _, item, _ ->
 
             // Handle Jade as an already Bonded device
-            if (item.device.hasPermissionsOrIsBonded() || item.device.handleBondingByHwwImplementation()) {
+            if (item.device.hasPermissions()) {
                 selectDevice(item.device)
             } else {
-                viewModel.askForPermissionOrBond(item.device)
+                viewModel.askForPermission(item.device)
             }
 
             true
@@ -109,7 +101,7 @@ class DeviceListFragment : AbstractDeviceFragment<DeviceListFragmentBinding>(
         }
 
         binding.buttonRequestPermission.setOnClickListener {
-            requestLocationPermission()
+            requestPermissions()
         }
 
         binding.buttonEnableLocationService.setOnClickListener {
@@ -173,7 +165,7 @@ class DeviceListFragment : AbstractDeviceFragment<DeviceListFragmentBinding>(
         }
     }
 
-    private fun selectDevice(device: Device) {
+    private fun selectDevice(device: GreenDevice) {
         navigate(DeviceListFragmentDirections.actionDeviceListFragmentToDeviceInfoFragment(deviceId = device.connectionIdentifier))
     }
 }
@@ -227,7 +219,7 @@ class JadePageFragment : Fragment() {
         binding?.rive?.stop()
     }
 
-    companion object : KLogging() {
+    companion object : Loggable() {
         private const val PAGE = "PAGE"
 
         fun newInstance(page: Int): JadePageFragment {

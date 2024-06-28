@@ -17,8 +17,6 @@ import kotlin.reflect.KClass
  */
 val results = mutableStateMapOf<String, Any?>()
 
-val Screen.resultKey get() = this::class.resultKey
-
 val KClass<*>.resultKey: String get() = "${qualifiedName ?: error("QualifiedName is not accessible")}_RESULT"
 
 fun setNavigationResultForKey(key: String, result: Any?) {

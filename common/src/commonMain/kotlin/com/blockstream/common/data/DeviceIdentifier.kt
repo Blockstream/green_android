@@ -4,7 +4,7 @@ import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
 import com.blockstream.common.devices.ConnectionType
 import com.blockstream.common.gdk.GreenJson
-import com.blockstream.common.gdk.device.DeviceBrand
+import com.blockstream.common.devices.DeviceBrand
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString

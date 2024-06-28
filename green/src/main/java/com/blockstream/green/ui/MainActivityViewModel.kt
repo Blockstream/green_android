@@ -1,7 +1,5 @@
 package com.blockstream.green.ui
 
-import android.annotation.SuppressLint
-import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.common.interfaces.JadeHttpRequestUrlValidator
 import com.blockstream.common.managers.LifecycleManager
@@ -13,7 +11,6 @@ import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class MainActivityViewModel constructor(
-    @SuppressLint("StaticFieldLeak") val context: Context,
     val lifecycleManager: LifecycleManager
 ) : GreenViewModel(), JadeHttpRequestUrlValidator {
     val lockScreen = lifecycleManager.isLocked
@@ -23,7 +20,7 @@ class MainActivityViewModel constructor(
     var torWarningEmitter: CompletableDeferred<Boolean>? = null
 
     init {
-        sessionManager.httpRequestProvider.jadeHttpRequestUrlValidator = this
+        sessionManager.httpRequestHandler.jadeHttpRequestUrlValidator = this
     }
 
     fun unlock(){

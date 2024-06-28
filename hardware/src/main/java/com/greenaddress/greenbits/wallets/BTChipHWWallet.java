@@ -1,5 +1,7 @@
 package com.greenaddress.greenbits.wallets;
 
+import android.annotation.SuppressLint;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -11,6 +13,7 @@ import com.blockstream.common.gdk.data.Device;
 import com.blockstream.common.gdk.data.InputOutput;
 import com.blockstream.common.gdk.data.Network;
 import com.blockstream.common.gdk.device.BlindingFactorsResult;
+import com.blockstream.common.gdk.device.GdkHardwareWallet;
 import com.blockstream.common.gdk.device.HardwareWalletInteraction;
 import com.blockstream.common.gdk.device.SignMessageResult;
 import com.blockstream.common.gdk.device.SignTransactionResult;
@@ -27,7 +30,6 @@ import com.btchip.utils.VarintUtils;
 import com.google.common.base.Joiner;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-import com.greenaddress.greenapi.HWWallet;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -44,7 +46,7 @@ import kotlinx.coroutines.CompletableDeferredKt;
 import kotlinx.coroutines.flow.StateFlow;
 
 
-public class BTChipHWWallet extends HWWallet {
+public class BTChipHWWallet extends GdkHardwareWallet {
     private static final byte SIGHASH_ALL = 1;
 
     private static final ListeningExecutorService mExecutor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(
@@ -54,30 +56,35 @@ public class BTChipHWWallet extends HWWallet {
     private final Map<String, String> mUserXPubs = new HashMap<>();
     private final StateFlow<Boolean> mDisconnectEvent;
 
-    protected Network mNetwork;
+    private final Network mNetwork;
+    private final Device device;
+    private final String model;
+    private final String firmwareVersion;
 
-    public BTChipHWWallet(final Gdk gdk, final BTChipDongle dongle, final String pin,
+    @SuppressLint("CheckResult")
+    public BTChipHWWallet(final BTChipDongle dongle, final String pin,
                           final Network network,
                           @Nullable final Device device,
                           final String firmwareVersion,
                           StateFlow<Boolean> disconnectEvent) {
-        mGdk = gdk;
         mDongle = dongle;
         mPin = pin;
         mNetwork = network;
-        mDevice = device;
+        this.device = device;
         if(dongle.getTransport().isUsb()){
             if(dongle.getTransport() instanceof BTChipTransportAndroidHID){
                 if(BTChipTransportAndroid.isNanoX(((BTChipTransportAndroidHID) dongle.getTransport()).getUsbDevice())){
-                    mModel = "Ledger Nano X";
+                    model = "Ledger Nano X";
                 }else{
-                    mModel = "Ledger Nano S";
+                    model = "Ledger Nano S";
                 }
+            }else{
+                model = "Ledger TChipTransportAndroidWinUSB";
             }
         } else{
-            mModel = "Ledger Nano X";
+            model = "Ledger Nano X";
         }
-        mFirmwareVersion = firmwareVersion;
+        this.firmwareVersion = firmwareVersion;
 
         mDisconnectEvent = disconnectEvent;
         if (pin == null)
@@ -111,7 +118,7 @@ public class BTChipHWWallet extends HWWallet {
 
     @NonNull
     @Override
-    public synchronized List<String> getXpubs(@NonNull Network network, @Nullable HardwareWalletInteraction hwInteraction, @NonNull List<? extends List<Integer>> paths) {
+    public synchronized List<String> getXpubs(@NonNull Network network, @NonNull List<? extends List<Integer>> paths, @Nullable HardwareWalletInteraction hwInteraction) {
         final List<String> xpubs = new ArrayList<>(paths.size());
         try {
             for (final List<Integer> path : paths) {
@@ -141,7 +148,7 @@ public class BTChipHWWallet extends HWWallet {
 
     @NonNull
     @Override
-    public synchronized String getBlindingKey(@Nullable HardwareWalletInteraction hwInteraction, @NonNull String scriptHex) {
+    public synchronized String getBlindingKey(@NonNull String scriptHex, @Nullable HardwareWalletInteraction hwInteraction) {
         try {
             final BTChipDongle.BTChipPublicKey blindingKey = mDongle.getBlindingKey(Wally.hex_to_bytes(scriptHex));
             final byte[] compressed = KeyUtils.compressPublicKey(blindingKey.getPublicKey());
@@ -154,7 +161,7 @@ public class BTChipHWWallet extends HWWallet {
 
     @NonNull
     @Override
-    public synchronized String getBlindingNonce(@Nullable HardwareWalletInteraction hwInteraction, @NonNull String pubkey, @NonNull String scriptHex) {
+    public synchronized String getBlindingNonce(@NonNull String pubkey, @NonNull String scriptHex, @Nullable HardwareWalletInteraction hwInteraction) {
         try {
             final byte[] fullPk = Wally.ec_public_key_decompress(Wally.hex_to_bytes(pubkey), null);
             final BTChipDongle.BTChipPublicKey nonce = mDongle.getBlindingNonce(fullPk, Wally.hex_to_bytes(scriptHex));
@@ -166,7 +173,7 @@ public class BTChipHWWallet extends HWWallet {
 
     @NonNull
     @Override
-    public synchronized BlindingFactorsResult getBlindingFactors(@Nullable HardwareWalletInteraction hwInteraction, @Nullable List<InputOutput> inputs, @Nullable List<InputOutput> outputs) {
+    public synchronized BlindingFactorsResult getBlindingFactors(@Nullable List<InputOutput> inputs, @Nullable List<InputOutput> outputs, @Nullable HardwareWalletInteraction hwInteraction) {
         try {
             final BTChipDongle.BTChipLiquidInput hwInputs[] = new BTChipDongle.BTChipLiquidInput[inputs.size()];
             for (int i = 0; i < hwInputs.length; ++i) {
@@ -207,7 +214,7 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
-    public synchronized String getGreenAddress(final Network network, HardwareWalletInteraction hwInteraction, final Account account, final List<Long> path, final long csvBlocks) throws BTChipException {
+    public synchronized String getGreenAddress(final Network network, final Account account, final List<Long> path, final long csvBlocks, HardwareWalletInteraction hwInteraction) throws BTChipException {
         try {
             // Only supported for liquid multisig shield and singlesig btc
             final String address;
@@ -236,8 +243,8 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
-    public synchronized SignMessageResult signMessage(@Nullable HardwareWalletInteraction hwInteraction, final List<Integer> path, final String message,
-                                                      final boolean useAeProtocol, final String aeHostCommitment, final String aeHostEntropy) {
+    public synchronized SignMessageResult signMessage(final List<Integer> path, final String message,
+                                                      final boolean useAeProtocol, final String aeHostCommitment, final String aeHostEntropy, @Nullable HardwareWalletInteraction hwInteraction) {
         if (useAeProtocol) {
             throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
         }
@@ -260,7 +267,7 @@ public class BTChipHWWallet extends HWWallet {
 
     @NonNull
     @Override
-    public synchronized SignTransactionResult signTransaction(@NonNull Network network, @Nullable HardwareWalletInteraction hwInteraction, @NonNull String transaction, @NonNull List<InputOutput> inputs, @NonNull List<InputOutput> outputs, @Nullable Map<String, String> transactions, boolean useAeProtocol) {
+    public synchronized SignTransactionResult signTransaction(@NonNull Network network, @NonNull String transaction, @NonNull List<InputOutput> inputs, @NonNull List<InputOutput> outputs, @Nullable Map<String, String> transactions, boolean useAeProtocol, @Nullable HardwareWalletInteraction hwInteraction) {
 
         final byte[] txBytes = Wally.hex_to_bytes(transaction);
 
@@ -582,6 +589,24 @@ public class BTChipHWWallet extends HWWallet {
     @Override
     public StateFlow<Boolean> getDisconnectEvent() {
         return mDisconnectEvent;
+    }
+
+    @Nullable
+    @Override
+    public String getFirmwareVersion() {
+        return firmwareVersion;
+    }
+
+    @NonNull
+    @Override
+    public String getModel() {
+        return model;
+    }
+
+    @NonNull
+    @Override
+    public Device getDevice() {
+        return device;
     }
 
     /*

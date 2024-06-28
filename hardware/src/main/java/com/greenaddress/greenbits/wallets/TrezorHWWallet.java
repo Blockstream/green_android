@@ -6,14 +6,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.blockstream.common.extensions.GdkExtensionsKt;
-import com.blockstream.common.gdk.Gdk;
 import com.blockstream.common.gdk.data.Account;
 import com.blockstream.common.gdk.data.AccountType;
 import com.blockstream.common.gdk.data.Device;
 import com.blockstream.common.gdk.data.InputOutput;
 import com.blockstream.common.gdk.data.Network;
 import com.blockstream.common.gdk.device.BlindingFactorsResult;
-import com.blockstream.common.gdk.device.DeviceBrand;
+import com.blockstream.common.devices.DeviceBrand;
+import com.blockstream.common.gdk.device.GdkHardwareWallet;
 import com.blockstream.common.gdk.device.HardwareWalletInteraction;
 import com.blockstream.common.gdk.device.SignMessageResult;
 import com.blockstream.common.gdk.device.SignTransactionResult;
@@ -21,7 +21,6 @@ import com.blockstream.libwally.Wally;
 import com.google.common.base.Joiner;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Message;
-import com.greenaddress.greenapi.HWWallet;
 import com.satoshilabs.trezor.Trezor;
 import com.satoshilabs.trezor.protobuf.TrezorMessage;
 import com.satoshilabs.trezor.protobuf.TrezorType;
@@ -37,7 +36,7 @@ import kotlinx.coroutines.CompletableDeferredKt;
 import kotlinx.coroutines.flow.MutableStateFlow;
 
 
-public class TrezorHWWallet extends HWWallet {
+public class TrezorHWWallet extends GdkHardwareWallet {
 
     private static final String TAG = TrezorHWWallet.class.getSimpleName();
 
@@ -47,12 +46,15 @@ public class TrezorHWWallet extends HWWallet {
     private final Map<String, TrezorType.HDNodeType> mRecoveryXPubs = new HashMap<>();
     private final Map<String, Object> mPrevTxs = new HashMap<>();
 
-    public TrezorHWWallet(final Gdk gdk, final Trezor t, final Device device, final String firmwareVersion) {
-        mGdk = gdk;
+    private final Device device;
+    private final String model;
+    private final String firmwareVersion;
+
+    public TrezorHWWallet(final Trezor t, Device device, final String firmwareVersion) {
         mTrezor = t;
-        mDevice = device;
-        mFirmwareVersion = firmwareVersion;
-        mModel = "Trezor " + mTrezor.getModel();
+        this.device = device;
+        this.firmwareVersion = firmwareVersion;
+        this.model = "Trezor " + mTrezor.getModel();
     }
 
     @Override
@@ -62,7 +64,7 @@ public class TrezorHWWallet extends HWWallet {
 
     @NonNull
     @Override
-    public synchronized List<String> getXpubs(@NonNull Network network, @Nullable HardwareWalletInteraction hwInteraction, @NonNull List<? extends List<Integer>> paths) {
+    public synchronized List<String> getXpubs(@NonNull Network network, @NonNull List<? extends List<Integer>> paths, @Nullable HardwareWalletInteraction hwInteraction) {
         final List<String> xpubs = new ArrayList<>(paths.size());
 
         for (List<Integer> path : paths) {
@@ -80,7 +82,7 @@ public class TrezorHWWallet extends HWWallet {
 
     @NonNull
     @Override
-    public SignMessageResult signMessage(@Nullable HardwareWalletInteraction hwInteraction, @NonNull List<Integer> path, @NonNull String message, boolean useAeProtocol, @Nullable String aeHostCommitment, @Nullable String aeHostEntropy) {
+    public SignMessageResult signMessage(@NonNull List<Integer> path, @NonNull String message, boolean useAeProtocol, @Nullable String aeHostCommitment, @Nullable String aeHostEntropy, @Nullable HardwareWalletInteraction hwInteraction) {
         if (useAeProtocol) {
             throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
         }
@@ -117,7 +119,7 @@ public class TrezorHWWallet extends HWWallet {
 
     @NonNull
     @Override
-    public SignTransactionResult signTransaction(@NonNull Network network, @Nullable HardwareWalletInteraction hwInteraction, @NonNull String transaction, @NonNull List<InputOutput> inputs, @NonNull List<InputOutput> outputs, @Nullable Map<String, String> transactions, boolean useAeProtocol) {
+    public SignTransactionResult signTransaction(@NonNull Network network, @NonNull String transaction, @NonNull List<InputOutput> inputs, @NonNull List<InputOutput> outputs, @Nullable Map<String, String> transactions, boolean useAeProtocol, @Nullable HardwareWalletInteraction hwInteraction) {
         if(network.isLiquid()){
             throw new RuntimeException(network.getCanonicalName() + " is not supported");
         }
@@ -270,17 +272,17 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public synchronized String getBlindingKey(@Nullable HardwareWalletInteraction hwInteraction, String scriptHex) {
+    public synchronized String getBlindingKey(String scriptHex, @Nullable HardwareWalletInteraction hwInteraction) {
         throw new RuntimeException("Master Blinding Key is not supported");
     }
 
     @Override
-    public synchronized String getBlindingNonce(@Nullable HardwareWalletInteraction hwInteraction, String pubkey, String scriptHex) {
+    public synchronized String getBlindingNonce(String pubkey, String scriptHex, @Nullable HardwareWalletInteraction hwInteraction) {
         throw new RuntimeException("Master Blinding Key is not supported");
     }
 
     @Override
-    public synchronized BlindingFactorsResult getBlindingFactors(@Nullable HardwareWalletInteraction hwInteraction, final List<InputOutput> inputs, final List<InputOutput> outputs) {
+    public synchronized BlindingFactorsResult getBlindingFactors(final List<InputOutput> inputs, final List<InputOutput> outputs, @Nullable HardwareWalletInteraction hwInteraction) {
         throw new RuntimeException("Master Blinding Key is not supported");
     }
 
@@ -476,7 +478,7 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public synchronized String getGreenAddress(final Network network, HardwareWalletInteraction hwInteraction, final Account account, final List<Long> path, final long csvBlocks) {
+    public synchronized String getGreenAddress(final Network network, final Account account, final List<Long> path, final long csvBlocks, HardwareWalletInteraction hwInteraction) {
 
         if (network.isMultisig()) {
             throw new RuntimeException("Hardware Wallet does not support displaying Green Multisig Shield addresses");
@@ -504,5 +506,23 @@ public class TrezorHWWallet extends HWWallet {
     @Override
     public MutableStateFlow getDisconnectEvent() {
         return null;
+    }
+
+    @Nullable
+    @Override
+    public String getFirmwareVersion() {
+        return firmwareVersion;
+    }
+
+    @NonNull
+    @Override
+    public String getModel() {
+        return model;
+    }
+
+    @NonNull
+    @Override
+    public Device getDevice() {
+        return device;
     }
 }

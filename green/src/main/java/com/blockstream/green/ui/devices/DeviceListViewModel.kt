@@ -1,15 +1,15 @@
 package com.blockstream.green.ui.devices
 
 import androidx.lifecycle.MutableLiveData
-import com.blockstream.common.gdk.device.DeviceInterface
+import com.blockstream.common.devices.GreenDevice
+import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.green.devices.Device
+import com.blockstream.green.devices.AndroidDevice
 import com.blockstream.green.devices.DeviceConnectionManager
+import com.blockstream.green.devices.toAndroidDevice
 import com.blockstream.green.utils.QATester
 import com.blockstream.green.utils.isDevelopmentOrDebug
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.annotation.KoinViewModel
@@ -22,12 +22,10 @@ class DeviceListViewModel constructor(
     @InjectedParam val isJade: Boolean
 ) : AbstractDeviceViewModel(deviceManager, qaTester, null) {
 
-    val devices = MutableLiveData(listOf<DeviceInterface>())
-    val hasBleConnectivity = true // deviceBrand == null || deviceBrand.hasBleConnectivity
+    val devices = MutableLiveData(listOf<GreenDevice>())
+    val hasBleConnectivity = true
 
-    var onSuccess: (() -> Unit)? = null
-
-    override val device: Device? = null
+    override val device: AndroidDevice? = null
 
     override val deviceConnectionManagerOrNull: DeviceConnectionManager? = null
 
@@ -38,13 +36,13 @@ class DeviceListViewModel constructor(
             devices.filter { it.isJade == isJade }
         }.onEach {
             devices.value = it
-        }.launchIn(viewModelScope.coroutineScope)
+        }.launchIn(this)
 
         bootstrap()
     }
 
-    fun askForPermissionOrBond(device: Device) {
-        device.askForPermissionOrBond(onSuccess = {
+    fun askForPermission(device: GreenDevice) {
+        device.toAndroidDevice()?.askForPermission(onSuccess = {
             postSideEffect(SideEffects.Navigate(device))
         }, onError = { error ->
             error?.also {

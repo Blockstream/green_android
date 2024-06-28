@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
-        <import type="com.polidea.rxandroidble3.RxBleClient.State" />
+        <import type="com.blockstream.common.managers.AndroidBluetoothState" />
 
         <variable
             name="vm"
@@ -82,7 +81,7 @@
             <Button
                 android:id="@+id/buttonEnableBluetooth"
                 style="@style/Widget.Green.Button.Small"
-                isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bleAdapterState == State.BLUETOOTH_NOT_ENABLED }"
+                isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bluetoothState == AndroidBluetoothState.OFF }"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/id_enable_bluetooth" />
@@ -90,7 +89,7 @@
             <Button
                 android:id="@+id/buttonRequestPermission"
                 style="@style/Widget.Green.Button.Tiny"
-                isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bleAdapterState == State.LOCATION_PERMISSION_NOT_GRANTED }"
+                isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bluetoothState == AndroidBluetoothState.PERMISSIONS_NOT_GRANTED }"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/id_give_bluetooth_permissions" />
@@ -98,7 +97,7 @@
             <Button
                 android:id="@+id/buttonEnableLocationService"
                 style="@style/Widget.Green.Button.Tiny"
-                isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bleAdapterState == State.LOCATION_SERVICES_NOT_ENABLED }"
+                isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bluetoothState == AndroidBluetoothState.LOCATION_SERVICES_DISABLED }"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/id_enable_location_services" />

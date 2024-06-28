@@ -6,6 +6,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.Urls
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
@@ -14,7 +15,6 @@ import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.databinding.DeviceScanFragmentBinding
-import com.blockstream.green.devices.Device
 import com.blockstream.green.extensions.navigate
 import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.utils.openBrowser
@@ -51,7 +51,7 @@ class DeviceScanFragment : AbstractDeviceFragment<DeviceScanFragmentBinding>(
         if (sideEffect is SideEffects.Navigate){
             if(sideEffect.data is Pair<*, *>){
                 @Suppress("UNCHECKED_CAST")
-                val data : Pair<GreenWallet, Device> = sideEffect.data as Pair<GreenWallet, Device>
+                val data : Pair<GreenWallet, GreenDevice> = sideEffect.data as Pair<GreenWallet, GreenDevice>
 
                 NavGraphDirections.actionGlobalLoginFragment(wallet = data.first, deviceId = data.second.connectionIdentifier).let { navDirections ->
                     navigate(findNavController(), navDirections.actionId, navDirections.arguments, isLogout = true)
@@ -100,7 +100,7 @@ class DeviceScanFragment : AbstractDeviceFragment<DeviceScanFragmentBinding>(
         }
 
         binding.buttonRequestPermission.setOnClickListener {
-            requestLocationPermission()
+            requestPermissions()
         }
 
         binding.buttonEnableLocationService.setOnClickListener {

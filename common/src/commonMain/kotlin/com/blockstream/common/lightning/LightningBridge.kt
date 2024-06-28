@@ -227,7 +227,7 @@ class LightningBridge constructor(
         try {
             breezSdk.lspId()?.also {
                 _lspInfoStateFlow.tryEmit(breezSdk.fetchLspInfo(it).also {
-                    Logger.d { "LspInformation: $it" }
+                    logger.d { "LspInformation: $it" }
                 })
             }
         } catch (e: Exception) {
@@ -237,7 +237,7 @@ class LightningBridge constructor(
 
     private fun updateNodeInfo(): NodeState {
         return breezSdk.nodeInfo().also {
-            Logger.d { "NodeState: $it" }
+            logger.d { "NodeState: $it" }
             _nodeInfoStateFlow.value = it
             // Emit New Block as a way to identify established connection
             _eventSharedFlow.tryEmit(BreezEvent.NewBlock(it.blockHeight))
@@ -257,7 +257,7 @@ class LightningBridge constructor(
 
         return try {
             updateNodeInfo().channelsBalanceSatoshi().also {
-                Logger.d { "Balance: $it" }
+                logger.d { "Balance: $it" }
             }
         }catch (e: Exception){
             e.printStackTrace()
@@ -565,7 +565,7 @@ class LightningBridge constructor(
     }
 
     override fun onEvent(e: BreezEvent) {
-        Logger.d { "Breez onEvent $e" }
+        logger.d { "Breez onEvent $e" }
         _eventSharedFlow.tryEmit(e)
     }
 

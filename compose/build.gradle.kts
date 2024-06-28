@@ -13,9 +13,6 @@ plugins {
 }
 
 kotlin {
-    // Enable the default target hierarchy:
-    applyDefaultHierarchyTemplate()
-
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
@@ -83,7 +80,6 @@ kotlin {
             /** ----------------------------------------------------------------------------------------- */
 
             /**  --- UI --------------------------------------------------------------------------------- */
-            implementation("dev.chrisbanes.material3:material3-window-size-class-multiplatform:0.5.0")
             implementation(libs.qrose)
             implementation(libs.mpfilepicker)
             implementation(libs.middle.ellipsis.text3)
@@ -105,9 +101,6 @@ kotlin {
             /**  --- Compose ---------------------------------------------------------------------------- */
             implementation(libs.androidx.activity.compose)
             implementation(libs.compose.ui.tooling.preview)
-
-            // debugImplementation(libs.compose.ui.tooling)
-            // debugImplementation(libs.compose.ui.test.manifest)
             /** ----------------------------------------------------------------------------------------- */
 
             /**  --- Material --------------------------------------------------------------------------- */

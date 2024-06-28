@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.blockstream.green.databinding.UiComponentsBinding
 import com.blockstream.green.utils.isDevelopmentFlavor
-import mu.KLogging
+import com.blockstream.common.utils.Loggable
 
 
 class UIComponentsActivity : AppCompatActivity() {
@@ -31,5 +31,5 @@ class UIComponentsActivity : AppCompatActivity() {
         binding.toolbar.title = "UI Components"
     }
 
-    companion object: KLogging()
+    companion object: Loggable()
 }

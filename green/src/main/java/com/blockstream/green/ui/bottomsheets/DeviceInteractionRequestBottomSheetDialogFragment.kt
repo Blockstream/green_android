@@ -13,7 +13,7 @@ import com.blockstream.green.extensions.stringFromIdentifier
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.utils.bounceDown
 import com.blockstream.green.utils.openBrowser
-import mu.KLogging
+import com.blockstream.common.utils.Loggable
 
 
 class DeviceInteractionRequestBottomSheetDialogFragment constructor() : AbstractBottomSheetDialogFragment<DeviceInteractionRequestBottomSheetBinding>() {
@@ -49,7 +49,7 @@ class DeviceInteractionRequestBottomSheetDialogFragment constructor() : Abstract
         }
     }
 
-    companion object : KLogging() {
+    companion object : Loggable() {
         const val DEVICE = "DEVICE"
         const val MESSAGE = "MESSAGE"
         const val DELAY = "DELAY"

@@ -17,7 +17,7 @@ import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.GenericFastItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.itemanimators.AlphaCrossFadeAnimator
-import mu.KLogging
+import com.blockstream.common.utils.Loggable
 
 
 open class FilterBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<FilterBottomSheetBinding>(){
@@ -89,7 +89,7 @@ open class FilterBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<Fi
         }
     }
 
-    companion object : KLogging() {
+    companion object : Loggable() {
         const val REQUEST_CODE = "REQUEST_CODE"
         const val WITH_DIVIDER = "WITH_DIVIDER"
         const val WITH_SEARCH = "WITH_SEARCH"

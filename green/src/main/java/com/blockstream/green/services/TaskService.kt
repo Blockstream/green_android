@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.IBinder
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.green.managers.NotificationManager
-import mu.KLogging
+import com.blockstream.common.utils.Loggable
 import org.koin.android.ext.android.inject
 
 class TaskService : Service() {
@@ -30,5 +30,5 @@ class TaskService : Service() {
         notificationManager.cancelAll()
     }
 
-    companion object : KLogging()
+    companion object : Loggable()
 }

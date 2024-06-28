@@ -6,9 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.events.Events
+import com.blockstream.common.utils.Loggable
 import com.blockstream.green.databinding.PinMatrixBottomSheetBinding
 import com.blockstream.green.ui.AppFragment
-import mu.KLogging
 
 class PinMatrixBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<PinMatrixBottomSheetBinding>(){
     override val screenName = "PinMatrix"
@@ -74,7 +74,7 @@ class PinMatrixBottomSheetDialogFragment: AbstractBottomSheetDialogFragment<PinM
         binding.pin = pin.indices.joinToString(" ") { "*" }
     }
 
-    companion object : KLogging() {
+    companion object : Loggable() {
         fun show(fragmentManager: FragmentManager) {
             show(PinMatrixBottomSheetDialogFragment(), fragmentManager)
         }

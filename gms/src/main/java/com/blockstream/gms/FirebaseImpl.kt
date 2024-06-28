@@ -3,9 +3,9 @@ package com.blockstream.gms
 
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.fcm.Firebase
+import com.blockstream.common.utils.Loggable
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
-import mu.KLogging
 import org.koin.core.component.KoinComponent
 
 class FirebaseImpl constructor(val fcmCommon: FcmCommon) : Firebase(), KoinComponent {
@@ -14,7 +14,7 @@ class FirebaseImpl constructor(val fcmCommon: FcmCommon) : Firebase(), KoinCompo
     override fun initialize() {
         firebaseMessaging.token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
-                logger.info { "Fetching FCM registration token failed " + task.exception }
+                logger.i { "Fetching FCM registration token failed " + task.exception }
                 return@OnCompleteListener
             }
 
@@ -23,5 +23,5 @@ class FirebaseImpl constructor(val fcmCommon: FcmCommon) : Firebase(), KoinCompo
         })
     }
 
-    companion object : KLogging()
+    companion object : Loggable()
 }

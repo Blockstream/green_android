@@ -1,15 +1,14 @@
 package com.blockstream.green.ui.devices
 
-import android.annotation.SuppressLint
-import android.content.Context
+import android.bluetooth.BluetoothAdapter
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.devices.ConnectionType
+import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.gdk.Gdk
-import com.blockstream.common.managers.SettingsManager
+import com.blockstream.common.gdk.Wally
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceConnectionManager
 import com.blockstream.green.devices.DeviceManagerAndroid
 import com.blockstream.green.devices.toAndroidDevice
@@ -22,13 +21,12 @@ import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.InjectedParam
 
 @KoinViewModel
-class DeviceScanViewModel constructor(
-    @SuppressLint("StaticFieldLeak")
-    val context: Context,
+class DeviceScanViewModel(
     deviceManager: DeviceManagerAndroid,
     qaTester: QATester,
     gdk: Gdk,
-    settingsManager: SettingsManager,
+    wally: Wally,
+    bluetoothAdapter: BluetoothAdapter,
     @InjectedParam wallet: GreenWallet
 ) : AbstractDeviceViewModel(deviceManager, qaTester, wallet) {
     val wallet get() = walletOrNull!!
@@ -37,23 +35,23 @@ class DeviceScanViewModel constructor(
 
     var requestUserActionEmitter: CompletableDeferred<Boolean>? = null
 
-    private val _deviceLiveData = MutableLiveData<Device?>(null)
-    val deviceLiveData: LiveData<Device?> get() = _deviceLiveData
-    override var device: Device?
+    private val _deviceLiveData = MutableLiveData<GreenDevice?>(null)
+    val deviceLiveData: LiveData<GreenDevice?> get() = _deviceLiveData
+    override var device: GreenDevice?
         get() = deviceLiveData.value
         set(value) {
             _deviceLiveData.postValue(value)
         }
 
     override val deviceConnectionManagerOrNull = DeviceConnectionManager(
-        countly = countly,
         gdk = gdk,
-        settingsManager = settingsManager,
-        httpRequestProvider = sessionManager.httpRequestProvider,
+        wally = wally,
+        scope = viewModelScope.coroutineScope,
+        applicationScope = applicationScope,
+        bluetoothAdapter = bluetoothAdapter,
+        httpRequestHandler = sessionManager.httpRequestHandler,
         interaction = this, // this leaks, we need a fix
-        qaTester = qaTester
     )
-    // val session get() = sessionManager.getWalletSession(wallet)
 
     init {
         session.device.takeIf { session.isConnected }?.also { device ->
@@ -62,19 +60,19 @@ class DeviceScanViewModel constructor(
             deviceManager.devices.onEach { devices ->
                 var foundDevice = devices.firstOrNull { device ->
                     wallet.deviceIdentifiers?.any { it.uniqueIdentifier == device.uniqueIdentifier } == true
-                }?.toAndroidDevice()
+                }
 
                 if(device == null) {
 
                     // Find a BLE device or request a usb authentication
                     foundDevice = foundDevice ?: devices.firstOrNull {
-                        it.toAndroidDevice().needsUsbPermissionsToIdentify()
-                    }?.toAndroidDevice()
+                        it.toAndroidDevice()?.needsUsbPermissionsToIdentify() == true
+                    }
 
                     if(foundDevice != null){
                         if(foundDevice.isBle) {
                             // Found device, pause ble scanning to increase connectivity success
-                            deviceManager.pauseBluetoothScanning()
+                            deviceManager.stopBluetoothScanning()
                         }
 
                         device = foundDevice
@@ -85,27 +83,24 @@ class DeviceScanViewModel constructor(
         }
     }
 
-    private fun selectDevice(device: Device) {
+    private fun selectDevice(device: GreenDevice) {
         if (device.gdkHardwareWallet != null) {
             // Device is unlocked
             onDeviceReady(device, null)
-        } else if (device.hasPermissionsOrIsBonded() || device.handleBondingByHwwImplementation()) {
+        } else if (device.hasPermissions()) {
             doAsync({
                 session.disconnect()
-                deviceConnectionManager.connectDevice(
-                    context,
-                    device
-                )
+                deviceConnectionManager.connectDevice(device)
             }, postAction = null, onSuccess = {
                 countly.hardwareConnect(device)
             })
         } else {
-            askForPermissionOrBond(device)
+            askForPermission(device)
         }
     }
 
-    private fun askForPermissionOrBond(device: Device) {
-        device.askForPermissionOrBond(onError = {
+    private fun askForPermission(device: GreenDevice) {
+        device.toAndroidDevice()?.askForPermission(onError = {
             onDeviceFailed(device)
         }, onSuccess = {
             // Check again if it's valid (after authentication we can get the usb serial id
@@ -117,13 +112,13 @@ class DeviceScanViewModel constructor(
         })
     }
 
-    override fun onDeviceFailed(device: Device) {
+    override fun onDeviceFailed(device: GreenDevice) {
         super.onDeviceFailed(device)
         this.device = null
         (deviceManager as DeviceManagerAndroid).startBluetoothScanning()
     }
 
-    override fun onDeviceReady(device: Device, isJadeUninitialized: Boolean?) {
+    override fun onDeviceReady(device: GreenDevice, isJadeUninitialized: Boolean?) {
 
         if (deviceConnectionManager.needsAndroid14BleUpdate) {
             postSideEffect(SideEffects.OpenDialog(0))

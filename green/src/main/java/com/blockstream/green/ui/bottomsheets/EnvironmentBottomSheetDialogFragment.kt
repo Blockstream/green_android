@@ -18,7 +18,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
-import mu.KLogging
+import com.blockstream.common.utils.Loggable
 import org.koin.android.ext.android.inject
 
 class EnvironmentBottomSheetDialogFragment : AbstractBottomSheetDialogFragment<MenuBottomSheetBinding>() {
@@ -93,7 +93,7 @@ class EnvironmentBottomSheetDialogFragment : AbstractBottomSheetDialogFragment<M
         (requireParentFragment() as? EnvironmentListener)?.onEnvironmentSelected(isTestnet, customNetwork)
     }
 
-    companion object : KLogging() {
+    companion object : Loggable() {
         private const val WITH_CUSTOM_NETWORK = "WITH_CUSTOM_NETWORK"
 
         fun show(withCustomNetwork: Boolean = false, fragmentManager: FragmentManager){

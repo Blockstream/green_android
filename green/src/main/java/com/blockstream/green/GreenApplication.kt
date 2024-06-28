@@ -10,19 +10,19 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import co.touchlab.kermit.Logger
 import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.fcm.Firebase
 import com.blockstream.common.managers.LifecycleManager
+import com.blockstream.common.utils.Loggable
 import com.blockstream.green.di.initKoinAndroid
 import com.blockstream.green.lifecycle.ActivityLifecycle
 import com.blockstream.green.settings.AndroidMigrator
 import com.blockstream.green.ui.MainActivity
 import com.blockstream.green.ui.QATesterActivity
 import com.blockstream.green.utils.isDevelopmentFlavor
-import mu.KLogging
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
-import org.slf4j.impl.HandroidLoggerAdapter
 
 class GreenApplication : Application() {
     private val androidMigrator: AndroidMigrator by inject()
@@ -52,10 +52,6 @@ class GreenApplication : Application() {
         })
 
         registerActivityLifecycleCallbacks(activityLifecycle)
-
-        HandroidLoggerAdapter.DEBUG = BuildConfig.DEBUG
-        HandroidLoggerAdapter.ANDROID_API_LEVEL = Build.VERSION.SDK_INT
-        HandroidLoggerAdapter.APP_NAME = "Green"
 
         androidMigrator.migrate()
 
@@ -94,5 +90,5 @@ class GreenApplication : Application() {
         shortcutManager!!.dynamicShortcuts = listOfNotNull(hideAmountsShortcut, qaTesterShortcut)
     }
 
-    companion object: KLogging()
+    companion object: Loggable()
 }

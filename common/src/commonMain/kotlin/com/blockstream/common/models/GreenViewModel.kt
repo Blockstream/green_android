@@ -12,7 +12,6 @@ import blockstream_green.common.generated.resources.id_you_dont_have_a_lightning
 import blockstream_green.common.generated.resources.id_your_device_was_disconnected
 import breez_sdk.InputType
 import cafe.adriel.voyager.core.model.ScreenModel
-import co.touchlab.kermit.Logger
 import com.blockstream.common.AddressInputType
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.ViewModelView
@@ -48,7 +47,7 @@ import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AuthHandlerStatus
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.gdk.device.DeviceBrand
+import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.gdk.device.GdkHardwareWallet
 import com.blockstream.common.gdk.device.HardwareWalletInteraction
@@ -292,12 +291,12 @@ open class GreenViewModel constructor(
 
         if(event is Redact){
             if(appInfo.isDebug){
-                Logger.d { "postEvent: Redacted(${event::class.simpleName}) Debug: $event" }
+                logger.d { "postEvent: Redacted(${event::class.simpleName}) Debug: $event" }
             }else{
-                Logger.d { "postEvent: Redacted(${event::class.simpleName})" }
+                logger.d { "postEvent: Redacted(${event::class.simpleName})" }
             }
         }else{
-            Logger.d { "postEvent: $event" }
+            logger.d { "postEvent: $event" }
         }
 
         viewModelScope.coroutineScope.launch { _event.emit(event) }
@@ -306,17 +305,17 @@ open class GreenViewModel constructor(
     protected fun postSideEffect(sideEffect: SideEffect) {
         if (sideEffect is Redact) {
             if(appInfo.isDebug){
-                Logger.d { "postSideEffect: Redacted(${sideEffect::class.simpleName}) Debug: $sideEffect" }
+                logger.d { "postSideEffect: Redacted(${sideEffect::class.simpleName}) Debug: $sideEffect" }
             }else{
-                Logger.d { "postSideEffect: Redacted(${sideEffect::class.simpleName})" }
+                logger.d { "postSideEffect: Redacted(${sideEffect::class.simpleName})" }
             }
         } else {
-            Logger.d { "postSideEffect: $sideEffect" }
+            logger.d { "postSideEffect: $sideEffect" }
         }
 
         // If navigate event forward side effect to parent viewmodel
         parentViewModel?.takeIf { sideEffect is SideEffects.NavigateTo }?.also {
-            Logger.d { "forward to parentViewModel: $sideEffect" }
+            logger.d { "forward to parentViewModel: $sideEffect" }
             it.postSideEffect(sideEffect)
         } ?: run {
             viewModelScope.coroutineScope.launch {
@@ -447,8 +446,10 @@ open class GreenViewModel constructor(
                 setDenominatedValue(event.denominatedValue)
             }
             is Events.Logout -> {
-                logoutSideEffect(event.reason)
-                sessionOrNull?.disconnectAsync(event.reason)
+                if(sessionOrNull?.disconnectAsync(event.reason) == false){
+                    // Already disconnected, logout the UI, else wait for disconnect event
+                    logoutSideEffect(event.reason)
+                }
             }
             is Events.SubmitErrorReport -> {
                 val subject = screenName()?.let { "Android Issue in $it" } ?: "Android Error Report"

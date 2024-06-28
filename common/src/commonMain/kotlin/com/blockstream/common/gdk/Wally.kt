@@ -4,15 +4,28 @@ interface Wally {
     val aesBlockLen: Int
     val hmacSha256Len: Int
     val ecPrivateKeyLen: Int
+    val ecSignatureRecoverableLen: Int
     val bip39TotalWords: Int
+    val blindingFactorLen: Int
 
     fun ecPrivateKeyVerify(privateKey: ByteArray): Boolean
+    fun ecSigToDer(signature: ByteArray): String
 
     fun bip39GetWord(index: Int): String
     fun bip39MnemonicValidate(mnemonic: String) : Boolean
 
     fun isXpubValid(xpub: String): Boolean
     fun bip32Fingerprint(bip32xPub: String): String?
+
+    fun hashPrevouts(
+        txHashes: ByteArray,
+        utxoIndexes: List<Int>
+    ): ByteArray
+
+    fun recoveryXpubBranchDerivation(
+        recoveryXpub: String,
+        branch: Long
+    ): String
 
     fun bip85FromMnemonic(
         mnemonic: String,

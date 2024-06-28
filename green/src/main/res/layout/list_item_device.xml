@@ -6,11 +6,11 @@
 
     <data>
         <import type="com.blockstream.common.devices.ConnectionType" />
-        <import type="com.blockstream.green.devices.Device" />
+        <import type="com.blockstream.common.devices.GreenDevice" />
 
         <variable
             name="device"
-            type="com.blockstream.green.devices.Device" />
+            type="com.blockstream.common.devices.GreenDevice" />
     </data>
 
     <com.google.android.material.card.MaterialCardView

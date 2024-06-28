@@ -4,6 +4,7 @@ import com.blockstream.common.CountlyBase
 import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
+import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.GASession
 import com.blockstream.common.gdk.Gdk
@@ -12,7 +13,6 @@ import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
 import com.blockstream.common.gdk.Wally
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.TorEvent
-import com.blockstream.common.gdk.device.DeviceInterface
 import com.blockstream.common.gdk.params.LoginCredentialsParams
 import com.blockstream.common.lightning.LightningBridge
 import com.blockstream.common.lightning.LightningManager
@@ -51,7 +51,7 @@ class SessionManager constructor(
 
     private var scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
-    val httpRequestProvider : GdkSession by lazy {
+    val httpRequestHandler : GdkSession by lazy {
         createSession()
     }
 
@@ -157,11 +157,11 @@ class SessionManager constructor(
         }.launchIn(CoroutineScope(context = Dispatchers.Default + logException()))
     }
 
-    fun getDeviceSessionForNetworkAllPolicies(device: DeviceInterface, network: Network, isEphemeral: Boolean): GdkSession? {
+    fun getDeviceSessionForNetworkAllPolicies(device: GreenDevice, network: Network, isEphemeral: Boolean): GdkSession? {
         return gdkSessions.find { it.device == device && it.defaultNetworkOrNull?.isBitcoin == network.isBitcoin && it.defaultNetworkOrNull?.isTestnet == network.isTestnet && (it.ephemeralWallet != null) == isEphemeral}
     }
 
-    fun getDeviceSessionForEnvironment(device: DeviceInterface, isTestnet: Boolean, isEphemeral: Boolean): GdkSession? {
+    fun getDeviceSessionForEnvironment(device: GreenDevice, isTestnet: Boolean, isEphemeral: Boolean): GdkSession? {
         return gdkSessions.find { it.device == device && it.isTestnet == isTestnet && (it.ephemeralWallet != null) == isEphemeral }
     }
 
@@ -226,7 +226,7 @@ class SessionManager constructor(
 
     fun getNextEphemeralId() : Long = (getConnectedEphemeralWalletSessions().filter { it.ephemeralWallet?.isHardware == false }.mapNotNull { it.ephemeralWallet?.ephemeralId }.maxOrNull() ?: 0) + 1
 
-    fun getConnectedDevices(): List<DeviceInterface>{
+    fun getConnectedDevices(): List<GreenDevice>{
         return walletSessions.values
             .filter { it.device?.isOffline == false }
             .mapNotNull { it.device }
@@ -276,8 +276,8 @@ class SessionManager constructor(
 
     @NativeCoroutinesIgnore
     suspend fun getLightningBridge(mnemonic: String, isTestnet: Boolean): LightningBridge {
-        val lightningLoginData = httpRequestProvider.getWalletIdentifier(
-            network = httpRequestProvider.networks.bitcoinElectrum(isTestnet),
+        val lightningLoginData = httpRequestHandler.getWalletIdentifier(
+            network = httpRequestHandler.networks.bitcoinElectrum(isTestnet),
             loginCredentialsParams = LoginCredentialsParams(mnemonic = mnemonic),
         )
 

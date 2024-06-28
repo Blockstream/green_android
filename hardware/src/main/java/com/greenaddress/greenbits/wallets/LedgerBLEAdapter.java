@@ -16,10 +16,10 @@ import com.blockstream.hardware.BuildConfig;
 import com.btchip.comm.BTChipTransport;
 import com.btchip.comm.LedgerDeviceBLE;
 
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
-import io.reactivex.rxjava3.subjects.PublishSubject;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import kotlinx.coroutines.flow.MutableStateFlow;
 
 public class LedgerBLEAdapter {
@@ -39,98 +39,75 @@ public class LedgerBLEAdapter {
     }
 
     // The underlying ledger device
-    private Disposable connectionDisposable;
     private final LedgerDeviceBLE ledgerDevice;
 
     @SuppressLint("MissingPermission")
     private LedgerBLEAdapter(final Context context, final BluetoothDevice btDevice, final OnConnectedListener onConnected, final OnErrorListener onError) {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
 
         // Adapter callback to route callbacks from the BLE stack to the LedgerDeviceBLE handler
         final BluetoothGattCallback gattAdapterCallback = new BluetoothGattCallback() {
             @Override
             public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-                if (ledgerDevice != null) {
-                    ledgerDevice.getGattCallback().onCharacteristicChanged(gatt, characteristic);
-                }
+                ledgerDevice.getGattCallback().onCharacteristicChanged(gatt, characteristic);
             }
 
             @Override
             public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-                if (ledgerDevice != null) {
-                    ledgerDevice.getGattCallback().onCharacteristicRead(gatt, characteristic, status);
-                }
+                ledgerDevice.getGattCallback().onCharacteristicRead(gatt, characteristic, status);
             }
 
             @Override
             public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-                if (ledgerDevice != null) {
-                    ledgerDevice.getGattCallback().onCharacteristicWrite(gatt, characteristic, status);
-                }
+                ledgerDevice.getGattCallback().onCharacteristicWrite(gatt, characteristic, status);
             }
 
             @Override
             public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-                if (ledgerDevice != null) {
-                    if (status == BluetoothGatt.GATT_SUCCESS) {
-                        if (newState == BluetoothProfile.STATE_CONNECTED) {
+                ledgerDevice.getGattCallback().onConnectionStateChange(gatt, status, newState);
+
+                if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothProfile.STATE_CONNECTED) {
+                    executorService.execute(() -> {
+                        try {
                             // Connect, and callback to login activity listener when connected
-                            dispose();
-                            connectionDisposable = Observable.just(gatt)
-                                    .observeOn(Schedulers.computation())
-                                    //.doFinally(() -> dispose())
-                                    .map(g -> {
-                                        // Apparently older versions benefit from a delay here to reduce a race condition
-                                        final int delay = Build.VERSION.SDK_INT <= Build.VERSION_CODES.N ? 1000 : 0;
-                                        android.os.SystemClock.sleep(delay);
-                                        ledgerDevice.connect();
-                                        return ledgerDevice;
-                                    })
-                                    .subscribe(device -> onConnected.onConnected(device, true, disconectEvent),
-                                            error -> { error.printStackTrace();
-                                                       onError.onError(ledgerDevice);
-                                    });
-
+                            final int delay = Build.VERSION.SDK_INT <= Build.VERSION_CODES.N ? 1000 : 0;
+                            android.os.SystemClock.sleep(delay);
+                            ledgerDevice.connect();
+                            onConnected.onConnected(ledgerDevice, true, disconectEvent);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            onError.onError(ledgerDevice);
                         }
-                    }
+                    });
+                }
 
-                    if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                        Log.i("LedgerBLEAdapter", "Send BLE disconnect event");
-                        disconectEvent.setValue(true);
+                if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                    Log.i("LedgerBLEAdapter", "Send BLE disconnect event");
+                    disconectEvent.setValue(true);
 
-                        // Disconnect, clean up BLE stack resources
-                        gatt.close();
-                    }
-
-                    ledgerDevice.getGattCallback().onConnectionStateChange(gatt, status, newState);
+                    // Disconnect, clean up BLE stack resources
+                    gatt.close();
                 }
             }
 
             @Override
             public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
-                if (ledgerDevice != null) {
-                    ledgerDevice.getGattCallback().onDescriptorRead(gatt, descriptor, status);
-                }
+                ledgerDevice.getGattCallback().onDescriptorRead(gatt, descriptor, status);
             }
 
             @Override
             public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
-                if (ledgerDevice != null) {
-                    ledgerDevice.getGattCallback().onDescriptorWrite(gatt, descriptor, status);
-                }
+                ledgerDevice.getGattCallback().onDescriptorWrite(gatt, descriptor, status);
             }
 
             @Override
             public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
-                if (ledgerDevice != null) {
-                    ledgerDevice.getGattCallback().onMtuChanged(gatt, mtu, status);
-                }
+                ledgerDevice.getGattCallback().onMtuChanged(gatt, mtu, status);
             }
 
             @Override
             public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-                if (ledgerDevice != null) {
-                    ledgerDevice.getGattCallback().onServicesDiscovered(gatt, status);
-                }
+                ledgerDevice.getGattCallback().onServicesDiscovered(gatt, status);
             }
         };
 
@@ -141,13 +118,6 @@ public class LedgerBLEAdapter {
         this.ledgerDevice = new LedgerDeviceBLE(connection);
         if (BuildConfig.DEBUG) {
             this.ledgerDevice.setDebug(true);
-        }
-    }
-
-    private void dispose() {
-        if (connectionDisposable != null) {
-            connectionDisposable.dispose();
-            connectionDisposable = null;
         }
     }
 }

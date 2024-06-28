@@ -36,7 +36,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import mu.KLogging
+import com.blockstream.common.utils.Loggable
 
 
 class NotificationManager constructor(
@@ -322,7 +322,7 @@ class NotificationManager constructor(
     // Intents are cached by the requestCode, in order for wallet to be updated we have to provide a unique requestCode
     private fun requestCode(wallet: GreenWallet): Int = wallet.hashCode()
 
-    companion object : KLogging() {
+    companion object : Loggable() {
         const val WALLETS_CHANNEL_ID = "${BuildConfig.APPLICATION_ID}.WALLETS_CHANNEL_ID"
         const val LIGHTNING_CHANNEL_ID = "${BuildConfig.APPLICATION_ID}.LIGHTNING_CHANNEL_ID"
 

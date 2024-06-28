@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.List;
 import java.io.ByteArrayOutputStream;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
@@ -34,6 +35,7 @@ import com.btchip.utils.FutureUtils;
  * Nano X : 13D63400-2C97-0004-0000-4C6564676572
  *
  */
+@SuppressLint("MissingPermission")
 public class LedgerDeviceBLE implements BTChipTransport {
 
   /** GATT Service UUID */
@@ -179,7 +181,7 @@ public class LedgerDeviceBLE implements BTChipTransport {
       Log.d(LOG_STRING, "Disconnected");
       return;
     }
-    clearQueue();
+    // clearQueue();
     if (!connection.discoverServices()) {
       throw new LedgerException(LedgerException.ExceptionReason.IO_ERROR, "Failed to initiate GATT service discovery");
     }
@@ -214,12 +216,10 @@ public class LedgerDeviceBLE implements BTChipTransport {
       throw new LedgerException(LedgerException.ExceptionReason.IO_ERROR, "Failed to enable remote notifications");
     }
     waitEvent(GattCallback.GattEventType.GATT_DESCRIPTOR_WRITE, CLIENT_CHARACTERISTIC_CONFIG);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (!connection.requestMtu(maxMtu)) {
-        throw new LedgerException(LedgerException.ExceptionReason.IO_ERROR, "Failed to request MTU");
-      }
-      waitEvent(GattCallback.GattEventType.GATT_MTU_CHANGED);
+    if (!connection.requestMtu(maxMtu)) {
+      throw new LedgerException(LedgerException.ExceptionReason.IO_ERROR, "Failed to request MTU");
     }
+    waitEvent(GattCallback.GattEventType.GATT_MTU_CHANGED);
     /* Extra test, request the MTU from the device side on the application layer */
     characteristicWrite.setValue(QUERY_MTU);
     if (!connection.writeCharacteristic(characteristicWrite)) {

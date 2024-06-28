@@ -51,6 +51,7 @@ import com.blockstream.green.extensions.errorSnackbar
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.extensions.stringFromIdentifier
 import com.blockstream.green.extensions.stringFromIdentifierOrNull
+
 import com.blockstream.green.ui.bottomsheets.DeviceInteractionRequestBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.PassphraseBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.PinMatrixBottomSheetDialogFragment

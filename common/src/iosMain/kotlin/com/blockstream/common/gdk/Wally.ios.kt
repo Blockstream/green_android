@@ -1,25 +1,32 @@
 package com.blockstream.common.gdk
 
 import cnames.structs.words
-import co.touchlab.kermit.Logger
 import com.blockstream.common.utils.getSecureRandom
 import com.blockstream.common.utils.toHex
 import gdk.AES_BLOCK_LEN
 import gdk.AES_FLAG_DECRYPT
+import gdk.BIP32_FLAG_KEY_PUBLIC
 import gdk.BIP32_FLAG_SKIP_HASH
 import gdk.BIP32_KEY_FINGERPRINT_LEN
 import gdk.BIP32_VER_MAIN_PRIVATE
 import gdk.BIP32_VER_TEST_PRIVATE
 import gdk.BIP39_SEED_LEN_512
 import gdk.BIP39_WORDLIST_LEN
+import gdk.BLINDING_FACTOR_LEN
 import gdk.EC_PRIVATE_KEY_LEN
+import gdk.EC_SIGNATURE_DER_MAX_LEN
+import gdk.EC_SIGNATURE_RECOVERABLE_LEN
 import gdk.HMAC_SHA256_LEN
 import gdk.HMAC_SHA512_LEN
+import gdk.SHA256_LEN
 import gdk.WALLY_OK
 import gdk.WALLY_SECP_RANDOMIZE_LEN
+import gdk.bip32_key_free
 import gdk.bip32_key_from_base58
+import gdk.bip32_key_from_parent
 import gdk.bip32_key_from_seed
 import gdk.bip32_key_get_fingerprint
+import gdk.bip32_key_to_base58
 import gdk.bip39_get_word
 import gdk.bip39_get_wordlist
 import gdk.bip39_mnemonic_from_bytes
@@ -29,7 +36,9 @@ import gdk.bip85_get_bip39_entropy
 import gdk.ext_key
 import gdk.wally_aes_cbc_with_ecdh_key
 import gdk.wally_ec_private_key_verify
+import gdk.wally_ec_sig_to_der
 import gdk.wally_free_string
+import gdk.wally_get_hash_prevouts
 import gdk.wally_init
 import gdk.wally_secp_randomize
 import kotlinx.cinterop.ByteVar
@@ -41,23 +50,27 @@ import kotlinx.cinterop.allocPointerTo
 import kotlinx.cinterop.convert
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
+import kotlinx.cinterop.toCValues
 import kotlinx.cinterop.toKString
 import kotlinx.cinterop.usePinned
 import kotlinx.cinterop.value
 import platform.posix.size_tVar
 
-inline fun MemScope.wordList(): CPointer<words>? {
+fun MemScope.wordList(): CPointer<words>? {
     val wordList = allocPointerTo<cnames.structs.words>().also {
         bip39_get_wordlist(Wally.Companion.BIP39_WORD_LIST_LANG, it.ptr)
     }
     return wordList.value
 }
 
+@OptIn(ExperimentalStdlibApi::class)
 class IOSWally : Wally {
     override val aesBlockLen: Int = AES_BLOCK_LEN
     override val hmacSha256Len: Int = HMAC_SHA256_LEN
     override val ecPrivateKeyLen: Int = EC_PRIVATE_KEY_LEN
+    override val ecSignatureRecoverableLen: Int = EC_SIGNATURE_RECOVERABLE_LEN
     override val bip39TotalWords: Int = BIP39_WORDLIST_LEN
+    override val blindingFactorLen: Int = BLINDING_FACTOR_LEN
 
     init {
         wally_init((0).convert())
@@ -73,6 +86,28 @@ class IOSWally : Wally {
                 byteArray.addressOf(0),
                 byteArray.get().size.convert()
             )
+        }
+    }
+
+    override fun ecSigToDer(signature: ByteArray): String {
+        return memScoped {
+
+            val written: size_tVar = alloc()
+            val der = ByteArray(EC_SIGNATURE_DER_MAX_LEN)
+
+            signature.toUByteArray().usePinned { signature ->
+                der.toUByteArray().usePinned { byteArray ->
+                    wally_ec_sig_to_der(
+                        signature.addressOf(0),
+                        signature.get().size.convert(),
+                        byteArray.addressOf(0),
+                        EC_SIGNATURE_DER_MAX_LEN.convert(),
+                        written.ptr
+                    )
+                }
+            }
+
+            der.sliceArray(0 until written.value.convert()).toHexString()
         }
     }
 
@@ -95,7 +130,6 @@ class IOSWally : Wally {
     }
 
     override fun bip39MnemonicValidate(mnemonic: String): Boolean {
-        Logger.d { "Wally bip39MnemonicValidate" }
         return memScoped {
             bip39_mnemonic_validate(wordList(), mnemonic) == WALLY_OK
         }
@@ -126,6 +160,68 @@ class IOSWally : Wally {
         }
     }
 
+    override fun hashPrevouts(
+        txHashes: ByteArray,
+        utxoIndexes: List<Int>
+    ): ByteArray {
+        return memScoped {
+            txHashes.toUByteArray().usePinned { txHashesByteArray ->
+                ByteArray(SHA256_LEN).also {
+                    it.toUByteArray().usePinned { byteArray ->
+                        wally_get_hash_prevouts(
+                            txhashes = txHashesByteArray.addressOf(0),
+                            txhashes_len = txHashes.size.convert(),
+                            utxo_indices = utxoIndexes.toIntArray().toUIntArray().toCValues(),
+                            num_utxo_indices = utxoIndexes.size.convert(),
+                            bytes_out = byteArray.addressOf(0),
+                            len = byteArray.get().size.convert()
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    override fun recoveryXpubBranchDerivation(
+        recoveryXpub: String,
+        branch: Long
+    ): String {
+        memScoped {
+            val accountKey = alloc<ext_key>().also {
+                bip32_key_from_base58(
+                    base58 = recoveryXpub,
+                    output = it.ptr
+                )
+            }
+
+            val branchKey = alloc<ext_key>().also {
+                bip32_key_from_parent(
+                    hdkey = accountKey.ptr,
+                    child_num = branch.convert(),
+                    flags = (BIP32_FLAG_KEY_PUBLIC or BIP32_FLAG_SKIP_HASH).convert(),
+                    output = it.ptr
+                )
+            }
+
+            val base58 = allocPointerTo<ByteVar>().also {
+                bip32_key_to_base58(
+                    hdkey = branchKey.ptr,
+                    flags = BIP32_FLAG_KEY_PUBLIC.convert(),
+                    output = it.ptr
+                )
+            }
+
+            defer {
+                wally_free_string(base58.value)
+
+                bip32_key_free(accountKey.ptr)
+                bip32_key_free(branchKey.ptr)
+            }
+
+            return base58.value?.toKString() ?: ""
+        }
+    }
+
     override fun bip85FromMnemonic(
         mnemonic: String,
         passphrase: String?,
@@ -133,7 +229,6 @@ class IOSWally : Wally {
         index: Long,
         numOfWords: Long
     ): String {
-        Logger.d { "Wally bip85FromMnemonic" }
         memScoped {
             val seed512 = ByteArray(BIP39_SEED_LEN_512).toUByteArray()
             val bip32Key: ext_key = alloc()
@@ -231,7 +326,7 @@ class IOSWally : Wally {
 
                                 val bip85Mnemonic = allocPointerTo<ByteVar>()
 
-                                out.get().slice(0 until written.value.convert()).toUByteArray().usePinned { out ->
+                                out.get().sliceArray(0 until written.value.convert()).usePinned { out ->
                                     bip39_mnemonic_from_bytes(
                                         wordList(),
                                         out.addressOf(0),

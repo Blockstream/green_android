@@ -9,11 +9,11 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.data.CountlyWidget
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.utils.Loggable
 import com.blockstream.green.R
 import com.blockstream.green.databinding.CountlySurveyDialogBinding
 import com.blockstream.green.extensions.snackbar
 import ly.count.android.sdk.ModuleFeedback
-import mu.KLogging
 
 class CountlySurveyDialogFragment : AbstractDialogFragment<CountlySurveyDialogBinding, GreenViewModel>() {
     override val viewModel: GreenViewModel? = null
@@ -54,7 +54,7 @@ class CountlySurveyDialogFragment : AbstractDialogFragment<CountlySurveyDialogBi
                 }
             }
         } ?: run {
-            logger.info { "Widget does not exists or it's not a Survey" }
+            logger.i { "Widget does not exists or it's not a Survey" }
             dismiss()
             return
         }
@@ -144,7 +144,7 @@ class CountlySurveyDialogFragment : AbstractDialogFragment<CountlySurveyDialogBi
         }
     }
 
-    companion object : KLogging() {
+    companion object : Loggable() {
         fun show(fragmentManager: FragmentManager) {
             showSingle(CountlySurveyDialogFragment(), fragmentManager)
         }

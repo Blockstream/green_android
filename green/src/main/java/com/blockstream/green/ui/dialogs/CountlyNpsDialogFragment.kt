@@ -9,11 +9,11 @@ import androidx.fragment.app.FragmentManager
 import com.blockstream.common.data.CountlyWidget
 import com.blockstream.common.data.FollowUpType
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.utils.Loggable
 import com.blockstream.green.R
 import com.blockstream.green.databinding.CountlyNpsDialogBinding
 import com.blockstream.green.extensions.snackbar
 import ly.count.android.sdk.ModuleFeedback
-import mu.KLogging
 
 class CountlyNpsDialogFragment : AbstractDialogFragment<CountlyNpsDialogBinding, GreenViewModel>() {
     override val viewModel: GreenViewModel? = null
@@ -53,7 +53,7 @@ class CountlyNpsDialogFragment : AbstractDialogFragment<CountlyNpsDialogBinding,
                 }
             }
         } ?: run {
-            logger.info { "Widget does not exists or it's not a NPS" }
+            logger.i { "Widget does not exists or it's not a NPS" }
             dismiss()
             return
         }
@@ -141,7 +141,7 @@ class CountlyNpsDialogFragment : AbstractDialogFragment<CountlyNpsDialogBinding,
         }
     }
 
-    companion object : KLogging() {
+    companion object : Loggable() {
         fun show(fragmentManager: FragmentManager) {
             showSingle(CountlyNpsDialogFragment(), fragmentManager)
         }

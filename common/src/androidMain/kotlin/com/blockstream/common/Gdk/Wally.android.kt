@@ -15,11 +15,14 @@ inline fun <T, R> T.bip32KeyFree(use: (T) -> R): R {
     }
 }
 
-class AndroidWally: Wally {
+
+class AndroidWally : Wally {
     override val aesBlockLen: Int = WallyJava.AES_BLOCK_LEN
     override val hmacSha256Len: Int = WallyJava.HMAC_SHA256_LEN
     override val ecPrivateKeyLen: Int = WallyJava.EC_PRIVATE_KEY_LEN
+    override val ecSignatureRecoverableLen: Int = WallyJava.EC_SIGNATURE_RECOVERABLE_LEN
     override val bip39TotalWords: Int = WallyJava.BIP39_WORDLIST_LEN
+    override val blindingFactorLen: Int = WallyJava.BLINDING_FACTOR_LEN
 
     private val bip39WordList by lazy { WallyJava.bip39_get_wordlist(BIP39_WORD_LIST_LANG) }
 
@@ -34,6 +37,11 @@ class AndroidWally: Wally {
     } catch (e: Exception) {
         e.printStackTrace()
         false
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    override fun ecSigToDer(signature: ByteArray): String {
+        return WallyJava.ec_sig_to_der(signature).toHexString()
     }
 
     override fun bip39GetWord(index: Int): String {
@@ -68,6 +76,33 @@ class AndroidWally: Wally {
             e.printStackTrace()
             null
         }
+    }
+
+    override fun hashPrevouts(
+        txHashes: ByteArray,
+        utxoIndexes: List<Int>
+    ): ByteArray {
+        return WallyJava.get_hash_prevouts(txHashes, utxoIndexes.toIntArray())
+    }
+
+    override fun recoveryXpubBranchDerivation(
+        recoveryXpub: String,
+        branch: Long
+    ): String {
+        val accountKey =
+            WallyJava.bip32_key_from_base58(recoveryXpub)
+
+        val branchKey = WallyJava.bip32_key_from_parent(
+            accountKey,
+            branch,
+            (WallyJava.BIP32_FLAG_KEY_PUBLIC or WallyJava.BIP32_FLAG_SKIP_HASH).toLong()
+        )
+
+        return WallyJava.bip32_key_to_base58(branchKey, WallyJava.BIP32_FLAG_KEY_PUBLIC.toLong())
+            .also {
+                WallyJava.bip32_key_free(accountKey)
+                WallyJava.bip32_key_free(branchKey)
+            }
     }
 
     override fun bip85FromMnemonic(
@@ -122,7 +157,7 @@ class AndroidWally: Wally {
                 out
             )
 
-            out.slice(0 until written).toByteArray().let {
+            out.sliceArray(0 until written).let {
                 WallyJava.bip39_mnemonic_from_bytes(bip39WordList, it)
             }
         } catch (e: Exception) {

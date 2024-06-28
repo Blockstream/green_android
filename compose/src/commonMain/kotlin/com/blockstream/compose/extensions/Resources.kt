@@ -59,13 +59,13 @@ import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.LBTC_POLICY_ASSET
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.WalletIcon
+import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.Transaction
-import com.blockstream.common.gdk.device.DeviceInterface
 import com.blockstream.common.looks.transaction.Completed
 import com.blockstream.common.looks.transaction.Confirmed
 import com.blockstream.common.looks.transaction.Failed
@@ -97,7 +97,7 @@ fun WalletIcon.resource() = when (this) {
     else -> Res.drawable.wallet
 }
 
-fun DeviceInterface.icon(): DrawableResource {
+fun GreenDevice.icon(): DrawableResource {
     return when {
         deviceBrand.isTrezor -> Res.drawable.trezor_device
         deviceBrand.isLedger -> Res.drawable.ledger_device

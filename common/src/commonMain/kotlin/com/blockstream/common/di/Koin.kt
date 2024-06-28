@@ -3,7 +3,6 @@ package com.blockstream.common.di
 import co.touchlab.kermit.chunked
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
-import co.touchlab.kermit.chunked
 import co.touchlab.kermit.platformLogWriter
 import com.blockstream.common.data.AppConfig
 import com.blockstream.common.data.AppInfo

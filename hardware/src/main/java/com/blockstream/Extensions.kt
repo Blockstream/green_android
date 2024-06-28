@@ -1,6 +1,6 @@
 package com.blockstream
 
-import com.blockstream.common.gdk.device.DeviceBrand
+import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.hardware.R
 import kotlinx.coroutines.flow.MutableStateFlow
 

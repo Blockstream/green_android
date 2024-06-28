@@ -6,8 +6,8 @@ import androidx.core.content.ContextCompat
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.WalletIcon
 import com.blockstream.common.database.Database
+import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.GA_ERROR
 import com.blockstream.common.gdk.GA_NOT_AUTHORIZED
@@ -141,7 +141,8 @@ fun Device.getIcon(): Int{
     }
 }
 
-fun com.blockstream.green.devices.Device.getIcon(): Int{
+
+fun GreenDevice.getIcon(): Int{
     return when {
         deviceBrand.isTrezor -> R.drawable.trezor_device
         deviceBrand.isLedger -> R.drawable.ledger_device

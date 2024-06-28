@@ -1,14 +1,16 @@
 package com.greenaddress.greenbits.wallets
 
-import android.os.SystemClock
 import android.util.Base64
-import com.blockstream.common.gdk.device.DeviceBrand
-import com.blockstream.common.interfaces.HttpRequestProvider
+import com.blockstream.common.devices.DeviceBrand
+import com.blockstream.common.interfaces.HttpRequestHandler
+import com.blockstream.common.utils.Loggable
 import com.blockstream.jade.JadeAPI
-import com.blockstream.jade.data.VersionInfo
-import com.blockstream.jade.entities.JadeError
-import com.blockstream.jade.entities.JadeError.CBOR_RPC_USER_CANCELLED
-import com.blockstream.jade.entities.JadeVersion
+import com.blockstream.jade.api.VersionInfo
+import com.blockstream.jade.data.JadeError
+import com.blockstream.jade.data.JadeError.Companion.CBOR_RPC_USER_CANCELLED
+import com.blockstream.jade.data.JadeState
+import com.blockstream.jade.data.JadeVersion
+import kotlinx.coroutines.delay
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -16,7 +18,6 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import mu.KLogging
 import java.io.IOException
 import java.security.MessageDigest
 
@@ -67,15 +68,14 @@ data class FirmwareChannels constructor(
 
 class JadeFirmwareManager constructor(
     private val firmwareInteraction: FirmwareInteraction,
-    private val httpRequestProvider: HttpRequestProvider,
+    private val httpRequestHandler: HttpRequestHandler,
     private val jadeFwVersionsFile: String = JADE_FW_VERSIONS_LATEST,
     private val forceFirmwareUpdate: Boolean = false
 ) {
 
-    companion object: KLogging(){
-        // FIXME: Should bump to "0.1.48" soon and remove the version-specific handling in liquid blinding/signing
+    companion object: Loggable(){
         // FIXME: Also we'd then be able to set any new 'supports-swaps' gdk capability to 'true' for Jade.
-        val JADE_MIN_ALLOWED_FW_VERSION = JadeVersion("0.1.44")
+        val JADE_MIN_ALLOWED_FW_VERSION = JadeVersion("0.1.48")
 
         const val JADE_FW_SERVER_HTTPS = "https://jadefw.blockstream.com"
         const val JADE_FW_SERVER_ONION =
@@ -97,27 +97,27 @@ class JadeFirmwareManager constructor(
 
     // Check Jade fw against minimum allowed firmware version
     private fun isJadeFwValid(version: JadeVersion): Boolean {
-        return JADE_MIN_ALLOWED_FW_VERSION.compareTo(version) <= 0
+        return version >= JADE_MIN_ALLOWED_FW_VERSION
     }
 
     // Check Jade version info to deduce which firmware flavour/directory to use
     private fun getFirmwarePath(info: VersionInfo): String? {
         val prod = info.jadeFeatures.contains(JADE_FEATURE_SECURE_BOOT)
-        logger .info { if (prod) "SecureBoot/FlashEncryption detected" else "dev/test unit detected" }
+        logger .i { if (prod) "SecureBoot/FlashEncryption detected" else "dev/test unit detected" }
         return when (info.boardType) {
             JADE_BOARD_TYPE_JADE -> {
                 // Alas the first version of the jade fw didn't have 'BoardType' - so we assume an early jade.
-                logger.info { "Jade 1.0 detected" }
+                logger.i { "Jade 1.0 detected" }
                 if (prod) JADE_FW_JADE_PATH else JADE_FW_JADEDEV_PATH
             }
             JADE_BOARD_TYPE_JADE_V1_1 -> {
                 // Jade 1.1
-                logger.info { "Jade 1.1 detected" }
+                logger.i { "Jade 1.1 detected" }
                 if (prod) JADE_FW_JADE1_1_PATH else JADE_FW_JADE1_1DEV_PATH
             }
             else -> {
                 val type = info.boardType
-                logger.info { "Unsupported hardware detected - $type" }
+                logger.i { "Unsupported hardware detected - $type" }
                 null
             }
         }
@@ -133,8 +133,8 @@ class JadeFirmwareManager constructor(
     // Uses GDKSession's httpRequest() to get binary file from Jade firmware server
     @Throws(IOException::class)
     private fun downloadBinary(path: String): ByteArray? {
-        logger.info { "Fetching firmware file: $path" }
-        val ret = httpRequestProvider.httpRequest.httpRequest("GET", urls(path), null, "base64", emptyList())
+        logger.i { "Fetching firmware file: $path" }
+        val ret = httpRequestHandler.httpRequest("GET", urls(path), null, "base64", emptyList())
         if(!ret.jsonObject.containsKey("body")){
             throw IOException("Failed to fetch firmware file: $path")
         }
@@ -145,8 +145,8 @@ class JadeFirmwareManager constructor(
     // Uses GDKSession's httpRequest() to get index file from Jade firmware server
     @Throws(IOException::class)
     private fun downloadIndex(path: String): FirmwareChannels {
-        logger.info { "Fetching index file: $path" }
-        val response = httpRequestProvider.httpRequest.httpRequest("GET", urls(path), null, "json", emptyList())
+        logger.i { "Fetching index file: $path" }
+        val response = httpRequestHandler.httpRequest("GET", urls(path), null, "json", emptyList())
         if(!response.jsonObject.containsKey("body")){
             throw IOException("Failed to fetch firmware file: $path")
         }
@@ -159,7 +159,7 @@ class JadeFirmwareManager constructor(
         // Get relevant fw path (or if hw not supported)
         val fwPath = getFirmwarePath(verInfo)
         if (fwPath.isNullOrBlank()) {
-            logger.info { "Unsupported hardware, firmware updates not available" }
+            logger.i { "Unsupported hardware, firmware updates not available" }
             return null
         }
         // Get the index file from that path
@@ -173,7 +173,7 @@ class JadeFirmwareManager constructor(
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            logger.info { "Error downloading firmware index file: $e" }
+            logger.i { "Error downloading firmware index file: $e" }
             null
         }
     }
@@ -185,7 +185,7 @@ class JadeFirmwareManager constructor(
             val fw = downloadBinary(fmw.filepath)
             fmw.firmware = fw
         } catch (e: java.lang.Exception) {
-            logger.info { "Error downloading firmware file: $e" }
+            logger.i { "Error downloading firmware file: $e" }
         }
     }
 
@@ -194,9 +194,9 @@ class JadeFirmwareManager constructor(
     // Call jade ota update
     // NOTE: the return value is not that useful, as the OTA may have look like it has succeeded
     @Throws(IOException::class)
-    private fun doOtaUpdate(jade: JadeAPI, firmwareInteraction: FirmwareInteraction, chunksize: Int, fwFile: FirmwareFileData) {
+    private suspend fun doOtaUpdate(jade: JadeAPI, fwFile: FirmwareFileData, firmwareInteraction: FirmwareInteraction): Boolean {
         try {
-            logger.info { "Uploading firmware, compressed size: " + fwFile.firmware?.size }
+            logger.i { "Uploading firmware, compressed size: " + fwFile.firmware?.size }
 
             val md = MessageDigest.getInstance("SHA-256")
 
@@ -209,26 +209,22 @@ class JadeFirmwareManager constructor(
             firmwareInteraction.firmwarePushedToDevice(fwFile, cmphash.toHex())
 
             val updated: Boolean = jade.otaUpdate(
-                fwFile.firmware,
+                fwFile.firmware!!,
                 fwFile.image.fwsize,
                 fwFile.image.fwhash,
                 fwFile.image.patchSize,
-                chunksize,
                 cmphash
             ) { written, totalSize ->
                 firmwareInteraction.firmwareProgress(written, totalSize)
             }
+            
+            logger.i { "Jade OTA Update returned: $updated" }
 
             firmwareInteraction.firmwareComplete(updated, fwFile)
-            logger.info { "Jade OTA Update returned: $updated" }
 
-            if (jade.isUsb) {
-                jade.disconnect()
-                // Sleep to allow jade to reboot
-                SystemClock.sleep(5000)
-            }
+            return true
         } catch (e: JadeError) {
-            logger.info { "Error during firmware update: $e" }
+            logger.i { "Error during firmware update: $e" }
             val userCancelled = e.code == CBOR_RPC_USER_CANCELLED
             firmwareInteraction.firmwareFailed(userCancelled = userCancelled, error = e.message ?: "", firmwareFileData =  fwFile)
 
@@ -236,20 +232,13 @@ class JadeFirmwareManager constructor(
                 jade.disconnect()
             }
         } catch (e: Exception) {
-            logger.info { "Error during firmware update: $e" }
+            e.printStackTrace()
+            logger.e { "Error during firmware update: $e" }
             firmwareInteraction.firmwareFailed(userCancelled = false, error = e.message ?: "", firmwareFileData =  fwFile)
-
             jade.disconnect()
-            SystemClock.sleep(1000)
         }
 
-        // On BLE connection re-bonding is expected
-        if (jade.isUsb) {
-            // Regardless of OTA success, fail, error etc. we try to reconnect.
-            if (jade.connectBlocking() == null) {
-                throw IOException("Failed to reconnect to Jade after OTA")
-            }
-        }
+        return false
     }
 
     // Checks version info and attempts to OTA if required.
@@ -257,18 +246,22 @@ class JadeFirmwareManager constructor(
     // fw-server, to read the index or download the firmware are not errors that prevent the connection
     // to Jade being made.
     // The function returns whether the current firmware is valid/allowed, regardless of any OTA occurring.
-    suspend fun checkFirmware(jade: JadeAPI): Boolean? {
-        try {
-            // Do firmware check and ota if necessary
-            val verInfo: VersionInfo = jade.versionInfo
-            val currentVersion = JadeVersion(verInfo.jadeVersion)
-            val fwValid = isJadeFwValid(currentVersion)
+    suspend fun checkFirmware(jade: JadeAPI, checkIfUninitialized: Boolean = false): Boolean {
+        // Do firmware check and ota if necessary
+        val verInfo: VersionInfo = jade.getVersionInfo()
+        val currentVersion = JadeVersion(verInfo.jadeVersion)
+        val fwValid = isJadeFwValid(currentVersion)
 
+        if (checkIfUninitialized && verInfo.jadeState != JadeState.UNINIT) {
+            return fwValid
+        }
+
+        try {
             // Log if current firmware not valid wrt the allowed minimum version
             if (!fwValid) {
-                logger.info { "Jade firmware is not sufficient to satisfy minimum supported version." }
-                logger.info { "Allowed minimum: $JADE_MIN_ALLOWED_FW_VERSION" }
-                logger.info { "Current version: $currentVersion" }
+                logger.i { "Jade firmware is not sufficient to satisfy minimum supported version." }
+                logger.i { "Allowed minimum: $JADE_MIN_ALLOWED_FW_VERSION" }
+                logger.i { "Current version: $currentVersion" }
             }
 
             // Fetch any available/selected firmware update
@@ -294,7 +287,7 @@ class JadeFirmwareManager constructor(
 
             val updates = delta.toList() + full.toList()
             if (updates.isEmpty()) {
-                logger.info { "No firmware updates currently available." }
+                logger.i { "No firmware updates currently available." }
                 return  fwValid
             }
 
@@ -325,55 +318,57 @@ class JadeFirmwareManager constructor(
                 val fwFile = updates[firmwareSelectionIndex]
 
                 // Update firmware
-                logger.info { "Loading selected firmware file: " + fwFile.filepath }
+                logger.i { "Loading selected firmware file: " + fwFile.filepath }
 
                 loadFirmware(fwFile)
 
                 if (fwFile.firmware == null) {
                     return  fwValid
                 } else {
-                    val requireBleRebonding =
-                        jade.isBle && currentVersion.isLessThan(
-                            JadeVersion("0.1.31")
-                        )
+                    val requireBleRebonding = jade.isBle && currentVersion.isLessThan(JadeVersion("0.1.31"))
 
                     // Try to OTA the fw onto Jade
-                    doOtaUpdate(
-                        jade,
-                        firmwareInteraction,
-                        verInfo.jadeOtaMaxChunk,
-                        fwFile
+                    val updated = doOtaUpdate(
+                        jade = jade,
+                        fwFile = fwFile,
+                        firmwareInteraction = firmwareInteraction
                     )
 
-                    if (jade.isUsb) {
-                        // Check fw validity again (from scratch)
-                        val newInfo = jade.versionInfo
-                        val newVersion = JadeVersion(newInfo.jadeVersion)
-                        val fwNowValid = isJadeFwValid(newVersion)
-                        firmwareInteraction.firmwareUpdated(
-                            false,
-                            requireBleRebonding
-                        )
-                        return  fwNowValid
+                    if (updated) {
+                        if (jade.isUsb) {
+                            // Delay to give time to reboot
+                            delay(5000L)
+
+                            // Check fw validity again (from scratch)
+                            val newInfo = jade.getVersionInfo()
+                            val newVersion = JadeVersion(newInfo.jadeVersion)
+                            val fwNowValid = isJadeFwValid(newVersion)
+                            firmwareInteraction.firmwareUpdated(
+                                false,
+                                requireBleRebonding
+                            )
+                            return fwNowValid
+                        } else {
+                            // If it's a BLE connection re-bonding is necessary
+                            firmwareInteraction.firmwareUpdated(
+                                true,
+                                requireBleRebonding
+                            )
+                            return true // the return value is irrelevant as we expect re-bonding
+                        }
                     } else {
-                        // If it's a BLE connection re-bonding is necessary
-                        firmwareInteraction.firmwareUpdated(
-                            true,
-                            requireBleRebonding
-                        )
-                        return  true // the return value is irrelevant as we expect re-bonding
+                        return  fwValid
                     }
                 }
             } else {
                 // User declined to update firmware right now
-                logger.info { "No OTA firmware selected" }
+                logger.i { "No OTA firmware selected" }
                 return  fwValid
             }
         } catch (e: java.lang.Exception) {
-            // emitter.onError(e)
             e.printStackTrace()
         }
 
-        return null
+        return fwValid
     }
 }

@@ -21,7 +21,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import mu.KLogging
+import com.blockstream.common.utils.Loggable
 import org.koin.android.ext.android.inject
 
 // Based on https://dev.to/bhullnatik/how-to-use-material-dialogs-with-dialogfragment-28i1
@@ -90,7 +90,7 @@ abstract class AbstractDialogFragment<T : ViewDataBinding, VM: GreenViewModel> :
         countly.screenView(this)
     }
 
-    companion object : KLogging() {
+    companion object : Loggable() {
         fun show(instance: AbstractDialogFragment<*, *>, fragmentManager: FragmentManager){
             instance.show(fragmentManager, instance.javaClass.simpleName)
         }
@@ -101,7 +101,7 @@ abstract class AbstractDialogFragment<T : ViewDataBinding, VM: GreenViewModel> :
             if (fragmentManager.findFragmentByTag(tag) == null) {
                 show(instance, fragmentManager)
             } else {
-                logger.info { "There is already an open instance of ${instance.javaClass.simpleName}" }
+                logger.i { "There is already an open instance of ${instance.javaClass.simpleName}" }
             }
         }
     }

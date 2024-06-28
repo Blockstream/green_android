@@ -1,7 +1,66 @@
 plugins {
     alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.kotlinxSerialization)
+}
+
+kotlin {
+    jvmToolchain(libs.versions.jvm.get().toInt())
+
+    androidTarget {
+        compilations.configureEach {
+            kotlinOptions {
+                jvmTarget = JavaVersion.VERSION_17.majorVersion
+            }
+        }
+    }
+
+    jvm()
+    iosArm64()
+    iosSimulatorArm64()
+    iosX64()
+
+    sourceSets {
+
+        all {
+            languageSettings.apply {
+                optIn("kotlin.io.encoding.ExperimentalEncodingApi")
+                optIn("kotlinx.serialization.ExperimentalSerializationApi")
+            }
+        }
+
+        commonMain.dependencies {
+            /**  --- Modules ---------------------------------------------------------------------------- */
+            implementation(project(":common"))
+            /** ----------------------------------------------------------------------------------------- */
+        }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.koin.test)
+        }
+
+        androidMain.dependencies {
+            /**  --- USB -------------------------------------------------------------------------------- */
+            implementation(libs.usb.serial)
+            /** ----------------------------------------------------------------------------------------- */
+        }
+
+        val androidUnitTest by getting {
+            dependencies {
+                implementation(libs.junit)
+            }
+        }
+
+        val androidInstrumentedTest by getting {
+            dependencies {
+                implementation(libs.junit)
+                implementation(libs.androidx.junit)
+                implementation(libs.androidx.espresso.core)
+            }
+        }
+    }
 }
 
 android {
@@ -12,50 +71,4 @@ android {
         minSdk = libs.versions.androidMinSdk.get().toInt()
         consumerProguardFiles("consumer-rules.pro")
     }
-}
-
-kotlin {
-    jvmToolchain(libs.versions.jvm.get().toInt())
-}
-
-dependencies {
-    /**  --- Modules ---------------------------------------------------------------------------- */
-    implementation(project(":common"))
-    /** ----------------------------------------------------------------------------------------- */
-
-    /**  --- Android / Google ------------------------------------------------------------------- */
-    api(libs.androidx.core.ktx)
-    /** ----------------------------------------------------------------------------------------- */
-
-    /**  --- Kotlin & KotlinX ------------------------------------------------------------------- */
-    implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.kotlinx.serialization.core)
-    implementation(libs.kotlinx.serialization.json)
-    /** ----------------------------------------------------------------------------------------- */
-
-    /**  --- Jackson ---------------------------------------------------------------------------- */
-    implementation(libs.jackson.datatype.json.org)
-    implementation(libs.jackson.dataformat.cbor)
-    /** ----------------------------------------------------------------------------------------- */
-
-    /**  --- RxJava ----------------------------------------------------------------------------- */
-    implementation(libs.rxjava)
-    implementation(libs.replaying.share)
-    /** ----------------------------------------------------------------------------------------- */
-
-    /**  --- Bluetooth -------------------------------------------------------------------------- */
-    implementation(libs.rxandroidble)
-    /** ----------------------------------------------------------------------------------------- */
-
-    /**  --- USB -------------------------------------------------------------------------------- */
-    implementation(libs.usb.serial)
-    /** ----------------------------------------------------------------------------------------- */
-
-    /**  --- Logging ---------------------------------------------------------------------------- */
-    implementation(libs.slf4j.simple)
-    implementation(libs.kotlin.logging.jvm)
-    /** ----------------------------------------------------------------------------------------- */
-
-
-    testImplementation(libs.junit)
 }

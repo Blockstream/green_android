@@ -33,6 +33,9 @@ import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.data.data
 import com.blockstream.common.data.isEmpty
 import com.blockstream.common.database.LoginCredentials
+import com.blockstream.common.devices.ConnectionType
+import com.blockstream.common.devices.DeviceBrand
+import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.biometricsPinData
@@ -50,13 +53,8 @@ import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.extensions.richWatchOnly
 import com.blockstream.common.extensions.watchOnlyCredentials
 import com.blockstream.common.gdk.GdkSession
-import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.TorEvent
-import com.blockstream.common.gdk.device.DeviceBrand
-import com.blockstream.common.gdk.device.DeviceInterface
 import com.blockstream.common.gdk.device.DeviceResolver
-import com.blockstream.common.gdk.device.DeviceState
-import com.blockstream.common.gdk.device.GdkHardwareWallet
 import com.blockstream.common.gdk.params.LoginCredentialsParams
 import com.blockstream.common.lightning.AppGreenlightCredentials
 import com.blockstream.common.managers.DeviceManager
@@ -86,7 +84,7 @@ abstract class LoginViewModelAbstract(
     greenWallet: GreenWallet,
     val isLightningShortcut: Boolean = false
 ) : GreenViewModel(greenWalletOrNull = greenWallet) {
-    abstract val device: DeviceInterface?
+    abstract val device: GreenDevice?
 
     override fun screenName(): String = "Login"
 
@@ -137,7 +135,7 @@ class LoginViewModel constructor(
     val autoLoginWallet: Boolean
 ) : LoginViewModelAbstract(greenWallet = greenWallet, isLightningShortcut = isLightningShortcut) {
     private val deviceManager : DeviceManager by inject()
-    override val device: DeviceInterface?
+    override val device: GreenDevice?
 
     override val isLoginRequired: Boolean = false
 
@@ -855,22 +853,13 @@ class LoginViewModelPreview(
     override val lightningCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
     override val lightningMnemonic: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
 
-    override val device: DeviceInterface? = if(withDevice) object : DeviceInterface{
+    override val device: GreenDevice? = if(withDevice) object : GreenDevice(deviceBrand = DeviceBrand.Blockstream, type = ConnectionType.USB, isBonded = true){
         override val connectionIdentifier: String = ""
         override val uniqueIdentifier: String = ""
         override val name: String = "Jade"
-        override val manufacturer: String? = null
-        override val deviceBrand: DeviceBrand = DeviceBrand.Ledger
-        override val isUsb: Boolean = true
-        override val isBle: Boolean = false
+        override val manufacturer: String = ""
         override val isOffline: Boolean = false
-        override val gdkHardwareWallet: GdkHardwareWallet? = null
-        override val isJade: Boolean = true
-        override val isTrezor: Boolean = false
-        override val isLedger: Boolean = false
-        override val deviceState: StateFlow<DeviceState> = MutableStateFlow(DeviceState.SCANNED)
         override fun disconnect() {}
-        override fun canVerifyAddressOnDevice(account: Account): Boolean = true
 
     } else null
 

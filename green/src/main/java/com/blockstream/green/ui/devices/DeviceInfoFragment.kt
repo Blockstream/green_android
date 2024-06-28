@@ -12,12 +12,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.Urls
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.devices.DeviceBrand
+import com.blockstream.common.devices.DeviceState
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.gdk.device.DeviceBrand
-import com.blockstream.common.gdk.device.DeviceState
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.Loggable
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.databinding.DeviceInfoFragmentBinding
@@ -30,7 +31,6 @@ import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.utils.openBrowser
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.greenaddress.greenbits.wallets.JadeFirmwareManager
-import mu.KLogging
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -41,7 +41,7 @@ class DeviceInfoFragment : AbstractDeviceFragment<DeviceInfoFragmentBinding>(
 ), EnvironmentListener {
     val args: DeviceInfoFragmentArgs by navArgs()
 
-    private val deviceOrNull by lazy { deviceManager.getAndroidDevice(args.deviceId) }
+    private val deviceOrNull by lazy { deviceManager.getDevice(args.deviceId) }
     private val device get() = deviceOrNull!!
 
     override val screenName = "DeviceInfo"
@@ -168,7 +168,7 @@ class DeviceInfoFragment : AbstractDeviceFragment<DeviceInfoFragmentBinding>(
                         // Update
                         viewModel.authenticateAndContinue(jadeFirmwareManager = JadeFirmwareManager(
                             viewModel,
-                            sessionManager.httpRequestProvider,
+                            sessionManager.httpRequestHandler,
                             channels[i],
                             true
                         ))
@@ -209,5 +209,5 @@ class DeviceInfoFragment : AbstractDeviceFragment<DeviceInfoFragmentBinding>(
         }
     }
 
-    companion object: KLogging()
+    companion object: Loggable()
 }

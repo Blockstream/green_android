@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk
 
-import co.touchlab.kermit.Logger
+import com.blockstream.common.utils.Loggable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -30,7 +30,7 @@ class JsonConverter constructor(val log: Boolean, val maskSensitiveFields: Boole
     fun toJSONObject(jsonString: String?): Any? {
         if (shouldLog(jsonString)) {
             "▲ ${mask(jsonString)}".let{
-                Logger.i { it }
+                logger.i { it }
             }
         }
 
@@ -48,7 +48,7 @@ class JsonConverter constructor(val log: Boolean, val maskSensitiveFields: Boole
         }.also {
             if (shouldLog(it)) {
                 "▼ ${mask(it)}".let {
-                    Logger.i { it }
+                    logger.i { it }
                 }
             }
         }
@@ -65,7 +65,7 @@ class JsonConverter constructor(val log: Boolean, val maskSensitiveFields: Boole
         return processed
     }
 
-    companion object{
+    companion object : Loggable() {
         const val SkipLogAmountConversions = false
 
         /**

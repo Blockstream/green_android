@@ -1,32 +1,33 @@
 package com.blockstream.green.ui.devices
 
-import android.annotation.SuppressLint
-import android.content.Context
+import android.bluetooth.BluetoothAdapter
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import com.blockstream.common.data.DeviceIdentifier
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.gdk.Gdk
+import com.blockstream.common.gdk.Wally
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceConnectionManager
 import com.blockstream.green.devices.DeviceManagerAndroid
 import com.blockstream.green.devices.HardwareConnectInteraction
 import com.blockstream.green.gdk.getWallet
 import com.blockstream.green.utils.QATester
 import com.greenaddress.greenbits.wallets.JadeFirmwareManager
-import mu.KLogging
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
+import com.blockstream.common.utils.Loggable
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.InjectedParam
 
 @KoinViewModel
 class DeviceInfoViewModel constructor(
-    @SuppressLint("StaticFieldLeak")
-    val context: Context,
     deviceManager: DeviceManagerAndroid,
     qaTester: QATester,
     val gdk: Gdk,
-    @InjectedParam override val device: Device,
+    val wally: Wally,
+    bluetoothAdapter: BluetoothAdapter,
+    @InjectedParam override val device: GreenDevice,
 ) : AbstractDeviceViewModel(deviceManager, qaTester, null), HardwareConnectInteraction {
 
     // Don't use onProgress for this screen as is not turned off for animation reasons
@@ -39,26 +40,27 @@ class DeviceInfoViewModel constructor(
     val deviceState = device.deviceState.asLiveData()
 
     override val deviceConnectionManagerOrNull = DeviceConnectionManager(
-        countly = countly,
         gdk = gdk,
-        settingsManager = settingsManager,
-        httpRequestProvider = sessionManager.httpRequestProvider,
-        interaction = this,
-        qaTester = qaTester
+        wally = wally,
+        scope = viewModelScope.coroutineScope,
+        applicationScope = applicationScope,
+        bluetoothAdapter = bluetoothAdapter,
+        httpRequestHandler = sessionManager.httpRequestHandler,
+        interaction = this
     )
 
     init {
         if(device.gdkHardwareWallet == null){
-            connectDevice(context)
+            connectDevice()
         }
 
         bootstrap()
     }
 
-    private fun connectDevice(context: Context) {
+    private fun connectDevice() {
         onProgress.value = true
         navigationLock.value = true
-        deviceConnectionManager.connectDevice(context, device)
+        deviceConnectionManager.connectDevice(device)
         countly.hardwareConnect(device)
     }
 
@@ -166,7 +168,8 @@ class DeviceInfoViewModel constructor(
         })
     }
 
-    override fun onDeviceReady(device: Device, isJadeUninitialized: Boolean?) {
+    override fun onDeviceReady(device: GreenDevice, isJadeUninitialized: Boolean?) {
+
         if (deviceConnectionManager.needsAndroid14BleUpdate) {
             postSideEffect(SideEffects.OpenDialog(0))
         }
@@ -178,13 +181,13 @@ class DeviceInfoViewModel constructor(
         jadeIsUninitialized.postValue(isJadeUninitialized == true)
     }
 
-    override fun onDeviceFailed(device: Device) {
+    override fun onDeviceFailed(device: GreenDevice) {
         super.onDeviceFailed(device)
         postSideEffect(SideEffects.NavigateBack())
         navigationLock.postValue(false)
     }
 
-    companion object : KLogging() {
+    companion object : Loggable() {
         const val REQUIRE_REBONDING = "REQUIRE_REBONDING"
     }
 }

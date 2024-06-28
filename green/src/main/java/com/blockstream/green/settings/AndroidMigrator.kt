@@ -17,13 +17,12 @@ import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletDao
 import com.blockstream.green.database.roomToDelight
 import kotlinx.coroutines.runBlocking
-import mu.KLogging
+import com.blockstream.common.utils.Loggable
 import org.koin.core.annotation.Single
 import java.security.KeyStore
 import java.security.UnrecoverableKeyException
 
-@Single
-class AndroidMigrator constructor(
+class AndroidMigrator(
     val context: Context,
     val sharedPreferences: SharedPreferences,
     val walletDao: WalletDao,
@@ -231,7 +230,7 @@ class AndroidMigrator constructor(
     private suspend fun migrateAppDataV2() {
         if (sharedPreferences.getLong(Preferences.APP_DATA_VERSION, 0) < 2) {
 
-            logger.info { "Migrating AppData to v2" }
+            logger.i { "Migrating AppData to v2" }
 
             walletDao.getAllWallets().forEach { wallet ->
 
@@ -253,7 +252,7 @@ class AndroidMigrator constructor(
 
     private suspend fun migrateAppDataV3() {
         if (sharedPreferences.getLong(Preferences.APP_DATA_VERSION, 0) < 3) {
-            logger.info { "Migrating AppData to v3" }
+            logger.i { "Migrating AppData to v3" }
 
             walletDao.getAllWallets().forEach { wallet ->
                 val newWallet = roomToDelight(wallet).toGreenWallet().also {
@@ -307,7 +306,7 @@ class AndroidMigrator constructor(
         return "NativeAndroidAuth"
     }
 
-    companion object: KLogging(){
+    companion object: Loggable(){
         const val APP_DATA_VERSION = 3
         const val NETWORK_ID_ACTIVE = "network_id_active"
         const val VERSION = "version"
