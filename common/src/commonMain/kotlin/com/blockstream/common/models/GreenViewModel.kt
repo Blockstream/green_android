@@ -153,7 +153,7 @@ open class GreenViewModel constructor(
     // Main action validation
     internal val _isValid = MutableStateFlow(viewModelScope, isPreview)
     //@NativeCoroutinesState
-    //val isValid = _isValid.asStateFlow()
+    val isValid: StateFlow<Boolean> = _isValid
 
     // Main button enabled flag
     private val _buttonEnabled = MutableStateFlow(isPreview)

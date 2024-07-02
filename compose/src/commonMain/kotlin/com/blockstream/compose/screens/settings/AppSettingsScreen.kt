@@ -53,6 +53,7 @@ import blockstream_green.common.generated.resources.id_double_check_spv_with_oth
 import blockstream_green.common.generated.resources.id_enable_experimental_features
 import blockstream_green.common.generated.resources.id_enable_limited_usage_data
 import blockstream_green.common.generated.resources.id_enable_testnet
+import blockstream_green.common.generated.resources.id_enable_tls_connection
 import blockstream_green.common.generated.resources.id_enhanced_privacy
 import blockstream_green.common.generated.resources.id_experimental_features_might
 import blockstream_green.common.generated.resources.id_help_green_improve
@@ -72,6 +73,7 @@ import blockstream_green.common.generated.resources.id_these_settings_apply_for_
 import blockstream_green.common.generated.resources.id_use_secure_display_and_screen
 import blockstream_green.common.generated.resources.id_verify_your_bitcoin
 import blockstream_green.common.generated.resources.id_your_settings_are_unsavednndo
+import blockstream_green.common.generated.resources.lock_simple
 import blockstream_green.common.generated.resources.shield_check
 import blockstream_green.common.generated.resources.test_tube_fill
 import blockstream_green.common.generated.resources.tor
@@ -339,6 +341,8 @@ fun AppSettingsScreen(
             )
 
             val electrumNodeEnabled by viewModel.electrumNodeEnabled.collectAsStateWithLifecycle()
+            val personalElectrumServerTlsEnabled by viewModel.personalElectrumServerTlsEnabled.collectAsStateWithLifecycle()
+
             GreenSwitch(
                 title = stringResource(Res.string.id_personal_electrum_server),
                 caption = stringResource(Res.string.id_choose_the_electrum_servers_you),
@@ -411,6 +415,16 @@ fun AppSettingsScreen(
                         )
                     }
                 }
+            }
+
+            AnimatedVisibility(visible = electrumNodeEnabled) {
+                GreenSwitch(
+                    title = stringResource(Res.string.id_enable_tls_connection),
+                    checked = personalElectrumServerTlsEnabled,
+                    painter = painterResource(Res.drawable.lock_simple),
+                    onCheckedChange = viewModel.personalElectrumServerTlsEnabled.onValueChange(),
+                    modifier = Modifier.padding(start = 42.dp)
+                )
             }
 
             HorizontalDivider(modifier = Modifier.padding(start = 54.dp))

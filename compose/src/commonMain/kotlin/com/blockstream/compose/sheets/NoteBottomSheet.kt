@@ -33,9 +33,11 @@ import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.navigation.getNavigationResult
 import com.blockstream.compose.navigation.setNavigationResult
+import com.blockstream.compose.sheets.NoteBottomSheet.Companion.setResult
 import com.blockstream.compose.utils.OpenKeyboard
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
+import kotlin.math.min
 
 @Parcelize
 data class NoteBottomSheet(
@@ -77,8 +79,7 @@ fun NoteBottomSheet(
         sideEffectHandler = {
             if (it is SideEffects.Success) {
                 (it.data as? String)?.also {
-                    NoteBottomSheet.setResult(it)
-                    onDismissRequest()
+                    setResult(it)
                 }
             }
         },
@@ -91,13 +92,14 @@ fun NoteBottomSheet(
 
         TextField(
             value = note,
-            onValueChange = viewModel.note.onValueChange(),
+            onValueChange = {
+                viewModel.note.value = it.substring(0 until it.length.coerceAtMost(200))
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .focusRequester(focusRequester),
             label = { Text(stringResource(if (viewModel.isLightning) Res.string.id_description else Res.string.id_add_note)) },
-            minLines = 3,
-            maxLines = 3,
+            maxLines = 5,
             trailingIcon = {
                 Icon(
                     Icons.Default.Clear,

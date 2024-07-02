@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_account__asset
+import blockstream_green.common.generated.resources.id_description
 import blockstream_green.common.generated.resources.id_fee_rate
 import blockstream_green.common.generated.resources.id_lightning_account
 import blockstream_green.common.generated.resources.id_next
@@ -41,6 +42,7 @@ import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
+import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.common.models.send.SendViewModel
 import com.blockstream.common.models.send.SendViewModelAbstract
@@ -50,6 +52,7 @@ import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAmountField
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.components.GreenNetworkFee
 import com.blockstream.compose.components.GreenTextField
 import com.blockstream.compose.components.RiveAnimation
@@ -273,6 +276,23 @@ fun SendScreen(
                     )
                 }
 
+                val note by viewModel.note.collectAsStateWithLifecycle()
+                AnimatedVisibility(visible = note.isNotBlank()) {
+                    GreenDataLayout(
+                        title = stringResource(Res.string.id_description),
+                        withPadding = false
+                    ) {
+                        Row {
+                            Text(
+                                text = note, modifier = Modifier
+                                    .weight(1f)
+                                    .padding(vertical = 16.dp)
+                                    .padding(start = 16.dp)
+                            )
+                        }
+                    }
+                }
+
                 val metadataDomain by viewModel.metadataDomain.collectAsStateWithLifecycle()
                 AnimatedNullableVisibility(value = metadataDomain) {
                     Text(
@@ -351,6 +371,7 @@ fun SendScreen(
 
             AnimatedNullableVisibility(value = accountAssetBalance) {
                 val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
+                val isValid by viewModel.isValid.collectAsStateWithLifecycle()
 
                 if (it.account.isLightning) {
                     SlideToUnlock(
@@ -363,7 +384,7 @@ fun SendScreen(
                 } else {
                     GreenButton(
                         text = stringResource(Res.string.id_next),
-                        enabled = buttonEnabled,
+                        enabled = isValid,
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         viewModel.postEvent(Events.Continue)

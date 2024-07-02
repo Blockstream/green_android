@@ -293,7 +293,9 @@ fun AccountOverviewScreen(
             }
 
             assets.data()?.also {
-                items(it) {
+                items(items = it, key = {
+                    it.assetId
+                }) {
                     GreenAsset(
                         modifier = Modifier
                             .padding(horizontal = 16.dp)
@@ -344,9 +346,9 @@ fun AccountOverviewScreen(
             }
 
             transactions.data()?.let {
-                itemsIndexed(it) { index, item ->
-                    GreenTransaction(transactionLook = item) {
-                        viewModel.postEvent(Events.Transaction(transaction = item.transaction))
+                items(items = it, key = { it.transaction.txHash.hashCode() + it.transaction.txType.gdkType.hashCode() }) {
+                    GreenTransaction(transactionLook = it) {
+                        viewModel.postEvent(Events.Transaction(transaction = it.transaction))
                     }
                 }
             }

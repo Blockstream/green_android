@@ -209,7 +209,7 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
     private val _generateAddressLock = Mutex()
 
     init {
-        combine(accountAsset, showLightningOnChainAddress) { accountAsset, showLightningOnChainAddress ->
+        combine(accountAsset, showLightningOnChainAddress, receiveAddress) { accountAsset, showLightningOnChainAddress, receiveAddress ->
             _navData.value = NavData(
                 title = getString(Res.string.id_receive),
                 subtitle = greenWallet.name,
@@ -228,7 +228,7 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
                                 )
                             )
                         }
-                    ).takeIf { accountAsset?.account?.isLightning == true && !showLightningOnChainAddress},
+                    ).takeIf { accountAsset?.account?.isLightning == true && !showLightningOnChainAddress && receiveAddress == null},
                     NavAction(
                         title = getString(Res.string.id_reset),
                         icon = Res.drawable.question,
@@ -720,7 +720,7 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
                 ) ?: "-"
 
                 _liquidityFee.value = when {
-                    amount.value.isBlank() -> {
+                    amount.value.isBlank() || _amountError.value != null -> {
                         null
                     }
 

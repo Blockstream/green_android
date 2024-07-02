@@ -173,17 +173,23 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
     } ?: emptyFlow()).stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
 
-    private val _transactions: StateFlow<DataState<List<TransactionLook>>> =
-        session.walletTransactions.filter { session.isConnected }.map { transactionsLooks ->
-        transactionsLooks.mapSuccess {
+    private val _transactions: StateFlow<DataState<List<TransactionLook>>> = combine(
+        session.walletTransactions.filter { session.isConnected },
+        session.settings()
+    ) { transactions, _ ->
+        transactions.mapSuccess {
             it.map {
                 TransactionLook.create(it, session)
             }
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), DataState.Loading)
 
+    // Re-calculate if needed (hideAmount or denomination & exchange rate change)
     override val transactions: StateFlow<DataState<List<TransactionLook>>> =
-        combine(hideAmounts, _transactions) { hideAmounts, transactionsLooks ->
+        combine(
+            hideAmounts,
+            _transactions
+        ) { hideAmounts, transactionsLooks ->
             if (transactionsLooks is DataState.Success && hideAmounts) {
                 DataState.Success(transactionsLooks.data.map { it.asMasked })
             } else {

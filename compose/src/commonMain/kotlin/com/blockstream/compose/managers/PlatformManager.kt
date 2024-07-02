@@ -37,7 +37,9 @@ expect fun askForNotificationPermissions(viewModel: GreenViewModel)
 expect class PlatformManager {
     fun openBrowser(url: String)
 
-    fun copyToClipboard(content: String, label: String? = null)
+    fun openToast(content: String): Boolean
+
+    fun copyToClipboard(content: String, label: String? = null, isSensitive: Boolean = false): Boolean
     internal fun getClipboard(): String?
     fun clearClipboard()
 

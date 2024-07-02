@@ -11,6 +11,7 @@ import breez_sdk.OpenChannelFeeResponse
 import breez_sdk.OpeningFeeParams
 import breez_sdk.Payment
 import breez_sdk.PaymentDetails
+import breez_sdk.PaymentStatus
 import breez_sdk.PaymentType
 import breez_sdk.ReceivePaymentResponse
 import breez_sdk.RecommendedFees
@@ -172,8 +173,16 @@ fun Transaction.Companion.fromPayment(payment: Payment): Transaction {
 
     val isPendingCloseChannel = payment.paymentType == PaymentType.CLOSED_CHANNEL && (payment.details as? PaymentDetails.ClosedChannel)?.data?.state == ChannelState.PENDING_CLOSE
 
+    val blockHeight = when {
+        isPendingCloseChannel || payment.status == PaymentStatus.PENDING -> 0
+        payment.status == PaymentStatus.COMPLETE -> payment.paymentTime
+        else -> {
+            0
+        }
+    }
+
     return Transaction(
-        blockHeight = if(isPendingCloseChannel) 0 else payment.paymentTime,
+        blockHeight = blockHeight,
         canRBF = false,
         createdAtTs = payment.paymentTime * 1_000_000,
         inputs = listOf(),
@@ -247,8 +256,8 @@ fun Transaction.Companion.fromReverseSwapInfo(account: Account, reverseSwapInfo:
 
 fun AppGreenlightCredentials.Companion.fromGreenlightCredentials(greenlightCredentials: GreenlightCredentials): AppGreenlightCredentials {
     return AppGreenlightCredentials(
-        deviceKey = greenlightCredentials.deviceKey,
-        deviceCert = greenlightCredentials.deviceCert
+        deviceKey = greenlightCredentials.developerKey,
+        deviceCert = greenlightCredentials.developerCert
     )
 }
 

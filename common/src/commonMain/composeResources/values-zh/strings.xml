@@ -1100,7 +1100,7 @@
     <string name="id_segwit_bip84">隔离见证(BIP84)</string>
     <string name="id_select_a_fiat_currency_and">选择一种法币和比特币面额在账户中显示</string>
     <string name="id_select_account">选择账户</string>
-    <string name="id_select_account_amp_asset">Select account &amp;amp; asset</string>
+    <string name="id_select_account_amp_asset">Select account &amp; asset</string>
     <string name="id_select_an_app_on_s">在%1$s上选择一个app</string>
     <string name="id_select_asset">选择资产</string>
     <string name="id_select_duration_of_twofactor">选择双重验证的持续时间来保护你的资产。新的选项只会影响新接收的资产。</string>
@@ -1413,6 +1413,7 @@
     <string name="id_waiting_for_transaction">等待转账...</string>
     <string name="id_wallet">钱包</string>
     <string name="id_wallet_already_restored">钱包已恢复</string>
+    <string name="id_wallet_already_restored_s">Wallet already restored: %1$s</string>
     <string name="id_wallet_assets">钱包资产</string>
     <string name="id_wallet_backup">钱包备份</string>
     <string name="id_wallet_coins_will_require">钱包中的代币需要每年重新激活一次双重验证，以保证受到双重身份验证的保护。</string>

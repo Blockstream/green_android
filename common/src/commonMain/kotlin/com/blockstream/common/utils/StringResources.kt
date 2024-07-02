@@ -1418,6 +1418,7 @@ object StringResourcesMap {
         "id_waiting_for_transaction" to Res.string.id_waiting_for_transaction,
         "id_wallet" to Res.string.id_wallet,
         "id_wallet_already_restored" to Res.string.id_wallet_already_restored,
+        "id_wallet_already_restored_s" to Res.string.id_wallet_already_restored_s,
         "id_wallet_assets" to Res.string.id_wallet_assets,
         "id_wallet_backup" to Res.string.id_wallet_backup,
         "id_wallet_coins_will_require" to Res.string.id_wallet_coins_will_require,

@@ -90,6 +90,7 @@
         <!--from starting a new Activity on new USB devices-->
         <activity
             android:name="com.blockstream.green.ui.MainActivity"
+            android:screenOrientation="userPortrait"
             android:windowSoftInputMode="adjustPan"
             android:exported="true"
             android:launchMode="singleTask">

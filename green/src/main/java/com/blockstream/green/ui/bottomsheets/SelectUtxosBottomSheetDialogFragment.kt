@@ -9,9 +9,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.databinding.SelectUtxosBottomSheetBinding
 import com.blockstream.green.ui.items.UtxoListItem
-import com.blockstream.green.ui.send.SendViewModel
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import mu.KLogging
 
 // WIP
-class SelectUtxosBottomSheetDialogFragment : WalletBottomSheetDialogFragment<SelectUtxosBottomSheetBinding, SendViewModel>() {
+class SelectUtxosBottomSheetDialogFragment : WalletBottomSheetDialogFragment<SelectUtxosBottomSheetBinding, GreenViewModel>() {
     override val screenName = "SelectUTXO"
 
     override fun inflate(layoutInflater: LayoutInflater) = SelectUtxosBottomSheetBinding.inflate(layoutInflater)

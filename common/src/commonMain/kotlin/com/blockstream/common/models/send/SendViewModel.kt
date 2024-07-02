@@ -392,6 +392,7 @@ class SendViewModel(
                 _metadataDomain.value = null
                 _metadataImage.value = null
                 _metadataDescription.value = null
+                note.value = ""
                 return@doAsync null
             }
 
@@ -404,6 +405,9 @@ class SendViewModel(
                 if (tx.error.isBlank()) {
                     _error.value = null
                 }
+
+                // Mainly used in Lightning invoice
+                note.value = tx.memo ?: ""
 
                 tx.addressees.firstOrNull()?.also { addressee ->
                     _isAmountLocked.value = addressee.isAmountLocked == true

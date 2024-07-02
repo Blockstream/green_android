@@ -55,14 +55,19 @@ actual fun askForNotificationPermissions(viewModel: GreenViewModel) {
 
 @OptIn(ExperimentalForeignApi::class)
 actual class PlatformManager(val application: UIApplication) {
+    actual fun openToast(content: String): Boolean {
+        return false
+    }
+
     actual fun openBrowser(url: String) {
         NSURL(string = url).takeIf { application.canOpenURL(it) }?.also {
             application.openURL(it)
         }
     }
 
-    actual fun copyToClipboard(content: String, label: String?) {
+    actual fun copyToClipboard(content: String, label: String?, isSensitive: Boolean): Boolean {
         UIPasteboard.generalPasteboard().string = content
+        return false
     }
 
     internal actual fun getClipboard(): String? {

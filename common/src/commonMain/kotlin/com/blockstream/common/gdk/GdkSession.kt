@@ -648,6 +648,7 @@ class GdkSession constructor(
             proxy = applicationSettings.proxyUrl ?: "",
             spvEnabled = spvEnabled,
             spvMulti = spvMulti,
+            electrumTls = if(electrumUrl.isNotBlank()) applicationSettings.personalElectrumServerTls else true,
             electrumUrl = electrumUrl,
             electrumOnionUrl = electrumUrl.takeIf { useTor },
             spvServers = spvServers
@@ -708,7 +709,7 @@ class GdkSession constructor(
                     gdk.connect(it.value, createConnectionParams(it.key))
                     it.key
                 } catch (e: Exception) {
-                    _failedNetworksStateFlow.value = _failedNetworksStateFlow.value + it.key
+                    _failedNetworksStateFlow.value += it.key
                     null
                 }
             }

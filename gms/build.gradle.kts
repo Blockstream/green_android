@@ -13,17 +13,13 @@ android {
 
         consumerProguardFiles("consumer-rules.pro")
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
     buildFeatures {
         buildConfig = true
     }
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(libs.versions.jvm.get().toInt())
 }
 
 dependencies {
@@ -36,7 +32,7 @@ dependencies {
     implementation(libs.review.ktx)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.messaging)
-
+    implementation(libs.installreferrer)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Koin   ----------------------------------------------------------------------------- */

@@ -66,6 +66,10 @@ fun startKoin(doOnStartup: () -> Unit = {}) {
             }
             single<FcmCommon> {
                 object : FcmCommon(get()){
+                    override fun showDebugNotification(title: String, message: String) {
+
+                    }
+
                     override fun scheduleLightningBackgroundJob(
                         walletId: String,
                         breezNotification: BreezNotification

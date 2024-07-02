@@ -41,9 +41,9 @@ class LightningManager constructor(
         if(appConfig.lightningFeatureEnabled) {
             setLogStream(object : LogStream {
                 override fun log(l: LogEntry) {
-                    if (l.level == "DEBUG") {
+                    if (l.level != "TRACE") {
                         logs.append("${Clock.System.now()} - ${l.line}\n")
-                        if (logs.length > 2_000_000) {
+                        if (logs.length > 4_000_000) {
                             logger.d { "Clear Lightning Logs" }
                             logs.deleteRange(0, 1_000_000)
                         }
@@ -88,6 +88,18 @@ class LightningManager constructor(
         return "${logDir}/greenlight_logs_${Clock.System.now()}.txt".toPath().also {
             withContext(context = Dispatchers.IO) {
                 fileSystem.write(it) {
+
+                    val nodeIds = bridges.map {
+                        it.value.nodeInfoStateFlow.value
+                    }
+
+                    this.writeUtf8("------------------------------------------------------------------\n")
+                    this.writeUtf8("Node IDs: --------------------------------------------------------\n")
+                    this.writeUtf8(nodeIds.joinToString("\n") { it.id })
+                    this.writeUtf8("\nNode Info: -------------------------------------------------------\n")
+                    this.writeUtf8(nodeIds.joinToString("\n") { it.toString() })
+                    this.writeUtf8("\n------------------------------------------------------------------\n")
+
                     this.writeUtf8(logs.toString())
                 }
             }

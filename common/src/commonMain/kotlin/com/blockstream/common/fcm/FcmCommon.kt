@@ -2,6 +2,7 @@ package com.blockstream.common.fcm
 
 import breez_sdk.BreezEvent
 import com.blockstream.common.crypto.GreenKeystore
+import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.database.Database
 import com.blockstream.common.di.ApplicationScope
@@ -24,6 +25,7 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
     private val database: Database by inject()
     private val greenKeystore: GreenKeystore by inject()
     private val sessionManager: SessionManager by inject()
+    private val appInfo: AppInfo by inject()
 
     private var _token: String? = null
 
@@ -53,12 +55,25 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
         breezNotification: BreezNotification
     )
 
+    abstract fun showDebugNotification(
+        title: String,
+        message: String,
+    )
+
     @NativeCoroutinesIgnore
     protected suspend fun wallet(walletId: String) = database.getWallet(walletId)
 
     @NativeCoroutinesIgnore
     suspend fun doLightningBackgroundWork(walletId: String, breezNotification: BreezNotification) {
         logger.d { "doLightningBackgroundWork for walletId:$walletId with data: $breezNotification" }
+
+        if(appInfo.isDevelopmentOrDebug) {
+            showDebugNotification(
+                title = "Background Work",
+                message = breezNotification.toString()
+            )
+        }
+
         wallet(walletId)?.also { wallet ->
             database.getLoginCredentials(wallet.id).lightningMnemonic?.encrypted_data?.let {
                 greenKeystore.decryptData(it).decodeToString()
@@ -67,7 +82,14 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
                     it.connectToGreenlight(mnemonic = mnemonic)
 
                     // Wait maximum 2 minutes to complete all operations
-                    withTimeoutOrNull(120_000) {
+                    val success = withTimeoutOrNull(120_000) {
+
+                        if(appInfo.isDevelopmentOrDebug) {
+                            showDebugNotification(
+                                title = "Lightning connected and waiting",
+                                message = breezNotification.toString()
+                            )
+                        }
 
                         if (breezNotification.paymentHash == "test") {
                             showLightningPaymentNotification(
@@ -93,6 +115,15 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
                             event is BreezEvent.Synced
                         }.firstOrNull()
                     }
+
+                    if(appInfo.isDevelopmentOrDebug) {
+                        showDebugNotification(
+                            title = "Lightning disconnected: Success: $success",
+                            message = breezNotification.toString()
+                        )
+                    }
+
+                    logger.d { "doLightningBackgroundWork completed walletId:$walletId" }
 
                     it.release()
                 }

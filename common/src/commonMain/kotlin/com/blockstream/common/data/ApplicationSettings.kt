@@ -39,6 +39,8 @@ data class ApplicationSettings constructor(
     val personalTestnetElectrumServer: String? = null,
     val personalTestnetLiquidElectrumServer: String? = null,
 
+    val personalElectrumServerTls: Boolean = true,
+
     val spvBitcoinElectrumServer: String? = null,
     val spvLiquidElectrumServer: String? = null,
     val spvTestnetElectrumServer: String? = null,
@@ -94,6 +96,8 @@ data class ApplicationSettings constructor(
         private const val PERSONAL_TESTNET_ELECTRUM_SERVER = "personalTestnetElectrumServer"
         private const val PERSONAL_TESTNET_LIQUID_ELECTRUM_SERVER = "personalTestnetLiquidElectrumServer"
 
+        private const val PERSONAL_ELECTRUM_SERVER_TLS = "personalElectrumServerTls"
+
         private const val SPV_BITCOIN_ELECTRUM_SERVER = "spvBitcoinElectrumServer"
         private const val SPV_LIQUID_ELECTRUM_SERVER = "spvLiquidElectrumServer"
         private const val SPV_TESTNET_ELECTRUM_SERVER = "spvTestnetElectrumServer"
@@ -129,6 +133,8 @@ data class ApplicationSettings constructor(
                         PERSONAL_TESTNET_LIQUID_ELECTRUM_SERVER
                     ),
 
+                    personalElectrumServerTls = settings.getBooleanOrNull(PERSONAL_ELECTRUM_SERVER_TLS) ?: true,
+
                     spvBitcoinElectrumServer = settings.getStringOrNull(SPV_BITCOIN_ELECTRUM_SERVER),
                     spvLiquidElectrumServer = settings.getStringOrNull(SPV_LIQUID_ELECTRUM_SERVER),
                     spvTestnetElectrumServer = settings.getStringOrNull(SPV_TESTNET_ELECTRUM_SERVER),
@@ -160,6 +166,8 @@ data class ApplicationSettings constructor(
                 it.putStringOrRemove(PERSONAL_LIQUID_ELECTRUM_SERVER, appSettings.personalLiquidElectrumServer)
                 it.putStringOrRemove(PERSONAL_TESTNET_ELECTRUM_SERVER, appSettings.personalTestnetElectrumServer)
                 it.putStringOrRemove(PERSONAL_TESTNET_LIQUID_ELECTRUM_SERVER, appSettings.personalTestnetLiquidElectrumServer)
+
+                it.putBoolean(PERSONAL_ELECTRUM_SERVER_TLS, appSettings.personalElectrumServerTls)
 
                 it.putStringOrRemove(SPV_BITCOIN_ELECTRUM_SERVER, appSettings.spvBitcoinElectrumServer)
                 it.putStringOrRemove(SPV_LIQUID_ELECTRUM_SERVER, appSettings.spvLiquidElectrumServer)

@@ -3,6 +3,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.31] - 2024-07-02
+
+### Added
+- Allow disabling TLS on Personal Electrum servers
+
+### Changed
+- Refactor ViewModels to support Kotlin Multiplatform
+- Refactor various UI elements
+- Updated project dependencies
+- Bump Breez to version 0.5.1-rc4
+
+- ### Fixed
+- Fix F-Droid dependency issue
+
 ## [4.0.30] - 2024-06-10
 
 ### Added

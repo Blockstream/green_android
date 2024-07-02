@@ -38,6 +38,7 @@ import blockstream_green.common.generated.resources.arrows_counter_clockwise
 import blockstream_green.common.generated.resources.id_account__asset
 import blockstream_green.common.generated.resources.id_account_address
 import blockstream_green.common.generated.resources.id_address
+import blockstream_green.common.generated.resources.id_address_copied_to_clipboard
 import blockstream_green.common.generated.resources.id_amount
 import blockstream_green.common.generated.resources.id_amount_to_receive
 import blockstream_green.common.generated.resources.id_confirm
@@ -70,6 +71,7 @@ import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.models.receive.ReceiveViewModel
 import com.blockstream.common.models.receive.ReceiveViewModelAbstract
+import com.blockstream.common.models.send.SendConfirmViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.GreenAccountAsset
@@ -92,6 +94,7 @@ import com.blockstream.compose.sheets.DenominationBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
 import com.blockstream.compose.sheets.MenuBottomSheet
 import com.blockstream.compose.sheets.MenuEntry
+import com.blockstream.compose.sheets.NoteBottomSheet
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
@@ -104,6 +107,7 @@ import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AlphaPulse
+import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import io.github.alexzhirkevich.qrose.QrCodePainter
@@ -148,6 +152,9 @@ fun ReceiveScreen(
         viewModel.postEvent(Events.SetDenominatedValue(it))
     }
 
+    NoteBottomSheet.getResult {
+        viewModel.postEvent(ReceiveViewModel.LocalEvents.SetNote(it))
+    }
 
     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
     val accountAsset by viewModel.accountAsset.collectAsStateWithLifecycle()
@@ -281,14 +288,16 @@ fun ReceiveScreen(
 
                 AnimatedVisibility(visible = accountAsset?.account?.isLightning == true && !showLightningOnChainAddress || showRequestAmount) {
 
-                GreenColumn(padding = 0, space = 8) {
+                    GreenColumn(padding = 0, space = 8) {
 
                         GreenAmountField(
                             value = amount,
                             onValueChange = viewModel.amount.onValueChange(),
                             assetId = viewModel.accountAsset.value?.assetId,
                             session = viewModel.sessionOrNull,
-                            title = if(accountAsset?.account?.isLightning == false) stringResource(Res.string.id_request_amount) else stringResource(Res.string.id_amount),
+                            title = if (accountAsset?.account?.isLightning == false) stringResource(
+                                Res.string.id_request_amount
+                            ) else stringResource(Res.string.id_amount),
                             error = amountError,
                             enabled = !onProgress,
                             denomination = denomination,
@@ -322,10 +331,9 @@ fun ReceiveScreen(
                             },
                             onDenominationClick = {
                                 viewModel.postEvent(Events.SelectDenomination)
-                            }
-                        )
+                            })
 
-                        liquidityFee?.also {
+                        AnimatedNullableVisibility(liquidityFee) {
                             GreenCard(
                                 padding = 0, colors = CardDefaults.elevatedCardColors(
                                     containerColor = green20
@@ -345,7 +353,6 @@ fun ReceiveScreen(
                                 }
                             }
                         }
-
                     }
                 }
 
@@ -408,7 +415,10 @@ fun ReceiveScreen(
                                         GreenAddress(
                                             address = receiveAddress ?: "",
                                             textAlign = TextAlign.Center,
-                                            maxLines = if (accountAsset?.account?.isLightning == true && !showLightningOnChainAddress) 1 else 6
+                                            maxLines = if (accountAsset?.account?.isLightning == true && !showLightningOnChainAddress) 1 else 6,
+                                            onCopyClick = {
+                                                viewModel.postEvent(ReceiveViewModel.LocalEvents.CopyAddress)
+                                            }
                                         )
 
                                         if (accountAsset?.account?.isLightning == true && showLightningOnChainAddress && onchainSwapMessage != null) {

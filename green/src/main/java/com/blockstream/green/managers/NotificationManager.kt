@@ -278,6 +278,31 @@ class NotificationManager constructor(
             }
     }
 
+    fun createDebugNotification(
+        context: Context,
+        title: String,
+        message: String,
+    ): Notification {
+
+        val notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+
+        return NotificationCompat.Builder(context, LIGHTNING_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_stat_green)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setColorized(true)
+            .setColor(ContextCompat.getColor(context, R.color.brand_green))
+            .setSound(notificationSound)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setAutoCancel(true)
+            .setProgress(0, 100, true)
+            .setOnlyAlertOnce(false)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .build().also {
+                androidNotificationManager.notify(237_237, it)
+            }
+    }
+
     suspend fun createForegroundServiceNotification(context: Context): Notification {
         return NotificationCompat.Builder(context, LIGHTNING_CHANNEL_ID)
             .setContentTitle(context.getString(R.string.id_lightning))

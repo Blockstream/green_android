@@ -68,6 +68,9 @@ abstract class AppSettingsViewModelAbstract() :
     abstract val multiServerValidationEnabled: MutableStateFlow<Boolean>
 
     @NativeCoroutinesState
+    abstract val personalElectrumServerTlsEnabled: MutableStateFlow<Boolean>
+
+    @NativeCoroutinesState
     abstract val personalBitcoinElectrumServer: MutableStateFlow<String>
 
     @NativeCoroutinesState
@@ -148,6 +151,9 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
 
     @NativeCoroutinesState
     override val multiServerValidationEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, appSettings.multiServerValidation)
+
+    @NativeCoroutinesState
+    override val personalElectrumServerTlsEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, appSettings.personalElectrumServerTls)
 
     @NativeCoroutinesState
     override val personalBitcoinElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, appSettings.personalBitcoinElectrumServer ?: "")
@@ -255,6 +261,8 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         personalTestnetElectrumServer = personalTestnetElectrumServer.value.takeIf { electrumNodeEnabled.value },
         personalTestnetLiquidElectrumServer = personalTestnetLiquidElectrumServer.value.takeIf { electrumNodeEnabled.value },
 
+        personalElectrumServerTls = personalElectrumServerTlsEnabled.value,
+
         spvBitcoinElectrumServer = spvBitcoinElectrumServer.value.takeIf { spvEnabled.value },
         spvLiquidElectrumServer = spvLiquidElectrumServer.value.takeIf { spvEnabled.value },
         spvTestnetElectrumServer = spvTestnetElectrumServer.value.takeIf { spvEnabled.value },
@@ -289,6 +297,7 @@ class AppSettingsViewModelPreview(initValue: Boolean = false) : AppSettingsViewM
     override val electrumNodeEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
     override val spvEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
     override val multiServerValidationEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
+    override val personalElectrumServerTlsEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
     override val personalBitcoinElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
     override val personalLiquidElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
     override val personalTestnetElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")

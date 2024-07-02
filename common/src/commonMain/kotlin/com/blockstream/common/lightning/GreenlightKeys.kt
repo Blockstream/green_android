@@ -11,8 +11,8 @@ data class GreenlightKeys(
     fun toGreenlightCredentials(): GreenlightCredentials? {
         return if (deviceKey != null && deviceCert != null) {
             GreenlightCredentials(
-                deviceKey = deviceKey,
-                deviceCert = deviceCert,
+                developerKey = deviceKey,
+                developerCert = deviceCert,
             )
         } else null
     }

@@ -1,5 +1,6 @@
 package com.blockstream.green.managers
 
+import android.app.Notification
 import android.content.Context
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.di.ApplicationScope
@@ -38,6 +39,13 @@ class FcmAndroid constructor(
     ) {
         logger.d { "showPaymentNotification $wallet" }
         notificationManager.createPaymentNotification(context, wallet, paymentHash, satoshi)
+    }
+
+    override fun showDebugNotification(
+        title: String,
+        message: String,
+    ) {
+        notificationManager.createDebugNotification(context = context, title = title, message = message)
     }
 
     companion object : Loggable()

@@ -213,7 +213,7 @@ class LightningBridge constructor(
                 (if (appInfo.isDevelopment) GREEN_NOTIFY_DEVELOPMENT else GREEN_NOTIFY_PRODUCTION).let { backend ->
                     "$backend/api/v1/notify?platform=${platformName()}&token=$token&app_data=$xpubHashId"
                 }.also { url ->
-                    logger.d { "Registering webhook for wallet($xpubHashId) as $url" }
+                    logger.i { "Registering webhook for wallet($xpubHashId) as $url" }
                     breezSdkOrNull?.registerWebhook(url)
                 }
             }

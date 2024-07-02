@@ -31,7 +31,7 @@ import org.koin.core.parameter.parametersOf
 
 
 class ReceiveFragment : AppFragment<ComposeViewBinding>(
-    layout = R.layout.compose_view
+    layout = R.layout.compose_view, menuRes = R.menu.menu_receive
 ) {
     val args: ReceiveFragmentArgs by navArgs()
 
@@ -79,11 +79,25 @@ class ReceiveFragment : AppFragment<ComposeViewBinding>(
             (requireActivity() as MainActivity).lockDrawer(!it.isVisible)
         }.launchIn(lifecycleScope)
 
+        viewModel.accountAsset.onEach {
+            invalidateMenu()
+        }.launchIn(lifecycleScope)
+
+        viewModel.onProgress.onEach {
+            // On HWWallet Block going back until address is generated
+            onBackCallback.isEnabled = viewModel.session.isHardwareWallet && it
+            invalidateMenu()
+        }.launchIn(lifecycleScope)
+
+        viewModel.navData.onEach {
+            invalidateMenu()
+        }.launchIn(lifecycleScope)
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackCallback)
     }
 
     override fun onPrepareMenu(menu: Menu) {
-        menu.findItem(R.id.add_description).isVisible = viewModel.account.isLightning
+        menu.findItem(R.id.add_description).isVisible = viewModel.account.isLightning && !viewModel.showLightningOnChainAddress.value && viewModel.receiveAddress.value == null
         menu.findItem(R.id.add_description).isEnabled = !viewModel.onProgress.value
     }
 

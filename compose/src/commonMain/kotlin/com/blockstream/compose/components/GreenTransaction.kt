@@ -53,10 +53,12 @@ fun GreenTransaction(
     modifier: Modifier = Modifier,
     transactionLook: TransactionLook,
     showAccount: Boolean = true,
-    onClick: () -> Unit
+    onClick: (TransactionLook) -> Unit
 ) {
     Card(
-        onClick = onClick,
+        onClick = {
+            onClick(transactionLook)
+        },
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)

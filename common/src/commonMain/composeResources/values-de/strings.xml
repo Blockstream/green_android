@@ -1100,7 +1100,7 @@
     <string name="id_segwit_bip84">SegWit (BIP84)</string>
     <string name="id_select_a_fiat_currency_and">Wähle eine Fiat-Währung und eine Bitcoin-Denominierung aus, um die Beträge in deiner Wallet anzuzeigen.</string>
     <string name="id_select_account">Wähle Konto</string>
-    <string name="id_select_account_amp_asset">Select account &amp;amp; asset</string>
+    <string name="id_select_account_amp_asset">Select account &amp; asset</string>
     <string name="id_select_an_app_on_s">Wähle eine App auf %1$s</string>
     <string name="id_select_asset">Wählen Sie das Vermögen</string>
     <string name="id_select_duration_of_twofactor">Wähle die Dauer des Zwei-Faktor-Authentifizierungsschutzes für deine Coins. Die neu gewählte Option gilt nur für neu erhaltene Coins.</string>
@@ -1413,6 +1413,7 @@
     <string name="id_waiting_for_transaction">Warten auf Transaktion...</string>
     <string name="id_wallet">Wallet</string>
     <string name="id_wallet_already_restored">Wallet bereits wiederhergestellt</string>
+    <string name="id_wallet_already_restored_s">Wallet already restored: %1$s</string>
     <string name="id_wallet_assets">Wallet-Assets</string>
     <string name="id_wallet_backup">Wallet Backup</string>
     <string name="id_wallet_coins_will_require">Coins in der Wallet werden einmal im Jahr die Zwei-Faktor-Reaktivierung benötigen, um mit Zwei-Faktor-Authentifizierung beschützt zu bleiben</string>

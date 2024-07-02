@@ -13,7 +13,6 @@
          <trust group="^app[.]cash($|([.].*))" name="sqldelight" regex="true" reason="Trust all SqlDelight artifacts"/>
          <trust group="^com[.]android($|([.].*))" regex="true" reason="Trust all Android artifacts"/>
          <trust group="^com[.]google($|([.].*))" regex="true" reason="Trust all Google artifacts"/>
-         <trust group="^com[.]gradle($|([.].*))" regex="true" reason="Trust all Gradle artifacts"/>
          <trust group="^io[.]insert-koin($|([.].*))" regex="true" reason="Trust all Koin artifacts"/>
          <trust group="^io[.]ktor($|([.].*))" regex="true" reason="Trust all Ktor artifacts"/>
          <trust group="^net[.]java($|([.].*))" name="jna" regex="true" reason="Trust all Java artifacts"/>

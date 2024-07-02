@@ -1100,7 +1100,7 @@
     <string name="id_segwit_bip84">SegWit (BIP84)</string>
     <string name="id_select_a_fiat_currency_and">Оберіть фіатную валюту і номінал біткоінів, щоб відображати суми у вашому гаманці</string>
     <string name="id_select_account">Оберіть акаунт</string>
-    <string name="id_select_account_amp_asset">Select account &amp;amp; asset</string>
+    <string name="id_select_account_amp_asset">Select account &amp; asset</string>
     <string name="id_select_an_app_on_s">Виберіть додаток на %1$s</string>
     <string name="id_select_asset">Оберіть актив</string>
     <string name="id_select_duration_of_twofactor">Оберіть тривалість захисту ваших монет двофакторною аутентифікацією. Нова опція застосовується до монет, що нещодавно отримані.</string>
@@ -1413,6 +1413,7 @@
     <string name="id_waiting_for_transaction">Очікування транзакції...</string>
     <string name="id_wallet">Гаманець</string>
     <string name="id_wallet_already_restored">Гаманець уже відновлений</string>
+    <string name="id_wallet_already_restored_s">Wallet already restored: %1$s</string>
     <string name="id_wallet_assets">Активи гаманця</string>
     <string name="id_wallet_backup">Створення резервної копії гаманця</string>
     <string name="id_wallet_coins_will_require">Монети гаманця вимагатимуть двофакторну реактивацію один раз на рік, щоб залишатися захищеними двофакторною аутентифікацією.</string>

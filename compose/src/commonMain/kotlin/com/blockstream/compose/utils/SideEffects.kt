@@ -366,10 +366,14 @@ fun HandleSideEffect(
                 }
 
                 is SideEffects.CopyToClipboard -> {
-                    platformManager.copyToClipboard(content = it.value)
-                    it.message?.also {
-                        appCoroutine.launch {
-                            snackbar.showSnackbar(message = it)
+                    if(!platformManager.copyToClipboard(content = it.value)){
+                        it.message?.also {
+                            if(!platformManager.openToast(it)) {
+                                // In case openToast is not supported
+                                appCoroutine.launch {
+                                    snackbar.showSnackbar(message = it)
+                                }
+                            }
                         }
                     }
                 }

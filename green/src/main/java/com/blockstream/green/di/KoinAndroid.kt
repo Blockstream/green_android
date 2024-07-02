@@ -43,7 +43,7 @@ fun initKoinAndroid(context: Context, doOnStartup: () -> Unit = {}) {
             }
             single {
                 if (context.resources.getBoolean(R.bool.feature_analytics)) {
-                    Countly(get(), get(), get(), get(), get(), get())
+                    Countly(get(), get(), get(), get(), get(), get(), get())
                 } else {
                     CountlyNoOp(get(), get(), get(), get())
                 }

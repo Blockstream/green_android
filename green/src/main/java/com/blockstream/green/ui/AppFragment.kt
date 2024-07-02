@@ -165,7 +165,7 @@ abstract class AppFragment<T : ViewDataBinding>(
             if(useCompose){
                 viewModel.navData.onEach {
                     updateToolbar()
-                }
+                }.launchIn(lifecycleScope)
             }
 
             viewLifecycleOwner.lifecycleScope.launch {

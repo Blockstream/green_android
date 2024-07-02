@@ -1,5 +1,5 @@
-
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
@@ -32,15 +32,18 @@ kotlin {
     applyDefaultHierarchyTemplate()
 
     androidTarget {
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             freeCompilerArgs.addAll("-P", "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.blockstream.common.Parcelize")
         }
-        compilations.configureEach {
-            kotlinOptions {
-                jvmTarget = JavaVersion.VERSION_17.majorVersion
-            }
-        }
     }
+
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
+    jvmToolchain(libs.versions.jvm.get().toInt())
 
     jvm()
 
@@ -80,7 +83,7 @@ kotlin {
                 commit = "1892410d13fceccd7cf91f803f06f110efc215b3"
             }
 
-            // Support for Objective-C headers with @import directives﻿
+            // Support for Objective-C headers with @import directives
             // https://kotlinlang.org/docs/native-cocoapods-libraries.html#support-for-objective-c-headers-with-import-directives
             extraOpts += listOf("-compiler-option", "-fmodules")
         }
@@ -222,11 +225,6 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.androidMinSdk.get().toInt()
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 

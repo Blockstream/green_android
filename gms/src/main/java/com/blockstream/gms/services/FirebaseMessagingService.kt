@@ -1,5 +1,6 @@
 package com.blockstream.gms.services
 
+import com.blockstream.common.data.AppInfo
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.lightning.BreezNotification
 import com.blockstream.common.utils.Loggable
@@ -12,6 +13,7 @@ import org.koin.core.component.inject
 class FirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
 
     val fcm: FcmCommon by inject()
+    val appInfo: AppInfo by inject()
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         val data = remoteMessage.data
@@ -26,6 +28,10 @@ class FirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
             if (notificationType == "payment_received" || notificationType == "tx_confirmed" || notificationType == "address_txs_confirmed") {
                 val xpubHashId = data["app_data"]
                 val breezNotification = BreezNotification.fromString(data["notification_payload"])
+
+                if(appInfo.isDevelopmentOrDebug){
+                    fcm.showDebugNotification(title = "Notification Received", message = breezNotification.toString())
+                }
 
                 if (breezNotification != null && !xpubHashId.isNullOrBlank()) {
                     fcm.handleLightningPushNotification(xpubHashId, breezNotification)

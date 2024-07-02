@@ -10,15 +10,10 @@ android {
     defaultConfig {
         minSdk = libs.versions.androidMinSdk.get().toInt()
     }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(libs.versions.jvm.get().toInt())
 }
 
 dependencies {
@@ -41,10 +36,13 @@ dependencies {
     api(libs.androidx.browser)
     api(libs.androidx.recyclerview)
     api(libs.androidx.viewpager2)
-    api(libs.installreferrer)
     api(libs.androidx.startup.runtime)
     api(libs.compose.material3)
     api(libs.androidx.work.runtime.ktx)
+    /** ----------------------------------------------------------------------------------------- */
+
+    /**  --- Countly ---------------------------------------------------------------------------- */
+    api(libs.countly.sdk.android)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Logging ---------------------------------------------------------------------------- */

@@ -1,5 +1,7 @@
 package com.blockstream.compose.components
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,7 +18,8 @@ fun GreenAddress(
     modifier: Modifier = Modifier,
     address: String,
     textAlign: TextAlign? = null,
-    maxLines: Int = Int.MAX_VALUE
+    maxLines: Int = Int.MAX_VALUE,
+    onCopyClick: ((String) -> Unit)? = null
 ) {
     val schemes = listOf("bitcoin", "liquidnetwork", "liquidtestnet", "lightning")
 
@@ -28,7 +31,7 @@ fun GreenAddress(
         AnnotatedString(address)
     }
 
-    CopyContainer(value = address, withSelection = false) {
+    val content = @Composable {
         Text(
             text = text,
             fontFamily = MonospaceFont(),
@@ -37,5 +40,17 @@ fun GreenAddress(
             maxLines = maxLines,
             overflow = TextOverflow.Ellipsis
         )
+    }
+
+    if (onCopyClick == null) {
+        CopyContainer(value = address, withSelection = false) {
+            content()
+        }
+    } else {
+        Box(modifier = Modifier.clickable {
+            onCopyClick(address)
+        }) {
+            content()
+        }
     }
 }

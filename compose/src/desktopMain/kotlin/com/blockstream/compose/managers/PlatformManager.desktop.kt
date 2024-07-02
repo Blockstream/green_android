@@ -37,13 +37,18 @@ actual fun askForNotificationPermissions(viewModel: GreenViewModel) {
 }
 
 actual class PlatformManager {
+    actual fun openToast(content: String): Boolean {
+        return false
+    }
+
     actual fun openBrowser(url: String) {
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
             Desktop.getDesktop().browse(URI(url))
         }
     }
 
-    actual fun copyToClipboard(content: String, label: String?) {
+    actual fun copyToClipboard(content: String, label: String?, isSensitive: Boolean): Boolean {
+        return false
     }
 
     internal actual fun getClipboard(): String? {

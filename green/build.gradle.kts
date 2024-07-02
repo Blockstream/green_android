@@ -42,8 +42,8 @@ android {
     defaultConfig {
         minSdk = libs.versions.androidMinSdk.get().toInt()
         targetSdk = libs.versions.androidTargetSdk.get().toInt()
-        versionCode = 430
-        versionName = "4.0.30"
+        versionCode = 431
+        versionName = "4.0.31"
 
         setProperty("archivesBaseName", "BlockstreamGreen-v$versionName")
         proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
@@ -130,8 +130,6 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
         // SDK 23 support
         isCoreLibraryDesugaringEnabled = true
     }
@@ -161,7 +159,7 @@ composeCompiler {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(libs.versions.jvm.get().toInt())
 
     sourceSets {
         all {
@@ -242,10 +240,6 @@ dependencies {
 
     /**  --- QR Scanner ------------------------------------------------------------------------- */
     implementation(libs.zxing.android.embedded)
-    /** ----------------------------------------------------------------------------------------- */
-
-    /**  --- Countly ---------------------------------------------------------------------------- */
-    implementation(libs.countly.sdk.android)
     /** ----------------------------------------------------------------------------------------- */
 
     testImplementation(libs.junit)

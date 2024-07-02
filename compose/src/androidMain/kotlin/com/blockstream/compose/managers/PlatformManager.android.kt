@@ -2,6 +2,7 @@ package com.blockstream.compose.managers
 
 import android.Manifest
 import android.content.ClipData
+import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
@@ -13,11 +14,14 @@ import android.graphics.ImageDecoder
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
+import android.os.Message
+import android.os.PersistableBundle
 import android.provider.MediaStore
 import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
 import android.text.TextUtils
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.browser.customtabs.CustomTabColorSchemeParams
@@ -110,6 +114,11 @@ actual fun askForNotificationPermissions(viewModel: GreenViewModel) {
 
 actual class PlatformManager(val context: Context) {
 
+    actual fun openToast(content: String): Boolean {
+        Toast.makeText(context, content, Toast.LENGTH_SHORT).show()
+        return true
+    }
+
     actual fun openBrowser(url: String) {
         try {
             val builder = CustomTabsIntent.Builder()
@@ -137,10 +146,20 @@ actual class PlatformManager(val context: Context) {
         }
     }
 
-    actual fun copyToClipboard(content: String, label: String?) {
+    actual fun copyToClipboard(content: String, label: String?, isSensitive: Boolean): Boolean {
         (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(
-            ClipData.newPlainText(label ?: "Green", content)
+            ClipData.newPlainText(label ?: "Green", content).apply {
+                if (isSensitive) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        description.extras = PersistableBundle().apply {
+                            putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
+                        }
+                    }
+                }
+            }
         )
+
+        return Build.VERSION.SDK_INT > Build.VERSION_CODES.S_V2
     }
 
     internal actual fun getClipboard(): String? {

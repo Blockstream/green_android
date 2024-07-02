@@ -13,13 +13,22 @@ plugins {
 }
 
 kotlin {
+    // Enable the default target hierarchy:
+    applyDefaultHierarchyTemplate()
+
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
             freeCompilerArgs.addAll("-P", "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.blockstream.common.Parcelize")
         }
     }
+
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
+    jvmToolchain(libs.versions.jvm.get().toInt())
 
     jvm("desktop")
 
@@ -138,10 +147,6 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.androidMinSdk.get().toInt()
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
     }
 
     packaging {

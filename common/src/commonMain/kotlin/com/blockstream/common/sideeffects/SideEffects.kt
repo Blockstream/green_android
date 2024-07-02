@@ -51,7 +51,7 @@ class SideEffects : SideEffect {
     data class TransactionSent(val data: SendTransactionSuccess) : SideEffect
     data class Logout(val reason: LogoutReason) : SideEffect
     object WalletDelete : SideEffect
-    data class CopyToClipboard(val value: String, val message: String? = null, val label: String? = null) : SideEffect
+    data class CopyToClipboard(val value: String, val message: String? = null, val label: String? = null, val isSensitive: Boolean = false) : SideEffect
     data class AccountArchived(val account: Account) : SideEffect
     data class AccountUnarchived(val account: Account) : SideEffect
     data class AccountCreated(val accountAsset: AccountAsset): SideEffect

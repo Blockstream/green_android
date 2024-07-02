@@ -144,7 +144,7 @@ class SessionManager constructor(
         }
 
         connectionChangeEvent.onEach {
-            getConnectedEphemeralWalletSessions().filter { it.ephemeralWallet?.isHardware == true }.mapNotNull { it.ephemeralWallet }.let {
+            getConnectedEphemeralWalletSessions().filter { it.ephemeralWallet?.isLightning == false && it.ephemeralWallet?.isHardware == true }.mapNotNull { it.ephemeralWallet }.let {
                 _hardwareWallets.value = it
             }
 

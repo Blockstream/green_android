@@ -63,11 +63,11 @@ fun GreenAccountCard(
     account: AccountBalance,
     isExpanded: Boolean,
     session: GdkSession? = null,
-    onCopyClick: (() -> Unit)? = null,
-    onArrowClick: (() -> Unit)? = null,
-    onWarningClick: (() -> Unit)? = null,
-    onClick: () -> Unit = {},
-    onLongClick: (offset: Offset) -> Unit = {},
+    onCopyClick: ((AccountBalance) -> Unit)? = null,
+    onArrowClick: ((AccountBalance) -> Unit)? = null,
+    onWarningClick: ((AccountBalance) -> Unit)? = null,
+    onClick: (AccountBalance) -> Unit = {},
+    onLongClick: (AccountBalance, offset: Offset) -> Unit = { _ , _ -> },
 ) {
     Box(
         modifier = Modifier
@@ -85,11 +85,11 @@ fun GreenAccountCard(
                 .fillMaxWidth()
                 .pointerInput(Unit){
                     detectTapGestures(
-                        onPress = {
-                            onClick()
+                        onTap = {
+                            onClick(account)
                         },
                         onLongPress = {
-                            onLongClick(it)
+                            onLongClick(account, it)
                         }
                     )
                 }
@@ -201,11 +201,15 @@ fun GreenAccountCard(
                                 type = GreenButtonType.OUTLINE,
                                 color = GreenButtonColor.WHITE,
                                 size = GreenButtonSize.SMALL,
-                                onClick = onCopyClick
+                                onClick = {
+                                    onCopyClick(account)
+                                }
                             )
                         } else if (onArrowClick != null) {
                             Card(
-                                onClick = onArrowClick,
+                                onClick = {
+                                    onArrowClick(account)
+                                },
                                 modifier = Modifier
                                     .align(Alignment.Bottom)
                                     .size(42.dp),
@@ -243,7 +247,9 @@ fun GreenAccountCard(
                     painter = painterResource(Res.drawable.shield_warning),
                     contentDescription = null,
                     modifier = Modifier
-                        .noRippleClickable(onWarningClick)
+                        .noRippleClickable {
+                            onWarningClick(account)
+                        }
                         .size(30.dp)
                         .clip(CircleShape)
                         .background(account.account.getAccountColor())

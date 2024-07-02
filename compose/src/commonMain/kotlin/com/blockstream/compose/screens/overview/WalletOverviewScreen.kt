@@ -31,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
@@ -65,12 +66,14 @@ import blockstream_green.common.generated.resources.trash
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.screen.uniqueScreenKey
 import cafe.adriel.voyager.koin.koinScreenModel
+import co.touchlab.kermit.Logger
 import com.arkivanov.essenty.parcelable.IgnoredOnParcel
 import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.common.gdk.data.AccountBalance
 import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.models.archived.ArchivedAccountsViewModel
 import com.blockstream.common.models.overview.WalletOverviewViewModel
@@ -261,7 +264,7 @@ fun WalletOverviewScreen(
 
             if (!isWalletOnboarding) {
 
-                items(alerts) {
+                items(items = alerts) {
                     GreenAlert(
                         modifier = Modifier
                             .padding(horizontal = 16.dp)
@@ -269,7 +272,9 @@ fun WalletOverviewScreen(
                     )
                 }
 
-                items(accounts) {
+                items(items = accounts, key = {
+                    it.account.id
+                }) {
                     val popupState = remember {
                         PopupState()
                     }
@@ -316,9 +321,9 @@ fun WalletOverviewScreen(
                                         setAsActive = true
                                     )
                                 )
-                            }, onLongClick = {
+                            }, onLongClick = { _: AccountBalance, offset: Offset ->
                                 if (hasContextMenu) {
-                                    popupState.offset.value = it.toMenuDpOffset(cardSize, density)
+                                    popupState.offset.value = offset.toMenuDpOffset(cardSize, density)
                                     popupState.isContextMenuVisible.value = true
                                 }
                             }
@@ -357,36 +362,6 @@ fun WalletOverviewScreen(
                         }
                     }
                 }
-
-//            item {
-//                val expandedAccount by viewModel.session.activeAccount.collectAsStateWithLifecycle()
-//                AnimatedVisibility(visible = accounts.isNotEmpty()) {
-//                    GreenColumn(
-//                        padding = 0,
-//                        space = 1,
-//                        modifier = Modifier.padding(vertical = 8.dp)
-//                    ) {
-//                        accounts.forEach {
-//                            GreenAccountCard(
-//                                modifier = Modifier.padding(bottom = 1.dp),
-//                                accountBalance = it,
-//                                isExpanded = it.account.id == expandedAccount?.id,
-//                                session = viewModel.sessionOrNull,
-//                                onArrowClick = {
-//
-//                                }
-//                            ) {
-//                                viewModel.postEvent(
-//                                    Events.SetAccountAsset(
-//                                        accountAsset = it.account.accountAsset,
-//                                        setAsActive = true
-//                                    )
-//                                )
-//                            }
-//                        }
-//                    }
-//                }
-//            }
 
                 lightningInfo?.also { lightningInfo ->
                     item {
@@ -429,9 +404,11 @@ fun WalletOverviewScreen(
                 }
 
                 transactions.data()?.also {
-                    items(it) { item ->
+                    items(items = it, key = {
+                        it.transaction.txHash.hashCode() + it.transaction.txType.gdkType.hashCode()
+                    }) { item ->
                         GreenTransaction(transactionLook = item) {
-                            viewModel.postEvent(Events.Transaction(transaction = item.transaction))
+                            viewModel.postEvent(Events.Transaction(transaction = it.transaction))
                         }
                     }
                 }

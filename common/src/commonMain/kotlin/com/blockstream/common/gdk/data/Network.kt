@@ -99,7 +99,11 @@ data class Network(
 
     @IgnoredOnParcel
     val confirmationsRequired: Long
-        get() = if(isLiquid) 2L else 6L
+        get() = when{
+            isLightning -> 1L
+            isLiquid -> 2L
+            else -> 6L
+        }
 
     fun getVerPublic(): Int {
         return if (isMainnet) BIP32_VER_MAIN_PUBLIC else BIP32_VER_TEST_PUBLIC
