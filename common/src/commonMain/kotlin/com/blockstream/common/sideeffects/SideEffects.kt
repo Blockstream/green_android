@@ -56,6 +56,7 @@ class SideEffects : SideEffect {
     data class AccountUnarchived(val account: Account) : SideEffect
     data class AccountCreated(val accountAsset: AccountAsset): SideEffect
     data class UrlWarning(val urls: List<String>): SideEffect
+    object TorWarning: SideEffect
     object AppReview: SideEffect
     object DeviceRequestPassphrase: SideEffect
     object DeviceRequestPin: SideEffect

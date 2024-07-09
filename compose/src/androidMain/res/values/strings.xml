@@ -1526,4 +1526,5 @@
   <string name="id_singlesig__">Singlesig / %s</string>
   <string name="id_signing__">Signing…</string>
   <string name="id_your_redeposit_address">Your Redeposit Address</string>
+  <string name="id_do_you_want_to_enable_tor">Do you want to enable Tor to connect to the PIN oracle server?</string>
 </resources>

@@ -118,11 +118,7 @@ class DeviceConnectionManager constructor(
     suspend fun authenticateDeviceIfNeeded(gdkHardwareWallet: GdkHardwareWallet, jadeFirmwareManager: JadeFirmwareManager? = null){
         if(gdkHardwareWallet is JadeHWWallet && gdkHardwareWallet.getVersionInfo().jadeState != JadeState.READY){
             try {
-                // Prepare http request
-                httpRequestProvider.httpRequest.prepareHttpRequest()
-
                 gdkHardwareWallet.authenticate(interaction, jadeFirmwareManager ?: this.jadeFirmwareManager)
-
             } catch (e: Exception) {
                 if (e is JadeError) {
                     when (e.code) {

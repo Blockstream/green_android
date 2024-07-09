@@ -98,7 +98,7 @@ import com.blockstream.common.gdk.params.UpdateSubAccountParams
 import com.blockstream.common.gdk.params.ValidateAddresseesParams
 import com.blockstream.common.interfaces.HttpRequestHandler
 import com.blockstream.common.interfaces.HttpRequestProvider
-import com.blockstream.common.interfaces.HttpRequestUrlValidator
+import com.blockstream.common.interfaces.JadeHttpRequestUrlValidator
 import com.blockstream.common.lightning.AppGreenlightCredentials
 import com.blockstream.common.lightning.LightningBridge
 import com.blockstream.common.lightning.LightningManager
@@ -179,7 +179,7 @@ class GdkSession constructor(
     private val scope = createScope(Dispatchers.Default)
     private val parentJob = SupervisorJob()
 
-    var httpRequestUrlValidator: HttpRequestUrlValidator? = null
+    var jadeHttpRequestUrlValidator: JadeHttpRequestUrlValidator? = null
 
     val isTestnet: Boolean // = false
         get() = defaultNetwork.isTestnet
@@ -905,7 +905,7 @@ class GdkSession constructor(
             it.jsonPrimitive.content
         } ?: listOf()
 
-        httpRequestUrlValidator?.also { urlValidator ->
+        jadeHttpRequestUrlValidator?.also { urlValidator ->
             val isUrlSafe = urls.filter { it.isNotBlank() }.all { url ->
                 BlockstreamPinOracleUrls.any { blockstreamUrl ->
                     url.startsWith(blockstreamUrl)
@@ -914,6 +914,13 @@ class GdkSession constructor(
 
             val servers = urls.map {
                 it.server()
+            }
+
+            if (!settingsManager.appSettings.tor && urls.filter { it.isNotBlank() }.all { it.contains(".onion") }) {
+                if (urlValidator.torWarning()) {
+                    // reconnect to enable tor
+                    prepareHttpRequest()
+                }
             }
 
             if(!isUrlSafe && !(settingsManager.isAllowCustomPinServer(urls) || _tempAllowedServers.containsAll(servers))){
@@ -931,7 +938,6 @@ class GdkSession constructor(
                 }
             }
         }
-
 
         return gdk.httpRequest(gdkSession(defaultNetwork), details).also {
             if(urls.find { it.contains("/set_pin") } != null){

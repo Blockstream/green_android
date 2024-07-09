@@ -48,6 +48,7 @@ import com.blockstream.green.data.AppEvent
 import com.blockstream.green.data.CountlyAndroid
 import com.blockstream.green.databinding.MainActivityBinding
 import com.blockstream.green.extensions.AuthenticationCallback
+import com.blockstream.green.extensions.dialog
 import com.blockstream.green.extensions.navigate
 import com.blockstream.green.managers.NotificationManager
 import com.blockstream.green.services.TaskService
@@ -57,6 +58,7 @@ import com.blockstream.green.utils.fadeIn
 import com.blockstream.green.utils.fadeOut
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.views.GreenToolbar
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
@@ -134,6 +136,23 @@ class MainActivity : AppActivity() {
                 activityViewModel.sideEffectAppFragment.onEach {
                     if(it is SideEffects.UrlWarning){
                         UrlWarningDialogFragment.show(it.urls, supportFragmentManager)
+                    } else if(it is SideEffects.TorWarning){
+                        MaterialAlertDialogBuilder(this@MainActivity)
+                            .setTitle(R.string.id_warning)
+                            .setMessage(R.string.id_do_you_want_to_enable_tor)
+                            .setCancelable(false)
+                            .setPositiveButton(R.string.id_enable) { _, _ ->
+                                settingsManager.saveApplicationSettings(
+                                    settingsManager.getApplicationSettings().copy(tor = true)
+                                )
+                                activityViewModel.torWarningEmitter?.complete(true)
+                            }
+                            .setNegativeButton(R.string.id_cancel) { _, _ ->
+                                activityViewModel.torWarningEmitter?.complete(false)
+                            }
+                            .setOnDismissListener {
+                                activityViewModel.torWarningEmitter?.complete(false)
+                            }.show()
                     }
                 }.launchIn(this)
             }
