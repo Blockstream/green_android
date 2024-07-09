@@ -92,6 +92,9 @@ abstract class TransactionViewModelAbstract(
     abstract val total: StateFlow<String?>
 
     @NativeCoroutinesState
+    abstract val totalFiat: StateFlow<String?>
+
+    @NativeCoroutinesState
     abstract val canReplaceByFee: StateFlow<Boolean>
 
     @NativeCoroutinesState
@@ -124,44 +127,47 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
     }
 
     private val _transaction = MutableStateFlow(transaction)
-    override val transaction: StateFlow<Transaction> = _transaction.asStateFlow()
+    override val transaction: StateFlow<Transaction> = _transaction
 
     private val _status: MutableStateFlow<TransactionStatus> = MutableStateFlow(Failed())
-    override val status: StateFlow<TransactionStatus> = _status.asStateFlow()
+    override val status: StateFlow<TransactionStatus> = _status
 
     override val type: StateFlow<Transaction.Type> = MutableStateFlow(transaction.txType)
 
     override val createdAt: StateFlow<String?> = MutableStateFlow(transaction.createdAtInstant?.formatFullWithTime())
 
     private val _spv: MutableStateFlow<Transaction.SPVResult> = MutableStateFlow(Transaction.SPVResult.Disabled)
-    override val spv: StateFlow<Transaction.SPVResult> = _spv.asStateFlow()
+    override val spv: StateFlow<Transaction.SPVResult> = _spv
 
     private val _amounts: MutableStateFlow<List<AmountAssetLook>> = MutableStateFlow(listOf())
-    override val amounts: StateFlow<List<AmountAssetLook>> = _amounts.asStateFlow()
+    override val amounts: StateFlow<List<AmountAssetLook>> = _amounts
 
     private val _transactionId: MutableStateFlow<String?> = MutableStateFlow(null)
-    override val transactionId: StateFlow<String?> = _transactionId.asStateFlow()
+    override val transactionId: StateFlow<String?> = _transactionId
 
     private val _fee: MutableStateFlow<String?> = MutableStateFlow(null)
-    override val fee: StateFlow<String?> = _fee.asStateFlow()
+    override val fee: StateFlow<String?> = _fee
 
     private val _feeRate: MutableStateFlow<String?> = MutableStateFlow(null)
-    override val feeRate: StateFlow<String?> = _feeRate.asStateFlow()
+    override val feeRate: StateFlow<String?> = _feeRate
 
     val _total: MutableStateFlow<String?> = MutableStateFlow(null)
-    override val total: StateFlow<String?> = _total.asStateFlow()
+    override val total: StateFlow<String?> = _total
+
+    val _totalFiat: MutableStateFlow<String?> = MutableStateFlow(null)
+    override val totalFiat: StateFlow<String?> = _totalFiat
 
     private val _canReplaceByFee: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    override val canReplaceByFee: StateFlow<Boolean> = _canReplaceByFee.asStateFlow()
+    override val canReplaceByFee: StateFlow<Boolean> = _canReplaceByFee
 
     private val _address: MutableStateFlow<String?> = MutableStateFlow(null)
-    override val address: StateFlow<String?> = _address.asStateFlow()
+    override val address: StateFlow<String?> = _address
 
     private val _note: MutableStateFlow<String?> = MutableStateFlow(null)
-    override val note: StateFlow<String?> = _note.asStateFlow()
+    override val note: StateFlow<String?> = _note
 
     private val _hasMoreDetails: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    override val hasMoreDetails: StateFlow<Boolean> = _hasMoreDetails.asStateFlow()
+    override val hasMoreDetails: StateFlow<Boolean> = _hasMoreDetails
 
     init {
         logger.d { "Transaction $transaction" }
@@ -287,13 +293,21 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
 
         _feeRate.value = transaction.feeRate.takeIf { _fee.value != null && !transaction.account.isLightning && it > 0}?.feeRateWithUnit()
 
-        _total.value = when {
-            transaction.txType == Transaction.Type.OUT -> {
-                // TODO calculate total spent
-                null
-            }
-            else -> null
+        transaction.satoshiPolicyAsset.takeIf { transaction.satoshi.size == 1 && transaction.isOut && transaction.fee > 0}?.also {
+            _total.value = it.toAmountLook(
+                session = session,
+                assetId = transaction.account.network.policyAssetOrNull,
+                withUnit = true
+            )
+
+            _totalFiat.value = it.toAmountLook(
+                session = session,
+                assetId = transaction.account.network.policyAssetOrNull,
+                withUnit = true,
+                denomination = Denomination.fiat(session)
+            )
         }
+
 
         val utxoViews = transaction.utxoViews
         _address.value = when {
@@ -369,6 +383,7 @@ class TransactionViewModelPreview(status : TransactionStatus) : TransactionViewM
     override val fee: StateFlow<String> = MutableStateFlow("56.960 sats")
     override val feeRate: StateFlow<String> = MutableStateFlow("8.34 sats / vbyte")
     override val total: StateFlow<String> = MutableStateFlow("2 BTC")
+    override val totalFiat: StateFlow<String?> = MutableStateFlow("2.000 USD")
     override val canReplaceByFee: StateFlow<Boolean> = MutableStateFlow(true)
     override val address: StateFlow<String?> = MutableStateFlow("bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu")
     override val note: StateFlow<String?> =

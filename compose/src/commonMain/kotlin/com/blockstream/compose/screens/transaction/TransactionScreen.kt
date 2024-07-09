@@ -19,8 +19,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
@@ -91,7 +94,9 @@ import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.headlineSmall
+import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium
+import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.AppBar
@@ -277,6 +282,7 @@ fun TransactionScreen(
         val fee by viewModel.fee.collectAsStateWithLifecycle()
         val feeRate by viewModel.feeRate.collectAsStateWithLifecycle()
         val total by viewModel.total.collectAsStateWithLifecycle()
+        val totalFiat by viewModel.totalFiat.collectAsStateWithLifecycle()
         val address by viewModel.address.collectAsStateWithLifecycle()
         val transactionId by viewModel.transactionId.collectAsStateWithLifecycle()
         val note by viewModel.note.collectAsStateWithLifecycle()
@@ -293,12 +299,6 @@ fun TransactionScreen(
 
                 feeRate?.also {
                     Detail(label = Res.string.id_fee_rate) {
-                        Text(text = it)
-                    }
-                }
-
-                total?.also {
-                    Detail(label = Res.string.id_total_spent) {
                         Text(text = it)
                     }
                 }
@@ -323,6 +323,21 @@ fun TransactionScreen(
                     }
                 }
             }
+
+            total?.also {
+                HorizontalDivider()
+
+                Detail(label = Res.string.id_total_spent, labelColor = whiteHigh, labelStyle = labelLarge, modifier = Modifier.padding(top = 8.dp)) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Text(text = it, style = labelLarge, color = whiteHigh, textAlign = TextAlign.End, modifier = Modifier.fillMaxWidth())
+                        totalFiat?.also {
+                            Text(text = it, textAlign = TextAlign.End, modifier = Modifier.fillMaxWidth())
+                        }
+                    }
+                }
+
+                GreenSpacer(32)
+            }
         }
 
         val canReplaceByFee by viewModel.canReplaceByFee.collectAsStateWithLifecycle()
@@ -338,7 +353,7 @@ fun TransactionScreen(
             }
 
             if (!viewModel.account.isLightning) {
-                if(!viewModel.session.isWatchOnly) {
+                if(!viewModel.greenWallet.isWatchOnly) {
                     HorizontalDivider()
                     MenuListItem(
                         stringResource(if (note.isNullOrBlank()) Res.string.id_add_note else Res.string.id_edit_note),
@@ -402,11 +417,17 @@ fun TransactionScreen(
 }
 
 @Composable
-private fun Detail(label: StringResource, content: @Composable () -> Unit) {
+private fun Detail(
+    modifier: Modifier = Modifier,
+    label: StringResource,
+    labelColor: Color = whiteMedium,
+    labelStyle: TextStyle = bodyLarge,
+    content: @Composable () -> Unit
+) {
     GreenRow(
-        padding = 0, space = 8, verticalAlignment = Alignment.Top,
+        padding = 0, space = 8, verticalAlignment = Alignment.Top, modifier = modifier
     ) {
-        Text(stringResource(label), color = whiteMedium, modifier = Modifier.weight(1f))
+        Text(stringResource(label), color = labelColor, style = labelStyle, modifier = Modifier.weight(1f))
         Box(modifier = Modifier.weight(2f)) {
             content()
         }
