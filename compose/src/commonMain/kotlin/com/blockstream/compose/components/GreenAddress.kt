@@ -1,23 +1,33 @@
 package com.blockstream.compose.components
 
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.copy
 import com.blockstream.compose.extensions.colorTextEdges
 import com.blockstream.compose.theme.MonospaceFont
+import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.utils.CopyContainer
+import org.jetbrains.compose.resources.painterResource
 
 
 @Composable
 fun GreenAddress(
-    modifier: Modifier = Modifier,
     address: String,
     textAlign: TextAlign? = null,
+    showCopyIcon: Boolean = false,
     maxLines: Int = Int.MAX_VALUE,
     onCopyClick: ((String) -> Unit)? = null
 ) {
@@ -31,15 +41,27 @@ fun GreenAddress(
         AnnotatedString(address)
     }
 
+
     val content = @Composable {
-        Text(
-            text = text,
-            fontFamily = MonospaceFont(),
-            modifier = modifier,
-            textAlign = textAlign,
-            maxLines = maxLines,
-            overflow = TextOverflow.Ellipsis
-        )
+        Row {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = text,
+                fontFamily = MonospaceFont(),
+                textAlign = textAlign,
+                maxLines = maxLines,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            if (showCopyIcon) {
+                Icon(
+                    painterResource(Res.drawable.copy),
+                    contentDescription = "Copy",
+                    tint = whiteHigh,
+                    modifier = Modifier.align(Alignment.CenterVertically).padding(start = 8.dp)
+                )
+            }
+        }
     }
 
     if (onCopyClick == null) {

@@ -48,7 +48,6 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.box_arrow_down
-import blockstream_green.common.generated.resources.coins
 import blockstream_green.common.generated.resources.eye
 import blockstream_green.common.generated.resources.eye_slash
 import blockstream_green.common.generated.resources.id_archive_account
@@ -66,7 +65,6 @@ import blockstream_green.common.generated.resources.trash
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.screen.uniqueScreenKey
 import cafe.adriel.voyager.koin.koinScreenModel
-import co.touchlab.kermit.Logger
 import com.arkivanov.essenty.parcelable.IgnoredOnParcel
 import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
@@ -99,6 +97,7 @@ import com.blockstream.compose.components.RiveAnimation
 import com.blockstream.compose.dialogs.AppRateDialog
 import com.blockstream.compose.dialogs.ArchivedAccountsDialog
 import com.blockstream.compose.dialogs.DenominationExchangeDialog
+import com.blockstream.compose.dialogs.WalletOverviewMenuDialog
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.extensions.toMenuDpOffset
 import com.blockstream.compose.managers.askForNotificationPermissions
@@ -114,7 +113,6 @@ import com.blockstream.compose.theme.md_theme_background
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteHigh
-import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
@@ -163,6 +161,10 @@ fun WalletOverviewScreen(
         mutableStateOf<ArchivedAccountsViewModel?>(null)
     }
 
+    var overviewMenuViewModel by remember {
+        mutableStateOf<WalletOverviewViewModelAbstract?>(null)
+    }
+
     askForNotificationPermissions(viewModel)
 
     MainMenuBottomSheet.getResult {
@@ -190,18 +192,34 @@ fun WalletOverviewScreen(
     }
 
     HandleSideEffect(viewModel = viewModel) {
-        if (it is SideEffects.OpenDenominationExchangeRate) {
-            denominationExchangeRateViewModel =
-                DenominationExchangeRateViewModel(viewModel.greenWallet)
-        } else if (it is SideEffects.AppReview) {
-            appRateViewModel = SimpleGreenViewModel(viewModel.greenWallet)
-        } else if(it is WalletOverviewViewModel.LocalSideEffects.AccountArchivedDialog) {
-            archivedAccountsViewModel =
-                ArchivedAccountsViewModel(viewModel.greenWallet).also {
-                    if(navigator == null) {
-                        it.parentViewModel = viewModel
+        when (it) {
+            is SideEffects.OpenDenominationExchangeRate -> {
+                denominationExchangeRateViewModel =
+                    DenominationExchangeRateViewModel(viewModel.greenWallet)
+            }
+
+            is SideEffects.AppReview -> {
+                appRateViewModel = SimpleGreenViewModel(viewModel.greenWallet)
+            }
+
+            is WalletOverviewViewModel.LocalSideEffects.AccountArchivedDialog -> {
+                archivedAccountsViewModel =
+                    ArchivedAccountsViewModel(viewModel.greenWallet).also {
+                        if(navigator == null) {
+                            it.parentViewModel = viewModel
+                        }
                     }
-                }
+            }
+
+            is SideEffects.OpenDialog -> {
+                overviewMenuViewModel = viewModel
+            }
+        }
+    }
+
+    overviewMenuViewModel?.also {
+        WalletOverviewMenuDialog(viewModel = viewModel) {
+            overviewMenuViewModel = null
         }
     }
 
@@ -435,8 +453,8 @@ fun WalletOverviewScreen(
                     .align(Alignment.BottomCenter)
                     .padding(horizontal = 16.dp)
                     .padding(bottom = 16.dp),
-                isWatchOnly = viewModel.session.isWatchOnly,
-                isSweepEnabled = viewModel.session.defaultNetworkOrNull?.isBitcoin == true,
+                isWatchOnly = viewModel.sessionOrNull?.isWatchOnly == true,
+                isSweepEnabled = viewModel.sessionOrNull?.defaultNetworkOrNull?.isBitcoin == true,
                 showMenu = viewModel.appInfo.isDevelopmentOrDebug,
                 onSendClick = {
                     viewModel.postEvent(WalletOverviewViewModel.LocalEvents.Send)
@@ -555,18 +573,6 @@ fun WalletBalance(viewModel: WalletOverviewViewModelAbstract) {
                 }
             }
         }
-
-        Icon(
-            painter = painterResource(Res.drawable.coins),
-            contentDescription = null,
-            tint = whiteLow,
-            modifier = Modifier
-                .clickable {
-                    viewModel.postEvent(WalletOverviewViewModel.LocalEvents.DenominationExchangeRate)
-                }
-                .padding(8.dp)
-                .align(Alignment.CenterVertically)
-        )
     }
 }
 

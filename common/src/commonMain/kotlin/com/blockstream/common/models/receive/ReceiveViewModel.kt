@@ -1,24 +1,31 @@
 package com.blockstream.common.models.receive
 
 import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.at
 import blockstream_green.common.generated.resources.id_a_funding_fee_of_s_s_is_applied
 import blockstream_green.common.generated.resources.id_a_set_up_funding_fee_of_s_s
 import blockstream_green.common.generated.resources.id_address_copied_to_clipboard
 import blockstream_green.common.generated.resources.id_funds_received
+import blockstream_green.common.generated.resources.id_help
+import blockstream_green.common.generated.resources.id_list_of_addresses
 import blockstream_green.common.generated.resources.id_max_limit_s
 import blockstream_green.common.generated.resources.id_note
 import blockstream_green.common.generated.resources.id_please_hold_on_while_your
 import blockstream_green.common.generated.resources.id_please_wait_until_your_ledger
 import blockstream_green.common.generated.resources.id_receive
+import blockstream_green.common.generated.resources.id_request_amount
 import blockstream_green.common.generated.resources.id_reset
 import blockstream_green.common.generated.resources.id_send_more_than_s_and_up_to_s_to
+import blockstream_green.common.generated.resources.id_sweep_from_paper_wallet
 import blockstream_green.common.generated.resources.id_the_address_is_valid
 import blockstream_green.common.generated.resources.id_this_amount_is_below_the
 import blockstream_green.common.generated.resources.id_you_cannot_receive_more_than_s
 import blockstream_green.common.generated.resources.id_you_have_just_received_s
 import blockstream_green.common.generated.resources.lightning_fill
 import blockstream_green.common.generated.resources.note_pencil
+import blockstream_green.common.generated.resources.qr_code
 import blockstream_green.common.generated.resources.question
+import blockstream_green.common.generated.resources.text_aa
 import breez_sdk.InputType
 import breez_sdk.LnInvoice
 import com.blockstream.common.AddressType
@@ -230,13 +237,42 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
                         }
                     ).takeIf { accountAsset?.account?.isLightning == true && !showLightningOnChainAddress && receiveAddress == null},
                     NavAction(
-                        title = getString(Res.string.id_reset),
+                        title = getString(Res.string.id_help),
                         icon = Res.drawable.question,
                         isMenuEntry = false,
                         onClick = {
                             postSideEffect(SideEffects.OpenBrowser(if (accountAsset?.account?.isAmp == true) Urls.HELP_AMP_ASSETS else Urls.HELP_RECEIVE_ASSETS))
                         }
-                    )
+                    ),
+
+                    NavAction(
+                        title = getString(Res.string.id_request_amount),
+                        icon = Res.drawable.text_aa,
+                        isMenuEntry = true,
+                        onClick = {
+                            postEvent(ReceiveViewModel.LocalEvents.ShowRequestAmount)
+                        }
+                    ).takeIf { receiveAddress.isNotBlank() && accountAsset?.account?.isLightning == false },
+                    NavAction(
+                        title = getString(Res.string.id_list_of_addresses),
+                        icon = Res.drawable.at,
+                        isMenuEntry = true,
+                        onClick = {
+                            accountAsset?.also {
+                                postEvent(NavigateDestinations.Addresses(accountAsset = it))
+                            }
+                        }
+                    ).takeIf { receiveAddress.isNotBlank() && accountAsset?.account?.isLightning == false },
+                    NavAction(
+                        title = getString(Res.string.id_sweep_from_paper_wallet),
+                        icon = Res.drawable.qr_code,
+                        isMenuEntry = true,
+                        onClick = {
+                            accountAsset?.also {
+                                postEvent(NavigateDestinations.Sweep(accountAsset = it))
+                            }
+                        }
+                    ).takeIf { receiveAddress.isNotBlank() && accountAsset?.account?.isLightning == false },
                 ),
                 onBackPressed = {
                     if(onProgress.value) {

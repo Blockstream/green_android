@@ -3,17 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/create_account"
-        android:icon="@drawable/ic_plus_circle"
-        android:title="@string/id_create_new_account" />
-
-    <item
-        android:id="@+id/settings"
-        android:icon="@drawable/ic_gear_six"
-        android:title="@string/id_settings" />
-
-    <item
-        android:id="@+id/logout"
-        android:icon="@drawable/ic_sign_out"
-        android:title="@string/id_log_out" />
+        android:id="@+id/options"
+        android:icon="@drawable/ic_baseline_more_vert_24"
+        android:title="@string/id_more_options"
+        app:showAsAction="always"/>
 </menu>

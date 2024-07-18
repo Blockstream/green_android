@@ -35,12 +35,6 @@ class LoginFragment : AppFragment<ComposeViewBinding>(
 
     override fun getGreenViewModel(): GreenViewModel = viewModel
 
-    override val title: String
-        get() = viewModel.greenWallet.name
-
-    override val subtitle: String?
-        get() = if(args.isLightningShortcut) getString(R.string.id_lightning_account) else null
-
     override val useCompose: Boolean = true
 
     override suspend fun handleSideEffect(sideEffect: SideEffect) {
@@ -75,18 +69,6 @@ class LoginFragment : AppFragment<ComposeViewBinding>(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        viewModel.walletName.onEach {
-            updateToolbar()
-        }.launchIn(lifecycleScope)
-
-        viewModel.error.onEach {
-            invalidateMenu()
-        }.launchIn(lifecycleScope)
-
-        viewModel.passwordCredentials.onEach {
-            invalidateMenu()
-        }
 
         binding.composeView.apply {
             setViewCompositionStrategy(

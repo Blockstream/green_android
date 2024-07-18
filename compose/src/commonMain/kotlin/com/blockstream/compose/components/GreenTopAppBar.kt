@@ -9,10 +9,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -27,6 +23,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.constraintlayout.compose.ConstraintLayout
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.arrow_left
+import blockstream_green.common.generated.resources.dots_three_vertical_bold
+import blockstream_green.common.generated.resources.list
 import cafe.adriel.voyager.core.screen.Screen
 import com.blockstream.compose.LocalAppBarState
 import com.blockstream.compose.LocalRootNavigator
@@ -115,7 +115,7 @@ fun GreenTopAppBar(
                             openDrawer()
                         }) {
                             Icon(
-                                imageVector = Icons.Filled.Menu,
+                                painter = painterResource(Res.drawable.list),
                                 contentDescription = "Drawer Menu"
                             )
                         }
@@ -126,7 +126,7 @@ fun GreenTopAppBar(
                             }
                         }) {
                             Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                painter = painterResource(Res.drawable.arrow_left),
                                 contentDescription = "Back"
                             )
                         }
@@ -163,7 +163,7 @@ fun GreenTopAppBar(
                             popupState.isContextMenuVisible.value = true
                         }) {
                             Icon(
-                                imageVector = Icons.Default.MoreVert,
+                                painter = painterResource(Res.drawable.dots_three_vertical_bold),
                                 contentDescription = "More Menu"
                             )
                         }

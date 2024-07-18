@@ -26,6 +26,7 @@ import blockstream_green.common.generated.resources.broom
 import blockstream_green.common.generated.resources.id_receive
 import blockstream_green.common.generated.resources.id_send
 import blockstream_green.common.generated.resources.id_sweep
+import blockstream_green.common.generated.resources.plus
 import blockstream_green.common.generated.resources.qr_code
 import com.blockstream.compose.theme.GreenSmallEnd
 import com.blockstream.compose.theme.GreenSmallStart
@@ -117,7 +118,7 @@ fun BottomNav(
             },
         ) {
             if (showMenu) {
-                Icon(Icons.Filled.Add, "Floating action button.")
+                Icon(painterResource(Res.drawable.plus), "Floating action button.")
             } else {
                 Icon(painterResource(Res.drawable.qr_code), "Scan")
             }

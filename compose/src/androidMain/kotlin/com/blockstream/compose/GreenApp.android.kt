@@ -10,6 +10,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import com.blockstream.common.data.AppInfo
 import com.blockstream.common.utils.AndroidKeystore
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.managers.rememberPlatformManager
@@ -67,6 +68,14 @@ fun GreenAndroidPreview(content: @Composable () -> Unit) {
             single { context }
             single {
                 AndroidKeystore(androidContext())
+            }
+            single {
+                AppInfo(
+                    userAgent = "GreenAndroidPreview",
+                    version = "1.0.0-preview",
+                    isDebug = true,
+                    isDevelopment = true
+                )
             }
         })
     }

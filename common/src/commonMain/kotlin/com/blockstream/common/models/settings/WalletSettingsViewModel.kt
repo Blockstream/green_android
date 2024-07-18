@@ -319,7 +319,6 @@ class WalletSettingsViewModel(
                             session.activeBitcoinMultisig != null || session.activeLiquidMultisig != null
     
                         list += listOfNotNull(
-                            WalletSetting.ArchivedAccounts(session.allAccounts.value.count { it.hidden }),
                             WalletSetting.WatchOnly,
                             WalletSetting.Text(getString(Res.string.id_security)),
                         )
@@ -757,7 +756,6 @@ class WalletSettingsViewModelPreview(
                     currency = "USD",
                     exchange = "BITFINEX"
                 ),
-                WalletSetting.ArchivedAccounts(2),
                 WalletSetting.WatchOnly,
                 WalletSetting.Text(getString(Res.string.id_security)),
                 WalletSetting.ChangePin,

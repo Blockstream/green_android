@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.Urls
 import com.blockstream.common.events.Events
+import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.receive.ReceiveViewModel
@@ -79,17 +80,9 @@ class ReceiveFragment : AppFragment<ComposeViewBinding>(
             (requireActivity() as MainActivity).lockDrawer(!it.isVisible)
         }.launchIn(lifecycleScope)
 
-        viewModel.accountAsset.onEach {
-            invalidateMenu()
-        }.launchIn(lifecycleScope)
-
         viewModel.onProgress.onEach {
             // On HWWallet Block going back until address is generated
             onBackCallback.isEnabled = viewModel.session.isHardwareWallet && it
-            invalidateMenu()
-        }.launchIn(lifecycleScope)
-
-        viewModel.navData.onEach {
             invalidateMenu()
         }.launchIn(lifecycleScope)
 
@@ -99,6 +92,12 @@ class ReceiveFragment : AppFragment<ComposeViewBinding>(
     override fun onPrepareMenu(menu: Menu) {
         menu.findItem(R.id.add_description).isVisible = viewModel.account.isLightning && !viewModel.showLightningOnChainAddress.value && viewModel.receiveAddress.value == null
         menu.findItem(R.id.add_description).isEnabled = !viewModel.onProgress.value
+
+        (viewModel.receiveAddress.value.isNotBlank() && viewModel.accountAsset.value?.account?.isLightning == false).also {
+            menu.findItem(R.id.request_amount).isVisible = it
+            menu.findItem(R.id.list_of_addresses).isVisible = it
+            menu.findItem(R.id.sweep_from_paper_wallet).isVisible = it
+        }
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -108,6 +107,19 @@ class ReceiveFragment : AppFragment<ComposeViewBinding>(
             }
             R.id.add_description -> {
                 viewModel.postEvent(NavigateDestinations.Note(note = viewModel.note.value ?: "", isLightning = true))
+            }
+            R.id.request_amount -> {
+                viewModel.postEvent(ReceiveViewModel.LocalEvents.ShowRequestAmount)
+            }
+            R.id.list_of_addresses -> {
+                viewModel.accountAsset.value?.also {
+                    viewModel.postEvent(NavigateDestinations.Addresses(accountAsset = it))
+                }
+            }
+            R.id.sweep_from_paper_wallet -> {
+                viewModel.accountAsset.value?.also {
+                    viewModel.postEvent(NavigateDestinations.Sweep(accountAsset = it))
+                }
             }
 
         }

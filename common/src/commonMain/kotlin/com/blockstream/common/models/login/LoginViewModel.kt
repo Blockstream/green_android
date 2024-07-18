@@ -89,8 +89,6 @@ abstract class LoginViewModelAbstract(
     override fun screenName(): String = "Login"
 
     @NativeCoroutinesState
-    abstract val walletName: StateFlow<String>
-    @NativeCoroutinesState
     abstract val bip39Passphrase: MutableStateFlow<String>
     @NativeCoroutinesState
     abstract val watchOnlyUsername: MutableStateFlow<String>
@@ -168,11 +166,6 @@ class LoginViewModel constructor(
     private val _passwordCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Loading)
     private val _lightningCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Loading)
     private val _lightningMnemonic: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Loading)
-
-    @NativeCoroutinesState
-    override val walletName: StateFlow<String> = greenWalletFlow.filterNotNull().map {
-        it.name
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), greenWallet.name)
 
     @NativeCoroutinesState
     override val biometricsCredentials: StateFlow<DataState<LoginCredentials>> = _biometricsCredentials.asStateFlow()
@@ -299,9 +292,7 @@ class LoginViewModel constructor(
         val check1 = !isLightningShortcut && !greenWallet.isHardware
         val check2 = check1 && !greenWallet.isWatchOnly
 
-        combine(greenWalletFlow.filterNotNull(), pinCredentials) { w, _ ->
-            w
-        }.onEach {
+        combine(greenWalletFlow.filterNotNull(), pinCredentials) { it , _ ->
             _navData.value = NavData(
                 title = it.name,
                 subtitle = if (isLightningShortcut) getString(
@@ -675,11 +666,9 @@ class LoginViewModel constructor(
                 // Disconnect as no longer needed
                 session.disconnectAsync(LogoutReason.USER_ACTION)
 
-                val walletName = greenWallet.name
-
                 var ephemeralWallet = GreenWallet.createEphemeralWallet(
                     ephemeralId = sessionManager.getNextEphemeralId(),
-                    name = walletName,
+                    name = greenWallet.name,
                     networkId = network.id,
                     isHardware = false
                 )
@@ -830,7 +819,6 @@ class LoginViewModelPreview(
     isWatchOnly: Boolean = false,
     isLightningShortcut: Boolean = false
 ) : LoginViewModelAbstract(greenWallet = greenWallet, isLightningShortcut = isLightningShortcut) {
-    override val walletName: StateFlow<String> = MutableStateFlow(viewModelScope, "Name")
     override val bip39Passphrase: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
     override val watchOnlyUsername: MutableStateFlow<String> = MutableStateFlow(viewModelScope, if(isWatchOnly) "username" else "")
     override val watchOnlyPassword: MutableStateFlow<String> = MutableStateFlow(viewModelScope, if(isWatchOnly) "password" else "")

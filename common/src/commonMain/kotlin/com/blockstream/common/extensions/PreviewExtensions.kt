@@ -1,5 +1,6 @@
 package com.blockstream.common.extensions
 
+import com.benasher44.uuid.uuid4
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.EnrichedAsset
@@ -83,9 +84,10 @@ fun previewLoginCredentials() =
 
 fun previewEnrichedAsset(isLiquid: Boolean = false) = if(isLiquid) EnrichedAsset.PreviewLBTC else EnrichedAsset.PreviewBTC
 
+var _accountId = 0L
 fun previewAccount(isLightning:Boolean = false) = Account(
-    gdkName = "Account #1",
-    pointer = 0,
+    gdkName = "Account #$_accountId",
+    pointer = _accountId++,
     type = if(isLightning) AccountType.LIGHTNING else AccountType.BIP84_SEGWIT,
     networkInjected = previewNetwork(),
     policyAsset = previewEnrichedAsset()
@@ -120,7 +122,7 @@ fun previewTransaction() = Transaction(
     feeRate = 0,
     memo = "",
     spvVerified = "",
-    txHash = "",
+    txHash = uuid4().toString(),
     type = "",
     satoshi = mapOf(),
 ).also {

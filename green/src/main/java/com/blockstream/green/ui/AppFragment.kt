@@ -106,6 +106,7 @@ abstract class AppFragment<T : ViewDataBinding>(
 
     open val title : String?
         get() = getGreenViewModel()?.navData?.value?.title
+
     open val subtitle : String?
         get() = getGreenViewModel()?.navData?.value?.subtitle
 
@@ -165,6 +166,7 @@ abstract class AppFragment<T : ViewDataBinding>(
             if(useCompose){
                 viewModel.navData.onEach {
                     updateToolbar()
+                    invalidateMenu()
                 }.launchIn(lifecycleScope)
             }
 

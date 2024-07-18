@@ -15,20 +15,16 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -38,7 +34,6 @@ import blockstream_green.common.generated.resources.arrows_counter_clockwise
 import blockstream_green.common.generated.resources.id_account__asset
 import blockstream_green.common.generated.resources.id_account_address
 import blockstream_green.common.generated.resources.id_address
-import blockstream_green.common.generated.resources.id_address_copied_to_clipboard
 import blockstream_green.common.generated.resources.id_amount
 import blockstream_green.common.generated.resources.id_amount_to_receive
 import blockstream_green.common.generated.resources.id_confirm
@@ -46,8 +41,6 @@ import blockstream_green.common.generated.resources.id_description
 import blockstream_green.common.generated.resources.id_expiration
 import blockstream_green.common.generated.resources.id_ledger_supports_a_limited_set
 import blockstream_green.common.generated.resources.id_lightning_invoice
-import blockstream_green.common.generated.resources.id_list_of_addresses
-import blockstream_green.common.generated.resources.id_more_options
 import blockstream_green.common.generated.resources.id_onchain_address
 import blockstream_green.common.generated.resources.id_please_verify_that_the_address
 import blockstream_green.common.generated.resources.id_qr_code
@@ -55,7 +48,6 @@ import blockstream_green.common.generated.resources.id_request_amount
 import blockstream_green.common.generated.resources.id_share
 import blockstream_green.common.generated.resources.id_show_lightning_invoice
 import blockstream_green.common.generated.resources.id_show_onchain_address
-import blockstream_green.common.generated.resources.id_sweep_from_paper_wallet
 import blockstream_green.common.generated.resources.id_verify_on_device
 import blockstream_green.common.generated.resources.info
 import blockstream_green.common.generated.resources.seal_check
@@ -71,7 +63,6 @@ import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.models.receive.ReceiveViewModel
 import com.blockstream.common.models.receive.ReceiveViewModelAbstract
-import com.blockstream.common.models.send.SendConfirmViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.GreenAccountAsset
@@ -100,7 +91,6 @@ import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.green20
 import com.blockstream.compose.theme.labelMedium
-import com.blockstream.compose.theme.md_theme_outline
 import com.blockstream.compose.theme.orange
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteHigh
@@ -112,7 +102,6 @@ import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import io.github.alexzhirkevich.qrose.QrCodePainter
 import io.github.alexzhirkevich.qrose.toByteArray
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
@@ -168,48 +157,23 @@ fun ReceiveScreen(
 
     val scope = rememberCoroutineScope()
 
-    var isShareMenu by remember {
-        mutableStateOf(false)
-    }
-
     val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
     val platformManager = rememberPlatformManager()
 
     MenuBottomSheet.getResult {
-        if (isShareMenu) {
-            scope.launch {
+        scope.launch {
 
-                val qrCode : Painter = QrCodePainter(
-                    data = receiveAddress ?: "",
-                )
+            val qrCode : Painter = QrCodePainter(
+                data = receiveAddress ?: "",
+            )
 
-                viewModel.postEvent(
-                    if (it == 0) ReceiveViewModel.LocalEvents.ShareAddress else ReceiveViewModel.LocalEvents.ShareQR(
-                        qrCode.toByteArray(800, 800).let {
-                            platformManager.processQr(it, receiveAddress ?: "")
-                        }
-                    )
-                )
-            }
-
-        } else {
-            when (it) {
-                0 -> {
-                    viewModel.postEvent(ReceiveViewModel.LocalEvents.ShowRequestAmount)
-                }
-
-                1 -> {
-                    accountAsset?.also {
-                        viewModel.postEvent(NavigateDestinations.Addresses(accountAsset = it))
+            viewModel.postEvent(
+                if (it == 0) ReceiveViewModel.LocalEvents.ShareAddress else ReceiveViewModel.LocalEvents.ShareQR(
+                    qrCode.toByteArray(800, 800).let {
+                        platformManager.processQr(it, receiveAddress ?: "")
                     }
-                }
-
-                2 -> {
-                    accountAsset?.also {
-                        viewModel.postEvent(NavigateDestinations.Sweep(accountAsset = it))
-                    }
-                }
-            }
+                )
+            )
         }
     }
 
@@ -229,7 +193,7 @@ fun ReceiveScreen(
     val liquidityFee by viewModel.liquidityFee.collectAsStateWithLifecycle()
 
     LaunchedEffect(showRequestAmount){
-        if(showRequestAmount){
+        if(showRequestAmount && amount.isBlank()){
             focusRequester.requestFocus()
         }
     }
@@ -415,6 +379,7 @@ fun ReceiveScreen(
                                         GreenAddress(
                                             address = receiveAddress ?: "",
                                             textAlign = TextAlign.Center,
+                                            showCopyIcon = true,
                                             maxLines = if (accountAsset?.account?.isLightning == true && !showLightningOnChainAddress) 1 else 6,
                                             onCopyClick = {
                                                 viewModel.postEvent(ReceiveViewModel.LocalEvents.CopyAddress)
@@ -531,8 +496,6 @@ fun ReceiveScreen(
         }
 
         Box {
-
-
             GreenColumn(
                 space = 4,
                 padding = 0,
@@ -548,7 +511,6 @@ fun ReceiveScreen(
                         enabled = !onProgress
                     ) {
                         scope.launch {
-                            isShareMenu = true
                             bottomSheetNavigator?.show(
                                 MenuBottomSheet(
                                     title = getString(Res.string.id_share), entries = listOf(
@@ -558,37 +520,6 @@ fun ReceiveScreen(
                                         ),
                                         MenuEntry(
                                             title = getString(Res.string.id_qr_code),
-                                            iconRes = "qr_code"
-                                        ),
-                                    )
-                                )
-                            )
-                        }
-                    }
-                }
-
-                AnimatedVisibility(visible = receiveAddress.isNotBlank() && accountAsset?.account?.isLightning == false) {
-                    GreenButton(
-                        text = stringResource(Res.string.id_more_options),
-                        type = GreenButtonType.OUTLINE,
-                        modifier = Modifier.fillMaxWidth(),
-                        enabled = !onProgress
-                    ) {
-                        scope.launch {
-                            isShareMenu = false
-                            bottomSheetNavigator?.show(
-                                MenuBottomSheet(
-                                    title = getString(Res.string.id_more_options), entries = listOf(
-                                        MenuEntry(
-                                            title = getString(Res.string.id_request_amount),
-                                            iconRes = "text_aa"
-                                        ),
-                                        MenuEntry(
-                                            title = getString(Res.string.id_list_of_addresses),
-                                            iconRes = "at"
-                                        ),
-                                        MenuEntry(
-                                            title = getString(Res.string.id_sweep_from_paper_wallet),
                                             iconRes = "qr_code"
                                         ),
                                     )

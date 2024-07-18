@@ -148,7 +148,7 @@ open class GreenViewModel constructor(
 
     protected val _navData = MutableStateFlow(NavData())
     @NativeCoroutinesState
-    val navData = _navData.asStateFlow()
+    val navData: StateFlow<NavData> = _navData
 
     // Main action validation
     internal val _isValid = MutableStateFlow(viewModelScope, isPreview)
@@ -158,7 +158,7 @@ open class GreenViewModel constructor(
     // Main button enabled flag
     private val _buttonEnabled = MutableStateFlow(isPreview)
     @NativeCoroutinesState
-    val buttonEnabled = _buttonEnabled.asStateFlow()
+    val buttonEnabled : StateFlow<Boolean> = _buttonEnabled
 
     override fun screenName(): String? = null
     override fun segmentation(): HashMap<String, Any>? = sessionOrNull?.let { countly.sessionSegmentation(session = session) }
@@ -239,9 +239,9 @@ open class GreenViewModel constructor(
             }
 
             greenWalletFlow.onEach {
-                if(it == null){
+                if (it == null) {
                     postSideEffect(SideEffects.WalletDelete)
-                }else{
+                } else {
                     _greenWallet = it
                 }
             }.launchIn(this)
