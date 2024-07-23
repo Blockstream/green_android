@@ -46,7 +46,7 @@ import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.extensions.getAccountColor
 import com.blockstream.compose.extensions.policyAndType
 import com.blockstream.compose.extensions.policyIcon
-import com.blockstream.compose.theme.bodySmall
+import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.md_theme_surfaceCircle
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.whiteHigh
@@ -106,14 +106,14 @@ fun GreenAccountCard(
 
                         Text(
                             text = account.account.type.policyAndType().uppercase(),
-                            style = bodySmall,
+                            style = bodyMedium,
                             color = whiteMedium
                         )
 
                         if (account.account.isLightning) {
                             Text(
                                 stringResource(Res.string.id_experimental),
-                                style = bodySmall,
+                                style = bodyMedium,
                                 color = whiteMedium,
                                 modifier = Modifier
                                     .padding(start = 4.dp)
@@ -186,7 +186,7 @@ fun GreenAccountCard(
                                 Column {
                                     Text(
                                         account.balanceExchange ?: "",
-                                        style = bodySmall,
+                                        style = bodyMedium,
                                         color = whiteMedium
                                     )
                                     Text(account.balance ?: "", style = titleMedium)

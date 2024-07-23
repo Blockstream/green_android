@@ -31,8 +31,8 @@ fun GreenCard(
     enabled: Boolean = true,
     padding: Int = 16,
     border: BorderStroke? = null,
-    error: String? = null,
-    errorColor: Color? = null,
+    helperText: String? = null,
+    helperContainerColor: Color? = null,
     contentError: (@Composable BoxScope.(error: String) -> Unit)? = null,
     onClick: (() -> Unit)? = null,
     content: @Composable BoxScope.() -> Unit
@@ -45,10 +45,10 @@ fun GreenCard(
     ) {
         if (onClick == null) {
             Card(
-                shape = if (error == null) CardDefaults.shape else GreenSmallBottom,
+                shape = if (helperText == null) CardDefaults.shape else GreenSmallBottom,
                 elevation = elevation,
                 colors = colors,
-                border = if (error == null) border else BorderStroke(1.dp, errorColor ?: md_theme_errorContainer)
+                border = if (helperText == null) border else BorderStroke(1.dp, helperContainerColor ?: md_theme_errorContainer)
             ) {
                 Box(
                     modifier = Modifier
@@ -61,10 +61,10 @@ fun GreenCard(
             Card(
                 onClick = onClick,
                 enabled = enabled,
-                shape = if (error == null) CardDefaults.shape else GreenSmallBottom,
+                shape = if (helperText == null) CardDefaults.shape else GreenSmallBottom,
                 elevation = elevation,
                 colors = colors,
-                border = if (error == null) border else BorderStroke(1.dp, errorColor ?: md_theme_errorContainer)
+                border = if (helperText == null) border else BorderStroke(1.dp, helperContainerColor ?: md_theme_errorContainer)
             ) {
                 Box(
                     modifier = Modifier
@@ -75,13 +75,13 @@ fun GreenCard(
             }
         }
 
-        AnimatedNullableVisibility(value = error) {
+        AnimatedNullableVisibility(value = helperText) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = GreenSmallTop,
                 colors = CardDefaults.cardColors(
                     contentColor = whiteHigh,
-                    containerColor = errorColor ?: md_theme_errorContainer
+                    containerColor = helperContainerColor ?: md_theme_errorContainer
                 )
             ) {
                 Box(

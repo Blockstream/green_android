@@ -14,8 +14,6 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,7 +62,8 @@ fun GreenAmountField(
     supportsSendAll: Boolean = false,
     enabled: Boolean = true,
     isAmountLocked: Boolean = false,
-    error: String? = null,
+    helperText: String? = null,
+    helperContainerColor: Color? = null,
     focusRequester: FocusRequester? = null,
     footerContent: @Composable (() -> Unit)? = null,
     isReadyOnly: Boolean = false,
@@ -76,14 +75,12 @@ fun GreenAmountField(
 
     Column {
         val isEditable = enabled && !isAmountLocked
-        // var errorColor by remember { mutableStateOf<Color?>(md_theme_outline) }
-        val errorColor by remember { mutableStateOf<Color?>(null) }
 
         GreenDataLayout(
             title = title ?: stringResource(Res.string.id_amount),
             withPadding = false,
-            error = error,
-            errorColor = errorColor
+            helperText = helperText,
+            helperContainerColor = helperContainerColor
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,

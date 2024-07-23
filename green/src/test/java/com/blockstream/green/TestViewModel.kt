@@ -66,6 +66,7 @@ open class TestViewModel<VM : GreenViewModel>: KoinTest {
                     declareMock<CountlyBase>{
                         every { viewModel(any()) } returns Unit
                         every { remoteConfigUpdateEvent } returns MutableSharedFlow<Unit>()
+                        every { updateRemoteConfig(any()) } returns Unit
                     }
 
                     declareMock<SettingsManager> {

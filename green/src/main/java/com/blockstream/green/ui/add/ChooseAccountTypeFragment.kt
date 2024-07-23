@@ -19,7 +19,7 @@ class ChooseAccountTypeFragment : AppFragment<ComposeViewBinding>(R.layout.compo
     val args: ChooseAccountTypeFragmentArgs by navArgs()
 
     val viewModel: ChooseAccountTypeViewModel by viewModel {
-        parametersOf(args.wallet, args.asset?.let { AssetBalance(it) }, args.isReceive)
+        parametersOf(args.wallet, args.asset?.let { AssetBalance(it) }, args.popTo)
     }
 
     override fun getGreenViewModel(): GreenViewModel = viewModel

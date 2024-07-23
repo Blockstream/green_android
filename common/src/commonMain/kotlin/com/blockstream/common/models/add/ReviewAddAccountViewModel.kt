@@ -14,7 +14,7 @@ abstract class ReviewAddAccountViewModelAbstract(
 ) : AddAccountViewModelAbstract(
     greenWallet = setupArgs.greenWallet!!,
     assetId = setupArgs.assetId,
-    isReceive = setupArgs.isReceive
+    popTo = setupArgs.popTo
 ) {
     override fun screenName(): String = "AddAccountConfirm"
 }

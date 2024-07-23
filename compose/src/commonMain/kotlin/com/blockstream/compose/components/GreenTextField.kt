@@ -50,7 +50,7 @@ fun GreenTextField(
 ) {
     val platformManager = LocalPlatformManager.current
     Column(modifier = modifier) {
-        GreenDataLayout(title = title, withPadding = false, error = error) {
+        GreenDataLayout(title = title, withPadding = false, helperText = error) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier

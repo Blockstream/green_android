@@ -1,4 +1,4 @@
-package com.blockstream.common.models.send
+package com.blockstream.common.models.exchange
 
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_account_transfer
@@ -29,6 +29,7 @@ import com.blockstream.common.gdk.data.PendingTransaction
 import com.blockstream.common.gdk.params.AddressParams
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.gdk.params.toJsonElement
+import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
@@ -200,11 +201,7 @@ class AccountExchangeViewModel(
         it?.let {
             try {
                 withContext(Dispatchers.IO) {
-                    if (it.account.isLightning) {
-                        session.receiveOnchain().bitcoinAddress
-                    } else {
-                        session.getReceiveAddress(it.account).address
-                    }
+                    session.getReceiveAddressAsString(it.account)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

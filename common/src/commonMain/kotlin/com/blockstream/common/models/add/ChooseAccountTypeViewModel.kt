@@ -18,6 +18,7 @@ import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.looks.AccountTypeLook
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.navigation.PopTo
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
@@ -33,8 +34,8 @@ import org.jetbrains.compose.resources.getString
 
 
 abstract class ChooseAccountTypeViewModelAbstract(
-    greenWallet: GreenWallet, assetId: String?, isReceive: Boolean
-) : AddAccountViewModelAbstract(greenWallet = greenWallet, assetId = assetId, isReceive = isReceive) {
+    greenWallet: GreenWallet, assetId: String?, popTo: PopTo?
+) : AddAccountViewModelAbstract(greenWallet = greenWallet, assetId = assetId, popTo = popTo) {
     override fun screenName(): String = "AddAccountChooseType"
 
     @NativeCoroutinesState
@@ -53,8 +54,8 @@ abstract class ChooseAccountTypeViewModelAbstract(
     abstract val hasAdvancedOptions: MutableStateFlow<Boolean>
 }
 
-class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalance?, isReceive: Boolean) :
-    ChooseAccountTypeViewModelAbstract(greenWallet = greenWallet, assetId = initAsset?.assetId, isReceive = isReceive) {
+class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalance?, popTo: PopTo?) :
+    ChooseAccountTypeViewModelAbstract(greenWallet = greenWallet, assetId = initAsset?.assetId, popTo = popTo) {
     override val asset: MutableStateFlow<AssetBalance> =
         MutableStateFlow(initAsset ?:EnrichedAsset.Empty.let { AssetBalance.create(it) })
 
@@ -206,7 +207,7 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
                         assetId = asset.value.assetId,
                         network = network,
                         accountType = AccountType.TWO_OF_THREE,
-                        isReceive = isReceive
+                        popTo = popTo
                     )
                 )
             )
@@ -258,7 +259,7 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
 }
 
 class ChooseAccountTypeViewModelPreview(greenWallet: GreenWallet) :
-    ChooseAccountTypeViewModelAbstract(greenWallet, assetId = null, isReceive = false) {
+    ChooseAccountTypeViewModelAbstract(greenWallet, assetId = null, popTo = null) {
 
     override val asset: MutableStateFlow<AssetBalance> = MutableStateFlow(EnrichedAsset.Empty.let { AssetBalance.create(it) })
     override val accountTypes: StateFlow<List<AccountTypeLook>> = MutableStateFlow(listOf(

@@ -56,7 +56,7 @@ fun GreenCardPreview() {
                 mutableStateOf<String?>("Error")
             }
 
-            GreenCard(error = error, modifier = Modifier.clickable {
+            GreenCard(helperText = error, modifier = Modifier.clickable {
                 if (error == null) {
                     error = "This is an error"
                 } else {
@@ -68,7 +68,7 @@ fun GreenCardPreview() {
                 )
             }
 
-            GreenCard(error = error, contentError = {
+            GreenCard(helperText = error, contentError = {
                 Text(it)
                 GreenButton(
                     modifier = Modifier.align(Alignment.CenterEnd),

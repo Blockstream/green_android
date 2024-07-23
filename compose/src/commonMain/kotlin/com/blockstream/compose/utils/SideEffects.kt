@@ -34,6 +34,7 @@ import com.blockstream.common.extensions.twoFactorMethodsLocalized
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.navigation.PopTo
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
@@ -55,6 +56,8 @@ import com.blockstream.compose.screens.add.ReviewAddAccountScreen
 import com.blockstream.compose.screens.add.XpubScreen
 import com.blockstream.compose.screens.addresses.AddressesScreen
 import com.blockstream.compose.screens.archived.ArchivedAccountsScreen
+import com.blockstream.compose.screens.exchange.AccountExchangeScreen
+import com.blockstream.compose.screens.exchange.OnOffRampsScreen
 import com.blockstream.compose.screens.jade.JadeQRScreen
 import com.blockstream.compose.screens.lightning.LnUrlAuthScreen
 import com.blockstream.compose.screens.lightning.LnUrlWithdrawScreen
@@ -77,7 +80,6 @@ import com.blockstream.compose.screens.recovery.RecoveryCheckScreen
 import com.blockstream.compose.screens.recovery.RecoveryIntroScreen
 import com.blockstream.compose.screens.recovery.RecoveryPhraseScreen
 import com.blockstream.compose.screens.recovery.RecoveryWordsScreen
-import com.blockstream.compose.screens.send.AccountExchangeScreen
 import com.blockstream.compose.screens.send.BumpScreen
 import com.blockstream.compose.screens.send.RedepositScreen
 import com.blockstream.compose.screens.send.SendConfirmScreen
@@ -238,7 +240,8 @@ fun HandleSideEffect(
                             platformManager = platformManager,
                             dialogState = dialog,
                             isTor = viewModel.settingsManager.appSettings.tor,
-                            url = it.url
+                            url = it.url,
+                            openSystemBrowser = it.openSystemBrowser
                         )
                     }
                 }
@@ -422,10 +425,10 @@ fun HandleSideEffect(
                 }
 
                 is SideEffects.NavigateToRoot -> {
-                    if(it.popToReceive){
-                        navigator?.popUntil { it is ReceiveScreen }
-                    }else {
-                        navigator?.popAll()
+                    when (it.popTo) {
+                        PopTo.Receive -> navigator?.popUntil { it is ReceiveScreen }
+                        PopTo.OnOffRamps -> navigator?.popUntil { it is OnOffRampsScreen }
+                        PopTo.Root, null -> navigator?.popAll()
                     }
                 }
 
@@ -726,7 +729,7 @@ fun HandleSideEffect(
                         }
 
                         is NavigateDestinations.Assets -> {
-                            val assets = withContext(context = Dispatchers.IO){
+                            val assets = destination.assets ?: withContext(context = Dispatchers.IO) {
                                 val session = viewModel.session
                                 (listOfNotNull(
                                     EnrichedAsset.createOrNull(session = session, session.bitcoin?.policyAsset),
@@ -742,6 +745,7 @@ fun HandleSideEffect(
                                     }
                                 }
                             }
+
 
                             bottomSheetNavigator?.show(
                                 AssetsBottomSheet(
@@ -945,6 +949,14 @@ fun HandleSideEffect(
                             )
                         }
 
+                        is NavigateDestinations.OnOffRamps -> {
+                            navigator?.push(
+                                OnOffRampsScreen(
+                                    greenWallet = viewModel.greenWallet,
+                                )
+                            )
+                        }
+
                         is NavigateDestinations.Redeposit -> {
                             navigator?.push(
                                 RedepositScreen(
@@ -984,7 +996,7 @@ fun HandleSideEffect(
                                 ChooseAccountTypeScreen(
                                     greenWallet = viewModel.greenWallet,
                                     assetBalance = destination.assetBalance,
-                                    isReceive = destination.isReceive
+                                    popTo = destination.popTo
                                 )
                             )
                         }

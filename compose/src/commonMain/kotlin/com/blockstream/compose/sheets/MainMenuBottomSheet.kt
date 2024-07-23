@@ -13,13 +13,17 @@ import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.arrow_u_left_down
 import blockstream_green.common.generated.resources.arrows_down_up
+import blockstream_green.common.generated.resources.coins
 import blockstream_green.common.generated.resources.id_account_transfer
+import blockstream_green.common.generated.resources.id_buy
 import blockstream_green.common.generated.resources.id_move_across_accounts
+import blockstream_green.common.generated.resources.id_qr_scanner
 import blockstream_green.common.generated.resources.id_redeposit
 import blockstream_green.common.generated.resources.id_redeposit_expired_2fa_coins
-import blockstream_green.common.generated.resources.id_scan_a_proposal
 import blockstream_green.common.generated.resources.id_scan_qr_code
 import blockstream_green.common.generated.resources.qr_code
+import com.blockstream.common.CountlyBase
+import com.blockstream.compose.LocalAppInfo
 import com.blockstream.compose.components.GreenArrow
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenCard
@@ -31,9 +35,10 @@ import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteLow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
 enum class MainMenuEntry {
-    ACCOUNT_TRANSFER, SCAN, REDEPOSIT;
+    BUY_SELL, ACCOUNT_TRANSFER, SCAN, REDEPOSIT;
 }
 
 object MainMenuBottomSheet : BottomScreen() {
@@ -92,27 +97,46 @@ fun MainMenuBottomSheetView(
         }
     ) {
 
+        val appInfo = LocalAppInfo.current
+        val countly = koinInject<CountlyBase>()
+
+
         GreenColumn {
+            if(countly.getRemoteConfigForOnOffRamps() != false) {
+                MainMenuItem(
+                    title = stringResource(Res.string.id_buy),
+                    subtitle = "BTC",
+                    icon = painterResource(Res.drawable.coins),
+                    onClick = {
+                        countly.buyInitiate()
+                        onSelect(MainMenuEntry.BUY_SELL)
+                    }
+                )
+            }
+
+             if(appInfo.isDevelopment) {
+                 MainMenuItem(
+                     title = stringResource(Res.string.id_account_transfer),
+                     subtitle = stringResource(
+                         Res.string.id_move_across_accounts
+                     ),
+                     icon = painterResource(Res.drawable.arrows_down_up),
+                     onClick = {
+                         onSelect(MainMenuEntry.ACCOUNT_TRANSFER)
+                     }
+                 )
+                 MainMenuItem(
+                     title = stringResource(Res.string.id_redeposit),
+                     subtitle = stringResource(Res.string.id_redeposit_expired_2fa_coins),
+                     icon = painterResource(Res.drawable.arrow_u_left_down), onClick = {
+                         onSelect(MainMenuEntry.REDEPOSIT)
+                     }
+                 )
+             }
+
             MainMenuItem(
-                title = stringResource(Res.string.id_account_transfer),
-                subtitle = stringResource(
-                    Res.string.id_move_across_accounts
-                ),
-                icon = painterResource(Res.drawable.arrows_down_up),
-                onClick = {
-                    onSelect(MainMenuEntry.ACCOUNT_TRANSFER)
-                }
-            )
-            MainMenuItem(
-                title = stringResource(Res.string.id_redeposit),
-                subtitle = stringResource(Res.string.id_redeposit_expired_2fa_coins),
-                icon = painterResource(Res.drawable.arrow_u_left_down), onClick = {
-                    onSelect(MainMenuEntry.REDEPOSIT)
-                }
-            )
-            MainMenuItem(
-                title = stringResource(Res.string.id_scan_qr_code),
-                subtitle = stringResource(Res.string.id_scan_a_proposal),
+                title = stringResource(Res.string.id_qr_scanner),
+                subtitle = stringResource(Res.string.id_scan_qr_code),
                 icon = painterResource(Res.drawable.qr_code), onClick = {
                     onSelect(MainMenuEntry.SCAN)
                 }

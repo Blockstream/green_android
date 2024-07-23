@@ -10,19 +10,19 @@ import com.blockstream.compose.managers.PlatformManager
 import org.jetbrains.compose.resources.getString
 
 
-suspend fun openBrowser(platformManager: PlatformManager, dialogState: DialogState, isTor: Boolean, url: String) {
+suspend fun openBrowser(platformManager: PlatformManager, dialogState: DialogState, isTor: Boolean, url: String, openSystemBrowser: Boolean = false) {
     if (isTor) {
         dialogState.openDialog(OpenDialogData(
             title = StringHolder.create(Res.string.id_tor),
             message = StringHolder.create(Res.string.id_you_have_tor_enabled_are_you),
             primaryText = getString(Res.string.id_open),
             onPrimary = {
-                platformManager.openBrowser(url = url)
+                platformManager.openBrowser(url = url, openSystemBrowser = openSystemBrowser)
             },
             secondaryText = getString(Res.string.id_cancel)
         ))
 
     } else {
-        platformManager.openBrowser(url = url)
+        platformManager.openBrowser(url = url, openSystemBrowser = openSystemBrowser)
     }
 }

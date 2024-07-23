@@ -253,7 +253,7 @@ fun SendScreen(
                         assetId = it.assetId,
                         session = viewModel.sessionOrNull,
                         isAmountLocked = isAmountLocked,
-                        error = errorAmount,
+                        helperText = errorAmount,
                         denomination = denomination,
                         sendAll = isSendAll,
                         supportsSendAll = supportsSendAll,

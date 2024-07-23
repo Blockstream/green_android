@@ -9,6 +9,7 @@ import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.navigation.NavigateDestination
+import com.blockstream.common.navigation.PopTo
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 
@@ -27,7 +28,7 @@ class Events : Event {
     object DismissSystemMessage : Event
     object ReconnectFailedNetworks : Event
     data class Transaction(val transaction: com.blockstream.common.gdk.data.Transaction): Event
-    data class ChooseAccountType(val isFirstAccount: Boolean = false, val isReceive: Boolean = false) : Event
+    data class ChooseAccountType(val isFirstAccount: Boolean = false, val popTo: PopTo? = null) : Event
     data class HandleUserInput(val data: String, val isQr: Boolean = false) : Event
     object Continue : Event
     object BannerDismiss : Event

@@ -1777,6 +1777,10 @@ class GdkSession constructor(
         )
     ).result<Address>()
 
+    fun getReceiveAddressAsString(account: Account): String = if (account.isLightning) lightningSdk.receiveOnchain().let {
+            it.bitcoinAddress
+    } else getReceiveAddress(account).address
+
     // Combine with receive address
     fun receiveOnchain(): SwapInfo {
         return lightningSdk.receiveOnchain()

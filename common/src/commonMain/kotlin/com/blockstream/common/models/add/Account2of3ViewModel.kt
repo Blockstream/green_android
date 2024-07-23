@@ -13,7 +13,7 @@ abstract class Account2of3ViewModelAbstract(
 ) : AddAccountViewModelAbstract(
     greenWallet = setupArgs.greenWallet!!,
     assetId = setupArgs.assetId,
-    isReceive = setupArgs.isReceive
+    popTo = setupArgs.popTo
 ) {
     override fun screenName(): String = "AddAccountChooseRecovery"
 }

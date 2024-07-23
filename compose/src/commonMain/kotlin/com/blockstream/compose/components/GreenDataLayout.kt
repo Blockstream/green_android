@@ -15,8 +15,8 @@ import com.blockstream.compose.theme.labelMedium
 fun GreenDataLayout(
     modifier: Modifier = Modifier,
     title: String? = null,
-    error: String? = null,
-    errorColor: Color? = null,
+    helperText: String? = null,
+    helperContainerColor: Color? = null,
     withPadding: Boolean = true,
     enabled: Boolean = true,
     onClick: (() -> Unit)? = null,
@@ -38,9 +38,9 @@ fun GreenDataLayout(
         GreenCard(
             padding = (if (withPadding) 16 else 0),
             onClick = onClick,
-            error = error,
+            helperText = helperText,
             enabled = enabled,
-            errorColor = errorColor,
+            helperContainerColor = helperContainerColor,
             content = content
         )
     }

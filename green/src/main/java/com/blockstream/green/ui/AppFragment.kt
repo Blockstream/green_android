@@ -38,6 +38,7 @@ import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.settings.WalletSettingsSection
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.navigation.PopTo
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
@@ -317,11 +318,12 @@ abstract class AppFragment<T : ViewDataBinding>(
             }
 
             is SideEffects.NavigateToRoot -> {
-                if (sideEffect.popToReceive) {
-                    findNavController().popBackStack(R.id.receiveFragment, false)
-                } else {
-                    findNavController().popBackStack(R.id.walletOverviewFragment, false)
+                when(sideEffect.popTo){
+                    PopTo.Receive -> findNavController().popBackStack(R.id.receiveFragment, false)
+                    PopTo.OnOffRamps -> findNavController().popBackStack(R.id.onOffRampsFragment, false)
+                    PopTo.Root, null -> findNavController().popBackStack(R.id.walletOverviewFragment, false)
                 }
+
             }
 
             is SideEffects.NavigateBack -> {
@@ -435,6 +437,14 @@ abstract class AppFragment<T : ViewDataBinding>(
                     )
                 }
 
+                (sideEffect.destination as? NavigateDestinations.OnOffRamps)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalOnOffRampsFragment(
+                            wallet = getGreenViewModel()!!.greenWallet
+                        )
+                    )
+                }
+
                 (sideEffect.destination as? NavigateDestinations.Bump)?.also {
                     navigate(
                         NavGraphDirections.actionGlobalBumpFragment(
@@ -534,7 +544,7 @@ abstract class AppFragment<T : ViewDataBinding>(
                     navigate(
                         NavGraphDirections.actionGlobalChooseAccountTypeFragment(
                             wallet = getGreenViewModel()!!.greenWallet,
-                            isReceive = it.isReceive,
+                            popTo = it.popTo ?: PopTo.Root,
                             asset = it.assetBalance?.asset
                         )
                     )

@@ -19,6 +19,7 @@ import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.gdk.params.SubAccountParams
 import com.blockstream.common.looks.AccountTypeLook
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.navigation.PopTo
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
@@ -33,7 +34,7 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
 
 
-abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet, val assetId: String?, val isReceive: Boolean) :
+abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet, val assetId: String?, val popTo: PopTo?) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
 
     internal val _accountTypeBeingCreated: MutableStateFlow<AccountTypeLook?> = MutableStateFlow(null)
@@ -189,7 +190,7 @@ abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet, val assetId
             postEvent(Events.SetAccountAsset(accountAsset, setAsActive = true))
             postSideEffect(SideEffects.AccountCreated(accountAsset))
 
-            val navigateToRoot = SideEffects.NavigateToRoot(popToReceive = isReceive)
+            val navigateToRoot = SideEffects.NavigateToRoot(popTo = popTo)
 
             if (it.isLightning && !greenWallet.isEphemeral) {
                 postSideEffect(SideEffects.LightningShortcut)

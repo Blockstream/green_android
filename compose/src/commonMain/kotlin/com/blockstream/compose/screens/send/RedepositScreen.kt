@@ -38,7 +38,6 @@ import com.blockstream.common.Parcelize
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.models.send.AccountExchangeViewModel
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.common.models.send.RedepositViewModel
 import com.blockstream.common.models.send.RedepositViewModelAbstract
@@ -89,11 +88,6 @@ data class RedepositScreen(
 fun RedepositScreen(
     viewModel: RedepositViewModelAbstract
 ) {
-
-    AccountsBottomSheet.getResult {
-        viewModel.postEvent(AccountExchangeViewModel.LocalEvents.SetToAccount(it.accountAsset))
-    }
-
     FeeRateBottomSheet.getResult {
         viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SetFeeRate(it))
     }

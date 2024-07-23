@@ -180,8 +180,13 @@ fun WalletOverviewScreen(
             MainMenuEntry.ACCOUNT_TRANSFER -> {
                 viewModel.postEvent(NavigateDestinations.AccountExchange)
             }
+
             MainMenuEntry.REDEPOSIT -> {
                 viewModel.postEvent(NavigateDestinations.Redeposit(accountAsset = viewModel.session.activeAccount.value!!.accountAsset, isRedeposit2FA = false))
+            }
+
+            MainMenuEntry.BUY_SELL -> {
+                viewModel.postEvent(NavigateDestinations.OnOffRamps)
             }
         }
     }
@@ -446,6 +451,7 @@ fun WalletOverviewScreen(
                 size = 76
             )
 
+
             BottomNav(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -453,22 +459,13 @@ fun WalletOverviewScreen(
                     .padding(bottom = 16.dp),
                 isWatchOnly = viewModel.sessionOrNull?.isNoBlobWatchOnly == true,
                 isSweepEnabled = viewModel.sessionOrNull?.defaultNetworkOrNull?.isBitcoin == true,
-                showMenu = viewModel.appInfo.isDevelopmentOrDebug,
+                showMenu = true,
                 onSendClick = {
                     viewModel.postEvent(WalletOverviewViewModel.LocalEvents.Send)
                 }, onReceiveClick = {
                     viewModel.postEvent(WalletOverviewViewModel.LocalEvents.Receive)
                 }, onCircleClick = {
-                    if (viewModel.appInfo.isDevelopmentOrDebug) {
-                        bottomSheetNavigator?.show(MainMenuBottomSheet)
-                    } else {
-                        viewModel.postEvent(
-                            NavigateDestinations.Camera(
-                                isDecodeContinuous = true,
-                                parentScreenName = viewModel.screenName()
-                            )
-                        )
-                    }
+                    bottomSheetNavigator?.show(MainMenuBottomSheet)
                 }
             )
         }

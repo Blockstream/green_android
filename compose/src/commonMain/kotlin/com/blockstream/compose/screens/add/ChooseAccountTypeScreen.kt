@@ -54,6 +54,7 @@ import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.models.add.ChooseAccountTypeViewModel
 import com.blockstream.common.models.add.ChooseAccountTypeViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.navigation.PopTo
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.LocalDialog
@@ -71,7 +72,6 @@ import com.blockstream.compose.screens.jade.JadeQRScreen
 import com.blockstream.compose.sheets.AssetsBottomSheet
 import com.blockstream.compose.sideeffects.OpenDialogData
 import com.blockstream.compose.theme.bodyMedium
-import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.lightning
@@ -93,12 +93,12 @@ import org.koin.core.parameter.parametersOf
 data class ChooseAccountTypeScreen(
     val greenWallet: GreenWallet,
     val assetBalance: AssetBalance?,
-    val isReceive: Boolean?,
+    val popTo: PopTo?,
 ) : Parcelable, Screen {
     @Composable
     override fun Content() {
         val viewModel = koinScreenModel<ChooseAccountTypeViewModel> {
-            parametersOf(greenWallet, assetBalance, isReceive)
+            parametersOf(greenWallet, assetBalance, popTo)
         }
 
         val navData by viewModel.navData.collectAsStateWithLifecycle()
@@ -109,6 +109,7 @@ data class ChooseAccountTypeScreen(
     }
 
     companion object {
+        // Use ReviewAddAccountScreen as a result handler
         internal fun setResult(result: AccountAsset) = ReviewAddAccountScreen.setResult(result)
     }
 }
@@ -197,7 +198,7 @@ fun ChooseAccountTypeScreen(
                     resource = Res.string.id_asset
                 ), withEditIcon = true
             ) {
-                viewModel.postEvent(NavigateDestinations.Assets)
+                viewModel.postEvent(NavigateDestinations.Assets())
             }
 
             val accountTypes by viewModel.accountTypes.collectAsStateWithLifecycle()
@@ -268,7 +269,7 @@ fun AccountType(accountType: AccountTypeLook, onClick: () -> Unit = {}) {
                             val isLightning = (accountType.isLightning && index != 0)
                             Text(
                                 text = s,
-                                style = bodySmall,
+                                style = bodyMedium,
                                 color = if (isLightning) whiteHigh else whiteMedium,
                                 modifier = Modifier.roundBackground(
                                     horizontal = 6.dp,

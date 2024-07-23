@@ -1,4 +1,4 @@
-package com.blockstream.compose.screens.send
+package com.blockstream.compose.screens.exchange
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
@@ -45,8 +45,8 @@ import com.blockstream.common.Parcelize
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.models.send.AccountExchangeViewModel
-import com.blockstream.common.models.send.AccountExchangeViewModelAbstract
+import com.blockstream.common.models.exchange.AccountExchangeViewModel
+import com.blockstream.common.models.exchange.AccountExchangeViewModelAbstract
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.common.utils.DecimalFormat
 import com.blockstream.common.utils.stringResourceFromId
@@ -192,7 +192,7 @@ fun AccountExchangeScreen(
                         title = stringResource(Res.string.id_send),
                         assetId = fromAccountAssetBalance?.assetId,
                         session = viewModel.sessionOrNull,
-                        error = stringResourceFromIdOrNull(errorAmount),
+                        helperText = stringResourceFromIdOrNull(errorAmount),
                         denomination = denomination,
                         sendAll = isSendAll,
                         supportsSendAll = supportsSendAll,

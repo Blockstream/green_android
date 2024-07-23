@@ -47,7 +47,7 @@ import com.blockstream.compose.extensions.policyIcon
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.green20
 import com.blockstream.compose.theme.labelLarge
-import com.blockstream.compose.theme.labelSmall
+import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
 import org.jetbrains.compose.resources.painterResource
@@ -177,7 +177,7 @@ fun GreenAssetAccounts(
                                 contentDescription = null,
                                 tint = green
                             )
-                            Text(warningMessage, style = labelSmall, color = green)
+                            Text(warningMessage, style = labelMedium, color = green)
                         }
 
                         HorizontalDivider(color = green)
@@ -208,7 +208,7 @@ fun GreenAssetAccounts(
                                         it.name,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
-                                        style = labelSmall,
+                                        style = labelMedium,
                                         color = whiteMedium
                                     )
                                 }

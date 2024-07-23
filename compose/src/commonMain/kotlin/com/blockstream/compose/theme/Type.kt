@@ -59,11 +59,11 @@ fun GreenTypography() = Typography().let {
 
         bodyLarge = copyTextStyle(it.bodyLarge, fontSize = 14.sp, lineHeight = 20.sp),
         bodyMedium = copyTextStyle(it.bodyMedium, fontSize = 12.sp, lineHeight = 16.sp),
-        bodySmall = copyTextStyle(it.bodySmall, fontSize = 10.sp, lineHeight = 14.sp),
+        bodySmall = copyTextStyle(it.bodySmall, fontSize = 11.sp, lineHeight = 14.sp),
 
         labelLarge = copyTextStyle(it.labelLarge, fontSize = 14.sp, fontWeight = FontWeight.Bold),
         labelMedium = copyTextStyle(it.labelMedium, fontSize = 12.sp, fontWeight = FontWeight.Bold),
-        labelSmall = copyTextStyle(it.labelSmall, fontSize = 10.sp, fontWeight = FontWeight.Bold),
+        labelSmall = copyTextStyle(it.labelSmall, fontSize = 11.sp, fontWeight = FontWeight.Bold),
     )
 }
 
@@ -111,6 +111,7 @@ val bodyMedium
     @Composable
     get() = MaterialTheme.typography.bodyMedium
 
+@Deprecated("Use bodyMedium instead")
 val bodySmall
     @Composable
     get() = MaterialTheme.typography.bodySmall

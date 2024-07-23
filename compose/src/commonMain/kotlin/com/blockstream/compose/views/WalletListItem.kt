@@ -44,7 +44,7 @@ import com.blockstream.compose.components.MenuEntry
 import com.blockstream.compose.components.PopupMenu
 import com.blockstream.compose.components.PopupState
 import com.blockstream.compose.extensions.resource
-import com.blockstream.compose.theme.bodySmall
+import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.ifTrue
@@ -91,7 +91,7 @@ private fun WalletListRow(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            subtitle?.let { Text(text = it, style = bodySmall) }
+            subtitle?.let { Text(text = it, style = bodyMedium) }
         }
 
         GreenSpacer()

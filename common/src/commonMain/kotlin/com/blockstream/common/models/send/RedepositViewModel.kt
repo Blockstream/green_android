@@ -51,6 +51,7 @@ class RedepositViewModel(
     accountAsset: AccountAsset,
     private val isRedeposit2FA: Boolean
 ) : RedepositViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
+
     init {
         viewModelScope.launch {
             _navData.value = NavData(

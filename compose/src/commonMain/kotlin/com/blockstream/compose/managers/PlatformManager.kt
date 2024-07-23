@@ -35,7 +35,7 @@ expect fun rememberImagePicker(scope: CoroutineScope, onResult: suspend (ByteArr
 expect fun askForNotificationPermissions(viewModel: GreenViewModel)
 
 expect class PlatformManager {
-    fun openBrowser(url: String)
+    fun openBrowser(url: String, openSystemBrowser: Boolean)
 
     fun openToast(content: String): Boolean
 

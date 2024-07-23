@@ -113,7 +113,7 @@ fun FeeRateBottomSheet(
 
 @Composable
 fun FeeItem(feePriority: FeePriority, onProgress: Boolean = false, onClick: () -> Unit = {}) {
-    GreenCard(onClick = onClick, error = feePriority.error, enabled = feePriority.enabled) {
+    GreenCard(onClick = onClick, helperText = feePriority.error, enabled = feePriority.enabled) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,

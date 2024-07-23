@@ -92,7 +92,6 @@ import com.blockstream.compose.sheets.NoteBottomSheet
 import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
-import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.headlineSmall
 import com.blockstream.compose.theme.labelLarge
@@ -194,7 +193,7 @@ fun TransactionScreen(
                     Image(painter = painterResource(spv.icon()), contentDescription = "SPV")
                     Text(
                         text = stringResource(spv.title()),
-                        style = bodySmall,
+                        style = bodyMedium,
                         color = whiteMedium
                     )
                 }

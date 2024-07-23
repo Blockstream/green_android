@@ -3,11 +3,13 @@ package com.blockstream.common.models.home
 import com.blockstream.common.Urls
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
+import com.blockstream.common.extensions.logException
 import com.blockstream.common.models.wallets.WalletsViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
+import com.rickclephas.kmp.observableviewmodel.launch
 import org.koin.core.annotation.Factory
 
 @Factory
@@ -21,6 +23,13 @@ class HomeViewModel: WalletsViewModel(isHome = true){
 
     class LocalSideEffects {
         class ShowConsent(sideEffect: SideEffect): SideEffects.SideEffectEvent(Events.EventSideEffect(sideEffect))
+    }
+
+    init {
+        viewModelScope.launch(context = logException()) {
+            // Update Remote Config when app is initiated, that's the easiest way
+            countly.updateRemoteConfig(force = false)
+        }
     }
 
     override suspend fun handleEvent(event: Event) {

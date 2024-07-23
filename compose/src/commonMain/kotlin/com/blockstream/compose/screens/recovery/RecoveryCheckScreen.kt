@@ -193,5 +193,4 @@ fun RecoveryCheckScreen(
             )
         }
     }
-
 }

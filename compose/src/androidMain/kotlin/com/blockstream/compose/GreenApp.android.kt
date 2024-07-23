@@ -21,6 +21,7 @@ import com.blockstream.compose.sideeffects.DialogState
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.utils.compatTestTagsAsResourceId
 import org.koin.android.ext.koin.androidContext
+import org.koin.compose.koinInject
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
@@ -30,6 +31,7 @@ fun Fragment.AppFragmentBridge(content: @Composable () -> Unit) {
     val dialogState = remember { DialogState() }
     val snackbarHostState = remember { SnackbarHostState() }
     val platformManager = rememberPlatformManager()
+    val appInfo = koinInject<AppInfo>()
 
     GreenTheme {
         CompositionLocalProvider(
@@ -37,6 +39,7 @@ fun Fragment.AppFragmentBridge(content: @Composable () -> Unit) {
             LocalSnackbar provides snackbarHostState,
             LocalPlatformManager provides platformManager,
             LocalActivity provides activity,
+            LocalAppInfo provides appInfo
         ) {
             BottomSheetNavigatorM3 {
                 Scaffold(

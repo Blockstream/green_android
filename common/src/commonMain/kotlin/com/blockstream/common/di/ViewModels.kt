@@ -13,6 +13,8 @@ import com.blockstream.common.models.camera.CameraViewModel
 import com.blockstream.common.models.demo.DemoViewModel
 import com.blockstream.common.models.devices.JadeGuideViewModel
 import com.blockstream.common.models.drawer.DrawerViewModel
+import com.blockstream.common.models.exchange.AccountExchangeViewModel
+import com.blockstream.common.models.exchange.OnOffRampsViewModel
 import com.blockstream.common.models.home.HomeViewModel
 import com.blockstream.common.models.jade.JadeQRViewModel
 import com.blockstream.common.models.lightning.LnUrlAuthViewModel
@@ -37,7 +39,6 @@ import com.blockstream.common.models.recovery.RecoveryCheckViewModel
 import com.blockstream.common.models.recovery.RecoveryIntroViewModel
 import com.blockstream.common.models.recovery.RecoveryPhraseViewModel
 import com.blockstream.common.models.recovery.RecoveryWordsViewModel
-import com.blockstream.common.models.send.AccountExchangeViewModel
 import com.blockstream.common.models.send.BumpViewModel
 import com.blockstream.common.models.send.DenominationViewModel
 import com.blockstream.common.models.send.FeeViewModel
@@ -114,6 +115,7 @@ val factoryViewModels = module {
     factoryOf(::RedepositViewModel)
     factoryOf(::ReEnable2FAViewModel)
     factoryOf(::WatchOnlyCredentialsSettingsViewModel)
+    factoryOf(::OnOffRampsViewModel)
     factory {
         AssetDetailsViewModel(get(), get(), getOrNull())
     }

@@ -14,7 +14,6 @@ import android.graphics.ImageDecoder
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
-import android.os.Message
 import android.os.PersistableBundle
 import android.provider.MediaStore
 import android.text.Layout
@@ -33,6 +32,7 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSavedStateRegistryOwner
 import androidx.core.app.ShareCompat
+import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
 import androidx.savedstate.SavedStateRegistryOwner
 import blockstream_green.common.generated.resources.Res
@@ -61,7 +61,7 @@ import okio.source
 import org.jetbrains.compose.resources.getString
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileOutputStream
+
 
 @Composable
 actual fun rememberPlatformManager(): PlatformManager {
@@ -119,13 +119,18 @@ actual class PlatformManager(val context: Context) {
         return true
     }
 
-    actual fun openBrowser(url: String) {
+    actual fun openBrowser(url: String, openSystemBrowser: Boolean) {
         try {
-            val builder = CustomTabsIntent.Builder()
-            builder.setShowTitle(true)
-            builder.setUrlBarHidingEnabled(false)
-            builder.setDefaultColorSchemeParams(
-                CustomTabColorSchemeParams.Builder()
+            if (openSystemBrowser) {
+                context.startActivity(Intent(Intent.ACTION_VIEW).also {
+                    it.setData(Uri.parse(url))
+                })
+            } else {
+                val builder = CustomTabsIntent.Builder()
+                builder.setShowTitle(true)
+                builder.setUrlBarHidingEnabled(false)
+                builder.setDefaultColorSchemeParams(
+                    CustomTabColorSchemeParams.Builder()
 //                    .setToolbarColor(ContextCompat.getColor(context, R.color.brand_surface))
 //                    .setNavigationBarColor(ContextCompat.getColor(context, R.color.brand_surface))
 //                    .setNavigationBarDividerColor(
@@ -134,13 +139,15 @@ actual class PlatformManager(val context: Context) {
 //                            R.color.brand_green
 //                        )
 //                    )
-                    .build()
-            )
+                        .build()
+                )
 //            builder.setStartAnimations(context, R.anim.enter_slide_up, R.anim.fade_out)
 //            builder.setExitAnimations(context, R.anim.fade_in, R.anim.exit_slide_down)
 
-            val customTabsIntent = builder.build()
-            customTabsIntent.launchUrl(context, Uri.parse(url))
+                val customTabsIntent = builder.build()
+                customTabsIntent.launchUrl(context, Uri.parse(url))
+
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }

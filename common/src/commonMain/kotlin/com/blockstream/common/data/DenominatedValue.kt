@@ -172,7 +172,7 @@ sealed class Denomination : Parcelable, JavaSerializable {
         }
 
         fun fiat(session: GdkSession): Denomination?{
-            return session.getSettings()?.pricing?.exchange?.let { FIAT(it) }
+            return session.getSettings()?.pricing?.currency?.let { FIAT(it) }
         }
 
         fun fiatOrNull(session: GdkSession, isFiat: Boolean): Denomination?{

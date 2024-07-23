@@ -60,13 +60,13 @@ sealed class NavigateDestinations : NavigateDestination {
     data class DeleteWallet(val greenWallet: GreenWallet) : NavigateDestination
     data class AssetsAccounts(val assetsAccounts: List<AccountAssetBalance>) : NavigateDestination
     data class Accounts(val accounts: List<AccountAssetBalance>, val withAsset: Boolean) : NavigateDestination
-    object Assets : NavigateDestination
+    data class Assets(val assets: List<AssetBalance>? = null) : NavigateDestination
     data class Bip39Passphrase(val passphrase: String) : NavigateDestination
     data class EnableTwoFactor(val network: Network) : NavigateDestination
     data class ArchivedAccounts(val navigateToRoot: Boolean = false) : NavigateDestination
     object WalletAssets : NavigateDestination
     data class AccountOverview(val accountAsset: AccountAsset) : NavigateDestination
-    data class ChooseAccountType(val assetBalance: AssetBalance? = null, val isReceive: Boolean = false) : NavigateDestination
+    data class ChooseAccountType(val assetBalance: AssetBalance? = null, val popTo: PopTo? = null) : NavigateDestination
     object WatchOnly : NavigateDestination
     object ChangePin : NavigateDestination
     data class SystemMessage(val network: Network, val message: String) : NavigateDestination
@@ -125,6 +125,8 @@ sealed class NavigateDestinations : NavigateDestination {
     ) : NavigateDestination
 
     object AccountExchange : NavigateDestination
+
+    object OnOffRamps : NavigateDestination
 
     data class LnUrlAuth(
         val lnUrlAuthRequest: LnUrlAuthRequestDataSerializable

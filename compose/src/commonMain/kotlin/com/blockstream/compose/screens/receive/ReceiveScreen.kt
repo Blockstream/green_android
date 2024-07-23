@@ -89,7 +89,6 @@ import com.blockstream.compose.sheets.MenuEntry
 import com.blockstream.compose.sheets.NoteBottomSheet
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
-import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.green20
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.orange
@@ -238,7 +237,7 @@ fun ReceiveScreen(
                                     )
                                     Text(
                                         stringResource(Res.string.id_ledger_supports_a_limited_set),
-                                        style = bodySmall,
+                                        style = bodyMedium,
                                         color = whiteMedium,
                                     )
                                 }
@@ -268,7 +267,7 @@ fun ReceiveScreen(
                             title = if (accountAsset?.account?.isLightning == false) stringResource(
                                 Res.string.id_request_amount
                             ) else stringResource(Res.string.id_amount),
-                            error = amountError,
+                            helperText = amountError,
                             enabled = !onProgress,
                             denomination = denomination,
                             focusRequester = focusRequester,
@@ -312,7 +311,7 @@ fun ReceiveScreen(
                                 Column {
                                     Text(
                                         it,
-                                        style = bodySmall,
+                                        style = bodyMedium,
                                         color = whiteMedium,
                                         modifier = Modifier.padding(horizontal = 8.dp)
                                             .padding(top = 8.dp)
@@ -402,7 +401,7 @@ fun ReceiveScreen(
                                                 ) {
                                                     Text(
                                                         onchainSwapMessage ?: "",
-                                                        style = bodySmall,
+                                                        style = bodyMedium,
                                                         color = whiteMedium,
                                                         textAlign = TextAlign.Center,
                                                         modifier = Modifier.fillMaxWidth()
@@ -426,7 +425,7 @@ fun ReceiveScreen(
 
                                                 Text(
                                                     text = stringResource(Res.string.id_please_verify_that_the_address),
-                                                    style = bodySmall
+                                                    style = bodyMedium
                                                 )
                                             }
                                         }

@@ -40,6 +40,7 @@ import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.ScreenTransition
 import cafe.adriel.voyager.transitions.ScreenTransitionContent
 import com.blockstream.common.crypto.NoKeystore
+import com.blockstream.common.data.AppInfo
 import com.blockstream.common.managers.LifecycleManager
 import com.blockstream.common.models.drawer.DrawerViewModel
 import com.blockstream.compose.components.GreenTopAppBar
@@ -65,6 +66,7 @@ import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
 
 
+val LocalAppInfo: ProvidableCompositionLocal<AppInfo> = staticCompositionLocalOf { error("LocalAppInfo not initialized") }
 val LocalAppBarState = compositionLocalOf { AppBarState() }
 val LocalSnackbar = compositionLocalOf { SnackbarHostState() }
 val LocalAppCoroutine = compositionLocalOf { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
@@ -83,13 +85,15 @@ fun GreenApp(modifier: Modifier = Modifier) {
     val appBarState = remember { AppBarState() }
     val dialogState = remember { DialogState() }
     val platformManager = rememberPlatformManager()
+    val appInfo = koinInject<AppInfo>()
 
     CompositionLocalProvider(
         LocalSnackbar provides snackbarHostState,
         LocalAppBarState provides appBarState,
         LocalDrawer provides drawerState,
         LocalDialog provides dialogState,
-        LocalPlatformManager provides platformManager
+        LocalPlatformManager provides platformManager,
+        LocalAppInfo provides appInfo
     ) {
 
         val lifecycleManager = koinInject<LifecycleManager>()

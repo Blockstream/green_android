@@ -25,7 +25,6 @@ import com.blockstream.common.data.LnUrlWithdrawRequestSerializable
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.lightning.LnUrlWithdrawViewModel
 import com.blockstream.common.models.lightning.LnUrlWithdrawViewModelAbstract
-import com.blockstream.common.models.send.AccountExchangeViewModel
 import com.blockstream.compose.components.GreenAmountField
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenColumn
@@ -107,10 +106,7 @@ fun LnUrlWithdrawScreen(
                 denomination = denomination,
                 enabled = !onProgress,
                 isAmountLocked = viewModel.isAmountLocked,
-                error = error,
-                onSendAllClick = {
-                    viewModel.postEvent(AccountExchangeViewModel.LocalEvents.ToggleIsSendAll)
-                },
+                helperText = error,
                 footerContent = {
                     Row(modifier = Modifier.padding(horizontal = 4.dp)) {
                         Text(

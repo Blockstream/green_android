@@ -29,6 +29,7 @@ import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.navigation.PopTo
 import com.blockstream.compose.LocalRootNavigator
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAssetAccounts
@@ -160,7 +161,7 @@ fun ChooseAssetAccountBottomSheet(
                         viewModel.postEvent(
                             NavigateDestinations.ChooseAccountType(
                                 assetBalance = AssetBalance.create(it),
-                                isReceive = true
+                                popTo = PopTo.Receive
                             )
                         )
                         onDismissRequest()

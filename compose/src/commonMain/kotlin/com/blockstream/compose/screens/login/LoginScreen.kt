@@ -84,6 +84,7 @@ import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.sheets.Bip39PassphraseBottomSheet
 import com.blockstream.compose.sideeffects.rememberBiometricsState
+import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.headlineMedium
 import com.blockstream.compose.theme.labelLarge
@@ -232,7 +233,7 @@ fun LoginScreen(
                     GreenSpacer(4)
                     Text(
                         text = applicationSettings.proxyUrl ?: "proxy Url",
-                        style = bodySmall,
+                        style = bodyMedium,
                         color = whiteMedium
                     )
                 }

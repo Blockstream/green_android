@@ -294,13 +294,13 @@
             android:name="wallet"
             app:argType="com.blockstream.common.data.GreenWallet" />
         <argument
-            android:name="isReceive"
-            app:argType="boolean" />
-        <argument
             android:name="asset"
             android:defaultValue="@null"
             app:argType="com.blockstream.common.data.EnrichedAsset"
             app:nullable="true" />
+        <argument
+            android:name="popTo"
+            app:argType="com.blockstream.common.navigation.PopTo" />
     </fragment>
     <fragment
         android:id="@+id/account2of3Fragment"
@@ -334,6 +334,15 @@
         <action
             android:id="@+id/action_receiveFragment_to_sendFragment"
             app:destination="@id/sendFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/onOffRampsFragment"
+        android:name="com.blockstream.green.ui.exchange.OnOffRampsFragment"
+        android:label="@string/id_buy">
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.common.data.GreenWallet" />
     </fragment>
 
     <fragment
@@ -607,6 +616,10 @@
     <action
         android:id="@+id/action_global_receiveFragment"
         app:destination="@id/receiveFragment" />
+
+    <action
+        android:id="@+id/action_global_onOffRampsFragment"
+        app:destination="@id/onOffRampsFragment" />
     <fragment
         android:id="@+id/sweepFragment"
         android:name="com.blockstream.green.ui.send.SweepFragment"
@@ -647,7 +660,7 @@
 
     <fragment
         android:id="@+id/accountExchangeFragment"
-        android:name="com.blockstream.green.ui.send.AccountExchangeFragment"
+        android:name="com.blockstream.green.ui.exchange.AccountExchangeFragment"
         tools:layout="@layout/compose_view">
         <argument
             android:name="wallet"

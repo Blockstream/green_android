@@ -19,6 +19,7 @@ import com.blockstream.green.ui.dialogs.CountlyNpsDialogFragment
 import com.blockstream.green.ui.dialogs.CountlySurveyDialogFragment
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.blockstream.green.utils.isProductionFlavor
+import kotlinx.datetime.Clock
 import ly.count.android.sdk.Countly
 import ly.count.android.sdk.CountlyConfig
 import ly.count.android.sdk.ModuleAPM
@@ -32,6 +33,8 @@ import ly.count.android.sdk.ModuleRemoteConfig
 import ly.count.android.sdk.ModuleRequestQueue
 import ly.count.android.sdk.ModuleUserProfile
 import ly.count.android.sdk.ModuleViews
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 class Countly constructor(
     private val context: Context,
@@ -148,8 +151,13 @@ class Countly constructor(
         countly.onConfigurationChanged(newConfig)
     }
 
-    override fun updateRemoteConfig() {
-        _remoteConfig.downloadAllKeys(null)
+    override fun updateRemoteConfig(force: Boolean) {
+        // Update remote config if required (1 minute distance between calls)
+        if (force || _remoteConfigUpdate.plus(30L.toDuration(DurationUnit.SECONDS)) < Clock.System.now()) {
+            _remoteConfig.downloadAllKeys(null)
+        } else {
+            logger.d { "Remote Config skip update: ${Clock.System.now().minus(_remoteConfigUpdate).inWholeSeconds} secs from previous update" }
+        }
     }
 
     override fun updateDeviceId() {

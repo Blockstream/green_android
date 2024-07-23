@@ -50,7 +50,7 @@ class CountlyNoOp constructor(
 
     }
 
-    override fun updateRemoteConfig() {
+    override fun updateRemoteConfig(force: Boolean) {
 
     }
 

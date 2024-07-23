@@ -38,9 +38,9 @@ import com.blockstream.common.looks.transaction.TransactionLook
 import com.blockstream.common.utils.formatAuto
 import com.blockstream.compose.extensions.directionColor
 import com.blockstream.compose.extensions.icon
-import com.blockstream.compose.theme.bodySmall
+import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelLarge
-import com.blockstream.compose.theme.labelSmall
+import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.md_theme_inverseSurface
 import com.blockstream.compose.theme.orange
 import com.blockstream.compose.theme.red
@@ -159,7 +159,7 @@ fun GreenTransaction(
                                 }
 
                                 Text(
-                                    text = text, style = bodySmall, modifier = Modifier
+                                    text = text, style = bodyMedium, modifier = Modifier
                                         .clip(RoundedCornerShape(100))
                                         .background(bgColor)
                                         .padding(horizontal = 6.dp, vertical = 1.dp)
@@ -173,7 +173,7 @@ fun GreenTransaction(
                             // Date
                             Text(
                                 text = transactionLook.transaction.createdAtInstant?.formatAuto() ?: "",
-                                style = labelSmall,
+                                style = labelMedium,
                                 color = whiteMedium
                             )
                         }
@@ -182,7 +182,7 @@ fun GreenTransaction(
                         if (showAccount) {
                             Text(
                                 text = transactionLook.transaction.account.name,
-                                style = bodySmall,
+                                style = bodyMedium,
                                 color = whiteMedium
                             )
                         }
@@ -192,7 +192,7 @@ fun GreenTransaction(
                         // Memo
                         Text(
                             text = transactionLook.transaction.memo,
-                            style = bodySmall,
+                            style = bodyMedium,
                             color = whiteMedium
                         )
                     }

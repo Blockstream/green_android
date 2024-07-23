@@ -18,7 +18,6 @@ import blockstream_green.common.generated.resources.id_network_fee
 import blockstream_green.common.generated.resources.pencil_simple_line
 import com.blockstream.common.data.FeePriority
 import com.blockstream.compose.theme.bodyMedium
-import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
@@ -36,7 +35,7 @@ fun GreenNetworkFee(
 ) {
     GreenDataLayout(
         title = title ?: stringResource(Res.string.id_network_fee),
-        error = feePriority.error,
+        helperText = feePriority.error,
         withPadding = false,
         onClick = if (onClick != null) {
             {
@@ -69,7 +68,7 @@ fun GreenNetworkFee(
                         )
                     }
                 }
-                Text(feePriority.feeRate ?: "", style = bodySmall, color = whiteMedium)
+                Text(feePriority.feeRate ?: "", style = bodyMedium, color = whiteMedium)
             }
 
             Row(verticalAlignment = Alignment.CenterVertically,

@@ -34,7 +34,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
-import org.koin.core.annotation.Single
 import kotlin.collections.set
 import kotlin.properties.Delegates
 
@@ -124,11 +123,11 @@ class SessionManager constructor(
                     }
                 }
             }
-        }.launchIn(CoroutineScope(context = Dispatchers.Default))
+        }.launchIn(CoroutineScope(context = Dispatchers.Default + logException()))
 
         settingsManager.appSettingsStateFlow.onEach {
             torEnabled = it.tor
-        }.launchIn(CoroutineScope(context = Dispatchers.Default))
+        }.launchIn(CoroutineScope(context = Dispatchers.Default + logException()))
 
         gdk.setNotificationHandler { gaSession: GASession, jsonObject: Any ->
             try {
@@ -155,7 +154,7 @@ class SessionManager constructor(
 
         _torProxy.filterNotNull().onEach {
             countly.updateTorProxy(it)
-        }.launchIn(CoroutineScope(context = Dispatchers.Default))
+        }.launchIn(CoroutineScope(context = Dispatchers.Default + logException()))
     }
 
     fun getDeviceSessionForNetworkAllPolicies(device: DeviceInterface, network: Network, isEphemeral: Boolean): GdkSession? {

@@ -41,7 +41,7 @@ actual class PlatformManager {
         return false
     }
 
-    actual fun openBrowser(url: String) {
+    actual fun openBrowser(url: String, openSystemBrowser: Boolean) {
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
             Desktop.getDesktop().browse(URI(url))
         }

@@ -6,6 +6,7 @@ import com.blockstream.common.Parcelize
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Credentials
 import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.navigation.PopTo
 
 
 @Parcelize
@@ -25,7 +26,7 @@ data class SetupArgs constructor(
     val page: Int = 1,
     val isShowRecovery: Boolean = false,
     val isLightning: Boolean = false,
-    val isReceive: Boolean = false
+    val popTo: PopTo? = null
 ) : Parcelable, JavaSerializable {
 
     val mnemonicAsWords

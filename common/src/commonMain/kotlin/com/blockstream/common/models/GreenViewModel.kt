@@ -56,6 +56,7 @@ import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.navigation.NavigateDestination
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.navigation.PopTo
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
@@ -500,7 +501,7 @@ open class GreenViewModel constructor(
             is Events.ChooseAccountType -> {
                 postSideEffect(
                     SideEffects.NavigateTo(
-                        NavigateDestinations.ChooseAccountType(isReceive = event.isReceive)
+                        NavigateDestinations.ChooseAccountType(popTo = event.popTo)
                     )
                 )
 

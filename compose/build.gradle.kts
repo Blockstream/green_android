@@ -88,7 +88,6 @@ kotlin {
             implementation(libs.mpfilepicker)
             implementation(libs.middle.ellipsis.text3)
             /** ----------------------------------------------------------------------------------------- */
-
         }
 
         val desktopMain by getting

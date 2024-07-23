@@ -13,6 +13,7 @@ import com.blockstream.common.gdk.data.Device
 import com.blockstream.common.gdk.data.ProcessedTransactionDetails
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.navigation.NavigateDestination
+import com.blockstream.common.navigation.PopTo
 import com.blockstream.common.utils.StringHolder
 import kotlinx.coroutines.CompletableDeferred
 import okio.Path
@@ -21,7 +22,7 @@ import org.jetbrains.compose.resources.DrawableResource
 
 class SideEffects : SideEffect {
     open class SideEffectEvent(override val event: Event) : SideEffectWithEvent
-    data class OpenBrowser(val url: String) : SideEffect
+    data class OpenBrowser(val url: String, val openSystemBrowser: Boolean = false) : SideEffect
     data class OpenMenu(val id: Int = 0) : SideEffect
     data class OpenDialog(val id: Int = 0) : SideEffect
     data class Snackbar(val text: StringHolder) : SideEffect
@@ -46,7 +47,7 @@ class SideEffects : SideEffect {
         val error: Throwable? = null,
         val errorReport: ErrorReport? = null,
     ) : SideEffect
-    data class NavigateToRoot(val popToReceive: Boolean = false) : SideEffect
+    data class NavigateToRoot(val popTo: PopTo? = null) : SideEffect
     data class TransactionSent(val data: ProcessedTransactionDetails) : SideEffect
     data class Logout(val reason: LogoutReason) : SideEffect
     object WalletDelete : SideEffect

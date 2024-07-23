@@ -38,6 +38,7 @@ import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.ScreenContainer
 import com.blockstream.compose.navigation.getNavigationResult
 import com.blockstream.compose.navigation.setNavigationResult
+import com.blockstream.compose.screens.add.ReviewAddAccountScreen.Companion.setResult
 import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.theme.labelLarge
@@ -80,9 +81,9 @@ fun ReviewAddAccountScreen(
 ) {
 
     HandleSideEffect(viewModel) {
-        when(it) {
+        when (it) {
             is SideEffects.AccountCreated -> {
-                ReviewAddAccountScreen.setResult(it.accountAsset)
+                setResult(it.accountAsset)
             }
         }
     }

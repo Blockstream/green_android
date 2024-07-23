@@ -26,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -124,6 +123,11 @@ fun AccountOverviewScreen(
             MainMenuEntry.REDEPOSIT -> {
                 viewModel.postEvent(NavigateDestinations.Redeposit(accountAsset = viewModel.accountAsset.value!!, isRedeposit2FA = false))
             }
+
+            MainMenuEntry.BUY_SELL -> {
+                viewModel.postEvent(NavigateDestinations.OnOffRamps)
+            }
+
         }
     }
 
@@ -381,7 +385,6 @@ fun AccountOverviewScreen(
                 }, onReceiveClick = {
                     viewModel.postEvent(AccountOverviewViewModel.LocalEvents.Receive)
                 }, onCircleClick = {
-                    // bottomSheetNavigator.show(MainMenuBottomSheet)
                     viewModel.postEvent(
                         NavigateDestinations.Camera(
                             isDecodeContinuous = true,

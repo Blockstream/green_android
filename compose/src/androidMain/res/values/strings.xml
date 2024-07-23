@@ -1528,4 +1528,6 @@
   <string name="id_your_redeposit_address">Your Redeposit Address</string>
   <string name="id_do_you_want_to_enable_tor">Do you want to enable Tor to connect to the PIN oracle server?</string>
   <string name="id_ledger_bitcoin_app_detected">Ledger Bitcoin app detected, please open the Bitcoin Legacy app to access.</string>
+  <string name="id_buy_sell">Buy / Sell</string>
+  <string name="id_buy">Buy</string>
 </resources>

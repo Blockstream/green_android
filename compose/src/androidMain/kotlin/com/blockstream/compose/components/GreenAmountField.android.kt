@@ -46,7 +46,7 @@ fun GreenAmountFieldPreview() {
                     style = bodyMedium,
                     color = whiteLow
                 )
-            }, error = "id_invalid_amount", denomination = Denomination.SATOSHI)
+            }, helperText = "id_invalid_amount", denomination = Denomination.SATOSHI)
 
             GreenAmountField(amount, {
                 amount = it
