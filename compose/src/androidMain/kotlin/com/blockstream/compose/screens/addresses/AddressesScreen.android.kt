@@ -17,6 +17,7 @@ fun AddressListItemPreview() {
             AddressListItem(
                 AddressLook(
                     address = "bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu",
+                    index = 1,
                     txCount = "99",
                     canSign = true
                 )

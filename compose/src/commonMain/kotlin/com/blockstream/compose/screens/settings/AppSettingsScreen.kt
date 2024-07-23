@@ -6,14 +6,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,8 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
@@ -50,6 +46,7 @@ import blockstream_green.common.generated.resources.id_connect_through_a_proxy
 import blockstream_green.common.generated.resources.id_connect_with_tor
 import blockstream_green.common.generated.resources.id_custom_servers_and_validation
 import blockstream_green.common.generated.resources.id_double_check_spv_with_other
+import blockstream_green.common.generated.resources.id_electrum_server_gap_limit
 import blockstream_green.common.generated.resources.id_enable_experimental_features
 import blockstream_green.common.generated.resources.id_enable_limited_usage_data
 import blockstream_green.common.generated.resources.id_enable_testnet
@@ -62,6 +59,7 @@ import blockstream_green.common.generated.resources.id_liquid_electrum_server
 import blockstream_green.common.generated.resources.id_liquid_testnet_electrum_server
 import blockstream_green.common.generated.resources.id_more_info
 import blockstream_green.common.generated.resources.id_multi_server_validation
+import blockstream_green.common.generated.resources.id_number_of_consecutive_empty_addresses
 import blockstream_green.common.generated.resources.id_personal_electrum_server
 import blockstream_green.common.generated.resources.id_private_but_less_stable
 import blockstream_green.common.generated.resources.id_remember_hardware_devices
@@ -90,7 +88,6 @@ import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenGradient
-import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.GreenSwitch
 import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.sheets.AnalyticsBottomSheet
@@ -100,9 +97,7 @@ import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.TextInputPaste
-import com.blockstream.compose.utils.ifTrue
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -417,14 +412,44 @@ fun AppSettingsScreen(
                 }
             }
 
+            val electrumServerGapLimit by viewModel.electrumServerGapLimit.collectAsStateWithLifecycle()
+
             AnimatedVisibility(visible = electrumNodeEnabled) {
-                GreenSwitch(
-                    title = stringResource(Res.string.id_enable_tls_connection),
-                    checked = personalElectrumServerTlsEnabled,
-                    painter = painterResource(Res.drawable.lock_simple),
-                    onCheckedChange = viewModel.personalElectrumServerTlsEnabled.onValueChange(),
-                    modifier = Modifier.padding(start = 42.dp)
-                )
+                GreenColumn(space = 4, padding = 0) {
+
+                    OutlinedTextField(
+                        value = electrumServerGapLimit,
+                        onValueChange = viewModel.electrumServerGapLimit.onValueChange(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 54.dp, end = 16.dp, bottom = 8.dp),
+                        singleLine = true,
+                        label = { Text(stringResource(Res.string.id_electrum_server_gap_limit)) },
+                        placeholder = {
+                            Text(
+                                "20",
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        },
+                        supportingText = {
+                            Text(text = stringResource(Res.string.id_number_of_consecutive_empty_addresses))
+                        },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Number
+                        ),
+                        trailingIcon = {
+                            TextInputPaste(state = viewModel.electrumServerGapLimit)
+                        }
+                    )
+
+                    GreenSwitch(
+                        title = stringResource(Res.string.id_enable_tls_connection),
+                        checked = personalElectrumServerTlsEnabled,
+                        painter = painterResource(Res.drawable.lock_simple),
+                        onCheckedChange = viewModel.personalElectrumServerTlsEnabled.onValueChange(),
+                        modifier = Modifier.padding(start = 42.dp)
+                    )
+                }
             }
 
             HorizontalDivider(modifier = Modifier.padding(start = 54.dp))

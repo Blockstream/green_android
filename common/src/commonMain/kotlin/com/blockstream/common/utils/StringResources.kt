@@ -1547,5 +1547,9 @@ object StringResourcesMap {
         "id_your_wallet_is_not_yet_fully" to Res.string.id_your_wallet_is_not_yet_fully,
         "id_your_watchonly_username_and" to Res.string.id_your_watchonly_username_and,
         "id_youve_entered_an_invalid_pin" to Res.string.id_youve_entered_an_invalid_pin,
+        "id_enable_tls_connection" to Res.string.id_enable_tls_connection,
+        "id_your_personal_electrum_server_for_s" to Res.string.id_your_personal_electrum_server_for_s,
+        "id_electrum_server_gap_limit" to Res.string.id_electrum_server_gap_limit,
+        "id_number_of_consecutive_empty_addresses" to Res.string.id_number_of_consecutive_empty_addresses,
     )
 }

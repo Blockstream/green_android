@@ -102,7 +102,7 @@ class AddressesViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
         _hasMore.value = false
 
         doAsync({
-            session.getPreviousAddresses(account = account, lastPointer)
+            session.getPreviousAddresses(account = account, lastPointer = lastPointer)
         }, onSuccess = { previousAddresses ->
             lastPointer = previousAddresses.lastPointer ?: 0
 
@@ -118,20 +118,14 @@ class AddressesViewModelPreview(greenWallet: GreenWallet, accountAsset: AccountA
     AddressesViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
     override val query: MutableStateFlow<String> = MutableStateFlow("")
 
-    override val addresses: StateFlow<List<AddressLook>> = MutableStateFlow(
-        listOf(
-            AddressLook(
-                address = "bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu",
-                txCount = "1",
-                canSign = true
-            ),
-            AddressLook(
-                address = "bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu",
-                txCount = "2",
-                canSign = false
-            )
+    override val addresses: StateFlow<List<AddressLook>> = MutableStateFlow((0..200).map {
+        AddressLook(
+            address = "bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu",
+            index = it.toLong(),
+            txCount = "$it",
+            canSign = true
         )
-    )
+    })
 
     override val hasMore: StateFlow<Boolean> = MutableStateFlow(false)
     override val canSign: Boolean = true

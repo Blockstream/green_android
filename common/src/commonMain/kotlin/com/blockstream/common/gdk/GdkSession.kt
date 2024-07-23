@@ -158,6 +158,8 @@ import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
 import kotlin.math.absoluteValue
+import kotlin.math.max
+import kotlin.math.min
 
 typealias EnrichedAssetPair = Pair<EnrichedAsset, Long>
 
@@ -648,11 +650,14 @@ class GdkSession constructor(
             proxy = applicationSettings.proxyUrl ?: "",
             spvEnabled = spvEnabled,
             spvMulti = spvMulti,
+            gapLimit = if(electrumUrl.isNotBlank() && network.isSinglesig) applicationSettings.electrumServerGapLimit?.coerceAtLeast(20) else null,
             electrumTls = if(electrumUrl.isNotBlank()) applicationSettings.personalElectrumServerTls else true,
             electrumUrl = electrumUrl,
             electrumOnionUrl = electrumUrl.takeIf { useTor },
             spvServers = spvServers
-        )
+        ).also {
+            logger.d { "Connection Params: $it" }
+        }
     }
 
     // Use it only for connected sessions

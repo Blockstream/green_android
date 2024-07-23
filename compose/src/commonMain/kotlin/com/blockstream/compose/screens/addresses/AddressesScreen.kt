@@ -1,12 +1,14 @@
 package com.blockstream.compose.screens.addresses
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
@@ -14,15 +16,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -47,7 +51,6 @@ import com.blockstream.common.looks.account.AddressLook
 import com.blockstream.common.models.addresses.AddressesViewModel
 import com.blockstream.common.models.addresses.AddressesViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.GreenSearchField
@@ -60,11 +63,11 @@ import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium
-import com.blockstream.compose.theme.md_theme_outline
+import com.blockstream.compose.theme.whiteHigh
+import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.reachedBottom
-import io.github.mataku.middleellipsistext3.MiddleEllipsisText
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
@@ -116,79 +119,91 @@ fun AddressesScreen(
             GreenSearchField(
                 value = query,
                 onValueChange = viewModel.query.onValueChange(),
-                modifier = Modifier.padding(bottom = 16.dp)
             )
         }
 
-        Box{
+        Box {
 
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            state = listState
-        ) {
-            item {
-                Row {
-                    Text(
-                        text = stringResource(Res.string.id_address),
-                        style = labelMedium,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Text(
-                        text = "Tx",
-                        style = labelMedium,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .padding(end = 6.dp)
-                            .widthIn(min = 30.dp)
-                    )
-                    Text(
-                        text = stringResource(Res.string.id_actions),
-                        style = labelMedium,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.width((8 + (48 * if (viewModel.canSign) 2 else 1)).dp)
-                    )
-                }
-            }
-
-            if(addresses.isEmpty()) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(vertical = 16.dp),
+                state = listState
+            ) {
                 item {
-                    Text(
-                        text = stringResource(Res.string.id_no_addresses),
-                        style = bodyMedium,
-                        textAlign = TextAlign.Center,
-                        fontStyle = FontStyle.Italic,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 32.dp)
-                            .padding(horizontal = 16.dp)
-                    )
-                }
-            }
-
-            items(addresses) { address ->
-                Box(modifier = Modifier.animateItemPlacement()) {
-                    AddressListItem(look = address, onCopyClick = {
-                        platformManager.copyToClipboard(content = address.address)
-                    }, onExplorerClick = {
-                        viewModel.postEvent(
-                            AddressesViewModel.LocalEvents.AddressBlockExplorer(
-                                address = address.address
-                            )
+                    Row(modifier = Modifier.padding(start = 16.dp)) {
+                        Text(
+                            text = stringResource(Res.string.id_address),
+                            style = labelMedium,
+                            modifier = Modifier.weight(1f)
                         )
-                    }, onSignatureClick = if (viewModel.canSign) {
-                        {
+                        Text(
+                            text = "Tx",
+                            style = labelMedium,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .padding(end = 6.dp)
+                                .widthIn(min = 30.dp)
+                        )
+                        Text(
+                            text = stringResource(Res.string.id_actions),
+                            style = labelMedium,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.width((8 + (48 * if (viewModel.canSign) 2 else 1)).dp)
+                        )
+                    }
+                }
+
+                if (addresses.isEmpty()) {
+                    item {
+                        Text(
+                            text = stringResource(Res.string.id_no_addresses),
+                            style = bodyMedium,
+                            textAlign = TextAlign.Center,
+                            fontStyle = FontStyle.Italic,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 32.dp)
+                                .padding(horizontal = 16.dp)
+                        )
+                    }
+                }
+
+                items(addresses) { address ->
+                    Box {
+                        HorizontalDivider(modifier = Modifier.align(Alignment.BottomCenter))
+
+                        AddressListItem(look = address, onCopyClick = {
+                            platformManager.copyToClipboard(content = address.address)
+                        }, onExplorerClick = {
                             viewModel.postEvent(
-                                NavigateDestinations.SignMessage(
-                                    accountAsset = viewModel.accountAsset.value!!,
+                                AddressesViewModel.LocalEvents.AddressBlockExplorer(
                                     address = address.address
                                 )
                             )
-                        }
-                    } else null)
+                        }, onSignatureClick = if (viewModel.canSign) {
+                            {
+                                viewModel.postEvent(
+                                    NavigateDestinations.SignMessage(
+                                        accountAsset = viewModel.accountAsset.value!!,
+                                        address = address.address
+                                    )
+                                )
+                            }
+                        } else null)
+                    }
+                }
+
+                item {
+                    androidx.compose.animation.AnimatedVisibility(hasMore) {
+                        LinearProgressIndicator(
+                            modifier = Modifier
+                                .padding(all = 16.dp)
+                                .height(1.dp)
+                                .fillMaxWidth()
+                        )
+                    }
                 }
             }
-        }
         }
     }
 }
@@ -205,9 +220,9 @@ fun AddressListItem(
         PopupState()
     }
 
-    GreenCard(onClick = {
+    Box(modifier = Modifier.clickable {
         popupState.isContextMenuVisible.value = true
-    }, padding = 0) {
+    }) {
         GreenRow(
             padding = 0,
             space = 6,
@@ -216,10 +231,16 @@ fun AddressListItem(
                 .padding(start = 16.dp, end = 8.dp)
         ) {
 
-            MiddleEllipsisText(
+            Text(text = "#${look.index}", style = bodyMedium, color = whiteMedium)
+
+            // MiddleEllipsisText adds a performance penalty
+            Text(
                 text = look.address,
                 fontFamily = MonospaceFont(),
-                modifier = Modifier.weight(1f)
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f),
+                color = whiteHigh
             )
 
             Text(

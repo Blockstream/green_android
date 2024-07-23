@@ -83,6 +83,9 @@ abstract class AppSettingsViewModelAbstract() :
     abstract val personalTestnetLiquidElectrumServer: MutableStateFlow<String>
 
     @NativeCoroutinesState
+    abstract val electrumServerGapLimit: MutableStateFlow<String>
+
+    @NativeCoroutinesState
     abstract val spvBitcoinElectrumServer: MutableStateFlow<String>
 
     @NativeCoroutinesState
@@ -166,6 +169,8 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
 
     @NativeCoroutinesState
     override val personalTestnetLiquidElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, appSettings.personalTestnetLiquidElectrumServer ?: "")
+
+    override val electrumServerGapLimit: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "${appSettings.electrumServerGapLimit ?: ""}")
 
     @NativeCoroutinesState
     override val spvBitcoinElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, appSettings.spvBitcoinElectrumServer ?: "")
@@ -254,6 +259,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         tor = torEnabled.value,
         spv = spvEnabled.value,
         multiServerValidation = multiServerValidationEnabled.value,
+        electrumServerGapLimit = electrumServerGapLimit.value?.takeIf { it.isNotBlank() }?.toIntOrNull(),
 
         // use null value as a reset to re-set the default urls and blank as a way to disabled it for a specific network
         personalBitcoinElectrumServer = personalBitcoinElectrumServer.value.takeIf { electrumNodeEnabled.value },
@@ -302,6 +308,7 @@ class AppSettingsViewModelPreview(initValue: Boolean = false) : AppSettingsViewM
     override val personalLiquidElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
     override val personalTestnetElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
     override val personalTestnetLiquidElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
+    override val electrumServerGapLimit: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
     override val spvBitcoinElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
     override val spvLiquidElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
     override val spvTestnetElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")

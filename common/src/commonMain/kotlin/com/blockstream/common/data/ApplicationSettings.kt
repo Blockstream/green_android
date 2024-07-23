@@ -18,6 +18,14 @@ fun Settings.putStringOrRemove(key: String, value: String?) {
     }
 }
 
+fun Settings.putIntOrRemove(key: String, value: Int?) {
+    if (value == null) {
+        this.remove(key)
+    } else {
+        putInt(key, value)
+    }
+}
+
 @Parcelize
 data class ApplicationSettings constructor(
     val enhancedPrivacy: Boolean = false,
@@ -33,6 +41,7 @@ data class ApplicationSettings constructor(
     val experimentalFeatures: Boolean = false,
 
     val hideAmounts: Boolean = false,
+    val electrumServerGapLimit: Int? = null,
 
     val personalBitcoinElectrumServer: String? = null,
     val personalLiquidElectrumServer: String? = null,
@@ -90,6 +99,7 @@ data class ApplicationSettings constructor(
         private const val ANALYTICS = "analytics"
         private const val EXPERIMENTAL_FEATURES = "experimental_features"
         private const val HIDE_AMOUNTS = "hideAmounts"
+        private const val ELECTRUM_SERVER_GAP_LIMIT = "electrumServerGapLimit"
 
         private const val PERSONAL_BITCOIN_ELECTRUM_SERVER = "personalBitcoinElectrumServer"
         private const val PERSONAL_LIQUID_ELECTRUM_SERVER = "personalLiquidElectrumServer"
@@ -119,7 +129,9 @@ data class ApplicationSettings constructor(
                     experimentalFeatures = settings.getBoolean(EXPERIMENTAL_FEATURES, false),
 
                     hideAmounts = settings.getBoolean(HIDE_AMOUNTS, false),
-
+                    electrumServerGapLimit = settings.getIntOrNull(
+                        ELECTRUM_SERVER_GAP_LIMIT
+                    ),
                     personalBitcoinElectrumServer = settings.getStringOrNull(
                         PERSONAL_BITCOIN_ELECTRUM_SERVER
                     ),
@@ -161,6 +173,8 @@ data class ApplicationSettings constructor(
                 it.putBoolean(ANALYTICS, appSettings.analytics)
                 it.putBoolean(EXPERIMENTAL_FEATURES, appSettings.experimentalFeatures)
                 it.putBoolean(HIDE_AMOUNTS, appSettings.hideAmounts)
+
+                it.putIntOrRemove(ELECTRUM_SERVER_GAP_LIMIT, appSettings.electrumServerGapLimit)
 
                 it.putStringOrRemove(PERSONAL_BITCOIN_ELECTRUM_SERVER, appSettings.personalBitcoinElectrumServer)
                 it.putStringOrRemove(PERSONAL_LIQUID_ELECTRUM_SERVER, appSettings.personalLiquidElectrumServer)
