@@ -18,6 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_add_note
+import blockstream_green.common.generated.resources.id_comment
 import blockstream_green.common.generated.resources.id_description
 import blockstream_green.common.generated.resources.id_save
 import cafe.adriel.voyager.koin.koinScreenModel
@@ -25,6 +26,7 @@ import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
+import com.blockstream.common.models.sheets.NoteType
 import com.blockstream.common.models.sheets.NoteViewModel
 import com.blockstream.common.models.sheets.NoteViewModelAbstract
 import com.blockstream.common.sideeffects.SideEffects
@@ -43,12 +45,12 @@ import kotlin.math.min
 data class NoteBottomSheet(
     val greenWallet: GreenWallet,
     val note: String,
-    val isLightning: Boolean
+    val noteType: NoteType
 ) : BottomScreen(), Parcelable {
     @Composable
     override fun Content() {
         val viewModel = koinScreenModel<NoteViewModel>{
-            parametersOf(note, isLightning, greenWallet)
+            parametersOf(note, noteType, greenWallet)
         }
 
         NoteBottomSheet(
@@ -73,8 +75,13 @@ fun NoteBottomSheet(
     viewModel: NoteViewModelAbstract,
     onDismissRequest: () -> Unit,
 ) {
+
     GreenBottomSheet(
-        title = stringResource(if (viewModel.isLightning) Res.string.id_description else Res.string.id_add_note),
+        title = stringResource(when(viewModel.noteType){
+            NoteType.Note -> Res.string.id_add_note
+            NoteType.Description -> Res.string.id_description
+            NoteType.Comment -> Res.string.id_comment
+        }),
         viewModel = viewModel,
         sideEffectHandler = {
             if (it is SideEffects.Success) {
@@ -98,7 +105,17 @@ fun NoteBottomSheet(
             modifier = Modifier
                 .fillMaxWidth()
                 .focusRequester(focusRequester),
-            label = { Text(stringResource(if (viewModel.isLightning) Res.string.id_description else Res.string.id_add_note)) },
+            label = {
+                Text(
+                    stringResource(
+                        when (viewModel.noteType) {
+                            NoteType.Note -> Res.string.id_add_note
+                            NoteType.Description -> Res.string.id_description
+                            NoteType.Comment -> Res.string.id_comment
+                        }
+                    )
+                )
+            },
             maxLines = 5,
             trailingIcon = {
                 Icon(

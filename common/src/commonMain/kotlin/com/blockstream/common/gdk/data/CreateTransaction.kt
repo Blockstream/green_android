@@ -22,8 +22,9 @@ data class CreateTransaction constructor(
     @SerialName("transaction") val transaction: String? = null,
     @SerialName("error") val error: String? = null,
     @SerialName("txhash") val txHash: String? = null,
-    @SerialName("sign_with") var signWith: List<String> = listOf(), // user, green-backendm, all
+    @SerialName("sign_with") var signWith: List<String> = listOf(), // user, green-backend, all
     @SerialName("is_lightning") val isLightning: Boolean = false, // synthesized
+    @SerialName("is_lightning_description_editable") val isLightningDescriptionEditable: Boolean = false, // synthesized
     @SerialName("previous_transaction") val previousTransaction: Transaction? = null, // Bump
 ) : GreenJson<CreateTransaction>() {
     override fun keepJsonElement() = true

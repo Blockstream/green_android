@@ -1551,5 +1551,6 @@ object StringResourcesMap {
         "id_your_personal_electrum_server_for_s" to Res.string.id_your_personal_electrum_server_for_s,
         "id_electrum_server_gap_limit" to Res.string.id_electrum_server_gap_limit,
         "id_number_of_consecutive_empty_addresses" to Res.string.id_number_of_consecutive_empty_addresses,
+        "id_comment" to Res.string.id_comment,
     )
 }

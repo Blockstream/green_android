@@ -1,11 +1,13 @@
 package com.blockstream.common.models.send
 
 import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_add_note
 import blockstream_green.common.generated.resources.id_address_was_filled_by_a_payment
 import blockstream_green.common.generated.resources.id_limits_s__s
 import blockstream_green.common.generated.resources.id_payment_requested_by_s
 import blockstream_green.common.generated.resources.id_send
 import blockstream_green.common.generated.resources.id_transaction_sent
+import blockstream_green.common.generated.resources.note_pencil
 import com.blockstream.common.AddressInputType
 import com.blockstream.common.TransactionSegmentation
 import com.blockstream.common.TransactionType
@@ -16,6 +18,7 @@ import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.ExceptionWithErrorReport
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.NavAction
 import com.blockstream.common.data.NavData
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
@@ -33,6 +36,8 @@ import com.blockstream.common.gdk.params.AddressParams
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.lightning.lnUrlPayDescription
 import com.blockstream.common.lightning.lnUrlPayImage
+import com.blockstream.common.models.send.SendConfirmViewModel.LocalEvents
+import com.blockstream.common.models.sheets.NoteType
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
@@ -54,6 +59,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
@@ -107,6 +113,9 @@ abstract class SendViewModelAbstract(greenWallet: GreenWallet) :
     abstract val supportsSendAll: StateFlow<Boolean>
 
     @NativeCoroutinesState
+    abstract val description: StateFlow<String?>
+
+    @NativeCoroutinesState
     abstract val metadataDomain: StateFlow<String?>
 
     @NativeCoroutinesState
@@ -114,6 +123,9 @@ abstract class SendViewModelAbstract(greenWallet: GreenWallet) :
 
     @NativeCoroutinesState
     abstract val metadataDescription: StateFlow<String?>
+
+    @NativeCoroutinesState
+    abstract val isNoteEditable: StateFlow<Boolean>
 }
 
 class SendViewModel(
@@ -187,6 +199,10 @@ class SendViewModel(
     private val _isAmountLocked: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val isAmountLocked: StateFlow<Boolean> = _isAmountLocked.asStateFlow()
 
+    private val _description: MutableStateFlow<String?> = MutableStateFlow(null)
+    override val description: StateFlow<String?> = _description
+
+
     private val _metadataDomain: MutableStateFlow<String?> = MutableStateFlow(null)
     override val metadataDomain: StateFlow<String?> = _metadataDomain.asStateFlow()
 
@@ -197,6 +213,9 @@ class SendViewModel(
     override val metadataDescription: StateFlow<String?> = _metadataDescription.asStateFlow()
 
 
+    private val _isNoteEditable: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    override val isNoteEditable: StateFlow<Boolean> = _isNoteEditable
+
     override val isAccountEdit: StateFlow<Boolean> = combine(assetsAndAccounts, accountAsset){ assetsAndAccounts, accountAsset ->
         assetsAndAccounts?.isNotEmpty() == true && accountAsset?.account?.isLightning != true
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), true)
@@ -205,14 +224,25 @@ class SendViewModel(
         object ToggleIsSendAll: Event
         object SendLightningTransaction : Event
         object ClickAssetsAccounts: Event
+        object Note : Event
     }
 
     init {
         _addressInputType = addressType
 
-        viewModelScope.launch {
-            _navData.value = NavData(title = getString(Res.string.id_send), subtitle = greenWallet.name)
-        }
+        isNoteEditable.onEach { isEditable ->
+            _navData.value = NavData(title = getString(Res.string.id_send),
+                subtitle = greenWallet.name,
+                actions = listOfNotNull(
+                    (NavAction(
+                        title = getString(Res.string.id_add_note),
+                        icon = Res.drawable.note_pencil,
+                        isMenuEntry = false
+                    ) {
+                        postEvent(SendConfirmViewModel.LocalEvents.Note)
+                    }).takeIf { isEditable }
+                ))
+        }.launchIn(this)
 
         session.ifConnected {
 
@@ -303,27 +333,46 @@ class SendViewModel(
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
-        if(event is LocalEvents.ClickAssetsAccounts){
-            postSideEffect(
-                SideEffects.NavigateTo(
-                    NavigateDestinations.AssetsAccounts(
-                        assetsAccounts = assetsAndAccounts.value ?: listOf()
+        when (event) {
+            is LocalEvents.ClickAssetsAccounts -> {
+                postSideEffect(
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.AssetsAccounts(
+                            assetsAccounts = assetsAndAccounts.value ?: listOf()
+                        )
                     )
                 )
-            )
-        } else if(event is LocalEvents.ToggleIsSendAll){
-            isSendAll.value = isSendAll.value.let { isSendAll ->
-                if(isSendAll){
-                    amount.value = ""
+            }
+
+            is LocalEvents.ToggleIsSendAll -> {
+                isSendAll.value = isSendAll.value.let { isSendAll ->
+                    if(isSendAll){
+                        amount.value = ""
+                    }
+                    !isSendAll
                 }
-                !isSendAll
             }
-        } else if (event is Events.Continue) {
-            createTransactionParams.value?.also {
-                createTransaction(params = it, finalCheckBeforeContinue = true)
+
+            is Events.Continue -> {
+                createTransactionParams.value?.also {
+                    createTransaction(params = it, finalCheckBeforeContinue = true)
+                }
             }
-        } else if(event is LocalEvents.SendLightningTransaction){
-            sendLightningTransaction()
+
+            is LocalEvents.SendLightningTransaction -> {
+                sendLightningTransaction()
+            }
+
+            is LocalEvents.Note -> {
+                postSideEffect(
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.Note(
+                            note = note.value,
+                            noteType = if (isNoteEditable.value) NoteType.Comment else NoteType.Description // LNURL allows to add a comment, Bolt11 includes a description
+                        )
+                    )
+                )
+            }
         }
     }
 
@@ -393,6 +442,7 @@ class SendViewModel(
                 _metadataImage.value = null
                 _metadataDescription.value = null
                 note.value = ""
+                _isNoteEditable.value = false
                 return@doAsync null
             }
 
@@ -401,13 +451,15 @@ class SendViewModel(
 
                 val tx = session.createTransaction(network, params)
 
+                _isNoteEditable.value = tx.isLightningDescriptionEditable
+
                 // Clear error as soon as possible
                 if (tx.error.isBlank()) {
                     _error.value = null
                 }
 
                 // Mainly used in Lightning invoice
-                note.value = tx.memo ?: ""
+                _description.value = tx.memo
 
                 tx.addressees.firstOrNull()?.also { addressee ->
                     _isAmountLocked.value = addressee.isAmountLocked == true
@@ -552,17 +604,13 @@ class SendViewModel(
 
     }
 
-    private fun sendLightningTransaction(){
+    private fun sendLightningTransaction() {
         doAsync({
             countly.startSendTransaction()
             countly.startFailedTransaction()
 
             createTransactionParams.value?.let {
-                session.sendTransaction(
-                    account = account,
-                    signedTransaction = session.createTransaction(_network.value!!, it),
-                    twoFactorResolver = this
-                )
+                session.sendLightningTransaction(params = session.createTransaction(_network.value!!, it), comment = note.value)
             }?: run {
                 throw Exception("Something went wrong while creating the Transaction")
             }
@@ -702,6 +750,8 @@ class SendViewModelPreview(greenWallet: GreenWallet) :
     override val metadataDomain: StateFlow<String?> = MutableStateFlow("id_payment_requested_by_s|blockstream.com")
     override val metadataImage: StateFlow<ByteArray?> = MutableStateFlow(base64Png.base64DecodedBytes)
     override val metadataDescription: StateFlow<String?> = MutableStateFlow("Metadata Description")
+    override val description: StateFlow<String?> = MutableStateFlow(null)
+    override val isNoteEditable: StateFlow<Boolean> = MutableStateFlow(true)
 
 
     init {

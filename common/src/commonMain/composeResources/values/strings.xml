@@ -1546,4 +1546,5 @@
     <string name="id_your_personal_electrum_server_for_s">Your Personal Electrum Server for %1$s can't be reached. Check your settings or your internet connection.</string>
     <string name="id_electrum_server_gap_limit">Electrum server gap limit</string>
     <string name="id_number_of_consecutive_empty_addresses">Number of consecutive empty addresses to monitor</string>
+    <string name="id_comment">Comment</string>
 </resources>

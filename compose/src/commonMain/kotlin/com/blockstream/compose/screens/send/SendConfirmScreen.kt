@@ -90,7 +90,7 @@ fun SendConfirmScreen(
     val onProgressDescription by viewModel.onProgressDescription.collectAsStateWithLifecycle()
 
     NoteBottomSheet.getResult {
-        viewModel.postEvent(SendConfirmViewModel.LocalEvents.SetNote(it))
+        viewModel.note.value = it
     }
 
     val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current

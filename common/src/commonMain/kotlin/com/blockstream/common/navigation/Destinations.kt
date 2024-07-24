@@ -16,6 +16,7 @@ import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.looks.transaction.TransactionConfirmLook
 import com.blockstream.common.models.settings.WalletSettingsSection
+import com.blockstream.common.models.sheets.NoteType
 
 interface NavigateDestination: Event
 sealed class NavigateDestinations : NavigateDestination {
@@ -158,7 +159,7 @@ sealed class NavigateDestinations : NavigateDestination {
 
     object ChooseAssetAccounts: NavigateDestination
 
-    data class Note(val note: String, val isLightning: Boolean) : NavigateDestination
+    data class Note(val note: String, val noteType: NoteType) : NavigateDestination
 
     data class VerifyOnDevice(
         val transactionConfirmLook: TransactionConfirmLook? = null,

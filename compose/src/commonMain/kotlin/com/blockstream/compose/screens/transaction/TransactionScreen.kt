@@ -71,6 +71,7 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.looks.transaction.Failed
 import com.blockstream.common.looks.transaction.Unconfirmed
+import com.blockstream.common.models.sheets.NoteType
 import com.blockstream.common.models.transaction.TransactionViewModel
 import com.blockstream.common.models.transaction.TransactionViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
@@ -362,7 +363,7 @@ fun TransactionScreen(
                         viewModel.postEvent(
                             NavigateDestinations.Note(
                                 note = viewModel.note.value ?: "",
-                                isLightning = viewModel.account.isLightning
+                                noteType = NoteType.Note
                             )
                         )
                     }

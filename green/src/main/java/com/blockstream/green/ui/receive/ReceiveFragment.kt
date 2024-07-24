@@ -14,6 +14,7 @@ import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.receive.ReceiveViewModel
+import com.blockstream.common.models.sheets.NoteType
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.AppFragmentBridge
 import com.blockstream.compose.screens.receive.ReceiveScreen
@@ -106,7 +107,7 @@ class ReceiveFragment : AppFragment<ComposeViewBinding>(
                 openBrowser(if (viewModel.account.isAmp) Urls.HELP_AMP_ASSETS else Urls.HELP_RECEIVE_ASSETS)
             }
             R.id.add_description -> {
-                viewModel.postEvent(NavigateDestinations.Note(note = viewModel.note.value ?: "", isLightning = true))
+                viewModel.postEvent(NavigateDestinations.Note(note = viewModel.note.value ?: "", noteType = NoteType.Description))
             }
             R.id.request_amount -> {
                 viewModel.postEvent(ReceiveViewModel.LocalEvents.ShowRequestAmount)

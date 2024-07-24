@@ -13,8 +13,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,12 +32,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_account__asset
+import blockstream_green.common.generated.resources.id_comment
 import blockstream_green.common.generated.resources.id_description
 import blockstream_green.common.generated.resources.id_fee_rate
 import blockstream_green.common.generated.resources.id_lightning_account
 import blockstream_green.common.generated.resources.id_next
 import blockstream_green.common.generated.resources.id_recipient_address
 import blockstream_green.common.generated.resources.id_set_custom_fee_rate
+import blockstream_green.common.generated.resources.pencil_simple_line
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import com.blockstream.common.AddressInputType
@@ -44,6 +49,7 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
+import com.blockstream.common.models.send.SendConfirmViewModel
 import com.blockstream.common.models.send.SendViewModel
 import com.blockstream.common.models.send.SendViewModelAbstract
 import com.blockstream.common.utils.DecimalFormat
@@ -64,6 +70,7 @@ import com.blockstream.compose.sheets.CameraBottomSheet
 import com.blockstream.compose.sheets.DenominationBottomSheet
 import com.blockstream.compose.sheets.FeeRateBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
+import com.blockstream.compose.sheets.NoteBottomSheet
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.md_theme_onError
@@ -74,6 +81,7 @@ import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.toPainter
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 
@@ -117,6 +125,10 @@ fun SendScreen(
 
     DenominationBottomSheet.getResult {
         viewModel.postEvent(Events.SetDenominatedValue(it))
+    }
+
+    NoteBottomSheet.getResult {
+        viewModel.note.value = it
     }
 
     var customFeeDialog by remember { mutableStateOf<String?>(null) }
@@ -276,19 +288,33 @@ fun SendScreen(
                     )
                 }
 
-                val note by viewModel.note.collectAsStateWithLifecycle()
-                AnimatedVisibility(visible = note.isNotBlank()) {
+                val description by viewModel.description.collectAsStateWithLifecycle() // Bolt11
+                val comment by viewModel.note.collectAsStateWithLifecycle() // LNURL
+                val commentOrDescription = description ?: comment
+                val isNoteEditable by viewModel.isNoteEditable.collectAsStateWithLifecycle()
+                AnimatedVisibility(visible = commentOrDescription.isNotBlank()) {
                     GreenDataLayout(
-                        title = stringResource(Res.string.id_description),
+                        title = stringResource(if(description != null) Res.string.id_description else Res.string.id_comment),
                         withPadding = false
                     ) {
                         Row {
                             Text(
-                                text = note, modifier = Modifier
+                                text = commentOrDescription, modifier = Modifier
                                     .weight(1f)
                                     .padding(vertical = 16.dp)
                                     .padding(start = 16.dp)
                             )
+                            if(isNoteEditable) {
+                                IconButton(onClick = {
+                                    viewModel.postEvent(SendViewModel.LocalEvents.Note)
+                                }) {
+                                    Icon(
+                                        painter = painterResource(Res.drawable.pencil_simple_line),
+                                        contentDescription = "Edit",
+                                        modifier = Modifier.minimumInteractiveComponentSize()
+                                    )
+                                }
+                            }
                         }
                     }
                 }

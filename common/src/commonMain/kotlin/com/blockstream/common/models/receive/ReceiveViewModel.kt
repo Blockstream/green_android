@@ -57,6 +57,7 @@ import com.blockstream.common.lightning.maxReceivableSatoshi
 import com.blockstream.common.lightning.receiveAmountSatoshi
 import com.blockstream.common.lightning.satoshi
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.sheets.NoteType
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.platformFileSystem
 import com.blockstream.common.sideeffects.SideEffects
@@ -230,7 +231,7 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
                                 SideEffects.NavigateTo(
                                     NavigateDestinations.Note(
                                         note = note.value ?: "",
-                                        isLightning = accountAsset?.account?.isLightning == true
+                                        noteType = if(accountAsset?.account?.isLightning == true) NoteType.Description else NoteType.Note
                                     )
                                 )
                             )

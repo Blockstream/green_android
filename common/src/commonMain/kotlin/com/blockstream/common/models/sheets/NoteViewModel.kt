@@ -9,12 +9,16 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.MutableStateFlow
 
-abstract class NoteViewModelAbstract(val isLightning: Boolean, greenWallet : GreenWallet) : GreenViewModel(greenWalletOrNull = greenWallet) {
+enum class NoteType{
+    Note, Description, Comment
+}
+
+abstract class NoteViewModelAbstract(val noteType: NoteType, greenWallet : GreenWallet) : GreenViewModel(greenWalletOrNull = greenWallet) {
     @NativeCoroutinesState
     abstract val note : MutableStateFlow<String>
 }
 
-class NoteViewModel(initialNote: String, isLightning: Boolean, greenWallet: GreenWallet) : NoteViewModelAbstract(isLightning = isLightning, greenWallet = greenWallet) {
+class NoteViewModel(initialNote: String, noteType: NoteType, greenWallet: GreenWallet) : NoteViewModelAbstract(noteType = noteType, greenWallet = greenWallet) {
     override fun screenName(): String = "TransactionNote"
 
     override val note: MutableStateFlow<String> = MutableStateFlow(initialNote)
@@ -33,9 +37,9 @@ class NoteViewModel(initialNote: String, isLightning: Boolean, greenWallet: Gree
     }
 }
 
-class NoteViewModelPreview(isLightning: Boolean) : NoteViewModelAbstract(isLightning = isLightning, greenWallet = previewWallet()) {
+class NoteViewModelPreview(noteType: NoteType) : NoteViewModelAbstract(noteType = noteType, greenWallet = previewWallet()) {
     override val note: MutableStateFlow<String> = MutableStateFlow("preview")
     companion object {
-        fun preview() = NoteViewModelPreview(isLightning = true)
+        fun preview() = NoteViewModelPreview(noteType = NoteType.Note)
     }
 }

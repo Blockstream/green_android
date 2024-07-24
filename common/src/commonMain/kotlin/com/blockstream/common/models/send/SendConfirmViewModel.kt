@@ -20,6 +20,7 @@ import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.UtxoView
 import com.blockstream.common.looks.transaction.TransactionConfirmLook
+import com.blockstream.common.models.sheets.NoteType
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
@@ -63,7 +64,6 @@ class SendConfirmViewModel constructor(
 
     class LocalEvents {
         object Note : Event
-        data class SetNote(val note: String) : Event
     }
 
     init {
@@ -143,12 +143,8 @@ class SendConfirmViewModel constructor(
                 }
             }
 
-            is LocalEvents.SetNote -> {
-                note.value = event.note
-            }
-
             is LocalEvents.Note -> {
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Note(note = note.value, isLightning = account.isLightning)))
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Note(note = note.value, noteType = NoteType.Note)))
             }
         }
     }

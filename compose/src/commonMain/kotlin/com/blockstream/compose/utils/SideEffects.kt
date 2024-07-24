@@ -815,7 +815,7 @@ fun HandleSideEffect(
                                 NoteBottomSheet(
                                     greenWallet = viewModel.greenWallet,
                                     note = destination.note,
-                                    isLightning = destination.isLightning
+                                    noteType = destination.noteType
                                 )
                             )
                         }

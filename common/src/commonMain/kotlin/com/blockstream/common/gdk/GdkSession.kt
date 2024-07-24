@@ -2490,15 +2490,14 @@ class GdkSession constructor(
 
     @NativeCoroutinesIgnore
     suspend fun createTransaction(network: Network, params: CreateTransactionParams) =
-        withContext(context = Dispatchers.IO) {
-            if (network.isLightning) {
-                createLightningTransaction(network, params).also {
-                    logger.d { "createLightningTransaction $it" }
-                }
-            } else authHandler(network,
-                gdk.createTransaction(gdkSession(network), params)
-            ).result<CreateTransaction>()
-        }
+        if (network.isLightning) {
+            createLightningTransaction(network, params).also {
+                logger.d { "createLightningTransaction $it" }
+            }
+        } else authHandler(
+            network,
+            gdk.createTransaction(gdkSession(network), params)
+        ).result<CreateTransaction>()
 
     private suspend fun generateLightningError(
         account: Account,
@@ -2521,7 +2520,7 @@ class GdkSession constructor(
         }
     }
     private suspend fun createLightningTransaction(network: Network, params: CreateTransactionParams): CreateTransaction {
-        Logger.d { "createLightningTransaction $params" }
+        logger.d { "createLightningTransaction $params" }
 
         val address = params.addresseesAsParams?.firstOrNull()?.address ?: ""
         val userInputSatoshi = params.addresseesAsParams?.firstOrNull()?.satoshi
@@ -2529,8 +2528,6 @@ class GdkSession constructor(
         return when (val lightningInputType = lightningSdk.parseBoltOrLNUrlAndCache(address)) {
             is InputType.Bolt11 -> {
                 val invoice = lightningInputType.invoice
-
-                Logger.d { "Expire in ${invoice.expireIn()}" }
 
                 var sendableSatoshi = invoice.sendableSatoshi(userInputSatoshi)
 
@@ -2579,6 +2576,7 @@ class GdkSession constructor(
                     outputs = listOf(Output.fromLnUrlPay(requestData, address, sendableSatoshi)),
                     satoshi = mapOf(network.policyAsset to sendableSatoshi),
                     isLightning = true,
+                    isLightningDescriptionEditable = true,
                     error = error
                 )
             }
@@ -2628,10 +2626,9 @@ class GdkSession constructor(
         _walletActiveEventInvalidated = true
     }
 
-    private fun sendLightningTransaction(params: CreateTransaction): SendTransactionSuccess{
+    fun sendLightningTransaction(params: CreateTransaction, comment: String?): SendTransactionSuccess{
         val invoiceOrLnUrl = params.addressees.first().address
         val satoshi = params.addressees.first().satoshi?.absoluteValue ?: 0L
-        val comment = params.memo
 
         Logger.d { "invoiceOrLnUrl: $invoiceOrLnUrl satoshi: $satoshi comment: $comment " }
 
@@ -2706,7 +2703,7 @@ class GdkSession constructor(
         signedTransaction: CreateTransaction,
         twoFactorResolver: TwoFactorResolver
     ): SendTransactionSuccess = (if (account.network.isLightning) {
-        sendLightningTransaction(signedTransaction)
+        throw Exception("Use sendLightningTransaction")
     } else {
         authHandler(
             account.network,

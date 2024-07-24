@@ -1,6 +1,8 @@
 package com.blockstream.green.ui.send
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -9,14 +11,19 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
+import com.blockstream.common.models.send.SendConfirmViewModel
+import com.blockstream.common.models.send.SendViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.Loggable
 import com.blockstream.compose.AppFragmentBridge
 import com.blockstream.compose.screens.send.SendScreen
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ComposeViewBinding
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.MainActivity
+import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.blockstream.green.utils.openBrowser
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.launchIn
@@ -26,7 +33,7 @@ import org.koin.core.parameter.parametersOf
 
 class SendFragment : AppFragment<ComposeViewBinding>(
     layout = R.layout.compose_view,
-    menuRes = 0
+    menuRes = R.menu.send
 ) {
     val args: SendFragmentArgs by navArgs()
 
@@ -103,4 +110,21 @@ class SendFragment : AppFragment<ComposeViewBinding>(
     private fun navigateToRoot(){
         findNavController().popBackStack(R.id.walletOverviewFragment, false)
     }
+
+    override fun onPrepareMenu(menu: Menu) {
+        menu.findItem(R.id.add_note).isVisible = viewModel.navData.value.actions.isNotEmpty()
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        when (menuItem.itemId) {
+            R.id.add_note -> {
+                viewModel.postEvent(SendViewModel.LocalEvents.Note)
+                return true
+            }
+        }
+
+        return super.onMenuItemSelected(menuItem)
+    }
+
+    companion object: Loggable()
 }
