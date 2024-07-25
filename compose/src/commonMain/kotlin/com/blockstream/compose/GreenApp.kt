@@ -72,6 +72,8 @@ val LocalDrawer = compositionLocalOf { DrawerState(DrawerValue.Closed) }
 val LocalDialog: ProvidableCompositionLocal<DialogState> =
     staticCompositionLocalOf { error("DialogState not initialized") }
 val LocalRootNavigator: ProvidableCompositionLocal<Navigator?> = staticCompositionLocalOf { null }
+val LocalActivity: ProvidableCompositionLocal<Any?> =
+    staticCompositionLocalOf { error("LocalActivity not initialized") }
 
 @Composable
 fun GreenApp(modifier: Modifier = Modifier) {
@@ -83,7 +85,6 @@ fun GreenApp(modifier: Modifier = Modifier) {
     val platformManager = rememberPlatformManager()
 
     CompositionLocalProvider(
-        androidx.lifecycle.compose.LocalLifecycleOwner provides androidx.compose.ui.platform.LocalLifecycleOwner.current, // Until Compose 1.7.0 is released https://stackoverflow.com/questions/78490378/java-lang-illegalstateexception-compositionlocal-locallifecycleowner-not-presen/78490602#78490602
         LocalSnackbar provides snackbarHostState,
         LocalAppBarState provides appBarState,
         LocalDrawer provides drawerState,
@@ -225,7 +226,6 @@ fun GreenPreview(content: @Composable () -> Unit) {
 
     GreenTheme {
         CompositionLocalProvider(
-            androidx.lifecycle.compose.LocalLifecycleOwner provides androidx.compose.ui.platform.LocalLifecycleOwner.current, // Until Compose 1.7.0 is released // https://stackoverflow.com/questions/78490378/java-lang-illegalstateexception-compositionlocal-locallifecycleowner-not-presen/78490602#78490602
             LocalDialog provides dialogState,
             LocalPlatformManager provides platformManager
         ) {

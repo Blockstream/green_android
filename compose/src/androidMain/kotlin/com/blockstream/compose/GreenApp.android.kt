@@ -10,6 +10,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.fragment.app.Fragment
 import com.blockstream.common.data.AppInfo
 import com.blockstream.common.utils.AndroidKeystore
 import com.blockstream.compose.managers.LocalPlatformManager
@@ -25,17 +26,17 @@ import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
 
 @Composable
-fun AppFragmentBridge(content: @Composable () -> Unit) {
+fun Fragment.AppFragmentBridge(content: @Composable () -> Unit) {
     val dialogState = remember { DialogState() }
     val snackbarHostState = remember { SnackbarHostState() }
     val platformManager = rememberPlatformManager()
 
     GreenTheme {
         CompositionLocalProvider(
-            androidx.lifecycle.compose.LocalLifecycleOwner provides androidx.compose.ui.platform.LocalLifecycleOwner.current, // Until Compose 1.7.0 is released // https://stackoverflow.com/questions/78490378/java-lang-illegalstateexception-compositionlocal-locallifecycleowner-not-presen/78490602#78490602
             LocalDialog provides dialogState,
             LocalSnackbar provides snackbarHostState,
-            LocalPlatformManager provides platformManager
+            LocalPlatformManager provides platformManager,
+            LocalActivity provides activity,
         ) {
             BottomSheetNavigatorM3 {
                 Scaffold(
@@ -84,7 +85,6 @@ fun GreenAndroidPreview(content: @Composable () -> Unit) {
 
     GreenTheme {
         CompositionLocalProvider(
-            androidx.lifecycle.compose.LocalLifecycleOwner provides androidx.compose.ui.platform.LocalLifecycleOwner.current, // Until Compose 1.7.0 is released // https://stackoverflow.com/questions/78490378/java-lang-illegalstateexception-compositionlocal-locallifecycleowner-not-presen/78490602#78490602
             LocalDialog provides dialogState,
             LocalPlatformManager provides platformManager
         ) {

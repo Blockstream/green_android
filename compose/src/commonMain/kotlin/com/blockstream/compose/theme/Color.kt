@@ -9,7 +9,7 @@ val md_theme_onPrimaryContainer = Color(0xFFFFFFFF)
 
 val md_theme_secondary = Color(0xFF00b45a)
 val md_theme_onSecondary = Color(0xFFFFFFFF)
-val md_theme_secondaryContainer = Color(0xFF00b45a)
+val md_theme_secondaryContainer = Color(0xFF394b3b)
 val md_theme_onSecondaryContainer = Color(0xFFFFFFFF)
 
 val md_theme_tertiary = Color(0xFF00b45a)

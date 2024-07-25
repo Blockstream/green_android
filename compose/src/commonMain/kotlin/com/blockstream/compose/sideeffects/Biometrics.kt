@@ -12,11 +12,11 @@ expect fun rememberBiometricsState(): BiometricsState
 
 @Stable
 expect class BiometricsState {
-    fun launchUserPresencePrompt(title: String, authenticated: (authenticated: Boolean) -> Unit)
-    fun launchUserPresencePromptForLightningShortcut(viewModel: LoginViewModelAbstract)
-    fun getBiometricsCipher(viewModel: GreenViewModel, onlyDeviceCredentials: Boolean = false)
+    suspend fun launchUserPresencePrompt(title: String, authenticated: (authenticated: Boolean) -> Unit)
+    suspend fun launchUserPresencePromptForLightningShortcut(viewModel: LoginViewModelAbstract)
+    suspend fun getBiometricsCipher(viewModel: GreenViewModel, onlyDeviceCredentials: Boolean = false)
 
-    fun launchBiometricPrompt(
+    suspend fun launchBiometricPrompt(
         loginCredentials: LoginCredentials,
         viewModel: LoginViewModelAbstract,
         onlyDeviceCredentials: Boolean = false

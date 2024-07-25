@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import co.touchlab.kermit.Logger
@@ -26,6 +27,7 @@ import com.blockstream.common.events.Events
 import com.blockstream.common.models.abstract.AbstractScannerViewModel
 import com.blockstream.common.models.camera.CameraViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
+import com.blockstream.compose.LocalActivity
 import com.blockstream.compose.R
 import com.blockstream.compose.android.views.ViewFinderView
 import com.google.zxing.client.android.Intents
@@ -52,6 +54,8 @@ actual fun CameraView(
     var captureManager by remember {
         mutableStateOf<CaptureManager?>(null)
     }
+
+    val activity = LocalActivity.current as FragmentActivity
 
     AndroidView(
         modifier = Modifier
@@ -103,7 +107,7 @@ actual fun CameraView(
                 }
 
                 captureManager =
-                    CaptureManager(context as Activity, decoratedBarcode).also {
+                    CaptureManager(activity, decoratedBarcode).also {
                         it.setShowMissingCameraPermissionDialog(true)
                     }
 

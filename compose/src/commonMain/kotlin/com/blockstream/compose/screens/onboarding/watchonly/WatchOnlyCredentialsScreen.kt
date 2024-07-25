@@ -280,7 +280,7 @@ fun WatchOnlyCredentialsScreen(
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
                             keyboardOptions = KeyboardOptions.Default.copy(
-                                autoCorrect = false,
+                                autoCorrectEnabled = false,
                                 keyboardType = KeyboardType.Text,
                                 imeAction = ImeAction.Next
                             ),
@@ -301,7 +301,7 @@ fun WatchOnlyCredentialsScreen(
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
                             keyboardOptions = KeyboardOptions.Default.copy(
-                                autoCorrect = false,
+                                autoCorrectEnabled = false,
                                 keyboardType = KeyboardType.Password,
                                 imeAction = ImeAction.Done
                             ),

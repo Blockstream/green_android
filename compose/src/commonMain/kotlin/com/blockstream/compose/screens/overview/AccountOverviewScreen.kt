@@ -9,14 +9,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.pullToRefresh
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -148,19 +147,25 @@ fun AccountOverviewScreen(
         }
     }
 
+    var isRefreshing by remember {
+        mutableStateOf(false)
+    }
+
     val state = rememberPullToRefreshState()
-    if (state.isRefreshing) {
+    if (isRefreshing) {
         LaunchedEffect(true) {
             viewModel.postEvent(AccountOverviewViewModel.LocalEvents.Refresh)
             delay(1500)
-            state.endRefresh()
+            isRefreshing = false
         }
     }
 
     Box(
         Modifier
             .fillMaxSize()
-            .nestedScroll(state.nestedScrollConnection)
+            .pullToRefresh(isRefreshing = isRefreshing, state = state) {
+                isRefreshing = true
+            }
     ) {
 
         val accountBalance by viewModel.accountBalance.collectAsStateWithLifecycle()
@@ -353,11 +358,6 @@ fun AccountOverviewScreen(
                 }
             }
         }
-
-        PullToRefreshContainer(
-            modifier = Modifier.align(Alignment.TopCenter),
-            state = state,
-        )
 
         Box(
             modifier = Modifier

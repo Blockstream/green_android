@@ -86,7 +86,7 @@ fun AddWalletScreen(
 
         Box(
             modifier = Modifier
-                .weight(2f)
+                .weight(6f)
                 .padding(horizontal = 24.dp),
         ) {
             Image(
@@ -106,7 +106,7 @@ fun AddWalletScreen(
 
         GreenColumn(
             space = 8,
-            modifier = Modifier.padding(horizontal = 0.dp).weight(1f),
+            modifier = Modifier.padding(horizontal = 0.dp).weight(4f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -122,7 +122,7 @@ fun AddWalletScreen(
             )
         }
 
-        Column() {
+        Column {
             GreenColumn(
                 padding = 24,
                 modifier = Modifier,

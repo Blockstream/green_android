@@ -16,29 +16,27 @@ actual fun rememberBiometricsState(): BiometricsState {
 
 @Stable
 actual class BiometricsState {
-    actual fun launchUserPresencePrompt(
+    actual suspend fun launchUserPresencePrompt(
         title: String,
         authenticated: (authenticated: Boolean) -> Unit
     ) {
-
     }
 
-    actual fun launchUserPresencePromptForLightningShortcut(viewModel: LoginViewModelAbstract) {
-
+    actual suspend fun launchUserPresencePromptForLightningShortcut(viewModel: LoginViewModelAbstract) {
     }
 
-    actual fun getBiometricsCipher(
+    actual suspend fun getBiometricsCipher(
         viewModel: GreenViewModel,
         onlyDeviceCredentials: Boolean
     ) {
-
     }
 
-    actual fun launchBiometricPrompt(
+    actual suspend fun launchBiometricPrompt(
         loginCredentials: LoginCredentials,
         viewModel: LoginViewModelAbstract,
         onlyDeviceCredentials: Boolean
     ) {
     }
+
 }
 

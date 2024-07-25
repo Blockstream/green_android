@@ -1,6 +1,9 @@
 package com.blockstream.common.utils
 
 import androidx.compose.runtime.Composable
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.allStringResources
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 
@@ -23,10 +26,11 @@ private fun processId(id: String): Pair<String, Array<String>> {
     return id to arrayOf()
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun stringResourceFromId(id: String): String {
     return processId(id).let {
-        StringResourcesMap.strings[it.first]?.let { stringRes ->
+        Res.allStringResources[it.first]?.let { stringRes ->
             stringResource(stringRes, *it.second)
         } ?: id
     }
@@ -35,9 +39,10 @@ fun stringResourceFromId(id: String): String {
 @Composable
 fun stringResourceFromIdOrNull(id: String?): String? = id?.let { stringResourceFromId(it) }
 
+@OptIn(ExperimentalResourceApi::class)
 suspend fun getStringFromId(id: String): String {
     return processId(id).let {
-        StringResourcesMap.strings[it.first]?.let { stringRes ->
+        Res.allStringResources[it.first]?.let { stringRes ->
             getString(stringRes, *it.second)
         } ?: id
     }

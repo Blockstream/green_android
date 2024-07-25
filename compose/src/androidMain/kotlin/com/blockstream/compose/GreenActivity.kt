@@ -1,9 +1,9 @@
 package com.blockstream.compose
 
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.compose.ui.Modifier
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentActivity
 import com.blockstream.compose.theme.GreenTheme
@@ -17,7 +17,9 @@ class GreenActivity : FragmentActivity() {
 
         setContent {
             GreenTheme {
-                GreenApp(modifier = Modifier.compatTestTagsAsResourceId())
+                CompositionLocalProvider(LocalActivity provides this) {
+                    GreenApp(modifier = Modifier.compatTestTagsAsResourceId())
+                }
             }
         }
     }

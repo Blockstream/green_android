@@ -121,7 +121,7 @@ fun TextDialog(
                     singleLine = true,
                     keyboardOptions = keyboardOptions ?: KeyboardOptions.Default.let {
                         if (isPassword) it.copy(
-                            autoCorrect = false,
+                            autoCorrectEnabled = false,
                             keyboardType = KeyboardType.Password,
                             imeAction = ImeAction.Done
                         ) else it

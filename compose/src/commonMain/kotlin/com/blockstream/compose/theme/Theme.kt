@@ -41,6 +41,14 @@ internal val GreenColors = ColorScheme(
     surfaceTint = md_theme_surfaceTint,
     outlineVariant = md_theme_outlineVariant,
     scrim = md_theme_scrim,
+
+    surfaceBright = md_theme_surface,
+    surfaceDim = md_theme_surface,
+    surfaceContainer = md_theme_surface,
+    surfaceContainerHigh = md_theme_surface,
+    surfaceContainerHighest = md_theme_surface,
+    surfaceContainerLow = md_theme_surface,
+    surfaceContainerLowest = md_theme_surface,
 )
 
 val GreenShapes = Shapes(
@@ -70,7 +78,6 @@ fun GreenThemePreview(
     val platformManager = rememberPlatformManager()
 
     CompositionLocalProvider(
-        androidx.lifecycle.compose.LocalLifecycleOwner provides androidx.compose.ui.platform.LocalLifecycleOwner.current, // Until Compose 1.7.0 is released https://stackoverflow.com/questions/78490378/java-lang-illegalstateexception-compositionlocal-locallifecycleowner-not-presen/78490602#78490602
         LocalPlatformManager provides platformManager
     ) {
         MaterialTheme(

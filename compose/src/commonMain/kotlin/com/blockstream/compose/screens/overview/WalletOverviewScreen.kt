@@ -20,7 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.pullToRefresh
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -241,19 +240,21 @@ fun WalletOverviewScreen(
         }
     }
 
+    var isRefreshing by remember {
+        mutableStateOf(false)
+    }
     val state = rememberPullToRefreshState()
-    if (state.isRefreshing) {
+    if (isRefreshing) {
         LaunchedEffect(true) {
             viewModel.postEvent(WalletOverviewViewModel.LocalEvents.Refresh)
             delay(1500)
-            state.endRefresh()
+            isRefreshing = false
         }
     }
 
     Box(
         Modifier
             .fillMaxSize()
-            .nestedScroll(state.nestedScrollConnection)
     ) {
 
         val isWalletOnboarding by viewModel.isWalletOnboarding.collectAsStateWithLifecycle()
@@ -263,7 +264,9 @@ fun WalletOverviewScreen(
         val transactions by viewModel.transactions.collectAsStateWithLifecycle()
         val density = LocalDensity.current
 
-        LazyColumn(contentPadding = PaddingValues(bottom = 96.dp)) {
+        LazyColumn(contentPadding = PaddingValues(bottom = 96.dp), modifier = Modifier.pullToRefresh(isRefreshing = isRefreshing, state = state) {
+            isRefreshing = true
+        }) {
             if (!viewModel.isLightningShortcut) {
                 item {
                     WalletBalance(viewModel)
@@ -432,11 +435,6 @@ fun WalletOverviewScreen(
                 }
             }
         }
-
-        PullToRefreshContainer(
-            modifier = Modifier.align(Alignment.TopCenter),
-            state = state,
-        )
 
         Box(
             modifier = Modifier

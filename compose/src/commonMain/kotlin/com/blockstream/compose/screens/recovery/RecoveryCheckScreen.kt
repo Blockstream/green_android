@@ -130,6 +130,7 @@ fun RecoveryCheckScreen(
                     .constrainAs(line) {
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom)
                     })
 
             Text("${viewModel.checkWordIndex}.", style = titleSmall, color = green,
