@@ -74,7 +74,7 @@ val LocalDialog: ProvidableCompositionLocal<DialogState> =
 val LocalRootNavigator: ProvidableCompositionLocal<Navigator?> = staticCompositionLocalOf { null }
 
 @Composable
-fun GreenApp() {
+fun GreenApp(modifier: Modifier = Modifier) {
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val snackbarHostState = remember { SnackbarHostState() }
@@ -94,7 +94,7 @@ fun GreenApp() {
         val lifecycleManager = koinInject<LifecycleManager>()
         val isLocked by lifecycleManager.isLocked.collectAsStateWithLifecycle()
 
-        Box {
+        Box(modifier = modifier) {
             Navigator(screen = HomeScreen, onBackPressed = { _ ->
                 !isLocked && appBarState.data.value.isVisible && appBarState.data.value.onBackPressed()
             }) { navigator ->

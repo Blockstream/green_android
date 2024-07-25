@@ -18,6 +18,7 @@ import com.blockstream.compose.sheets.BottomSheetNavigatorM3
 import com.blockstream.compose.sideeffects.DialogHost
 import com.blockstream.compose.sideeffects.DialogState
 import com.blockstream.compose.theme.GreenTheme
+import com.blockstream.compose.utils.compatTestTagsAsResourceId
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
@@ -44,7 +45,8 @@ fun AppFragmentBridge(content: @Composable () -> Unit) {
                     content = { innerPadding ->
                         Box(
                             modifier = Modifier
-                                .padding(innerPadding),
+                                .padding(innerPadding)
+                                .compatTestTagsAsResourceId(), // Enable configuration toggle to map testTags to resource-id.
                         ) {
                             content()
                         }

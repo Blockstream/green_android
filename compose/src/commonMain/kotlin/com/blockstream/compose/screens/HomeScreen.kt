@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -131,7 +132,7 @@ fun HomeScreen(
 
                         GreenButton(
                             stringResource(Res.string.id_get_started),
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth().testTag("getStarted"),
                             size = GreenButtonSize.BIG,
                             enabled = termsOfServiceIsChecked
                         ) {
@@ -147,7 +148,8 @@ fun HomeScreen(
                         ) {
                             Checkbox(
                                 checked = termsOfServiceIsChecked,
-                                onCheckedChange = viewModel.termsOfServiceIsChecked.onValueChange()
+                                onCheckedChange = viewModel.termsOfServiceIsChecked.onValueChange(),
+                                modifier = Modifier.testTag("termsOfService")
                             )
 
                             val annotatedString = colorText(
