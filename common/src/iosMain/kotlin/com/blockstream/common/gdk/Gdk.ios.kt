@@ -101,7 +101,6 @@ import gdk.GA_send_transaction
 import gdk.GA_set_csvtime
 import gdk.GA_set_notification_handler
 import gdk.GA_set_transaction_memo
-import gdk.GA_set_watch_only
 import gdk.GA_sign_message
 import gdk.GA_sign_transaction
 import gdk.GA_twofactor_cancel_reset

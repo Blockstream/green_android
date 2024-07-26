@@ -1,22 +1,10 @@
 package com.blockstream.green.extensions
 
-import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
-import android.net.Uri
-import android.os.Build
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
-import android.widget.Toast
-import androidx.annotation.MenuRes
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.PopupMenu
-import androidx.core.app.ShareCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -38,21 +26,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
-fun Fragment.hideKeyboard() {
-    view?.let { context?.hideKeyboard(it) }
-}
-
-fun Fragment.openKeyboard() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        view?.windowInsetsController?.show(WindowInsetsCompat.Type.ime())
-    }else{
-        @Suppress("DEPRECATION")
-        (requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?)?.toggleSoftInputFromWindow(
-            view?.applicationWindowToken, InputMethodManager.SHOW_FORCED, 0
-        )
-    }
-}
-
 fun Fragment.copyToClipboard(label: String, content: String, animateView: View? = null, showCopyNotification: Boolean = false) {
     com.blockstream.green.utils.copyToClipboard(
         label = label,
@@ -72,22 +45,6 @@ fun BottomSheetDialogFragment.dismissIn(timeMillis: Long){
             dismiss()
         }
     }
-}
-
-fun Context.hideKeyboard(view: View) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        view.windowInsetsController?.hide(WindowInsetsCompat.Type.ime())
-    }else {
-        val inputMethodManager =
-            getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
-    }
-}
-
-fun Context.localized2faMethod(method: String): String = resources.getStringArray(R.array.twoFactorChoices)[resources.getStringArray(R.array.twoFactorMethods).indexOf(method)]
-
-fun Context.localized2faMethods(methods: List<String>): List<String> = methods.map {
-    localized2faMethod(it)
 }
 
 fun Context.stringFromIdentifierOrNull(id: String?): String? {
@@ -266,21 +223,6 @@ fun Context.dialog(title: String, message: String, icon: Int? = null, isMessageS
         }
 }
 
-fun Fragment.toast(resId: Int, duration: Int = Toast.LENGTH_SHORT) {
-    Toast.makeText(requireContext(), getString(resId), duration).show()
-}
-
-fun Fragment.toast(text: String, duration: Int = Toast.LENGTH_SHORT) {
-    Toast.makeText(requireContext(), text, duration).show()
-}
-
-fun Fragment.errorSnackbar(
-    throwable: Throwable,
-    duration: Int = Snackbar.LENGTH_SHORT,
-) {
-    snackbar(errorFromResourcesAndGDK(throwable), duration)
-}
-
 fun Fragment.snackbar(resId: Int, duration: Int = Snackbar.LENGTH_SHORT) {
     snackbar(getString(resId), duration)
 }
@@ -322,74 +264,6 @@ fun Fragment.errorSnackbar(
 fun View.snackbar(resId: Int, duration: Int = Snackbar.LENGTH_SHORT) {
     Snackbar.make(this, resId, duration).show()
 }
-
-fun Fragment.share(text: String) {
-    val builder = ShareCompat.IntentBuilder(requireActivity())
-        .setType("text/plain")
-        .setText(text)
-
-    requireActivity().startActivity(
-        Intent.createChooser(
-            builder.intent,
-            getString(R.string.id_share)
-        )
-    )
-}
-
-fun Fragment.shareJPEG(uri: Uri) {
-    val builder = ShareCompat.IntentBuilder(requireActivity())
-        .setType("image/jpg")
-        .setStream(uri)
-
-    requireActivity().startActivity(
-        Intent.createChooser(
-            builder.intent,
-            getString(R.string.id_share)
-        )
-    )
-}
-
-fun Fragment.shareTextFile(uri: Uri) {
-    val builder = ShareCompat.IntentBuilder(requireActivity())
-        .setType("text/plain")
-        .setStream(uri)
-
-    requireActivity().startActivity(
-        Intent.createChooser(
-            builder.intent,
-            getString(R.string.id_share)
-        )
-    )
-}
-
-fun Fragment.showPopupMenu(
-    view: View,
-    @MenuRes menuRes: Int,
-    listener: PopupMenu.OnMenuItemClickListener
-) {
-    val popup = PopupMenu(requireContext(), view, Gravity.END)
-    popup.setForceShowIcon(true)
-    popup.menuInflater.inflate(menuRes, popup.menu)
-    popup.setOnMenuItemClickListener(listener)
-    popup.show()
-}
-
-fun Fragment.showChoiceDialog(
-    title: String,
-    items: Array<CharSequence>,
-    checkedItem: Int,
-    listener: (position: Int) -> Unit
-) {
-    MaterialAlertDialogBuilder(requireContext())
-        .setTitle(title)
-        .setSingleChoiceItems(items, checkedItem) { dialog: DialogInterface, position: Int ->
-            listener.invoke(position)
-            dialog.dismiss()
-        }
-        .setNegativeButton(android.R.string.cancel, null)
-        .show()
-}
-
 
 fun BottomSheetDialogFragment.makeItConstant(percent: Double = 1.0) {
     // Keep the height of the window always constant

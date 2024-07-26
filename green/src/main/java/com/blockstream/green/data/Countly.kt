@@ -19,7 +19,6 @@ import com.blockstream.green.ui.dialogs.CountlyNpsDialogFragment
 import com.blockstream.green.ui.dialogs.CountlySurveyDialogFragment
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.blockstream.green.utils.isProductionFlavor
-import com.blockstream.green.views.GreenAlertView
 import ly.count.android.sdk.Countly
 import ly.count.android.sdk.CountlyConfig
 import ly.count.android.sdk.ModuleAPM
@@ -300,9 +299,4 @@ class Countly constructor(
             Countly.CountlyFeatureNames.crashes
         )
     }
-}
-
-
-interface BannerView {
-    fun getBannerAlertView() : GreenAlertView?
 }

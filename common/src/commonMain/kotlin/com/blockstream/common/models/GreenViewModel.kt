@@ -203,7 +203,7 @@ open class GreenViewModel constructor(
 
 
     protected val _denomination by lazy {
-        MutableStateFlow<Denomination>(sessionOrNull?.ifConnected { Denomination.default(session) } ?: Denomination.BTC)
+        MutableStateFlow(sessionOrNull?.ifConnected { Denomination.default(session) } ?: Denomination.BTC)
     }
 
     @NativeCoroutinesState

@@ -272,6 +272,10 @@ actual fun getGdkBinding(
             TODO("Not yet implemented")
         }
 
+        override fun psbtFromJson(session: GASession, transaction: JsonElement): GAAuthHandler {
+            TODO("Not yet implemented")
+        }
+
         override fun broadcastTransaction(session: GASession, transaction: String): String {
             TODO("Not yet implemented")
         }

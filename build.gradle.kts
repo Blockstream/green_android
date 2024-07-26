@@ -26,7 +26,7 @@ plugins {
     alias(libs.plugins.kotlinParcelize) apply false
     alias(libs.plugins.googleServices) apply false
     alias(libs.plugins.nativeCocoapods) apply false
-
+    id("org.barfuin.gradle.taskinfo") version "2.2.0"
 }
 
 allprojects {

@@ -126,53 +126,12 @@ fun copyToClipboard(label: String, content: String, context: Context, animateVie
     }
 }
 
-fun clearClipboard(context: Context) {
-    (context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager)?.also {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            it.clearPrimaryClip()
-        }
-    }
-}
-
-fun createQrBitmap(content: String, errorCorrectionLevel: ErrorCorrectionLevel = ErrorCorrectionLevel.M): Bitmap? {
-    try {
-        val matrix = Encoder.encode(content, errorCorrectionLevel).matrix
-
-        val height: Int = matrix.height
-        val width: Int = matrix.width
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        for (x in 0 until width) {
-            for (y in 0 until height) {
-                bitmap.setPixel(
-                    x,
-                    y,
-                    if (matrix[x, y].toInt() == 1) Color.BLACK else Color.WHITE
-                )
-            }
-        }
-
-        return bitmap
-    } catch (e: Exception) {
-        e.printStackTrace()
-        return null
-    }
-}
-
-fun Int.dp(context: Context) =
-    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this.toFloat(), context.resources.displayMetrics).toInt()
-
 fun Int.dp(view: View) =
     TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this.toFloat(), view.resources.displayMetrics).toInt()
-
-fun Context.toPixels(size: Float) =
-    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, resources.displayMetrics).toInt()
 
 fun Context.toPixels(size: Int) =
     TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size.toFloat(), resources.displayMetrics)
         .toInt()
-
-fun Fragment.toPixels(size: Float) =
-    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, resources.displayMetrics).toInt()
 
 fun Fragment.toPixels(size: Int) =
     TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size.toFloat(), resources.displayMetrics)
@@ -183,106 +142,3 @@ val isDebug by lazy { BuildConfig.DEBUG }
 val isDevelopmentFlavor by lazy { BuildConfig.FLAVOR == "development" || BuildConfig.APPLICATION_ID.contains(".dev") }
 val isDevelopmentOrDebug by lazy { isDevelopmentFlavor || isDebug }
 val isProductionFlavor by lazy { !isDevelopmentFlavor }
-
-fun Fragment.notifyDevelopmentFeature(message: String) {
-    requireContext().notifyDevelopmentFeature(message)
-}
-
-fun Context.notifyDevelopmentFeature(message: String) {
-    if (isDevelopmentFlavor) {
-        Toast.makeText(this, "Development Flavor: $message", Toast.LENGTH_SHORT).show()
-    }
-}
-
-fun Fragment.greenText(whiteText: Int, vararg greenTexts: Int): Spanned {
-    return requireContext().greenText(whiteText, *greenTexts)
-}
-
-fun Fragment.greenText(whiteText: String, vararg greenTexts: String): Spanned {
-    return requireContext().colorText(whiteText, R.color.white, R.color.brand_green, *greenTexts)
-}
-
-fun Context.greenText(whiteText: Int, vararg greenTexts: Int): Spanned {
-    return colorText(
-        getString(whiteText), R.color.white, R.color.brand_green,
-        *(greenTexts.map { getString(it) }).toTypedArray()
-    )
-}
-
-fun Fragment.colorText(baseText: String, baseColor: Int, color: Int, vararg greenTexts: String): Spanned {
-    return requireContext().colorText(baseText, baseColor, color, *greenTexts)
-}
-
-fun Context.colorText(baseText: String, baseColor: Int, color: Int, vararg greenTexts: String): Spanned {
-    return try{
-        buildSpannedString {
-            color(ContextCompat.getColor(this@colorText, baseColor)) {
-                append(baseText)
-            }
-
-            greenTexts.map { it.lowercase() }.forEach {
-                val start = baseText.lowercase().indexOf(it)
-                setSpan(
-                    ForegroundColorSpan(
-                        ContextCompat.getColor(
-                            this@colorText,
-                            color
-                        )
-                    ),
-                    start,
-                    start + it.length,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-            }
-        }.toSpanned()
-    }catch (e: Exception){
-        baseText.toSpanned()
-    }
-}
-
-fun Fragment.underlineText(text: String): Spanned {
-    return requireContext().underlineText(text)
-}
-fun Context.underlineText(text: String): Spanned {
-    return buildSpannedString {
-        underline {
-            append(text)
-        }
-    }.toSpanned()
-}
-
-fun Context.linkedText(text: Int, color: Int = R.color.white, links: List<Pair<Int, ClickableSpan>>): Spanned {
-    val whiteString = getString(text)
-
-    return try {
-        buildSpannedString {
-            color(ContextCompat.getColor(this@linkedText, color)) {
-                append(whiteString)
-            }
-
-            links.onEach { link ->
-                val text = getString(link.first).lowercase()
-                val start = whiteString.lowercase().indexOf(text)
-
-                listOfNotNull(
-                    StyleSpan(Typeface.BOLD),
-                    ForegroundColorSpan(
-                        ContextCompat.getColor(
-                            this@linkedText,
-                            R.color.brand_green
-                        )
-                    ), link.second
-                ).onEach {
-                    setSpan(
-                        it,
-                        start,
-                        start + text.length,
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                    )
-                }
-            }
-        }.toSpanned()
-    } catch (e: Exception) {
-        whiteString.toSpanned()
-    }
-}

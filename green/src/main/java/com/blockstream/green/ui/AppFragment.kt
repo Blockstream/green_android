@@ -33,7 +33,6 @@ import com.blockstream.common.data.NavData
 import com.blockstream.common.extensions.handleException
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.Wally
-import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.models.GreenViewModel
@@ -42,10 +41,8 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
-import com.blockstream.common.utils.getStringFromId
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
-import com.blockstream.green.data.BannerView
 import com.blockstream.green.data.CountlyAndroid
 import com.blockstream.green.extensions.dialog
 import com.blockstream.green.extensions.errorDialog
@@ -53,16 +50,12 @@ import com.blockstream.green.extensions.errorSnackbar
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.extensions.stringFromIdentifier
 import com.blockstream.green.extensions.stringFromIdentifierOrNull
-import com.blockstream.green.ui.bottomsheets.AccountAssetListener
-import com.blockstream.green.ui.bottomsheets.DenominationBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.DeviceInteractionRequestBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.PassphraseBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.PinMatrixBottomSheetDialogFragment
 import com.blockstream.green.ui.drawer.DrawerFragment
-import com.blockstream.green.utils.BannersHelper
 import com.blockstream.green.utils.copyToClipboard
 import com.blockstream.green.utils.openBrowser
-import com.blockstream.green.views.GreenAlertView
 import com.blockstream.green.views.GreenToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -86,7 +79,7 @@ import org.koin.android.ext.android.inject
 abstract class AppFragment<T : ViewDataBinding>(
     @LayoutRes val layout: Int,
     @MenuRes val menuRes: Int = 0
-) : Fragment(), MenuProvider, ScreenView, BannerView, AccountAssetListener {
+) : Fragment(), MenuProvider, ScreenView {
     open val isAdjustResize = false
 
     internal lateinit var binding: T
@@ -159,10 +152,6 @@ abstract class AppFragment<T : ViewDataBinding>(
 
         getGreenViewModel()?.let { viewModel ->
 
-            viewModel.banner.onEach {
-                BannersHelper.setupBanner(this, it)
-            }.launchIn(lifecycleScope)
-
             if(useCompose){
                 viewModel.navData.onEach {
                     updateToolbar()
@@ -195,8 +184,6 @@ abstract class AppFragment<T : ViewDataBinding>(
             updateToolbar()
             countly.screenView(this)
         }
-
-        BannersHelper.handle(this, getGreenViewModel()?.sessionOrNull)
     }
 
     override fun onPrepareMenu(menu: Menu) {
@@ -326,14 +313,6 @@ abstract class AppFragment<T : ViewDataBinding>(
                             )
                         }
                     }
-                }
-            }
-            is SideEffects.OpenDenomination -> {
-                if(!useCompose) {
-                    DenominationBottomSheetDialogFragment.show(
-                        denominatedValue = sideEffect.denominatedValue,
-                        childFragmentManager
-                    )
                 }
             }
 
@@ -665,14 +644,6 @@ abstract class AppFragment<T : ViewDataBinding>(
                     )
                 }
             }
-        }
-    }
-
-    override fun getBannerAlertView(): GreenAlertView? = null
-
-    override fun accountAssetClicked(accountAsset: AccountAsset) {
-        getGreenViewModel()?.also {
-            it.accountAsset.value = accountAsset
         }
     }
 

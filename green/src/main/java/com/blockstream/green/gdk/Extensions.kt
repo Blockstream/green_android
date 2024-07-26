@@ -64,14 +64,6 @@ fun AccountType?.policyRes(): Int = when (this) {
 }
 
 
-fun AccountType.withPolicy(context: Context): String = policyRes().let {
-    when{
-        this.isMutlisig() -> "${context.getString(R.string.id_multisig)} / ${context.getString(it)}"
-        this.isLightning() -> "${context.getString(R.string.id_lightning)}"
-        else -> "${context.getString(R.string.id_singlesig)} / ${context.getString(it)}"
-    }
-}
-
 @Deprecated("Use StringResouces")
 fun Network.getNetworkIcon(): Int{
     return with(id) {
@@ -82,19 +74,6 @@ fun Network.getNetworkIcon(): Int{
         if (Network.isLightningMainnet(this)) return R.drawable.bitcoin_lightning
         R.drawable.unknown
     }
-}
-
-fun Long?.getDirectionColor(context: Context, isFailed: Boolean = false): Int =
-    ContextCompat.getColor(context, if(isFailed) R.color.error else if ((this ?: 0) < 0) R.color.white else R.color.brand_green)
-
-
-fun String.getNetworkIcon(): Int{
-    if (Network.isBitcoinMainnet(this)) return R.drawable.bitcoin
-    if (Network.isLiquidMainnet(this)) return R.drawable.liquid
-    if (Network.isBitcoinTestnet(this)) return R.drawable.bitcoin_testnet
-    if (Network.isLiquidTestnet(this)) return R.drawable.liquid_testnet
-    if (Network.isLightningMainnet(this)) return R.drawable.bitcoin_lightning
-    return R.drawable.unknown
 }
 
 fun String.getNetworkColor(): Int = when {
@@ -170,18 +149,6 @@ fun com.blockstream.green.devices.Device.getIcon(): Int{
     }
 }
 
-fun GreenWallet.iconResource() = when(icon) {
-    WalletIcon.WATCH_ONLY -> R.drawable.ic_regular_eye_24
-    WalletIcon.TESTNET -> R.drawable.ic_regular_flask_24
-    WalletIcon.BIP39 -> R.drawable.ic_regular_wallet_passphrase_24
-    WalletIcon.HARDWARE -> R.drawable.ic_regular_hww_24 // session.device!!.getIcon()
-    WalletIcon.LIGHTNING -> R.drawable.ic_lightning_fill
-    else -> R.drawable.ic_regular_wallet_24
-}
-
-fun Throwable.getGDKErrorCode(): Int {
-    return this.message?.getGDKErrorCode() ?: GA_ERROR
-}
 fun String.getGDKErrorCode(): Int {
     return try {
         val stringCode = this.split(" ".toRegex()).toTypedArray()[1]
@@ -194,11 +161,9 @@ fun String.getGDKErrorCode(): Int {
     }
 }
 
-fun Throwable.isNotAuthorized() = (message ?: "").isNotAuthorized()
 fun String.isNotAuthorized() =
     getGDKErrorCode() == GA_NOT_AUTHORIZED || this == "id_invalid_pin"
 
 fun String.isConnectionError() = this.contains("failed to connect") || this == "id_connection_failed"
-fun Throwable.isConnectionError() = (message ?: "").isConnectionError()
 
 

@@ -27,6 +27,7 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_allows_you_to_quickly_check
 import blockstream_green.common.generated.resources.id_at_least_8_characters_required
 import blockstream_green.common.generated.resources.id_delete_credentials
+import blockstream_green.common.generated.resources.id_password
 import blockstream_green.common.generated.resources.id_save
 import blockstream_green.common.generated.resources.id_update
 import blockstream_green.common.generated.resources.id_username
@@ -141,7 +142,7 @@ fun WatchOnlyCredentialsSettingsBottomSheet(
                 }
             ),
             isError = password.isNotBlank() && password.length < 8,
-            label = { Text(stringResource(Res.string.id_username)) },
+            label = { Text(stringResource(Res.string.id_password)) },
             supportingText = {
                 Text(if(password.length < 8) stringResource(Res.string.id_at_least_8_characters_required) else "")
             },
