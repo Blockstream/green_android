@@ -3,8 +3,13 @@ package com.blockstream.gms
 import android.content.Context
 import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.data.ErrorReport
+import com.blockstream.common.di.ApplicationScope
+import com.blockstream.common.extensions.logException
+import com.russhwolf.settings.Settings
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import mu.KLogging
 import zendesk.core.AnonymousIdentity
 import zendesk.core.Zendesk
@@ -13,8 +18,11 @@ import zendesk.support.CustomField
 import zendesk.support.Request
 import zendesk.support.RequestProvider
 import zendesk.support.Support
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
-class ZendeskSdkAndroid constructor(context: Context, clientId: String) : ZendeskSdk() {
+class ZendeskSdkAndroid(context: Context, val scope: ApplicationScope, clientId: String) : ZendeskSdk() {
     private val zendeskSdk = Zendesk.INSTANCE
     private val support = Support.INSTANCE
 
@@ -57,11 +65,21 @@ class ZendeskSdkAndroid constructor(context: Context, clientId: String) : Zendes
 
         provider.createRequest(request, object : ZendeskCallback<Request>() {
             override fun onSuccess(createRequest: Request) {
-                logger.info { "Success" }
+                logger.info { "createRequest: Success" }
             }
 
             override fun onError(errorResponse: ErrorResponse) {
-                logger.info { errorResponse.responseBody }
+                logger.info { "createRequest: Error(${errorResponse.responseBody}) ... retry with delay"  }
+
+                scope.launch(context = logException()) {
+                    delay(1L.toDuration(DurationUnit.MINUTES))
+                    submitNewTicket(
+                        subject = subject,
+                        email = email,
+                        message = message,
+                        errorReport = errorReport
+                    )
+                }
             }
         })
     }

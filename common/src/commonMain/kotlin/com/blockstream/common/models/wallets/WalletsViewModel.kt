@@ -131,7 +131,7 @@ abstract class WalletsViewModel(isHome: Boolean) : WalletsViewModelAbstract(isHo
                     )
                 )
             }
-        }else if(event is LocalEvents.RemoveLightningShortcut){
+        } else if(event is LocalEvents.RemoveLightningShortcut){
             removeLightningShortcut(event.greenWallet)
         }
     }

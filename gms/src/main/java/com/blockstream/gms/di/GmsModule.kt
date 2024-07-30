@@ -34,7 +34,7 @@ val gmsModule = module {
         val apiKey = get<AppConfig>().zendeskClientId?.let { base64 ->
             Base64.decode(base64).commonToUtf8String()
         } ?: ""
-        ZendeskSdkAndroid(get(), apiKey)
+        ZendeskSdkAndroid(get(), get(), apiKey)
     } binds(arrayOf(ZendeskSdk::class))
 
     single {

@@ -1547,4 +1547,6 @@
     <string name="id_electrum_server_gap_limit">Electrum server gap limit</string>
     <string name="id_number_of_consecutive_empty_addresses">Number of consecutive empty addresses to monitor</string>
     <string name="id_comment">Comment</string>
+    <string name="id_payments_will_fail">Payments Will Fail!</string>
+    <string name="id_you_will_stop_receiving_push_notifications">You will stop receiving push notifications for this lightning account, but they are necessary for your lightning account to receive and send reliably.</string>
 </resources>

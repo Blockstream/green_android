@@ -4,10 +4,17 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_cancel
+import blockstream_green.common.generated.resources.id_payments_will_fail
+import blockstream_green.common.generated.resources.id_remove_lightning_shortcut
+import blockstream_green.common.generated.resources.id_you_will_stop_receiving_push_notifications
 import com.blockstream.common.Urls
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.needs2faActivation
@@ -20,10 +27,12 @@ import com.blockstream.compose.AppFragmentBridge
 import com.blockstream.compose.screens.overview.AccountOverviewScreen
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ComposeViewBinding
+import com.blockstream.green.extensions.dialog
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.utils.openBrowser
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -116,7 +125,7 @@ class AccountOverviewFragment : AppFragment<ComposeViewBinding>(
 
             R.id.lightning_shortcut -> {
                 if (viewModel.hasLightningShortcut.value == true) {
-                    viewModel.postEvent(AccountOverviewViewModel.LocalEvents.RemoveLightningShortcut)
+                    viewModel.postEvent(Events.AskRemoveLightningShortcut())
                 } else {
                     viewModel.postEvent(AccountOverviewViewModel.LocalEvents.EnableLightningShortcut)
                 }

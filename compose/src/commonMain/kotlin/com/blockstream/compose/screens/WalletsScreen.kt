@@ -18,27 +18,46 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.caret_right
+import blockstream_green.common.generated.resources.id_are_you_not_receiving_your_2fa
+import blockstream_green.common.generated.resources.id_cancel
+import blockstream_green.common.generated.resources.id_contact_support
 import blockstream_green.common.generated.resources.id_digital_wallets
+import blockstream_green.common.generated.resources.id_enable_2fa_call_method
 import blockstream_green.common.generated.resources.id_ephemeral_wallets
 import blockstream_green.common.generated.resources.id_hardware_devices
+import blockstream_green.common.generated.resources.id_payments_will_fail
+import blockstream_green.common.generated.resources.id_remove_lightning_shortcut
 import blockstream_green.common.generated.resources.id_setup_a_new_wallet
+import blockstream_green.common.generated.resources.id_try_again
+import blockstream_green.common.generated.resources.id_try_again_using_another_2fa
+import blockstream_green.common.generated.resources.id_you_will_stop_receiving_push_notifications
+import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.TwoFactorMethod
+import com.blockstream.common.data.TwoFactorSetupAction
+import com.blockstream.common.events.Events
 import com.blockstream.common.looks.wallet.WalletListLook
 import com.blockstream.common.models.wallets.WalletsViewModel
 import com.blockstream.common.models.wallets.WalletsViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.utils.StringHolder
+import com.blockstream.compose.LocalDialog
 import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.sideeffects.OpenDialogData
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.views.WalletListItem
 import com.blockstream.compose.views.WalletListItemCallbacks
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -78,6 +97,10 @@ fun WalletsScreen(
     modifier: Modifier = Modifier,
     viewModel: WalletsViewModelAbstract,
 ) {
+    val dialog = LocalDialog.current
+    val scope = rememberCoroutineScope()
+
+
     val isEmptyWallet by viewModel.isEmptyWallet.collectAsStateWithLifecycle()
     val softwareWallets by viewModel.softwareWallets.collectAsStateWithLifecycle()
     val ephemeralWallets by viewModel.ephemeralWallets.collectAsStateWithLifecycle()
@@ -91,7 +114,7 @@ fun WalletsScreen(
             )
         )
     }, onLightningShortcutDelete = {
-        viewModel.postEvent(WalletsViewModel.LocalEvents.RemoveLightningShortcut(it))
+        viewModel.postEvent(Events.AskRemoveLightningShortcut(wallet = it))
     }, onWalletDelete = {
         viewModel.postEvent(NavigateDestinations.DeleteWallet(it))
     }, onWalletRename = {

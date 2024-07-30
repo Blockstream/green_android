@@ -37,14 +37,16 @@ class Events : Event {
     data class RenameWallet(val wallet: GreenWallet, val name: String) : Event
     data class DeleteWallet(val wallet: GreenWallet) : Event
     data class Logout(val reason: LogoutReason) : Event
-    class DeviceRequestResponse(val data: String?): Event
-    class RenameAccount(val account: Account, val name: String): Event
-    class ArchiveAccount constructor(val account: Account): Event
-    class UnArchiveAccount(val account: Account, val navigateToRoot: Boolean): Event
-    class RemoveAccount(val account: Account): Event
-    class SetAccountAsset(val accountAsset: AccountAsset, val setAsActive: Boolean = false): Event
-    class SetBarcodeScannerResult(val scannedText : String): Event
-    class SubmitErrorReport(val email : String, val message: String, val errorReport: ErrorReport): Event
+    data class DeviceRequestResponse(val data: String?): Event
+    data class RenameAccount(val account: Account, val name: String): Event
+    data class ArchiveAccount constructor(val account: Account): Event
+    data class UnArchiveAccount(val account: Account, val navigateToRoot: Boolean): Event
+    data class RemoveAccount(val account: Account): Event
+    data class RemoveLightningShortcut(val wallet: GreenWallet? = null): Event
+    data class AskRemoveLightningShortcut(val wallet: GreenWallet? = null): Event
+    data class SetAccountAsset(val accountAsset: AccountAsset, val setAsActive: Boolean = false): Event
+    data class SetBarcodeScannerResult(val scannedText : String): Event
+    data class SubmitErrorReport(val email : String, val message: String, val errorReport: ErrorReport): Event
     class ProvideCipher(
         val platformCipher: PlatformCipher? = null,
         val exception: Exception? = null

@@ -15,19 +15,26 @@ import blockstream_green.common.generated.resources.id_enable_2fa_call_method
 import blockstream_green.common.generated.resources.id_message_from_recipient_s
 import blockstream_green.common.generated.resources.id_ok
 import blockstream_green.common.generated.resources.id_open
+import blockstream_green.common.generated.resources.id_payments_will_fail
+import blockstream_green.common.generated.resources.id_remove_lightning_shortcut
 import blockstream_green.common.generated.resources.id_success
 import blockstream_green.common.generated.resources.id_try_again
 import blockstream_green.common.generated.resources.id_try_again_using_another_2fa
+import blockstream_green.common.generated.resources.id_you_will_stop_receiving_push_notifications
+import blockstream_green.common.generated.resources.warning
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorResolverData
 import com.blockstream.common.data.TwoFactorSetupAction
+import com.blockstream.common.events.Event
+import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.twoFactorMethodsLocalized
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.wallets.WalletsViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
@@ -283,6 +290,24 @@ fun HandleSideEffect(
                                 title = it.title,
                                 message = it.message,
                                 icon = it.icon
+                            )
+                        )
+                    }
+                }
+
+                is SideEffects.AskRemoveLightningShortcut -> {
+                    appCoroutine.launch {
+                        dialog.openDialog(
+                            OpenDialogData(
+                                title = StringHolder.create(Res.string.id_payments_will_fail),
+                                message = StringHolder.create(Res.string.id_you_will_stop_receiving_push_notifications),
+                                icon = Res.drawable.warning,
+                                primaryText = getString(Res.string.id_remove_lightning_shortcut),
+                                secondaryText = getString(Res.string.id_cancel),
+                                onPrimary = {
+                                    viewModel.postEvent(Events.RemoveLightningShortcut(wallet = it.wallet))
+                                },
+                                onSecondary = { }
                             )
                         )
                     }

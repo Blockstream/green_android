@@ -67,4 +67,5 @@ class SideEffects : SideEffect {
     data class TwoFactorResolver(val data: TwoFactorResolverData) : SideEffect
     object OpenDenominationExchangeRate : SideEffect
     object LightningShortcut : SideEffect
+    data class AskRemoveLightningShortcut(val wallet: GreenWallet) : SideEffect
 }

@@ -198,7 +198,6 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
         object Send : Event
         object Receive : Event
         object Refresh : Event
-        object RemoveLightningShortcut : Event
         object EnableLightningShortcut : Event
         object LoadMoreTransactions : Event
         object RescanSwaps : Event
@@ -260,7 +259,7 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                             icon = Res.drawable.lightning_slash,
                             isMenuEntry = true,
                             onClick = {
-                                postEvent(LocalEvents.RemoveLightningShortcut)
+                                postEvent(Events.AskRemoveLightningShortcut())
                             }
                         ).takeIf { account.isLightning &&  hasLightningShortcut == true },
                         NavAction(
@@ -325,10 +324,6 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                 session.refresh(account = account)
             }
 
-            is LocalEvents.RemoveLightningShortcut -> {
-                removeLightningShortcut()
-            }
-
             is LocalEvents.EnableLightningShortcut -> {
                 enableLightningShortcut()
             }
@@ -368,16 +363,6 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                 _enableLightningShortcut()
             }, onSuccess = {
                 postSideEffect(SideEffects.LightningShortcut)
-            })
-        }
-    }
-
-    private fun removeLightningShortcut() {
-        if (account.isLightning) {
-            doAsync({
-                database.deleteLoginCredentials(greenWallet.id, CredentialType.LIGHTNING_MNEMONIC)
-            }, onSuccess = {
-
             })
         }
     }

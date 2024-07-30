@@ -383,6 +383,12 @@ open class GreenViewModel constructor(
             is Events.RemoveAccount -> {
                  removeAccount(account = event.account)
             }
+            is Events.RemoveLightningShortcut -> {
+                removeLightningShortcut(greenWallet = event.wallet ?: greenWallet)
+            }
+            is Events.AskRemoveLightningShortcut -> {
+                postSideEffect(SideEffects.AskRemoveLightningShortcut(wallet = event.wallet ?: greenWallet))
+            }
             is EventWithSideEffect -> {
                 postSideEffect(event.sideEffect)
             }
@@ -629,6 +635,14 @@ open class GreenViewModel constructor(
                 postSideEffect(SideEffects.NavigateToRoot())
             })
         }
+    }
+
+    private fun removeLightningShortcut(greenWallet: GreenWallet) {
+        doAsync({
+            database.deleteLoginCredentials(greenWallet.id, CredentialType.LIGHTNING_MNEMONIC)
+        }, onSuccess = {
+
+        })
     }
 
     private fun setActiveAccount(account: Account) {
