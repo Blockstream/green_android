@@ -149,6 +149,7 @@ fun ReceiveScreen(
     val accountAsset by viewModel.accountAsset.collectAsStateWithLifecycle()
     val showRequestAmount by viewModel.showAmount.collectAsStateWithLifecycle()
     val receiveAddress by viewModel.receiveAddress.collectAsStateWithLifecycle()
+    val receiveAddressUri by viewModel.receiveAddressUri.collectAsStateWithLifecycle()
     val onchainSwapMessage by viewModel.onchainSwapMessage.collectAsStateWithLifecycle()
     val denomination by viewModel.denomination.collectAsStateWithLifecycle()
     val showLightningOnChainAddress by viewModel.showLightningOnChainAddress.collectAsStateWithLifecycle()
@@ -164,13 +165,13 @@ fun ReceiveScreen(
         scope.launch {
 
             val qrCode : Painter = QrCodePainter(
-                data = receiveAddress ?: "",
+                data = receiveAddressUri ?: "",
             )
 
             viewModel.postEvent(
                 if (it == 0) ReceiveViewModel.LocalEvents.ShareAddress else ReceiveViewModel.LocalEvents.ShareQR(
                     qrCode.toByteArray(800, 800).let {
-                        platformManager.processQr(it, receiveAddress ?: "")
+                        platformManager.processQr(it, receiveAddressUri ?: "")
                     }
                 )
             )
@@ -369,7 +370,7 @@ fun ReceiveScreen(
                                         onQrClick = {
                                             viewModel.postEvent(ReceiveViewModel.LocalEvents.CopyAddress)
                                         },
-                                        data = receiveAddress,
+                                        data = receiveAddressUri,
                                     )
 
                                     GreenColumn(

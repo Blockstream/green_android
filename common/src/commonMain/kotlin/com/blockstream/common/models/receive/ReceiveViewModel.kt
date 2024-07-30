@@ -139,6 +139,9 @@ abstract class ReceiveViewModelAbstract(greenWallet: GreenWallet, accountAssetOr
     abstract val receiveAddress: StateFlow<String?>
 
     @NativeCoroutinesState
+    abstract val receiveAddressUri: StateFlow<String?>
+
+    @NativeCoroutinesState
     abstract val showVerifyOnDevice: StateFlow<Boolean>
 
     @NativeCoroutinesState
@@ -153,6 +156,7 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
     ReceiveViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = initialAccountAsset) {
 
     private val _receiveAddress = MutableStateFlow<String?>(null)
+    private val _receiveAddressUri = MutableStateFlow<String?>(null)
     private val _showVerifyOnDevice = MutableStateFlow(false)
     private val _showLightningOnChainAddress = MutableStateFlow(false)
     private val _showLedgerAssetWarning = MutableStateFlow(false)
@@ -172,26 +176,27 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
     private val _invoiceExpiration = MutableStateFlow<String?>(null)
     private val _invoiceExpirationTimestamp = MutableStateFlow<Long?>(null)
 
-    override val receiveAddress: StateFlow<String?> = _receiveAddress.asStateFlow()
+    override val receiveAddress: StateFlow<String?> = _receiveAddress
+    override val receiveAddressUri: StateFlow<String?> = _receiveAddressUri
 
-    override val invoiceAmountToReceive = _invoiceAmountToReceive.asStateFlow()
-    override val invoiceAmountToReceiveFiat = _invoiceAmountToReceiveFiat.asStateFlow()
-    override val invoiceDescription = _invoiceDescription.asStateFlow()
-    override val invoiceExpiration = _invoiceExpiration.asStateFlow()
-    override val invoiceExpirationTimestamp = _invoiceExpirationTimestamp.asStateFlow()
+    override val invoiceAmountToReceive = _invoiceAmountToReceive
+    override val invoiceAmountToReceiveFiat = _invoiceAmountToReceiveFiat
+    override val invoiceDescription = _invoiceDescription
+    override val invoiceExpiration = _invoiceExpiration
+    override val invoiceExpirationTimestamp = _invoiceExpirationTimestamp
 
     override val amount = MutableStateFlow("")
-    override val amountError = _amountError.asStateFlow()
-    override val note = _note.asStateFlow()
-    override val liquidityFee = _liquidityFee.asStateFlow()
-    override val onchainSwapMessage = _onchainSwapMessage.asStateFlow()
-    override val amountCurrency = _amountCurrency.asStateFlow()
-    override val amountExchange = _amountExchange.asStateFlow()
-    override val maxReceiveAmount = _maxReceiveAmount.asStateFlow()
-    override val showVerifyOnDevice = _showVerifyOnDevice.asStateFlow()
-    override val showLightningOnChainAddress = _showLightningOnChainAddress.asStateFlow()
-    override val showLedgerAssetWarning = _showLedgerAssetWarning.asStateFlow()
-    override val showAmount = _showRequestAmount.asStateFlow()
+    override val amountError = _amountError
+    override val note = _note
+    override val liquidityFee = _liquidityFee
+    override val onchainSwapMessage = _onchainSwapMessage
+    override val amountCurrency = _amountCurrency
+    override val amountExchange = _amountExchange
+    override val maxReceiveAmount = _maxReceiveAmount
+    override val showVerifyOnDevice = _showVerifyOnDevice
+    override val showLightningOnChainAddress = _showLightningOnChainAddress
+    override val showLedgerAssetWarning = _showLedgerAssetWarning
+    override val showAmount = _showRequestAmount
 
     private val _address = MutableStateFlow<Address?>(null)
     private val _lightningInvoice = MutableStateFlow<LnInvoice?>(null)
@@ -291,15 +296,21 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
                 // When toggling between showLightningOnChainAddress clear the receiveAddress
                 if(accountAsset?.account?.isLightning == true && !showLightningOnChainAddress){
                     _receiveAddress.value = null
+                    _receiveAddressUri.value = null
                     _address.value = null
                 }
-            }.launchIn(this)
 
-            accountAsset.onEach {
                 amount.value = ""
                 _amountError.value = null
                 _note.value = null
                 _showRequestAmount.value = false
+
+                _invoiceAmountToReceive.value = null
+                _invoiceDescription.value = null
+                _invoiceExpiration.value = null
+            }.launchIn(this)
+
+            accountAsset.onEach {
                 _showLightningOnChainAddress.value = false
                 _liquidityFee.value = null
                 generateAddress()
@@ -381,6 +392,7 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
         when (event) {
             is LocalEvents.ClearLightningInvoice -> {
                 _receiveAddress.value = null
+                _receiveAddressUri.value = null
                 _invoiceAmountToReceive.value = null
                 _invoiceAmountToReceiveFiat.value = null
                 _invoiceDescription.value = null
@@ -528,6 +540,7 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
 
         if (account.isLightning) {
             _receiveAddress.value = null
+            _receiveAddressUri.value = null
             _address.value = null
         } else {
             doAsync({
@@ -541,22 +554,20 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
 
     private suspend fun updateAddress(address: String) {
         withContext(context = Dispatchers.IO) {
-            if (account.isLightning) {
-                if (showLightningOnChainAddress.value) {
-                    _receiveAddress.value = address.takeIf { it.isNotBlank() }
-                } else {
-                    _receiveAddress.value = address.takeIf { it.isNotBlank() }?.let {
-                        Uri.Builder().also {
-                            it.scheme(account.network.bip21Prefix)
-                            it.opaquePart(address.uppercase()) // bech32 is case insensitive
-                        }.toString()
-                    }
+
+            if (account.isLightning && !showLightningOnChainAddress.value) {
+                Uri.Builder().also {
+                    it.scheme(account.network.bip21Prefix)
+                    it.opaquePart(address.uppercase()) // bech32 is case insensitive
+                }.toString().also {
+                    _receiveAddress.value = it
+                    _receiveAddressUri.value = it
                 }
-            } else if (amount.value.isNotBlank() || !accountAsset.value?.assetId.isPolicyAsset(session)) {
+            } else {
                 // Use 2 different builders, we are restricted by spec
                 // https://stackoverflow.com/questions/8534899/is-it-possible-to-use-uri-builder-and-not-have-the-part
                 val scheme = Uri.Builder().also {
-                    it.scheme(account.network.bip21Prefix)
+                    it.scheme(if(account.isLightning) session.bitcoin?.bip21Prefix else account.network.bip21Prefix)
                     it.opaquePart(address)
                 }.toString()
 
@@ -575,9 +586,13 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
                     }
                 }.toString()
 
-                _receiveAddress.value = scheme + query
-            } else {
-                _receiveAddress.value = address
+                if (amount.value.isNotBlank() || !accountAsset.value?.assetId.isPolicyAsset(session)) {
+                    _receiveAddress.value = scheme + query
+                } else {
+                    _receiveAddress.value = address
+                }
+
+                _receiveAddressUri.value = scheme + query
             }
         }
     }
@@ -848,6 +863,7 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
 class ReceiveViewModelPreview() : ReceiveViewModelAbstract(greenWallet = previewWallet(), accountAssetOrNull = previewAccountAsset(isLightning = true)) {
 
     override val receiveAddress: StateFlow<String?> = MutableStateFlow("lightning:LNBC1bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznubc1qaqtq80759n35gkh7du83nwvt5lgkznubc1qaqtq80759n35gkh7du83nwvt5lgkznubc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznubc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu")
+    override val receiveAddressUri: StateFlow<String?> = MutableStateFlow("lightning:LNBC1bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznubc1qaqtq80759n35gkh7du83nwvt5lgkznubc1qaqtq80759n35gkh7du83nwvt5lgkznubc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznubc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu")
     override val amount: MutableStateFlow<String> = MutableStateFlow("")
     override val amountError: StateFlow<String?> = MutableStateFlow(null)
     override val note = MutableStateFlow("")
