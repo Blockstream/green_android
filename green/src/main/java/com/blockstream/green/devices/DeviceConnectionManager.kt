@@ -310,6 +310,7 @@ class DeviceConnectionManager constructor(
             val application = dongle.application
             logger.info { "Ledger application $application" }
 
+            val isLegacy = application.name.lowercase().contains("legacy")
             val isTestnet = application.name.lowercase().contains("test")
             val isBitcoin = application.name.lowercase().contains("bitcoin")
             val isLiquid = application.name.lowercase().contains("liquid")
@@ -326,6 +327,11 @@ class DeviceConnectionManager constructor(
                 return
             }
 
+            if(isBitcoin && !isLegacy){
+                interaction.showInstructions(R.string.id_ledger_bitcoin_app_detected)
+                closeLedgerAndFail(device, transport)
+                return
+            }
 
             val network = when {
                 isBitcoin && isTestnet -> gdk.networks().testnetBitcoinElectrum

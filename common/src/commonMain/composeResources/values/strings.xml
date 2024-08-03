@@ -1549,4 +1549,5 @@
     <string name="id_comment">Comment</string>
     <string name="id_payments_will_fail">Payments Will Fail!</string>
     <string name="id_you_will_stop_receiving_push_notifications">You will stop receiving push notifications for this lightning account, but they are necessary for your lightning account to receive and send reliably.</string>
+    <string name="id_ledger_bitcoin_app_detected">Ledger Bitcoin app detected, please open the Bitcoin Legacy app to access.</string>
 </resources>
