@@ -20,6 +20,8 @@ class HomeFragment :
 
     override val useCompose: Boolean = true
 
+    override val isAdjustResize: Boolean = true
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
