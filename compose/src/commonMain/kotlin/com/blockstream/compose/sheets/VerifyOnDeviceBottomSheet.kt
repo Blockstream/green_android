@@ -2,6 +2,7 @@ package com.blockstream.compose.sheets
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -57,8 +58,8 @@ data class VerifyOnDeviceBottomSheet(
 @Composable
 fun VerifyOnDeviceBottomSheet(
     viewModel: GreenViewModel,
-    transactionConfirmLook: TransactionConfirmLook?,
-    address: String?,
+    transactionConfirmLook: TransactionConfirmLook? = null,
+    address: String? = null,
     onDismissRequest: () -> Unit,
 ) {
     GreenBottomSheet(
@@ -83,7 +84,9 @@ fun VerifyOnDeviceBottomSheet(
             GreenColumn(
                 padding = 0,
                 space = 16,
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
+                    .fillMaxWidth()
                     .verticalScroll(
                         rememberScrollState()
                     )

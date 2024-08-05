@@ -1,6 +1,7 @@
 package com.blockstream.compose.components
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.compose.theme.GreenThemePreview
 
@@ -9,8 +10,12 @@ import com.blockstream.compose.theme.GreenThemePreview
 @Composable
 fun GreenAddressPreview() {
     GreenThemePreview {
-        GreenColumn {
-            GreenAddress(address = "sml", showCopyIcon = true)
+
+
+        GreenColumn(horizontalAlignment = Alignment.CenterHorizontally) {
+            GreenAddress(address = "bc1tinyaddresstestonly", showCopyIcon = true)
+            GreenAddress(address = "bc1tinyaddresstestonly")
+            GreenAddress(address = "1Dyf7wmQfcMwsvYct54sTKpmLzHwGyurPk", showCopyIcon = true)
             GreenAddress(address = "1Dyf7wmQfcMwsvYct54sTKpmLzHwGyurPk")
             GreenAddress(address = "bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu")
             GreenAddress(address = "bc1q7s60uyszam87cjxpdy6u0kr24cqjm6ydnkzkhgsh9htw2u6k3k5sl37hqp")

@@ -10,7 +10,7 @@ import com.blockstream.compose.GreenAndroidPreview
 
 @Composable
 @Preview
-fun VerifyOnDeviceBottomSheetPreview() {
+fun VerifyOnDeviceTransactionBottomSheetPreview() {
     GreenAndroidPreview {
         VerifyOnDeviceBottomSheet(
             viewModel = SimpleGreenViewModelPreview(),
@@ -30,6 +30,18 @@ fun VerifyOnDeviceBottomSheetPreview() {
                 ),
                 fee = "1 BTC"
             ),
+            onDismissRequest = { }
+        )
+    }
+}
+
+@Composable
+@Preview
+fun VerifyOnDeviceAddressBottomSheetPreview() {
+    GreenAndroidPreview {
+        VerifyOnDeviceBottomSheet(
+            viewModel = SimpleGreenViewModelPreview(),
+            address = "bc1tinyaddresstestonly",
             onDismissRequest = { }
         )
     }

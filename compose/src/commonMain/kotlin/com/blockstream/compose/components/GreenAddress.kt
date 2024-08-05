@@ -20,6 +20,7 @@ import com.blockstream.compose.extensions.colorTextEdges
 import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.utils.CopyContainer
+import com.blockstream.compose.utils.ifTrue
 import org.jetbrains.compose.resources.painterResource
 
 
@@ -45,7 +46,9 @@ fun GreenAddress(
     val content = @Composable {
         Row {
             Text(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.ifTrue(showCopyIcon) {
+                    weight(1f) // Make it fill the available space, else copy icon will be out of visible area
+                },
                 text = text,
                 fontFamily = MonospaceFont(),
                 textAlign = textAlign,
