@@ -199,8 +199,10 @@ class PinViewModel constructor(
             wallet
         }, preAction = {
             onProgress.value = true
+            rocketAnimation.value = true
         }, postAction = {
             onProgress.value = it == null
+            rocketAnimation.value = it == null
         }, onSuccess = {
             postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))
         })

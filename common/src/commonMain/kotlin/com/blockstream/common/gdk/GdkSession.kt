@@ -53,8 +53,8 @@ import com.blockstream.common.gdk.data.NetworkEvent
 import com.blockstream.common.gdk.data.Notification
 import com.blockstream.common.gdk.data.Output
 import com.blockstream.common.gdk.data.PreviousAddresses
-import com.blockstream.common.gdk.data.Psbt
 import com.blockstream.common.gdk.data.ProcessedTransactionDetails
+import com.blockstream.common.gdk.data.Psbt
 import com.blockstream.common.gdk.data.Settings
 import com.blockstream.common.gdk.data.SignMessage
 import com.blockstream.common.gdk.data.TorEvent
@@ -106,7 +106,6 @@ import com.blockstream.common.interfaces.JadeHttpRequestUrlValidator
 import com.blockstream.common.lightning.AppGreenlightCredentials
 import com.blockstream.common.lightning.LightningBridge
 import com.blockstream.common.lightning.LightningManager
-import com.blockstream.common.lightning.expireIn
 import com.blockstream.common.lightning.fromInvoice
 import com.blockstream.common.lightning.fromLnUrlPay
 import com.blockstream.common.lightning.fromPayment
@@ -163,8 +162,6 @@ import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
 import kotlin.math.absoluteValue
-import kotlin.math.max
-import kotlin.math.min
 
 typealias EnrichedAssetPair = Pair<EnrichedAsset, Long>
 
@@ -2068,6 +2065,13 @@ class GdkSession constructor(
                     if(!walletHasHistory){
                         if(walletAssets.size > 2 || walletAssets.values.sum() > 0L) {
                             _walletHasHistorySharedFlow.value = true
+                        }
+                    }
+
+                    // In case of empty wallet, add one policy asset to display correctly the unit on wallet balance
+                    if (walletAssets.isEmpty()) {
+                        accounts.value.firstOrNull()?.network?.policyAsset?.also {
+                            walletAssets[it] = 0
                         }
                     }
 

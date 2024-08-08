@@ -3,6 +3,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.32] - 2024-08-12
+
+### Added
+- Allow custom gap limit on personal Electrum server
+- Allow adding a comment on a LNURL payment
+
+### Changed
+- Refactor Wallet overview options menu
+- Bump GDK to version 0.72.2
+- Bump Breez to version 0.5.2
+ 
+- ### Fixed
+- Various bug fixes
+
 ## [4.0.31] - 2024-07-02
 
 ### Added

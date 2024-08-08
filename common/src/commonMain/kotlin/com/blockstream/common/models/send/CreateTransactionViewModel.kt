@@ -377,8 +377,7 @@ abstract class CreateTransactionViewModelAbstract(
                 transaction = session.blindTransaction(network, transaction)
             }
 
-
-            if ((session.isWatchOnly) || createPsbt) {
+            if (!transaction.isSweep() && (session.isWatchOnly || createPsbt)) {
                 // Create PSBT
                 ProcessedTransactionDetails(psbt = session.psbtFromJson(account.network, transaction).psbt)
             } else {

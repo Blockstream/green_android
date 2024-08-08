@@ -100,7 +100,7 @@ fun PinScreen(
         onProgress = onProgress,
         onProgressDescription = onProgressDescription,
         blurBackground = !rocketAnimation,
-        riveAnimation = if (viewModel.setupArgs.isRestoreFlow) RiveAnimation.ROCKET else null
+        riveAnimation = if(rocketAnimation) RiveAnimation.ROCKET else null
     ) {
         Column(
             modifier = Modifier

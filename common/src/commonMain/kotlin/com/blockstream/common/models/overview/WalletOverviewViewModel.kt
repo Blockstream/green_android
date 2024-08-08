@@ -22,7 +22,6 @@ import com.blockstream.common.extensions.previewTransactionLook
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.extensions.toggle
 import com.blockstream.common.gdk.data.Account
-import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.data.AccountBalance
 import com.blockstream.common.gdk.data.WalletEvents
 import com.blockstream.common.looks.account.LightningInfoLook
@@ -287,7 +286,7 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
                 }.launchIn(this)
             }
 
-            combine(session.walletTotalBalance, primaryBalanceInFiat, hideAmounts, session.settings()) { _, _, _, _ ->
+            combine(session.walletTotalBalance, session.walletAssets, primaryBalanceInFiat, hideAmounts, session.settings()) { _, _, _, _, _ ->
                 session.isConnected
             }.filter { isConnected ->
                 // Prevent from updating on non connected sessions
@@ -329,7 +328,8 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
             _balanceSecondary.value = null
         } else {
             val balance = session.starsOrNull ?: session.walletTotalBalance.value.toAmountLook(
-                session = session
+                session = session,
+                assetId = session.walletAssets.value.policyId
             )
 
             val fiat = session.starsOrNull ?: session.walletTotalBalance.value.toAmountLook(
