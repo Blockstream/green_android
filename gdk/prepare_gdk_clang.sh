@@ -30,14 +30,15 @@ if [ -n "$1" ]; then
     all_archs="$1"
 fi
 
-mkdir -p ../src/main/java/com/blockstream/libwally ../src/main/java/com/blockstream/libgreenaddress/
+mkdir -p ../src/main/java/com/blockstream/libwally ../src/main/java/com/blockstream/green_gdk/
 
 for arch in $all_archs; do
     mkdir -p ../src/main/jniLibs/$arch $PWD/gdk-android-jni$arch
     #./tools/build.sh --buildtype=debug --install $PWD/gdk-android-jni$arch --ndk $arch
     ./tools/build.sh --install $PWD/gdk-android-jni$arch --ndk $arch
+    rm -rf gdk-android-jni$arch/lib/$arch/*-linux-gnu # remove unnecessary files
     cp gdk-android-jni$arch/lib/$arch/*.so ../src/main/jniLibs/$arch
-    cp gdk-android-jni$arch/share/java/com/blockstream/libgreenaddress/GDKJNI.java ../src/main/java/com/blockstream/libgreenaddress/GDKJNI.java
+    cp gdk-android-jni$arch/share/java/com/blockstream/green_gdk/GDK.java ../src/main/java/com/blockstream/green_gdk/GDK.java
     cp gdk-android-jni$arch/share/java/com/blockstream/libwally/Wally.java ../src/main/java/com/blockstream/libwally/Wally.java
 done
 
