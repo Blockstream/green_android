@@ -18,12 +18,12 @@ _EOF_
 }
 
 # ----- Vars
-NAME="gdk-release_0.72.2"
+TAGNAME="release_0.73.0"
+NAME="gdk-$TAGNAME"
 TARBALL="${NAME}.tar.gz"
 # The version of gdk to fetch and its sha256 checksum for integrity checking
-TAGNAME="release_0.72.2"
 URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${TARBALL}"
-SHA256="a091a5e37f3ce69e1281d28bd2ea5a4898a5d48b6fb8059f412058b5e842b783"
+SHA256="2bb9d517b0a5f31a65154ab449db469fa3e19852c1f39d17c8622776bf40249d"
 VALIDATE_CHECKSUM=true
 COMMIT=false
 GCLOUD_URL="https://storage.googleapis.com/green-gdk-builds/gdk-"
@@ -84,6 +84,8 @@ if [ -f gdk_commit ] ; then
 fi
 
 if [[ $COMMIT != false ]]; then
+  NAME="gdk-android-jni"
+  TARBALL="${NAME}.tar.gz"
   URL="${GCLOUD_URL}${COMMIT}/android/${TARBALL}"
   VALIDATE_CHECKSUM=false
   echo $COMMIT > gdk_commit

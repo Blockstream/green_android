@@ -1,8 +1,8 @@
 package com.blockstream.common.models.send
 
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_reenable_2fa
 import blockstream_green.common.generated.resources.id_redeposit
+import blockstream_green.common.generated.resources.id_reenable_2fa
 import com.blockstream.common.TransactionSegmentation
 import com.blockstream.common.TransactionType
 import com.blockstream.common.data.Banner
@@ -18,7 +18,6 @@ import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.gdk.params.AddressParams
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
@@ -94,26 +93,20 @@ class RedepositViewModel(
     }
 
     override suspend fun createTransactionParams(): CreateTransactionParams {
-        val unspentOutputs = session.getUnspentOutputs(account = account, isExpired = isRedeposit2FA)
+        // val unspentOutputs = session.getUnspentOutputs(account = account, isExpired = isRedeposit2FA)
 
-        // For each assetId, create an output. TODO handle case where no lbtc utxo is available to cover the fees
-        return unspentOutputs.unspentOutputs.keys.map { key ->
-            AddressParams(
-                address = session.getReceiveAddress(account).address,
-                satoshi = 0,
-                isGreedy = true,
-                assetId = key.takeIf { account.isLiquid }
-            )
-        }.let { params ->
-            CreateTransactionParams(
-                from = accountAsset.value,
-                isRedeposit = true,
-                addressees = params.map { it.toJsonElement() },
-                addresseesAsParams = params,
-                feeRate = getFeeRate(),
-                utxos = unspentOutputs.unspentOutputsAsJsonElement
-            )
-        }.also {
+        // The following only works for re-depositing expired utxos not as a way to consolidate your utxos into one.
+
+        // The UTXOs that should be re-deposited, Unspent outputs JSON as returned by GA_get_unspent_outputs.
+        // Non-expired UTXOs will be ignored, except for L-BTC UTXOs that may be required for fees when re-depositing assets.
+        // For Liquid, all assets except L-BTC must come from the same subaccount.
+        val unspentOutputs = session.getUnspentOutputs(account = account, isExpired = false)
+
+        return CreateTransactionParams(
+            utxos = unspentOutputs.unspentOutputsAsJsonElement,
+            feeRate = getFeeRate(),
+            isRedeposit = true
+        ).also {
             createTransactionParams.value = it
         }
     }
@@ -130,7 +123,7 @@ class RedepositViewModel(
             accountAsset.value?.let { accountAsset ->
                 val network = accountAsset.account.network
 
-                val tx = session.createTransaction(network, params)
+                val tx = session.createRedepositTransaction(network, params)
 
                 // Clear error as soon as possible
                 if (tx.error.isBlank()) {

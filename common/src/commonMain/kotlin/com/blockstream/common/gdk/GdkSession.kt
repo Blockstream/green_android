@@ -2579,6 +2579,13 @@ class GdkSession constructor(
             gdk.createTransaction(gdkSession(network), params)
         ).result<CreateTransaction>()
 
+    @NativeCoroutinesIgnore
+    suspend fun createRedepositTransaction(network: Network, params: CreateTransactionParams) =
+        authHandler(
+            network,
+            gdk.createRedepositTransaction(gdkSession(network), params)
+        ).result<CreateTransaction>()
+
     private suspend fun generateLightningError(
         account: Account,
         satoshi: Long?,
@@ -2703,28 +2710,18 @@ class GdkSession constructor(
             gdk.psbtFromJson(gdkSession(network), transaction = transaction.jsonElement!!)
         ).result<Psbt>()
 
-//    // GDK 0.73.0
-//    fun broadcastTransaction(
-//        network: Network,
-//        broadcastTransaction: BroadcastTransactionParams
-//    ): ProcessedTransactionDetails =
-//        authHandler(
-//            network, gdk.broadcastTransaction(
-//                session = gdkSession(network),
-//                broadcastTransactionParams = broadcastTransaction
-//            )
-//        ).result<ProcessedTransactionDetails>().also {
-//            _walletActiveEventInvalidated = true
-//        }
-
-    fun broadcastTransaction(network: Network, broadcastTransaction: BroadcastTransactionParams) = ProcessedTransactionDetails(
-        txHash = gdk.broadcastTransaction(
-            gdkSession(network),
-            broadcastTransaction.transaction ?: ""
-        )
-    ).also {
-        _walletActiveEventInvalidated = true
-    }
+    fun broadcastTransaction(
+        network: Network,
+        broadcastTransaction: BroadcastTransactionParams
+    ): ProcessedTransactionDetails =
+        authHandler(
+            network, gdk.broadcastTransaction(
+                session = gdkSession(network),
+                broadcastTransactionParams = broadcastTransaction
+            )
+        ).result<ProcessedTransactionDetails>().also {
+            _walletActiveEventInvalidated = true
+        }
 
     fun sendLightningTransaction(params: CreateTransaction, comment: String?): ProcessedTransactionDetails{
         val invoiceOrLnUrl = params.addressees.first().address
@@ -2871,8 +2868,8 @@ class GdkSession constructor(
     private fun scanExpired2FA() {
         scope.launch(context = Dispatchers.IO + logException(countly)) {
             _expired2FAStateFlow.value = accounts.value.filter {
-                // Enable only for Bitcoin until clear instructions to redeposit asset based utxos
-                it.isMultisig && it.isBitcoin && !it.needs2faActivation(this@GdkSession) && getUnspentOutputs(
+
+                it.type == AccountType.STANDARD && !it.needs2faActivation(this@GdkSession) && getUnspentOutputs(
                     account = it,
                     isExpired = true
                 ).unspentOutputs.isNotEmpty()

@@ -409,7 +409,8 @@ abstract class CreateTransactionViewModelAbstract(
                         session.broadcastTransaction(
                             network = network,
                             broadcastTransaction = BroadcastTransactionParams(
-                                transaction = transaction.transaction ?: ""
+                                transaction = transaction.transaction ?: "",
+                                memo = note.value.takeIf { it.isNotBlank() }?.trim() ?: ""
                             )
                         )
                     } else {

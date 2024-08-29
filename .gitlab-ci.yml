@@ -132,7 +132,7 @@ gdk_commit:
     expire_in: 7 days
     when: on_success
     paths:
-      - green/build/outputs/apk/productionGoogle/release/*.apk
+      - green/build/outputs/apk/development/debug/*.apk
   tags:
     - ga
   when: manual
@@ -142,9 +142,10 @@ gdk_commit:
   script:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
+    - echo "GDK_COMMIT=$GDK_COMMIT"
     - ./gdk/fetch_android_binaries.sh -c $GDK_COMMIT
     - ./gradlew useBlockstreamKeys
-    - ./gradlew assembleProductionGoogleRelease
+    - ./gradlew assembleDevelopmentDebug
 
 #####################################
 # Build Unsigned APK

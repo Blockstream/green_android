@@ -60,7 +60,6 @@ if [[ $TAGNAME = false ]]; then
 fi
 
 GH=$(curl https://api.github.com/repos/blockstream/gdk/releases/tags/$TAGNAME)
-
 NAME=$(echo $GH | jq -r .name)
 sed -i '' -e "s/TAGNAME=.*/TAGNAME=\"${TAGNAME}\"/" gdk/fetch_android_binaries.sh
 sed -i '' -e "s/TAGNAME=.*/TAGNAME=\"${TAGNAME}\"/" gdk/prepare_gdk_clang.sh
@@ -74,9 +73,6 @@ curl -sL -o $TEMP $TARURL
 SHA256=$(shasum -a256 $TEMP | awk '{print $1;}')
 echo $TARURL $SHA256
 sed -i '' -e "s/SHA256=.*/SHA256=\"${SHA256}\"/" gdk/fetch_android_binaries.sh
-FILE=$(basename $(basename $TARURL))
-FILE=${FILE%.tar.gz}
-sed -i '' -e "s/$NAME=.*/$NAME=\"${FILE}\"/" gdk/fetch_android_binaries.sh
 
 # iOS Arm
 TARURL=$(echo $GH | jq -r .assets[].browser_download_url | grep "gdk-iphone.tar.gz")

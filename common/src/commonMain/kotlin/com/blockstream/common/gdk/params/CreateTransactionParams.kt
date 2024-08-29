@@ -27,6 +27,7 @@ data class CreateTransactionParams constructor(
     @SerialName("memo") val memo: String? = null,
     @kotlin.jvm.Transient
     @SerialName("utxos") val utxos: JsonElement? = null,
+    @SerialName("fee_subaccount") val feeSubaccount: Long? = null,
 ) : GreenJson<CreateTransactionParams>() {
 
     override fun encodeDefaultsValues() = false

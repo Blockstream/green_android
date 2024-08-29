@@ -326,6 +326,13 @@ actual fun getGdkBinding(
             TODO("Not yet implemented")
         }
 
+        override fun createRedepositTransaction(
+            session: GASession,
+            params: GreenJson<*>
+        ): GAAuthHandler {
+            TODO("Not yet implemented")
+        }
+
         override fun createSwapTransaction(
             session: GASession,
             params: GreenJson<*>

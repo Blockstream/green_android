@@ -1038,6 +1038,19 @@ class IOSGdkBinding constructor(config: InitConfig) : GdkBinding {
     }
 
     @Throws(Exception::class)
+    override fun createRedepositTransaction(session: GASession, params: GreenJson<*>): GAAuthHandler {
+        return memScoped {
+            gaAuthHandler().let { gaAuthHandler ->
+                GA_create_redeposit_transaction(
+                    session = session.asGASession(),
+                    transaction_details = params.toGaJson(this),
+                    call = gaAuthHandler.ptr
+                ).okOrThrow(gaAuthHandler)
+            }
+        }
+    }
+
+    @Throws(Exception::class)
     override fun createSwapTransaction(session: GASession, params: GreenJson<*>): GAAuthHandler {
         return memScoped {
             gaAuthHandler().let { gaAuthHandler ->

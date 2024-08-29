@@ -224,11 +224,8 @@ interface GdkBinding {
     @Throws(Exception::class)
     fun psbtFromJson(session: GASession, transaction: JsonElement): GAAuthHandler
 
-//    @Throws(Exception::class)
-//    fun broadcastTransaction(session: GASession, broadcastTransactionParams: BroadcastTransactionParams): GAAuthHandler
-
     @Throws(Exception::class)
-    fun broadcastTransaction(session: GASession, transaction: String): String
+    fun broadcastTransaction(session: GASession, broadcastTransactionParams: BroadcastTransactionParams): GAAuthHandler
 
     @Throws(Exception::class)
     fun sendTransaction(session: GASession, transaction: JsonElement): GAAuthHandler
@@ -256,6 +253,9 @@ interface GdkBinding {
 
     @Throws(Exception::class)
     fun getUnspentOutputsForPrivateKey(session: GASession, details: UnspentOutputsPrivateKeyParams): GAAuthHandler
+
+    @Throws(Exception::class)
+    fun createRedepositTransaction(session: GASession, params: GreenJson<*>): GAAuthHandler
 
     @Throws(Exception::class)
     fun createTransaction(session: GASession, params: GreenJson<*>): GAAuthHandler

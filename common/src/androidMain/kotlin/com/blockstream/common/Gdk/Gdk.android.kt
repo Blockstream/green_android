@@ -266,12 +266,8 @@ class AndroidGdk(log: Boolean, config: InitConfig) : GdkBinding {
 
     override fun psbtFromJson(session: GASession, transaction: JsonElement): GAAuthHandler = GDK.psbt_from_json(session, transaction)
 
-//    // GDK 0.73.0
-//    override fun broadcastTransaction(session: GASession, broadcastTransactionParams: BroadcastTransactionParams): GAAuthHandler =
-//        GDK.broadcast_transaction(session, broadcastTransactionParams)
-
-    override fun broadcastTransaction(session: GASession, transaction: String): String =
-        GDK.broadcast_transaction(session, transaction)
+    override fun broadcastTransaction(session: GASession, broadcastTransactionParams: BroadcastTransactionParams): GAAuthHandler =
+        GDK.broadcast_transaction(session, broadcastTransactionParams)
 
     override fun sendTransaction(session: GASession, transaction: JsonElement): GAAuthHandler =
         GDK.send_transaction(session, transaction)
@@ -312,6 +308,13 @@ class AndroidGdk(log: Boolean, config: InitConfig) : GdkBinding {
 
     override fun createTransaction(session: GASession, params: GreenJson<*>): GAAuthHandler {
         return GDK.create_transaction(session, params)
+    }
+
+    override fun createRedepositTransaction(
+        session: GASession,
+        params: GreenJson<*>
+    ): GAAuthHandler {
+        return GDK.create_redeposit_transaction(session, params)
     }
 
     override fun createSwapTransaction(session: GASession, params: GreenJson<*>): GAAuthHandler {
