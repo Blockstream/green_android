@@ -14,6 +14,7 @@ import io.mockk.mockkClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -44,7 +45,10 @@ open class TestViewModel<VM : GreenViewModel>: KoinTest {
     @Mock
     protected lateinit var countly: CountlyBase
 
-    private val testDispatcher = UnconfinedTestDispatcher()
+    protected val testDispatcher = UnconfinedTestDispatcher()
+
+    protected val scope = TestScope(testDispatcher)
+
     @Before
     open fun setup() {
         Dispatchers.setMain(testDispatcher)

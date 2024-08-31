@@ -5,11 +5,11 @@ import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.models.home.HomeViewModel
 import com.blockstream.green.TestViewModel
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -20,8 +20,8 @@ import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
-class HomeViewModelUnitTests : TestViewModel<HomeViewModel>(){
-    private fun init(walletExists: Boolean = false) = runBlockingTest {
+class HomeViewModelUnitTests : TestViewModel<HomeViewModel>() {
+    private fun init(walletExists: Boolean = false) = scope.runTest {
 
         get<SettingsManager>().also {
             every { it.isDeviceTermsAccepted() } returns walletExists
@@ -36,6 +36,7 @@ class HomeViewModelUnitTests : TestViewModel<HomeViewModel>(){
         get<Database>().also {
             every { it.walletsExistsFlow() } returns flowOf(walletExists)
             every { it.getWalletsFlow(any(), any()) } returns flowOf(mockk())
+            coEvery { it.walletsExists() } returns walletExists
         }
 
         viewModel = HomeViewModel()
@@ -67,7 +68,7 @@ class HomeViewModelUnitTests : TestViewModel<HomeViewModel>(){
     }
 
     @Test
-    fun whenWalletExists_termsShouldBeChecked() = runTest {
+    fun whenWalletExists_termsShouldBeChecked() {
         init(true)
         assertTrue(viewModel.termsOfServiceIsChecked.value)
     }
