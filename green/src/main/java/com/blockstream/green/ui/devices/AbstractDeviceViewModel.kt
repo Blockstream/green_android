@@ -13,6 +13,7 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.ConsumableEvent
+import com.blockstream.common.utils.Loggable
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceConnectionManager
 import com.blockstream.green.devices.DeviceManagerAndroid
@@ -25,7 +26,6 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import mu.KLogging
 
 abstract class AbstractDeviceViewModel constructor(
     val deviceManager: DeviceManager,
@@ -82,7 +82,7 @@ abstract class AbstractDeviceViewModel constructor(
     }
 
     override fun showInstructions(resId: Int) {
-        logger.info { "Show instructions $resId" }
+        logger.i { "Show instructions $resId" }
         onInstructions.postValue(ConsumableEvent(resId))
     }
 
@@ -145,8 +145,31 @@ abstract class AbstractDeviceViewModel constructor(
         postSideEffect(LocalSideEffects.FirmwareUpdateProgress(written, totalSize))
     }
 
+    override fun firmwareFailed(userCancelled: Boolean, error: String, firmwareFileData: FirmwareFileData) {
+        logger.i { "firmwareFailed: userCancelled $userCancelled" }
+
+        device?.also {
+            if(userCancelled) {
+                countly.jadeOtaRefuse(
+                    device = it,
+                    firmwareFileData.image.config,
+                    firmwareFileData.image.patchSize != null,
+                    firmwareFileData.image.version
+                )
+            }else{
+                countly.jadeOtaFailed(
+                    device = it,
+                    error = error,
+                    firmwareFileData.image.config,
+                    firmwareFileData.image.patchSize != null,
+                    firmwareFileData.image.version
+                )
+            }
+        }
+    }
+
     override fun firmwareComplete(success: Boolean, firmwareFileData: FirmwareFileData) {
-        logger.info { "firmwareComplete: $success" }
+        logger.i { "firmwareComplete: $success" }
 
         (device?.gdkHardwareWallet as? JadeHWWallet)?.also {
             it.updateFirmwareVersion(firmwareFileData.image.version)
@@ -175,5 +198,5 @@ abstract class AbstractDeviceViewModel constructor(
         }
     }
 
-    companion object: KLogging()
+    companion object: Loggable()
 }

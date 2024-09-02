@@ -682,6 +682,17 @@ abstract class CountlyBase(
         eventCancel(Events.OTA_COMPLETE.toString())
     }
 
+    fun jadeOtaFailed(device: DeviceInterface, error:String, config: String, isDelta: Boolean, version: String) {
+        eventRecord(Events.OTA_FAILED.toString(), deviceSegmentation(device , baseSegmentation()).also { segmentation ->
+            segmentation[PARAM_ERROR] = error
+            segmentation[PARAM_SELECTED_CONFIG] = config.lowercase()
+            segmentation[PARAM_SELECTED_DELTA] = isDelta
+            segmentation[PARAM_SELECTED_VERSION] = version
+        })
+
+        eventCancel(Events.OTA_COMPLETE.toString())
+    }
+
      fun jadeOtaComplete(device: DeviceInterface, config: String, isDelta: Boolean, version: String) {
          eventEnd(Events.OTA_COMPLETE.toString(), deviceSegmentation(device , baseSegmentation()).also { segmentation ->
              segmentation[PARAM_SELECTED_CONFIG] = config
@@ -708,6 +719,7 @@ abstract class CountlyBase(
 
          OTA_START("ota_start"),
          OTA_REFUSE("ota_refuse"),
+         OTA_FAILED("ota_failed"),
          OTA_COMPLETE("ota_complete"),
 
          WALLET_ADD("wallet_add"),

@@ -13,6 +13,8 @@ interface FirmwareInteraction: HardwareQATester {
 
     fun firmwareProgress(written: Int, totalSize: Int)
 
+    fun firmwareFailed(userCancelled: Boolean, error: String, firmwareFileData: FirmwareFileData)
+
     fun firmwareComplete(success: Boolean, firmwareFileData: FirmwareFileData)
 
     fun firmwareUpdated(requireReconnection: Boolean, requireBleRebonding: Boolean)

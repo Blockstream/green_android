@@ -6,6 +6,8 @@ import com.blockstream.common.gdk.device.DeviceBrand
 import com.blockstream.common.interfaces.HttpRequestProvider
 import com.blockstream.jade.JadeAPI
 import com.blockstream.jade.data.VersionInfo
+import com.blockstream.jade.entities.JadeError
+import com.blockstream.jade.entities.JadeError.CBOR_RPC_USER_CANCELLED
 import com.blockstream.jade.entities.JadeVersion
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -225,8 +227,18 @@ class JadeFirmwareManager constructor(
                 // Sleep to allow jade to reboot
                 SystemClock.sleep(5000)
             }
-        } catch (e: java.lang.Exception) {
+        } catch (e: JadeError) {
             logger.info { "Error during firmware update: $e" }
+            val userCancelled = e.code == CBOR_RPC_USER_CANCELLED
+            firmwareInteraction.firmwareFailed(userCancelled = userCancelled, error = e.message ?: "", firmwareFileData =  fwFile)
+
+            if(!userCancelled){
+                jade.disconnect()
+            }
+        } catch (e: Exception) {
+            logger.info { "Error during firmware update: $e" }
+            firmwareInteraction.firmwareFailed(userCancelled = false, error = e.message ?: "", firmwareFileData =  fwFile)
+
             jade.disconnect()
             SystemClock.sleep(1000)
         }
