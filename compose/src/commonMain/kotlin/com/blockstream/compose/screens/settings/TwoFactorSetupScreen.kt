@@ -98,7 +98,7 @@ fun TwoFactorSetupScreen(
 ) {
     val focusRequester = remember { FocusRequester() }
 
-    CountriesBottomSheet.getNavigationResult {
+    CountriesBottomSheet.getResult {
         viewModel.country.value = it.dialCodeString
         focusRequester.requestFocus()
     }

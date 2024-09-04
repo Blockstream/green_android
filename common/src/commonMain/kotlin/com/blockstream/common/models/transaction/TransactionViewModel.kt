@@ -403,7 +403,7 @@ class TransactionViewModelPreview(status : TransactionStatus) : TransactionViewM
     companion object {
         fun previewUnconfirmed() = TransactionViewModelPreview(Unconfirmed())
         fun previewConfirmed() = TransactionViewModelPreview(Confirmed(confirmations = 3, confirmationsRequired = 6))
-        fun previewCompleted() = TransactionViewModelPreview(Completed)
+        fun previewCompleted() = TransactionViewModelPreview(Completed(Long.MAX_VALUE))
         fun previewFailed() = TransactionViewModelPreview(Failed())
     }
 }

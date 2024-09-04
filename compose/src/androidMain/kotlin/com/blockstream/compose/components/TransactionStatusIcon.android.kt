@@ -18,11 +18,11 @@ fun TransactionStatusIconPreview() {
         Column {
 
             TransactionStatusIcon(
-                transactionStatus = Completed,
+                transactionStatus = Completed(),
                 icons = listOf(painterResource(id = R.drawable.bitcoin))
             )
             TransactionStatusIcon(
-                transactionStatus = Completed,
+                transactionStatus = Completed(),
                 icons = listOf(painterResource(id = R.drawable.bitcoin), painterResource(id = R.drawable.liquid)),
                 isSwap = true
             )

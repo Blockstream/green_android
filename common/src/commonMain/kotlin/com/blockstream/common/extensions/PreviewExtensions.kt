@@ -17,6 +17,7 @@ import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.looks.transaction.Completed
 import com.blockstream.common.looks.transaction.TransactionLook
+import com.blockstream.common.looks.transaction.TransactionStatus
 import com.blockstream.common.looks.wallet.WalletListLook
 import kotlinx.datetime.Clock
 
@@ -129,4 +130,4 @@ fun previewTransaction() = Transaction(
     it.accountInjected = previewAccount()
 }
 
-fun previewTransactionLook() = TransactionLook(Completed, 1, previewTransaction(), listOf("12311.123 BTC"))
+fun previewTransactionLook(status: TransactionStatus = Completed()) = TransactionLook(status, previewTransaction(), listOf("12311.123 BTC"))

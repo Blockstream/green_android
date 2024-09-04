@@ -98,15 +98,15 @@ abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet, val assetId
                 }
 
 
-                if (appInfo.isDevelopmentOrDebug) {
-                    logger.i { "Development/Debug feature setCloseToAddress" }
-                    session.accounts.value.filter { it.isBitcoin }.let { accounts ->
-                        accounts.find { it.type == AccountType.BIP84_SEGWIT }
-                            ?: accounts.find { it.type == AccountType.BIP49_SEGWIT_WRAPPED }
-                    }?.also {
-                        session.lightningSdk.setCloseToAddress(session.getReceiveAddress(it).address)
-                    }
-                }
+//                if (appInfo.isDevelopmentOrDebug) {
+//                    logger.i { "Development/Debug feature setCloseToAddress" }
+//                    session.accounts.value.filter { it.isBitcoin }.let { accounts ->
+//                        accounts.find { it.type == AccountType.BIP84_SEGWIT }
+//                            ?: accounts.find { it.type == AccountType.BIP49_SEGWIT_WRAPPED }
+//                    }?.also {
+//                        session.lightningSdk.setCloseToAddress(session.getReceiveAddress(it).address)
+//                    }
+//                }
 
                 // If wallet is new and LN is created, default to Satoshi
                 if (isEmptyWallet) {

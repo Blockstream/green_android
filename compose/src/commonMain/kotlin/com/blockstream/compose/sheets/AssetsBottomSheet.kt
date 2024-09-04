@@ -57,7 +57,7 @@ data class AssetsBottomSheet(
 
     companion object {
         @Composable
-        fun getNavigationResult(fn: (AssetBalance) -> Unit) = getNavigationResult(this::class, fn)
+        fun getResult(fn: (AssetBalance) -> Unit) = getNavigationResult(this::class, fn)
 
         internal fun setResult(result: AssetBalance) =
             setNavigationResult(this::class, result)

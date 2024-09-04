@@ -1,6 +1,6 @@
+
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
@@ -112,6 +112,7 @@ kotlin {
             /** ----------------------------------------------------------------------------------------- */
 
             /**  --- Material --------------------------------------------------------------------------- */
+            implementation(libs.compose.material3)
             implementation(libs.compose.material3.android)
             /** ----------------------------------------------------------------------------------------- */
 

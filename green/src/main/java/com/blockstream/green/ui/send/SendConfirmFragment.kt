@@ -7,25 +7,17 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.models.add.ChooseAccountTypeViewModel
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.common.models.send.SendConfirmViewModel
-import com.blockstream.common.sideeffects.SideEffect
-import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 import com.blockstream.compose.AppFragmentBridge
 import com.blockstream.compose.screens.send.SendConfirmScreen
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ComposeViewBinding
-import com.blockstream.green.extensions.clearNavigationResult
-import com.blockstream.green.extensions.dialog
-import com.blockstream.green.extensions.getNavigationResult
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.MainActivity
-import com.blockstream.green.ui.jade.JadeQRFragment
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -58,13 +50,6 @@ class SendConfirmFragment : AppFragment<ComposeViewBinding>(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        getNavigationResult<String>(JadeQRFragment.PSBT)?.observe(viewLifecycleOwner) { psbt ->
-            if (psbt != null) {
-                clearNavigationResult(JadeQRFragment.PSBT)
-                viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.BroadcastTransaction(broadcastTransaction = false, psbt = psbt))
-            }
-        }
 
         binding.composeView.apply {
             setViewCompositionStrategy(

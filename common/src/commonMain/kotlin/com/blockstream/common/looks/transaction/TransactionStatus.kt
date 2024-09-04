@@ -5,6 +5,8 @@ import com.blockstream.common.gdk.data.Transaction
 
 
 sealed interface TransactionStatus {
+    val confirmations: Long
+
     val onProgress: Boolean
         get() = this is Unconfirmed || this is Confirmed
 
@@ -16,7 +18,7 @@ sealed interface TransactionStatus {
                     Failed()
                 }
                 confirmations == 0L -> {
-                    Unconfirmed(transaction.network.confirmationsRequired)
+                    Unconfirmed(confirmationsRequired = transaction.network.confirmationsRequired)
                 }
 
                 confirmations < transaction.network.confirmationsRequired -> {
@@ -24,7 +26,7 @@ sealed interface TransactionStatus {
                 }
 
                 confirmations >= transaction.network.confirmationsRequired -> {
-                    Completed
+                    Completed(confirmations = confirmations)
                 }
 
                 else -> {
@@ -35,7 +37,11 @@ sealed interface TransactionStatus {
     }
 }
 
-class Unconfirmed(val confirmationsRequired: Long = 6) : TransactionStatus
-class Confirmed(val confirmations: Long, val confirmationsRequired : Long = 6) : TransactionStatus
-object Completed : TransactionStatus
-class Failed(val error: String = "") : TransactionStatus
+data class Unconfirmed(val confirmationsRequired: Long = 6): TransactionStatus {
+     override val confirmations: Long= 0
+}
+data class Confirmed(override val confirmations: Long, val confirmationsRequired : Long = 6) : TransactionStatus
+data class Completed(override val confirmations: Long = Long.MAX_VALUE) : TransactionStatus
+data class Failed(val error: String = "") : TransactionStatus {
+    override val confirmations: Long= 0
+}

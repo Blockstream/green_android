@@ -9,9 +9,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.Urls
-import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.receive.ReceiveViewModel
 import com.blockstream.common.models.sheets.NoteType
@@ -20,11 +18,8 @@ import com.blockstream.compose.AppFragmentBridge
 import com.blockstream.compose.screens.receive.ReceiveScreen
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ComposeViewBinding
-import com.blockstream.green.extensions.clearNavigationResult
-import com.blockstream.green.extensions.getNavigationResult
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.MainActivity
-import com.blockstream.green.ui.add.ReviewAddAccountFragment
 import com.blockstream.green.utils.openBrowser
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -56,13 +51,6 @@ class ReceiveFragment : AppFragment<ComposeViewBinding>(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        getNavigationResult<AccountAsset>(ReviewAddAccountFragment.SET_ACCOUNT)?.observe(viewLifecycleOwner) {
-            it?.let {
-                viewModel.postEvent(Events.SetAccountAsset(it))
-                clearNavigationResult(ReviewAddAccountFragment.SET_ACCOUNT)
-            }
-        }
 
         binding.composeView.apply {
             setViewCompositionStrategy(

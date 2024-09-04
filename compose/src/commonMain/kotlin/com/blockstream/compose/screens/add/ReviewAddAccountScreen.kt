@@ -29,11 +29,15 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.models.add.ReviewAddAccountViewModel
 import com.blockstream.common.models.add.ReviewAddAccountViewModelAbstract
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.ScreenContainer
+import com.blockstream.compose.navigation.getNavigationResult
+import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.theme.labelLarge
@@ -61,6 +65,13 @@ data class ReviewAddAccountScreen(
 
         ReviewAddAccountScreen(viewModel = viewModel)
     }
+
+    companion object {
+        @Composable
+        fun getResult(fn: (AccountAsset) -> Unit) = getNavigationResult(this::class, fn)
+
+        internal fun setResult(result: AccountAsset) = setNavigationResult(this::class, result)
+    }
 }
 
 @Composable
@@ -68,7 +79,13 @@ fun ReviewAddAccountScreen(
     viewModel: ReviewAddAccountViewModelAbstract
 ) {
 
-    HandleSideEffect(viewModel)
+    HandleSideEffect(viewModel) {
+        when(it) {
+            is SideEffects.AccountCreated -> {
+                ReviewAddAccountScreen.setResult(it.accountAsset)
+            }
+        }
+    }
 
     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
     val onProgressDescription by viewModel.onProgressDescription.collectAsStateWithLifecycle()

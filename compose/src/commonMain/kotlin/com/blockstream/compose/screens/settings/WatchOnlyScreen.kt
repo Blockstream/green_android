@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -317,15 +316,17 @@ fun Descriptor(
                 )
             }
 
-            GreenRow(space = 0, padding = 0, verticalAlignment = Alignment.Top) {
-                SelectionContainer(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = descriptor,
-                        style = bodyMedium,
-                        color = whiteMedium,
-                        fontFamily = MonospaceFont()
-                    )
-                }
+            Row(verticalAlignment = Alignment.Top, modifier = Modifier.fillMaxWidth()) {
+                // Disabled SelectionContainer as it fills all space, propably aa bug
+                // SelectionContainer(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = descriptor,
+                    style = bodyMedium,
+                    color = whiteMedium,
+                    fontFamily = MonospaceFont(),
+                    modifier = Modifier.weight(1f)
+                )
+                // }
 
                 Row {
                     IconButton(onCopy) {

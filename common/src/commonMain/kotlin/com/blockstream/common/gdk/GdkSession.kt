@@ -1498,7 +1498,8 @@ class GdkSession constructor(
                 // Init SDK
                 initLightningSdk(lightningMnemonic)
 
-                if (hasLightning || ((isRestore || isSmartDiscovery) && settingsManager.isLightningEnabled())) {
+                // SmartDiscovery only for SW wallets, on HW ln mnemonic is not available
+                if (hasLightning || ((isRestore || (isSmartDiscovery && !isHardwareWallet)) && settingsManager.isLightningEnabled())) {
                     // Make it async to speed up login process
                     val job = scope.async {
                         try {

@@ -80,6 +80,7 @@ import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.LearnMoreButton
 import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.managers.rememberPlatformManager
+import com.blockstream.compose.screens.add.ReviewAddAccountScreen
 import com.blockstream.compose.sheets.ChooseAssetAccountBottomSheet
 import com.blockstream.compose.sheets.DenominationBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
@@ -132,6 +133,10 @@ data class ReceiveScreen(
 fun ReceiveScreen(
     viewModel: ReceiveViewModelAbstract
 ) {
+
+    ReviewAddAccountScreen.getResult {
+        viewModel.postEvent(Events.SetAccountAsset(it))
+    }
 
     ChooseAssetAccountBottomSheet.getResult {
         viewModel.accountAsset.value = it

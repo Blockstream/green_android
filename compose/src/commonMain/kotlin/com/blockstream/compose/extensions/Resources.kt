@@ -157,7 +157,7 @@ fun TransactionStatus.color() = when (this) {
 fun TransactionStatus.title() = when (this) {
     is Unconfirmed -> stringResource(Res.string.id_transaction_confirmed_ss, "0", confirmationsRequired.toString())
     is Confirmed -> stringResource(Res.string.id_transaction_confirmed_ss, confirmations.toString(), confirmationsRequired.toString())
-    Completed -> stringResource(Res.string.id_transaction_completed)
+    is Completed -> stringResource(Res.string.id_transaction_completed)
     is Failed -> stringResource(Res.string.id_transaction_failed)
 }
 

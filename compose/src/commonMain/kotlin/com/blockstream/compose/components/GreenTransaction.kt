@@ -206,7 +206,7 @@ fun GreenTransaction(
             ) {
                 if (status is Confirmed) {
                     LinearProgressIndicator(progress = {
-                        (status.confirmations / status.confirmationsRequired).toFloat()
+                        status.confirmations / status.confirmationsRequired.toFloat()
                     }, modifier = Modifier.fillMaxWidth())
                 } else {
                     LinearProgressIndicator(

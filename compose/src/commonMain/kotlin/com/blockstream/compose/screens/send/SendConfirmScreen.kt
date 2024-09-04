@@ -35,7 +35,6 @@ import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.models.add.ChooseAccountTypeViewModel
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.common.models.send.SendConfirmViewModel
 import com.blockstream.common.models.send.SendConfirmViewModelAbstract
@@ -87,7 +86,6 @@ fun SendConfirmScreen(
     viewModel: SendConfirmViewModelAbstract
 ) {
     val look by viewModel.transactionConfirmLook.collectAsStateWithLifecycle()
-    val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
     val onProgressSending by viewModel.onProgressSending.collectAsStateWithLifecycle()
     val onProgressDescription by viewModel.onProgressDescription.collectAsStateWithLifecycle()
 

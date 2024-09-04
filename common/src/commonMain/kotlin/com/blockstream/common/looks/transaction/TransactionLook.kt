@@ -14,9 +14,8 @@ import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.toAmountLookOrNa
 import org.jetbrains.compose.resources.StringResource
 
-data class TransactionLook(
+data class TransactionLook constructor(
     val status: TransactionStatus,
-    val confirmations: Long,
     val transaction: Transaction,
     val assets: List<String>
 ) {
@@ -27,11 +26,11 @@ data class TransactionLook(
     val directionText: StringResource
         get() = when {
             transaction.txType == Transaction.Type.IN -> {
-                if (confirmations > 0) Res.string.id_received else Res.string.id_receiving
+                if (status.confirmations > 0) Res.string.id_received else Res.string.id_receiving
             }
 
             transaction.txType == Transaction.Type.OUT -> {
-                if (confirmations > 0) Res.string.id_sent else Res.string.id_sending
+                if (status.confirmations > 0) Res.string.id_sent else Res.string.id_sending
             }
 
             transaction.txType == Transaction.Type.REDEPOSIT -> Res.string.id_redeposited
@@ -45,7 +44,6 @@ data class TransactionLook(
 
             return TransactionLook(
                 transaction = transaction,
-                confirmations = transaction.getConfirmations(session),
                 status = TransactionStatus.create(transaction, session),
                 assets = transaction.assets.map {
                     session.starsOrNull ?: it.second.toAmountLookOrNa(

@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -32,10 +30,8 @@ import com.blockstream.common.data.Countries
 import com.blockstream.common.data.Country
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.isBlank
-import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.SimpleGreenViewModel
-import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.GreenColumn
@@ -64,7 +60,7 @@ data class CountriesBottomSheet(
 
     companion object {
         @Composable
-        fun getNavigationResult(fn: (Country) -> Unit) = getNavigationResult(this::class, fn)
+        fun getResult(fn: (Country) -> Unit) = getNavigationResult(this::class, fn)
 
         internal fun setResult(result: Country) =
             setNavigationResult(this::class, result)

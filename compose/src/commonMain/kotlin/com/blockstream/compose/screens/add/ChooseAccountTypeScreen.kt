@@ -67,7 +67,6 @@ import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.ScreenContainer
 import com.blockstream.compose.dialogs.LightningShortcutDialog
 import com.blockstream.compose.extensions.drawDiagonalLabel
-import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.screens.jade.JadeQRScreen
 import com.blockstream.compose.sheets.AssetsBottomSheet
 import com.blockstream.compose.sideeffects.OpenDialogData
@@ -110,10 +109,7 @@ data class ChooseAccountTypeScreen(
     }
 
     companion object {
-        @Composable
-        fun getNavigationResult(fn: (AccountAsset) -> Unit) = com.blockstream.compose.navigation.getNavigationResult(this::class, fn)
-
-        internal fun setNavigationResult(result: AccountAsset) = setNavigationResult(this::class, result)
+        internal fun setResult(result: AccountAsset) = ReviewAddAccountScreen.setResult(result)
     }
 }
 
@@ -137,8 +133,7 @@ fun ChooseAccountTypeScreen(
     HandleSideEffect(viewModel) {
         when(it) {
             is SideEffects.AccountCreated -> {
-                // TODO make it unique
-                ChooseAccountTypeScreen.setNavigationResult(it.accountAsset)
+                ChooseAccountTypeScreen.setResult(it.accountAsset)
             }
             is SideEffects.LightningShortcut -> {
                 lightningShortcutViewModel = SimpleGreenViewModel(viewModel.greenWallet)
@@ -180,7 +175,7 @@ fun ChooseAccountTypeScreen(
         }
     }
 
-    AssetsBottomSheet.getNavigationResult {
+    AssetsBottomSheet.getResult {
         viewModel.asset.value = it
     }
 
