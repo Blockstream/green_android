@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_select_account
-import blockstream_green.common.generated.resources.id_select_account_amp_asset
+import blockstream_green.common.generated.resources.id_select_account__asset
 import blockstream_green.common.generated.resources.pencil_simple_line
 import blockstream_green.common.generated.resources.unknown
 import com.blockstream.common.gdk.GdkSession
@@ -94,7 +94,7 @@ fun GreenAccountAsset(
             ) {
                 if (accountAssetBalance == null) {
                     Text(
-                        text = selectText ?: stringResource(if(withAsset) Res.string.id_select_account_amp_asset else Res.string.id_select_account),
+                        text = selectText ?: stringResource(if(withAsset) Res.string.id_select_account__asset else Res.string.id_select_account),
                         style = labelLarge,
                         overflow = TextOverflow.Ellipsis
                     )

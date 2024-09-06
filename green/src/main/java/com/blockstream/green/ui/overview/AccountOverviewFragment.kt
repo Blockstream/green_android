@@ -14,7 +14,7 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_cancel
 import blockstream_green.common.generated.resources.id_payments_will_fail
 import blockstream_green.common.generated.resources.id_remove_lightning_shortcut
-import blockstream_green.common.generated.resources.id_you_will_stop_receiving_push_notifications
+import blockstream_green.common.generated.resources.id_you_will_stop_receiving_push
 import com.blockstream.common.Urls
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.needs2faActivation

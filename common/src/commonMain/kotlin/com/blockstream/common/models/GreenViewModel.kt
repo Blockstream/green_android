@@ -329,7 +329,7 @@ open class GreenViewModel constructor(
 
     private fun listenForNetworksEvents(){
         session.networkErrors.onEach {
-            postSideEffect(SideEffects.ErrorDialog(Exception("id_your_personal_electrum_server_for_s|${it.first.canonicalName}")))
+            postSideEffect(SideEffects.ErrorDialog(Exception("id_your_personal_electrum_server|${it.first.canonicalName}")))
         }.launchIn(this)
     }
 

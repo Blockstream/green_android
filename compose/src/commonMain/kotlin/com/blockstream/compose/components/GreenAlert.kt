@@ -21,7 +21,7 @@ import blockstream_green.common.generated.resources.id_learn_more
 import blockstream_green.common.generated.resources.id_lightning_account
 import blockstream_green.common.generated.resources.id_lightning_service_is_undergoing
 import blockstream_green.common.generated.resources.id_passphrase_protected
-import blockstream_green.common.generated.resources.id_some_accounts_can_not_be_logged
+import blockstream_green.common.generated.resources.id_some_accounts_cannot_be_logged
 import blockstream_green.common.generated.resources.id_system_message
 import blockstream_green.common.generated.resources.id_the_lightning_service_is
 import blockstream_green.common.generated.resources.id_this_wallet_is_based_on_your
@@ -127,7 +127,7 @@ fun GreenAlert(modifier: Modifier = Modifier, alertType: AlertType, viewModel: G
             GreenAlert(
                 modifier = modifier,
                 title = stringResource(Res.string.id_warning),
-                message = stringResource(Res.string.id_some_accounts_can_not_be_logged),
+                message = stringResource(Res.string.id_some_accounts_cannot_be_logged),
                 primaryButton = stringResource(Res.string.id_try_again),
                 onPrimaryClick = {
                     viewModel.postEvent(Events.ReconnectFailedNetworks)

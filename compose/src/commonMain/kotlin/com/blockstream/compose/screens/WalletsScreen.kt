@@ -37,7 +37,7 @@ import blockstream_green.common.generated.resources.id_remove_lightning_shortcut
 import blockstream_green.common.generated.resources.id_setup_a_new_wallet
 import blockstream_green.common.generated.resources.id_try_again
 import blockstream_green.common.generated.resources.id_try_again_using_another_2fa
-import blockstream_green.common.generated.resources.id_you_will_stop_receiving_push_notifications
+import blockstream_green.common.generated.resources.id_you_will_stop_receiving_push
 import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.TwoFactorMethod

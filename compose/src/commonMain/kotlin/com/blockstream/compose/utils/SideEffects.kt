@@ -20,7 +20,7 @@ import blockstream_green.common.generated.resources.id_remove_lightning_shortcut
 import blockstream_green.common.generated.resources.id_success
 import blockstream_green.common.generated.resources.id_try_again
 import blockstream_green.common.generated.resources.id_try_again_using_another_2fa
-import blockstream_green.common.generated.resources.id_you_will_stop_receiving_push_notifications
+import blockstream_green.common.generated.resources.id_you_will_stop_receiving_push
 import blockstream_green.common.generated.resources.warning
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.ErrorReport
@@ -300,7 +300,7 @@ fun HandleSideEffect(
                         dialog.openDialog(
                             OpenDialogData(
                                 title = StringHolder.create(Res.string.id_payments_will_fail),
-                                message = StringHolder.create(Res.string.id_you_will_stop_receiving_push_notifications),
+                                message = StringHolder.create(Res.string.id_you_will_stop_receiving_push),
                                 icon = Res.drawable.warning,
                                 primaryText = getString(Res.string.id_remove_lightning_shortcut),
                                 secondaryText = getString(Res.string.id_cancel),

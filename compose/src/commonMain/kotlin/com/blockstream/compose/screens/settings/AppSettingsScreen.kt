@@ -50,7 +50,7 @@ import blockstream_green.common.generated.resources.id_electrum_server_gap_limit
 import blockstream_green.common.generated.resources.id_enable_experimental_features
 import blockstream_green.common.generated.resources.id_enable_limited_usage_data
 import blockstream_green.common.generated.resources.id_enable_testnet
-import blockstream_green.common.generated.resources.id_enable_tls_connection
+import blockstream_green.common.generated.resources.id_enable_tls
 import blockstream_green.common.generated.resources.id_enhanced_privacy
 import blockstream_green.common.generated.resources.id_experimental_features_might
 import blockstream_green.common.generated.resources.id_help_green_improve
@@ -59,7 +59,7 @@ import blockstream_green.common.generated.resources.id_liquid_electrum_server
 import blockstream_green.common.generated.resources.id_liquid_testnet_electrum_server
 import blockstream_green.common.generated.resources.id_more_info
 import blockstream_green.common.generated.resources.id_multi_server_validation
-import blockstream_green.common.generated.resources.id_number_of_consecutive_empty_addresses
+import blockstream_green.common.generated.resources.id_number_of_consecutive_empty
 import blockstream_green.common.generated.resources.id_personal_electrum_server
 import blockstream_green.common.generated.resources.id_private_but_less_stable
 import blockstream_green.common.generated.resources.id_remember_hardware_devices
@@ -432,7 +432,7 @@ fun AppSettingsScreen(
                             )
                         },
                         supportingText = {
-                            Text(text = stringResource(Res.string.id_number_of_consecutive_empty_addresses))
+                            Text(text = stringResource(Res.string.id_number_of_consecutive_empty))
                         },
                         keyboardOptions = KeyboardOptions.Default.copy(
                             keyboardType = KeyboardType.Number
@@ -443,7 +443,7 @@ fun AppSettingsScreen(
                     )
 
                     GreenSwitch(
-                        title = stringResource(Res.string.id_enable_tls_connection),
+                        title = stringResource(Res.string.id_enable_tls),
                         checked = personalElectrumServerTlsEnabled,
                         painter = painterResource(Res.drawable.lock_simple),
                         onCheckedChange = viewModel.personalElectrumServerTlsEnabled.onValueChange(),

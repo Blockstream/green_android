@@ -42,7 +42,7 @@
     <string name="id_a_set_up_funding_fee_of_s_s">A set up funding fee of %1$s (%2$s) will be applied to the received amount.</string>
     <string name="id_a_wallet_is_detected_on_this">Eine Wallet wurde auf dem Gerät erkannt:</string>
     <string name="id_about">Über</string>
-    <string name="id_accept">AKZEPTIEREN</string>
+    <string name="id_accept">Accept</string>
     <string name="id_access">Zugriff</string>
     <string name="id_account">Konto</string>
     <string name="id_account__asset">Konto &amp; Guthaben</string>
@@ -255,6 +255,7 @@
     <string name="id_coins_with_a_value_lower_than">Coins mit einem Wert kleiner als 1092 Satoshis, bei deinen eine Ausgabe ökonomisch unsinnig wäre; diese Coins können in deinem Wallet als Change erstellt werden oder werden dir von Dritten zugeschickt, um dich zu spammen oder dein Wallet zu de-anonymisieren.</string>
     <string name="id_collapse_sidebar">Seitennavigation schließen</string>
     <string name="id_coming_soon">Bald erhältlich!</string>
+    <string name="id_comment">Comment</string>
     <string name="id_communication_timed_out_make">Die Kommunikation wurde unterbrochen. Stelle sicher, dass das Gerät eingeschaltet ist, und probiere es erneut.</string>
     <string name="id_completed">Abgeschlossen</string>
     <string name="id_confidential">Vertraulich</string>
@@ -416,6 +417,7 @@
     <string name="id_edit">Bearbeiten</string>
     <string name="id_edit_fee">Gebühr anpassen</string>
     <string name="id_edit_note">Edit Note</string>
+    <string name="id_electrum_server_gap_limit">Electrum server gap limit</string>
     <string name="id_email">Email</string>
     <string name="id_email_address">Email-Adresse</string>
     <string name="id_emergency_recovery_phrase">Wiedererlangen der Wiederherstellungs-Phrase im Notfall</string>
@@ -437,6 +439,7 @@
     <string name="id_enable_spv_and_modify_spv">SPV aktivieren und SPV-Einstellungen modifizieren</string>
     <string name="id_enable_testnet">Testnet aktivieren</string>
     <string name="id_enable_testnet_in_app_settings">Testnet in den App-Einstellungen aktivieren, um Jade zu verwenden</string>
+    <string name="id_enable_tls">Enable TLS</string>
     <string name="id_enable_touch_id">Touch ID aktivieren</string>
     <string name="id_enable_twofactor_authentication">Aktiviere die Zwei-Faktor-Authentifizierung, um deine Wallet vor nicht autorisierten Transaktionen oder Änderungen an kritischen Sicherheitseinstellungen zu schützen</string>
     <string name="id_enabled">Aktiviert</string>
@@ -696,6 +699,7 @@
     <string name="id_learn_more">Erfahre mehr</string>
     <string name="id_learn_more_about_amp_the_assets">Erfahre mehr über AMP, die Vermögenswerte und deine Teilnahmeberechtigung</string>
     <string name="id_learn_more_about_s">Erfahre mehr über %1$s.</string>
+    <string name="id_ledger_bitcoin_app_detected">Ledger Bitcoin app detected, please open the Bitcoin Legacy app to access.</string>
     <string name="id_ledger_dashboard_detected">Ledger Dashboard erkannt, für Zugriff bitte die richtige App öffnen.</string>
     <string name="id_ledger_devices">Ledger-Geräte</string>
     <string name="id_ledger_supports_a_limited_set">Ledger unterstützt eine begrenzte Anzahl von Assets: Tippe hier, um die Liste zu sehen.</string>
@@ -869,6 +873,7 @@
     <string name="id_note_down_your_recovery_phrase">Schreibe deine Wiederherstellungs-Phrase auf. Bewahre sie sicher auf!</string>
     <string name="id_notifications">Nachrichten</string>
     <string name="id_now">Jetzt</string>
+    <string name="id_number_of_consecutive_empty">Number of consecutive empty addresses to monitor</string>
     <string name="id_of_24">von 24</string>
     <string name="id_of_s">von %1$s</string>
     <string name="id_offline_key_storage">Offline-Schlüsselspeicher</string>
@@ -918,6 +923,7 @@
     <string name="id_payment_received">Payment received</string>
     <string name="id_payment_requested_by_s">Payment requested by %1$s</string>
     <string name="id_payments_to_self_are_not">Payments to self are not supported in your lightning account.</string>
+    <string name="id_payments_will_fail">Payments will fail!</string>
     <string name="id_pending_confirmation">Bestätigung ausstehend</string>
     <string name="id_permanent_2fa_account_ideal_for">Feststehendes 2FA-Konto, ideal für das  Langzeit-Hodlen, kann optional mit einem 3. Notfall-Schlüssel auf einer Hardware Wallet verwendet werden.</string>
     <string name="id_permanently_block_this_wallet">Diese Wallet dauerhaft blockieren</string>
@@ -1031,6 +1037,7 @@
     <string name="id_remove_custom_network">Eigenes Netzwerk entfernen</string>
     <string name="id_remove_lightning_shortcut">Remove lightning shortcut</string>
     <string name="id_remove_wallet">Wallet entfernen</string>
+    <string name="id_removing_wallet">Removing wallet…</string>
     <string name="id_rename">Umbenennen</string>
     <string name="id_rename_account">Konto umbenennen</string>
     <string name="id_rename_wallet">Wallet umbenennen</string>
@@ -1100,7 +1107,7 @@
     <string name="id_segwit_bip84">SegWit (BIP84)</string>
     <string name="id_select_a_fiat_currency_and">Wähle eine Fiat-Währung und eine Bitcoin-Denominierung aus, um die Beträge in deiner Wallet anzuzeigen.</string>
     <string name="id_select_account">Wähle Konto</string>
-    <string name="id_select_account_amp_asset">Select account &amp; asset</string>
+    <string name="id_select_account__asset">Select account &amp; asset</string>
     <string name="id_select_an_app_on_s">Wähle eine App auf %1$s</string>
     <string name="id_select_asset">Wählen Sie das Vermögen</string>
     <string name="id_select_duration_of_twofactor">Wähle die Dauer des Zwei-Faktor-Authentifizierungsschutzes für deine Coins. Die neu gewählte Option gilt nur für neu erhaltene Coins.</string>
@@ -1201,7 +1208,7 @@
     <string name="id_socks5_hostname">Socks5 Hostname</string>
     <string name="id_socks5_port">Socks5 Port</string>
     <string name="id_socks5_proxy_and_port_must_be">SOCKS5 Proxy und Port müssen eingestellt sein</string>
-    <string name="id_some_accounts_can_not_be_logged">Some accounts can not be logged in due to network issues. Please try again later.</string>
+    <string name="id_some_accounts_cannot_be_logged">Some accounts cannot be logged into due to network issues. Please update the Green app and try again later.</string>
     <string name="id_some_coins_in_your_wallet">Some coins in your wallet haven&apos;t moved for a long time, so 2FA expired to keep you in control. To reactivate 2FA:\n\n• Send normally and refresh the 2FA on change coins (optimizes fees)\n• Redeposit all your expired 2FA coins</string>
     <string name="id_something_went_wrong">da ist was schiefgegangen</string>
     <string name="id_speed_up_transaction">Speed up Transaction</string>
@@ -1506,6 +1513,7 @@
     <string name="id_you_will_need_to_export_the">You will need to export the account from Jade at your next login.</string>
     <string name="id_you_will_need_to_reenter_your">Du musst Deinen Merksatz erneut eingeben um dich neu einzuloggen, falls Du keinen PIN eingerichtet hast.  Drücke &quot;OK&quot; um fortzufahren.</string>
     <string name="id_you_will_see_your_coins_here">Deine Coins wirst du hier sehen</string>
+    <string name="id_you_will_stop_receiving_push">You will stop receiving push notifications for this lightning account. Notifications are helpful to improve the reliability of lightning payments.</string>
     <string name="id_youll_need_to_back_up_your">You&apos;ll need to back up your recovery phrase before you can send or receive funds, but you can still check out the wallet for now.</string>
     <string name="id_youll_need_your_pin_to_log_in">Du wirst deine PIN benötigen, um dich in deinem Wallet anzumelden. Diese PIN sichert dein Wallet nur auf diesem Gerät.</string>
     <string name="id_youll_need_your_recovery_phrase">Du wirst deine Wiederherstellungs-Phrase benötigen, um dieses Wallet wiederherstellen zu können</string>
