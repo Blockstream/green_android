@@ -39,13 +39,11 @@ import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
@@ -69,6 +67,9 @@ abstract class TransactionViewModelAbstract(
 
     @NativeCoroutinesState
     abstract val type: StateFlow<Transaction.Type>
+
+    @NativeCoroutinesState
+    abstract val isCloseChannel: StateFlow<Boolean>
 
     @NativeCoroutinesState
     abstract val createdAt: StateFlow<String?>
@@ -136,6 +137,8 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
     override val status: StateFlow<TransactionStatus> = _status
 
     override val type: StateFlow<Transaction.Type> = MutableStateFlow(transaction.txType)
+
+    override val isCloseChannel = MutableStateFlow(transaction.isCloseChannel)
 
     override val createdAt: StateFlow<String?> = MutableStateFlow(transaction.createdAtInstant?.formatFullWithTime())
 
@@ -395,6 +398,7 @@ class TransactionViewModelPreview(status : TransactionStatus) : TransactionViewM
         MutableStateFlow("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
     override val canEditNote: StateFlow<Boolean> = MutableStateFlow(true)
     override val hasMoreDetails: StateFlow<Boolean> = MutableStateFlow(true)
+    override val isCloseChannel: StateFlow<Boolean> = MutableStateFlow(false)
 
     companion object {
         fun previewUnconfirmed() = TransactionViewModelPreview(Unconfirmed())

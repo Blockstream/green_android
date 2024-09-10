@@ -197,6 +197,7 @@ fun Transaction.Companion.fromPayment(payment: Payment): Transaction {
         message = ((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Message)?.data?.message,
         plaintext = (((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Aes)?.result as? AesSuccessActionDataResult.Decrypted)?.data?.let { it.description to it.plaintext },
         url = ((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Url)?.data?.let { it.description to it.url},
+        isCloseChannel = payment.paymentType == PaymentType.CLOSED_CHANNEL,
         isPendingCloseChannel = isPendingCloseChannel,
         extras = extras
     )

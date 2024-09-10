@@ -32,6 +32,7 @@ import blockstream_green.common.generated.resources.binoculars
 import blockstream_green.common.generated.resources.export
 import blockstream_green.common.generated.resources.gauge
 import blockstream_green.common.generated.resources.id_add_note
+import blockstream_green.common.generated.resources.id_closed_channel
 import blockstream_green.common.generated.resources.id_confidential_transaction
 import blockstream_green.common.generated.resources.id_edit_note
 import blockstream_green.common.generated.resources.id_fee_rate
@@ -60,7 +61,6 @@ import blockstream_green.common.generated.resources.id_unblinding_data
 import blockstream_green.common.generated.resources.id_view_in_explorer
 import blockstream_green.common.generated.resources.id_your_transaction_failed_s
 import blockstream_green.common.generated.resources.id_your_transaction_was
-
 import blockstream_green.common.generated.resources.magnifying_glass
 import blockstream_green.common.generated.resources.pencil_simple_line
 import cafe.adriel.voyager.core.screen.Screen
@@ -216,6 +216,7 @@ fun TransactionScreen(
         }
 
         val type by viewModel.type.collectAsStateWithLifecycle()
+        val isCloseChannel by viewModel.isCloseChannel.collectAsStateWithLifecycle()
         val message: String = when {
             status is Failed -> stringResource(Res.string.id_your_transaction_failed_s, (status as Failed).error)
             type == Transaction.Type.IN -> stringResource(Res.string.id_the_transaction_was)
@@ -247,6 +248,7 @@ fun TransactionScreen(
                 status is Unconfirmed && type == Transaction.Type.OUT -> Res.string.id_outgoing
                 status is Unconfirmed && type == Transaction.Type.IN -> Res.string.id_incoming
                 status is Unconfirmed && type == Transaction.Type.REDEPOSIT -> Res.string.id_redeposit
+                isCloseChannel -> Res.string.id_closed_channel
                 type == Transaction.Type.OUT -> Res.string.id_sent
                 type == Transaction.Type.REDEPOSIT -> Res.string.id_redeposited
                 type == Transaction.Type.MIXED -> Res.string.id_swap
