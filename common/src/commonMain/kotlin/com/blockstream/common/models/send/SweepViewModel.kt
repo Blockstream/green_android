@@ -125,7 +125,7 @@ class SweepViewModel(greenWallet: GreenWallet, privateKey: String?, accountAsset
             _addressInputType = if (event.isScan) AddressInputType.SCAN else AddressInputType.SCAN
         } else if (event is CreateTransactionViewModelAbstract.LocalEvents.SignTransaction) {
             signAndSendTransaction(
-                originalParams = createTransactionParams.value,
+                params = createTransactionParams.value,
                 originalTransaction = createTransaction.value,
                 segmentation = TransactionSegmentation(
                     transactionType = TransactionType.SWEEP,

@@ -130,7 +130,7 @@ class BumpViewModel(
 
         if (event is LocalEvents.SignTransaction) {
             signAndSendTransaction(
-                originalParams = createTransactionParams.value,
+                params = createTransactionParams.value,
                 originalTransaction = createTransaction.value,
                 segmentation = TransactionSegmentation(
                     transactionType = TransactionType.BUMP

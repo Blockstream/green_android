@@ -4,6 +4,7 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_add_note
 import blockstream_green.common.generated.resources.id_review
 import blockstream_green.common.generated.resources.id_sign_transaction
+import blockstream_green.common.generated.resources.id_the_address_is_valid
 import blockstream_green.common.generated.resources.note_pencil
 import blockstream_green.common.generated.resources.signature
 import com.blockstream.common.BTC_POLICY_ASSET
@@ -13,8 +14,8 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavAction
 import com.blockstream.common.data.NavData
 import com.blockstream.common.events.Event
-import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnected
+import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAsset
@@ -22,11 +23,11 @@ import com.blockstream.common.gdk.data.UtxoView
 import com.blockstream.common.looks.transaction.TransactionConfirmLook
 import com.blockstream.common.models.sheets.NoteType
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
+import com.blockstream.common.utils.StringHolder
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -48,6 +49,9 @@ abstract class SendConfirmViewModelAbstract(greenWallet: GreenWallet, accountAss
 
     @NativeCoroutinesState
     abstract val transactionConfirmLook: StateFlow<TransactionConfirmLook?>
+
+    @NativeCoroutinesState
+    abstract val showVerifyOnDevice: StateFlow<Boolean>
 }
 
 class SendConfirmViewModel constructor(
@@ -55,6 +59,8 @@ class SendConfirmViewModel constructor(
     accountAsset: AccountAsset,
     denomination: Denomination?
 ) : SendConfirmViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
+    private val _showVerifyOnDevice = MutableStateFlow(false)
+    override val showVerifyOnDevice = _showVerifyOnDevice
 
     private val _transactionConfirmLook: MutableStateFlow<TransactionConfirmLook?> =
         MutableStateFlow(null)
@@ -64,6 +70,7 @@ class SendConfirmViewModel constructor(
 
     class LocalEvents {
         object Note : Event
+        object VerifyOnDevice: Event
     }
 
     init {
@@ -117,6 +124,10 @@ class SendConfirmViewModel constructor(
                         isAddressVerificationOnDevice = false
                     )
 
+                    _showVerifyOnDevice.value =
+                        if (it.first.isRedeposit) session.device?.canVerifyAddressOnDevice(account)
+                            ?: false else false
+
                     _isValid.value = true
                 }
 
@@ -135,7 +146,7 @@ class SendConfirmViewModel constructor(
             is CreateTransactionViewModelAbstract.LocalEvents.SignTransaction -> {
                 session.pendingTransaction?.also {
                     signAndSendTransaction(
-                        originalParams = it.first,
+                        params = it.first,
                         originalTransaction = it.second,
                         segmentation = it.third,
                         broadcast = event.broadcastTransaction,
@@ -147,7 +158,7 @@ class SendConfirmViewModel constructor(
             is CreateTransactionViewModelAbstract.LocalEvents.BroadcastTransaction -> {
                 session.pendingTransaction?.also {
                     signAndSendTransaction(
-                        originalParams = it.first,
+                        params = it.first,
                         originalTransaction = it.second,
                         segmentation = it.third,
                         psbt = event.psbt,
@@ -159,6 +170,52 @@ class SendConfirmViewModel constructor(
             is LocalEvents.Note -> {
                 postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Note(note = note.value, noteType = NoteType.Note)))
             }
+
+            is LocalEvents.VerifyOnDevice -> {
+                verifyAddressOnDevice()
+            }
+        }
+    }
+
+    private fun verifyAddressOnDevice() {
+        val hwWallet = session.gdkHwWallet
+        val transaction = session.pendingTransaction?.second
+
+        if(hwWallet != null && transaction != null){
+            doAsync({
+                countly.verifyAddress(session, account)
+
+                transaction.outputs.filter { it.address.isNotBlank() }.forEach { output ->
+                    postSideEffect(
+                        SideEffects.NavigateTo(
+                            NavigateDestinations.VerifyOnDevice(
+                                address = output.address
+                            )
+                        )
+                    )
+
+                    if(hwWallet.getGreenAddress(
+                            network = account.network,
+                            hwInteraction = null,
+                            account = account,
+                            path = output.userPath ?: listOf(),
+                            csvBlocks = output.subType ?: 0
+                        ) != output.address){
+                        throw Exception("id_the_addresses_dont_match")
+                    }
+
+                    postSideEffect(SideEffects.Dismiss)
+                }
+
+            }, preAction = null, postAction = null, timeout = 30, onSuccess = {
+                postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_the_address_is_valid)))
+                // Dismiss Verify Transaction Dialog
+                postSideEffect(SideEffects.Dismiss)
+            }, onError = {
+                postSideEffect(SideEffects.ErrorDialog(it))
+                // Dismiss Verify Transaction Dialog
+                postSideEffect(SideEffects.Dismiss)
+            })
         }
     }
 
@@ -172,6 +229,8 @@ class SendConfirmViewModelPreview(
 
     override val transactionConfirmLook: StateFlow<TransactionConfirmLook?> =
         MutableStateFlow(transactionConfirmLook)
+
+    override val showVerifyOnDevice: StateFlow<Boolean> = MutableStateFlow(false)
 
     init {
         banner.value = Banner.preview3

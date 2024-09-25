@@ -3,12 +3,9 @@ package com.blockstream.green.ui.send
 import android.os.Bundle
 import android.view.View
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.send.SweepViewModel
-import com.blockstream.common.sideeffects.SideEffect
-import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.AppFragmentBridge
 import com.blockstream.compose.screens.send.SweepScreen
 import com.blockstream.green.R

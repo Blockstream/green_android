@@ -3,6 +3,7 @@ package com.blockstream.compose.screens.send
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -25,6 +26,7 @@ import blockstream_green.common.generated.resources.id_note
 import blockstream_green.common.generated.resources.id_sent_to
 import blockstream_green.common.generated.resources.id_to
 import blockstream_green.common.generated.resources.id_total_spent
+import blockstream_green.common.generated.resources.id_verify_address_on_device
 import blockstream_green.common.generated.resources.id_your_redeposit_address
 import blockstream_green.common.generated.resources.pencil_simple_line
 import cafe.adriel.voyager.core.screen.Screen
@@ -42,6 +44,9 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.Banner
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAmount
+import com.blockstream.compose.components.GreenButton
+import com.blockstream.compose.components.GreenButtonColor
+import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.components.ScreenContainer
@@ -116,6 +121,7 @@ fun SendConfirmScreen(
         onProgressDescription = onProgressDescription,
         blurBackground = true
     ) {
+        val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
 
         GreenColumn(
             padding = 0,
@@ -168,6 +174,19 @@ fun SendConfirmScreen(
                         session = viewModel.sessionOrNull,
                         showIcon = true
                     )
+                }
+
+                val showVerifyOnDevice by viewModel.showVerifyOnDevice.collectAsStateWithLifecycle()
+                if (showVerifyOnDevice) {
+                    GreenButton(
+                        text = stringResource(Res.string.id_verify_address_on_device),
+                        enabled = buttonEnabled,
+                        type = GreenButtonType.OUTLINE,
+                        color = GreenButtonColor.WHITE,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        viewModel.postEvent(SendConfirmViewModel.LocalEvents.VerifyOnDevice)
+                    }
                 }
 
                 val note by viewModel.note.collectAsStateWithLifecycle()
@@ -243,8 +262,6 @@ fun SendConfirmScreen(
                     }
                 }
             }
-
-            val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
 
             SlideToUnlock(
                 modifier = Modifier.padding(top = 8.dp),

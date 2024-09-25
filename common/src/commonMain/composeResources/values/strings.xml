@@ -1311,7 +1311,7 @@
     <string name="id_time_s">Time: %1$s</string>
     <string name="id_tip_we_recommend_you_enable">Tip: We recommend you enable more than one 2FA method. If you only set up one 2FA method and then lose it, you&apos;ll have to wait at least one year until the 2FA expires.</string>
     <string name="id_tip_you_can_use_the">Tip: You can use the xPub/yPub/zPub to view your watch-only wallet in Green, or you may import it to another platform. Each account in your wallet has a separate xPub/yPub/zPub.</string>
-    <string name="id_to">TO</string>
+    <string name="id_to">To</string>
     <string name="id_to_authorize_the_transaction">To authorize the transaction you need to enter your 2FA code.</string>
     <string name="id_to_keep_you_in_control_of_your">To keep you in control of your funds, Two-Factor Authentication protection expires after roughly %1$d days since your last payment. You will be prompted to make a Two-Factor Reactivation transaction, if you don&apos;t move funds often enough.</string>
     <string name="id_to_show_balances_and">to show balances and transactions on Liquid accounts up to 10x faster at every login, and it&apos;s necessary to use Liquid singlesig accounts.</string>
@@ -1551,4 +1551,5 @@
     <string name="id_your_watchonly_username_and">Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press &quot;OK&quot; to continue.</string>
     <string name="id_youve_entered_an_invalid_pin">You&apos;ve entered an invalid PIN too many times.</string>
     <string name="id_closed_channel">Closed Channel</string>
+    <string name="id_verify_address_on_device">Verify address on Device</string>
 </resources>

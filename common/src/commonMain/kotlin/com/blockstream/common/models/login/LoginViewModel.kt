@@ -32,7 +32,6 @@ import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.data.data
 import com.blockstream.common.data.isEmpty
-import com.blockstream.common.data.toLoginCredentials
 import com.blockstream.common.database.LoginCredentials
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
@@ -51,6 +50,7 @@ import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.extensions.richWatchOnly
 import com.blockstream.common.extensions.watchOnlyCredentials
 import com.blockstream.common.gdk.GdkSession
+import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.TorEvent
 import com.blockstream.common.gdk.device.DeviceBrand
 import com.blockstream.common.gdk.device.DeviceInterface
@@ -76,7 +76,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -871,11 +870,14 @@ class LoginViewModelPreview(
         override val isLedger: Boolean = false
         override val deviceState: StateFlow<DeviceState> = MutableStateFlow(DeviceState.SCANNED)
         override fun disconnect() {}
+        override fun canVerifyAddressOnDevice(account: Account): Boolean = true
+
     } else null
 
     init {
         banner.value = Banner.preview3
     }
+
     companion object{
         fun preview(): LoginViewModelPreview{
             return LoginViewModelPreview(

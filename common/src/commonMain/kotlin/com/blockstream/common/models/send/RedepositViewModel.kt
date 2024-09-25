@@ -18,6 +18,7 @@ import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.params.AddressParams
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
@@ -47,7 +48,6 @@ class RedepositViewModel(
     accountAsset: AccountAsset,
     private val isRedeposit2FA: Boolean
 ) : RedepositViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
-
     init {
         viewModelScope.launch {
             _navData.value = NavData(
@@ -89,6 +89,7 @@ class RedepositViewModel(
                     createTransaction(params = it, finalCheckBeforeContinue = true)
                 }
             }
+
         }
     }
 
@@ -102,11 +103,35 @@ class RedepositViewModel(
         // For Liquid, all assets except L-BTC must come from the same subaccount.
         val unspentOutputs = session.getUnspentOutputs(account = account, isExpired = false)
 
-        return CreateTransactionParams(
-            utxos = unspentOutputs.unspentOutputsAsJsonElement,
-            feeRate = getFeeRate(),
-            isRedeposit = true
-        ).also {
+        return (if (isRedeposit2FA) {
+            CreateTransactionParams(
+                utxos = unspentOutputs.unspentOutputsAsJsonElement,
+                feeRate = getFeeRate(),
+                feeSubaccount = account.pointer,
+                isRedeposit = true
+            )
+        } else {
+            val addressee = unspentOutputs.unspentOutputs.keys.map { key ->
+                session.getReceiveAddress(account).let {
+                    AddressParams(
+                        address = it.address,
+                        satoshi = 0,
+                        isGreedy = true,
+                        assetId = key.takeIf { account.isLiquid },
+                        receiveAddress = it
+                    )
+                }
+            }
+
+            CreateTransactionParams(
+                from = accountAsset.value,
+                addressees = addressee.map { it.toJsonElement() },
+                addresseesAsParams = addressee,
+                utxos = unspentOutputs.unspentOutputsAsJsonElement,
+                feeRate = getFeeRate(),
+                isRedeposit = true
+            )
+        }).also {
             createTransactionParams.value = it
         }
     }
@@ -123,7 +148,21 @@ class RedepositViewModel(
             accountAsset.value?.let { accountAsset ->
                 val network = accountAsset.account.network
 
-                val tx = session.createRedepositTransaction(network, params)
+                val tx = if (isRedeposit2FA) session.createRedepositTransaction(
+                    network = network,
+                    params = params
+                ) else session.createTransaction(network = network, params = params)
+                    .let { transaction ->
+                        // Copy userPath/subType from receiveAddress so that we can validate the address later in Jade
+                        transaction.copy(outputs = transaction.outputs.map { output ->
+                            params.addresseesAsParams?.find { it.address == output.address }?.let {
+                                output.copy(
+                                    userPath = it.receiveAddress?.userPath,
+                                    subType = it.receiveAddress?.subType
+                                )
+                            } ?: output
+                        })
+                    }
 
                 // Clear error as soon as possible
                 if (tx.error.isBlank()) {

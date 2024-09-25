@@ -6,6 +6,7 @@ import android.hardware.usb.UsbDevice
 import android.os.ParcelUuid
 import android.os.SystemClock
 import com.blockstream.common.devices.ConnectionType
+import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.device.DeviceBrand
 import com.blockstream.common.gdk.device.DeviceInterface
 import com.blockstream.common.gdk.device.DeviceState
@@ -189,6 +190,15 @@ class Device constructor(
 
         // Mark it as online if required
         _deviceState.compareAndSet(DeviceState.DISCONNECTED, DeviceState.SCANNED)
+    }
+
+    override fun canVerifyAddressOnDevice(account: Account): Boolean {
+        return !account.isLightning && (
+                isJade ||
+                        (isLedger && account.network.isLiquid && !account.network.isSinglesig) ||
+                        (isLedger && !account.network.isLiquid && account.network.isSinglesig) ||
+                        (isTrezor && !account.network.isLiquid && account.network.isSinglesig)
+                )
     }
 
     companion object : KLogging() {

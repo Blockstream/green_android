@@ -1,5 +1,6 @@
 package com.blockstream.common.gdk.device
 
+import com.blockstream.common.gdk.data.Account
 import kotlinx.coroutines.flow.StateFlow
 
 enum class DeviceState {
@@ -22,5 +23,7 @@ interface DeviceInterface {
     val isLedger: Boolean
 
     val deviceState : StateFlow<DeviceState>
+
+    fun canVerifyAddressOnDevice(account: Account): Boolean
     fun disconnect()
 }

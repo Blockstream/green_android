@@ -49,6 +49,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.jsonObject
 import org.jetbrains.compose.resources.getString
 
 
@@ -324,7 +327,7 @@ abstract class CreateTransactionViewModelAbstract(
         }
 
     internal fun signAndSendTransaction(
-        originalParams: CreateTransactionParams?,
+        params: CreateTransactionParams?,
         originalTransaction: CreateTransaction?,
         psbt: String? = null,
         segmentation: TransactionSegmentation,
@@ -332,7 +335,7 @@ abstract class CreateTransactionViewModelAbstract(
         createPsbt: Boolean = false
     ) {
         doAsync({
-            if(originalParams == null || originalTransaction == null){
+            if(params == null || originalTransaction == null){
                 throw Exception("No params/transaction is provided")
             }
 
@@ -356,21 +359,9 @@ abstract class CreateTransactionViewModelAbstract(
                 )
             }
 
-            // Create transaction with memo
-            val params = note.value.takeIf { it.isNotBlank() }?.trim()?.let {
-                originalParams.copy(memo = it)
-            } ?: originalParams
+            var transaction = originalTransaction
 
-            val isSwap = originalTransaction.isSwap()
-
-            var transaction = if (!isSwap) {
-                // Re-create transaction if not swap
-                session.createTransaction(network, params).also { tx ->
-                    tx.error.takeIf { it.isNotBlank() }?.also {
-                        throw Exception(it)
-                    }
-                }
-            } else originalTransaction
+            val isSwap = transaction.isSwap()
 
             // If liquid, blind the transaction before signing
             if(!transaction.isBump() && !transaction.isSweep() && network.isLiquid){
@@ -414,9 +405,21 @@ abstract class CreateTransactionViewModelAbstract(
                             )
                         )
                     } else {
+
+                        // Set memo without recreating the transaction
+                        val signedTransaction =
+                            JsonObject(transaction.jsonElement!!.jsonObject.toMutableMap().apply {
+                                this["memo"] =
+                                    JsonPrimitive(note.value.takeIf { it.isNotBlank() }?.trim()
+                                        ?: ""
+                                    )
+                            })
+
                         session.sendTransaction(
                             account = account,
-                            signedTransaction = transaction,
+                            signedTransaction = signedTransaction,
+                            isSendAll = transaction.isSendAll,
+                            isBump = transaction.isBump(),
                             twoFactorResolver = this
                         )
                     }

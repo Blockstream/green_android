@@ -14,7 +14,6 @@ import blockstream_green.common.generated.resources.id_please_hold_on_while_your
 import blockstream_green.common.generated.resources.id_please_wait_until_your_ledger
 import blockstream_green.common.generated.resources.id_receive
 import blockstream_green.common.generated.resources.id_request_amount
-import blockstream_green.common.generated.resources.id_reset
 import blockstream_green.common.generated.resources.id_send_more_than_s_and_up_to_s_to
 import blockstream_green.common.generated.resources.id_sweep_from_paper_wallet
 import blockstream_green.common.generated.resources.id_the_address_is_valid
@@ -74,9 +73,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
@@ -527,16 +524,8 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
 
     private fun generateAddress() {
         logger.i { "Generating address for ${account.name}" }
-        val network = account.network
         _showLedgerAssetWarning.value = account.isLiquid && session.device?.isLedger == true
-        _showVerifyOnDevice.value = session.device?.let { device ->
-            !account.isLightning && (
-                    device.isJade ||
-                            (device.isLedger && network.isLiquid && !network.isSinglesig) ||
-                            (device.isLedger && !network.isLiquid && network.isSinglesig) ||
-                            (device.isTrezor && !network.isLiquid && network.isSinglesig)
-                    )
-        } ?: false
+        _showVerifyOnDevice.value = session.device?.canVerifyAddressOnDevice(account) ?: false
 
         if (account.isLightning) {
             _receiveAddress.value = null

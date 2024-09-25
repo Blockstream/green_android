@@ -2538,11 +2538,11 @@ class GdkSession constructor(
         isExpired: Boolean = false
     ): UnspentOutputs {
         return getUnspentOutputs(
-            account.network,
-            if (isExpired) {
+            network = account.network,
+            params = if (isExpired) {
                 BalanceParams(
                     subaccount = account.pointer,
-                    confirmations = 0,
+                    confirmations = 1,
                     expiredAt = block(account.network).value.height
                 )
             } else {
@@ -2797,22 +2797,24 @@ class GdkSession constructor(
 
     suspend fun sendTransaction(
         account: Account,
-        signedTransaction: CreateTransaction,
+        signedTransaction: JsonElement,
+        isSendAll: Boolean,
+        isBump: Boolean,
         twoFactorResolver: TwoFactorResolver
     ): ProcessedTransactionDetails = (if (account.network.isLightning) {
         throw Exception("Use sendLightningTransaction")
     } else {
         authHandler(
             account.network,
-            gdk.sendTransaction(gdkSession(account.network), transaction = signedTransaction.jsonElement!!)
+            gdk.sendTransaction(gdkSession(account.network), transaction = signedTransaction)
         ).result<ProcessedTransactionDetails>(twoFactorResolver = twoFactorResolver).also {
-            if(signedTransaction.isSendAll){
+            if(isSendAll){
                 _accountEmptiedEvent = account
             }
         }
     }).also {
         // no Send All or Bump transaction
-        if(!signedTransaction.isSendAll && signedTransaction.previousTransaction == null) {
+        if(!isSendAll && !isBump) {
             _eventsSharedFlow.emit(WalletEvents.APP_REVIEW)
         }
     }

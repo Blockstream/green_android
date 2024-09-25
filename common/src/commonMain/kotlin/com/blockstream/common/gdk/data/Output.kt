@@ -10,4 +10,7 @@ data class Output constructor(
     @SerialName("asset_id") val assetId: String? = null,
     @SerialName("is_change") val isChange: Boolean? = null,
     @SerialName("satoshi") val satoshi: Long,
+    // Used in 2FA Redeposit
+    @SerialName("user_path") val userPath: List<Long>? = null,
+    @SerialName("subtype")val subType: Long? = null,
 )

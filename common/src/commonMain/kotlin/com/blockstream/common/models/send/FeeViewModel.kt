@@ -114,12 +114,13 @@ class FeeViewModel(
             listOf(FeePriority.High(), FeePriority.Medium(), FeePriority.Low()).map {
                 try{
                     val feeRate = getFeeRate(priority = it)
-                    val tx = session.createTransaction(
-                        account.network,
-                        params.copy(
-                            addressees = listOfNotNull(params.addresseesAsParams?.firstOrNull()?.toJsonElement()),
-                            feeRate = feeRate
-                        )
+
+                    val tx = if (params.isRedeposit) session.createRedepositTransaction(
+                        network = account.network,
+                        params = params.copy(feeRate = feeRate)
+                    ) else session.createTransaction(
+                        network = account.network,
+                        params = params.copy(feeRate = feeRate)
                     )
 
                     calculateFeePriority(
