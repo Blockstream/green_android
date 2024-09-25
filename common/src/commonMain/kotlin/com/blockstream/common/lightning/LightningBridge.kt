@@ -103,7 +103,8 @@ class LightningBridge constructor(
             maxSinglePaymentAmountMsat = 0u,
             maxChanReserveMsats = 0u,
             connectedPeers = listOf(),
-            inboundLiquidityMsats = 0u,
+            maxReceivableSinglePaymentAmountMsat = 0u,
+            totalInboundLiquidityMsats = 0u
         )
     )
 
@@ -490,21 +491,21 @@ class LightningBridge constructor(
         }
     }
 
-    fun sendPayment(bolt11: String, satoshi: Long?): SendPaymentResponse {
+    fun sendPayment(bolt11: String, satoshi: Long?, useTrampoline: Boolean): SendPaymentResponse {
         return try {
             breezSdk.sendPayment(
-                SendPaymentRequest(bolt11 = bolt11, amountMsat = satoshi?.milliSatoshi())
+                SendPaymentRequest(bolt11 = bolt11, amountMsat = satoshi?.milliSatoshi(), useTrampoline = useTrampoline)
             )
         } catch (e: Exception) {
             throw exceptionWithNodeId(e)
         }
     }
 
-    fun payLnUrl(requestData: LnUrlPayRequestData, amount: Long, comment: String): LnUrlPayResult {
+    fun payLnUrl(requestData: LnUrlPayRequestData, amount: Long, comment: String, useTrampoline: Boolean): LnUrlPayResult {
         return try {
             breezSdk.payLnurl(
                 LnUrlPayRequest(
-                    data = requestData, amountMsat = amount.milliSatoshi(), comment = comment
+                    data = requestData, amountMsat = amount.milliSatoshi(), comment = comment, useTrampoline = useTrampoline
                 )
             )
         } catch (e: Exception) {

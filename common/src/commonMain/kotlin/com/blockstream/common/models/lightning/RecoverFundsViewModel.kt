@@ -28,7 +28,6 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.feeRateWithUnit
-import com.blockstream.common.utils.getStringFromId
 import com.blockstream.common.utils.getStringFromIdOrNull
 import com.blockstream.common.utils.toAmountLook
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
@@ -156,7 +155,7 @@ class RecoverFundsViewModel(
         accounts.filter { it.isBitcoin && !it.isLightning }.map {
             AccountAssetBalance.create(accountAsset = it.accountAsset, session = sessionOrNull)
         }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, listOf())
 
     override val hasBitcoinAccount: StateFlow<Boolean> = bitcoinAccounts.map {
         it.isNotEmpty()

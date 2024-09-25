@@ -5,7 +5,7 @@ import blockstream_green.common.generated.resources.id_you_can_sweep_s_of_your_f
 import blockstream_green.common.generated.resources.id_your_current_receive_capacity
 import breez_sdk.NodeState
 import com.blockstream.common.gdk.GdkSession
-import com.blockstream.common.lightning.inboundLiquiditySatoshi
+import com.blockstream.common.lightning.totalInboundLiquiditySatoshi
 import com.blockstream.common.lightning.isLoading
 import com.blockstream.common.lightning.onchainBalanceSatoshi
 import com.blockstream.common.utils.toAmountLook
@@ -16,7 +16,7 @@ data class LightningInfoLook constructor(val sweep: String? = null, val capacity
 
     companion object {
         suspend fun create(session: GdkSession, nodeState: NodeState): LightningInfoLook? {
-            if(nodeState.isLoading() || (nodeState.onchainBalanceSatoshi() == 0L && nodeState.inboundLiquiditySatoshi() == 0L)){
+            if(nodeState.isLoading() || (nodeState.onchainBalanceSatoshi() == 0L && nodeState.totalInboundLiquiditySatoshi() == 0L)){
                 return null
             }
 
@@ -28,8 +28,8 @@ data class LightningInfoLook constructor(val sweep: String? = null, val capacity
                     )
                 }
 
-            val capacity = if (nodeState.inboundLiquiditySatoshi() == 0L) null else {
-                getString(Res.string.id_your_current_receive_capacity, nodeState.inboundLiquiditySatoshi().toAmountLook(session = session) ?: "")
+            val capacity = if (nodeState.totalInboundLiquiditySatoshi() == 0L) null else {
+                getString(Res.string.id_your_current_receive_capacity, nodeState.totalInboundLiquiditySatoshi().toAmountLook(session = session) ?: "")
             }
 
             return LightningInfoLook(sweep = sweep, capacity = capacity)

@@ -9,6 +9,6 @@ import com.blockstream.compose.GreenAndroidPreview
 @Preview
 fun SendScreenPreview() {
     GreenAndroidPreview {
-        SendScreen(viewModel = SendViewModelPreview.preview())
+        SendScreen(viewModel = SendViewModelPreview.preview(isLightning = true))
     }
 }

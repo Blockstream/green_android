@@ -28,6 +28,7 @@ import com.blockstream.common.extensions.isBlank
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.launchIn
+import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.extensions.startsWith
 import com.blockstream.common.gdk.data.AccountAsset
@@ -222,7 +223,7 @@ class SendViewModel(
 
     class LocalEvents {
         object ToggleIsSendAll: Event
-        object SendLightningTransaction : Event
+        data class SendLightningTransaction(val useTrampoline: Boolean) : Event
         object ClickAssetsAccounts: Event
         object Note : Event
     }
@@ -360,7 +361,7 @@ class SendViewModel(
             }
 
             is LocalEvents.SendLightningTransaction -> {
-                sendLightningTransaction()
+                sendLightningTransaction(useTrampoline = event.useTrampoline)
             }
 
             is LocalEvents.Note -> {
@@ -602,13 +603,13 @@ class SendViewModel(
 
     }
 
-    private fun sendLightningTransaction() {
+    private fun sendLightningTransaction(useTrampoline: Boolean) {
         doAsync({
             countly.startSendTransaction()
             countly.startFailedTransaction()
 
             createTransactionParams.value?.let {
-                session.sendLightningTransaction(params = session.createTransaction(_network.value!!, it), comment = note.value)
+                session.sendLightningTransaction(params = session.createTransaction(_network.value!!, it), comment = note.value, useTrampoline = useTrampoline)
             }?: run {
                 throw Exception("Something went wrong while creating the Transaction")
             }
@@ -723,7 +724,7 @@ class SendViewModel(
     }
 }
 
-class SendViewModelPreview(greenWallet: GreenWallet) :
+class SendViewModelPreview(greenWallet: GreenWallet, isLightning: Boolean = false) :
     SendViewModelAbstract(greenWallet = greenWallet) {
     override val isAccountEdit: StateFlow<Boolean> = MutableStateFlow(true)
     override val errorAddress: StateFlow<String?> = MutableStateFlow(null)
@@ -759,6 +760,6 @@ class SendViewModelPreview(greenWallet: GreenWallet) :
 
 
     companion object {
-        fun preview() = SendViewModelPreview(previewWallet())
+        fun preview(isLightning: Boolean = false) = SendViewModelPreview(previewWallet(), isLightning = isLightning)
     }
 }

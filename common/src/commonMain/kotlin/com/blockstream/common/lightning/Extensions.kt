@@ -112,7 +112,7 @@ fun NodeState.isLoading() = this.id.isBlank()
 fun NodeState.channelsBalanceSatoshi() = this.channelsBalanceMsat.satoshi()
 fun NodeState.onchainBalanceSatoshi() = this.onchainBalanceMsat.satoshi()
 fun NodeState.maxReceivableSatoshi() = this.maxReceivableMsat.satoshi()
-fun NodeState.inboundLiquiditySatoshi() = this.inboundLiquidityMsats.satoshi()
+fun NodeState.totalInboundLiquiditySatoshi() = this.totalInboundLiquidityMsats.satoshi()
 fun NodeState.maxSinglePaymentAmountSatoshi() = this.maxSinglePaymentAmountMsat.satoshi()
 fun NodeState.maxPayableSatoshi() = this.maxPayableMsat.satoshi()
 

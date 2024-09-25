@@ -49,10 +49,10 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
-import com.blockstream.common.models.send.SendConfirmViewModel
 import com.blockstream.common.models.send.SendViewModel
 import com.blockstream.common.models.send.SendViewModelAbstract
 import com.blockstream.common.utils.DecimalFormat
+import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.components.Banner
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAmountField
@@ -400,13 +400,34 @@ fun SendScreen(
                 val isValid by viewModel.isValid.collectAsStateWithLifecycle()
 
                 if (it.account.isLightning) {
-                    SlideToUnlock(
-                        isLoading = onProgressSending,
-                        enabled = buttonEnabled,
-                        onSlideComplete = {
-                            viewModel.postEvent(SendViewModel.LocalEvents.SendLightningTransaction)
+                    GreenColumn(padding = 0) {
+                        SlideToUnlock(
+                            isLoading = onProgressSending,
+                            enabled = buttonEnabled,
+                            onSlideComplete = {
+                                viewModel.postEvent(
+                                    SendViewModel.LocalEvents.SendLightningTransaction(
+                                        useTrampoline = false
+                                    )
+                                )
+                            }
+                        )
+
+                        if (viewModel.appInfo.isDevelopment) {
+                            SlideToUnlock(
+                                isLoading = onProgressSending,
+                                enabled = buttonEnabled,
+                                hint = StringHolder.create("Slide to Send with Trampoline"),
+                                onSlideComplete = {
+                                    viewModel.postEvent(
+                                        SendViewModel.LocalEvents.SendLightningTransaction(
+                                            useTrampoline = true
+                                        )
+                                    )
+                                }
+                            )
                         }
-                    )
+                    }
                 } else {
                     GreenButton(
                         text = stringResource(Res.string.id_next),

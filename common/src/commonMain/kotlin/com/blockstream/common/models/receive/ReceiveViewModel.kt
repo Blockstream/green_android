@@ -51,7 +51,7 @@ import com.blockstream.common.gdk.data.Address
 import com.blockstream.common.lightning.amountSatoshi
 import com.blockstream.common.lightning.expireIn
 import com.blockstream.common.lightning.feeSatoshi
-import com.blockstream.common.lightning.inboundLiquiditySatoshi
+import com.blockstream.common.lightning.totalInboundLiquiditySatoshi
 import com.blockstream.common.lightning.maxReceivableSatoshi
 import com.blockstream.common.lightning.receiveAmountSatoshi
 import com.blockstream.common.lightning.satoshi
@@ -695,14 +695,14 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
                 val nodeState = session.lightningSdk.nodeInfoStateFlow.value
 
                 val openChannelFee = balance?.satoshi?.let {
-                    if (it > nodeState.inboundLiquiditySatoshi()) session.lightningSdk.openChannelFee(
+                    if (it > nodeState.totalInboundLiquiditySatoshi()) session.lightningSdk.openChannelFee(
                         it
                     ) else null
                 }
 
                 _isValid.value = balance != null && (balance.satoshi >= 0 &&
                         balance.satoshi <= nodeState.maxReceivableSatoshi() &&
-                        (balance.satoshi <= nodeState.inboundLiquiditySatoshi() || (balance.satoshi > (openChannelFee?.feeSatoshi()
+                        (balance.satoshi <= nodeState.totalInboundLiquiditySatoshi() || (balance.satoshi > (openChannelFee?.feeSatoshi()
                             ?: 0)))
                         )
 
@@ -744,7 +744,7 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
                     }
                 }
 
-                val isSetupChannel = nodeState.inboundLiquiditySatoshi() == 0L
+                val isSetupChannel = nodeState.totalInboundLiquiditySatoshi() == 0L
 
                 val channelFee = openChannelFee?.feeSatoshi()?.toAmountLook(
                     session = session,
@@ -773,16 +773,16 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
                         )
                     }
 
-                    (balance?.satoshi ?: 0) > nodeState.inboundLiquiditySatoshi() -> {
+                    (balance?.satoshi ?: 0) > nodeState.totalInboundLiquiditySatoshi() -> {
 
-                        val inboundLiquidity = nodeState.inboundLiquiditySatoshi().toAmountLookOrNa(
+                        val inboundLiquidity = nodeState.totalInboundLiquiditySatoshi().toAmountLookOrNa(
                             session = session,
                             assetId = session.lightningAccount.network.policyAsset,
                             denomination = denomination.value.notFiat(),
                             withUnit = true
                         )
 
-                        val inboundLiquidityFiat = nodeState.inboundLiquiditySatoshi().toAmountLook(
+                        val inboundLiquidityFiat = nodeState.totalInboundLiquiditySatoshi().toAmountLook(
                             session = session,
                             assetId = session.lightningAccount.network.policyAsset,
                             denomination = Denomination.fiat(session),

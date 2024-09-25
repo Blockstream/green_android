@@ -15,7 +15,7 @@ import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.lightning.LightningManager
 import com.blockstream.common.lightning.channelsBalanceSatoshi
-import com.blockstream.common.lightning.inboundLiquiditySatoshi
+import com.blockstream.common.lightning.totalInboundLiquiditySatoshi
 import com.blockstream.common.lightning.maxPayableSatoshi
 import com.blockstream.common.lightning.maxReceivableSatoshi
 import com.blockstream.common.lightning.maxSinglePaymentAmountSatoshi
@@ -80,7 +80,7 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
                         withUnit = true,
                         withGrouping = true
                     )),
-                    StringHolder.create(Res.string.id_inbound_liquidity) to StringHolder.create(it.inboundLiquiditySatoshi().toAmountLookOrNa(
+                    StringHolder.create(Res.string.id_inbound_liquidity) to StringHolder.create(it.totalInboundLiquiditySatoshi().toAmountLookOrNa(
                         session = session,
                         withUnit = true,
                         withGrouping = true

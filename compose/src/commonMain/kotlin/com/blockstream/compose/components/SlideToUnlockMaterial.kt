@@ -48,10 +48,10 @@ import androidx.compose.ui.unit.times
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.arrow_fat_lines_right
 import blockstream_green.common.generated.resources.id_slide_to_send
+import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.md_theme_backgroundVariant
-import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteHigh
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -64,6 +64,7 @@ fun SlideToUnlock(
     isLoading: Boolean,
     enabled: Boolean = true,
     onSlideComplete: () -> Unit,
+    hint: StringHolder? = null,
     modifier: Modifier = Modifier,
 ) {
     val hapticFeedback = LocalHapticFeedback.current
@@ -93,7 +94,7 @@ fun SlideToUnlock(
         modifier = modifier,
     ) {
         Hint(
-            text = stringResource(Res.string.id_slide_to_send),
+            text = hint?.stringOrNull() ?: stringResource(Res.string.id_slide_to_send),
             enabled = enabled,
             modifier = Modifier
                 .align(Alignment.Center)
