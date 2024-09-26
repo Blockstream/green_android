@@ -3,11 +3,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.35] - 2024-09-26
+
+### Added
+- Verify address with HWW upon 2FA reactivation
+
+### Changed
+- Bump GDK to version 0.73.1
+
 ## [4.0.34] - 2024-09-04
 
 ### Changed
 - Update dependencies
-- 
+ 
 - ### Fixed
 - Various bug fixes
 

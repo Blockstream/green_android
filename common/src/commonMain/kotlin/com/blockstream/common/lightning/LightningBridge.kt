@@ -4,6 +4,7 @@ import breez_sdk.BlockingBreezServices
 import breez_sdk.BreezEvent
 import breez_sdk.Config
 import breez_sdk.ConfigureNodeRequest
+import breez_sdk.ConnectException
 import breez_sdk.ConnectRequest
 import breez_sdk.EnvironmentType
 import breez_sdk.EventListener
@@ -46,7 +47,6 @@ import breez_sdk.ReverseSwapFeesRequest
 import breez_sdk.ReverseSwapInfo
 import breez_sdk.ReverseSwapPairInfo
 import breez_sdk.ReverseSwapStatus
-import breez_sdk.SdkException
 import breez_sdk.SendOnchainRequest
 import breez_sdk.SendOnchainResponse
 import breez_sdk.SendPaymentRequest
@@ -190,13 +190,13 @@ class LightningBridge constructor(
             updateLspInformation()
 
             return true
-        } catch (e: SdkException) {
+        } catch (e: ConnectException){
             e.printStackTrace()
 
             // SdkException for not registered node
             // Failed to initialize the SDK: Failed to connect to Greenlight: status: Internal,
             // message: "Unable to register node: not authorized: an invite code or a partner certificate is require to register a new node (see https://bit.ly/glinvites for details"
-            return if(e.message?.lowercase()?.contains("register node") == true) {
+            return if(e.message?.lowercase()?.contains("restore only", ignoreCase = true) == true) {
                 false
             } else {
                 null
