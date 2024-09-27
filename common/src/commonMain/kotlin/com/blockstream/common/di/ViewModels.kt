@@ -118,7 +118,7 @@ val factoryViewModels = module {
         AssetDetailsViewModel(get(), get(), getOrNull())
     }
     factory {
-        FeeViewModel(get(), getOrNull(), getOrNull(), get())
+        FeeViewModel(get(), getOrNull(), get())
     }
     factory {
         SendConfirmViewModel(get(), get(), getOrNull())

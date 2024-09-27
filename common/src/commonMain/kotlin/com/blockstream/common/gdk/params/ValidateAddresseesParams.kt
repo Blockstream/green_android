@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ValidateAddresseesParams private constructor(
-    @SerialName("addressees") val addressees: List<Addressee>,
+    @SerialName("addressees") val addressees: List<AddressParams>,
 ) : GreenJson<ValidateAddresseesParams>() {
     override fun explicitNulls(): Boolean = false
 
@@ -18,7 +18,7 @@ data class ValidateAddresseesParams private constructor(
         fun create(network: Network, address: String): ValidateAddresseesParams {
             return ValidateAddresseesParams(
                 addressees = listOf(
-                    Addressee(
+                    AddressParams(
                         address = address,
                         assetId = network.policyAssetOrNull,
                         satoshi = 1_000_000 // GDK needs an amount larger than the dust

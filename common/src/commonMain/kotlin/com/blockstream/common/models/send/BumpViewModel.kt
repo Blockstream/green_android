@@ -147,7 +147,7 @@ class BumpViewModel(
             CreateTransactionParams(
                 subaccount = account.pointer,
                 feeRate = getFeeRate(),
-                utxos = unspentOutputs.unspentOutputsAsJsonElement,
+                utxos = unspentOutputs.unspentOutputs,
                 previousTransaction = transaction
             )
         } catch (e: Exception) {

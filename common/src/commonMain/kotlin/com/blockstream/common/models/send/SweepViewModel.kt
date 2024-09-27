@@ -22,12 +22,13 @@ import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.params.AddressParams
 import com.blockstream.common.gdk.params.CreateTransactionParams
+import com.blockstream.common.gdk.params.toJsonElement
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.toAmountLook
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import com.rickclephas.kmp.observableviewmodel.launch
+import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -146,22 +147,17 @@ class SweepViewModel(greenWallet: GreenWallet, privateKey: String?, accountAsset
             val unspentOutputs =
                 session.getUnspentOutputs(network, privateKey = privateKey.value.trim())
 
-            listOf(
-                session.getReceiveAddress(account)
+
+            AddressParams(
+                address = session.getReceiveAddress(account).address,
+                satoshi = 0,
+                isGreedy = true
             ).let { params ->
                 CreateTransactionParams(
                     feeRate = getFeeRate(),
                     privateKey = privateKey.value.trim(),
-                    passphrase = "",
-                    addressees = params.map { it.toJsonElement() },
-                    addresseesAsParams = params.map {
-                        AddressParams(
-                            address = it.address,
-                            satoshi = 0,
-                            isGreedy = true
-                        )
-                    },
-                    utxos = unspentOutputs.unspentOutputsAsJsonElement
+                    addressees = listOf(params).toJsonElement(),
+                    utxos = unspentOutputs.unspentOutputs
                 ).also {
                     createTransactionParams.value = it
                 }

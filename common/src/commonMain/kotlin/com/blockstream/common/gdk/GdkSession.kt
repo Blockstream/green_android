@@ -10,7 +10,6 @@ import co.touchlab.kermit.Logger
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.BTC_UNIT
 import com.blockstream.common.CountlyBase
-import com.blockstream.common.TransactionSegmentation
 import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.CountlyAsset
 import com.blockstream.common.data.DataState
@@ -52,6 +51,7 @@ import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.NetworkEvent
 import com.blockstream.common.gdk.data.Notification
 import com.blockstream.common.gdk.data.Output
+import com.blockstream.common.gdk.data.PendingTransaction
 import com.blockstream.common.gdk.data.PreviousAddresses
 import com.blockstream.common.gdk.data.ProcessedTransactionDetails
 import com.blockstream.common.gdk.data.Psbt
@@ -428,7 +428,8 @@ class GdkSession constructor(
     var xPubHashId : String? = null
         private set
 
-    var pendingTransaction: Triple<CreateTransactionParams, CreateTransaction, TransactionSegmentation>? = null
+    var pendingTransactionParams: CreateTransactionParams? = null
+    var pendingTransaction: PendingTransaction? = null
 
     val networkAssetManager: NetworkAssetManager get() = assetManager.getNetworkAssetManager(defaultNetworkOrNull?.let { isMainnet } ?: true)
 
@@ -2521,16 +2522,12 @@ class GdkSession constructor(
     private fun getUnspentOutputs(network: Network, params: BalanceParams) = authHandler(
         network,
         gdk.getUnspentOutputs(gdkSession(network), params)
-    ).result<UnspentOutputs>().also {
-        it.fillUtxosJsonElement()
-    }
+    ).result<UnspentOutputs>()
 
     private fun getUnspentOutputsForPrivateKey(network: Network, params: UnspentOutputsPrivateKeyParams) = authHandler(
         network,
         gdk.getUnspentOutputsForPrivateKey(gdkSession(network), params)
-    ).result<UnspentOutputs>().also {
-        it.fillUtxosJsonElement()
-    }
+    ).result<UnspentOutputs>()
 
     fun getUnspentOutputs(
         account: Account,
@@ -2552,14 +2549,6 @@ class GdkSession constructor(
                 )
             }
         )
-    }
-
-    fun getUnspentOutputs(accounts: List<Account>): UnspentOutputs {
-        return accounts.map {
-            getUnspentOutputs(it)
-        }.reduce { unspentOutputs1, unspentOutputs2 ->
-            unspentOutputs1 + unspentOutputs2
-        }
     }
 
     fun getUnspentOutputs(network: Network, privateKey: String): UnspentOutputs {

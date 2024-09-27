@@ -9,6 +9,7 @@ import blockstream_green.common.generated.resources.id_send
 import blockstream_green.common.generated.resources.id_transaction_sent
 import blockstream_green.common.generated.resources.note_pencil
 import com.blockstream.common.AddressInputType
+import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.TransactionSegmentation
 import com.blockstream.common.TransactionType
 import com.blockstream.common.data.Banner
@@ -32,8 +33,10 @@ import com.blockstream.common.extensions.startsWith
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.data.PendingTransaction
 import com.blockstream.common.gdk.params.AddressParams
 import com.blockstream.common.gdk.params.CreateTransactionParams
+import com.blockstream.common.gdk.params.toJsonElement
 import com.blockstream.common.lightning.lnUrlPayDescription
 import com.blockstream.common.lightning.lnUrlPayImage
 import com.blockstream.common.models.send.SendConfirmViewModel.LocalEvents
@@ -45,11 +48,9 @@ import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.UserInput
 import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.getStringFromId
-import com.blockstream.common.utils.getStringFromIdOrNull
 import com.blockstream.common.utils.ifNotNull
 import com.blockstream.common.utils.toAmountLook
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.launch
 import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -59,7 +60,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
@@ -393,12 +393,11 @@ class SendViewModel(
                 satoshi = satoshi ?: 0
             ).let { params ->
                 CreateTransactionParams(
-                    addressees = listOf(params.toJsonElement()),
-                    addresseesAsParams = listOf(params),
-                    utxos = buildJsonObject {
+                    addressees = listOf(params).toJsonElement(),
+                    utxos = mapOf(BTC_POLICY_ASSET to listOf(buildJsonObject {
                         // a hack to re-create params when balance changes
                         session.accountAssets(account).value.policyAsset
-                    }
+                    }))
                 )
             }
         } else {
@@ -420,10 +419,9 @@ class SendViewModel(
             ).let { params ->
                 CreateTransactionParams(
                     from = accountAsset.value,
-                    addressees = listOf(params.toJsonElement()),
-                    addresseesAsParams = listOf(params),
+                    addressees = listOf(params).toJsonElement(),
                     feeRate = getFeeRate(),
-                    utxos = unspentOutputs?.unspentOutputsAsJsonElement
+                    utxos = unspentOutputs?.unspentOutputs
                 )
             }
         }).also {
@@ -566,13 +564,13 @@ class SendViewModel(
             }
 
             if(finalCheckBeforeContinue && params != null && it != null){
-                session.pendingTransaction = Triple(
-                    first = params,
-                    second = it,
-                    third = TransactionSegmentation(
+                session.pendingTransaction = PendingTransaction(
+                    params = params,
+                    transaction = it,
+                    segmentation = TransactionSegmentation(
                         transactionType = TransactionType.SEND,
                         addressInputType = _addressInputType,
-                        sendAll = isSendAll.value ?: false
+                        sendAll = isSendAll.value
                     )
                 )
                 postSideEffect(SideEffects.NavigateTo(NavigateDestinations.SendConfirm(

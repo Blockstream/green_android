@@ -25,8 +25,10 @@ import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.data.PendingTransaction
 import com.blockstream.common.gdk.params.AddressParams
 import com.blockstream.common.gdk.params.CreateTransactionParams
+import com.blockstream.common.gdk.params.toJsonElement
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
@@ -35,9 +37,9 @@ import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.getStringFromId
 import com.blockstream.common.utils.ifNotNull
 import com.blockstream.common.utils.toAmountLook
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
+import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -411,10 +413,9 @@ class AccountExchangeViewModel(
                 CreateTransactionParams(
                     from = fromAccountAsset,
                     to = toAccountAsset.value,
-                    addressees = listOf(params.toJsonElement()),
-                    addresseesAsParams = listOf(params),
+                    addressees = listOf(params).toJsonElement(),
                     feeRate = getFeeRate(),
-                    utxos = unspentOutputs.unspentOutputsAsJsonElement
+                    utxos = unspentOutputs.unspentOutputs
                 )
             }
         }).also {
@@ -543,11 +544,13 @@ class AccountExchangeViewModel(
             }
 
             if (finalCheckBeforeContinue && params != null && it != null) {
-                session.pendingTransaction = Triple(
-                    params, it, TransactionSegmentation(
+                session.pendingTransaction = PendingTransaction(
+                    params = params,
+                    transaction = it,
+                    segmentation = TransactionSegmentation(
                         transactionType = TransactionType.SEND,
                         addressInputType = _addressInputType,
-                        sendAll = isSendAll.value ?: false
+                        sendAll = isSendAll.value
                     )
                 )
 

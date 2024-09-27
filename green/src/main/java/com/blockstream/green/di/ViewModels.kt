@@ -119,7 +119,7 @@ val viewModels = module {
         AssetDetailsViewModel(get(), get(), getOrNull())
     }
     viewModel {
-        FeeViewModel(get(), getOrNull(), getOrNull(), get())
+        FeeViewModel(get(), getOrNull(), get())
     }
     viewModel {
         SendConfirmViewModel(get(), get(), getOrNull())

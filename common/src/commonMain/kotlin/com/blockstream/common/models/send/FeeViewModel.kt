@@ -43,14 +43,14 @@ abstract class FeeViewModelAbstract(
 class FeeViewModel(
     greenWallet: GreenWallet,
     accountAssetOrNull: AccountAsset?,
-    val params: CreateTransactionParams?,
-    val useBreezFees: Boolean
+    private val useBreezFees: Boolean
 ) : FeeViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = accountAssetOrNull) {
 
     private val _feePriorities: MutableStateFlow<List<FeePriority>> =
         MutableStateFlow(listOf(FeePriority.High(), FeePriority.Medium(), FeePriority.Low()))
     override val feePriorities: StateFlow<List<FeePriority>> = _feePriorities.asStateFlow()
 
+    private var params: CreateTransactionParams? = null
 
     init {
 
@@ -61,15 +61,21 @@ class FeeViewModel(
         }
 
         session.ifConnected {
+            params = session.pendingTransactionParams
+
             _network.value = accountAssetOrNull?.account?.network
 
             _feeEstimation.filterNotNull().onEach {
-                calculateFees()
+                params?.also {
+                    calculateFees(it)
+                }
             }.launchIn(this)
 
             if(useBreezFees){
                 calculateBreezFees()
             }
+
+
         }
 
         bootstrap()
@@ -107,8 +113,7 @@ class FeeViewModel(
         })
     }
 
-    private fun calculateFees() {
-        if(params == null) return
+    private fun calculateFees(params: CreateTransactionParams) {
 
         doAsync({
             listOf(FeePriority.High(), FeePriority.Medium(), FeePriority.Low()).map {

@@ -51,6 +51,8 @@ abstract class GreenJson<T>: JavaSerializable {
         return json.encodeToJsonElement(kSerializer(), this as T)
     }
 
+    open fun processJsonElement() { }
+
     companion object{
         val json = Json {
             encodeDefaults = true

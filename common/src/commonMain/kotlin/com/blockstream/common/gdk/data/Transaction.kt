@@ -21,28 +21,47 @@ import kotlin.math.absoluteValue
 @Parcelize
 data class Transaction constructor(
     var accountInjected: Account? = null,
-    @SerialName("block_height") val blockHeight: Long,
-    @SerialName("can_rbf") val canRBF: Boolean,
-    @SerialName("created_at_ts") val createdAtTs: Long,
-    @SerialName("inputs") val inputs: List<InputOutput>,
-    @SerialName("outputs") val outputs: List<InputOutput>,
-    @SerialName("fee") val fee: Long,
-    @SerialName("fee_rate") val feeRate: Long,
-    @SerialName("memo") val memo: String,
-    @SerialName("spv_verified") val spvVerified: String,
-    @SerialName("txhash") val txHash: String,
-    @SerialName("type") val type: String,
-    @SerialName("satoshi") val satoshi: Map<String, Long>,
-
-    @SerialName("message") val message: String? = null,
-    @SerialName("plaintext") val plaintext: Pair<String, String>? = null,
-    @SerialName("url") val url: Pair<String, String>? = null,
-    @SerialName("isCloseChannel") val isCloseChannel: Boolean = false,
-    @SerialName("isPendingCloseChannel") val isPendingCloseChannel: Boolean = false,
-    @SerialName("isLightningSwap") val isLightningSwap: Boolean = false,
-    @SerialName("isInProgressSwap") val isInProgressSwap: Boolean = false,
-    @SerialName("isRefundableSwap") val isRefundableSwap: Boolean = false,
-    @SerialName("extras") val extras: List<Pair<String,String>>? = null,
+    @SerialName("block_height")
+    val blockHeight: Long,
+    @SerialName("can_cpfp")
+    val canCpfp: Boolean = false,
+    @SerialName("can_rbf")
+    val canRBF: Boolean = false,
+    @SerialName("rbf_optin")
+    val rbfOptin: Boolean = false,
+    @SerialName("created_at_ts")
+    val createdAtTs: Long,
+    val inputs: List<InputOutput>,
+    val outputs: List<InputOutput>,
+    val fee: Long,
+    @SerialName("fee_rate")
+    val feeRate: Long,
+    val memo: String,
+    @SerialName("spv_verified")
+    val spvVerified: String,
+    @SerialName("txhash")
+    val txHash: String,
+    val type: String,
+    val satoshi: Map<String, Long>,
+    @SerialName("transaction_vsize")
+    val transactionVsize: Long = 0,
+    @SerialName("transaction_weight")
+    val transactionWeight: Long = 0,
+    val message: String? = null,
+    val plaintext: Pair<String, String>? = null,
+    val url: Pair<String, String>? = null,
+    @SerialName("isCloseChannel")
+    val isCloseChannel: Boolean = false,
+    @SerialName("isPendingCloseChannel")
+    val isPendingCloseChannel: Boolean = false,
+    @SerialName("isLightningSwap")
+    val isLightningSwap: Boolean = false,
+    @SerialName("isInProgressSwap")
+    val isInProgressSwap: Boolean = false,
+    @SerialName("isRefundableSwap")
+    val isRefundableSwap: Boolean = false,
+    @SerialName("extras")
+    val extras: List<Pair<String,String>>? = null
 ) : GreenJson<Transaction>(), Parcelable {
     val account
         get() = accountInjected!!

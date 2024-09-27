@@ -18,8 +18,10 @@ import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.PendingTransaction
 import com.blockstream.common.gdk.params.AddressParams
 import com.blockstream.common.gdk.params.CreateTransactionParams
+import com.blockstream.common.gdk.params.toJsonElement
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
@@ -105,7 +107,7 @@ class RedepositViewModel(
 
         return (if (isRedeposit2FA) {
             CreateTransactionParams(
-                utxos = unspentOutputs.unspentOutputsAsJsonElement,
+                utxos = unspentOutputs.unspentOutputs,
                 feeRate = getFeeRate(),
                 feeSubaccount = account.pointer,
                 isRedeposit = true
@@ -125,9 +127,8 @@ class RedepositViewModel(
 
             CreateTransactionParams(
                 from = accountAsset.value,
-                addressees = addressee.map { it.toJsonElement() },
-                addresseesAsParams = addressee,
-                utxos = unspentOutputs.unspentOutputsAsJsonElement,
+                addressees = addressee.toJsonElement(),
+                utxos = unspentOutputs.unspentOutputs,
                 feeRate = getFeeRate(),
                 isRedeposit = true
             )
@@ -194,8 +195,10 @@ class RedepositViewModel(
             _error.value = null
 
             if(finalCheckBeforeContinue && params != null && it != null){
-                session.pendingTransaction = Triple(
-                    params, it, TransactionSegmentation(
+                session.pendingTransaction = PendingTransaction(
+                    params = params,
+                    transaction = it,
+                    segmentation = TransactionSegmentation(
                         transactionType = TransactionType.REDEPOSIT,
                     )
                 )

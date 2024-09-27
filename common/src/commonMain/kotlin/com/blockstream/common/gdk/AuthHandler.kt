@@ -170,6 +170,7 @@ class AuthHandler constructor(
             JsonDeserializer.decodeFromJsonElement<T>(result).let{
                 if(it is GreenJson<*> && it.keepJsonElement()) {
                     it.jsonElement = result
+                    it.processJsonElement()
                 }
                 it
             }

@@ -28,13 +28,11 @@ import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorResolverData
 import com.blockstream.common.data.TwoFactorSetupAction
-import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.twoFactorMethodsLocalized
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.models.wallets.WalletsViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
@@ -246,11 +244,13 @@ fun HandleSideEffect(
                 }
 
                 is SideEffects.OpenFeeBottomSheet -> {
+                    // Pass params to GdkSession
+                    viewModel.sessionOrNull?.pendingTransactionParams = it.params
+
                     bottomSheetNavigator?.show(
                         FeeRateBottomSheet(
                             greenWallet = it.greenWallet,
                             accountAsset = it.accountAsset,
-                            params = it.params,
                             useBreezFees = it.useBreezFees
                         )
                     )

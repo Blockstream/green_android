@@ -111,13 +111,13 @@ class SendConfirmViewModel constructor(
             session.pendingTransaction?.also {
                 viewModelScope.coroutineScope.launch {
                     if (appInfo.isDevelopmentOrDebug) {
-                        logger.d { "Params: ${it.first}" }
-                        logger.d { "Transaction: ${it.second}" }
+                        logger.d { "Params: ${it.params}" }
+                        logger.d { "Transaction: ${it.transaction}" }
                     }
 
                     _transactionConfirmLook.value = TransactionConfirmLook.create(
-                        params = it.first,
-                        transaction = it.second,
+                        params = it.params,
+                        transaction = it.transaction,
                         account = account,
                         session = session,
                         denomination = _denomination.value,
@@ -125,7 +125,7 @@ class SendConfirmViewModel constructor(
                     )
 
                     _showVerifyOnDevice.value =
-                        if (it.first.isRedeposit) session.device?.canVerifyAddressOnDevice(account)
+                        if (it.params.isRedeposit) session.device?.canVerifyAddressOnDevice(account)
                             ?: false else false
 
                     _isValid.value = true
@@ -146,9 +146,9 @@ class SendConfirmViewModel constructor(
             is CreateTransactionViewModelAbstract.LocalEvents.SignTransaction -> {
                 session.pendingTransaction?.also {
                     signAndSendTransaction(
-                        params = it.first,
-                        originalTransaction = it.second,
-                        segmentation = it.third,
+                        params = it.params,
+                        originalTransaction = it.transaction,
+                        segmentation = it.segmentation,
                         broadcast = event.broadcastTransaction,
                         createPsbt = event.createPsbt
                     )
@@ -158,9 +158,9 @@ class SendConfirmViewModel constructor(
             is CreateTransactionViewModelAbstract.LocalEvents.BroadcastTransaction -> {
                 session.pendingTransaction?.also {
                     signAndSendTransaction(
-                        params = it.first,
-                        originalTransaction = it.second,
-                        segmentation = it.third,
+                        params = it.params,
+                        originalTransaction = it.transaction,
+                        segmentation = it.segmentation,
                         psbt = event.psbt,
                         broadcast = event.broadcastTransaction,
                     )
@@ -179,7 +179,7 @@ class SendConfirmViewModel constructor(
 
     private fun verifyAddressOnDevice() {
         val hwWallet = session.gdkHwWallet
-        val transaction = session.pendingTransaction?.second
+        val transaction = session.pendingTransaction?.transaction
 
         if(hwWallet != null && transaction != null){
             doAsync({

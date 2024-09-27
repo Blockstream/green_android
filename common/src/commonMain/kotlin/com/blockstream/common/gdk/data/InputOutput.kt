@@ -17,44 +17,50 @@ import kotlinx.serialization.Serializable
 @Serializable
 @Parcelize
 data class InputOutput constructor(
+    // Bitcoin & Liquid
     @SerialName("address") val address: String? = null,
     @SerialName("addressee") val addressee: String? = null,
     @SerialName("address_type") val addressType: String? = null,
-    @SerialName("is_blinded") val isBlinded: Boolean? = null,
-    @SerialName("is_confidential") val isConfidential: Boolean? = null,
-    @SerialName("unblinded_address") val unblindedAddress: String? = null,
-    @SerialName("is_change") val isChange: Boolean? = null,
+    @SerialName("is_internal") val isInternal: Boolean? = null,
     @SerialName("is_output") val isOutput: Boolean? = null,
     @SerialName("is_relevant") val isRelevant: Boolean? = null,
     @SerialName("is_spent") val isSpent: Boolean? = null,
-
     @SerialName("pointer") val pointer: Int? = null,
-    @SerialName("prevout_script") val prevoutScript: String? = null,
     @SerialName("pt_idx") val ptIdx: Long? = null, // this is UInt until Parcelize is supported
-    @SerialName("recovery_xpub") val recoveryXpub: String? = null,
-
     @SerialName("satoshi") val satoshi: Long? = null,
-    @SerialName("script") val script: String? = null,
-    @SerialName("scriptpubkey") val scriptPubkey: String? = null,
-
-    @SerialName("sequence") val sequence: Long? = null, // this is UInt until Parcelize is supported
     @SerialName("subaccount") val subaccount: Int? = null,
     @SerialName("subtype") val subtype: Int? = null,
 
-    @SerialName("txhash") val txHash: String? = null,
-    @SerialName("service_xpub") val serviceXpub: String? = null,
-
-    @SerialName("user_path") val userPath: List<Long>? = null,
-
-    @SerialName("ae_host_commitment") val aeHostCommitment: String? = null,
-    @SerialName("ae_host_entropy") val aeHostEntropy: String? = null,
-
-    @SerialName("commitment") val commitment: String? = null, // blinded value
-    @SerialName("assetblinder") val assetblinder: String? = null, // asset blinding factor
+    // Liquid Input & Output
     @SerialName("amountblinder") val amountblinder: String? = null, // value blinding factor
     @SerialName("asset_id") val assetId: String? = null, // asset id for Liquid txs
-    @SerialName("blinding_key") val blindingKey: String? = null, // the blinding public key embedded into the blinded address we are sending to
+    @SerialName("asset_tag") val assetTag: String? = null,
+    @SerialName("assetblinder") val assetblinder: String? = null, // asset blinding factor
+    @SerialName("commitment") val commitment: String? = null,
+    @SerialName("is_blinded") val isBlinded: Boolean? = null,
+    @SerialName("nonce_commitment") val nonceCommitment: String? = null,
+    @SerialName("previdx") val previdx: Long? = null,
+    @SerialName("prevtxhash") val prevtxhash: String? = null,
+    @SerialName("script") val script: String? = null,
 
+    // Liquid Output
+    @SerialName("blinding_key") val blindingKey: String? = null, // the blinding public key embedded into the blinded address we are sending to
+    @SerialName("is_confidential") val isConfidential: Boolean? = null,
+    @SerialName("unconfidential_address") val unconfidentialAddress: String? = null,
+
+
+    // TODO review
+    @SerialName("unblinded_address") val unblindedAddress: String? = null,
+    @SerialName("is_change") val isChange: Boolean? = null,
+    @SerialName("prevout_script") val prevoutScript: String? = null,
+    @SerialName("recovery_xpub") val recoveryXpub: String? = null,
+    @SerialName("scriptpubkey") val scriptPubkey: String? = null,
+    @SerialName("sequence") val sequence: Long? = null, // this is UInt until Parcelize is supported
+    @SerialName("txhash") val txHash: String? = null,
+    @SerialName("service_xpub") val serviceXpub: String? = null,
+    @SerialName("user_path") val userPath: List<Long>? = null,
+    @SerialName("ae_host_commitment") val aeHostCommitment: String? = null,
+    @SerialName("ae_host_entropy") val aeHostEntropy: String? = null,
     @SerialName("eph_public_key") val ephPublicKey: String? = null, // our ephemeral public key for [un]blinding
 ) : GreenJson<InputOutput>(), Parcelable {
     override fun kSerializer() = serializer()

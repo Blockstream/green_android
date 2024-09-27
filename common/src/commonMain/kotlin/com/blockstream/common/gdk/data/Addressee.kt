@@ -19,6 +19,6 @@ data class Addressee constructor(
 ) : GreenJson<Addressee>() {
     override fun kSerializer() = serializer()
 
-    val isAmountLocked: Boolean?
+    val isAmountLocked: Boolean
         get() = isInvoiceAmountLocked == true || bip21Params?.hasAmount == true
 }

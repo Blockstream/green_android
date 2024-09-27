@@ -25,7 +25,6 @@ import com.blockstream.common.Parcelize
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.models.send.FeeViewModel
 import com.blockstream.common.models.send.FeeViewModelAbstract
 import com.blockstream.compose.components.GreenArrow
@@ -51,14 +50,13 @@ import org.koin.core.parameter.parametersOf
 data class FeeRateBottomSheet(
     val greenWallet: GreenWallet,
     val accountAsset: AccountAsset?,
-    val params: CreateTransactionParams?,
     val useBreezFees: Boolean
 ) : BottomScreen(), Parcelable {
     @Composable
     override fun Content() {
 
         val viewModel = koinScreenModel<FeeViewModel> {
-            parametersOf(greenWallet, accountAsset, params, useBreezFees)
+            parametersOf(greenWallet, accountAsset, useBreezFees)
         }
 
         FeeRateBottomSheet(
