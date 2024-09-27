@@ -3,7 +3,6 @@ package com.blockstream.green.di
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.LifecycleObserver
-import com.blockstream.HardwareQATester
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.data.AppConfig
 import com.blockstream.common.data.AppInfo
@@ -20,7 +19,6 @@ import com.blockstream.green.utils.QATester
 import com.blockstream.green.utils.isDevelopmentFlavor
 import org.koin.dsl.binds
 import org.koin.dsl.module
-import org.koin.ksp.generated.com_blockstream_green_di_AndroidModule
 
 
 fun initKoinAndroid(context: Context, doOnStartup: () -> Unit = {}) {
@@ -60,12 +58,12 @@ fun initKoinAndroid(context: Context, doOnStartup: () -> Unit = {}) {
             }
             single {
                 QATester(get())
-            } binds (arrayOf(HardwareQATester::class))
+            } binds (arrayOf(com.blockstream.jade.firmware.HardwareQATester::class))
             single {
                 ActivityLifecycle(get(), get())
             } binds (arrayOf(Application.ActivityLifecycleCallbacks::class, LifecycleObserver::class))
         },
-        com_blockstream_green_di_AndroidModule,
+//        com_blockstream_green_di_AndroidModule,
         databaseModule,
         greenModules,
         viewModels,

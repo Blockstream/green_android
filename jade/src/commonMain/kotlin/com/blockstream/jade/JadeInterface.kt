@@ -1,8 +1,5 @@
 package com.blockstream.jade
 
-import com.blockstream.common.di.ApplicationScope
-import com.blockstream.common.utils.Loggable
-import com.blockstream.common.utils.toHex
 import com.blockstream.jade.api.AuthRequest
 import com.blockstream.jade.api.HandshakeInitRequest
 import com.blockstream.jade.api.HttpRequestDataResponse
@@ -14,8 +11,8 @@ import com.blockstream.jade.api.Response
 import com.blockstream.jade.connection.JadeBleConnection
 import com.blockstream.jade.connection.JadeConnection
 import com.juul.kable.Peripheral
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.DeserializationStrategy
@@ -58,27 +55,22 @@ class JadeInterface internal constructor(private val connection: JadeConnection)
     }
 
     @Throws(Exception::class)
-    fun <R : Response<*, P>, P> makeRpcCall(
+    suspend fun <R : Response<*, P>, P> makeRpcCall(
         request: Request<*, *>,
         serializer: DeserializationStrategy<R>,
         timeout: Int,
         drain: Boolean = false
-    ): Response<*, *>? {
-
-        return runBlocking {
-            mutex.withLock {
-                // If requested, drain any existing outstanding messages first
-                if (drain) {
-                    drain()
-                }
-
-                // Send the request
-                writeRequest(request)
-
-                // Await the response
-                readResponse(request, serializer, timeout)
-            }
+    ): Response<*, *>? = mutex.withLock {
+        // If requested, drain any existing outstanding messages first
+        if (drain) {
+            drain()
         }
+
+        // Send the request
+        writeRequest(request)
+
+        // Await the response
+        readResponse(request, serializer, timeout)
     }
 
     @Throws(Exception::class)
@@ -90,7 +82,7 @@ class JadeInterface internal constructor(private val connection: JadeConnection)
         logger.d { "Sending request: $request" }
         val bytes = request.toCbor()
 
-        logger.d { "Sending ${bytes.size} bytes : ${bytes.toHex()}" }
+        logger.d { "Sending ${bytes.size} bytes : ${bytes.toHexString()}" }
         connection.write(bytes)
     }
 
@@ -166,7 +158,8 @@ class JadeInterface internal constructor(private val connection: JadeConnection)
                 }
             } catch (e: Exception) {
                 logger.w { "Error: ${e.message}" }
-                e.printStackTrace();
+                e.printStackTrace()
+                throw e
             }
         }
     }
@@ -176,7 +169,7 @@ class JadeInterface internal constructor(private val connection: JadeConnection)
         fun fromBle(
             peripheral: Peripheral,
             isBonded: Boolean,
-            scope: ApplicationScope
+            scope: CoroutineScope
         ): JadeInterface {
             val ble = JadeBleConnection(peripheral = peripheral, scope = scope, isBonded = isBonded)
             return JadeInterface(ble)

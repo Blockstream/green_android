@@ -1,13 +1,12 @@
 package com.blockstream.common.gdk.params
 
 import com.blockstream.common.gdk.GreenJson
-import com.blockstream.common.gdk.data.Addressee
 import com.blockstream.common.gdk.data.Network
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ValidateAddresseesParams private constructor(
+data class ValidateAddresseesParams(
     @SerialName("addressees") val addressees: List<AddressParams>,
 ) : GreenJson<ValidateAddresseesParams>() {
     override fun explicitNulls(): Boolean = false

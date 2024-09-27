@@ -1,8 +1,12 @@
 package com.blockstream.common.devices
 
+import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.data.Account
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.GdkHardwareWallet
+import com.blockstream.common.gdk.device.HardwareConnectInteraction
 import com.blockstream.common.utils.Loggable
+import com.blockstream.jade.firmware.FirmwareUpdateState
 import com.juul.kable.Peripheral
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -16,53 +20,100 @@ import kotlinx.datetime.Clock
 import kotlin.properties.Delegates
 
 enum class DeviceState {
-    SCANNED, DISCONNECTED
+    CONNECTED, DISCONNECTED
 }
 
-open class GreenDevice constructor(
-    val deviceBrand: DeviceBrand,
-    val type: ConnectionType,
-    var peripheral: Peripheral? = null,
+interface DeviceOperatingNetwork {
+    suspend fun getOperatingNetworkForEnviroment(greenDevice: GreenDevice, gdk: Gdk, isTestnet: Boolean): Network?
+    suspend fun getOperatingNetwork(greenDevice: GreenDevice, gdk: Gdk, interaction: HardwareConnectInteraction): Network?
+}
+
+interface GreenDevice: DeviceOperatingNetwork {
+    val peripheral: Peripheral?
+    var gdkHardwareWallet: GdkHardwareWallet?
+    val deviceBrand: DeviceBrand
+    val uniqueIdentifier: String
+    val type: ConnectionType
     val isBonded: Boolean
-) {
+    val isUsb: Boolean
+    val isBle: Boolean
+    val deviceState: StateFlow<DeviceState>
+    val firmwareState: StateFlow<FirmwareUpdateState?>
+    val name: String
+    val connectionIdentifier: String
+    val manufacturer: String?
+    val isJade: Boolean
+    val isTrezor: Boolean
+    val isLedger: Boolean
+    val isOffline: Boolean
+    val isConnected: Boolean
+    val heartbeat: Long
+
+    fun frozeHeartbeat()
+    fun updateHeartbeat()
+
+    fun disconnect()
+    fun hasPermissions(): Boolean
+    fun updateFromScan(newPeripheral: Peripheral)
+    fun updateFirmwareState(status : FirmwareUpdateState)
+    fun needsUsbPermissionsToIdentify(): Boolean
+    fun askForUsbPermission(onSuccess: (() -> Unit), onError: ((throwable: Throwable?) -> Unit)? = null)
+    fun canVerifyAddressOnDevice(account: Account): Boolean
+}
+
+abstract class GreenDeviceImpl constructor(
+    override val deviceBrand: DeviceBrand,
+    override val type: ConnectionType,
+    override var peripheral: Peripheral? = null,
+    override val isBonded: Boolean
+) : GreenDevice, DeviceOperatingNetwork {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-    private val _deviceState: MutableStateFlow<DeviceState> = MutableStateFlow(DeviceState.SCANNED)
-    val deviceState: StateFlow<DeviceState> = _deviceState
+    private val _deviceState: MutableStateFlow<DeviceState> = MutableStateFlow(DeviceState.CONNECTED)
+    override val deviceState: StateFlow<DeviceState> = _deviceState
 
-    open val name
+    private val _firmwareState: MutableStateFlow<FirmwareUpdateState?> = MutableStateFlow(null)
+    override val firmwareState: StateFlow<FirmwareUpdateState?> = _firmwareState
+
+    override val name
         get() = peripheral?.name ?: deviceBrand.name
 
     // On Jade devices is not safe to use mac address as an id cause of RPA. Prefer using the unique name as a way to identify the device.
-    open val connectionIdentifier: String
+    override val connectionIdentifier: String
         get() = peripheral?.name ?: peripheral?.identifier?.toString() ?: hashCode().toString(10)
 
-    open val uniqueIdentifier: String
+    override val uniqueIdentifier: String
         get() = name
 
-    var timeout: Long = 0
+    final override var heartbeat: Long = Clock.System.now().toEpochMilliseconds()
+        private set
 
     // Jade v1 has the controller manufacturer as a productName
-    open val manufacturer
+    override val manufacturer
         get() = if (deviceBrand.isJade) deviceBrand.name else peripheral?.name
 
-    val isUsb
+    override val isUsb
         get() = type == ConnectionType.USB
 
-    val isBle
+    override val isBle
         get() = type == ConnectionType.BLUETOOTH
 
-    open val isOffline: Boolean
+    override val isOffline: Boolean
         get() = deviceState.value == DeviceState.DISCONNECTED
 
-    val isJade: Boolean
+    override val isConnected: Boolean
+        get() = deviceState.value == DeviceState.CONNECTED
+
+    override val isJade: Boolean
         get() = deviceBrand.isJade
-    val isTrezor: Boolean
+
+    override val isTrezor: Boolean
         get() = deviceBrand.isTrezor
-    val isLedger: Boolean
+
+    override val isLedger: Boolean
         get() = deviceBrand.isLedger
 
-    var gdkHardwareWallet: GdkHardwareWallet? by Delegates.observable(null) { _, _, gdkHardwareWallet ->
+    override var gdkHardwareWallet: GdkHardwareWallet? by Delegates.observable(null) { _, _, gdkHardwareWallet ->
         logger.i { "Set GdkHardwareWallet" }
 
         gdkHardwareWallet?.disconnectEvent?.let {
@@ -76,7 +127,22 @@ open class GreenDevice constructor(
         }
     }
 
-    fun canVerifyAddressOnDevice(account: Account): Boolean {
+    override fun frozeHeartbeat() {
+        logger.d { "frozeHeartbeat" }
+        heartbeat = 0
+    }
+
+    override fun updateHeartbeat() {
+        heartbeat = Clock.System.now().toEpochMilliseconds()
+    }
+
+    override fun askForUsbPermission(onSuccess: (() -> Unit), onError: ((throwable: Throwable?) -> Unit)?) { }
+
+    override fun needsUsbPermissionsToIdentify(): Boolean {
+        return isUsb && !hasPermissions()
+    }
+
+    override fun canVerifyAddressOnDevice(account: Account): Boolean {
         return !account.isLightning && (
                 isJade ||
                         (isLedger && account.network.isLiquid && !account.network.isSinglesig) ||
@@ -85,25 +151,32 @@ open class GreenDevice constructor(
                 )
     }
 
-    fun updateFromScan(newPeripheral: Peripheral) {
+    override fun updateFromScan(newPeripheral: Peripheral) {
         // Update bleDevice as the it can be changed due to RPA
         peripheral = newPeripheral
 
         // Update timeout
-        timeout = Clock.System.now().toEpochMilliseconds()
+        if (heartbeat > 0) {
+            // Update timeout
+            updateHeartbeat()
+        }
 
         // Mark it as online if required
-        _deviceState.compareAndSet(DeviceState.DISCONNECTED, DeviceState.SCANNED)
+        _deviceState.compareAndSet(DeviceState.DISCONNECTED, DeviceState.CONNECTED)
     }
 
     fun offline() {
         logger.i { "Device went offline" }
-        _deviceState.compareAndSet(DeviceState.SCANNED, DeviceState.DISCONNECTED)
+        _deviceState.compareAndSet(DeviceState.CONNECTED, DeviceState.DISCONNECTED)
     }
 
-    open fun hasPermissions(): Boolean = true
+    override fun updateFirmwareState(status : FirmwareUpdateState) {
+        _firmwareState.value = status
+    }
 
-    open fun disconnect() {
+    override open fun hasPermissions(): Boolean = true
+
+    override fun disconnect() {
         scope.cancel()
 
         gdkHardwareWallet?.disconnect()
@@ -114,20 +187,6 @@ open class GreenDevice constructor(
         }
     }
 
-    companion object : Loggable() {
-
-        fun jadeFromScan(
-            peripheral: Peripheral? = null,
-            isBonded: Boolean = false
-        ): GreenDevice {
-            return GreenDevice(
-                deviceBrand = DeviceBrand.Blockstream,
-                type = ConnectionType.BLUETOOTH,
-                peripheral = peripheral,
-                isBonded = isBonded,
-            ).also {
-                it.timeout = Clock.System.now().toEpochMilliseconds()
-            }
-        }
-    }
+    companion object : Loggable()
 }
+

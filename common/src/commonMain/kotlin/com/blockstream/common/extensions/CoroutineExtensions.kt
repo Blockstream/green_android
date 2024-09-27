@@ -7,7 +7,10 @@ import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -59,10 +62,9 @@ fun MutableStateFlow<Boolean>.toggle() {
     this.value = !value
 }
 
-public fun <T> Flow<T>.launchIn(viewModel: ViewModel) = launchIn(viewModel.viewModelScope.coroutineScope)
+fun <T> Flow<T>.launchIn(viewModel: ViewModel) = launchIn(viewModel.viewModelScope.coroutineScope)
 
-fun CoroutineScope.childScope() =
-    CoroutineScope(coroutineContext + Job(coroutineContext[Job]))
+fun CoroutineScope.supervisorJob() = CoroutineScope(context = coroutineContext + SupervisorJob() + Dispatchers.IO + handleException())
 
 fun CoroutineScope.cancelChildren(
     cause: CancellationException? = null

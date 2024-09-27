@@ -401,7 +401,7 @@ public class TrezorHWWallet extends GdkHardwareWallet {
         case "ButtonRequest":
             CompletableDeferred completable = CompletableDeferredKt.CompletableDeferred(null);
             if(hwInteraction != null) {
-                hwInteraction.interactionRequest(this, completable, "id_check_your_device");
+                hwInteraction.interactionRequest(this,"id_check_your_device", false, completable);
             }
             Message io = mTrezor.io(TrezorMessage.ButtonAck.newBuilder());
             completable.complete(true);

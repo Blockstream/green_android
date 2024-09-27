@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinAndroid)
-    alias(libs.plugins.google.devtools.ksp)
 }
 
 android {
@@ -20,9 +19,5 @@ kotlin {
 dependencies {
     /**  --- Modules ---------------------------------------------------------------------------- */
     implementation(project(":base"))
-    /** ----------------------------------------------------------------------------------------- */
-
-    /**  --- Koin   ----------------------------------------------------------------------------- */
-    ksp(libs.koin.ksp.compiler)
     /** ----------------------------------------------------------------------------------------- */
 }

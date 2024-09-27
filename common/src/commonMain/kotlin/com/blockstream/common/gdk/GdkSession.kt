@@ -99,7 +99,6 @@ import com.blockstream.common.gdk.params.TransactionParams.Companion.TRANSACTION
 import com.blockstream.common.gdk.params.UnspentOutputsPrivateKeyParams
 import com.blockstream.common.gdk.params.UpdateSubAccountParams
 import com.blockstream.common.gdk.params.ValidateAddresseesParams
-import com.blockstream.common.interfaces.HttpRequestHandler
 import com.blockstream.common.interfaces.JadeHttpRequestUrlValidator
 import com.blockstream.common.lightning.AppGreenlightCredentials
 import com.blockstream.common.lightning.LightningBridge
@@ -124,6 +123,7 @@ import com.blockstream.common.utils.randomChars
 import com.blockstream.common.utils.server
 import com.blockstream.common.utils.toAmountLook
 import com.blockstream.common.utils.toHex
+import com.blockstream.jade.HttpRequestHandler
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -861,7 +861,7 @@ class GdkSession constructor(
         return false
     }
 
-    override fun prepareHttpRequest() {
+    fun prepareHttpRequest() {
         logger.i { "Prepare HTTP Request Provider" }
         disconnect()
 

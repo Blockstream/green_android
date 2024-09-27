@@ -188,8 +188,8 @@ class SendConfirmViewModel constructor(
                 transaction.outputs.filter { it.address.isNotBlank() }.forEach { output ->
                     postSideEffect(
                         SideEffects.NavigateTo(
-                            NavigateDestinations.VerifyOnDevice(
-                                address = output.address
+                            NavigateDestinations.DeviceInteraction(
+                                verifyAddress = output.address
                             )
                         )
                     )

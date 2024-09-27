@@ -10,6 +10,7 @@ import com.blockstream.common.gdk.params.BcurDecodeParams
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
+import com.rickclephas.kmp.observableviewmodel.InternalKMPObservableViewModelApi
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -82,13 +83,22 @@ abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false,
         }
     }
 
-    override fun onDispose() {
-        super.onDispose()
+    // Called from Android ViewModelX
+    override fun onCleared() {
+        super.onCleared()
         try {
             bcurPartEmitter?.completeExceptionally(Exception(""))
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    // This is called from Voyager
+    @OptIn(InternalKMPObservableViewModelApi::class)
+    override fun onDispose() {
+        super.onDispose()
+        // Call the internal InternalKMPObservableViewModelApi
+        clear()
     }
 
     companion object: Loggable()

@@ -117,3 +117,7 @@ actual class ImagePickerLauncher actual constructor(private val onLaunch: () -> 
         onLaunch.invoke()
     }
 }
+
+@Composable
+actual fun askForBluetoothPermissions(viewModel: GreenViewModel) {
+}

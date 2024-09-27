@@ -4,11 +4,11 @@
 
     <data>
 
-        <import type="com.blockstream.common.managers.AndroidBluetoothState" />
+        <import type="com.blockstream.common.managers.BluetoothState" />
 
         <variable
             name="vm"
-            type="com.blockstream.green.ui.devices.DeviceListViewModel" />
+            type="com.blockstream.common.models.devices.DeviceListViewModel" />
 
     </data>
 
@@ -62,7 +62,7 @@
                 <Button
                     android:id="@+id/buttonEnableBluetooth"
                     style="@style/Widget.Green.Button"
-                    isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bluetoothState == AndroidBluetoothState.OFF }"
+                    isVisible="@{vm.bluetoothState == BluetoothState.OFF }"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/id_enable_bluetooth" />
@@ -70,13 +70,13 @@
                 <Button
                     android:id="@+id/buttonRequestPermission"
                     style="@style/Widget.Green.Button"
-                    isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bluetoothState == AndroidBluetoothState.PERMISSIONS_NOT_GRANTED }"
+                    isVisible="@{vm.bluetoothState == BluetoothState.PERMISSIONS_NOT_GRANTED }"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/id_give_bluetooth_permissions" />
 
                 <TextView
-                    isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bluetoothState == AndroidBluetoothState.LOCATION_SERVICES_DISABLED }"
+                    isVisible="@{vm.bluetoothState == BluetoothState.LOCATION_SERVICES_DISABLED }"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -88,7 +88,7 @@
                 <Button
                     android:id="@+id/buttonLocationServiceMoreInfo"
                     style="@style/Widget.Green.Button.Text.Tiny"
-                    isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bluetoothState == AndroidBluetoothState.LOCATION_SERVICES_DISABLED }"
+                    isVisible="@{vm.bluetoothState == BluetoothState.LOCATION_SERVICES_DISABLED }"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/id_more_info" />
@@ -96,14 +96,14 @@
                 <Button
                     android:id="@+id/buttonEnableLocationService"
                     style="@style/Widget.Green.Button"
-                    isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bluetoothState == AndroidBluetoothState.LOCATION_SERVICES_DISABLED }"
+                    isVisible="@{vm.bluetoothState == BluetoothState.LOCATION_SERVICES_DISABLED }"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/id_enable_location_services" />
 
                 <com.google.android.material.progressindicator.CircularProgressIndicator
                     android:id="@+id/circularProgressIndicator"
-                    isVisible="@{vm.devices.empty &amp;&amp; vm.bluetoothState == AndroidBluetoothState.ON }"
+                    isVisible="@{vm.devices.empty &amp;&amp; vm.bluetoothState == BluetoothState.ON }"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -116,7 +116,7 @@
                     app:trackColor="@color/color_on_surface_emphasis_very_low" />
 
                 <TextView
-                    isVisible="@{vm.devices.empty &amp;&amp; vm.bluetoothState == AndroidBluetoothState.ON }"
+                    isVisible="@{vm.devices.empty &amp;&amp; vm.bluetoothState == BluetoothState.ON }"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"

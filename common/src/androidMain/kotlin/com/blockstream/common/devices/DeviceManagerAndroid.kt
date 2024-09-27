@@ -1,4 +1,4 @@
-package com.blockstream.green.devices
+package com.blockstream.common.devices
 
 import android.annotation.SuppressLint
 import android.app.PendingIntent
@@ -10,9 +10,9 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
-import android.os.ParcelUuid
 import androidx.core.content.ContextCompat
 import androidx.core.content.IntentCompat
+import com.benasher44.uuid.Uuid
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.extensions.isBonded
 import com.blockstream.common.extensions.isJade
@@ -20,12 +20,9 @@ import com.blockstream.common.managers.BluetoothManager
 import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.utils.Loggable
-import com.blockstream.jade.connection.JadeBleConnection
-import com.btchip.comm.LedgerDeviceBLE
-import com.juul.kable.Bluetooth
+import com.juul.kable.Peripheral
 import com.juul.kable.PlatformAdvertisement
 import com.juul.kable.peripheral
-import kotlinx.coroutines.flow.onEach
 import java.lang.ref.WeakReference
 
 
@@ -34,8 +31,14 @@ class DeviceManagerAndroid constructor(
     val context: Context,
     sessionManager: SessionManager,
     bluetoothManager: BluetoothManager,
-    val usbManager: UsbManager
-): DeviceManager(scope, sessionManager, bluetoothManager, SupportedBleUuid) {
+    val usbManager: UsbManager,
+    supportedBleDevices: List<String>,
+    val deviceMapper: (
+        deviceManager: DeviceManagerAndroid, usbDevice: UsbDevice?, bleService: Uuid?,
+        peripheral: Peripheral?,
+        isBonded: Boolean?
+    ) -> AndroidDevice?
+): DeviceManager(scope, sessionManager, bluetoothManager, supportedBleDevices) {
 
     private var onPermissionSuccess: WeakReference<(() -> Unit)>? = null
     private var onPermissionError: WeakReference<((throwable: Throwable?) -> Unit)>? = null
@@ -44,7 +47,7 @@ class DeviceManagerAndroid constructor(
         @SuppressLint("MissingPermission")
         override fun onReceive(context: Context, intent: Intent) {
 
-            logger.i { "onReceive: ${intent.action}" }
+            logger.i { "onReceive: ${intent.action} ${intent.extras}" }
 
             if (UsbManager.ACTION_USB_DEVICE_ATTACHED == intent.action) {
                 scanUsbDevices()
@@ -53,6 +56,10 @@ class DeviceManagerAndroid constructor(
             } else if (ACTION_USB_PERMISSION == intent.action) {
 
                 val device: UsbDevice? = IntentCompat.getParcelableExtra(intent, UsbManager.EXTRA_DEVICE, UsbDevice::class.java)
+
+                logger.d { "Device $device" }
+                logger.d { "Device has permission ${hasPermissions(device!!)}" }
+
 
                 if (device != null && (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false) || hasPermissions(device))) {
                     device.apply {
@@ -84,9 +91,6 @@ class DeviceManagerAndroid constructor(
 
         scanUsbDevices()
 
-        Bluetooth.availability.onEach {
-            it
-        }
     }
 
     override fun advertisedDevice(advertisement: PlatformAdvertisement) {
@@ -96,25 +100,19 @@ class DeviceManagerAndroid constructor(
         if (isJade) {
             super.advertisedDevice(advertisement)
         } else {
-
             val peripheral = scope.peripheral(advertisement)
+            val bleService = advertisement.uuids.firstOrNull()
 
-            val device = AndroidDevice.fromScan(
-                deviceManager = this,
-                peripheral = peripheral,
-                bleService = advertisement.uuids.first().let {
-                    ParcelUuid(it)
-                },
-                isBonded = advertisement.isBonded()
-            )
-
-            addBluetoothDevice(device)
+            deviceMapper.invoke(this, null, bleService, peripheral, advertisement.isBonded())
+                ?.also {
+                    addBluetoothDevice(it)
+                }
         }
     }
 
     fun hasPermissions(device: UsbDevice) = usbManager.hasPermission(device)
 
-    fun askForPermissions(device: UsbDevice, onSuccess: (() -> Unit), onError: ((throwable: Throwable?) -> Unit)? = null) {
+    fun askForUsbPermissions(device: UsbDevice, onSuccess: (() -> Unit), onError: ((throwable: Throwable?) -> Unit)? = null) {
         onPermissionSuccess = WeakReference(onSuccess)
         onPermissionError = onError?.let { WeakReference(it) }
         val permissionIntent = PendingIntent.getBroadcast(context, 748, Intent(ACTION_USB_PERMISSION).also {
@@ -124,10 +122,9 @@ class DeviceManagerAndroid constructor(
         usbManager.requestPermission(device, permissionIntent)
     }
 
-    fun refreshDevices(){
-        logger.i { "Refresh device list" }
+    override fun refreshDevices(){
+        super.refreshDevices()
 
-        bleDevices.value = listOf()
         scanUsbDevices()
     }
 
@@ -148,8 +145,11 @@ class DeviceManagerAndroid constructor(
 
         val newDevices = mutableListOf<AndroidDevice>()
         for (usbDevice in newUsbDevices){
-            if(oldDevices.find { it.toAndroidDevice()?.usbDevice == usbDevice } == null){
-                AndroidDevice.fromUsbDevice(this, usbDevice)?.let{
+            if(oldDevices.find { it.toAndroidDevice()?.usbDevice == usbDevice } == null) {
+
+                // Jade or UsbDeviceMapper
+                (JadeUsbDevice.fromUsbDevice(deviceManager = this, usbDevice = usbDevice)
+                    ?: deviceMapper.invoke(this, usbDevice, null, null, null))?.let {
                     newDevices += it
                 }
             }
@@ -160,8 +160,5 @@ class DeviceManagerAndroid constructor(
 
     companion object : Loggable() {
         private const val ACTION_USB_PERMISSION = "com.blockstream.green.USB_PERMISSION"
-
-        // Supported BLE Devices
-        private val SupportedBleUuid = listOf(LedgerDeviceBLE.SERVICE_UUID.toString(), JadeBleConnection.JADE_SERVICE)
     }
 }

@@ -2,7 +2,7 @@
 jvm = "17"
 accompanistPermissions = "0.34.0"
 constraintlayoutComposeMultiplatform = "0.4.0"
-kotlin = "2.0.21"
+kotlin = "2.1.0-Beta2"
 kotlin-logging = "3.0.5"
 kotlinx-coroutines = "1.9.0"
 kotlinx-datetime = "0.6.1"
@@ -44,6 +44,7 @@ multiplatformSettings = "1.1.1"
 okio = "3.9.0"
 peekabooImagePicker = "0.5.2"
 qrose = "1.0.1"
+kotlincrypto-hash = "0.5.3"
 sqldelight = "2.0.2"
 mockito-kotlin = "5.3.1"
 mockk = "1.13.10"
@@ -115,6 +116,8 @@ middle-ellipsis-text3 = { module = "io.github.mataku:middle-ellipsis-text3", ver
 mpfilepicker = { module = "com.darkrockstudios:mpfilepicker", version.ref = "mpfilepicker" }
 peekaboo-image-picker = { module = "io.github.onseok:peekaboo-image-picker", version.ref = "peekabooImagePicker" }
 qrose = { module = "io.github.alexzhirkevich:qrose", version.ref = "qrose" }
+kotlincrypto-hash-sha2 = { module = "org.kotlincrypto.hash:sha2", version.ref = "kotlincrypto-hash" }
+kotlincrypto-hash-md = { module = "org.kotlincrypto.hash:md", version.ref = "kotlincrypto-hash" }
 sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
 sqldelight-sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }

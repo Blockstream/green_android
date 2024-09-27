@@ -147,7 +147,6 @@ class SweepViewModel(greenWallet: GreenWallet, privateKey: String?, accountAsset
             val unspentOutputs =
                 session.getUnspentOutputs(network, privateKey = privateKey.value.trim())
 
-
             AddressParams(
                 address = session.getReceiveAddress(account).address,
                 satoshi = 0,

@@ -375,7 +375,7 @@ abstract class CreateTransactionViewModelAbstract(
                 if (session.isHardwareWallet && !account.isLightning && !transaction.isSweep() && !session.isWatchOnly) {
                     postSideEffect(
                         SideEffects.NavigateTo(
-                            NavigateDestinations.VerifyOnDevice(
+                            NavigateDestinations.DeviceInteraction(
                                 transactionConfirmLook = TransactionConfirmLook.create(
                                     params = params,
                                     transaction = transaction,

@@ -5,21 +5,33 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_are_you_not_receiving_your_2fa
+import blockstream_green.common.generated.resources.id_bluetooth
 import blockstream_green.common.generated.resources.id_cancel
 import blockstream_green.common.generated.resources.id_choose_method_to_authorize_the
 import blockstream_green.common.generated.resources.id_contact_support
+import blockstream_green.common.generated.resources.id_continue
+import blockstream_green.common.generated.resources.id_enable
 import blockstream_green.common.generated.resources.id_enable_2fa_call_method
+import blockstream_green.common.generated.resources.id_install_version_s
+import blockstream_green.common.generated.resources.id_location_services_are_disabled
 import blockstream_green.common.generated.resources.id_message_from_recipient_s
+import blockstream_green.common.generated.resources.id_new_jade_firmware_available
+import blockstream_green.common.generated.resources.id_new_jade_firmware_required
 import blockstream_green.common.generated.resources.id_ok
 import blockstream_green.common.generated.resources.id_open
+import blockstream_green.common.generated.resources.id_outdated_hardware_wallet
 import blockstream_green.common.generated.resources.id_payments_will_fail
 import blockstream_green.common.generated.resources.id_remove_lightning_shortcut
+import blockstream_green.common.generated.resources.id_skip
 import blockstream_green.common.generated.resources.id_success
+import blockstream_green.common.generated.resources.id_the_new_firmware_requires_you
 import blockstream_green.common.generated.resources.id_try_again
 import blockstream_green.common.generated.resources.id_try_again_using_another_2fa
+import blockstream_green.common.generated.resources.id_warning
 import blockstream_green.common.generated.resources.id_you_will_stop_receiving_push
 import blockstream_green.common.generated.resources.warning
 import com.blockstream.common.data.EnrichedAsset
@@ -28,11 +40,14 @@ import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorResolverData
 import com.blockstream.common.data.TwoFactorSetupAction
+import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.common.events.Events
+import com.blockstream.common.extensions.handleException
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.twoFactorMethodsLocalized
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.devices.AbstractDeviceViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.navigation.PopTo
 import com.blockstream.common.sideeffects.SideEffect
@@ -46,6 +61,7 @@ import com.blockstream.compose.dialogs.SingleChoiceDialog
 import com.blockstream.compose.dialogs.TwoFactorCodeDialog
 import com.blockstream.compose.extensions.showErrorSnackbar
 import com.blockstream.compose.managers.LocalPlatformManager
+import com.blockstream.compose.managers.askForBluetoothPermissions
 import com.blockstream.compose.navigation.pushOrReplace
 import com.blockstream.compose.navigation.pushUnique
 import com.blockstream.compose.screens.HomeScreen
@@ -58,6 +74,9 @@ import com.blockstream.compose.screens.addresses.AddressesScreen
 import com.blockstream.compose.screens.archived.ArchivedAccountsScreen
 import com.blockstream.compose.screens.exchange.AccountExchangeScreen
 import com.blockstream.compose.screens.exchange.OnOffRampsScreen
+import com.blockstream.compose.screens.devices.DeviceInfoScreen
+import com.blockstream.compose.screens.devices.DeviceListScreen
+import com.blockstream.compose.screens.devices.DeviceScanScreen
 import com.blockstream.compose.screens.jade.JadeQRScreen
 import com.blockstream.compose.screens.lightning.LnUrlAuthScreen
 import com.blockstream.compose.screens.lightning.LnUrlWithdrawScreen
@@ -104,7 +123,10 @@ import com.blockstream.compose.sheets.CameraBottomSheet
 import com.blockstream.compose.sheets.ChooseAssetAccountBottomSheet
 import com.blockstream.compose.sheets.CountriesBottomSheet
 import com.blockstream.compose.sheets.DenominationBottomSheet
+import com.blockstream.compose.sheets.DeviceInteractionBottomSheet
+import com.blockstream.compose.sheets.EnvironmentBottomSheet
 import com.blockstream.compose.sheets.FeeRateBottomSheet
+import com.blockstream.compose.sheets.JadeFirmwareUpdateBottomSheet
 import com.blockstream.compose.sheets.LightningNodeBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
 import com.blockstream.compose.sheets.NoteBottomSheet
@@ -113,7 +135,6 @@ import com.blockstream.compose.sheets.SignMessageBottomSheet
 import com.blockstream.compose.sheets.SystemMessageBottomSheet
 import com.blockstream.compose.sheets.TransactionDetailsBottomSheet
 import com.blockstream.compose.sheets.TwoFactorResetBottomSheet
-import com.blockstream.compose.sheets.VerifyOnDeviceBottomSheet
 import com.blockstream.compose.sheets.WalletDeleteBottomSheet
 import com.blockstream.compose.sheets.WalletRenameBottomSheet
 import com.blockstream.compose.sheets.WatchOnlySettingsCredentialsBottomSheet
@@ -122,6 +143,7 @@ import com.blockstream.compose.sideeffects.openBrowser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -160,6 +182,7 @@ fun HandleSideEffect(
     val dialog = LocalDialog.current
     val appCoroutine = LocalAppCoroutine.current
     val platformManager = LocalPlatformManager.current
+    val scope = rememberCoroutineScope()
 
     var twoFactorResolverData by remember { mutableStateOf<TwoFactorResolverData?>(null) }
     twoFactorResolverData?.also {
@@ -469,6 +492,66 @@ fun HandleSideEffect(
                             navigator.popAll()
                         }
                     }
+                }
+
+                is SideEffects.EnableBluetooth -> {
+                    platformManager.enableBluetooth()
+                }
+
+                is SideEffects.AskForBluetoothPermissions -> {
+                    platformManager.enableLocationService()
+                }
+
+                is SideEffects.EnableLocationService -> {
+                    dialog.openDialog(
+                        OpenDialogData(
+                            title = StringHolder(stringResource = Res.string.id_bluetooth),
+                            message = StringHolder(stringResource = Res.string.id_location_services_are_disabled),
+                            primaryText = getString(Res.string.id_enable),
+                            secondaryText = getString(Res.string.id_cancel),
+                            onDismiss = {
+                                viewModel.postEvent(Events.NavigateBack)
+                            },
+                            onPrimary = {
+                                platformManager.openBluetoothSettings()
+                            }
+                        )
+                    )
+                }
+
+                is SideEffects.SelectEnvironment -> {
+                    bottomSheetNavigator?.show(EnvironmentBottomSheet)
+                }
+
+                is SideEffects.DeviceInteraction -> {
+                    val screen = bottomSheetNavigator?.show(
+                        DeviceInteractionBottomSheet(
+                            isMasterBlindingKeyRequest = it.isMasterBlindingKeyRequest,
+                            message = it.message
+                        )
+                    )
+
+                    scope.launch (context = handleException()) {
+                        it.completable?.also { completable ->
+                            completable.await()
+                        } ?: run { delay(3000L) }
+
+                        bottomSheetNavigator?.hide(screen)
+                    }
+                }
+
+                is SideEffects.BleRequireRebonding -> {
+                    dialog.openDialog(
+                        OpenDialogData(
+                            title = StringHolder(stringResource = Res.string.id_warning),
+                            message = StringHolder(stringResource = Res.string.id_the_new_firmware_requires_you),
+                            primaryText = getString(Res.string.id_ok),
+                            secondaryText = getString(Res.string.id_cancel),
+                            onPrimary = {
+                                platformManager.enableLocationService()
+                            }
+                        )
+                    )
                 }
 
                 is SideEffects.NavigateTo -> {
@@ -829,12 +912,14 @@ fun HandleSideEffect(
                             )
                         }
 
-                        is NavigateDestinations.VerifyOnDevice -> {
+                        is NavigateDestinations.DeviceInteraction -> {
                             bottomSheetNavigator?.show(
-                                VerifyOnDeviceBottomSheet(
-                                    greenWallet = viewModel.greenWallet,
+                                DeviceInteractionBottomSheet(
+                                    greenWalletOrNull = viewModel.greenWalletOrNull,
                                     transactionConfirmLook = destination.transactionConfirmLook,
-                                    address = destination.address
+                                    verifyAddress = destination.verifyAddress,
+                                    isMasterBlindingKeyRequest = destination.isMasterBlindingKeyRequest,
+                                    message = destination.message
                                 )
                             )
                         }
@@ -1061,9 +1146,121 @@ fun HandleSideEffect(
                                 )
                             )
                         }
+
+                        is NavigateDestinations.DeviceList -> {
+                            navigator?.push(
+                                DeviceListScreen(
+                                    isJade = destination.isJade
+                                )
+                            )
+                        }
+
+                        is NavigateDestinations.DeviceInfo -> {
+                            navigator?.push(
+                                DeviceInfoScreen(
+                                    deviceId = destination.deviceId
+                                )
+                            )
+                        }
+
+                        is NavigateDestinations.DeviceScan -> {
+                            navigator?.push(
+                                DeviceScanScreen(
+                                    greenWallet = destination.greenWallet
+                                )
+                            )
+                        }
+
+                        is NavigateDestinations.JadeFirmwareUpdate -> {
+                            bottomSheetNavigator?.push(
+                                JadeFirmwareUpdateBottomSheet(
+                                    deviceId = destination.deviceId
+                                )
+                            )
+                        }
+
                     }
                 }
             }
         }.collect()
     }
+}
+
+@Composable
+fun DeviceHandleSideEffect(
+    viewModel: AbstractDeviceViewModel,
+    handler: suspend CoroutineScope.(sideEffect: SideEffect) -> Unit = {}
+) {
+    val dialog = LocalDialog.current
+    val appCoroutine = LocalAppCoroutine.current
+    var askForBluetoothPermissions by remember { mutableStateOf(false) }
+
+    if (askForBluetoothPermissions) {
+        askForBluetoothPermissions(viewModel)
+    }
+
+    HandleSideEffect(viewModel = viewModel, handler = {
+        if (it is SideEffects.AskForBluetoothPermissions) {
+            askForBluetoothPermissions = true
+        } else if(it is AbstractDeviceViewModel.LocalSideEffects.AskForFirmwareUpgrade) {
+
+            if(viewModel.deviceOrNull?.deviceBrand == DeviceBrand.Blockstream) {
+
+                val title = when {
+                    it.request.firmwareList != null -> "Select firmware"
+                    it.request.isUpgradeRequired -> getString(Res.string.id_new_jade_firmware_required)
+                    else -> getString(Res.string.id_new_jade_firmware_available)
+                }
+
+                val message = if (it.request.firmwareList == null) getString(
+                    Res.string.id_install_version_s,
+                    it.request.upgradeVersion ?: ""
+                ) else null
+
+                appCoroutine.launch {
+                    dialog.openDialog(OpenDialogData(
+                        title = StringHolder.create(title),
+                        message = message?.let { StringHolder.create(it) },
+                        items = it.request.firmwareList,
+                        primaryText = getString(Res.string.id_continue) ,
+                        secondaryText = if (it.request.firmwareList == null) getString(if (it.request.isUpgradeRequired) Res.string.id_cancel else Res.string.id_skip) else null,
+                        onPrimary = {
+                            viewModel.postEvent(AbstractDeviceViewModel.LocalEvents.RespondToFirmwareUpgrade(index = 0))
+                        },
+                        onSecondary = {
+                            viewModel.postEvent(AbstractDeviceViewModel.LocalEvents.RespondToFirmwareUpgrade(index = null))
+                        }, onItem = {
+                            if(it != null) {
+                                viewModel.postEvent(
+                                    AbstractDeviceViewModel.LocalEvents.RespondToFirmwareUpgrade(
+                                        index = it
+                                    )
+                                )
+                            }
+                        }
+                    ))
+                }
+
+            } else if(viewModel.deviceOrNull != null && it.request.isUpgradeRequired){
+
+                appCoroutine.launch {
+                    dialog.openDialog(OpenDialogData(
+                        title = StringHolder.create(Res.string.id_warning),
+                        message = StringHolder.create(Res.string.id_outdated_hardware_wallet),
+                        primaryText = getString(Res.string.id_continue) ,
+                        secondaryText = getString(Res.string.id_cancel),
+                        onPrimary = {
+                            viewModel.postEvent(AbstractDeviceViewModel.LocalEvents.RespondToFirmwareUpgrade(index = 0))
+                        },
+                        onSecondary = {
+                            viewModel.postEvent(AbstractDeviceViewModel.LocalEvents.RespondToFirmwareUpgrade(index = 0))
+                        }
+                    ))
+                }
+            }
+
+        } else {
+            handler.invoke(this, it)
+        }
+    })
 }

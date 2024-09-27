@@ -51,17 +51,16 @@ class BottomSheetNavigatorM3 constructor(
     private val coroutineScope: CoroutineScope
 ) : Stack<Screen> by navigator {
 
-    fun show(screen: Screen) {
+    fun show(screen: Screen): Screen {
         coroutineScope.launch {
             push(screen)
         }
+        return screen
     }
     
-    public fun hide() {
+    fun hide(screen: Screen? = null) {
         coroutineScope.launch {
-            (lastItemOrNull as? BottomScreen)?.sheetState?.also {
-                it.hide()
-            }
+            (if (screen == null) lastItemOrNull else items.find { it == screen })?.let { it as? BottomScreen }?.sheetState?.hide()
 
             if(size > 1) {
                 pop()

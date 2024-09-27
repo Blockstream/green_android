@@ -110,11 +110,3 @@ fun ErrorReportDialog(
         }
     }
 }
-
-@Composable
-@Preview
-fun ErrorReportDialogPreview() {
-    GreenThemePreview {
-        ErrorReportDialog(errorReport = ErrorReport.create(Exception("Preview")))
-    }
-}

@@ -5,6 +5,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.gdk.data.UtxoView
 import com.blockstream.common.looks.transaction.TransactionConfirmLook
 import com.blockstream.common.models.SimpleGreenViewModelPreview
+import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.GreenAndroidPreview
 
 
@@ -12,9 +13,9 @@ import com.blockstream.compose.GreenAndroidPreview
 @Preview
 fun VerifyOnDeviceTransactionBottomSheetPreview() {
     GreenAndroidPreview {
-        VerifyOnDeviceBottomSheet(
+        DeviceInteractionBottomSheet(
             viewModel = SimpleGreenViewModelPreview(),
-            address = null,
+            verifyAddress = null,
             transactionConfirmLook = TransactionConfirmLook(
                 utxos = listOf(
                     UtxoView(
@@ -39,9 +40,33 @@ fun VerifyOnDeviceTransactionBottomSheetPreview() {
 @Preview
 fun VerifyOnDeviceAddressBottomSheetPreview() {
     GreenAndroidPreview {
-        VerifyOnDeviceBottomSheet(
+        DeviceInteractionBottomSheet(
             viewModel = SimpleGreenViewModelPreview(),
-            address = "bc1tinyaddresstestonly",
+            verifyAddress = "bc1tinyaddresstestonly",
+            onDismissRequest = { }
+        )
+    }
+}
+
+@Composable
+@Preview
+fun VerifyOnDeviceMessageBottomSheetPreview() {
+    GreenAndroidPreview {
+        DeviceInteractionBottomSheet(
+            viewModel = SimpleGreenViewModelPreview(),
+            message = StringHolder.create("id_check_your_device"),
+            onDismissRequest = { }
+        )
+    }
+}
+
+@Composable
+@Preview
+fun VerifyOnDeviceMasterBlindingKeyBottomSheetPreview() {
+    GreenAndroidPreview {
+        DeviceInteractionBottomSheet(
+            viewModel = SimpleGreenViewModelPreview(),
+            isMasterBlindingKeyRequest = true,
             onDismissRequest = { }
         )
     }

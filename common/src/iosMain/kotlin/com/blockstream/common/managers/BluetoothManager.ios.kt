@@ -5,5 +5,5 @@ import kotlinx.coroutines.flow.StateFlow
 
 
 actual class BluetoothManager {
-    actual val bluetoothState: StateFlow<BluetoothState> = MutableStateFlow(BluetoothState.On)
+    actual val bluetoothState: StateFlow<BluetoothState> = MutableStateFlow(BluetoothState.ON)
 }

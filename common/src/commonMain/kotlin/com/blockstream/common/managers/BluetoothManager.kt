@@ -2,13 +2,8 @@ package com.blockstream.common.managers
 
 import kotlinx.coroutines.flow.StateFlow
 
-public sealed class BluetoothState {
-    data object Off : BluetoothState()
-    data object Unavailable: BluetoothState()
-    data object AdapterNotAvailable: BluetoothState()
-    data object PermissionsNotGranted : BluetoothState()
-    data object LocationServicesDisabled : BluetoothState()
-    data object On : BluetoothState()
+enum class BluetoothState {
+    OFF, UNAVAILABLE, ADAPTER_NOT_AVAILABLE, PERMISSIONS_NOT_GRANTED, LOCATION_SERVICES_DISABLED, ON
 }
 
 expect class BluetoothManager {

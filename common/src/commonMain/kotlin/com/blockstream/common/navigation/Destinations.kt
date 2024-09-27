@@ -14,7 +14,6 @@ import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.gdk.data.Psbt
 import com.blockstream.common.looks.transaction.TransactionConfirmLook
 import com.blockstream.common.models.settings.WalletSettingsSection
 import com.blockstream.common.models.sheets.NoteType
@@ -50,12 +49,15 @@ sealed class NavigateDestinations : NavigateDestination {
 
     data class Xpub(val setupArgs: SetupArgs) : NavigateDestination
     data class DeviceList(val isJade: Boolean) : NavigateDestination
+    data class DeviceInfo(val deviceId: String) : NavigateDestination
+    data class DeviceScan(val greenWallet: GreenWallet) : NavigateDestination
+    data class JadeFirmwareUpdate(val deviceId: String) : NavigateDestination
 
     data class Login(val greenWallet: GreenWallet, val isLightningShortcut: Boolean = false, val deviceId: String? = null) : NavigateDestination
 
     data class WalletOverview(val greenWallet: GreenWallet) : NavigateDestination
 
-    data class DeviceScan(val greenWallet: GreenWallet) : NavigateDestination
+
     data class RenameWallet(val greenWallet: GreenWallet) : NavigateDestination
     data class DeleteWallet(val greenWallet: GreenWallet) : NavigateDestination
     data class AssetsAccounts(val assetsAccounts: List<AccountAssetBalance>) : NavigateDestination
@@ -165,8 +167,10 @@ sealed class NavigateDestinations : NavigateDestination {
 
     data class Note(val note: String, val noteType: NoteType) : NavigateDestination
 
-    data class VerifyOnDevice(
+    data class DeviceInteraction(
         val transactionConfirmLook: TransactionConfirmLook? = null,
-        val address: String? = null
+        val verifyAddress: String? = null,
+        val isMasterBlindingKeyRequest: Boolean = false,
+        val message: String? = null
     ) : NavigateDestination
 }

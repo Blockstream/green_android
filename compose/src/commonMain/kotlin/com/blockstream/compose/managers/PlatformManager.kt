@@ -34,6 +34,9 @@ expect fun rememberImagePicker(scope: CoroutineScope, onResult: suspend (ByteArr
 @Composable
 expect fun askForNotificationPermissions(viewModel: GreenViewModel)
 
+@Composable
+expect fun askForBluetoothPermissions(viewModel: GreenViewModel)
+
 expect class PlatformManager {
     fun openBrowser(url: String, openSystemBrowser: Boolean)
 
@@ -54,6 +57,10 @@ expect class PlatformManager {
     suspend fun processQr(data: ByteArray, text: String): ByteArray
 
     fun fileToSource(file: String): Source?
+
+    fun enableBluetooth()
+    fun enableLocationService()
+    fun openBluetoothSettings()
 }
 
 fun PlatformManager.getClipboard(clearClipboard: Boolean = false): String? {

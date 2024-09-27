@@ -1,4 +1,4 @@
-package com.blockstream;
+package com.blockstream.jade.firmware;
 
 interface HardwareQATester{
     fun getAntiExfilCorruptionForMessageSign() : Boolean

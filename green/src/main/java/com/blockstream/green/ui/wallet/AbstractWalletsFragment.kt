@@ -9,8 +9,6 @@ import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.ui.AppFragment
-import com.blockstream.green.ui.MainActivity
-import com.blockstream.green.ui.login.LoginFragment
 
 abstract class AbstractWalletsFragment<T : ViewDataBinding> constructor(
     @LayoutRes layout: Int,
@@ -38,28 +36,6 @@ abstract class AbstractWalletsFragment<T : ViewDataBinding> constructor(
             is NavigateDestinations.WalletOverview -> navigate(
                 NavGraphDirections.actionGlobalWalletOverviewFragment(
                     directions.greenWallet
-                )
-            )
-
-            is NavigateDestinations.Login -> {
-                (requireActivity() as MainActivity).getVisibleFragment()?.also {
-                    if(it is LoginFragment && it.viewModel.greenWalletOrNull == directions.greenWallet && it.args.isLightningShortcut == directions.isLightningShortcut){
-                        return
-                    }
-                }
-
-                navigate(
-                    NavGraphDirections.actionGlobalLoginFragment(
-                        wallet = directions.greenWallet,
-                        isLightningShortcut = directions.isLightningShortcut,
-                        autoLoginWallet = !directions.isLightningShortcut
-                    )
-                )
-            }
-
-            is NavigateDestinations.DeviceScan -> navigate(
-                NavGraphDirections.actionGlobalDeviceScanFragment(
-                    wallet = directions.greenWallet
                 )
             )
         }

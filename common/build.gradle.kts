@@ -100,6 +100,10 @@ kotlin {
         }
 
         commonMain.dependencies {
+            /**  --- Jade ------------------------------------------------------------------------------- */
+            api(project(":jade"))
+            /** ----------------------------------------------------------------------------------------- */
+
             /**  --- Kotlin & KotlinX ------------------------------------------------------------------- */
             api(libs.kotlinx.coroutines.core)
             api(libs.kotlinx.serialization.core)
@@ -136,12 +140,13 @@ kotlin {
             api(libs.uuid)
             api(libs.multiplatform.settings)
             api(libs.okio) // Filesystem
-            api(libs.kermit) //Add latest version
+            api(libs.kermit)
             api(libs.state.keeper)
             api(libs.parcelable)
             api(libs.kase64) // base64
             api(libs.ksoup.entites) // html entities
             api(libs.kable.core)
+
             implementation("com.juul.tuulbox:coroutines:8.0.0")
             /** ----------------------------------------------------------------------------------------- */
         }

@@ -5,8 +5,6 @@ import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.data.EnrichedAsset
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.database.Database
 import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.GA_ERROR
@@ -17,7 +15,6 @@ import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Device
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.managers.SessionManager
 import com.blockstream.green.R
 import com.blockstream.green.extensions.toBitmap
 import com.blockstream.green.extensions.toBitmapDrawable
@@ -31,9 +28,7 @@ fun GdkSession.getAssetDrawableOrNull(context: Context, assetId: String): Drawab
     return null
 }
 
-suspend fun GdkSession.getWallet(database: Database, sessionManager: SessionManager): GreenWallet? {
-    return (ephemeralWallet ?: (sessionManager.getWalletIdFromSession(this)?.let { walletId -> database.getWallet(walletId) }))
-}
+
 
 fun GdkSession.getAssetDrawableOrDefault(context: Context, assetId: String): Drawable {
     return getAssetDrawableOrNull(context, assetId) ?: context.getDrawable(R.drawable.unknown)!!

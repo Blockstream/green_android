@@ -22,21 +22,21 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.database.Database
 import com.blockstream.common.di.ApplicationScope
+import com.blockstream.common.extensions.getWallet
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
+import com.blockstream.common.utils.Loggable
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
 import com.blockstream.green.gdk.getNetworkColor
-import com.blockstream.green.gdk.getWallet
 import com.blockstream.green.ui.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import com.blockstream.common.utils.Loggable
 
 
 class NotificationManager constructor(

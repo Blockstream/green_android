@@ -15,9 +15,8 @@ import com.blockstream.common.data.NavData
 import com.blockstream.compose.LocalAppBarState
 import com.blockstream.compose.theme.GreenThemePreview
 import com.blockstream.compose.utils.AppBarState
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
-@Preview
+@androidx.compose.ui.tooling.preview.Preview
 @Composable
 private fun GreenTopAppScreenPreview() {
     GreenThemePreview {
@@ -27,6 +26,7 @@ private fun GreenTopAppScreenPreview() {
                     title = "Title",
                     subtitle = "Subtitle",
                     actions = listOf(
+                        NavAction(title = "Action", isMenuEntry = false),
                         NavAction(title = "Action", isMenuEntry = false, icon = Res.drawable.note_pencil),
                         NavAction(title = "Action Menu", isMenuEntry = true, icon =  Res.drawable.signature),
                         NavAction(title = "Action Menu", isMenuEntry = true, icon =  Res.drawable.note_pencil),

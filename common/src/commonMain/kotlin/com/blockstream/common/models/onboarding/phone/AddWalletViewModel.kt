@@ -6,7 +6,6 @@ import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestination
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 
@@ -19,10 +18,6 @@ class AddWalletViewModel : AddWalletViewModelAbstract() {
         object NewWallet : Event
         object RestoreWallet : Event
         class SelectEnviroment(val isTestnet: Boolean, val customNetwork: Network?): Event
-    }
-
-    sealed class LocalSideEffects{
-        object SelectEnvironment: SideEffect
     }
 
     private val isTestnetEnabled
@@ -42,7 +37,7 @@ class AddWalletViewModel : AddWalletViewModelAbstract() {
                 SideEffects.NavigateTo(NavigateDestinations.RecoveryIntro(setupArgs = SetupArgs(isRestoreFlow = false))).also {
                     if(isTestnetEnabled){
                         pendingDestination = it.destination
-                        postSideEffect(LocalSideEffects.SelectEnvironment)
+                        postSideEffect(SideEffects.SelectEnvironment)
                     }else{
                         postSideEffect(it)
                     }
@@ -54,7 +49,7 @@ class AddWalletViewModel : AddWalletViewModelAbstract() {
                 SideEffects.NavigateTo(NavigateDestinations.EnterRecoveryPhrase(setupArgs = SetupArgs(isRestoreFlow = true))).also {
                     if(isTestnetEnabled){
                         pendingDestination = it.destination
-                        postSideEffect(LocalSideEffects.SelectEnvironment)
+                        postSideEffect(SideEffects.SelectEnvironment)
                     }else{
                         postSideEffect(it)
                     }

@@ -55,4 +55,5 @@ class Events : Event {
 
     data class SelectTwoFactorMethod(val method: String?): Event
     object NotificationPermissionGiven: Event
+    object BluetoothPermissionGiven: Event
 }

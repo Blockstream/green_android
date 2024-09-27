@@ -23,6 +23,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.MutableLiveData
 import androidx.viewbinding.ViewBinding
 import com.blockstream.common.data.TwoFactorMethod
+import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.green.R
@@ -33,6 +34,19 @@ import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+
+fun DeviceBrand.icon(): Int = when (this) {
+    DeviceBrand.Blockstream -> R.drawable.ic_blockstream
+    DeviceBrand.Ledger -> R.drawable.ic_ledger
+    DeviceBrand.Trezor -> R.drawable.ic_trezor
+}
+
+
+fun DeviceBrand.deviceIcon(): Int = when (this) {
+    DeviceBrand.Blockstream -> R.drawable.blockstream_jade_device
+    DeviceBrand.Ledger -> R.drawable.ledger_device
+    DeviceBrand.Trezor -> R.drawable.trezor_device
+}
 
 fun ViewBinding.context(): Context = root.context
 

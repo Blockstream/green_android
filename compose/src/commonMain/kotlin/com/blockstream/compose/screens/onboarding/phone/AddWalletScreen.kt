@@ -33,7 +33,6 @@ import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.sheets.EnvironmentBottomSheet
-import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
 import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AppBar
@@ -61,20 +60,17 @@ fun AddWalletScreen(
 ) {
 
     EnvironmentBottomSheet.getResult {
-        viewModel.postEvent(
-            AddWalletViewModel.LocalEvents.SelectEnviroment(
-                isTestnet = it,
-                customNetwork = null
+        if(it >= 0) {
+            viewModel.postEvent(
+                AddWalletViewModel.LocalEvents.SelectEnviroment(
+                    isTestnet = it == 1,
+                    customNetwork = null
+                )
             )
-        )
-    }
-
-    val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
-    HandleSideEffect(viewModel = viewModel) { sideEffect ->
-        if (sideEffect is AddWalletViewModel.LocalSideEffects.SelectEnvironment) {
-            bottomSheetNavigator?.show(EnvironmentBottomSheet)
         }
     }
+
+    HandleSideEffect(viewModel = viewModel)
 
     Column(
         modifier = Modifier

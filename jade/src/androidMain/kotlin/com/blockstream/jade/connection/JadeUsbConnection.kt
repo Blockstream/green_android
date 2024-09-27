@@ -2,7 +2,7 @@ package com.blockstream.jade.connection
 
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
-import com.blockstream.common.utils.Loggable
+import com.blockstream.jade.Loggable
 import com.blockstream.jade.data.JadeError
 import com.felhr.usbserial.UsbSerialDevice
 import com.felhr.usbserial.UsbSerialInterface

@@ -59,6 +59,7 @@ import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.LBTC_POLICY_ASSET
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.WalletIcon
+import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.GdkSession
@@ -97,12 +98,12 @@ fun WalletIcon.resource() = when (this) {
     else -> Res.drawable.wallet
 }
 
-fun GreenDevice.icon(): DrawableResource {
-    return when {
-        deviceBrand.isTrezor -> Res.drawable.trezor_device
-        deviceBrand.isLedger -> Res.drawable.ledger_device
-        else -> Res.drawable.blockstream_jade_device
-    }
+fun GreenDevice.icon(): DrawableResource = deviceBrand.icon()
+
+fun DeviceBrand.icon(): DrawableResource = when (this) {
+    DeviceBrand.Ledger -> Res.drawable.ledger_device
+    DeviceBrand.Trezor -> Res.drawable.trezor_device
+    else -> Res.drawable.blockstream_jade_device
 }
 
 fun String.getNetworkIcon(): DrawableResource {

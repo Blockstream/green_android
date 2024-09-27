@@ -1,7 +1,5 @@
 package com.blockstream.jade
 
-import com.blockstream.common.interfaces.HttpRequestHandler
-import com.blockstream.common.utils.Loggable
 import com.blockstream.jade.api.AuthRequest
 import com.blockstream.jade.api.AuthRequestParams
 import com.blockstream.jade.api.BlindingFactorRequest
@@ -79,8 +77,6 @@ class JadeAPI internal constructor(
 
     val disconnectEvent: StateFlow<Boolean>?
         get() = jade.bleDisconnectEvent
-
-    private var sync_error = false
 
     suspend fun connect(): VersionInfo? {
         // Connect the underlying transport
@@ -183,7 +179,7 @@ class JadeAPI internal constructor(
 
     // OTA firmware update
     @Throws(Exception::class)
-    fun otaUpdate(
+    suspend fun otaUpdate(
         firmware: ByteArray,
         firmwareSize: Int,
         firmwareHash: String?,
@@ -234,14 +230,14 @@ class JadeAPI internal constructor(
     // `output_index` is the output we are trying to blind.
     // `type` can either be "ASSET" or "VALUE" to generate ABFs or VBFs.
     @Throws(Exception::class)
-    fun getBlindingFactor(hashPrevouts: ByteArray, outputIdx: Int, type: String): ByteArray {
+    suspend fun getBlindingFactor(hashPrevouts: ByteArray, outputIdx: Int, type: String): ByteArray {
         val request = BlindingFactorRequest(params = BlindingFactorRequestParams(hashPrevouts = hashPrevouts, outputIdx = outputIdx, type = type))
         return jadeRpc(request, ByteArrayResponse.serializer())
     }
 
     // Get blinding key for script
     @Throws(Exception::class)
-    fun getBlindingKey(script: ByteArray): ByteArray {
+    suspend fun getBlindingKey(script: ByteArray): ByteArray {
         val request = BlindingKeyRequest(params = BlindingKeyRequestParams(script = script))
         return jadeRpc(request, ByteArrayResponse.serializer())
     }
@@ -249,13 +245,13 @@ class JadeAPI internal constructor(
     // Get the shared secret to unblind a tx, given the receiving script on our side
     // and the pubkey of the sender (sometimes called "nonce" in Liquid)
     @Throws(Exception::class)
-    fun getSharedNonce(script: ByteArray, pubkey: ByteArray): ByteArray {
+    suspend fun getSharedNonce(script: ByteArray, pubkey: ByteArray): ByteArray {
         val request = SharedNonceRequest(params = SharedNonceRequestParams(script = script, theirPubKey = pubkey))
         return jadeRpc(request, ByteArrayResponse.serializer())
     }
 
     // Sign a transaction
-    fun signTx(network: String, txn: ByteArray, inputs: List<TxInput>, change: List<ChangeOutput?>): SignedTransactionInputs {
+    suspend fun signTx(network: String, txn: ByteArray, inputs: List<TxInput>, change: List<ChangeOutput?>): SignedTransactionInputs {
         // 1st message contains txn and number of inputs we are going to send.
         // Reply ok if that corresponds to the expected number of inputs (n).
         val request = SignTransactionRequest(id = jadeId(), method = "sign_tx", params = SignTransactionRequestParams(
@@ -277,7 +273,7 @@ class JadeAPI internal constructor(
 
     // Sign a liquid transaction
     @Throws(Exception::class)
-    fun signLiquidTx(
+    suspend fun signLiquidTx(
         network: String,
         txn: ByteArray,
         inputs: List<TxInput>,
@@ -307,7 +303,7 @@ class JadeAPI internal constructor(
 
     // Helper to send transaction inputs and retrieve signature responses
     @Throws(Exception::class)
-    private fun signTransactionInputs(
+    private suspend fun signTransactionInputs(
         inputs: List<TxInput>
     ): SignedTransactionInputs {
         /**
@@ -342,7 +338,7 @@ class JadeAPI internal constructor(
 
     // Sign a message
     @Throws(Exception::class)
-    fun signMessage(
+    suspend fun signMessage(
         path: List<Long>,
         message: String,
         useAeProtocol: Boolean,
@@ -380,7 +376,7 @@ class JadeAPI internal constructor(
     }
 
     // Get (receive) green address - multisig shield
-    fun getReceiveAddress(
+    suspend fun getReceiveAddress(
         network: String,
         subaccount: Long,
         branch: Long,
@@ -404,7 +400,7 @@ class JadeAPI internal constructor(
     }
 
     // Get (receive) green address - singlesig
-    fun getReceiveAddress(network: String, variant: String, path: List<Long>): String {
+    suspend fun getReceiveAddress(network: String, variant: String, path: List<Long>): String {
         val request = ReceiveAddressRequest(
             id = jadeId(),
             method = "get_receive_address",
@@ -413,7 +409,7 @@ class JadeAPI internal constructor(
         return jadeRpc(request, StringResponse.serializer())
     }
 
-    private fun logout(): Boolean {
+    private suspend fun logout(): Boolean {
         // Command added in fw 1.1.44
         return if (JadeVersion(getVersionInfo(useCache = true).jadeVersion) >= JadeVersion("0.1.44")) {
             jadeRpc(LogoutRequest(), BooleanResponse.serializer())
@@ -422,12 +418,12 @@ class JadeAPI internal constructor(
         }
     }
 
-    fun authUser(network: String): Boolean {
+    suspend fun authUser(network: String): Boolean {
         val request = AuthRequest(params = AuthRequestParams(network = network, epoch = Clock.System.now().toEpochMilliseconds() / 1000))
         return jadeRpc(request, BooleanResponse.serializer())
     }
 
-    fun getVersionInfo(useCache: Boolean = false): VersionInfo {
+    suspend fun getVersionInfo(useCache: Boolean = false): VersionInfo {
         _versionInfo.takeIf { useCache }?.also {
             return it
         }
@@ -439,26 +435,26 @@ class JadeAPI internal constructor(
     }
 
     // Send additional entropy for the rng to jade
-    fun addEntropy(entropy: ByteArray): Boolean {
+    suspend fun addEntropy(entropy: ByteArray): Boolean {
         val request = EntropyRequest(params = EntropyRequestParams(entropy = entropy))
         return jadeRpc(request, BooleanResponse.serializer())
     }
 
 
     // Get xpub given path
-    fun getXpub(network: String, path: List<Long>): String {
+    suspend fun getXpub(network: String, path: List<Long>): String {
         val request = XpubRequest(params = XpubRequestParams(network = network, path = path))
         return jadeRpc(request, StringResponse.serializer())
     }
 
     // Liquid calls
     // Get master [un-]blinding key for wallet
-    fun getMasterBlindingKey(onlyIfSilent: Boolean): ByteArray {
+    suspend fun getMasterBlindingKey(onlyIfSilent: Boolean): ByteArray {
         val request = MasterBlindingKeyRequest(params = MasterBlindingKeyRequestParams(onlyIfSilent = onlyIfSilent))
         return jadeRpc(request, ByteArrayResponse.serializer())
     }
 
-    private fun <R: Response<*, P>, P> jadeRpc(request: Request<*, *>, serializer: DeserializationStrategy<R>): P {
+    private suspend fun <R: Response<*, P>, P> jadeRpc(request: Request<*, *>, serializer: DeserializationStrategy<R>): P {
 
         val response = jade.makeRpcCall(request = request, serializer = serializer, timeout = request.timeout, drain = false)
 
@@ -525,8 +521,6 @@ class JadeAPI internal constructor(
     }
 
     companion object : Loggable() {
-        private const val TAG = "JadeAPI"
-
 
         fun fromBle(
             peripheral: Peripheral,

@@ -1,20 +1,17 @@
 package com.blockstream.green.ui
 
-import androidx.lifecycle.MutableLiveData
 import com.blockstream.common.interfaces.JadeHttpRequestUrlValidator
 import com.blockstream.common.managers.LifecycleManager
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.runBlocking
-import org.koin.android.annotation.KoinViewModel
 
-@KoinViewModel
 class MainActivityViewModel constructor(
-    val lifecycleManager: LifecycleManager
+    private val lifecycleManager: LifecycleManager
 ) : GreenViewModel(), JadeHttpRequestUrlValidator {
     val lockScreen = lifecycleManager.isLocked
-    val buildVersion = MutableLiveData("")
+    val buildVersion = MutableStateFlow("")
 
     var unsafeUrlWarningEmitter: CompletableDeferred<Boolean>? = null
     var torWarningEmitter: CompletableDeferred<Boolean>? = null

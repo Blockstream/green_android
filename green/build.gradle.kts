@@ -185,8 +185,7 @@ dependencies {
     /**  --- Modules ---------------------------------------------------------------------------- */
     implementation(project(":base"))
     implementation(project(":compose"))
-    implementation(project(":hardware"))
-    implementation(project(":jade"))
+    // implementation(project(":jade"))
 
     developmentImplementation(project(":gms"))
     productionGoogleImplementation(project(":gms"))
@@ -210,8 +209,6 @@ dependencies {
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Koin   ----------------------------------------------------------------------------- */
-    ksp(libs.koin.ksp.compiler)
-
     // For instrumentation tests
     androidTestImplementation(libs.koin.test)
     androidTestImplementation(libs.koin.test.junit4)

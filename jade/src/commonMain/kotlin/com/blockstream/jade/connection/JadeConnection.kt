@@ -1,6 +1,6 @@
 package com.blockstream.jade.connection
 
-import com.blockstream.common.utils.Loggable
+import com.blockstream.jade.Loggable
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.StateFlow
@@ -11,7 +11,7 @@ import kotlinx.coroutines.withTimeout
  */
 abstract class JadeConnection {
     // Derived classes push incoming/received data into this queue
-    private val receivedData = Channel<ByteArray>(capacity = UNLIMITED)
+    internal val receivedData = Channel<ByteArray>(capacity = UNLIMITED)
 
     abstract val isUsb: Boolean
 
@@ -39,17 +39,17 @@ abstract class JadeConnection {
     // A timeout of less than zero and the call blocks until a byte is received.
     // Returns null if the timeout expires and no byte is available.
     suspend fun read(timeout: Int): ByteArray? {
-        val pollTimeout = if ((timeout >= 0)) timeout else 10000
 
         return if (timeout == 0) {
             receivedData.tryReceive().getOrNull()
         } else if (timeout > 0) {
             try {
-                withTimeout(pollTimeout.toLong()) {
+                withTimeout(timeout.toLong()) {
                     receivedData.receive()
                 }
             } catch (e: Exception) {
-                logger.w { "read() timed-out - timeout(ms): $timeout" }
+                e.printStackTrace()
+                logger.w { "read() timed-out - timeout(ms): $timeout (${e.message})" }
                 null
             }
         } else {

@@ -9,7 +9,7 @@
 
         <variable
             name="vm"
-            type="com.blockstream.green.ui.devices.DeviceInfoViewModel" />
+            type="com.blockstream.common.models.devices.DeviceInfoViewModel" />
 
     </data>
 

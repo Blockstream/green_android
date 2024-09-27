@@ -401,8 +401,8 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
                     _address.value?.also {
                         postSideEffect(
                             SideEffects.NavigateTo(
-                                NavigateDestinations.VerifyOnDevice(
-                                    address = it.address
+                                NavigateDestinations.DeviceInteraction(
+                                    verifyAddress = it.address
                                 )
                             )
                         )

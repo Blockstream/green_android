@@ -1,6 +1,7 @@
 package com.blockstream.compose.managers
 
 import android.Manifest
+import android.bluetooth.BluetoothAdapter
 import android.content.ClipData
 import android.content.ClipDescription
 import android.content.ClipboardManager
@@ -16,12 +17,14 @@ import android.net.Uri
 import android.os.Build
 import android.os.PersistableBundle
 import android.provider.MediaStore
+import android.provider.Settings
 import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
 import android.text.TextUtils
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
@@ -31,9 +34,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSavedStateRegistryOwner
+import androidx.core.app.ActivityCompat
 import androidx.core.app.ShareCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
+import androidx.fragment.app.FragmentActivity
 import androidx.savedstate.SavedStateRegistryOwner
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_share
@@ -41,9 +46,12 @@ import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.stateKeeper
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.logException
+import com.blockstream.common.managers.BluetoothManager
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.compose.LocalActivity
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.google.zxing.MultiFormatReader
@@ -62,13 +70,13 @@ import org.jetbrains.compose.resources.getString
 import java.io.ByteArrayOutputStream
 import java.io.File
 
-
 @Composable
 actual fun rememberPlatformManager(): PlatformManager {
     val context = LocalContext.current
+    val activity = LocalActivity.current as? FragmentActivity
 
     return remember {
-        PlatformManager(context)
+        PlatformManager(context, activity)
     }
 }
 actual class StateKeeperFactory(val savedStateRegistryOwner: SavedStateRegistryOwner) {
@@ -112,7 +120,32 @@ actual fun askForNotificationPermissions(viewModel: GreenViewModel) {
     }
 }
 
-actual class PlatformManager(val context: Context) {
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+actual fun askForBluetoothPermissions(viewModel: GreenViewModel) {
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { results ->
+        if (results.values.all { it }) {
+            viewModel.postEvent(Events.BluetoothPermissionGiven)
+        } else {
+            // Handle permission denial
+        }
+    }
+
+    val permissionState = rememberMultiplePermissionsState(BluetoothManager.BLE_PERMISSIONS.toList())
+
+    LaunchedEffect(permissionState) {
+        if (!permissionState.allPermissionsGranted && permissionState.shouldShowRationale) {
+            // Show rationale if needed
+            requestPermissionLauncher.launch(BluetoothManager.BLE_PERMISSIONS)
+        } else {
+            requestPermissionLauncher.launch(BluetoothManager.BLE_PERMISSIONS)
+        }
+    }
+}
+
+actual class PlatformManager constructor(val context: Context, val activity: FragmentActivity?) {
 
     actual fun openToast(content: String): Boolean {
         Toast.makeText(context, content, Toast.LENGTH_SHORT).show()
@@ -213,6 +246,18 @@ actual class PlatformManager(val context: Context) {
                 getString(Res.string.id_share)
             )
         )
+    }
+
+    actual fun enableBluetooth() {
+        activity?.startActivity(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
+    }
+
+    actual fun enableLocationService(){
+        activity?.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+    }
+
+    actual fun openBluetoothSettings(){
+        activity?.startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
     }
 
     actual fun hasFlash(): Boolean = context.packageManager?.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH) ?: false

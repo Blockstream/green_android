@@ -11,6 +11,9 @@ import com.blockstream.common.models.addresses.SignMessageViewModel
 import com.blockstream.common.models.archived.ArchivedAccountsViewModel
 import com.blockstream.common.models.camera.CameraViewModel
 import com.blockstream.common.models.demo.DemoViewModel
+import com.blockstream.common.models.devices.DeviceInfoViewModel
+import com.blockstream.common.models.devices.DeviceListViewModel
+import com.blockstream.common.models.devices.DeviceScanViewModel
 import com.blockstream.common.models.devices.JadeGuideViewModel
 import com.blockstream.common.models.drawer.DrawerViewModel
 import com.blockstream.common.models.exchange.AccountExchangeViewModel
@@ -55,6 +58,7 @@ import com.blockstream.common.models.settings.WatchOnlyCredentialsSettingsViewMo
 import com.blockstream.common.models.settings.WatchOnlyViewModel
 import com.blockstream.common.models.sheets.AnalyticsViewModel
 import com.blockstream.common.models.sheets.AssetDetailsViewModel
+import com.blockstream.common.models.sheets.JadeFirmwareUpdateViewModel
 import com.blockstream.common.models.sheets.LightningNodeViewModel
 import com.blockstream.common.models.sheets.NoteViewModel
 import com.blockstream.common.models.sheets.RecoveryHelpViewModel
@@ -63,11 +67,13 @@ import com.blockstream.common.models.transaction.TransactionViewModel
 import com.blockstream.common.models.twofactor.ReEnable2FAViewModel
 import com.blockstream.common.models.wallet.WalletDeleteViewModel
 import com.blockstream.common.models.wallet.WalletNameViewModel
+import com.blockstream.green.ui.MainActivityViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.dsl.module
 
 val viewModels = module {
+    viewModelOf(::MainActivityViewModel)
     viewModelOf(::AboutViewModel)
     viewModelOf(::DemoViewModel)
     viewModelOf(::SetupNewWalletViewModel)
@@ -117,6 +123,10 @@ val viewModels = module {
     viewModelOf(::ReEnable2FAViewModel)
     viewModelOf(::WatchOnlyCredentialsSettingsViewModel)
     viewModelOf(::OnOffRampsViewModel)
+    viewModelOf(::DeviceListViewModel)
+    viewModelOf(::DeviceInfoViewModel)
+    viewModelOf(::DeviceScanViewModel)
+    viewModelOf(::JadeFirmwareUpdateViewModel)
     viewModel {
         AssetDetailsViewModel(get(), get(), getOrNull())
     }

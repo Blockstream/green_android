@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <import type="com.blockstream.common.managers.AndroidBluetoothState" />
+        <import type="com.blockstream.common.managers.BluetoothState" />
 
         <variable
             name="vm"
-            type="com.blockstream.green.ui.devices.DeviceScanViewModel" />
+            type="com.blockstream.common.models.devices.DeviceScanViewModel" />
 
     </data>
 
@@ -42,8 +41,10 @@
             android:src="@drawable/blockstream_jade_device"
             app:layout_constraintBottom_toBottomOf="@id/hwBackground"
             app:layout_constraintEnd_toEndOf="@+id/hwBackground"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/hwBackground"
-            app:layout_constraintTop_toTopOf="@id/hwBackground" />
+            app:layout_constraintTop_toTopOf="@id/hwBackground"
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
             android:id="@+id/textView6"
@@ -52,7 +53,7 @@
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
             android:minLines="3"
-            android:text="@{vm.deviceLiveData == null ? @string/id_connect_usb_cable_or_enable : @string/id_unlock_your_device_to_continue}"
+            android:text="@{vm.deviceFlow == null ? @string/id_connect_usb_cable_or_enable : @string/id_unlock_your_device_to_continue}"
             android:textAlignment="center"
             android:textAppearance="?attr/textAppearanceTitleLarge"
             app:layout_constraintBottom_toTopOf="@+id/linearLayout"
@@ -63,7 +64,7 @@
 
         <LinearLayout
             android:id="@+id/linearLayout"
-            isVisible="@{vm.deviceLiveData == null}"
+            isVisible="@{vm.deviceFlow == null}"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="32dp"
@@ -81,7 +82,7 @@
             <Button
                 android:id="@+id/buttonEnableBluetooth"
                 style="@style/Widget.Green.Button.Small"
-                isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bluetoothState == AndroidBluetoothState.OFF }"
+                isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bluetoothState == BluetoothState.OFF }"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/id_enable_bluetooth" />
@@ -89,7 +90,7 @@
             <Button
                 android:id="@+id/buttonRequestPermission"
                 style="@style/Widget.Green.Button.Tiny"
-                isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bluetoothState == AndroidBluetoothState.PERMISSIONS_NOT_GRANTED }"
+                isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bluetoothState == BluetoothState.PERMISSIONS_NOT_GRANTED }"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/id_give_bluetooth_permissions" />
@@ -97,7 +98,7 @@
             <Button
                 android:id="@+id/buttonEnableLocationService"
                 style="@style/Widget.Green.Button.Tiny"
-                isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bluetoothState == AndroidBluetoothState.LOCATION_SERVICES_DISABLED }"
+                isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bluetoothState == BluetoothState.LOCATION_SERVICES_DISABLED }"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/id_enable_location_services" />
@@ -116,7 +117,7 @@
                 app:trackColor="@color/color_on_surface_emphasis_very_low" />
 
             <TextView
-                isInvisible="@{vm.deviceLiveData != null}"
+                isInvisible="@{vm.deviceFlow != null}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"

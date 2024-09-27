@@ -23,6 +23,7 @@ import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.dialogs.ErrorReportDialog
+import com.blockstream.compose.dialogs.SingleChoiceDialog
 import com.blockstream.compose.managers.PlatformManager
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.utils.openNewTicketUrl
@@ -45,6 +46,8 @@ data class OpenDialogData constructor(
     val secondaryText: String? = null,
     var errorReport: ErrorReport? = null,
     val onSubmitErrorReport: ((submitErrorReport: Events.SubmitErrorReport) -> Unit)? = null,
+    val items: List<String>? = null,
+    val onItem: (index: Int?) -> Unit = {},
     val onPrimary: () -> Unit = {},
     val onSecondary: (() -> Unit)? = null,
     val onDismiss: () -> Unit = {},
@@ -146,72 +149,93 @@ class DialogState {
 fun DialogHost(state: DialogState) {
     state.data?.also { data ->
 
+        val items = data.items
         val errorReport = data.errorReport
-        if (errorReport == null) {
-            AlertDialog(
-                title = data.title?.let {
-                    {
-                        Text(text = it.string())
+        when {
+            items != null -> {
+                SingleChoiceDialog(
+                    title = data.title?.string() ?: "",
+                    message = data.message?.string(),
+                    items = items,
+                    onNeutralText = data.secondaryText,
+                    onNeutralClick = {
+                        data.onSecondary?.invoke()
+                        state.clear()
+                    },
+                    onDismissRequest = {
+                        data.onItem.invoke(it)
+                        data.onDismiss.invoke()
+                        state.clear()
                     }
-                },
-                text = data.message?.let {
-                    {
-                        SelectionContainer {
+                )
+            }
+            errorReport != null -> {
+                ErrorReportDialog(
+                    errorReport = errorReport,
+                    onSubmitErrorReport = data.onSubmitErrorReport,
+                    onDismiss = {
+                        data.onDismiss()
+                        state.clear()
+                    }
+                )
+            }
+            else -> {
+                AlertDialog(
+                    title = data.title?.let {
+                        {
                             Text(text = it.string())
                         }
-                    }
-                },
-                icon = data.icon?.let {
-                    {
-                        Icon(
-                            painter = painterResource(it),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(50.dp)
-                        )
-                    }
-                },
-                iconContentColor = whiteHigh,
-                onDismissRequest = {
-                    data.onDismiss.invoke()
-                    state.clear()
-                },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            data.onPrimary.invoke()
-                            state.clear()
+                    },
+                    text = data.message?.let {
+                        {
+                            SelectionContainer {
+                                Text(text = it.string())
+                            }
                         }
-                    ) {
-                        Text(
-                            data.primaryText ?: stringResource(
-                            Res.string.id_ok
-                        ))
-                    }
-                },
-                dismissButton = {
-                    if (state.data?.onSecondary != null) {
+                    },
+                    icon = data.icon?.let {
+                        {
+                            Icon(
+                                painter = painterResource(it),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(50.dp)
+                            )
+                        }
+                    },
+                    iconContentColor = whiteHigh,
+                    onDismissRequest = {
+                        data.onDismiss.invoke()
+                        state.clear()
+                    },
+                    confirmButton = {
                         TextButton(
                             onClick = {
-                                data.onSecondary?.invoke()
+                                data.onPrimary.invoke()
                                 state.clear()
                             }
                         ) {
-                            Text(data.secondaryText?.takeIf { it.isNotBlank() }
-                                ?: stringResource(Res.string.id_cancel))
+                            Text(
+                                data.primaryText ?: stringResource(
+                                    Res.string.id_ok
+                                ))
+                        }
+                    },
+                    dismissButton = {
+                        if (state.data?.onSecondary != null) {
+                            TextButton(
+                                onClick = {
+                                    data.onSecondary?.invoke()
+                                    state.clear()
+                                }
+                            ) {
+                                Text(data.secondaryText?.takeIf { it.isNotBlank() }
+                                    ?: stringResource(Res.string.id_cancel))
+                            }
                         }
                     }
-                }
-            )
-        } else {
-            ErrorReportDialog(
-                errorReport = errorReport,
-                onSubmitErrorReport = data.onSubmitErrorReport,
-                onDismiss = {
-                    data.onDismiss()
-                    state.clear()
-                }
-            )
+                )
+            }
         }
     }
 }

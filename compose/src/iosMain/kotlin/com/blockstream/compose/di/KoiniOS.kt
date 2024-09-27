@@ -9,9 +9,11 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.di.initKoin
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.fcm.Firebase
+import com.blockstream.common.interfaces.DeviceConnectionInterface
 import com.blockstream.common.lightning.BreezNotification
 import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.managers.DeviceManager.Companion.JADE
+import com.blockstream.compose.managers.DeviceConnectionManager
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.koin.dsl.binds
 import org.koin.dsl.module
@@ -71,9 +73,15 @@ fun startKoin(doOnStartup: () -> Unit = {}) {
                 DeviceManager(
                     get(),
                     get(),
+                    get(),
                     listOf(JADE)
                 )
             }
+            single {
+                DeviceConnectionManager(
+                    get(), get(),get()
+                )
+            } binds (arrayOf(DeviceConnectionManager::class, DeviceConnectionInterface::class))
             single<FcmCommon> {
                 object : FcmCommon(get()){
                     override fun showDebugNotification(title: String, message: String) {

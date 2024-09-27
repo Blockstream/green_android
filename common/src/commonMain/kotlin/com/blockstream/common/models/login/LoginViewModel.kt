@@ -48,13 +48,17 @@ import com.blockstream.common.extensions.lightningMnemonic
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.extensions.passwordPinData
 import com.blockstream.common.extensions.pinPinData
+import com.blockstream.common.extensions.previewGreenDevice
 import com.blockstream.common.extensions.previewLoginCredentials
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.extensions.richWatchOnly
 import com.blockstream.common.extensions.watchOnlyCredentials
+import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.GdkSession
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.TorEvent
 import com.blockstream.common.gdk.device.DeviceResolver
+import com.blockstream.common.gdk.device.HardwareConnectInteraction
 import com.blockstream.common.gdk.params.LoginCredentialsParams
 import com.blockstream.common.lightning.AppGreenlightCredentials
 import com.blockstream.common.managers.DeviceManager
@@ -853,15 +857,7 @@ class LoginViewModelPreview(
     override val lightningCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
     override val lightningMnemonic: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
 
-    override val device: GreenDevice? = if(withDevice) object : GreenDevice(deviceBrand = DeviceBrand.Blockstream, type = ConnectionType.USB, isBonded = true){
-        override val connectionIdentifier: String = ""
-        override val uniqueIdentifier: String = ""
-        override val name: String = "Jade"
-        override val manufacturer: String = ""
-        override val isOffline: Boolean = false
-        override fun disconnect() {}
-
-    } else null
+    override val device: GreenDevice? = if(withDevice) previewGreenDevice() else null
 
     init {
         banner.value = Banner.preview3

@@ -9,17 +9,19 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -31,6 +33,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import com.blockstream.compose.LocalAppBarState
 import com.blockstream.compose.LocalRootNavigator
 import com.blockstream.compose.theme.bodySmall
+import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.titleSmall
 import org.jetbrains.compose.resources.painterResource
 
@@ -49,8 +52,8 @@ fun GreenTopAppBar(
 
     val navData by LocalAppBarState.current.data
 
-
-    CenterAlignedTopAppBar(
+    // CenterAlignedTopAppBar if you want center aligned
+    TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.background,
             titleContentColor = MaterialTheme.colorScheme.onPrimary,
@@ -121,7 +124,7 @@ fun GreenTopAppBar(
                         }
                     } else {
                         IconButton(enabled = navData.isVisible, onClick = {
-                            if(navData.isVisible){
+                            if (navData.isVisible && navData.onBackPressed()) {
                                 navigator?.pop()
                             }
                         }) {
@@ -144,14 +147,23 @@ fun GreenTopAppBar(
             ) {
                 Row {
                     navData.actions.filter { !it.isMenuEntry }.forEach {
-                        IconButton(onClick = {
-                            it.onClick()
-                        }) {
-                            it.icon?.also {
-                                Image(
-                                    painter = painterResource(it),
-                                    contentDescription = null
-                                )
+                        if (it.icon == null) {
+                            TextButton(
+                                onClick = it.onClick,
+                                modifier = Modifier.align(Alignment.CenterVertically)
+                            ) {
+                                Text(text = it.title, style = labelMedium)
+                            }
+                        } else {
+                            IconButton(onClick = {
+                                it.onClick()
+                            }) {
+                                it.icon?.also {
+                                    Image(
+                                        painter = painterResource(it),
+                                        contentDescription = null
+                                    )
+                                }
                             }
                         }
                     }

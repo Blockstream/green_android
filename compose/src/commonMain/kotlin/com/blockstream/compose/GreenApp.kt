@@ -24,6 +24,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
@@ -41,6 +42,7 @@ import cafe.adriel.voyager.transitions.ScreenTransition
 import cafe.adriel.voyager.transitions.ScreenTransitionContent
 import com.blockstream.common.crypto.NoKeystore
 import com.blockstream.common.data.AppInfo
+import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.managers.LifecycleManager
 import com.blockstream.common.models.drawer.DrawerViewModel
 import com.blockstream.compose.components.GreenTopAppBar
@@ -49,6 +51,8 @@ import com.blockstream.compose.managers.rememberPlatformManager
 import com.blockstream.compose.screens.DrawerScreen
 import com.blockstream.compose.screens.HomeScreen
 import com.blockstream.compose.screens.LockScreen
+import com.blockstream.compose.screens.devices.DeviceListScreen
+import com.blockstream.compose.screens.devices.DeviceScanScreen
 import com.blockstream.compose.screens.login.LoginScreen
 import com.blockstream.compose.screens.overview.WalletOverviewScreen
 import com.blockstream.compose.sheets.BottomSheetNavigatorM3
@@ -74,8 +78,8 @@ val LocalDrawer = compositionLocalOf { DrawerState(DrawerValue.Closed) }
 val LocalDialog: ProvidableCompositionLocal<DialogState> =
     staticCompositionLocalOf { error("DialogState not initialized") }
 val LocalRootNavigator: ProvidableCompositionLocal<Navigator?> = staticCompositionLocalOf { null }
-val LocalActivity: ProvidableCompositionLocal<Any?> =
-    staticCompositionLocalOf { error("LocalActivity not initialized") }
+val LocalActivity: ProvidableCompositionLocal<Any?> = compositionLocalOf { null }
+val LocalPreview = compositionLocalOf { false }
 
 @Composable
 fun GreenApp(modifier: Modifier = Modifier) {
@@ -97,12 +101,21 @@ fun GreenApp(modifier: Modifier = Modifier) {
     ) {
 
         val lifecycleManager = koinInject<LifecycleManager>()
+        val deviceManager = koinInject<DeviceManager>()
         val isLocked by lifecycleManager.isLocked.collectAsStateWithLifecycle()
 
         Box(modifier = modifier) {
             Navigator(screen = HomeScreen, onBackPressed = { _ ->
                 !isLocked && appBarState.data.value.isVisible && appBarState.data.value.onBackPressed()
             }) { navigator ->
+
+                LaunchedEffect(navigator.lastItemOrNull) {
+                    if (navigator.lastItemOrNull?.let { it is DeviceListScreen || it is DeviceScanScreen } == true) {
+                        deviceManager.startDeviceDiscovery()
+                    } else {
+                        deviceManager.stopDeviceDiscovery()
+                    }
+                }
 
                 CompositionLocalProvider(
                     LocalRootNavigator provides navigator

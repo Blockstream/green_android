@@ -60,8 +60,12 @@ class SideEffects : SideEffect {
     object AppReview: SideEffect
     object DeviceRequestPassphrase: SideEffect
     object DeviceRequestPin: SideEffect
-    class DeviceInteraction(val device: Device, val message: String?, val completable: CompletableDeferred<Boolean>?):
-        SideEffect
+    class DeviceInteraction(
+        val device: Device,
+        val message: String?,
+        val isMasterBlindingKeyRequest: Boolean,
+        val completable: CompletableDeferred<Boolean>?
+    ) : SideEffect
     object Dismiss : SideEffect
     data class Share(val text: String? = null) : SideEffect
     data class ShareFile(val path: Path) : SideEffect
@@ -69,4 +73,10 @@ class SideEffects : SideEffect {
     object OpenDenominationExchangeRate : SideEffect
     object LightningShortcut : SideEffect
     data class AskRemoveLightningShortcut(val wallet: GreenWallet) : SideEffect
+    object EnableBluetooth: SideEffect
+    object EnableLocationService: SideEffect
+    object AskForBluetoothPermissions: SideEffect
+
+    object SelectEnvironment: SideEffect
+    object BleRequireRebonding: SideEffect
 }

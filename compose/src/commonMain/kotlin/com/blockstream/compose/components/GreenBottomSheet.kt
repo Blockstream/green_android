@@ -82,6 +82,7 @@ fun GreenBottomSheet(
                             text = title,
                             style = titleSmall,
                             color = whiteHigh,
+                            textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .padding(horizontal = 16.dp)
                                 .align(Alignment.CenterHorizontally)

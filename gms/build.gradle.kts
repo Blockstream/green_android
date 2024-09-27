@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinAndroid)
-    alias(libs.plugins.google.devtools.ksp)
 }
 
 android {
@@ -33,10 +32,6 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.messaging)
     implementation(libs.installreferrer)
-    /** ----------------------------------------------------------------------------------------- */
-
-    /**  --- Koin   ----------------------------------------------------------------------------- */
-    ksp(libs.koin.ksp.compiler)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Zendesk ---------------------------------------------------------------------------- */

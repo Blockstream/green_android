@@ -5,11 +5,23 @@ import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.Device
 import com.blockstream.common.gdk.data.InputOutput
 import com.blockstream.common.gdk.data.Network
+import com.blockstream.jade.firmware.FirmwareInteraction
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.StateFlow
 
+interface HardwareConnectInteraction : FirmwareInteraction, HwWalletLogin, HardwareWalletInteraction {
+    fun showInstructions(text: String)
+    fun showError(err: String)
+
+    fun requestPinBlocking(deviceBrand: DeviceBrand): String
+}
+
+interface HwWalletLogin: HardwareWalletInteraction {
+    fun requestNetwork(): Network?
+}
+
 interface HardwareWalletInteraction{
-    fun interactionRequest(hw: GdkHardwareWallet, completable: CompletableDeferred<Boolean>?, text: String?)
+    fun interactionRequest(gdkHardwareWallet: GdkHardwareWallet, message: String?, isMasterBlindingKeyRequest: Boolean, completable: CompletableDeferred<Boolean>?)
     fun requestPinMatrix(deviceBrand: DeviceBrand?): String?
     fun requestPassphrase(deviceBrand: DeviceBrand?): String?
 }

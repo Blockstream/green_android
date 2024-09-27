@@ -1,14 +1,18 @@
 package com.blockstream.common.managers
 
 import com.benasher44.uuid.uuidFrom
+import com.blockstream.common.devices.DeviceState
 import com.blockstream.common.devices.GreenDevice
+import com.blockstream.common.devices.JadeBleDevice
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.extensions.cancelChildren
-import com.blockstream.common.extensions.childScope
 import com.blockstream.common.extensions.conflate
+import com.blockstream.common.extensions.ifFalse
+import com.blockstream.common.extensions.ifTrue
 import com.blockstream.common.extensions.isBonded
 import com.blockstream.common.extensions.isJade
 import com.blockstream.common.extensions.setupJade
+import com.blockstream.common.extensions.supervisorJob
 import com.blockstream.common.utils.Loggable
 import com.juul.kable.Filter
 import com.juul.kable.PlatformAdvertisement
@@ -18,15 +22,14 @@ import com.juul.kable.logs.SystemLogEngine
 import com.juul.kable.peripheral
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -37,10 +40,8 @@ import kotlinx.datetime.Clock
 
 
 sealed class ScanStatus {
-    data object Stopped : ScanStatus()
     data object Started : ScanStatus()
-    data object Scanning : ScanStatus()
-    data class Failed(val message: CharSequence) : ScanStatus()
+    data object Stopped : ScanStatus()
 }
 
 open class DeviceManager constructor(
@@ -49,6 +50,8 @@ open class DeviceManager constructor(
     private val bluetoothManager: BluetoothManager,
     private val supportedBleDevices: List<String>
 ) {
+    private val deviceDiscovery = MutableStateFlow(false)
+
     protected val usbDevices = MutableStateFlow<List<GreenDevice>>(listOf())
     protected val bleDevices = MutableStateFlow<List<GreenDevice>>(listOf())
 
@@ -57,42 +60,71 @@ open class DeviceManager constructor(
 
     val bluetoothState = bluetoothManager.bluetoothState
 
-    private var scanScope: CoroutineScope = CoroutineScope(scope.coroutineContext + SupervisorJob() + Dispatchers.IO).childScope()
+    private var scanScope: CoroutineScope = scope.supervisorJob()
 
-    val devices = combine(usbDevices, bleDevices) { ble, usb ->
-        ble + usb
-    }.stateIn(scope, SharingStarted.WhileSubscribed(), listOf())
+    private val disconnectEvent = bleDevices.flatMapLatest { devices ->
+        combine(devices.map { it.deviceState }) { }
+    }
+
+    val devices = combine(usbDevices, bleDevices, disconnectEvent) { usb, ble, _ ->
+        ble.filter { it.deviceState.value == DeviceState.CONNECTED } + usb
+    }.stateIn(scope, SharingStarted.Eagerly, emptyList())
+
+    var savedDevice: GreenDevice? = null
 
     init {
         bluetoothManager.bluetoothState.onEach {
             logger.d { "Bluetooth state: $it , status = ${status.value}" }
-            if (it == BluetoothState.On && status.value == ScanStatus.Started) {
+
+            if (it == BluetoothState.ON && status.value == ScanStatus.Started) {
                 startBluetoothScanning()
-            } else if (it != BluetoothState.On && status.value == ScanStatus.Scanning) {
+            } else if (it != BluetoothState.ON && status.value == ScanStatus.Started) {
                 logger.d { "Pausing BLE scanning state: $it" }
-                stopBluetoothScanning(CancellationException("pause"))
+                pauseBluetoothScanning()
             }
 
             // Clear all devices
-            if(it != BluetoothState.On){
-                bleDevices.value = listOf()
+            if(it != BluetoothState.ON){
+                cleanupBleDevices(cleanAll = true)
             }
         }.launchIn(scope)
+
+        deviceDiscovery.onEach {
+            if (it) {
+                startBluetoothScanning()
+            } else {
+                stopBluetoothScanning()
+            }
+        }.launchIn(scope)
+
+
     }
 
     fun getDevice(deviceId: String?): GreenDevice? {
         return devices.value.find { it.connectionIdentifier == deviceId }
+            // Check if device is already in a session
+            ?: sessionManager.getConnectedHardwareWalletSessions()
+                .find { it.device?.connectionIdentifier == deviceId }?.device
+            ?: savedDevice?.takeIf { it.connectionIdentifier == deviceId }
     }
 
-    fun startBluetoothScanning() {
-        if (_status.value == ScanStatus.Scanning) return // Scan already in progress.
+    private fun cleanupBleDevices(cleanAll : Boolean = false) {
+        val cleanupTs = Clock.System.now().toEpochMilliseconds() - 3_000
+        bleDevices.value = if(cleanAll) listOf() else bleDevices.value.filter {
+            it.isConnected && (it.heartbeat == 0L || it.heartbeat > cleanupTs)
+        }
+    }
 
-        if(bluetoothManager.bluetoothState.value != BluetoothState.On){
-            _status.value = ScanStatus.Started
+    private fun startBluetoothScanning() {
+        if(!deviceDiscovery.value) return // Device Discovery is off
+
+        if(bluetoothManager.bluetoothState.value != BluetoothState.ON) return // Bluetooth is not enabled
+
+        if (_status.value == ScanStatus.Started) return // Scan already in progress.
+
+        _status.compareAndSet(ScanStatus.Stopped, ScanStatus.Started).ifFalse {
             return
         }
-
-        _status.value = ScanStatus.Scanning
 
         logger.i { "Start BLE scanning" }
 
@@ -100,11 +132,11 @@ open class DeviceManager constructor(
 
         scanScope.launch {
             do {
+                ensureActive()
+
+                cleanupBleDevices()
+
                 delay(1000L)
-                val ts = Clock.System.now().toEpochMilliseconds() - 3_000
-                bleDevices.value = bleDevices.value.filter {
-                    !it.isOffline && (it.timeout == 0L || it.timeout > ts)
-                }
             } while (isActive)
         }
 
@@ -131,14 +163,11 @@ open class DeviceManager constructor(
         scanner
             .advertisements
             .catch { cause ->
-                _status.value = ScanStatus.Failed(cause.message ?: "Unknown error")
+                cause.printStackTrace()
+                stopBluetoothScanning()
             }
-            .onCompletion { cause ->
-                _status.value = if ((cause as? CancellationException)?.message.equals("pause"))
-                    ScanStatus.Started
-                else if (cause == null || (cause is CancellationException))
-                    ScanStatus.Stopped
-                else _status.value
+            .onCompletion {
+                _status.value = ScanStatus.Stopped
             }
             .onEach {
                 advertisedDevice(it)
@@ -154,7 +183,7 @@ open class DeviceManager constructor(
                 setupJade(JADE_MTU)
             }
 
-            val device = GreenDevice.jadeFromScan(
+            val device = JadeBleDevice.fromScan(
                 peripheral = peripheral,
                 isBonded = advertisement.isBonded()
             )
@@ -164,9 +193,8 @@ open class DeviceManager constructor(
     }
 
     protected fun addBluetoothDevice(newDevice: GreenDevice) {
-        bleDevices.value.find { it.connectionIdentifier == newDevice.connectionIdentifier }
-            ?.also { oldDevice ->
-                newDevice.peripheral?.let {
+        bleDevices.value.find { it.connectionIdentifier == newDevice.connectionIdentifier }?.also { oldDevice ->
+                newDevice.peripheral?.also {
                     oldDevice.updateFromScan(it)
                 }
             } ?: run {
@@ -175,16 +203,33 @@ open class DeviceManager constructor(
         }
     }
 
-    fun stopBluetoothScanning(cause: CancellationException? = null) {
-        if (status.value != ScanStatus.Stopped) {
-            logger.i { "Stop BLE scanning" }
-            scanScope.cancelChildren(cause = cause)
-        }
+    private fun pauseBluetoothScanning() = stopBluetoothScanning(CancellationException("pause"))
+
+    private fun stopBluetoothScanning(cause: CancellationException? = null) {
+        logger.i { "Stop BLE scanning" }
+        scanScope.cancelChildren(cause = cause)
     }
 
     private fun addBleConnectedDevices() {
         sessionManager.getConnectedDevices().filter { it.isBle }.forEach {
             addBluetoothDevice(it)
+        }
+    }
+
+    open fun refreshDevices(){
+        logger.i { "Refresh device list" }
+        cleanupBleDevices(cleanAll = true)
+    }
+
+    fun startDeviceDiscovery() {
+        deviceDiscovery.compareAndSet(expect = false, update = true).ifTrue {
+            logger.d { "startDeviceDiscovery" }
+        }
+    }
+
+    fun stopDeviceDiscovery() {
+        deviceDiscovery.compareAndSet(true, false).ifTrue {
+            logger.d { "stopDeviceDiscovery" }
         }
     }
 

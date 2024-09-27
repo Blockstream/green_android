@@ -3,9 +3,9 @@ package com.blockstream.green.ui
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
+import com.blockstream.common.devices.DeviceManagerAndroid
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.R
-import com.blockstream.green.devices.DeviceManagerAndroid
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.views.GreenToolbar
 import kotlinx.coroutines.CoroutineScope
@@ -54,9 +54,9 @@ abstract class AppActivity : AppCompatActivity() {
             }
 
             if(destination.id == R.id.deviceListFragment || destination.id == R.id.deviceScanFragment){
-                deviceManager.startBluetoothScanning()
+                deviceManager.startDeviceDiscovery()
             }else{
-                deviceManager.stopBluetoothScanning()
+                deviceManager.stopDeviceDiscovery()
             }
         }
         settingsManager.appSettingsStateFlow.onEach {

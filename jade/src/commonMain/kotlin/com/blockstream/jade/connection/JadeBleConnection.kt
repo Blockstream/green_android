@@ -1,11 +1,13 @@
 package com.blockstream.jade.connection
 
-import com.blockstream.common.di.ApplicationScope
-import com.blockstream.common.utils.Loggable
+
+import com.blockstream.jade.Loggable
 import com.juul.kable.Peripheral
 import com.juul.kable.State
 import com.juul.kable.WriteType
 import com.juul.kable.characteristicOf
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +15,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.runBlocking
 
 /**
  * Low-level BLE backend interface to Jade
@@ -22,7 +23,7 @@ import kotlinx.coroutines.runBlocking
  */
 class JadeBleConnection internal constructor(
     private val peripheral: Peripheral,
-    private val scope: ApplicationScope,
+    private val scope: CoroutineScope,
     private val isBonded: Boolean
 ) : JadeConnection() {
 
@@ -30,7 +31,6 @@ class JadeBleConnection internal constructor(
 
     override val isConnected
         get() = peripheral.state.value == State.Connected
-
 
     override val disconnectEvent: StateFlow<Boolean>
         get() = peripheral.state.map {
@@ -42,10 +42,23 @@ class JadeBleConnection internal constructor(
 
         peripheral.connect()
 
-        if(!isBonded) {
+        logger.d { "Connected" }
+
+        peripheral.state.onEach {
+            if(it is State.Disconnected) {
+                logger.d { "BLE was disconnected, closing receiveData channel" }
+                receivedData.close(CancellationException("Jade BLE was disconnected"))
+            }
+        }.launchIn(scope)
+
+        if (!isBonded) {
             // Initiate a write so that Android bond the device if needed before continuing with the observe
             // else if we observe before that won't work
-            peripheral.write(WriteCharacteristics, byteArrayOf(), writeType = WriteType.WithResponse)
+            peripheral.write(
+                characteristic = WriteCharacteristics,
+                data = byteArrayOf(),
+                writeType = WriteType.WithResponse
+            )
 
             logger.d { "Bonded... delaying..." }
 
@@ -53,7 +66,9 @@ class JadeBleConnection internal constructor(
             delay(2000L)
         }
 
-        peripheral.observe(ObserveCharacteristics).onEach {
+        peripheral
+            .observe(ObserveCharacteristics)
+            .onEach {
             // Process data.
             onDataReceived(it)
         }.launchIn(scope)
@@ -61,10 +76,7 @@ class JadeBleConnection internal constructor(
 
     override suspend fun disconnect() {
         logger.d { "Disconnecting" }
-
-        runBlocking {
-            peripheral.disconnect()
-        }
+        peripheral.disconnect()
     }
 
     override suspend fun write(bytes: ByteArray): Int {

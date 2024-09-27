@@ -27,19 +27,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 
-enum class AndroidBluetoothState{
-    OFF, UNAVAILABLE, ADAPTER_NOT_AVAILABLE, PERMISSIONS_NOT_GRANTED, LOCATION_SERVICES_DISABLED, ON
-}
-
-fun BluetoothState.toAndroidBluetoothState() = when(this){
-    BluetoothState.AdapterNotAvailable -> AndroidBluetoothState.OFF
-    BluetoothState.LocationServicesDisabled -> AndroidBluetoothState.LOCATION_SERVICES_DISABLED
-    BluetoothState.Off -> AndroidBluetoothState.OFF
-    BluetoothState.On ->AndroidBluetoothState.ON
-    BluetoothState.PermissionsNotGranted -> AndroidBluetoothState.PERMISSIONS_NOT_GRANTED
-    BluetoothState.Unavailable -> AndroidBluetoothState.UNAVAILABLE
-}
-
 private fun Context.getLocationManagerOrNull() =
     ContextCompat.getSystemService(this, LocationManager::class.java)
 
@@ -76,7 +63,7 @@ actual class BluetoothManager(val context: Context, val bluetoothAdapter: Blueto
 
     private val _bluetoothState: Flow<BluetoothState> = flow {
         when (val adapter = getBluetoothAdapterOrNull()) {
-            null -> emit(BluetoothState.Unavailable)
+            null -> emit(BluetoothState.UNAVAILABLE)
             else -> emitAll(
                 broadcastReceiverFlow(IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED))
                     .map { intent -> intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR) }
@@ -86,10 +73,10 @@ actual class BluetoothManager(val context: Context, val bluetoothAdapter: Blueto
                     .map { state ->
                         logger.d { "Bluetooth state changed to $state" }
                         when (state) {
-                            BluetoothAdapter.STATE_ON -> BluetoothState.On
-                            BluetoothAdapter.STATE_OFF -> BluetoothState.Off
-                            BluetoothAdapter.STATE_TURNING_OFF -> BluetoothState.Unavailable
-                            BluetoothAdapter.STATE_TURNING_ON -> BluetoothState.Unavailable
+                            BluetoothAdapter.STATE_ON -> BluetoothState.ON
+                            BluetoothAdapter.STATE_OFF -> BluetoothState.OFF
+                            BluetoothAdapter.STATE_TURNING_OFF -> BluetoothState.UNAVAILABLE
+                            BluetoothAdapter.STATE_TURNING_ON -> BluetoothState.UNAVAILABLE
                             else -> error("Unexpected bluetooth state: $state")
                         }
                     },
@@ -111,11 +98,11 @@ actual class BluetoothManager(val context: Context, val bluetoothAdapter: Blueto
             _bluetoothState,
         ) { locationEnabled, _, bluetoothState ->
             when (locationEnabled) {
-                true -> if(hasPermissions) bluetoothState else BluetoothState.PermissionsNotGranted
-                false -> BluetoothState.LocationServicesDisabled
-                null -> BluetoothState.Unavailable
+                true -> if(hasPermissions) bluetoothState else BluetoothState.PERMISSIONS_NOT_GRANTED
+                false -> BluetoothState.LOCATION_SERVICES_DISABLED
+                null -> BluetoothState.UNAVAILABLE
             }
-        }).stateIn(scope, SharingStarted.Eagerly, BluetoothState.Unavailable)
+        }).stateIn(scope, SharingStarted.Eagerly, BluetoothState.UNAVAILABLE)
 
     companion object: Loggable() {
 

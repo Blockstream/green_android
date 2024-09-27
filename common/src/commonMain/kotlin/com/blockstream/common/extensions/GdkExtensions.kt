@@ -9,6 +9,8 @@ import blockstream_green.common.generated.resources.id_telegram
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.data.AlertType
 import com.blockstream.common.data.Denomination
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.database.Database
 import com.blockstream.common.gdk.GA_ERROR
 import com.blockstream.common.gdk.GA_NOT_AUTHORIZED
 import com.blockstream.common.gdk.GA_RECONNECT
@@ -17,6 +19,7 @@ import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.Transaction
+import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.utils.getBitcoinOrLiquidUnit
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import org.jetbrains.compose.resources.StringResource
@@ -192,4 +195,8 @@ fun List<String>.twoFactorMethodsLocalizedDeprecated(): List<String> = map {
 
 fun List<String>.twoFactorMethodsLocalized(): List<StringResource> = map {
     it.twoFactorMethodsLocalized()
+}
+
+suspend fun GdkSession.getWallet(database: Database, sessionManager: SessionManager): GreenWallet? {
+    return (ephemeralWallet ?: (sessionManager.getWalletIdFromSession(this)?.let { walletId -> database.getWallet(walletId) }))
 }

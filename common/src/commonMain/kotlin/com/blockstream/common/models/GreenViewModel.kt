@@ -30,6 +30,7 @@ import com.blockstream.common.data.Redact
 import com.blockstream.common.data.TwoFactorResolverData
 import com.blockstream.common.data.toSerializable
 import com.blockstream.common.database.Database
+import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.EventWithSideEffect
@@ -47,7 +48,6 @@ import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AuthHandlerStatus
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.gdk.device.GdkHardwareWallet
 import com.blockstream.common.gdk.device.HardwareWalletInteraction
@@ -120,7 +120,7 @@ open class GreenViewModel constructor(
     protected val greenKeystore: GreenKeystore by inject()
     val zendeskSdk: ZendeskSdk by inject()
 
-    private val isPreview by lazy { this::class.simpleName?.contains("Preview") == true }
+    internal val isPreview by lazy { this::class.simpleName?.contains("Preview") == true }
 
     private val _event: MutableSharedFlow<Event> = MutableSharedFlow()
     private val _sideEffect: Channel<SideEffect> = Channel()
@@ -544,7 +544,7 @@ open class GreenViewModel constructor(
             if (appInfo.isDebug) {
                 it.printStackTrace()
             }
-            postSideEffect(SideEffects.ErrorDialog(it, errorReport = errorReport(it)))
+            postSideEffect(SideEffects.ErrorDialog(error = it, errorReport = errorReport(it)))
         }
     ): Job {
         return viewModelScope.coroutineScope.launch {
@@ -766,12 +766,20 @@ open class GreenViewModel constructor(
         }
     }
 
-    final override fun interactionRequest(
-        hw: GdkHardwareWallet,
-        completable: CompletableDeferred<Boolean>?,
-        text: String?
+    override fun interactionRequest(
+        gdkHardwareWallet: GdkHardwareWallet,
+        message: String?,
+        isMasterBlindingKeyRequest: Boolean,
+        completable: CompletableDeferred<Boolean>?
     ) {
-        postSideEffect(SideEffects.DeviceInteraction(hw.device, text, completable))
+        postSideEffect(
+            SideEffects.DeviceInteraction(
+                device = gdkHardwareWallet.device,
+                message = message,
+                isMasterBlindingKeyRequest = isMasterBlindingKeyRequest,
+                completable = completable
+            )
+        )
     }
 
     final override fun requestPassphrase(deviceBrand: DeviceBrand?): String {

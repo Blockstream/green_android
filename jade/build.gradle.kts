@@ -30,9 +30,18 @@ kotlin {
         }
 
         commonMain.dependencies {
-            /**  --- Modules ---------------------------------------------------------------------------- */
-            implementation(project(":common"))
+            /**  --- Kotlin & KotlinX ------------------------------------------------------------------- */
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.core)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.kotlinx.serialization.cbor)
+            implementation(libs.kotlinx.datetime)
             /** ----------------------------------------------------------------------------------------- */
+
+            implementation(libs.kotlincrypto.hash.md)
+            implementation(libs.kotlincrypto.hash.sha2)
+            implementation(libs.kable.core)
+            implementation(libs.kermit)
         }
 
         commonTest.dependencies {

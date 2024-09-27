@@ -2,21 +2,20 @@ package com.blockstream.green.utils
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import com.blockstream.HardwareQATester
+import com.blockstream.jade.firmware.HardwareQATester
 import com.blockstream.common.gdk.data.Notification
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
-import org.koin.core.annotation.Single
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 /*
  * Emulate different scenarios, useful for QA
  */
-class QATester(val context: Context) : HardwareQATester {
+class QATester(val context: Context) : com.blockstream.jade.firmware.HardwareQATester {
     val corruptedHardwareMessageSign = MutableLiveData(false)
     val corruptedHardwareTxSign = MutableLiveData(false)
     val corruptedJadeFirmwareHash = MutableLiveData(false)

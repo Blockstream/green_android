@@ -56,6 +56,7 @@ import gdk.GA_convert_amount
 import gdk.GA_convert_json_to_string
 import gdk.GA_convert_json_value_to_string
 import gdk.GA_convert_string_to_json
+import gdk.GA_create_redeposit_transaction
 import gdk.GA_create_session
 import gdk.GA_create_subaccount
 import gdk.GA_create_swap_transaction
@@ -880,27 +881,19 @@ class IOSGdkBinding constructor(config: InitConfig) : GdkBinding {
         }
     }
 
+    // GDK 0.73.0
     @Throws(Exception::class)
-    override fun broadcastTransaction(session: GASession, transaction: String): String {
+    override fun broadcastTransaction(session: GASession, broadcastTransactionParams: BroadcastTransactionParams): GAAuthHandler {
         return memScoped {
-            gdkString {
+            gaAuthHandler().let { gaAuthHandler ->
                 GA_broadcast_transaction(
-                    session = session.asGASession(), transaction_hex = transaction, tx_hash = it.ptr
-                ).okOrThrow()
+                    session = session.asGASession(),
+                    details = broadcastTransactionParams.toGaJson(this),
+                    call = gaAuthHandler.ptr
+                ).okOrThrow(gaAuthHandler)
             }
         }
     }
-//    // GDK 0.73.0
-//    @Throws(Exception::class)
-//    override fun broadcastTransaction(session: GASession, broadcastTransactionParams: BroadcastTransactionParams): GAAuthHandler {
-//        return memScoped {
-//            gaAuthHandler().let { gaAuthHandler ->
-//                GA_broadcast_transaction(
-//                    session = session.asGASession(), transaction_hex = transaction
-//                ).okOrThrow(gaAuthHandler)
-//            }
-//        }
-//    }
 
     @Throws(Exception::class)
     override fun sendTransaction(session: GASession, transaction: JsonElement): GAAuthHandler {
@@ -1042,7 +1035,7 @@ class IOSGdkBinding constructor(config: InitConfig) : GdkBinding {
             gaAuthHandler().let { gaAuthHandler ->
                 GA_create_redeposit_transaction(
                     session = session.asGASession(),
-                    transaction_details = params.toGaJson(this),
+                    details = params.toGaJson(this),
                     call = gaAuthHandler.ptr
                 ).okOrThrow(gaAuthHandler)
             }

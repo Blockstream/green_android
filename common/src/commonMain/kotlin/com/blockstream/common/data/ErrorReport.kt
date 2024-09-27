@@ -3,7 +3,7 @@ package com.blockstream.common.data
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Network
 
-data class ErrorReport private constructor(
+data class ErrorReport(
     val subject: String? = null,
     val error: String,
     val supportId: String? = null,

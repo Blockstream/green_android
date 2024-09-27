@@ -22,7 +22,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.lifecycle.withResumed
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
@@ -30,7 +29,6 @@ import com.blockstream.common.ScreenView
 import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.NavData
-import com.blockstream.common.extensions.handleException
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.Wally
 import com.blockstream.common.managers.SessionManager
@@ -51,11 +49,10 @@ import com.blockstream.green.extensions.errorSnackbar
 import com.blockstream.green.extensions.snackbar
 import com.blockstream.green.extensions.stringFromIdentifier
 import com.blockstream.green.extensions.stringFromIdentifierOrNull
-
-import com.blockstream.green.ui.bottomsheets.DeviceInteractionRequestBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.PassphraseBottomSheetDialogFragment
 import com.blockstream.green.ui.bottomsheets.PinMatrixBottomSheetDialogFragment
 import com.blockstream.green.ui.drawer.DrawerFragment
+import com.blockstream.green.ui.login.LoginFragment
 import com.blockstream.green.utils.copyToClipboard
 import com.blockstream.green.utils.openBrowser
 import com.blockstream.green.views.GreenToolbar
@@ -296,26 +293,6 @@ abstract class AppFragment<T : ViewDataBinding>(
             }
             is SideEffects.DeviceRequestPassphrase -> {
                 PassphraseBottomSheetDialogFragment.show(childFragmentManager)
-            }
-            is SideEffects.DeviceInteraction -> {
-
-                DeviceInteractionRequestBottomSheetDialogFragment.showSingle(
-                    device = sideEffect.device,
-                    message = sideEffect.message,
-                    delay = (3000L).takeIf { sideEffect.completable == null } ?: 0L,
-                    childFragmentManager
-                )
-
-                sideEffect.completable?.also { completable ->
-                    lifecycleScope.launch(context = handleException()) {
-                        completable.await()
-                        withResumed {
-                            DeviceInteractionRequestBottomSheetDialogFragment.closeAll(
-                                childFragmentManager
-                            )
-                        }
-                    }
-                }
             }
 
             is SideEffects.NavigateToRoot -> {
@@ -654,6 +631,46 @@ abstract class AppFragment<T : ViewDataBinding>(
                         )
                     )
                 }
+
+                (sideEffect.destination as? NavigateDestinations.DeviceInfo)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalDeviceInfoFragment(
+                            deviceId = it.deviceId
+                        )
+                    )
+                }
+
+                (sideEffect.destination as? NavigateDestinations.JadeGuide)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalJadeGuideFragment()
+                    )
+                }
+
+                (sideEffect.destination as? NavigateDestinations.DeviceScan)?.also {
+                    navigate(
+                        NavGraphDirections.actionGlobalDeviceScanFragment(
+                            wallet = it.greenWallet
+                        )
+                    )
+                }
+
+                (sideEffect.destination as? NavigateDestinations.Login)?.also {
+                    (requireActivity() as MainActivity).getVisibleFragment()?.also { fragment ->
+                        if(fragment is LoginFragment && fragment.viewModel.greenWalletOrNull == it.greenWallet && fragment.args.isLightningShortcut == it.isLightningShortcut) {
+                            return
+                        }
+                    }
+
+                    navigate(
+                        NavGraphDirections.actionGlobalLoginFragment(
+                            wallet = it.greenWallet,
+                            isLightningShortcut = it.isLightningShortcut,
+                            autoLoginWallet = !it.isLightningShortcut,
+                            deviceId = it.deviceId
+                        )
+                    )
+                }
+
             }
         }
     }

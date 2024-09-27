@@ -740,6 +740,6 @@
         app:destination="@id/walletSettingsFragment" />
     <action
         android:id="@+id/action_global_previousAddressesFragment"
-        app:destination="@id/previousAddressesFragment" />
+        app:destination="@id/previousAddressesFragment" /><action android:id="@+id/action_global_deviceInfoFragment" app:destination="@id/deviceInfoFragment"/><action android:id="@+id/action_global_jadeGuideFragment" app:destination="@id/jadeGuideFragment"/>
 
 </navigation>

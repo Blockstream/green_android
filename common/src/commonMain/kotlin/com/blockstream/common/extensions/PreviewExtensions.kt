@@ -7,6 +7,11 @@ import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.WalletSerializable
 import com.blockstream.common.database.LoginCredentials
+import com.blockstream.common.devices.ConnectionType
+import com.blockstream.common.devices.DeviceBrand
+import com.blockstream.common.devices.GreenDevice
+import com.blockstream.common.devices.GreenDeviceImpl
+import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalance
@@ -15,6 +20,7 @@ import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.Transaction
+import com.blockstream.common.gdk.device.HardwareConnectInteraction
 import com.blockstream.common.looks.transaction.Completed
 import com.blockstream.common.looks.transaction.TransactionLook
 import com.blockstream.common.looks.transaction.TransactionStatus
@@ -131,3 +137,27 @@ fun previewTransaction() = Transaction(
 }
 
 fun previewTransactionLook(status: TransactionStatus = Completed()) = TransactionLook(status, previewTransaction(), listOf("12311.123 BTC"))
+
+fun previewGreenDevice(isJade: Boolean = true) = object: GreenDeviceImpl(deviceBrand = if(isJade) DeviceBrand.Blockstream else DeviceBrand.Trezor, type = ConnectionType.USB, isBonded = true) {
+    override val connectionIdentifier: String = ""
+    override val uniqueIdentifier: String = ""
+    override val name: String = if(isJade) "Jade" else "Trezor T"
+    override val manufacturer: String = if(isJade) "Blockstream" else "Trezor"
+    override val isOffline: Boolean = false
+    override fun disconnect() {}
+    override suspend fun getOperatingNetworkForEnviroment(
+        greenDevice: GreenDevice,
+        gdk: Gdk,
+        isTestnet: Boolean
+    ): Network? {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getOperatingNetwork(
+        greenDevice: GreenDevice,
+        gdk: Gdk,
+        interaction: HardwareConnectInteraction
+    ): Network? {
+        TODO("Not yet implemented")
+    }
+}

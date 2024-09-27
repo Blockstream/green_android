@@ -253,7 +253,7 @@ public class BTChipHWWallet extends GdkHardwareWallet {
 
         try {
             if(hwInteraction != null) {
-                hwInteraction.interactionRequest(this, completable, "id_check_your_device");
+                hwInteraction.interactionRequest(this, "id_check_your_device", false, completable);
             }
             mDongle.signMessagePrepare(path, message.getBytes(StandardCharsets.UTF_8));
             final String signature = Wally.hex_from_bytes(mDongle.signMessageSign(new byte[] {0}).getSignature());
@@ -297,7 +297,7 @@ public class BTChipHWWallet extends GdkHardwareWallet {
                 mDongle.startUntrustedLiquidTransaction(version, true, 0, hwInputs, script0);
 
                 if (mDongle.supportScreen() && hwInteraction != null) {
-                    hwInteraction.interactionRequest(this, null, null);
+                    hwInteraction.interactionRequest(this, "id_check_your_device", false, null);
                 }
 
                 // Cannot remove getLiquidCommitments() even though tx already blinded and we should be able to fetch
@@ -435,7 +435,7 @@ public class BTChipHWWallet extends GdkHardwareWallet {
         mDongle.startUntrustedTransaction(version, true, 0, hwInputs, script0, true);
 
         if (mDongle.supportScreen() && hwInteraction != null) {
-            hwInteraction.interactionRequest(this, null, null);
+            hwInteraction.interactionRequest(this, "id_check_your_device",false, null);
         }
         mDongle.finalizeInputFull(outputBytes(outputs));
 
@@ -475,7 +475,7 @@ public class BTChipHWWallet extends GdkHardwareWallet {
 
             mDongle.startUntrustedTransaction(version, i == 0, i, hwInputs, script, false);
             if (mDongle.supportScreen() && hwInteraction != null) {
-                hwInteraction.interactionRequest(this, null, null);
+                hwInteraction.interactionRequest(this, "id_check_your_device", false, null);
             }
             mDongle.finalizeInputFull(outputData);
 
