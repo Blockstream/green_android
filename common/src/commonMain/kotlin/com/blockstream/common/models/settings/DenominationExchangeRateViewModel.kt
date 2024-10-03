@@ -54,7 +54,14 @@ class DenominationExchangeRateViewModel(greenWallet: GreenWallet) :
     override val selectedExchangeAndCurrency: StateFlow<String> =
         _selectedExchangeAndCurrency.asStateFlow()
 
-    private val availablePricing = session.ifConnected { session.availableCurrencies() } ?: listOf()
+    private val availablePricing by lazy { session.ifConnected {
+        try {
+            session.availableCurrencies()
+        } catch (e: Exception) {
+            countly.recordException(e)
+            null
+        }
+    } ?: listOf() }
 
     class LocalEvents {
         data class Set(val unit: String? = null, val exchangeAndCurrency: String? = null) : Event
@@ -95,19 +102,20 @@ class DenominationExchangeRateViewModel(greenWallet: GreenWallet) :
     }
 
     private fun saveSettings() {
-        val newSettings = session.getSettings()!!.let { settings ->
-            settings.copy(
-                unit = Settings.fromNetworkUnit(selectedUnit.value, session),
-                pricing = selectedExchangeAndCurrency.value.let {
-                    _exchangeAndCurrencies.value.indexOf(it).takeIf { it >= 0 }?.let {
-                        availablePricing[it]
-                    } ?: settings.pricing
-                }
-            )
-        }
-
         doAsync({
+            val newSettings = session.getSettings()!!.let { settings ->
+                settings.copy(
+                    unit = Settings.fromNetworkUnit(selectedUnit.value, session),
+                    pricing = selectedExchangeAndCurrency.value.let {
+                        _exchangeAndCurrencies.value.indexOf(it).takeIf { it >= 0 }?.let {
+                            availablePricing[it]
+                        } ?: settings.pricing
+                    }
+                )
+            }
+
             session.changeGlobalSettings(newSettings)
+
             if (!greenWallet.isEphemeral) {
                 greenWallet.also {
                     // Pass settings to Lightning Shortcut

@@ -8,10 +8,15 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.withContext
 import org.koin.mp.KoinPlatformTools
 
 
 // Log and handle the exception. Prevent unhanded exception crash
+suspend fun <T> tryCatch(block: suspend () -> T): T? = withContext(context = logException()) {
+    block()
+}
+
 fun logException(
     countly: CountlyBase
 ): CoroutineExceptionHandler {

@@ -17,6 +17,7 @@ import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewWallet
+import com.blockstream.common.extensions.tryCatch
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.PendingTransaction
 import com.blockstream.common.gdk.params.AddressParams
@@ -73,7 +74,7 @@ class RedepositViewModel(
                 _network.value = accountAsset.account.network
 
                 combine(_feeEstimation.filterNotNull(), _feePriorityPrimitive) { _ ->
-                    createTransactionParams.value = createTransactionParams()
+                    createTransactionParams.value = tryCatch { createTransactionParams() }
                 }.launchIn(this)
             }
         }
