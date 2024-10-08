@@ -4,6 +4,17 @@ stages:
   - deploy
   - upload
 
+variables:
+  GRADLE_USER_HOME: "${CI_PROJECT_DIR}/.gradle"
+
+cache:
+  - key:
+      files:
+        - gradle/wrapper/gradle-wrapper.properties
+    paths:
+      - .gradle/wrapper
+      - .gradle/caches
+
 #####################################
 # Build XCFramework
 
@@ -211,6 +222,7 @@ sign_google_play:
   tags:
     - garelease
   stage: deploy
+  cache: []
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
     expire_in: 30 days
@@ -228,6 +240,7 @@ sign_google_play:
 .gcp_prep:
   stage: upload
   image: blockstream/gcloud-docker-tf:1.1.9
+  cache: []
   tags:
     - ga
 

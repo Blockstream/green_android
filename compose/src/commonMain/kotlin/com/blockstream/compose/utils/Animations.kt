@@ -98,8 +98,8 @@ fun Rotating(duration: Int = 1000, content: @Composable () -> Unit) {
     val infiniteTransition = rememberInfiniteTransition()
 
     val rotate by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = 359f,
+        initialValue = 359f,
+        targetValue = 1f,
         animationSpec = infiniteRepeatable(
             animation = tween(duration, easing = LinearEasing),
             repeatMode = RepeatMode.Restart

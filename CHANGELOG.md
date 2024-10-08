@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.36] - 2024-10-24
+
+### Changed
+- Bump GDK to version 0.73.2
+- Bump Breez to version 0.6.2
+- Update dependencies
+
 ## [4.0.35] - 2024-09-26
 
 ### Added
@@ -16,12 +23,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Update dependencies
  
-- ### Fixed
+### Fixed
 - Various bug fixes
 
 ## [4.0.33] - 2024-08-15
 
-- ### Fixed
+### Fixed
 - Fix GDK build for F-Droid
 
 ## [4.0.32] - 2024-08-12
@@ -35,7 +42,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Bump GDK to version 0.72.2
 - Bump Breez to version 0.5.2
  
-- ### Fixed
+### Fixed
 - Various bug fixes
 
 ## [4.0.31] - 2024-07-02
@@ -49,7 +56,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Updated project dependencies
 - Bump Breez to version 0.5.1-rc4
 
-- ### Fixed
+### Fixed
 - Fix F-Droid dependency issue
 
 ## [4.0.30] - 2024-06-10
