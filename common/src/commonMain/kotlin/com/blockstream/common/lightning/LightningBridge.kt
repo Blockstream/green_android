@@ -491,21 +491,21 @@ class LightningBridge constructor(
         }
     }
 
-    fun sendPayment(bolt11: String, satoshi: Long?, useTrampoline: Boolean): SendPaymentResponse {
+    fun sendPayment(bolt11: String, satoshi: Long?): SendPaymentResponse {
         return try {
             breezSdk.sendPayment(
-                SendPaymentRequest(bolt11 = bolt11, amountMsat = satoshi?.milliSatoshi(), useTrampoline = useTrampoline)
+                SendPaymentRequest(bolt11 = bolt11, amountMsat = satoshi?.milliSatoshi(), useTrampoline = true)
             )
         } catch (e: Exception) {
             throw exceptionWithNodeId(e)
         }
     }
 
-    fun payLnUrl(requestData: LnUrlPayRequestData, amount: Long, comment: String, useTrampoline: Boolean): LnUrlPayResult {
+    fun payLnUrl(requestData: LnUrlPayRequestData, amount: Long, comment: String): LnUrlPayResult {
         return try {
             breezSdk.payLnurl(
                 LnUrlPayRequest(
-                    data = requestData, amountMsat = amount.milliSatoshi(), comment = comment, useTrampoline = useTrampoline
+                    data = requestData, amountMsat = amount.milliSatoshi(), comment = comment, useTrampoline = true
                 )
             )
         } catch (e: Exception) {

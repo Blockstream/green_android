@@ -28,7 +28,6 @@ import com.blockstream.common.extensions.isBlank
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.launchIn
-import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.extensions.startsWith
 import com.blockstream.common.gdk.data.AccountAsset
@@ -223,7 +222,7 @@ class SendViewModel(
 
     class LocalEvents {
         object ToggleIsSendAll: Event
-        data class SendLightningTransaction(val useTrampoline: Boolean) : Event
+        object SendLightningTransaction : Event
         object ClickAssetsAccounts: Event
         object Note : Event
     }
@@ -361,7 +360,7 @@ class SendViewModel(
             }
 
             is LocalEvents.SendLightningTransaction -> {
-                sendLightningTransaction(useTrampoline = event.useTrampoline)
+                sendLightningTransaction()
             }
 
             is LocalEvents.Note -> {
@@ -603,13 +602,13 @@ class SendViewModel(
 
     }
 
-    private fun sendLightningTransaction(useTrampoline: Boolean) {
+    private fun sendLightningTransaction() {
         doAsync({
             countly.startSendTransaction()
             countly.startFailedTransaction()
 
             createTransactionParams.value?.let {
-                session.sendLightningTransaction(params = session.createTransaction(_network.value!!, it), comment = note.value, useTrampoline = useTrampoline)
+                session.sendLightningTransaction(params = session.createTransaction(_network.value!!, it), comment = note.value)
             }?: run {
                 throw Exception("Something went wrong while creating the Transaction")
             }

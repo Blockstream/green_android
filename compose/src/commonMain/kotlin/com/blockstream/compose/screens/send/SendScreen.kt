@@ -52,7 +52,6 @@ import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.common.models.send.SendViewModel
 import com.blockstream.common.models.send.SendViewModelAbstract
 import com.blockstream.common.utils.DecimalFormat
-import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.components.Banner
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAmountField
@@ -406,27 +405,10 @@ fun SendScreen(
                             enabled = buttonEnabled,
                             onSlideComplete = {
                                 viewModel.postEvent(
-                                    SendViewModel.LocalEvents.SendLightningTransaction(
-                                        useTrampoline = false
-                                    )
+                                    SendViewModel.LocalEvents.SendLightningTransaction
                                 )
                             }
                         )
-
-                        if (viewModel.appInfo.isDevelopment) {
-                            SlideToUnlock(
-                                isLoading = onProgressSending,
-                                enabled = buttonEnabled,
-                                hint = StringHolder.create("Slide to Send with Trampoline"),
-                                onSlideComplete = {
-                                    viewModel.postEvent(
-                                        SendViewModel.LocalEvents.SendLightningTransaction(
-                                            useTrampoline = true
-                                        )
-                                    )
-                                }
-                            )
-                        }
                     }
                 } else {
                     GreenButton(

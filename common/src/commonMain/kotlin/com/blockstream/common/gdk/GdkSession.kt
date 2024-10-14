@@ -2712,7 +2712,7 @@ class GdkSession constructor(
             _walletActiveEventInvalidated = true
         }
 
-    fun sendLightningTransaction(params: CreateTransaction, comment: String?, useTrampoline: Boolean): ProcessedTransactionDetails{
+    fun sendLightningTransaction(params: CreateTransaction, comment: String?): ProcessedTransactionDetails{
         val invoiceOrLnUrl = params.addressees.first().address
         val satoshi = params.addressees.first().satoshi?.absoluteValue ?: 0L
 
@@ -2732,8 +2732,7 @@ class GdkSession constructor(
                 try {
                     val response = lightningSdk.sendPayment(
                         bolt11 = inputType.invoice.bolt11,
-                        satoshi = satoshi.takeIf { inputType.invoice.amountMsat == null },
-                        useTrampoline = useTrampoline
+                        satoshi = satoshi.takeIf { inputType.invoice.amountMsat == null }
                     )
 
                     ProcessedTransactionDetails(paymentId = response.payment.id)
@@ -2754,8 +2753,7 @@ class GdkSession constructor(
                 lightningSdk.payLnUrl(
                     requestData = inputType.data,
                     amount = satoshi,
-                    comment = comment ?: "",
-                    useTrampoline = useTrampoline
+                    comment = comment ?: ""
                 ).let {
                     when (it) {
                         is LnUrlPayResult.EndpointSuccess -> {
