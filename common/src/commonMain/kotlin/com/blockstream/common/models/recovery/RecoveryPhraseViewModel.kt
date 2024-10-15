@@ -8,7 +8,7 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavData
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
-import com.blockstream.common.extensions.ifConnected
+import com.blockstream.common.extensions.ifConnectedSuspend
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.Credentials
 import com.blockstream.common.models.GreenViewModel
@@ -16,6 +16,7 @@ import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.jetbrains.compose.resources.getString
 
 abstract class RecoveryPhraseViewModelAbstract(
@@ -26,13 +27,13 @@ abstract class RecoveryPhraseViewModelAbstract(
     override fun screenName(): String = "RecoveryPhrase"
 
     @NativeCoroutinesState
-    abstract val mnemonic: MutableStateFlow<String>
+    abstract val mnemonic: StateFlow<String>
 
     @NativeCoroutinesState
-    abstract val mnemonicWords: MutableStateFlow<List<String>>
+    abstract val mnemonicWords: StateFlow<List<String>>
 
     @NativeCoroutinesState
-    abstract val passphrase: MutableStateFlow<String?>
+    abstract val passphrase: StateFlow<String?>
 
     @NativeCoroutinesState
     abstract val showQR: MutableStateFlow<Boolean>
@@ -45,21 +46,14 @@ class RecoveryPhraseViewModel(
 ) :
     RecoveryPhraseViewModelAbstract(isLightning = isLightning, greenWallet = greenWallet) {
 
-    val credentials: Credentials by lazy {
-        providedCredentials ?: session.ifConnected {
-            (if (isLightning) {
-                Credentials(mnemonic = session.deriveLightningMnemonic())
-            } else {
-                session.getCredentials()
-            })
-        } ?: Credentials.empty()
-    }
+    private val _mnemonic = MutableStateFlow("")
+    override val mnemonic: StateFlow<String> = _mnemonic
 
-    override val mnemonic = MutableStateFlow(viewModelScope, credentials.mnemonic ?: "")
+    private val _mnemonicWords = MutableStateFlow(emptyList<String>())
+    override val mnemonicWords: StateFlow<List<String>> = _mnemonicWords
 
-    override val mnemonicWords = MutableStateFlow(viewModelScope, credentials.mnemonic?.split(" ") ?: listOf())
-
-    override val passphrase = MutableStateFlow(viewModelScope, credentials.bip39Passphrase)
+    private val _passphrase = MutableStateFlow<String?>(null)
+    override val passphrase: StateFlow<String?> = _passphrase
 
     override val showQR = MutableStateFlow(viewModelScope, false)
 
@@ -74,6 +68,12 @@ class RecoveryPhraseViewModel(
                 title = getString(Res.string.id_backup_recovery_phrase),
                 subtitle = if (isLightning) getString(Res.string.id_lightning) else null
             )
+
+            (providedCredentials ?: session.ifConnectedSuspend { (if (isLightning) Credentials(mnemonic = session.deriveLightningMnemonic()) else session.getCredentials()) })?.also { credentials ->
+                _mnemonic.value = credentials.mnemonic ?: ""
+                _mnemonicWords.value = credentials.mnemonic?.split(" ") ?: listOf()
+                _passphrase.value = credentials.bip39Passphrase
+            }
         }
 
         bootstrap()

@@ -53,19 +53,10 @@ data class TwoFactorResetBottomSheet(
     val greenWallet: GreenWallet,
     val network: Network
 ) : BottomScreen(), Parcelable {
-    @Transient
-    @IgnoredOnParcel
-    var parentViewModel: GreenViewModel? = null
-
     @Composable
     override fun Content() {
         val viewModel = koinScreenModel<SimpleGreenViewModel> {
             parametersOf(greenWallet, null, "TwoFactorReset")
-        }.also {
-            val navigator = LocalRootNavigator.current
-            if(navigator == null) {
-                it.parentViewModel = parentViewModel
-            }
         }
 
         val twoFactorReset = viewModel.session.twoFactorReset(network).value

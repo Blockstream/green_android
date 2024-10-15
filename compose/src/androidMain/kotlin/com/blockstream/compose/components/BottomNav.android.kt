@@ -3,13 +3,13 @@ package com.blockstream.compose.components
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.blockstream.compose.theme.GreenThemePreview
+import com.blockstream.compose.theme.GreenChromePreview
 
 
 @Composable
 @Preview
 fun BottomNavPreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         GreenColumn {
             BottomNav(modifier = Modifier, onSendClick = {
 
@@ -30,7 +30,7 @@ fun BottomNavPreview() {
             BottomNav(
                 modifier = Modifier,
                 isSweepEnabled = false,
-                isWatchOnly = true,
+                canSend = true,
                 onSendClick = {
 
                 },

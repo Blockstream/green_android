@@ -21,7 +21,6 @@ import com.blockstream.common.utils.Timer
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -49,7 +48,7 @@ class SessionManager constructor(
 ) {
     private val userAgent = "${appInfo.userAgent}_${appInfo.version}_${appInfo.type}"
 
-    private var scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    private var scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     val httpRequestHandler : GdkSession by lazy {
         createSession()
@@ -123,11 +122,11 @@ class SessionManager constructor(
                     }
                 }
             }
-        }.launchIn(CoroutineScope(context = Dispatchers.Default + logException()))
+        }.launchIn(scope)
 
         settingsManager.appSettingsStateFlow.onEach {
             torEnabled = it.tor
-        }.launchIn(CoroutineScope(context = Dispatchers.Default + logException()))
+        }.launchIn(scope)
 
         gdk.setNotificationHandler { gaSession: GASession, jsonObject: Any ->
             try {
@@ -154,7 +153,7 @@ class SessionManager constructor(
 
         _torProxy.filterNotNull().onEach {
             countly.updateTorProxy(it)
-        }.launchIn(CoroutineScope(context = Dispatchers.Default + logException()))
+        }.launchIn(scope)
     }
 
     fun getDeviceSessionForNetworkAllPolicies(device: GreenDevice, network: Network, isEphemeral: Boolean): GdkSession? {
@@ -290,7 +289,7 @@ class SessionManager constructor(
         if (applicationSettings.tor && applicationSettings.proxyUrl?.startsWith("socks5://") != true) {
             if (!torNetworkSession.isConnected) {
                 // Re-initiate connection
-                scope.launch(context = Dispatchers.IO + logException(countly)) {
+                scope.launch(context = logException(countly)) {
                     gdk.networks().bitcoinElectrum.also { network ->
                         torNetworkSession.connect(network = network, initNetworks = listOf(network))
                     }

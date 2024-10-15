@@ -52,6 +52,8 @@ class FeeViewModel(
 
     private var params: CreateTransactionParams? = null
 
+    override val isWatchOnly = MutableStateFlow(false)
+
     init {
 
         viewModelScope.launch {
@@ -156,6 +158,8 @@ class FeeViewModel(
 
 class FeeViewModelPreview(greenWallet: GreenWallet) :
     FeeViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = previewAccountAsset()) {
+
+    override val isWatchOnly: StateFlow<Boolean> = MutableStateFlow(false)
 
     override val feePriorities: StateFlow<List<FeePriority>> =
         MutableStateFlow(listOf(FeePriority.High(error = "id_insufficient_funds"), FeePriority.Medium(), FeePriority.Low()))

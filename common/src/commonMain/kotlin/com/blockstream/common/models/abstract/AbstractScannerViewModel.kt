@@ -10,13 +10,11 @@ import com.blockstream.common.gdk.params.BcurDecodeParams
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
-import com.rickclephas.kmp.observableviewmodel.InternalKMPObservableViewModelApi
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false, greenWalletOrNull: GreenWallet? = null): GreenViewModel(greenWalletOrNull = greenWalletOrNull) {
 
@@ -25,6 +23,9 @@ abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false,
     private var bcurPartEmitter: CompletableDeferred<String>? = null
 
     abstract fun setScanResult(scanResult: ScanResult)
+
+    internal val _progress = MutableStateFlow<Int?>(null)
+    val progress: StateFlow<Int?> = _progress
 
     private fun barcodeScannerResult(scanResult: ScanResult){
         if (appInfo.isDevelopmentOrDebug) {
@@ -47,24 +48,30 @@ abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false,
 
             if(!isScanComplete) {
                 if ((isDecodeContinuous && scannedText.startsWith(prefix = "ur:", ignoreCase = true)) || bcurPartEmitter != null) {
+
                     if (bcurPartEmitter == null) {
                         viewModelScope.coroutineScope.launch(context = logException(countly)) {
+
                             try {
-                                val bcurDecodedData = withContext(context = Dispatchers.IO) {
-                                    session.bcurDecode(
-                                        BcurDecodeParams(part = scannedText),
-                                        object : BcurResolver {
-                                            override fun requestData(): CompletableDeferred<String> {
-                                                return CompletableDeferred<String>().also {
-                                                    bcurPartEmitter = it
-                                                }
+                                val bcurDecodedData = session.bcurDecode(
+                                    params = BcurDecodeParams(part = scannedText),
+                                    bcurResolver = object : BcurResolver {
+                                        override fun requestData(): CompletableDeferred<String> {
+                                            return CompletableDeferred<String>().also {
+                                                bcurPartEmitter = it
                                             }
                                         }
-                                    )
-                                }
+
+                                        override fun progress(progress: Int) {
+                                            _progress.value = progress
+                                        }
+                                    }
+                                )
 
                                 barcodeScannerResult(ScanResult.from(bcurDecodedData))
-                            } catch (e: Exception) {
+                            } catch (e: CancellationException){
+                                e.printStackTrace()
+                            }  catch (e: Exception) {
                                 e.printStackTrace()
                                 postSideEffect(SideEffects.ErrorDialog(e))
                             } finally {
@@ -91,14 +98,6 @@ abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false,
         } catch (e: Exception) {
             e.printStackTrace()
         }
-    }
-
-    // This is called from Voyager
-    @OptIn(InternalKMPObservableViewModelApi::class)
-    override fun onDispose() {
-        super.onDispose()
-        // Call the internal InternalKMPObservableViewModelApi
-        clear()
     }
 
     companion object: Loggable()

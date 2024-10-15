@@ -12,7 +12,7 @@ import blockstream_green.common.generated.resources.magnifying_glass
 import blockstream_green.common.generated.resources.pencil_simple_line
 import com.blockstream.common.models.transaction.TransactionViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
-import com.blockstream.compose.theme.GreenThemePreview
+import com.blockstream.compose.theme.GreenChromePreview
 import org.jetbrains.compose.resources.painterResource
 
 object TransactionViewModelPreviewProvider : PreviewParameterProvider<TransactionViewModelPreview> {
@@ -54,7 +54,7 @@ fun TransactionScreenPreviewFailed() {
 @Composable
 @Preview
 fun MenuPreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         Column {
             HorizontalDivider()
             MenuListItem("Add Note", painterResource(Res.drawable.pencil_simple_line))

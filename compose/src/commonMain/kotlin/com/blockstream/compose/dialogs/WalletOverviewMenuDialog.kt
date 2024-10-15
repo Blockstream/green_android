@@ -116,9 +116,10 @@ fun WalletOverviewMenuDialog(viewModel: WalletOverviewViewModelAbstract, onDismi
                         onDismissRequest()
                     }
 
-                    MenuHeader(text = stringResource(Res.string.id_accounts))
 
                     if(viewModel.sessionOrNull?.isWatchOnly == false && !viewModel.greenWallet.isLightning) {
+                        MenuHeader(text = stringResource(Res.string.id_accounts))
+
                         MenuItem(
                             text = stringResource(Res.string.id_add_new_account),
                             icon = Res.drawable.plus

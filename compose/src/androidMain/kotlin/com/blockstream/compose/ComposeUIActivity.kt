@@ -3,9 +3,9 @@ package com.blockstream.compose
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -13,7 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.looks.wallet.WalletListLook
+import com.blockstream.compose.components.GreenButton
+import com.blockstream.compose.components.GreenButtonColor
+import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.theme.GreenChrome
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.views.WalletListItem
 
@@ -21,6 +25,7 @@ class ComposeUIActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            GreenChrome()
             GreenTheme {
                 ComposeUI()
             }
@@ -82,6 +87,17 @@ fun ComposeUI() {
             WalletListItem(look = WalletListLook.preview(true, true))
             WalletListItem(look = WalletListLook.preview(false, true))
         }
+
+        HorizontalDivider()
+
+        GreenColumn {
+            GreenButton("Button") { }
+            GreenButton("Button", type = GreenButtonType.OUTLINE) { }
+            GreenButton("Button", type = GreenButtonType.OUTLINE, color = GreenButtonColor.GREENER) { }
+            GreenButton("Button", type = GreenButtonType.TEXT) { }
+        }
+
+        CircularProgressIndicator()
     }
 }
 

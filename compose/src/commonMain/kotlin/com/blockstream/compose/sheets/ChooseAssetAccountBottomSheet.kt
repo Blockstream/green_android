@@ -45,20 +45,10 @@ data class ChooseAssetAccountBottomSheet(
     val greenWallet: GreenWallet
 ) : BottomScreen(), Parcelable {
 
-    // Temp fix until fully migration to Compose
-    @Transient
-    @IgnoredOnParcel
-    var parentViewModel: GreenViewModel? = null
-
     @Composable
     override fun Content() {
         val viewModel = koinScreenModel<SimpleGreenViewModel> {
             parametersOf(greenWallet, null, "ChooseAssetAndAccount")
-        }.also {
-            val navigator = LocalRootNavigator.current
-            if(navigator == null) {
-                it.parentViewModel = parentViewModel
-            }
         }
 
         ChooseAssetAccountBottomSheet(

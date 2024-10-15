@@ -1,5 +1,6 @@
 package com.blockstream.green.data
 
+import android.app.Activity
 import android.content.res.Configuration
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.data.AppInfo
@@ -8,7 +9,6 @@ import com.blockstream.common.database.Database
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.utils.Loggable
-import com.blockstream.green.ui.AppActivity
 import ly.count.android.sdk.ModuleFeedback
 
 
@@ -25,7 +25,7 @@ class CountlyNoOp constructor(
 
     }
 
-    override fun onStart(activity: AppActivity) {
+    override fun onStart(activity: Activity) {
 
     }
 

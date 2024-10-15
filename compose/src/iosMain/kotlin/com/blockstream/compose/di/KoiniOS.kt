@@ -13,6 +13,7 @@ import com.blockstream.common.interfaces.DeviceConnectionInterface
 import com.blockstream.common.lightning.BreezNotification
 import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.managers.DeviceManager.Companion.JADE
+import com.blockstream.common.managers.NotificationManager
 import com.blockstream.compose.managers.DeviceConnectionManager
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.koin.dsl.binds
@@ -68,6 +69,9 @@ fun startKoin(doOnStartup: () -> Unit = {}) {
             }
             single {
                 Firebase()
+            }
+            single {
+                NotificationManager()
             }
             single {
                 DeviceManager(

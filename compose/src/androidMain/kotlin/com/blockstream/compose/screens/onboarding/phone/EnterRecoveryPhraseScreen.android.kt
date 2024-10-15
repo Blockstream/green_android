@@ -6,12 +6,12 @@ import com.blockstream.common.models.onboarding.phone.EnterRecoveryPhraseViewMod
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenRow
-import com.blockstream.compose.theme.GreenThemePreview
+import com.blockstream.compose.theme.GreenChromePreview
 
 @Preview
 @Composable
 fun KeysPreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         GreenRow {
             Key(key = "about", isWord = true) { }
             Key(key = "thanks", isWord = true) { }
@@ -23,7 +23,7 @@ fun KeysPreview() {
 @Preview
 @Composable
 fun PhraseW1ordPreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         GreenColumn {
             PhraseWord(1, "ribbon", true)
             PhraseWord(2, "ribbon", false)

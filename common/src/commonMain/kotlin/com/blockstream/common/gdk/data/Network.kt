@@ -11,9 +11,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @Parcelize
 data class Network(
-    @SerialName("id") val id: String, // this is a synthetic property app side
-    @SerialName("name") val name: String,
     @SerialName("network") val network: String,
+    @SerialName("name") val name: String,
     @SerialName("mainnet") val isMainnet: Boolean,
     @SerialName("liquid") val isLiquid: Boolean,
     @SerialName("development") val isDevelopment: Boolean,
@@ -25,6 +24,8 @@ data class Network(
     @SerialName("csv_buckets") val csvBuckets: List<Int> = listOf(),
     @SerialName("lightning") val isLightning: Boolean = false, // synthetic
 ) : GreenJson<Network>(), Parcelable {
+    val id
+        get() = network
 
     val isElectrum
         get() = "electrum" == serverType

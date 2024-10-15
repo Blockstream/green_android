@@ -6,7 +6,6 @@ import com.blockstream.common.gdk.params.GetAssetsParams
 import com.blockstream.common.utils.Loggable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,7 +32,7 @@ data class AssetStatus constructor(
  * App Cache: cached data from apk
  */
 class NetworkAssetManager constructor() {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     private val metadata = mutableMapOf<String, Asset?>()
     private val icons = mutableMapOf<String, ByteArray?>()

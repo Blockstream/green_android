@@ -17,19 +17,26 @@ import com.blockstream.common.CountlyBase
 import com.blockstream.common.ViewModelView
 import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.crypto.GreenKeystore
+import com.blockstream.common.crypto.PlatformCipher
 import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.Banner
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
+import com.blockstream.common.data.DeviceIdentifier
+import com.blockstream.common.data.EncryptedData
 import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.NavData
+import com.blockstream.common.data.Promo
 import com.blockstream.common.data.Redact
 import com.blockstream.common.data.TwoFactorResolverData
+import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.data.toSerializable
 import com.blockstream.common.database.Database
+import com.blockstream.common.database.LoginCredentials
+import com.blockstream.common.devices.ConnectionType
 import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.events.Event
@@ -42,6 +49,7 @@ import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.logException
+import com.blockstream.common.extensions.objectId
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.TwoFactorResolver
 import com.blockstream.common.gdk.data.Account
@@ -51,25 +59,30 @@ import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.gdk.device.GdkHardwareWallet
 import com.blockstream.common.gdk.device.HardwareWalletInteraction
+import com.blockstream.common.managers.BluetoothManager
+import com.blockstream.common.managers.NotificationManager
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.navigation.NavigateDestination
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.navigation.PopTo
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.StringHolder
+import com.blockstream.common.utils.generateWalletName
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.InternalKMPObservableViewModelApi
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.ViewModel
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -114,21 +127,19 @@ open class GreenViewModel constructor(
     val appInfo: AppInfo by inject()
     protected val database: Database by inject()
     protected val countly: CountlyBase by inject()
-    protected val sessionManager: SessionManager by inject()
+    val sessionManager: SessionManager by inject()
     val settingsManager: SettingsManager by inject()
     protected val applicationScope: ApplicationScope by inject()
     protected val greenKeystore: GreenKeystore by inject()
     val zendeskSdk: ZendeskSdk by inject()
+    private val notificationManager: NotificationManager by inject()
+    private val bluetoothManager: BluetoothManager by inject()
 
     internal val isPreview by lazy { this::class.simpleName?.contains("Preview") == true }
 
     private val _event: MutableSharedFlow<Event> = MutableSharedFlow()
     private val _sideEffect: Channel<SideEffect> = Channel()
-    private val _sideEffectAppFragment: Channel<SideEffect> = Channel()
     // Check with Don't Keep activities if the logout event is persisted
-
-    // Used only for AppFragment Navigation from dialogs, tabs or bottom sheets
-    var parentViewModel: GreenViewModel? = null
 
     // Helper method to force the use of MutableStateFlow(viewModelScope)
     @NativeCoroutinesIgnore
@@ -136,9 +147,6 @@ open class GreenViewModel constructor(
 
     @NativeCoroutines
     val sideEffect = _sideEffect.receiveAsFlow()
-
-    @NativeCoroutines
-    val sideEffectAppFragment = _sideEffectAppFragment.receiveAsFlow()
 
     @NativeCoroutinesState
     val onProgress = MutableStateFlow(viewModelScope, false)
@@ -213,6 +221,10 @@ open class GreenViewModel constructor(
     val banner: MutableStateFlow<Banner?> = MutableStateFlow(null)
     val closedBanners = mutableListOf<Banner>()
 
+    @NativeCoroutines
+    val promo: MutableStateFlow<Promo?> = MutableStateFlow(null)
+    private var promoImpression: Boolean = false
+
     private var _deviceRequest: CompletableDeferred<String>? = null
     private var _bootstrapped: Boolean = false
 
@@ -277,6 +289,7 @@ open class GreenViewModel constructor(
         }.launchIn(this)
 
         initBanner()
+        initPromo()
     }
 
     @ObjCName(name = "post", swiftName = "postEvent")
@@ -313,17 +326,8 @@ open class GreenViewModel constructor(
             logger.d { "postSideEffect: $sideEffect" }
         }
 
-        // If navigate event forward side effect to parent viewmodel
-        parentViewModel?.takeIf { sideEffect is SideEffects.NavigateTo }?.also {
-            logger.d { "forward to parentViewModel: $sideEffect" }
-            it.postSideEffect(sideEffect)
-        } ?: run {
-            viewModelScope.coroutineScope.launch {
-                _sideEffect.send(sideEffect)
-            }
-            viewModelScope.coroutineScope.launch {
-                _sideEffectAppFragment.send(sideEffect)
-            }
+        viewModelScope.coroutineScope.launch {
+            _sideEffect.send(sideEffect)
         }
     }
 
@@ -359,11 +363,41 @@ open class GreenViewModel constructor(
         }.launchIn(this)
     }
 
+    protected open fun initPromo() {
+        countly.remoteConfigUpdateEvent.onEach {
+            val oldPromo = promo.value
+            countly.getRemoteConfigValueForPromos()?.filter {
+                it.isVisible &&
+                // Filter closed promos
+                !settingsManager.isPromoDismissed(it.id) &&
+                // Filter based on screen name
+                (it.screens == null || it.screens.contains(screenName()) || it.screens.contains("*"))
+            }?.let {
+                    // Search for the already displayed promo, else give priority to those with screen name, else "*"
+                    it.find { it == oldPromo } ?: it.find { it.screens?.contains(screenName()) == true } ?: it.firstOrNull()
+                }.also {
+                    // Set promo to ViewModel
+                    promo.value = it
+                }
+        }.launchIn(this)
+    }
+
     open suspend fun handleEvent(event: Event) {
         when(event){
+            is Events.ProvideCipher -> {
+                event.platformCipher?.also {
+                    biometricsPlatformCipher?.complete(it)
+                }
+
+                event.exception?.also {
+                    biometricsPlatformCipher?.completeExceptionally(it)
+                }
+            }
             is Events.NotificationPermissionGiven -> {
-                // Todo update notifications
-                // notificationManager.notificationPermissionGiven()
+                 notificationManager.notificationPermissionGiven()
+            }
+            is Events.BluetoothPermissionGiven -> {
+                bluetoothManager.permissionsGranted()
             }
             is Events.SetAccountAsset -> {
                 accountAsset.value = event.accountAsset
@@ -395,11 +429,44 @@ open class GreenViewModel constructor(
             is NavigateDestination -> {
                 postSideEffect(SideEffects.NavigateTo(event))
             }
+            is Events.PromoImpression -> {
+                promo.value?.also {
+                    if (!promoImpression) {
+                        promoImpression = true
+                        countly.promoView(sessionOrNull, it)
+                    }
+                }
+            }
+            is Events.PromoOpen -> {
+                promo.value?.also {
+                    countly.promoOpen(sessionOrNull, it)
+                    postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Promo(promo = it)))
+                }
+            }
+            is Events.PromoDismiss -> {
+                promo.value?.also {
+                    settingsManager.dismissPromo(it.id)
+                    countly.promoDismiss(sessionOrNull, it)
+                }
+                promo.value = null
+            }
             is Events.BannerDismiss -> {
                 banner.value?.also {
                     closedBanners += it
                 }
                 banner.value = null
+            }
+            is Events.PromoAction -> {
+                promo.value?.also { promo ->
+                    promo.link?.also { link ->
+                        countly.promoAction(session = sessionOrNull, promo = promo)
+                        if (link == "green://onofframps" && greenWalletOrNull != null ) {
+                            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.OnOffRamps))
+                        } else {
+                            postSideEffect(SideEffects.OpenBrowser(url = link))
+                        }
+                    }
+                }
             }
             is Events.BannerAction -> {
                 banner.value?.also { banner ->
@@ -472,6 +539,16 @@ open class GreenViewModel constructor(
                         it.completeExceptionally(Exception("id_action_canceled"))
                     }else{
                         it.complete(event.method)
+                    }
+                }
+                _twoFactorDeferred = null
+            }
+            is Events.ResolveTwoFactorCode -> {
+                _twoFactorDeferred?.takeIf { !it.isCompleted }?.also {
+                    if(event.code == null){
+                        it.completeExceptionally(Exception("id_action_canceled"))
+                    }else{
+                        it.complete(event.code)
                     }
                 }
                 _twoFactorDeferred = null
@@ -802,23 +879,146 @@ open class GreenViewModel constructor(
     protected open fun setDenominatedValue(denominatedValue: DenominatedValue) { }
     protected open fun errorReport(exception: Throwable): ErrorReport? { return null}
 
-    var _twoFactorDeferred: CompletableDeferred<String>? = null
-    override suspend fun withSelectMethod(availableMethods: List<String>): CompletableDeferred<String> {
+    private var _twoFactorDeferred: CompletableDeferred<String>? = null
+    override suspend fun selectTwoFactorMethod(availableMethods: List<String>): CompletableDeferred<String> {
         return CompletableDeferred<String>().also {
             _twoFactorDeferred = it
-            postSideEffect(SideEffects.TwoFactorResolver(TwoFactorResolverData.selectMethod(availableMethods)))
+            postSideEffect(
+                SideEffects.TwoFactorResolver(
+                    TwoFactorResolverData.selectMethod(
+                        availableMethods
+                    )
+                )
+            )
         }
     }
 
-    override suspend fun getCode(
+    override suspend fun getTwoFactorCode(
         network: Network,
         enable2faCallMethod: Boolean,
         authHandlerStatus: AuthHandlerStatus
     ): CompletableDeferred<String> {
         return CompletableDeferred<String>().also {
             _twoFactorDeferred = it
-            postSideEffect(SideEffects.TwoFactorResolver(TwoFactorResolverData.getCode(network,enable2faCallMethod, authHandlerStatus)))
+            postSideEffect(
+                SideEffects.TwoFactorResolver(
+                    TwoFactorResolverData.getCode(
+                        network,
+                        enable2faCallMethod,
+                        authHandlerStatus
+                    )
+                )
+            )
         }
+    }
+
+    private var biometricsPlatformCipher: CompletableDeferred<PlatformCipher>? = null
+
+    internal fun createNewWatchOnlyWallet(
+        network: Network,
+        persistLoginCredentials: Boolean,
+        watchOnlyCredentials: WatchOnlyCredentials,
+        withBiometrics: Boolean,
+        deviceBrand: DeviceBrand? = null
+    ) {
+
+        val biometricsCipherProvider = viewModelScope.coroutineScope.async(
+            start = CoroutineStart.LAZY
+        ) {
+            CompletableDeferred<PlatformCipher>().let {
+                biometricsPlatformCipher = it
+                postSideEffect(SideEffects.RequestCipher)
+                it.await()
+            }
+        }
+
+        doAsync({
+            val loginData = session.loginWatchOnly(network = network, wallet = null, watchOnlyCredentials = watchOnlyCredentials)
+
+            // First get login credentials before creating the wallet
+            val loginCredentials: LoginCredentials? =
+                if (persistLoginCredentials || network.isSinglesig) {
+                    val credentialType: CredentialType
+                    val encryptedData: EncryptedData
+                    if (withBiometrics) {
+                        encryptedData = greenKeystore.encryptData(
+                            biometricsCipherProvider.await(),
+                            watchOnlyCredentials.toString().encodeToByteArray()
+                        )
+                        credentialType = CredentialType.BIOMETRICS_WATCHONLY_CREDENTIALS
+                    } else {
+                        encryptedData = greenKeystore.encryptData(
+                            watchOnlyCredentials.toString().encodeToByteArray()
+                        )
+                        credentialType = CredentialType.KEYSTORE_WATCHONLY_CREDENTIALS
+                    }
+
+                    createLoginCredentials(
+                        walletId = objectId().toString(), // temp
+                        network = network.id,
+                        credentialType = credentialType,
+                        encryptedData = encryptedData
+                    )
+                } else {
+                    null
+                }
+
+            // Check if wallet already exists
+            database.getWalletWithXpubHashId(
+                xPubHashId = loginData.networkHashId,
+                isTestnet = network.isTestnet,
+                isHardware = deviceBrand != null
+            )?.also { wallet ->
+                throw Exception("id_wallet_already_restored_s|${wallet.name}")
+            }
+
+            val wallet = GreenWallet.createWallet(
+                name = generateWalletName(settingsManager),
+                xPubHashId = loginData.networkHashId, // Use networkHashId as the watch-only is linked to a specific network
+                activeNetwork = session.activeAccount.value?.networkId
+                    ?: session.defaultNetwork.id,
+                activeAccount = session.activeAccount.value?.pointer ?: 0,
+                watchOnlyUsername = if (network.isSinglesig) "" else watchOnlyCredentials.username, // empty string helps us hide the username and still identify it as a wo
+                isTestnet = network.isTestnet,
+                isHardware = deviceBrand != null,
+                deviceIdentifier = deviceBrand?.let {
+                    listOf(
+                        DeviceIdentifier(
+                            name = "",
+                            uniqueIdentifier = "",
+                            brand = it,
+                            connectionType = ConnectionType.QR
+                        )
+                    )
+                }
+
+            ).also {
+                database.insertWallet(it)
+            }
+
+            loginCredentials?.also {
+                database.replaceLoginCredential(it.copy(wallet_id = wallet.id))
+            }
+
+            // Disconnect and reconnect with wallet
+            session.disconnectAsync()
+            session.loginWatchOnly(network = network, wallet = wallet, watchOnlyCredentials = watchOnlyCredentials)
+
+            sessionManager.upgradeOnBoardingSessionToWallet(wallet)
+            countly.importWallet(session)
+
+            wallet
+        }, onSuccess = {
+            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))
+        })
+    }
+
+    // This is called from Voyager
+    @OptIn(InternalKMPObservableViewModelApi::class)
+    override fun onDispose() {
+        super.onDispose()
+        // Call the internal InternalKMPObservableViewModelApi
+        clear()
     }
 
     companion object: Loggable(){

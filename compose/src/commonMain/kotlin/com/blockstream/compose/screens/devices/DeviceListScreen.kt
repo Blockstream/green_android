@@ -1,6 +1,5 @@
 package com.blockstream.compose.screens.devices
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.ble
-import blockstream_green.common.generated.resources.blockstream_jade_device
 import blockstream_green.common.generated.resources.hw_matrix_bg
 import blockstream_green.common.generated.resources.id_blockstream_green_needs_access
 import blockstream_green.common.generated.resources.id_choose_a_usb_or_bluetooth
@@ -70,8 +68,10 @@ import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.Rive
 import com.blockstream.compose.components.RiveAnimation
+import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.navigation.getNavigationResult
 import com.blockstream.compose.navigation.setNavigationResult
+import com.blockstream.compose.sheets.AskJadeUnlockBottomSheet
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.green
@@ -116,7 +116,7 @@ data class DeviceListScreen(val isJade: Boolean) : Screen, Parcelable {
 fun DeviceListItem(device: GreenDevice, modifier: Modifier, onClick: () -> Unit) {
     GreenCard(onClick = onClick, padding = 0, modifier = modifier) {
         Image(
-            painter = painterResource(Res.drawable.blockstream_jade_device),
+            painter = painterResource(device.icon()),
             modifier = Modifier.align(Alignment.CenterEnd).alpha(0.75f).height(120.dp)
                 .aspectRatio(1f, matchHeightConstraintsFirst = true).padding(end = 8.dp),
             contentDescription = null
@@ -154,6 +154,14 @@ fun DeviceListScreen(
 
     val pullToRefreshState = rememberPullToRefreshState()
     var isRefreshing by remember { mutableStateOf(false) }
+
+    AskJadeUnlockBottomSheet.getResult { isUnlocked ->
+        if (isUnlocked) {
+            viewModel.postEvent(DeviceListViewModel.LocalEvents.ConnectViaQRUnlocked)
+        } else {
+            viewModel.postEvent(DeviceListViewModel.LocalEvents.ConnectViaQRPinUnlock)
+        }
+    }
 
     LaunchedEffect(isRefreshing) {
         if (isRefreshing) {
@@ -292,7 +300,8 @@ fun DeviceListScreen(
                                 stringResource(Res.string.id_follow_the_instructions_of_your),
                                 color = whiteHigh,
                                 style = titleMedium,
-                                textAlign = TextAlign.Center
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(horizontal = 32.dp)
                             )
                         }
                     }
@@ -376,16 +385,17 @@ fun DeviceListScreen(
                 }
             }
 
-            GreenColumn(
-                space = 8,
-                padding = 0,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Bottom,
-                modifier = Modifier
-                    .padding(horizontal = 24.dp)
-            ) {
+            if (isJade) {
 
-                AnimatedVisibility(isJade && viewModel.appInfo.isDevelopmentOrDebug) {
+                GreenColumn(
+                    space = 8,
+                    padding = 0,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Bottom,
+                    modifier = Modifier
+                        .padding(horizontal = 24.dp)
+                ) {
+
                     GreenButton(
                         text = stringResource(Res.string.id_connect_via_qr),
                         color = GreenButtonColor.WHITE,
@@ -396,9 +406,7 @@ fun DeviceListScreen(
                             viewModel.postEvent(DeviceListViewModel.LocalEvents.ConnectViaQR)
                         }
                     )
-                }
 
-                AnimatedVisibility(devices.isEmpty()) {
                     GreenButton(
                         text = stringResource(Res.string.id_troubleshoot),
                         color = GreenButtonColor.GREEN,

@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.data.Denomination
-import com.blockstream.compose.theme.GreenThemePreview
+import com.blockstream.compose.theme.GreenChromePreview
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.whiteLow
 
@@ -19,7 +19,7 @@ import com.blockstream.compose.theme.whiteLow
 @Preview
 @Composable
 fun GreenAmountFieldPreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         GreenColumn {
             var amount by remember {
                 mutableStateOf("123")

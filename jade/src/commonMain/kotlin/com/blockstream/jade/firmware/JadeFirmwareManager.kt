@@ -98,9 +98,12 @@ class JadeFirmwareManager constructor(
         const val JADE_FW_JADE1_1_PATH = "/bin/jade1.1/"
         const val JADE_FW_JADEDEV_PATH = "/bin/jadedev/"
         const val JADE_FW_JADE1_1DEV_PATH = "/bin/jade1.1dev/"
+        const val JADE_FW_JADE2_0_PATH = "/bin/jade2.0/"
+        const val JADE_FW_JADE2_0DEV_PATH = "/bin/jade2.0dev/"
 
         const val JADE_BOARD_TYPE_JADE = "JADE"
         const val JADE_BOARD_TYPE_JADE_V1_1 = "JADE_V1.1"
+        const val JADE_BOARD_TYPE_JADE_V2_0 = "JADE_V2"
         const val JADE_FEATURE_SECURE_BOOT = "SB"
 
         const val JADE_FW_VERSIONS_LATEST = "LATEST"
@@ -128,6 +131,11 @@ class JadeFirmwareManager constructor(
                 logger.i { "Jade 1.1 detected" }
                 if (prod) JADE_FW_JADE1_1_PATH else JADE_FW_JADE1_1DEV_PATH
             }
+            JADE_BOARD_TYPE_JADE_V2_0 -> {
+                // Jade 2.0
+                logger.i { "Jade 2.0 detected" }
+                if (prod) JADE_FW_JADE2_0_PATH else JADE_FW_JADE2_0DEV_PATH
+            }
             else -> {
                 val type = info.boardType
                 logger.i { "Unsupported hardware detected - $type" }
@@ -145,7 +153,7 @@ class JadeFirmwareManager constructor(
 
     // Uses GDKSession's httpRequest() to get binary file from Jade firmware server
     @Throws(Exception::class)
-    private fun downloadBinary(path: String): ByteArray? {
+    private suspend fun downloadBinary(path: String): ByteArray? {
         logger.i { "Fetching firmware file: $path" }
         val ret = httpRequestHandler.httpRequest("GET", urls(path), null, "base64", emptyList())
         if(!ret.jsonObject.containsKey("body")){
@@ -157,7 +165,7 @@ class JadeFirmwareManager constructor(
 
     // Uses GDKSession's httpRequest() to get index file from Jade firmware server
     @Throws(Exception::class)
-    private fun downloadIndex(path: String): FirmwareChannels {
+    private suspend fun downloadIndex(path: String): FirmwareChannels {
         logger.i { "Fetching index file: $path" }
         val response = httpRequestHandler.httpRequest("GET", urls(path), null, "json", emptyList())
         if(!response.jsonObject.containsKey("body")){
@@ -168,7 +176,7 @@ class JadeFirmwareManager constructor(
     }
 
     // Get index file and filter channels as appropriate for the passed info
-    private fun getAvailableFirmwares(verInfo: VersionInfo): FirmwareImages? {
+    private suspend fun getAvailableFirmwares(verInfo: VersionInfo): FirmwareImages? {
         // Get relevant fw path (or if hw not supported)
         val fwPath = getFirmwarePath(verInfo)
         if (fwPath.isNullOrBlank()) {
@@ -192,7 +200,7 @@ class JadeFirmwareManager constructor(
     }
 
     // Load firmware file into the data object
-    private fun loadFirmware(fmw: FirmwareFileData) {
+    private suspend fun loadFirmware(fmw: FirmwareFileData) {
         try {
             // Load file from fw server
             val fw = downloadBinary(fmw.filepath)
@@ -362,6 +370,9 @@ class JadeFirmwareManager constructor(
                         } else {
                             // If it's a BLE connection re-bonding is necessary
                             firmwareInteraction.firmwareUpdateState(FirmwareUpdateState.Completed(requireReconnection = true, requireBleRebonding = requireBleRebonding))
+
+                            jade.disconnect(logout = false)
+
                             return true // the return value is irrelevant as we expect re-bonding
                         }
                     } else {

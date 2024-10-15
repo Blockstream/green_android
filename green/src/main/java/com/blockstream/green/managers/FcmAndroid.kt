@@ -1,6 +1,5 @@
 package com.blockstream.green.managers
 
-import android.app.Notification
 import android.content.Context
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.di.ApplicationScope
@@ -15,7 +14,7 @@ class FcmAndroid constructor(
     applicationScope: ApplicationScope,
 ) : FcmCommon(applicationScope = applicationScope) {
 
-    private val notificationManager: NotificationManager by inject()
+    private val notificationManager: NotificationManagerAndroid by inject()
 
     override fun scheduleLightningBackgroundJob(
         walletId: String,

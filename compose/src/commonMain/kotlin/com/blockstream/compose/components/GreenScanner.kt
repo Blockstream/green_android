@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_scan_from_image
 import blockstream_green.common.generated.resources.lightning
@@ -29,6 +31,7 @@ import com.blockstream.compose.LocalDialog
 import com.blockstream.compose.extensions.pxToDp
 import com.blockstream.compose.managers.rememberImagePicker
 import com.blockstream.compose.managers.rememberPlatformManager
+import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.getScreenSizeInfo
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -62,6 +65,14 @@ fun GreenScanner(
                 showScanFromImage = showScanFromImage,
                 viewModel = viewModel
             )
+
+            val progress by viewModel.progress.collectAsStateWithLifecycle()
+
+            AnimatedNullableVisibility(progress, modifier = Modifier.align(Alignment.BottomCenter)) {
+                LinearProgressIndicator(progress = {
+                    it / 100f
+                }, modifier = Modifier.fillMaxWidth().height(4.dp))
+            }
         }
 
         val hasFlash = remember {

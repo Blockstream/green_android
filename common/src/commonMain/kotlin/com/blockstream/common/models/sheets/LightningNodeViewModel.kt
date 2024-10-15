@@ -15,10 +15,10 @@ import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.lightning.LightningManager
 import com.blockstream.common.lightning.channelsBalanceSatoshi
-import com.blockstream.common.lightning.totalInboundLiquiditySatoshi
 import com.blockstream.common.lightning.maxPayableSatoshi
 import com.blockstream.common.lightning.maxReceivableSatoshi
 import com.blockstream.common.lightning.maxSinglePaymentAmountSatoshi
+import com.blockstream.common.lightning.totalInboundLiquiditySatoshi
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
@@ -170,7 +170,7 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
 
     private fun shareLogs() {
         doAsync({
-            val file = lightningManager.createLogs()
+            val file = lightningManager.createLogs(session = session)
             postSideEffect(SideEffects.ShareFile(file))
         }, onSuccess = {
             postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_completed)))

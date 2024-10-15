@@ -1,40 +1,38 @@
 package com.blockstream.compose.components
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.blockstream.compose.R
-import com.blockstream.compose.theme.GreenThemePreview
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.bitcoin
+import blockstream_green.common.generated.resources.bitcoin_testnet
+import blockstream_green.common.generated.resources.id_import_a_wallet_created_with
+import blockstream_green.common.generated.resources.key_singlesig
+import com.blockstream.compose.theme.GreenChromePreview
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 
 @Composable
 @Preview
 fun GreenContentCardPreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         GreenColumn() {
             GreenContentCard(
                 title = "Bitcoin",
-                message = stringResource(id = R.string.id_import_a_wallet_created_with),
-                painter = painterResource(
-                    id = R.drawable.key_singlesig
-                )
+                message = stringResource(Res.string.id_import_a_wallet_created_with),
+                painter = painterResource(Res.drawable.key_singlesig)
             )
 
             GreenContentCard(
                 title = "Bitcoin",
-                message = stringResource(id = R.string.id_import_a_wallet_created_with),
-                painter = painterResource(
-                    id = R.drawable.bitcoin
-                )
+                message = stringResource(Res.string.id_import_a_wallet_created_with),
+                painter = painterResource(Res.drawable.bitcoin)
             )
 
             GreenContentCard(
                 title = "Testnet",
                 message = "",
-                painter = painterResource(
-                    id = R.drawable.bitcoin_testnet
-                )
+                painter = painterResource(Res.drawable.bitcoin_testnet)
             )
         }
     }

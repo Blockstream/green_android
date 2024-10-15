@@ -3,12 +3,12 @@ package com.blockstream.compose.components
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.data.FeePriority
-import com.blockstream.compose.theme.GreenThemePreview
+import com.blockstream.compose.theme.GreenChromePreview
 
 @Preview
 @Composable
 fun GreenNetworkFeePreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         GreenColumn {
             GreenNetworkFee(FeePriority.High(), onClick = {})
             GreenNetworkFee(

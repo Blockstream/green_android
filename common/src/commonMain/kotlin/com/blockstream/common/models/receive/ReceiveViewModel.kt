@@ -51,10 +51,10 @@ import com.blockstream.common.gdk.data.Address
 import com.blockstream.common.lightning.amountSatoshi
 import com.blockstream.common.lightning.expireIn
 import com.blockstream.common.lightning.feeSatoshi
-import com.blockstream.common.lightning.totalInboundLiquiditySatoshi
 import com.blockstream.common.lightning.maxReceivableSatoshi
 import com.blockstream.common.lightning.receiveAmountSatoshi
 import com.blockstream.common.lightning.satoshi
+import com.blockstream.common.lightning.totalInboundLiquiditySatoshi
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.sheets.NoteType
 import com.blockstream.common.navigation.NavigateDestinations
@@ -275,7 +275,7 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
                                 postEvent(NavigateDestinations.Sweep(accountAsset = it))
                             }
                         }
-                    ).takeIf { receiveAddress.isNotBlank() && accountAsset?.account?.isLightning == false },
+                    ).takeIf { receiveAddress.isNotBlank() && accountAsset?.account?.isLightning == false && !accountAsset.account.isLiquid },
                 ),
                 onBackPressed = {
                     if(onProgress.value) {
@@ -353,10 +353,8 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
 
                 session.lastInvoicePaid.filterNotNull().onEach { paidDetails ->
                     if (paidDetails.paymentHash == _lightningInvoice.value?.paymentHash) {
-                        (withContext(context = Dispatchers.IO) {
-                            // Parse the actual Bolt11 invoice
-                            session.parseInput(paidDetails.bolt11)
-                        }?.second as? InputType.Bolt11)?.also {
+                        // Parse the actual Bolt11 invoice
+                        (session.parseInput(paidDetails.bolt11)?.second as? InputType.Bolt11)?.also {
                             postSideEffect(
                                 SideEffects.Dialog(
                                     title = StringHolder.create(Res.string.id_funds_received),

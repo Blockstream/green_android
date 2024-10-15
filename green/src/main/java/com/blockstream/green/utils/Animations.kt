@@ -49,12 +49,3 @@ fun View.pulse(repeat: Boolean = false) {
         it.start()
     }
 }
-
-fun View.bounceDown(){
-    ObjectAnimator.ofFloat(this, "translationY", 0.0f, 30.0f, 0.0f).apply {
-        duration = 500
-        repeatMode = ValueAnimator.RESTART
-        repeatCount = ValueAnimator.INFINITE
-        start()
-    }
-}

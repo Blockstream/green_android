@@ -7,6 +7,7 @@ import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.LBTC_POLICY_ASSET
 import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
+import com.blockstream.common.extensions.isBitcoinPolicyAsset
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.GreenJson
@@ -36,10 +37,10 @@ data class EnrichedAsset constructor(
         return if (isAnyAsset) {
             StringHolder(stringResource = if (isAmp) Res.string.id_receive_any_amp_asset else Res.string.id_receive_any_liquid_asset)
         } else if (session != null && assetId.isPolicyAsset(session)) {
-            if (assetId == BTC_POLICY_ASSET) {
-                "Bitcoin"
-            } else {
-                "Liquid Bitcoin"
+            when {
+                assetId.isBitcoinPolicyAsset() -> "Bitcoin"
+                assetId.isPolicyAsset(session.liquid) -> "Liquid Bitcoin"
+                else -> throw Exception("No supported network")
             }.let {
                 StringHolder(string = if (session.isTestnet) "Testnet $it" else it)
             }
@@ -52,10 +53,10 @@ data class EnrichedAsset constructor(
 
     fun ticker(session: GdkSession): String? {
         return if (assetId.isPolicyAsset(session)) {
-            if (assetId == BTC_POLICY_ASSET) {
-                "BTC"
-            } else {
-                "L-BTC"
+            when{
+                assetId.isBitcoinPolicyAsset() -> "BTC"
+                assetId.isPolicyAsset(session.liquid) -> "L-BTC"
+                else -> throw Exception("No supported network")
             }.let {
                 if (session.isTestnet) "TEST-$it" else it
             }
@@ -84,7 +85,7 @@ data class EnrichedAsset constructor(
     val isBitcoin
         get() = assetId == BTC_POLICY_ASSET
 
-    fun isLiquid(session: GdkSession) = !isAnyAsset && assetId.isPolicyAsset(session)
+    fun isLiquid(session: GdkSession) = !isAnyAsset && assetId.isPolicyAsset(session.liquid)
 
     override fun kSerializer() = serializer()
 

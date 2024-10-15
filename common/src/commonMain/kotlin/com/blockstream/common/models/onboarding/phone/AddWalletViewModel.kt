@@ -35,10 +35,10 @@ class AddWalletViewModel : AddWalletViewModelAbstract() {
         when (event) {
             is LocalEvents.NewWallet -> {
                 SideEffects.NavigateTo(NavigateDestinations.RecoveryIntro(setupArgs = SetupArgs(isRestoreFlow = false))).also {
-                    if(isTestnetEnabled){
+                    if (isTestnetEnabled) {
                         pendingDestination = it.destination
                         postSideEffect(SideEffects.SelectEnvironment)
-                    }else{
+                    } else {
                         postSideEffect(it)
                     }
                 }

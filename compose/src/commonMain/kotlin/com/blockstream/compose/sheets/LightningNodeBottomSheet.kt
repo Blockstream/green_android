@@ -28,7 +28,6 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.sheets.LightningNodeViewModel
 import com.blockstream.common.models.sheets.LightningNodeViewModelAbstract
-import com.blockstream.compose.LocalRootNavigator
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
@@ -43,20 +42,11 @@ import kotlin.jvm.Transient
 data class LightningNodeBottomSheet(
     val greenWallet: GreenWallet,
 ) : BottomScreen(), Parcelable {
-    // Temp fix until fully migration to Compose
-    @Transient
-    @IgnoredOnParcel
-    var parentViewModel: GreenViewModel? = null
 
     @Composable
     override fun Content() {
         val viewModel = koinScreenModel<LightningNodeViewModel> {
             parametersOf(greenWallet)
-        }.also {
-            val navigator = LocalRootNavigator.current
-            if(navigator == null) {
-                it.parentViewModel = parentViewModel
-            }
         }
 
         LightningNodeBottomSheet(

@@ -13,7 +13,7 @@ import com.blockstream.common.extensions.logException
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.lightning.BreezNotification
 import com.blockstream.common.utils.Loggable
-import com.blockstream.green.managers.NotificationManager
+import com.blockstream.green.managers.NotificationManagerAndroid
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
@@ -23,7 +23,7 @@ class LightningWork(val context: Context, workerParams: WorkerParameters) :
     CoroutineWorker(context, workerParams), KoinComponent {
 
     private val firebase: FcmCommon by inject()
-    private val notificationManager: NotificationManager by inject()
+    private val notificationManager: NotificationManagerAndroid by inject()
 
     override suspend fun getForegroundInfo(): ForegroundInfo {
         val notification = notificationManager.createForegroundServiceNotification(context)
@@ -31,7 +31,7 @@ class LightningWork(val context: Context, workerParams: WorkerParameters) :
     }
 
     override suspend fun doWork(): Result {
-        return withContext(Dispatchers.IO + logException()) {
+        return withContext(Dispatchers.Default + logException()) {
             val walletId = inputData.getString(WALLET_ID) ?: ""
             val breezNotification = BreezNotification.fromString(
                 inputData.getString(

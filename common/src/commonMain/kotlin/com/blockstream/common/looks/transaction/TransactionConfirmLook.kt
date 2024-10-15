@@ -1,8 +1,8 @@
 package com.blockstream.common.looks.transaction
 
+import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
-import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.GreenJson
@@ -47,7 +47,7 @@ data class TransactionConfirmLook(
             transaction: CreateTransaction,
             account: Account,
             session: GdkSession,
-            denomination: Denomination?,
+            denomination: Denomination? = null,
             isAddressVerificationOnDevice: Boolean = false
         ): TransactionConfirmLook {
 

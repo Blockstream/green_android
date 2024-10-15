@@ -8,20 +8,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_amount
 import com.blockstream.compose.R
-import com.blockstream.compose.theme.GreenThemePreview
+import com.blockstream.compose.theme.GreenChromePreview
+import org.jetbrains.compose.resources.stringResource
 
 
 @Preview
 @Composable
 fun GreenDataLayoutPreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         GreenColumn {
             GreenDataLayout() {
                 Text(text = "Test")
             }
 
-            GreenDataLayout(title = stringResource(R.string.id_amount)) {
+            GreenDataLayout(title = stringResource(Res.string.id_amount)) {
                 Text(text = "Test")
             }
 

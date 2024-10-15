@@ -4,14 +4,14 @@ import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.looks.account.LightningInfoLook
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.theme.GreenTheme
 
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun LightningInfoPreview() {
-    GreenTheme {
+    GreenPreview {
         GreenColumn(padding = 0, space = 4) {
             LightningInfo(
                 lightningInfoLook = LightningInfoLook(

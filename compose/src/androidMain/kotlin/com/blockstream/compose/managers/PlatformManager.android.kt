@@ -22,9 +22,9 @@ import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
 import android.text.TextUtils
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
@@ -36,7 +36,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSavedStateRegistryOwner
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ShareCompat
-import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
 import androidx.fragment.app.FragmentActivity
 import androidx.savedstate.SavedStateRegistryOwner
@@ -44,16 +43,17 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_share
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.stateKeeper
+import com.blockstream.common.data.AppInfo
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.managers.BluetoothManager
+import com.blockstream.common.managers.BluetoothManager.Companion.BLE_PERMISSIONS
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.compose.LocalActivity
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
 import com.google.zxing.MultiFormatReader
 import com.google.zxing.RGBLuminanceSource
 import com.journeyapps.barcodescanner.MixedDecoder
@@ -67,6 +67,7 @@ import kotlinx.coroutines.withContext
 import okio.Source
 import okio.source
 import org.jetbrains.compose.resources.getString
+import org.koin.compose.koinInject
 import java.io.ByteArrayOutputStream
 import java.io.File
 
@@ -74,9 +75,11 @@ import java.io.File
 actual fun rememberPlatformManager(): PlatformManager {
     val context = LocalContext.current
     val activity = LocalActivity.current as? FragmentActivity
+    val appInfo = koinInject<AppInfo>()
+    val bluetoothManager = koinInject<BluetoothManager?>()
 
     return remember {
-        PlatformManager(context, activity)
+        PlatformManager(context, activity, bluetoothManager, appInfo)
     }
 }
 actual class StateKeeperFactory(val savedStateRegistryOwner: SavedStateRegistryOwner) {
@@ -110,10 +113,10 @@ actual fun askForNotificationPermissions(viewModel: GreenViewModel) {
 
         val notificatioPermissionState = rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
         LaunchedEffect(notificatioPermissionState) {
-            if (!notificatioPermissionState.status.isGranted && notificatioPermissionState.status.shouldShowRationale) {
+            if(!notificatioPermissionState.status.isGranted){
                 // Show rationale if needed
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            } else {
+                // notificatioPermissionState.status.shouldShowRationale
+
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
@@ -122,7 +125,10 @@ actual fun askForNotificationPermissions(viewModel: GreenViewModel) {
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-actual fun askForBluetoothPermissions(viewModel: GreenViewModel) {
+actual fun askForBluetoothPermissions(viewModel: GreenViewModel, fn: () -> Unit) {
+
+    val bluetoothManager: BluetoothManager = koinInject()
+
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { results ->
@@ -131,21 +137,30 @@ actual fun askForBluetoothPermissions(viewModel: GreenViewModel) {
         } else {
             // Handle permission denial
         }
+
+        bluetoothManager.permissionsGranted()
+
+        fn()
     }
 
-    val permissionState = rememberMultiplePermissionsState(BluetoothManager.BLE_PERMISSIONS.toList())
+    val permissionState = rememberMultiplePermissionsState(BLE_PERMISSIONS.toList())
 
     LaunchedEffect(permissionState) {
-        if (!permissionState.allPermissionsGranted && permissionState.shouldShowRationale) {
+        if(!permissionState.allPermissionsGranted){
             // Show rationale if needed
-            requestPermissionLauncher.launch(BluetoothManager.BLE_PERMISSIONS)
-        } else {
-            requestPermissionLauncher.launch(BluetoothManager.BLE_PERMISSIONS)
+            // permissionState.shouldShowRationale
+            requestPermissionLauncher.launch(BLE_PERMISSIONS)
         }
     }
 }
 
-actual class PlatformManager constructor(val context: Context, val activity: FragmentActivity?) {
+actual class PlatformManager constructor(
+    val context: Context,
+    val activity: FragmentActivity?,
+    val bluetoothManager: BluetoothManager?,
+    val appInfo: AppInfo
+) {
+    private var isWindowSecure: Boolean = false
 
     actual fun openToast(content: String): Boolean {
         Toast.makeText(context, content, Toast.LENGTH_SHORT).show()
@@ -249,7 +264,17 @@ actual class PlatformManager constructor(val context: Context, val activity: Fra
     }
 
     actual fun enableBluetooth() {
-        activity?.startActivity(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            if (bluetoothManager?.bluetoothAdapter?.isEnabled == false && ActivityCompat.checkSelfPermission(
+                    context,
+                    BLE_PERMISSIONS.first()
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                bluetoothManager.bluetoothAdapter?.enable()
+            }
+        } else {
+            activity?.startActivity(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
+        }
     }
 
     actual fun enableLocationService(){
@@ -371,6 +396,27 @@ actual class PlatformManager constructor(val context: Context, val activity: Fra
         } catch (e: Exception) {
             e.printStackTrace()
             null
+        }
+    }
+
+    actual fun setSecureScreen(isSecure: Boolean) {
+        if (isSecure == isWindowSecure) return
+
+        isWindowSecure = isSecure
+
+        // In development flavor allow screen capturing
+        if (appInfo.isDevelopmentOrDebug) {
+            // notifyDevelopmentFeature("FLAG_SECURE = $isSecure")
+//            return
+        }
+
+        if (isWindowSecure) {
+            activity?.window?.setFlags(
+                WindowManager.LayoutParams.FLAG_SECURE,
+                WindowManager.LayoutParams.FLAG_SECURE
+            )
+        } else {
+            activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
         }
     }
 }

@@ -4,13 +4,13 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import com.blockstream.common.managers.SessionManager
-import com.blockstream.green.managers.NotificationManager
+import com.blockstream.green.managers.NotificationManagerAndroid
 import com.blockstream.common.utils.Loggable
 import org.koin.android.ext.android.inject
 
 class TaskService : Service() {
 
-    private val notificationManager: NotificationManager by inject()
+    private val notificationManager: NotificationManagerAndroid by inject()
 
     private val sessionManager: SessionManager by inject()
 

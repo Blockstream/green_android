@@ -4,9 +4,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.managers.rememberPlatformManager
@@ -51,6 +51,11 @@ internal val GreenColors = ColorScheme(
     surfaceContainerLowest = md_theme_surface,
 )
 
+internal val GreenColorsLight = GreenColors.copy(
+    background = Color.White,
+    onBackground = Color.Black
+)
+
 val GreenShapes = Shapes(
     extraSmall = RoundedCornerShape(8.dp),
     small = RoundedCornerShape(4.dp),
@@ -69,10 +74,10 @@ val GreenSmallEnd =
     RoundedCornerShape(topStart = 4.dp, topEnd = 0.dp, bottomStart = 4.dp, bottomEnd = 0.dp)
 
 expect @Composable
-fun GreenTheme(content: @Composable () -> Unit)
+fun GreenChrome(isLight: Boolean = false)
 
 @Composable
-fun GreenThemePreview(
+fun GreenChromePreview(
     content: @Composable () -> Unit
 ) {
     val platformManager = rememberPlatformManager()
@@ -80,15 +85,19 @@ fun GreenThemePreview(
     CompositionLocalProvider(
         LocalPlatformManager provides platformManager
     ) {
-        MaterialTheme(
-            colorScheme = GreenColors,
-            shapes = GreenShapes,
-            typography = GreenTypography()
-        ) {
-            Surface(
-                color = MaterialTheme.colorScheme.background,
-                content = content
-            )
-        }
+        GreenTheme(content = content)
     }
+}
+
+@Composable
+fun GreenTheme(isLight: Boolean = false, content: @Composable () -> Unit) {
+
+    val colorScheme = if (isLight) GreenColorsLight else GreenColors
+
+    MaterialTheme(
+        colorScheme = colorScheme,
+        shapes = GreenShapes,
+        typography = GreenTypography(),
+        content = content
+    )
 }

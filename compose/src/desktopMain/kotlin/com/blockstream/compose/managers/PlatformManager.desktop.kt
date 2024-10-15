@@ -82,6 +82,18 @@ actual class PlatformManager {
     actual fun fileToSource(file: String): Source? {
         return platformFileSystem().source(file.toPath())
     }
+
+    actual fun enableBluetooth() {
+    }
+
+    actual fun enableLocationService() {
+    }
+
+    actual fun openBluetoothSettings() {
+    }
+
+    actual fun setSecureScreen(isSecure: Boolean) {
+    }
 }
 
 @Composable
@@ -119,5 +131,5 @@ actual class ImagePickerLauncher actual constructor(private val onLaunch: () -> 
 }
 
 @Composable
-actual fun askForBluetoothPermissions(viewModel: GreenViewModel) {
+actual fun askForBluetoothPermissions(viewModel: GreenViewModel, fn: () -> Unit) {
 }

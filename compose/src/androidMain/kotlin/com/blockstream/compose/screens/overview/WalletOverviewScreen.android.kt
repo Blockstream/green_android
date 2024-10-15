@@ -4,13 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.models.overview.WalletOverviewViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
-import com.blockstream.compose.theme.GreenThemePreview
+import com.blockstream.compose.theme.GreenChromePreview
 
 
 @Composable
 @Preview
 fun WalletBalancePreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         WalletBalance(viewModel = WalletOverviewViewModelPreview.create())
     }
 }
@@ -18,7 +18,7 @@ fun WalletBalancePreview() {
 @Composable
 @Preview
 fun WalletAssetsPreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         WalletAssets(viewModel = WalletOverviewViewModelPreview.create())
     }
 }

@@ -296,7 +296,7 @@ class RecoverFundsViewModel(
         }
     }
 
-    private fun address() =
+    private suspend fun address() =
         if (showManualAddress.value) manualAddress.value else session.getReceiveAddress(account).address
 
     private fun minFee(): Long = recommendedFees.value?.minimumFee?.toLong() ?: 0

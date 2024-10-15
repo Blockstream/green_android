@@ -26,6 +26,10 @@ suspend fun <T> tryCatch(context: CoroutineContext = EmptyCoroutineContext, bloc
     block()
 }
 
+fun <T> tryCatchNull(block: () -> T): T? = try {
+    block()
+} catch (e: Exception) { null }
+
 fun logException(
     countly: CountlyBase
 ): CoroutineExceptionHandler {

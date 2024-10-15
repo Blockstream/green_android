@@ -113,7 +113,7 @@ abstract class WalletsViewModel(isHome: Boolean) : WalletsViewModelAbstract(isHo
 
             if (session.isConnected) {
                 postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(childWallet)))
-            } else if (childWallet.isHardware && !event.isLightningShortcut) {
+            } else if (childWallet.isHardware && !event.isLightningShortcut && !childWallet.isWatchOnly) {
                 postSideEffect(
                     SideEffects.NavigateTo(
                         NavigateDestinations.DeviceScan(

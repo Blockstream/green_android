@@ -59,6 +59,8 @@ abstract class OnOffRampsViewModelAbstract(
     abstract val amountHint: StateFlow<String?>
 
     abstract val isSandboxEnvironment: MutableStateFlow<Boolean>
+
+    override val isWatchOnly: StateFlow<Boolean> = MutableStateFlow(false)
 }
 
 class OnOffRampsViewModel(greenWallet: GreenWallet) :

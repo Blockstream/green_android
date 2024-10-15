@@ -41,13 +41,13 @@ import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.recovery.RecoveryIntroViewModel
 import com.blockstream.common.models.recovery.RecoveryIntroViewModelAbstract
+import com.blockstream.compose.LocalBiometricState
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.managers.rememberStateKeeperFactory
-import com.blockstream.compose.sideeffects.rememberBiometricsState
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelMedium
@@ -85,12 +85,11 @@ fun RecoveryIntroScreen(
     viewModel: RecoveryIntroViewModelAbstract
 ) {
 
-    val biometricsState = rememberBiometricsState()
-
+    val biometricsState = LocalBiometricState.current
 
     HandleSideEffect(viewModel) { sideEffect ->
         if (sideEffect is RecoveryIntroViewModel.LocalSideEffects.LaunchUserPresence) {
-            biometricsState.launchUserPresencePrompt(getString(Res.string.id_authenticate_to_view_the)) {
+            biometricsState?.launchUserPresencePrompt(getString(Res.string.id_authenticate_to_view_the)) {
                 viewModel.postEvent(RecoveryIntroViewModel.LocalEvents.Authenticated(it))
             }
         }

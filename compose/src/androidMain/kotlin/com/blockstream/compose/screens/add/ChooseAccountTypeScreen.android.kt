@@ -7,12 +7,12 @@ import com.blockstream.common.looks.AccountTypeLook
 import com.blockstream.common.models.add.ChooseAccountTypeViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.theme.GreenThemePreview
+import com.blockstream.compose.theme.GreenChromePreview
 
 @Composable
 @Preview
 fun AccountTypePreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         GreenColumn {
             AccountType(
                 AccountTypeLook(

@@ -8,6 +8,7 @@ import com.blockstream.common.data.AppInfo
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.gdk.Gdk
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.LoginData
 import com.blockstream.common.platformFileSystem
 import com.blockstream.common.utils.Loggable
@@ -74,7 +75,7 @@ class LightningManager constructor(
         }
     }
 
-    suspend fun createLogs(): Path {
+    suspend fun createLogs(session: GdkSession): Path {
         val fileSystem = platformFileSystem()
         val logDir = "${appConfig.cacheDir}/logs/".toPath()
 
@@ -99,8 +100,11 @@ class LightningManager constructor(
                     this.writeUtf8("\nNode Info: -------------------------------------------------------\n")
                     this.writeUtf8(nodeIds.joinToString("\n") { it.toString() })
                     this.writeUtf8("\n------------------------------------------------------------------\n")
-
                     this.writeUtf8(logs.toString())
+                    session.lightningSdk.generateDiagnosticData()?.also {
+                        this.writeUtf8("\nDiagnostic Data: -------------------------------------------------\n")
+                        this.writeUtf8(it)
+                    }
                 }
             }
         }

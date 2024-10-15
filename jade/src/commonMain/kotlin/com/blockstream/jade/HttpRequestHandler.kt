@@ -5,9 +5,9 @@ import kotlinx.serialization.json.JsonElement
 // HttpRequestHandler is used for network calls during pinserver handshake
 // useful on TOR enabled sessions
 interface HttpRequestHandler {
-    fun httpRequest(details: JsonElement): JsonElement
+    suspend fun httpRequest(details: JsonElement): JsonElement
 
-    fun httpRequest(
+    suspend fun httpRequest(
         method: String,
         urls: List<String>?,
         data: String?,

@@ -8,6 +8,7 @@ import com.blockstream.common.data.LnUrlWithdrawRequestSerializable
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorSetupAction
+import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.common.events.Event
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
@@ -15,6 +16,7 @@ import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.looks.transaction.TransactionConfirmLook
+import com.blockstream.common.models.jade.JadeQrOperation
 import com.blockstream.common.models.settings.WalletSettingsSection
 import com.blockstream.common.models.sheets.NoteType
 
@@ -147,10 +149,18 @@ sealed class NavigateDestinations : NavigateDestination {
         val isRedeposit2FA: Boolean
     ) : NavigateDestination
 
-    data class JadeQR(
-        val psbt: String? = null,
-        val isLightningMnemonicExport: Boolean = false
+    data class JadeQR constructor(
+        val operation: JadeQrOperation,
+        val deviceBrand: DeviceBrand? = null,
     ) : NavigateDestination
+
+    data class AskJadeUnlock(
+        val isOnboarding: Boolean
+    ) : NavigateDestination
+
+    object JadePinUnlock: NavigateDestination
+
+    data class ImportPubKey(val deviceBrand: DeviceBrand): NavigateDestination
 
     data class Qr(
         val title: String? = null,
@@ -166,6 +176,8 @@ sealed class NavigateDestinations : NavigateDestination {
     object ChooseAssetAccounts: NavigateDestination
 
     data class Note(val note: String, val noteType: NoteType) : NavigateDestination
+
+    data class Promo(val promo: com.blockstream.common.data.Promo) : NavigateDestination
 
     data class DeviceInteraction(
         val transactionConfirmLook: TransactionConfirmLook? = null,

@@ -8,13 +8,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.extensions.previewAccount
 import com.blockstream.common.extensions.previewEnrichedAsset
-import com.blockstream.compose.theme.GreenThemePreview
+import com.blockstream.compose.theme.GreenChromePreview
 
 
 @Preview
 @Composable
 fun GreenAssetAccountsPreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         GreenColumn {
             var selected by remember {
                 mutableStateOf(0)

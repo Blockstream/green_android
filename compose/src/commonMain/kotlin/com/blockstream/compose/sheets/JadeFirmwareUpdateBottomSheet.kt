@@ -25,7 +25,6 @@ import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.sheets.JadeFirmwareUpdateViewModel
 import com.blockstream.common.models.sheets.JadeFirmwareUpdateViewModelAbstract
-import com.blockstream.compose.LocalRootNavigator
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.navigation.getNavigationResult
@@ -46,20 +45,10 @@ data class JadeFirmwareUpdateBottomSheet(
     val deviceId: String
 ) : BottomScreen(), Parcelable {
 
-    // Temp fix until fully migration to Compose
-    @Transient
-    @IgnoredOnParcel
-    var parentViewModel: GreenViewModel? = null
-
     @Composable
     override fun Content() {
         val viewModel = koinScreenModel<JadeFirmwareUpdateViewModel> {
             parametersOf(deviceId)
-        }.also {
-            val navigator = LocalRootNavigator.current
-            if (navigator == null) {
-                it.parentViewModel = parentViewModel
-            }
         }
 
         JadeFirmwareUpdateBottomSheet(

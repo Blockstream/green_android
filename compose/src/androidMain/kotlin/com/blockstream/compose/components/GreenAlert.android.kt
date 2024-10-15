@@ -1,17 +1,21 @@
 package com.blockstream.compose.components
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.blockstream.compose.R
-import com.blockstream.compose.theme.GreenThemePreview
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_lightning_account
+import blockstream_green.common.generated.resources.id_the_lightning_service_is_currently_unavailable_we
+import blockstream_green.common.generated.resources.lightning
+import blockstream_green.common.generated.resources.warning
+import com.blockstream.compose.theme.GreenChromePreview
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 
 @Composable
 @Preview
 fun GreenAlertPreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         GreenColumn() {
 
             GreenAlert(
@@ -47,7 +51,7 @@ fun GreenAlertPreview() {
             GreenAlert(
                 title = "Important!",
                 message = "This is a message",
-                icon = painterResource(id = R.drawable.warning),
+                icon = painterResource(Res.drawable.warning),
                 primaryButton = "Learn More",
                 onCloseClick = {
 
@@ -55,9 +59,9 @@ fun GreenAlertPreview() {
             )
 
             GreenAlert(
-                title = stringResource(R.string.id_lightning_account),
-                message = stringResource(R.string.id_the_lightning_service_is_currently_unavailable_we),
-                icon = painterResource(id = R.drawable.lightning)
+                title = stringResource(Res.string.id_lightning_account),
+                message = stringResource(Res.string.id_the_lightning_service_is_currently_unavailable_we),
+                icon = painterResource(Res.drawable.lightning)
             )
         }
     }

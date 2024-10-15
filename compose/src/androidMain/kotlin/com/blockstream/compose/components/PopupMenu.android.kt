@@ -9,8 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.question
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.extensions.toggle
-import com.blockstream.compose.theme.GreenTheme
 
 
 @Composable
@@ -19,7 +19,7 @@ fun PopupMenuPreview() {
 
     val popupState = remember { PopupState().also { it.isContextMenuVisible.value = true } }
 
-    GreenTheme {
+    GreenPreview {
         Box {
             GreenColumn(modifier = Modifier
                 .fillMaxWidth()

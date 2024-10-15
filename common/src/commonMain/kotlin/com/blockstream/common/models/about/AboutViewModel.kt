@@ -57,6 +57,7 @@ class AboutViewModel : AboutViewModelAbstract() {
         object CountlyCopyDeviceId : Event
         object CountlyResetDeviceId : Event
         object CountlyZeroOffset : Event
+        object ResetPromos : Event
         object SendFeedback: Event
     }
 
@@ -97,6 +98,9 @@ class AboutViewModel : AboutViewModelAbstract() {
             settingsManager.zeroCountlyOffset()
             countly.updateOffset()
             postSideEffect(SideEffects.Snackbar(text = StringHolder.create("Countly offset reset to zero")))
+        } else if (event is LocalEvents.ResetPromos) {
+            settingsManager.resetPromoDismissals()
+            postSideEffect(SideEffects.Snackbar(text = StringHolder.create("Reset promos")))
         } else if (event is LocalEvents.CountlyCopyDeviceId) {
             countly.getDeviceId().let { deviceId ->
                 postSideEffect(

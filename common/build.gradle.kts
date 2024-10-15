@@ -135,7 +135,6 @@ kotlin {
             /**  --- Misc. ------------------------------------------------------------------------------ */
             api(libs.sqldelight.coroutines.extensions)
             api(libs.kmp.observableviewmodel)
-            api(libs.stately.concurrent.collections)
             api(libs.uri.kmp)
             api(libs.uuid)
             api(libs.multiplatform.settings)
@@ -147,7 +146,7 @@ kotlin {
             api(libs.ksoup.entites) // html entities
             api(libs.kable.core)
 
-            implementation("com.juul.tuulbox:coroutines:8.0.0")
+            implementation(libs.tuulbox.coroutines)
             /** ----------------------------------------------------------------------------------------- */
         }
 
@@ -197,7 +196,6 @@ kotlin {
         }
 
         iosMain.dependencies {
-            implementation(libs.stately.common) // until this is fixed https://github.com/touchlab/Stately/issues/93
             implementation(libs.sqldelight.native.driver)
         }
     }

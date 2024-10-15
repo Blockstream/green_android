@@ -54,7 +54,6 @@ import blockstream_green.common.generated.resources.id_watchonly_mode_can_be_act
 import blockstream_green.common.generated.resources.id_xpub
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
-import co.touchlab.kermit.Logger
 import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
 import com.blockstream.common.data.SetupArgs
@@ -62,6 +61,7 @@ import com.blockstream.common.events.Events
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyCredentialsViewModel
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyCredentialsViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.compose.LocalBiometricState
 import com.blockstream.compose.components.AppSettingsButton
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
@@ -74,7 +74,6 @@ import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.managers.rememberPlatformManager
 import com.blockstream.compose.sheets.CameraBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
-import com.blockstream.compose.sideeffects.rememberBiometricsState
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.displayMedium
@@ -112,7 +111,7 @@ data class WatchOnlyCredentialsScreen(val setupArgs: SetupArgs) : Screen, Parcel
 fun WatchOnlyCredentialsScreen(
     viewModel: WatchOnlyCredentialsViewModelAbstract
 ) {
-    val biometricsState = rememberBiometricsState()
+    val biometricsState = LocalBiometricState.current
     val platformManager = rememberPlatformManager()
 
     CameraBottomSheet.getResult {
@@ -125,7 +124,7 @@ fun WatchOnlyCredentialsScreen(
 
     HandleSideEffect(viewModel = viewModel) {
         if (it is WatchOnlyCredentialsViewModel.LocalSideEffects.RequestCipher) {
-            biometricsState.getBiometricsCipher(viewModel)
+            biometricsState?.getBiometricsCipher(viewModel)
         }
     }
 

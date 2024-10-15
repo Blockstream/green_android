@@ -26,13 +26,11 @@ class JadeUsbDevice constructor(
 ), JadeDeviceApi by JadeDeviceApiImpl(), JadeDevice {
 
     companion object : Loggable() {
-        const val VENDOR_JADE_A = 0x10c4
-        const val VENDOR_JADE_B = 0x1a86
+        private val VendorIds = listOf(0x10c4, 0x1a86, 0x0403, 0x303a)
 
         private fun hasSuportedVendorId(usbDevice: UsbDevice): Boolean {
             val vId = usbDevice.vendorId
-            return (vId == VENDOR_JADE_A ||
-                    vId == VENDOR_JADE_B)
+            return VendorIds.any { vId == it }
         }
 
         fun fromUsbDevice(deviceManager: DeviceManagerAndroid, usbDevice: UsbDevice): JadeUsbDevice? {

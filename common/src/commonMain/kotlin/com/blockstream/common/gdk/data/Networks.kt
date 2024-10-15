@@ -26,7 +26,6 @@ data class Networks(
 
     val lightning by lazy {
         Network(
-            id = Network.LightningMainnet,
             network = Network.LightningMainnet,
             name = "Lightning",
             isMainnet = true,

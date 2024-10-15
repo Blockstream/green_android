@@ -1,26 +1,28 @@
 package com.blockstream.compose.components
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_account
+import blockstream_green.common.generated.resources.id_account__asset
 import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalance
-import com.blockstream.compose.R
-import com.blockstream.compose.theme.GreenThemePreview
+import com.blockstream.compose.theme.GreenChromePreview
+import org.jetbrains.compose.resources.stringResource
 
 
 @Preview
 @Composable
 fun GreenAccountAssetPreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         GreenColumn {
             GreenAccountAsset(
                 accountAssetBalance = previewAccountAsset().accountAssetBalance,
-                title = stringResource(id = R.string.id_account__asset)
+                title = stringResource(Res.string.id_account__asset)
             )
             GreenAccountAsset(
                 accountAssetBalance = previewAccountAsset().accountAssetBalance,
-                title = stringResource(id = R.string.id_account),
+                title = stringResource(Res.string.id_account),
                 withAsset = false
             )
             GreenAccountAsset(accountAssetBalance = previewAccountAsset().let {

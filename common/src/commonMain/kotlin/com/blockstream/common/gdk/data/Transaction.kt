@@ -21,6 +21,7 @@ import kotlin.math.absoluteValue
 @Parcelize
 data class Transaction constructor(
     var accountInjected: Account? = null,
+    var confirmationsMaxInjected: Long = 0, // Used to invalidate the UI
     @SerialName("block_height")
     val blockHeight: Long,
     @SerialName("can_cpfp")
@@ -251,7 +252,7 @@ data class Transaction constructor(
             }
     }
 
-    fun getConfirmations(currentBlock: Long): Long {
+    private fun getConfirmations(currentBlock: Long): Long {
         if (network.isLightning) return (if (blockHeight > 0) 6 else 0)
         if (blockHeight == 0L || currentBlock == 0L) return 0
         return currentBlock - blockHeight + 1
@@ -259,6 +260,10 @@ data class Transaction constructor(
 
     fun getConfirmations(session: GdkSession): Long {
         return getConfirmations(session.block(network).value.height)
+    }
+
+    fun getConfirmationsMax(session: GdkSession): Long {
+        return getConfirmations(session.block(network).value.height).coerceAtMost((if (network.isLiquid) 3 else 7))
     }
 
     fun getUnblindedString() = (inputs.mapNotNull { it.getUnblindedString() } + outputs.mapNotNull { it.getUnblindedString() }).joinToString(",")

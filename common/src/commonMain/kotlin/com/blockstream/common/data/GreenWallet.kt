@@ -13,11 +13,11 @@ import com.arkivanov.essenty.parcelable.writeBoolean
 import com.arkivanov.essenty.parcelable.writeLong
 import com.arkivanov.essenty.parcelable.writeString
 import com.arkivanov.essenty.parcelable.writeStringOrNull
-import com.blockstream.common.Parcelize
 import com.blockstream.common.Parcelable
-
+import com.blockstream.common.Parcelize
 import com.blockstream.common.database.GetWalletsWithCredentialType
 import com.blockstream.common.database.Wallet
+import com.blockstream.common.devices.ConnectionType
 import com.blockstream.common.extensions.isBlank
 import com.blockstream.common.extensions.objectId
 import com.blockstream.common.gdk.GreenJson
@@ -82,7 +82,7 @@ fun GetWalletsWithCredentialType.toGreenWallet(): GreenWallet {
     return GreenWallet(wallet = wallet, hasLightningShortcut = credential_type == CredentialType.LIGHTNING_MNEMONIC)
 }
 
-enum class WalletIcon { REGULAR, WATCH_ONLY, TESTNET, BIP39, HARDWARE, LIGHTNING }
+enum class WalletIcon { REGULAR, WATCH_ONLY, TESTNET, BIP39, HARDWARE, LIGHTNING, QR }
 
 @Serializable
 @Parcelize
@@ -136,6 +136,9 @@ data class GreenWallet constructor(
     val isWatchOnly
         get() = wallet.watch_only_username != null
 
+    val isWatchOnlyQr
+        get() = isWatchOnly && wallet.device_identifiers?.any { it.connectionType == ConnectionType.QR } == true
+
     val isWatchOnlySingleSig
         get() = isWatchOnly && watchOnlyUsername.isBlank()
 
@@ -180,6 +183,7 @@ data class GreenWallet constructor(
 
     val icon
         get() = when{
+            isWatchOnly && deviceIdentifiers?.firstOrNull()?.connectionType == ConnectionType.QR -> WalletIcon.QR
             isWatchOnly -> WalletIcon.WATCH_ONLY
             isTestnet -> WalletIcon.TESTNET
             isBip39Ephemeral -> WalletIcon.BIP39
@@ -201,6 +205,7 @@ data class GreenWallet constructor(
             watchOnlyUsername: String? = null,
             isTestnet: Boolean = false,
             isHardware: Boolean = false,
+            deviceIdentifier: List<DeviceIdentifier>? = null,
             extras: WalletExtras? = null
         ): GreenWallet {
             return Wallet(
@@ -214,7 +219,7 @@ data class GreenWallet constructor(
                 is_lightning = false,
                 ask_bip39_passphrase = false,
                 watch_only_username = watchOnlyUsername,
-                device_identifiers = null,
+                device_identifiers = deviceIdentifier,
                 extras = extras,
                 order = 0L
             ).toGreenWallet()

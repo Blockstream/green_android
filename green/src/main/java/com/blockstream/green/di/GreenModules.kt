@@ -10,12 +10,13 @@ import com.blockstream.common.devices.DeviceManagerAndroid
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.interfaces.DeviceConnectionInterface
 import com.blockstream.common.managers.DeviceManager
+import com.blockstream.common.managers.NotificationManager
 import com.blockstream.compose.devices.LedgerDevice
 import com.blockstream.compose.devices.TrezorDevice
 import com.blockstream.compose.managers.DeviceConnectionManager
 import com.blockstream.compose.managers.DeviceConnectionManagerAndroid
 import com.blockstream.green.managers.FcmAndroid
-import com.blockstream.green.managers.NotificationManager
+import com.blockstream.green.managers.NotificationManagerAndroid
 import com.blockstream.jade.connection.JadeBleConnection
 import com.btchip.comm.LedgerDeviceBLE
 import com.juul.kable.Peripheral
@@ -26,7 +27,7 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 
 val greenModules = module {
     single {
-        NotificationManager(
+        NotificationManagerAndroid(
             androidContext(),
             get(),
             get(),
@@ -34,7 +35,7 @@ val greenModules = module {
             get(),
             get()
         )
-    }
+    } binds (arrayOf(NotificationManagerAndroid::class, NotificationManager::class))
     single {
         DeviceManagerAndroid(
             get(),

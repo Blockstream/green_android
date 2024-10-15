@@ -44,6 +44,7 @@ import com.blockstream.compose.components.AppSettingsButton
 import com.blockstream.compose.components.Banner
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
+import com.blockstream.compose.components.Promo
 import com.blockstream.compose.extensions.colorText
 import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.sheets.AnalyticsBottomSheet
@@ -97,9 +98,13 @@ fun HomeScreen(
                 .align(Alignment.CenterHorizontally)
         )
 
-        Banner(viewModel, withTopPadding = true)
+        Banner(viewModel = viewModel, withTopPadding = true)
 
         val isEmptyWallet by viewModel.isEmptyWallet.collectAsStateWithLifecycle()
+
+        if (isEmptyWallet == false) {
+            Promo(viewModel = viewModel, modifier = Modifier.padding(top = 16.dp))
+        }
 
         when (isEmptyWallet) {
             true -> {

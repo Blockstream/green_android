@@ -7,12 +7,12 @@ import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.models.send.DenominationViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
-import com.blockstream.compose.theme.GreenThemePreview
+import com.blockstream.compose.theme.GreenChromePreview
 
 @Composable
 @Preview
 fun DenominatedValueItemPreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         Column {
             DenominatedValueItem(DenominatedValue(Denomination.BTC))
             DenominatedValueItem(DenominatedValue(Denomination.SATOSHI), isChecked = true)

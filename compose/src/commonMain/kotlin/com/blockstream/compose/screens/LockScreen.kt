@@ -15,16 +15,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.brand
 import blockstream_green.common.generated.resources.id_unlock
 import blockstream_green.common.generated.resources.id_unlock_green
+import com.blockstream.compose.LocalBiometricState
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.compose.sideeffects.rememberBiometricsState
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
@@ -35,13 +35,13 @@ fun LockScreen(
     unlock: () -> Unit = {}
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val biometricsState = rememberBiometricsState()
+    val biometricsState = LocalBiometricState.current
 
     val lifecycleOwner = LocalLifecycleOwner.current
     val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
 
     val launchBiometrics = suspend {
-        biometricsState.launchUserPresencePrompt(getString(Res.string.id_unlock_green)) {
+        biometricsState?.launchUserPresencePrompt(getString(Res.string.id_unlock_green)) {
             unlock()
         }
     }

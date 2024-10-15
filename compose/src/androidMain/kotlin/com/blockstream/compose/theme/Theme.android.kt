@@ -14,17 +14,17 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
+import com.blockstream.compose.GreenPreview
 
 @Composable
-actual fun GreenTheme(
-    content: @Composable () -> Unit
-) {
+actual fun GreenChrome(isLight: Boolean) {
     val view = LocalView.current
+
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
 
-            GreenColors.background.toArgb().also {
+            (if(isLight) GreenColorsLight else GreenColors).background.toArgb().also {
                 window.navigationBarColor = it
                 window.statusBarColor = it
             }
@@ -39,25 +39,13 @@ actual fun GreenTheme(
             }
         }
     }
-
-    MaterialTheme(
-        colorScheme = GreenColors,
-        shapes = GreenShapes,
-        typography = GreenTypography()
-    ){
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background,
-            content = content
-        )
-    }
 }
 
 
 @Composable
 @Preview(showSystemUi = true, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 fun GreenThemePreview() {
-    GreenTheme {
+    GreenPreview {
         // A surface container using the 'background' color from the theme
         Surface(
             modifier = Modifier.fillMaxSize(),

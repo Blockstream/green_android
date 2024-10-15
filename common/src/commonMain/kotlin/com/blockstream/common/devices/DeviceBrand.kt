@@ -1,7 +1,7 @@
 package com.blockstream.common.devices
 
 enum class DeviceBrand(val brand: String) {
-    Blockstream("Blockstream"), Ledger("Ledger"), Trezor("Trezor");
+    Blockstream("Blockstream"), Ledger("Ledger"), Trezor("Trezor"), Generic("Generic");
 
     val isTrezor
         get() = this == Trezor
@@ -11,6 +11,9 @@ enum class DeviceBrand(val brand: String) {
 
     val isJade
         get() = this == Blockstream
+
+    val isGeneric
+        get() = this == Generic
 
     val hasBleConnectivity
         get() = this != Trezor

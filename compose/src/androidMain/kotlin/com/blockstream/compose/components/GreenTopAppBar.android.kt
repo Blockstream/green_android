@@ -12,19 +12,19 @@ import blockstream_green.common.generated.resources.note_pencil
 import blockstream_green.common.generated.resources.signature
 import com.blockstream.common.data.NavAction
 import com.blockstream.common.data.NavData
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.LocalAppBarState
-import com.blockstream.compose.theme.GreenThemePreview
 import com.blockstream.compose.utils.AppBarState
 
 @androidx.compose.ui.tooling.preview.Preview
 @Composable
 private fun GreenTopAppScreenPreview() {
-    GreenThemePreview {
+    GreenPreview {
         val appBarState = remember {
             AppBarState(
                 NavData(
                     title = "Title",
-                    subtitle = "Subtitle",
+                    subtitle = "This is the Subtitle",
                     actions = listOf(
                         NavAction(title = "Action", isMenuEntry = false),
                         NavAction(title = "Action", isMenuEntry = false, icon = Res.drawable.note_pencil),

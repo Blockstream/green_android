@@ -43,9 +43,9 @@ import com.blockstream.common.utils.stringResourceFromId
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAmount
 import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenConfirmButton
 import com.blockstream.compose.components.GreenNetworkFee
 import com.blockstream.compose.components.GreenTextField
-import com.blockstream.compose.components.SlideToUnlock
 import com.blockstream.compose.dialogs.TextDialog
 import com.blockstream.compose.sheets.AccountsBottomSheet
 import com.blockstream.compose.sheets.CameraBottomSheet
@@ -220,12 +220,8 @@ fun SweepScreen(
 
         }
 
-
-        val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
-        val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
-
-        SlideToUnlock(isLoading = onProgress, enabled = buttonEnabled, onSlideComplete = {
+        GreenConfirmButton(viewModel = viewModel) {
             viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SignTransaction())
-        })
+        }
     }
 }

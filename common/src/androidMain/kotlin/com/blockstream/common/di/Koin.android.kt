@@ -33,6 +33,6 @@ actual val platformModule: Module = module {
         AndroidKeystore(androidContext())
     } binds (arrayOf(GreenKeystore::class))
 
-    single<BluetoothManager> { BluetoothManager(androidContext(), get()) }
     single<BluetoothAdapter?> { (androidContext().getSystemService(Context.BLUETOOTH_SERVICE) as? android.bluetooth.BluetoothManager)?.adapter }
+    single<BluetoothManager> { BluetoothManager(androidContext(), null) }
 }

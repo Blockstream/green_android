@@ -8,7 +8,6 @@ buildscript {
         classpath(libs.android.gradle.plugin)
         classpath(libs.kotlin.gradle.plugin)
         classpath(libs.kotlin.serialization)
-        classpath(libs.navigation.safe.args.gradle.plugin)
     }
 }
 

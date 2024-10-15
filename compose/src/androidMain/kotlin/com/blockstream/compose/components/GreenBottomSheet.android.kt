@@ -11,13 +11,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
-import com.blockstream.compose.theme.GreenTheme
+import com.blockstream.compose.GreenPreview
 
 @ExperimentalMaterial3Api
 @Composable
 @Preview(showSystemUi = true, showBackground = true)
 fun GreenBottomSheetPreview() {
-    GreenTheme {
+    GreenPreview {
         Text("WalletRenameBottomSheet")
 
         var showBottomSheet by remember { mutableStateOf(true) }

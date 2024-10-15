@@ -6,14 +6,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.blockstream.compose.theme.GreenTheme
+import com.blockstream.compose.GreenPreview
 
 @Preview(widthDp = 200, heightDp = 400)
 @Preview(widthDp = 300, heightDp = 500)
 @Preview
 @Composable
 fun PinViewPreview() {
-    GreenTheme {
+    GreenPreview {
         Box {
             PinView(
                 isSmall = true,
@@ -31,7 +31,7 @@ fun PinViewPreview() {
 @Preview
 @Composable
 fun PinViewPreviewSmall() {
-    GreenTheme {
+    GreenPreview {
         Box {
             PinView(
                 isSmall = true,

@@ -1,19 +1,23 @@
 package com.blockstream.compose.components
 
-import android.app.Activity
 import android.util.TypedValue
 import android.view.LayoutInflater
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -55,73 +59,82 @@ actual fun CameraView(
         mutableStateOf<CaptureManager?>(null)
     }
 
-    val activity = LocalActivity.current as FragmentActivity
+    val activity = LocalActivity.current as? FragmentActivity
 
-    AndroidView(
-        modifier = Modifier
-            .fillMaxSize()
-            .clip(RoundedCornerShape(8.dp)),
-        factory = { context ->
-            LayoutInflater.from(context).inflate(R.layout.camera, null).apply {
+    if(activity != null) {
+        AndroidView(
+            modifier = Modifier
+                .fillMaxSize(),
+            factory = { context ->
+                LayoutInflater.from(context).inflate(R.layout.camera, null).apply {
 
-                val decoratedBarcode =
-                    findViewById<DecoratedBarcodeView>(R.id.decorated_barcode)
-                val viewFinder = findViewById<ViewFinderView>(R.id.view_finder)
+                    val decoratedBarcode =
+                        findViewById<DecoratedBarcodeView>(R.id.decorated_barcode)
+                    val viewFinder = findViewById<ViewFinderView>(R.id.view_finder)
 
-                viewFinder.maskColor = DEFAULT_MASK_COLOR
-                viewFinder.frameColor = DEFAULT_FRAME_COLOR
-                viewFinder.frameThickness = TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP,
-                    DEFAULT_FRAME_THICKNESS_DP,
-                    resources.displayMetrics
-                ).toInt()
-                viewFinder.frameCornersSize = TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP,
-                    DEFAULT_FRAME_CORNER_SIZE_DP,
-                    resources.displayMetrics
-                ).toInt()
-                viewFinder.frameSize = DEFAULT_FRAME_SIZE
+                    viewFinder.maskColor = DEFAULT_MASK_COLOR
+                    viewFinder.frameColor = DEFAULT_FRAME_COLOR
+                    viewFinder.frameThickness = TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        DEFAULT_FRAME_THICKNESS_DP,
+                        resources.displayMetrics
+                    ).toInt()
+                    viewFinder.frameCornersSize = TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        DEFAULT_FRAME_CORNER_SIZE_DP,
+                        resources.displayMetrics
+                    ).toInt()
+                    viewFinder.frameSize = DEFAULT_FRAME_SIZE
 
-                decoratedBarcode.apply {
-                    this.viewFinder.isVisible = false
-                    this.statusView.isVisible = false
-                    // Scan black/white or inverted
-                    this.barcodeView.decoderFactory =
-                        DefaultDecoderFactory(null, null, null, Intents.Scan.MIXED_SCAN)
-                }
-
-                decoratedBarcode.cameraSettings.apply {
-                    isMeteringEnabled = true
-                    isExposureEnabled = true
-                    isContinuousFocusEnabled = true
-                }
-
-                val callback = BarcodeCallback { result ->
-                    viewModel.postEvent(Events.SetBarcodeScannerResult(result.text))
-                }
-
-                if (isDecodeContinuous) {
-                    decoratedBarcode.decodeContinuous(callback)
-                } else {
-                    decoratedBarcode.decodeSingle(callback)
-                }
-
-                captureManager =
-                    CaptureManager(activity, decoratedBarcode).also {
-                        it.setShowMissingCameraPermissionDialog(true)
+                    decoratedBarcode.apply {
+                        this.viewFinder.isVisible = false
+                        this.statusView.isVisible = false
+                        // Scan black/white or inverted
+                        this.barcodeView.decoderFactory =
+                            DefaultDecoderFactory(null, null, null, Intents.Scan.MIXED_SCAN)
                     }
 
-            }
-        }, update = { view ->
-            val decoratedBarcode =
-                view.findViewById<DecoratedBarcodeView>(R.id.decorated_barcode)
+                    decoratedBarcode.cameraSettings.apply {
+                        isMeteringEnabled = true
+                        isExposureEnabled = true
+                        isContinuousFocusEnabled = true
+                    }
 
-            if (isFlashOn) {
-                decoratedBarcode.setTorchOn()
-            } else {
-                decoratedBarcode.setTorchOff()
-            }
-        })
+                    val callback = BarcodeCallback { result ->
+                        viewModel.postEvent(Events.SetBarcodeScannerResult(result.text))
+                    }
+
+                    if (isDecodeContinuous) {
+                        decoratedBarcode.decodeContinuous(callback)
+                    } else {
+                        decoratedBarcode.decodeSingle(callback)
+                    }
+
+                    captureManager =
+                        CaptureManager(activity, decoratedBarcode).also {
+                            it.setShowMissingCameraPermissionDialog(true)
+                        }
+
+                }
+            }, update = { view ->
+                val decoratedBarcode =
+                    view.findViewById<DecoratedBarcodeView>(R.id.decorated_barcode)
+
+                if (isFlashOn) {
+                    decoratedBarcode.setTorchOn()
+                } else {
+                    decoratedBarcode.setTorchOff()
+                }
+            })
+    } else {
+
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(Color.DarkGray)
+            .clip(RoundedCornerShape(8.dp))){
+            Text("Preview Model", modifier = Modifier.align(Alignment.Center))
+        }
+    }
 
     val lifecycleOwner = LocalLifecycleOwner.current
 

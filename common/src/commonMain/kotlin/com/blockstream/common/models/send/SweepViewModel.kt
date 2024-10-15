@@ -18,6 +18,7 @@ import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewAccountAssetBalance
 import com.blockstream.common.extensions.previewWallet
+import com.blockstream.common.extensions.tryCatch
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.params.AddressParams
@@ -29,6 +30,7 @@ import com.blockstream.common.utils.toAmountLook
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
 import com.rickclephas.kmp.observableviewmodel.stateIn
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -76,6 +78,8 @@ class SweepViewModel(greenWallet: GreenWallet, privateKey: String?, accountAsset
     private val _amountFiat: MutableStateFlow<String?> = MutableStateFlow(null)
     override val amountFiat: StateFlow<String?> = _amountFiat.asStateFlow()
 
+    override val isWatchOnly: StateFlow<Boolean> = MutableStateFlow(false)
+
     override val accounts: StateFlow<List<AccountAssetBalance>> = session.accounts.map { accounts ->
         accounts.filter { it.isBitcoin }.map { it.accountAssetBalance }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, listOf())
@@ -111,7 +115,7 @@ class SweepViewModel(greenWallet: GreenWallet, privateKey: String?, accountAsset
                         && privateKey.isNotBlank()
                         && (accountAsset.account.network.isBitcoin || (accountAsset.account.network.isLiquid && getFeeRate(FeePriority.High()) > accountAsset.account.network.defaultFee))
 
-                createTransactionParams.value = createTransactionParams()
+                createTransactionParams.value = tryCatch(context = Dispatchers.Default) { createTransactionParams() }
             }.launchIn(this)
         }
 
@@ -138,33 +142,32 @@ class SweepViewModel(greenWallet: GreenWallet, privateKey: String?, accountAsset
     }
 
     override suspend fun createTransactionParams(): CreateTransactionParams? {
-        return try {
-            if (privateKey.value.isBlank()) {
-                _error.value = null
-                return null
-            }
+        if (privateKey.value.isBlank()) {
+            _error.value = null
+            return null
+        }
 
-            val unspentOutputs =
-                session.getUnspentOutputs(network, privateKey = privateKey.value.trim())
-
-            AddressParams(
-                address = session.getReceiveAddress(account).address,
-                satoshi = 0,
-                isGreedy = true
-            ).let { params ->
-                CreateTransactionParams(
-                    feeRate = getFeeRate(),
-                    privateKey = privateKey.value.trim(),
-                    addressees = listOf(params).toJsonElement(),
-                    utxos = unspentOutputs.unspentOutputs
-                ).also {
-                    createTransactionParams.value = it
-                }
-            }
+        // In case of invalid private key, create the CreateTransactionParams
+        // there is another check in createTransaction
+        val unspentOutputs = try {
+            session.getUnspentOutputs(network, privateKey = privateKey.value.trim())
         } catch (e: Exception) {
             e.printStackTrace()
             _error.value = e.message
             null
+        }
+
+        return AddressParams(
+            address = session.getReceiveAddress(account).address,
+            satoshi = 0,
+            isGreedy = true
+        ).let { params ->
+            CreateTransactionParams(
+                feeRate = getFeeRate(),
+                privateKey = privateKey.value.trim(),
+                addressees = listOf(params).toJsonElement(),
+                utxos = unspentOutputs?.unspentOutputs
+            )
         }
     }
 
@@ -179,10 +182,19 @@ class SweepViewModel(greenWallet: GreenWallet, privateKey: String?, accountAsset
                 return@doAsync null
             }
 
+            // Check if this is an error from createTransactionParams
+            if (params.utxos.isNullOrEmpty()) {
+                throw Exception(_error.value ?: "UTXOs are empty")
+            }
+
             val network = _network.value!!
             val tx = session.createTransaction(network, params)
 
-            tx.satoshi[network.policyAsset].let { amount ->
+            val receiveAddress = params.addresseesAsParams?.firstOrNull()?.address
+            (tx.outputs.firstOrNull()?.takeIf { it.address == receiveAddress }?.satoshi?.takeIf { it > 0L } ?: // from outputs
+            tx.addressees.firstOrNull()?.takeIf { it.address == receiveAddress }?.satoshi?.takeIf { it > 0L } ?: // from addresses
+            tx.satoshi[network.policyAsset]) // from satoshi
+            .also { amount ->
                 _amount.value = amount.toAmountLook(
                     session = session,
                     withUnit = true
@@ -235,6 +247,7 @@ class SweepViewModelPreview(greenWallet: GreenWallet) :
     override val privateKey: MutableStateFlow<String> = MutableStateFlow("privatekey")
     override val amount: StateFlow<String?> = MutableStateFlow("1.0 BTC")
     override val amountFiat: StateFlow<String?> = MutableStateFlow("150.000 USD")
+    override val isWatchOnly: StateFlow<Boolean> = MutableStateFlow(false)
 
     init {
         _feePriority.value = FeePriority.Low(fee = "0.000001 BTC", feeFiat = "13.00 USD", feeRate = 2L.feeRateWithUnit(), expectedConfirmationTime = "id_s_hours|2")

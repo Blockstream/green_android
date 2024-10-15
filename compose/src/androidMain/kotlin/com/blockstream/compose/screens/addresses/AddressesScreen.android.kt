@@ -6,13 +6,13 @@ import com.blockstream.common.looks.account.AddressLook
 import com.blockstream.common.models.addresses.AddressesViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.theme.GreenThemePreview
+import com.blockstream.compose.theme.GreenChromePreview
 
 
 @Composable
 @Preview
 fun AddressListItemPreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         GreenColumn {
             AddressListItem(
                 AddressLook(

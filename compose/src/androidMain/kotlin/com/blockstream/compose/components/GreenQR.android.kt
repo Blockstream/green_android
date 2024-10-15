@@ -5,12 +5,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.blockstream.compose.theme.GreenTheme
+import com.blockstream.compose.GreenPreview
 
 @Composable
 @Preview
 fun GreenQRPreview() {
-    GreenTheme {
+    GreenPreview {
         GreenColumn(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             GreenQR(
                 data = "",

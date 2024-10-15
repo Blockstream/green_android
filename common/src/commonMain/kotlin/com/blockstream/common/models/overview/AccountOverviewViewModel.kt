@@ -20,7 +20,6 @@ import blockstream_green.common.generated.resources.trash
 import breez_sdk.HealthCheckStatus
 import com.blockstream.common.Urls
 import com.blockstream.common.data.AlertType
-import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
@@ -49,9 +48,8 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.StringHolder
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.launch
+import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -309,12 +307,12 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
             is LocalEvents.Send -> {
                 postSideEffect(
                     SideEffects.NavigateTo(
-                        if (session.isNoBlobWatchOnly) {
+                        if (session.canSendTransaction) {
+                            NavigateDestinations.Send()
+                        } else {
                             NavigateDestinations.Sweep(
                                 accountAsset = accountAsset.value,
                             )
-                        } else {
-                            NavigateDestinations.Send()
                         }
                     )
                 )

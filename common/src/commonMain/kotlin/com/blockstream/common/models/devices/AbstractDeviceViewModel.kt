@@ -111,7 +111,7 @@ abstract class AbstractDeviceViewModel constructor(
         })
     }
 
-    fun getWalletHashId(session: GdkSession, network: Network, device: GreenDevice): String {
+    suspend fun getWalletHashId(session: GdkSession, network: Network, device: GreenDevice): String {
         return session.getWalletIdentifier(
             network = network, // xPub generation is network agnostic
             gdkHwWallet = device.gdkHardwareWallet,

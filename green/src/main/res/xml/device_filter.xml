@@ -92,4 +92,12 @@
     <usb-device vendor-id="4292" product-id="60000"/>
     <!-- VID 0x1a86 PID 0x55d4 - Jade New serial chip -->
     <usb-device vendor-id="6790" product-id="21972"/>
+    <!-- VID 0x303a PID 0x4001 - Jade updated serial chip -->
+    <!-- VID 0x303a PID 0x1001 - Jade updated serial chip -->
+    <usb-device vendor-id="12346" product-id="16385"/>
+    <usb-device vendor-id="12346" product-id="4097"/>
+    <!-- VID 0x0403 PID 0x6001 - DYI -->
+    <!-- VID 0x1a86 PID 0x7523 - DYI -->
+    <usb-device vendor-id="1027" product-id="24577"/>
+    <usb-device vendor-id="6790" product-id="29987"/>
 </resources>

@@ -21,6 +21,7 @@ import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewAccountAssetBalance
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.extensions.startsWith
+import com.blockstream.common.extensions.tryCatch
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalance
@@ -213,6 +214,9 @@ class AccountExchangeViewModel(
 
     private var _pendingSetAccountFrom = true
 
+    private val _isWatchOnly = MutableStateFlow(false)
+    override val isWatchOnly = _isWatchOnly
+
     class LocalEvents {
         object ToggleIsSendAll : Event
         data class SetToAccount(val accountAsset: AccountAsset) : Event
@@ -226,6 +230,8 @@ class AccountExchangeViewModel(
         }
 
         session.ifConnected {
+
+            _isWatchOnly.value = session.isWatchOnly
 
             fromAccountAsset.onEach { fromAccount ->
                 _network.value = fromAccount?.account?.network
@@ -298,7 +304,7 @@ class AccountExchangeViewModel(
                 // Prefer the real network from the account
                 _network.value = network?.let { accountAsset.value?.account?.network } ?: network
             }.onEach {
-                createTransactionParams.value = createTransactionParams()
+                createTransactionParams.value = tryCatch(context = Dispatchers.Default) { createTransactionParams() }
             }.launchIn(this)
 
             error.onEach {
@@ -415,9 +421,7 @@ class AccountExchangeViewModel(
                     utxos = unspentOutputs.unspentOutputs
                 )
             }
-        }).also {
-            createTransactionParams.value = it
-        }
+        })
     }
 
     override fun createTransaction(
@@ -526,10 +530,7 @@ class AccountExchangeViewModel(
 
                 tx
             }
-        }, mutex = createTransactionMutex, preAction = {
-            onProgress.value = true
-            _isValid.value = false
-        }, onSuccess = {
+        }, mutex = createTransactionMutex, onSuccess = {
             createTransaction.value = it
             _isValid.value = it != null
 
@@ -658,6 +659,8 @@ class AccountExchangeViewModelPreview(greenWallet: GreenWallet) :
 
     override val isSendAll: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val supportsSendAll: StateFlow<Boolean> = MutableStateFlow(true)
+
+    override val isWatchOnly: StateFlow<Boolean> = MutableStateFlow(false)
 
     init {
 

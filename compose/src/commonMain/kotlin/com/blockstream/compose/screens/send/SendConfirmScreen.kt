@@ -48,9 +48,9 @@ import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenConfirmButton
 import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.components.ScreenContainer
-import com.blockstream.compose.components.SlideToUnlock
 import com.blockstream.compose.screens.jade.JadeQRScreen
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
 import com.blockstream.compose.sheets.NoteBottomSheet
@@ -263,18 +263,10 @@ fun SendConfirmScreen(
                 }
             }
 
-            SlideToUnlock(
-                modifier = Modifier.padding(top = 8.dp),
-                isLoading = onProgressSending,
-                enabled = buttonEnabled,
-                onSlideComplete = {
-                    viewModel.postEvent(
-                        CreateTransactionViewModelAbstract.LocalEvents.SignTransaction(
-                            broadcastTransaction = true
-                        )
-                    )
-                }
-            )
+
+            GreenConfirmButton(viewModel = viewModel) {
+                viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SignTransaction())
+            }
         }
     }
 }

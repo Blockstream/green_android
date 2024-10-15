@@ -29,6 +29,7 @@ import com.blockstream.common.gdk.params.BroadcastTransactionParams
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.looks.transaction.TransactionConfirmLook
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.jade.JadeQrOperation
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
@@ -128,6 +129,9 @@ abstract class CreateTransactionViewModelAbstract(
     open suspend fun createTransactionParams(): CreateTransactionParams? = null
 
     open fun createTransaction(params: CreateTransactionParams?, finalCheckBeforeContinue: Boolean = false) { }
+
+    @NativeCoroutinesState
+    abstract val isWatchOnly: StateFlow<Boolean>
 
     class LocalEvents {
         data class ClickFeePriority(val showCustomFeeRateDialog: Boolean = false) : Event
@@ -326,6 +330,16 @@ abstract class CreateTransactionViewModelAbstract(
             }
         }
 
+    private suspend fun transactionConfirmLook() = session.pendingTransaction?.let {
+        TransactionConfirmLook.create(
+            params = it.params,
+            transaction = it.transaction,
+            account = account,
+            session = session,
+            isAddressVerificationOnDevice = true
+        )
+    }
+
     internal fun signAndSendTransaction(
         params: CreateTransactionParams?,
         originalTransaction: CreateTransaction?,
@@ -364,7 +378,7 @@ abstract class CreateTransactionViewModelAbstract(
             val isSwap = transaction.isSwap()
 
             // If liquid, blind the transaction before signing
-            if(!transaction.isBump() && !transaction.isSweep() && network.isLiquid){
+            if(network.isLiquid && !transaction.isBump() && !transaction.isSweep()){
                 transaction = session.blindTransaction(network, transaction)
             }
 
@@ -376,14 +390,7 @@ abstract class CreateTransactionViewModelAbstract(
                     postSideEffect(
                         SideEffects.NavigateTo(
                             NavigateDestinations.DeviceInteraction(
-                                transactionConfirmLook = TransactionConfirmLook.create(
-                                    params = params,
-                                    transaction = transaction,
-                                    account = account,
-                                    session = session,
-                                    denomination = _denomination.value,
-                                    isAddressVerificationOnDevice = true
-                                )
+                                transactionConfirmLook = transactionConfirmLook()
                             )
                         )
                     )
@@ -438,10 +445,21 @@ abstract class CreateTransactionViewModelAbstract(
             // Dismiss Verify Transaction Dialog
             postSideEffect(SideEffects.Dismiss)
 
-            if (it.psbt != null) {
+            if (it.psbt != null && it.txHash == null) {
                 onProgress.value = false
                 _onProgressSending.value = false
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.JadeQR(psbt = it.psbt)))
+                postSideEffect(
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.JadeQR(
+                            operation = JadeQrOperation.Psbt(
+                                psbt = it.psbt,
+                                transactionConfirmLook = transactionConfirmLook(),
+                                askForJadeUnlock = true
+                            ),
+                            deviceBrand = session.deviceBrand
+                        )
+                    )
+                )
             } else if (broadcast) {
                 countly.endSendTransaction(
                     session = session,

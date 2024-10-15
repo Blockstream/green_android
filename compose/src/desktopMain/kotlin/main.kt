@@ -8,7 +8,7 @@ import com.blockstream.common.data.AppConfig
 import com.blockstream.common.data.AppInfo
 import com.blockstream.compose.GreenApp
 import com.blockstream.compose.di.initKoinDesktop
-import com.blockstream.compose.theme.GreenTheme
+import com.blockstream.compose.theme.GreenChrome
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 fun main() = application {
@@ -36,7 +36,7 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         title = "Blockstream Green",
     ) {
-        GreenTheme {
+        GreenChrome {
             GreenApp()
         }
     }

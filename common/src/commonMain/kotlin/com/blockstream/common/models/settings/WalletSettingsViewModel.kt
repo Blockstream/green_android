@@ -60,7 +60,7 @@ import com.blockstream.common.gdk.data.TwoFactorConfig
 import com.blockstream.common.gdk.data.TwoFactorMethodConfig
 import com.blockstream.common.gdk.params.CsvParams
 import com.blockstream.common.gdk.params.EncryptWithPinParams
-import com.blockstream.common.gdk.withSelectMethod
+import com.blockstream.common.gdk.selectTwoFactorMethod
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
@@ -584,7 +584,7 @@ class WalletSettingsViewModel(
         })
     }
 
-    private fun toggleRecoveryTransactionsEmails() {
+    private suspend fun toggleRecoveryTransactionsEmails() {
         network?.also {
             session.getSettings(it)?.also { settings ->
                 settings.notifications?.let { notifications ->
@@ -663,7 +663,7 @@ class WalletSettingsViewModel(
                     network = network,
                     method = method.gdkType,
                     methodConfig = TwoFactorMethodConfig(enabled = false),
-                    twoFactorResolver = this.withSelectMethod(authenticateMethod.gdkType)
+                    twoFactorResolver = this.selectTwoFactorMethod(authenticateMethod.gdkType)
                 )
         }, onSuccess = {
             postSideEffect(SideEffects.Success())

@@ -4,6 +4,7 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_setup_guide
 import com.blockstream.common.data.NavAction
 import com.blockstream.common.data.NavData
+import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
@@ -31,7 +32,9 @@ class DeviceListViewModel(isJade: Boolean = true) :
         
     class LocalEvents {
         data class SelectDevice(val device: GreenDevice): Event
-        object ConnectViaQR: Events.NavigateTo(NavigateDestinations.JadeQR())
+        object ConnectViaQR: Event
+        object ConnectViaQRPinUnlock: Events.NavigateTo(NavigateDestinations.JadePinUnlock)
+        object ConnectViaQRUnlocked: Events.NavigateTo(NavigateDestinations.ImportPubKey(deviceBrand = DeviceBrand.Blockstream))
     }
 
     override val devices: StateFlow<List<GreenDevice>> = deviceManager.devices.map { devices ->
@@ -54,7 +57,19 @@ class DeviceListViewModel(isJade: Boolean = true) :
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
-        if (event is LocalEvents.SelectDevice) {
+        if(event is LocalEvents.ConnectViaQR){
+            if(isJade) {
+                postSideEffect(
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.AskJadeUnlock(
+                            isOnboarding = true
+                        )
+                    )
+                )
+            }else{
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.ImportPubKey(deviceBrand = DeviceBrand.Generic)))
+            }
+        }else if (event is LocalEvents.SelectDevice) {
             val navigateTo =
                 SideEffects.NavigateTo(NavigateDestinations.DeviceInfo(deviceId = event.device.connectionIdentifier))
             if (event.device.hasPermissions()) {

@@ -1,21 +1,23 @@
 package com.blockstream.compose.components
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.blockstream.compose.R
-import com.blockstream.compose.theme.GreenThemePreview
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_address
+import blockstream_green.common.generated.resources.id_private_key
+import com.blockstream.compose.theme.GreenChromePreview
+import org.jetbrains.compose.resources.stringResource
 
 
 @Preview
 @Composable
 fun GreenTextFieldPreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         GreenColumn {
-            GreenTextField(title = stringResource(R.string.id_address), "123", {})
-            GreenTextField(title = stringResource(R.string.id_private_key), "", {})
+            GreenTextField(title = stringResource(Res.string.id_address), "123", {})
+            GreenTextField(title = stringResource(Res.string.id_private_key), "", {})
             GreenTextField(
-                stringResource(R.string.id_private_key),
+                stringResource(Res.string.id_private_key),
                 "",
                 {},
                 error = "id_insufficient_funds"

@@ -7,7 +7,6 @@ import blockstream_green.common.generated.resources.id_email
 import blockstream_green.common.generated.resources.id_sms
 import blockstream_green.common.generated.resources.id_telegram
 import com.blockstream.common.BTC_POLICY_ASSET
-import com.blockstream.common.data.AlertType
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.database.Database
@@ -18,7 +17,6 @@ import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.utils.getBitcoinOrLiquidUnit
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
@@ -48,10 +46,6 @@ fun ByteArray.reverseBytes(): ByteArray {
         this[size - i - 1] = b
     }
     return this
-}
-
-fun Transaction.getConfirmationsMax(session: GdkSession): Long {
-    return getConfirmations(session.block(network).value.height).coerceAtMost((if (network.isLiquid) 3 else 7))
 }
 
 fun AccountType?.title(): String = when (this) {
@@ -91,8 +85,9 @@ fun Account.hasTwoFactorReset(session: GdkSession): Boolean {
     return isMultisig && session.twoFactorReset(network).value?.isActive == true
 }
 
+fun String?.isBitcoinPolicyAsset(): Boolean = (this == null || this == BTC_POLICY_ASSET)
 fun String?.isPolicyAsset(network: Network?): Boolean = (this == null || this == network?.policyAsset)
-fun String?.isPolicyAsset(session: GdkSession): Boolean = (isPolicyAsset(session.bitcoin) || isPolicyAsset(session.liquid))
+fun String?.isPolicyAsset(session: GdkSession): Boolean = isBitcoinPolicyAsset() || session.gdkSessions.keys.any { isPolicyAsset(it) }
 
 // If no Bitcoin network is available, fallback to Liquid
 fun String?.networkForAsset(session: GdkSession): Network = (if(this == null || this == BTC_POLICY_ASSET) (session.activeBitcoin ?: session.activeLiquid) else session.activeLiquid ) ?: session.defaultNetwork

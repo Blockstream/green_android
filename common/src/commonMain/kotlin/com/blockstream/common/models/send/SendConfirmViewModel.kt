@@ -62,6 +62,9 @@ class SendConfirmViewModel constructor(
     private val _showVerifyOnDevice = MutableStateFlow(false)
     override val showVerifyOnDevice = _showVerifyOnDevice
 
+    private val _isWatchOnly = MutableStateFlow(false)
+    override val isWatchOnly = _isWatchOnly
+
     private val _transactionConfirmLook: MutableStateFlow<TransactionConfirmLook?> =
         MutableStateFlow(null)
 
@@ -107,6 +110,8 @@ class SendConfirmViewModel constructor(
             if (denomination != null && !denomination.isFiat) {
                 _denomination.value = denomination
             }
+
+            isWatchOnly.value = session.isWatchOnly
 
             session.pendingTransaction?.also {
                 viewModelScope.coroutineScope.launch {
@@ -231,6 +236,7 @@ class SendConfirmViewModelPreview(
         MutableStateFlow(transactionConfirmLook)
 
     override val showVerifyOnDevice: StateFlow<Boolean> = MutableStateFlow(false)
+    override val isWatchOnly: StateFlow<Boolean> = MutableStateFlow(true)
 
     init {
         banner.value = Banner.preview3

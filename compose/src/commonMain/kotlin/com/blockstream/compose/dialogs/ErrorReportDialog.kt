@@ -31,10 +31,8 @@ import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.theme.GreenThemePreview
 import com.blockstream.compose.theme.titleSmall
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
 @Composable

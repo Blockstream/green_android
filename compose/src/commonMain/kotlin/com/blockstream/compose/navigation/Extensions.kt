@@ -55,7 +55,11 @@ inline fun <reified T> getNavigationResult(screenKey: String): State<T?> {
 
 @Composable
 inline fun <reified T> getNavigationResult(kClass: KClass<*>, fn: (T) -> Unit) =
-    getNavigationResult<T>(kClass.resultKey).value?.also {
+    getNavigationResultForKey<T>(kClass.resultKey, fn)
+
+@Composable
+inline fun <reified T> getNavigationResultForKey(screenKey: String, fn: (T) -> Unit) =
+    getNavigationResult<T>(screenKey).value?.also {
         fn(it)
     }
 

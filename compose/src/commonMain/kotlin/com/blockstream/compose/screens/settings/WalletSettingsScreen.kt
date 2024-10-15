@@ -81,6 +81,8 @@ import com.blockstream.common.models.settings.WalletSettingsViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.getBitcoinOrLiquidUnit
+
+import com.blockstream.compose.LocalBiometricState
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenColumn
@@ -90,7 +92,6 @@ import com.blockstream.compose.dialogs.DenominationExchangeDialog
 import com.blockstream.compose.dialogs.SingleChoiceDialog
 import com.blockstream.compose.dialogs.TextDialog
 import com.blockstream.compose.extensions.colorText
-import com.blockstream.compose.sideeffects.rememberBiometricsState
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.red
 import com.blockstream.compose.theme.titleMedium
@@ -142,7 +143,7 @@ fun WalletSettingsScreen(
     var showTwoFactorChangeDialog by remember { mutableStateOf<WalletSettingsViewModel.LocalSideEffects.Disable2FA?>(null) }
     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
 
-    val biometricsState = rememberBiometricsState()
+    val biometricsState = LocalBiometricState.current
 
     HandleSideEffect(viewModel) {
         when (it) {
@@ -159,7 +160,7 @@ fun WalletSettingsScreen(
             }
 
             is WalletSettingsViewModel.LocalSideEffects.LaunchBiometrics -> {
-                biometricsState.getBiometricsCipher(viewModel)
+                biometricsState?.getBiometricsCipher(viewModel)
             }
 
             is WalletSettingsViewModel.LocalSideEffects.Disable2FA -> {

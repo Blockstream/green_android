@@ -30,6 +30,7 @@ import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.extensions.startsWith
+import com.blockstream.common.extensions.tryCatch
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.data.Network
@@ -52,6 +53,7 @@ import com.blockstream.common.utils.ifNotNull
 import com.blockstream.common.utils.toAmountLook
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.stateIn
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -63,6 +65,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.buildJsonObject
 import org.jetbrains.compose.resources.getString
 import saschpe.kase64.base64DecodedBytes
@@ -216,6 +219,9 @@ class SendViewModel(
     private val _isNoteEditable: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val isNoteEditable: StateFlow<Boolean> = _isNoteEditable
 
+    private val _isWatchOnly = MutableStateFlow(false)
+    override val isWatchOnly = _isWatchOnly
+
     override val isAccountEdit: StateFlow<Boolean> = combine(assetsAndAccounts, accountAsset){ assetsAndAccounts, accountAsset ->
         assetsAndAccounts?.isNotEmpty() == true && accountAsset?.account?.isLightning != true
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), true)
@@ -239,12 +245,14 @@ class SendViewModel(
                         icon = Res.drawable.note_pencil,
                         isMenuEntry = false
                     ) {
-                        postEvent(SendConfirmViewModel.LocalEvents.Note)
+                        postEvent(LocalEvents.Note)
                     }).takeIf { isEditable }
                 ))
         }.launchIn(this)
 
         session.ifConnected {
+
+            _isWatchOnly.value = session.isWatchOnly
 
             sessionManager.pendingUri.filterNotNull().onEach {
                 sessionManager.pendingUri.value = null
@@ -305,7 +313,7 @@ class SendViewModel(
                 // Prefer the real network from the account
                 _network.value = network?.let { accountAsset.value?.account?.network } ?: network
             }.onEach {
-                createTransactionParams.value = createTransactionParams()
+                createTransactionParams.value = tryCatch (context = Dispatchers.Default) { createTransactionParams() }
             }.launchIn(this)
 
             error.onEach {
@@ -424,9 +432,7 @@ class SendViewModel(
                     utxos = unspentOutputs?.unspentOutputs
                 )
             }
-        }).also {
-            createTransactionParams.value = it
-        }
+        })
     }
 
     override fun createTransaction(
@@ -553,10 +559,7 @@ class SendViewModel(
                 tx
             }
 
-        }, mutex = createTransactionMutex, preAction = {
-            onProgress.value = true
-            _isValid.value = false
-        }, onSuccess = {
+        }, mutex = createTransactionMutex, onSuccess = {
             _isValid.value = it != null
             if (it != null) {
                 // Preserve error
@@ -750,7 +753,7 @@ class SendViewModelPreview(greenWallet: GreenWallet, isLightning: Boolean = fals
     override val metadataDescription: StateFlow<String?> = MutableStateFlow("Metadata Description")
     override val description: StateFlow<String?> = MutableStateFlow(null)
     override val isNoteEditable: StateFlow<Boolean> = MutableStateFlow(true)
-
+    override val isWatchOnly: StateFlow<Boolean> = MutableStateFlow(false)
 
     init {
         _showFeeSelector.value = true

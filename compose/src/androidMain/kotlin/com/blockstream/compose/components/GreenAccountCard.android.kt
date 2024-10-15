@@ -10,12 +10,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.LBTC_POLICY_ASSET
 import com.blockstream.common.extensions.previewAccountBalance
-import com.blockstream.compose.theme.GreenThemePreview
+import com.blockstream.compose.theme.GreenChromePreview
 
 @Composable
 @Preview
 fun AccountAssetsPreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         AccountAssets(accountBalance = previewAccountBalance().let {
             it.copy(
                 assets = listOf(
@@ -36,7 +36,7 @@ fun AccountAssetsPreview() {
 @Composable
 @Preview
 fun GreenAccountCardPreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         GreenColumn(horizontalAlignment = Alignment.CenterHorizontally, space = 1, padding = 0) {
             var expanded by remember {
                 mutableIntStateOf(0)

@@ -28,6 +28,8 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.feeRateWithUnit
 import com.rickclephas.kmp.observableviewmodel.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import org.jetbrains.compose.resources.getString
@@ -51,6 +53,8 @@ class RedepositViewModel(
     accountAsset: AccountAsset,
     private val isRedeposit2FA: Boolean
 ) : RedepositViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
+    private val _isWatchOnly = MutableStateFlow(false)
+    override val isWatchOnly = _isWatchOnly
 
     init {
         viewModelScope.launch {
@@ -69,13 +73,15 @@ class RedepositViewModel(
             )
         } else {
             session.ifConnected {
+                _isWatchOnly.value = session.isWatchOnly
+
                 _showFeeSelector.value = accountAsset.account.network.isBitcoin
                         || (accountAsset.account.network.isLiquid && getFeeRate(FeePriority.High()) > accountAsset.account.network.defaultFee)
 
                 _network.value = accountAsset.account.network
 
                 combine(_feeEstimation.filterNotNull(), _feePriorityPrimitive) { _ ->
-                    createTransactionParams.value = tryCatch { createTransactionParams() }
+                    createTransactionParams.value = tryCatch(context = Dispatchers.Default) { createTransactionParams() }
                 }.launchIn(this)
             }
         }
@@ -134,9 +140,7 @@ class RedepositViewModel(
                 feeRate = getFeeRate(),
                 isRedeposit = true
             )
-        }).also {
-            createTransactionParams.value = it
-        }
+        })
     }
 
     override fun createTransaction(
@@ -188,10 +192,7 @@ class RedepositViewModel(
                 tx
             }
 
-        }, mutex = createTransactionMutex, preAction = {
-            onProgress.value = true
-            _isValid.value = false
-        }, onSuccess = {
+        }, mutex = createTransactionMutex, onSuccess = {
             createTransaction.value = it
             _isValid.value = it != null
             _error.value = null
@@ -220,6 +221,8 @@ class RedepositViewModel(
 
 class RedepositViewModelPreview(greenWallet: GreenWallet, accountAsset: AccountAsset) :
     RedepositViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
+
+    override val isWatchOnly: StateFlow<Boolean> = MutableStateFlow(false)
 
     init {
         _showFeeSelector.value = true

@@ -4,20 +4,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.sign_out
 import com.blockstream.common.models.settings.WalletSettingsViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
-import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.theme.GreenThemePreview
+import com.blockstream.compose.theme.GreenChromePreview
 import com.blockstream.compose.theme.titleMedium
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 @Preview
 fun SettingPreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         GreenColumn {
             Text(
                 text = "General",
@@ -27,7 +28,7 @@ fun SettingPreview() {
             Setting(
                 title = "Logout",
                 subtitle = "Wallet",
-                painter = painterResource(id = R.drawable.sign_out)
+                painter = painterResource(Res.drawable.sign_out)
             )
             Setting(title = "Watch-only")
             Setting(title = "Change PIN")

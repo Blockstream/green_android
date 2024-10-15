@@ -5,13 +5,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.models.recovery.RecoveryWordsViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.theme.GreenThemePreview
+import com.blockstream.compose.theme.GreenChromePreview
 
 
 @Composable
 @Preview
 private fun ItemPreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         GreenColumn {
             Item(1, "word")
         }

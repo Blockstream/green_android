@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -38,7 +36,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun BottomNav(
     modifier: Modifier = Modifier,
-    isWatchOnly: Boolean = false,
+    canSend: Boolean = true,
     isSweepEnabled: Boolean = false,
     showMenu: Boolean = false,
     onSendClick: () -> Unit,
@@ -63,7 +61,7 @@ fun BottomNav(
                 shape = GreenSmallEnd,
                 colors = CardDefaults.cardColors(containerColor = bottom_nav_bg),
                 onClick = onSendClick,
-                enabled = !isWatchOnly || isSweepEnabled
+                enabled = canSend || isSweepEnabled
             ) {
                 GreenRow(
                     padding = 0,
@@ -74,11 +72,11 @@ fun BottomNav(
                         .padding(end = 30.dp)
                 ) {
                     Icon(
-                        painterResource(if (isWatchOnly && isSweepEnabled) Res.drawable.broom else Res.drawable.arrow_line_up),
+                        painterResource(if (!canSend && isSweepEnabled) Res.drawable.broom else Res.drawable.arrow_line_up),
                         contentDescription = null,
                         tint = green,
                     )
-                    Text(text = stringResource(if (isWatchOnly && isSweepEnabled) Res.string.id_sweep else Res.string.id_send))
+                    Text(text = stringResource(if (!canSend && isSweepEnabled) Res.string.id_sweep else Res.string.id_send))
                 }
             }
 

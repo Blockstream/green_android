@@ -44,7 +44,7 @@ import blockstream_green.common.generated.resources.id_welcome_to_blockstream_ja
 import blockstream_green.common.generated.resources.id_your_bitcoin_and_liquid_assets
 import blockstream_green.common.generated.resources.jade_welcome
 import blockstream_green.common.generated.resources.offline_key_storage
-import blockstream_green.common.generated.resources.qr_air_gapped
+import blockstream_green.common.generated.resources.qr_airgapped
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import com.blockstream.common.models.onboarding.hardware.UseHardwareDeviceViewModel
@@ -97,7 +97,7 @@ fun UseHardwareDeviceScreen(
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
 
-        val pagerState = rememberPagerState(pageCount = { 3 })
+        val pagerState = rememberPagerState(pageCount = { 4 })
 
         Column(modifier = Modifier.weight(1f)) {
             // Display 10 items
@@ -120,7 +120,7 @@ fun UseHardwareDeviceScreen(
                     0 -> painterResource(Res.drawable.jade_welcome)
                     1 -> painterResource(Res.drawable.hardware_security)
                     2 -> painterResource(Res.drawable.offline_key_storage)
-                    else -> painterResource(Res.drawable.qr_air_gapped)
+                    else -> painterResource(Res.drawable.qr_airgapped)
                 }
 
                 Column {

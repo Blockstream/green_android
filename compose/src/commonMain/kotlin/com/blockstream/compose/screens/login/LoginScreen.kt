@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -56,6 +55,7 @@ import blockstream_green.common.generated.resources.id_username
 import blockstream_green.common.generated.resources.id_you_have_to_authenticate_using
 import blockstream_green.common.generated.resources.id_youve_entered_an_invalid_pin
 import blockstream_green.common.generated.resources.lightning_fill
+import blockstream_green.common.generated.resources.qr_code
 import blockstream_green.common.generated.resources.shield_warning
 import blockstream_green.common.generated.resources.tor
 import blockstream_green.common.generated.resources.x
@@ -71,6 +71,7 @@ import com.blockstream.common.models.login.LoginViewModel
 import com.blockstream.common.models.login.LoginViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.compose.LocalBiometricState
 import com.blockstream.compose.LocalRootNavigator
 import com.blockstream.compose.components.AppSettingsButton
 import com.blockstream.compose.components.Banner
@@ -91,6 +92,7 @@ import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.lightning
 import com.blockstream.compose.theme.red
+import com.blockstream.compose.theme.textMedium
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
@@ -135,6 +137,7 @@ fun LoginScreen(
     viewModel: LoginViewModelAbstract,
 ) {
     val navigator = LocalRootNavigator.current
+    val biometricsState = LocalBiometricState.current
 
     val pinCredentials by viewModel.pinCredentials.collectAsStateWithLifecycle()
     val passwordCredentials by viewModel.passwordCredentials.collectAsStateWithLifecycle()
@@ -145,16 +148,14 @@ fun LoginScreen(
         )
     }
 
-    val biometricsState = rememberBiometricsState()
-
     HandleSideEffect(viewModel) {
         when (it) {
             is LoginViewModel.LocalSideEffects.LaunchBiometrics -> {
-                biometricsState.launchBiometricPrompt(it.loginCredentials, viewModel = viewModel)
+                biometricsState?.launchBiometricPrompt(it.loginCredentials, viewModel = viewModel)
             }
 
             is LoginViewModel.LocalSideEffects.LaunchUserPresenceForLightning -> {
-                biometricsState.launchUserPresencePromptForLightningShortcut(viewModel = viewModel)
+                biometricsState?.launchUserPresencePromptForLightningShortcut(viewModel = viewModel)
             }
 
             is SideEffects.WalletDelete -> {
@@ -322,9 +323,9 @@ fun LoginScreen(
                                     .align(Alignment.CenterHorizontally)
                             ) {
                                 Image(
-                                    painter = painterResource(Res.drawable.eye),
+                                    painter = painterResource(if(viewModel.greenWallet.isWatchOnlyQr) Res.drawable.qr_code else Res.drawable.eye),
                                     contentDescription = "Watch Only",
-                                    // colorFilter = ColorFilter.tint(lightning),
+                                    // colorFilter = ColorFilter.tint(green),
                                     alpha = 0.25f,
                                     modifier = Modifier
                                         .size(128.dp)

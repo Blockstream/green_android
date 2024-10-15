@@ -33,7 +33,7 @@ private fun Context.getLocationManagerOrNull() =
 private fun Context.isLocationEnabledOrNull(): Boolean? =
     getLocationManagerOrNull()?.let(LocationManagerCompat::isLocationEnabled)
 
-actual class BluetoothManager(val context: Context, val bluetoothAdapter: BluetoothAdapter?) {
+actual class BluetoothManager constructor(val context: Context, val bluetoothAdapter: BluetoothAdapter?) {
     private val scope = CoroutineScope(context = Dispatchers.Default)
 
     private val blePermissionsUpdate = MutableSharedFlow<Unit>(replay = 1).also {
@@ -87,7 +87,7 @@ actual class BluetoothManager(val context: Context, val bluetoothAdapter: Blueto
     private val hasPermissions
         get() = BLE_PERMISSIONS.all { ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED }
 
-    fun permissionsGranted() {
+    actual fun permissionsGranted() {
         blePermissionsUpdate.tryEmit(Unit)
     }
 

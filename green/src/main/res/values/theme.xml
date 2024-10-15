@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Green" parent="@style/Theme.Material3.Light.NoActionBar" />
+
+    <style name="Theme.Green.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/brand_background</item>
+        <item name="postSplashScreenTheme">@style/Theme.Green</item>
+    </style>
+</resources>

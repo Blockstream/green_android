@@ -3,12 +3,14 @@ package com.blockstream.compose.components
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -67,30 +69,32 @@ fun GreenTopAppBar(
                 ConstraintLayout {
                     val (title, subtitle) = createRefs()
 
-                    Text(
-                        text = navData.title ?: "",
-                        maxLines = 1,
-                        style = titleSmall,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.constrainAs(title) {
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                            top.linkTo(parent.top)
-                            bottom.linkTo(parent.bottom)
-                        }
-                    )
+                    Crossfade(targetState = navData.title ?: "", modifier = Modifier.constrainAs(title) {
+                        start.linkTo(parent.start)
+                        // end.linkTo(parent.end)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    }) {
+                        Text(
+                            text = it,
+                            maxLines = 1,
+                            style = titleSmall,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
 
-                    navData.subtitle?.also {
+                    Crossfade(targetState = navData.subtitle ?: "", modifier = Modifier.constrainAs(subtitle) {
+                        start.linkTo(parent.start)
+                        // end.linkTo(parent.end)
+                        top.linkTo(title.bottom)
+                    }) {
                         Text(
                             text = it,
                             maxLines = 1,
                             style = bodySmall,
                             overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.constrainAs(subtitle) {
-                                start.linkTo(parent.start)
-                                end.linkTo(parent.end)
-                                top.linkTo(title.bottom)
-                            }
+                            modifier = Modifier.fillMaxWidth()
                         )
                     }
                 }

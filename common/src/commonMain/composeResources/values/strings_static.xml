@@ -2,77 +2,77 @@
     <string name="id_host_ip" translatable="false">host:ip</string>
     <string name="id_2fa" translatable="false">2FA</string>
 
-    <string-array name="twoFactorChoices" translatable="false">
-        <item>@string/id_email</item>
-        <item>@string/id_sms</item>
-        <item>@string/id_call</item>
-        <item>@string/id_telegram</item>
-        <item>@string/id_authenticator_app</item>
-    </string-array>
+<!--    <string-array name="twoFactorChoices" translatable="false">-->
+<!--        <item>@string/id_email</item>-->
+<!--        <item>@string/id_sms</item>-->
+<!--        <item>@string/id_call</item>-->
+<!--        <item>@string/id_telegram</item>-->
+<!--        <item>@string/id_authenticator_app</item>-->
+<!--    </string-array>-->
 
-    <string-array name="twoFactorMethods" translatable="false">
-        <item>email</item>
-        <item>sms</item>
-        <item>phone</item>
-        <item>telegram</item>
-        <item>gauth</item>
-    </string-array>
+<!--    <string-array name="twoFactorMethods" translatable="false">-->
+<!--        <item>email</item>-->
+<!--        <item>sms</item>-->
+<!--        <item>phone</item>-->
+<!--        <item>telegram</item>-->
+<!--        <item>gauth</item>-->
+<!--    </string-array>-->
 
-    <string-array name="fee_target_entries" translatable="false">
-        <item>@string/id_fast</item>
-        <item>@string/id_medium</item>
-        <item>@string/id_slow</item>
-    </string-array>
+<!--    <string-array name="fee_target_entries" translatable="false">-->
+<!--        <item>@string/id_fast</item>-->
+<!--        <item>@string/id_medium</item>-->
+<!--        <item>@string/id_slow</item>-->
+<!--    </string-array>-->
 
-    <string-array name="fee_target_values" translatable="false">
-        <item>3</item>
-        <item>12</item>
-        <item>24</item>
-    </string-array>
+<!--    <string-array name="fee_target_values" translatable="false">-->
+<!--        <item>3</item>-->
+<!--        <item>12</item>-->
+<!--        <item>24</item>-->
+<!--    </string-array>-->
 
-    <string-array name="btc_units_entries" translatable="false">
-        <item>BTC</item>
-        <item>mBTC</item>
-        <item>\u00B5BTC</item>
-        <item>bits</item>
-        <item>sats</item>
-    </string-array>
+<!--    <string-array name="btc_units_entries" translatable="false">-->
+<!--        <item>BTC</item>-->
+<!--        <item>mBTC</item>-->
+<!--        <item>\u00B5BTC</item>-->
+<!--        <item>bits</item>-->
+<!--        <item>sats</item>-->
+<!--    </string-array>-->
 
-    <string-array name="liquid_units_entries" translatable="false">
-        <item>L-BTC</item>
-        <item>L-mBTC</item>
-        <item>L-\u00B5BTC</item>
-        <item>L-bits</item>
-        <item>L-sats</item>
-    </string-array>
+<!--    <string-array name="liquid_units_entries" translatable="false">-->
+<!--        <item>L-BTC</item>-->
+<!--        <item>L-mBTC</item>-->
+<!--        <item>L-\u00B5BTC</item>-->
+<!--        <item>L-bits</item>-->
+<!--        <item>L-sats</item>-->
+<!--    </string-array>-->
 
-    <string-array name="testnet_units_entries" translatable="false">
-        <item>TEST</item>
-        <item>mTEST</item>
-        <item>\u00B5TEST</item>
-        <item>bTEST</item>
-        <item>sTEST</item>
-    </string-array>
+<!--    <string-array name="testnet_units_entries" translatable="false">-->
+<!--        <item>TEST</item>-->
+<!--        <item>mTEST</item>-->
+<!--        <item>\u00B5TEST</item>-->
+<!--        <item>bTEST</item>-->
+<!--        <item>sTEST</item>-->
+<!--    </string-array>-->
 
-<!--  Deprecatd  -->
-    <string-array name="auto_logout_values" translatable="false">
-        <item>1</item>
-        <item>2</item>
-        <item>5</item>
-        <item>10</item>
-        <item>60</item>
-    </string-array>
+<!--&lt;!&ndash;  Deprecatd  &ndash;&gt;-->
+<!--    <string-array name="auto_logout_values" translatable="false">-->
+<!--        <item>1</item>-->
+<!--        <item>2</item>-->
+<!--        <item>5</item>-->
+<!--        <item>10</item>-->
+<!--        <item>60</item>-->
+<!--    </string-array>-->
 
-    <string-array name="csv_titles" translatable="false">
-        <item>@string/id_6_months_25920_blocks</item>
-        <item>@string/id_12_months_51840_blocks</item>
-        <item>@string/id_15_months_65535_blocks</item>
-    </string-array>
+<!--    <string-array name="csv_titles" translatable="false">-->
+<!--        <item>@string/id_6_months_25920_blocks</item>-->
+<!--        <item>@string/id_12_months_51840_blocks</item>-->
+<!--        <item>@string/id_15_months_65535_blocks</item>-->
+<!--    </string-array>-->
 
-    <string-array name="csv_subtitles" translatable="false">
-        <item>@string/id_optimal_if_you_spend_coins</item>
-        <item>@string/id_wallet_coins_will_require</item>
-        <item>@string/id_optimal_if_you_rarely_spend</item>
-    </string-array>
+<!--    <string-array name="csv_subtitles" translatable="false">-->
+<!--        <item>@string/id_optimal_if_you_spend_coins</item>-->
+<!--        <item>@string/id_wallet_coins_will_require</item>-->
+<!--        <item>@string/id_optimal_if_you_rarely_spend</item>-->
+<!--    </string-array>-->
 
 </resources>

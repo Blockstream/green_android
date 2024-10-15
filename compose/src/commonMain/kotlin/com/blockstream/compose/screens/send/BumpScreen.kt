@@ -49,10 +49,11 @@ import com.blockstream.common.utils.stringResourceFromId
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAddress
 import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenConfirmButton
 import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.components.GreenNetworkFee
-import com.blockstream.compose.components.SlideToUnlock
 import com.blockstream.compose.dialogs.TextDialog
+import com.blockstream.compose.screens.jade.JadeQRScreen
 import com.blockstream.compose.sheets.FeeRateBottomSheet
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
@@ -97,6 +98,14 @@ fun BumpScreen(
 ) {
     FeeRateBottomSheet.getResult {
         viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SetFeeRate(it))
+    }
+
+    JadeQRScreen.getResult {
+        viewModel.postEvent(
+            CreateTransactionViewModelAbstract.LocalEvents.BroadcastTransaction(
+                psbt = it
+            )
+        )
     }
 
     var customFeeDialog by remember { mutableStateOf<String?>(null) }
@@ -298,11 +307,8 @@ fun BumpScreen(
             }
         }
 
-        val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
-        val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
-
-        SlideToUnlock(isLoading = onProgress, enabled = buttonEnabled, onSlideComplete = {
-             viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SignTransaction())
-        })
+        GreenConfirmButton(viewModel = viewModel) { isWatchOnly ->
+            viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SignTransaction())
+        }
     }
 }

@@ -33,20 +33,11 @@ data class Call2ActionBottomSheet(
     val greenWallet: GreenWallet,
     val network: Network,
 ) : BottomScreen(), Parcelable {
-    // Temp fix until fully migration to Compose
-    @Transient
-    @IgnoredOnParcel
-    var parentViewModel: GreenViewModel? = null
 
     @Composable
     override fun Content() {
         val viewModel = koinScreenModel<SimpleGreenViewModel> {
             parametersOf(greenWallet)
-        }.also {
-            val navigator = LocalRootNavigator.current
-            if(navigator == null) {
-                it.parentViewModel = parentViewModel
-            }
         }
 
         Call2ActionBottomSheet(

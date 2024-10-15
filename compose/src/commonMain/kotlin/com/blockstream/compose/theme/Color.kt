@@ -1,5 +1,7 @@
 package com.blockstream.compose.theme
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 val md_theme_primary = Color(0xFF00b45a)
@@ -48,13 +50,17 @@ val green = md_theme_primary
 val green20 = Color(0x3300f113)
 
 val red = Color(0xFFEA5262)
+val redDark = Color(0xFF9A0000)
 val orange = Color(0xFFBB7B00)
 
 val md_theme_surfaceCircle = Color(0xFF363636)
 
-val whiteHigh = Color.White
-val whiteMedium = Color.White.copy(alpha = 0.75f)
-val whiteLow = Color.White.copy(alpha = 0.5f)
+val whiteHigh @Composable
+    get() = MaterialTheme.colorScheme.onSurface
+val whiteMedium @Composable
+    get() = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
+val whiteLow @Composable
+    get() = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
 
 val bitcoin = Color(0xFFfe8e02)
 val liquid = Color(0xFF46BEAE)

@@ -152,6 +152,9 @@ actual class PlatformManager(val application: UIApplication) {
 
     actual fun openBluetoothSettings() {
     }
+
+    actual fun setSecureScreen(isSecure: Boolean) {
+    }
 }
 
 @Composable
@@ -183,6 +186,6 @@ actual class ImagePickerLauncher actual constructor(private val onLaunch: () -> 
 }
 
 @Composable
-actual fun askForBluetoothPermissions(viewModel: GreenViewModel) {
+actual fun askForBluetoothPermissions(viewModel: GreenViewModel, fn: () -> Unit) {
 
 }

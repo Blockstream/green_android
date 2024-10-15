@@ -52,6 +52,7 @@ class JadeBleConnection internal constructor(
         }.launchIn(scope)
 
         if (!isBonded) {
+            logger.d { "Device is not bonded, attempting to bond..." }
             // Initiate a write so that Android bond the device if needed before continuing with the observe
             // else if we observe before that won't work
             peripheral.write(

@@ -15,6 +15,7 @@ import blockstream_green.common.generated.resources.currency_btc
 import blockstream_green.common.generated.resources.eye
 import blockstream_green.common.generated.resources.eye_slash
 import blockstream_green.common.generated.resources.flask
+import blockstream_green.common.generated.resources.generic_device
 import blockstream_green.common.generated.resources.id_2of2
 import blockstream_green.common.generated.resources.id_2of3
 import blockstream_green.common.generated.resources.id_amp
@@ -83,7 +84,7 @@ import com.blockstream.compose.theme.liquid
 import com.blockstream.compose.theme.liquid_testnet
 import com.blockstream.compose.theme.orange
 import com.blockstream.compose.theme.red
-import com.blockstream.compose.theme.whiteHigh
+import com.blockstream.compose.theme.textHigh
 import com.blockstream.compose.utils.toPainter
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -95,6 +96,7 @@ fun WalletIcon.resource() = when (this) {
     WalletIcon.BIP39 -> Res.drawable.wallet_passphrase
     WalletIcon.HARDWARE -> Res.drawable.wallet_hw
     WalletIcon.LIGHTNING -> Res.drawable.lightning_fill
+    WalletIcon.QR -> Res.drawable.qr_code
     else -> Res.drawable.wallet
 }
 
@@ -103,6 +105,7 @@ fun GreenDevice.icon(): DrawableResource = deviceBrand.icon()
 fun DeviceBrand.icon(): DrawableResource = when (this) {
     DeviceBrand.Ledger -> Res.drawable.ledger_device
     DeviceBrand.Trezor -> Res.drawable.trezor_device
+    DeviceBrand.Generic -> Res.drawable.generic_device
     else -> Res.drawable.blockstream_jade_device
 }
 
@@ -177,9 +180,10 @@ fun Transaction.SPVResult.title() = when (this) {
     else -> Res.string.id_invalid_spv
 }
 
+@Composable
 fun TransactionLook.directionColor(index: Int) = when {
     transaction.isRefundableSwap -> red
-    else -> if ((transaction.assets.getOrNull(index)?.second ?: 0) < 0) whiteHigh else green
+    else -> if ((transaction.assets.getOrNull(index)?.second ?: 0) < 0) textHigh else green
 }
 
 @Composable

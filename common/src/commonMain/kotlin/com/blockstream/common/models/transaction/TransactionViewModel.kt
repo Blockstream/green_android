@@ -325,7 +325,7 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
             else -> null
         }
 
-        _canReplaceByFee.value = transaction.canRBF && !transaction.isIn && !session.isNoBlobWatchOnly
+        _canReplaceByFee.value = transaction.canRBF && !transaction.isIn && session.canSendTransaction
 
         _note.value = transaction.memo.takeIf { it.isNotBlank()}
 

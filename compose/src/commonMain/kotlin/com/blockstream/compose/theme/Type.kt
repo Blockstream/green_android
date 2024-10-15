@@ -1,6 +1,7 @@
 package com.blockstream.compose.theme
 
 
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
@@ -127,3 +128,16 @@ val labelMedium
 val labelSmall
     @Composable
     get() = MaterialTheme.typography.labelSmall
+
+// Text Colors
+val textHigh
+    @Composable
+    get() = LocalContentColor.current
+
+val textMedium
+    @Composable
+    get() = LocalContentColor.current.copy(alpha = 0.75f)
+
+val textLow
+    @Composable
+    get() = LocalContentColor.current.copy(alpha = 0.5f)

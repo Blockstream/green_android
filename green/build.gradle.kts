@@ -12,10 +12,8 @@ plugins {
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.compose.compiler)
-    id("kotlin-kapt") // until @BindingAdapter supports KSP
-    id("androidx.navigation.safeargs.kotlin")
-    id("com.adarshr.test-logger") version "3.2.0"
     alias(libs.plugins.googleServices)
+    id("com.adarshr.test-logger") version "3.2.0"
 }
 
 // https://developer.android.com/studio/publish/app-signing#secure-key
@@ -109,7 +107,6 @@ android {
     }
     buildFeatures {
         compose = true
-        dataBinding = true
         buildConfig = true
     }
     buildTypes {
@@ -185,7 +182,6 @@ dependencies {
     /**  --- Modules ---------------------------------------------------------------------------- */
     implementation(project(":base"))
     implementation(project(":compose"))
-    // implementation(project(":jade"))
 
     developmentImplementation(project(":gms"))
     productionGoogleImplementation(project(":gms"))
@@ -194,12 +190,6 @@ dependencies {
 
     /**  --- Java 8+ API desugaring support ----------------------------------------------------- */
     coreLibraryDesugaring(libs.desugar)
-    /** ----------------------------------------------------------------------------------------- */
-
-    /**  --- Navigation ------------------------------------------------------------------------- */
-    implementation(libs.navigation.fragment.ktx)
-    implementation(libs.navigation.ui.ktx)
-    testImplementation(libs.navigation.testing)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Room ------------------------------------------------------------------------------- */
@@ -216,21 +206,6 @@ dependencies {
     // For local unit tests
     testImplementation(libs.koin.test)
     testImplementation(libs.koin.test.junit4)
-    /** ----------------------------------------------------------------------------------------- */
-
-    /**  --- FastAdapter  ----------------------------------------------------------------------- */
-    implementation(libs.fastadapter)
-    implementation(libs.fastadapter.extensions.diff) // diff util helpers
-    implementation(libs.fastadapter.extensions.binding) // view binding helpers
-    implementation(libs.fastadapter.extensions.expandable)
-    implementation(libs.fastadapter.extensions.ui) // pre-defined ui components
-    implementation(libs.fastadapter.extensions.scroll)
-    implementation(libs.fastadapter.extensions.utils)
-    implementation(libs.itemanimators)
-    /** ----------------------------------------------------------------------------------------- */
-
-    /**  --- QR Scanner ------------------------------------------------------------------------- */
-    implementation(libs.zxing.android.embedded)
     /** ----------------------------------------------------------------------------------------- */
 
     testImplementation(libs.junit)

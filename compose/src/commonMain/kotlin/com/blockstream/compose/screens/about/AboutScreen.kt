@@ -36,6 +36,7 @@ import blockstream_green.common.generated.resources.linkedin_logo
 import blockstream_green.common.generated.resources.number_zero
 import blockstream_green.common.generated.resources.telegram_logo
 import blockstream_green.common.generated.resources.trash
+import blockstream_green.common.generated.resources.x
 import blockstream_green.common.generated.resources.x_logo
 import blockstream_green.common.generated.resources.youtube_logo
 import cafe.adriel.voyager.core.screen.Screen
@@ -59,6 +60,7 @@ import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.noRippleClickable
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -132,7 +134,7 @@ fun AboutScreen(
                     modifier = Modifier
                         .heightIn(50.dp, 70.dp)
                         .align(Alignment.Center)
-                        .clickable {
+                        .noRippleClickable {
                             viewModel.postEvent(AboutViewModel.LocalEvents.ClickLogo)
                         }
                 )
@@ -157,6 +159,12 @@ fun AboutScreen(
                             iconRes = Res.drawable.number_zero,
                             onClick = {
                                 viewModel.postEvent(AboutViewModel.LocalEvents.CountlyZeroOffset)
+                            }
+                        ), MenuEntry(
+                            title = "Reset Promos",
+                            iconRes = Res.drawable.x,
+                            onClick = {
+                                viewModel.postEvent(AboutViewModel.LocalEvents.ResetPromos)
                             }
                         )
                     )

@@ -2,11 +2,14 @@ package com.blockstream.compose.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_are_you_not_receiving_your_2fa
 import blockstream_green.common.generated.resources.id_bluetooth
@@ -54,7 +57,9 @@ import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.LocalAppCoroutine
+import com.blockstream.compose.LocalBiometricState
 import com.blockstream.compose.LocalDialog
+import com.blockstream.compose.LocalDrawer
 import com.blockstream.compose.LocalRootNavigator
 import com.blockstream.compose.LocalSnackbar
 import com.blockstream.compose.dialogs.SingleChoiceDialog
@@ -72,11 +77,13 @@ import com.blockstream.compose.screens.add.ReviewAddAccountScreen
 import com.blockstream.compose.screens.add.XpubScreen
 import com.blockstream.compose.screens.addresses.AddressesScreen
 import com.blockstream.compose.screens.archived.ArchivedAccountsScreen
-import com.blockstream.compose.screens.exchange.AccountExchangeScreen
-import com.blockstream.compose.screens.exchange.OnOffRampsScreen
 import com.blockstream.compose.screens.devices.DeviceInfoScreen
 import com.blockstream.compose.screens.devices.DeviceListScreen
 import com.blockstream.compose.screens.devices.DeviceScanScreen
+import com.blockstream.compose.screens.devices.ImportPubKeyScreen
+import com.blockstream.compose.screens.exchange.AccountExchangeScreen
+import com.blockstream.compose.screens.exchange.OnOffRampsScreen
+import com.blockstream.compose.screens.jade.JadePinUnlockScreen
 import com.blockstream.compose.screens.jade.JadeQRScreen
 import com.blockstream.compose.screens.lightning.LnUrlAuthScreen
 import com.blockstream.compose.screens.lightning.LnUrlWithdrawScreen
@@ -94,6 +101,7 @@ import com.blockstream.compose.screens.onboarding.watchonly.WatchOnlyPolicyScree
 import com.blockstream.compose.screens.overview.AccountOverviewScreen
 import com.blockstream.compose.screens.overview.WalletAssetsScreen
 import com.blockstream.compose.screens.overview.WalletOverviewScreen
+import com.blockstream.compose.screens.promo.PromoScreen
 import com.blockstream.compose.screens.receive.ReceiveScreen
 import com.blockstream.compose.screens.recovery.RecoveryCheckScreen
 import com.blockstream.compose.screens.recovery.RecoveryIntroScreen
@@ -114,6 +122,7 @@ import com.blockstream.compose.screens.transaction.TransactionScreen
 import com.blockstream.compose.screens.twofactor.ReEnable2FAScreen
 import com.blockstream.compose.sheets.AccountRenameBottomSheet
 import com.blockstream.compose.sheets.AccountsBottomSheet
+import com.blockstream.compose.sheets.AskJadeUnlockBottomSheet
 import com.blockstream.compose.sheets.AssetDetailsBottomSheet
 import com.blockstream.compose.sheets.AssetsAccountsBottomSheet
 import com.blockstream.compose.sheets.AssetsBottomSheet
@@ -130,6 +139,8 @@ import com.blockstream.compose.sheets.JadeFirmwareUpdateBottomSheet
 import com.blockstream.compose.sheets.LightningNodeBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
 import com.blockstream.compose.sheets.NoteBottomSheet
+import com.blockstream.compose.sheets.PassphraseBottomSheet
+import com.blockstream.compose.sheets.PinMatrixBottomSheet
 import com.blockstream.compose.sheets.QrBottomSheet
 import com.blockstream.compose.sheets.SignMessageBottomSheet
 import com.blockstream.compose.sheets.SystemMessageBottomSheet
@@ -182,68 +193,61 @@ fun HandleSideEffect(
     val dialog = LocalDialog.current
     val appCoroutine = LocalAppCoroutine.current
     val platformManager = LocalPlatformManager.current
+    val drawer = LocalDrawer.current
     val scope = rememberCoroutineScope()
+    val biometricsState = LocalBiometricState.current
 
     var twoFactorResolverData by remember { mutableStateOf<TwoFactorResolverData?>(null) }
-    twoFactorResolverData?.also {
-        it.methods?.also { methods ->
+    twoFactorResolverData?.also { resolverData ->
+        resolverData.methods?.also { methods ->
             SingleChoiceDialog(
                 title = stringResource(Res.string.id_choose_method_to_authorize_the),
                 items = methods.twoFactorMethodsLocalized().map {
                     stringResource(it)
                 }
-            ) {
-                if (it == null) {
-                    viewModel._twoFactorDeferred?.completeExceptionally(Exception("id_action_canceled"))
-                } else {
-                    methods.getOrNull(it)?.also {
-                        viewModel._twoFactorDeferred?.complete(it)
-                    }
-                }
+            ) { position ->
+                viewModel.postEvent(Events.SelectTwoFactorMethod(method = position?.let { methods.getOrNull(it) }))
                 twoFactorResolverData = null
             }
         }
 
-        it.authHandlerStatus?.also { authHandlerStatus ->
+        resolverData.authHandlerStatus?.also { authHandlerStatus ->
             TwoFactorCodeDialog(authHandlerStatus = authHandlerStatus) { code, isHelp ->
-                if (code != null) {
-                    viewModel._twoFactorDeferred?.complete(code)
-                } else {
-                    viewModel._twoFactorDeferred?.completeExceptionally(Exception("id_action_canceled"))
 
-                    if (isHelp == true) {
-                        appCoroutine.launch {
-                            dialog.openDialog(OpenDialogData(
-                                title = StringHolder.create(Res.string.id_are_you_not_receiving_your_2fa),
-                                message = StringHolder.create(Res.string.id_try_again_using_another_2fa),
-                                primaryText = getString(if (it.enable2faCallMethod) Res.string.id_enable_2fa_call_method else Res.string.id_try_again),
-                                secondaryText = getString(Res.string.id_contact_support),
-                                onPrimary = {
-                                    if (it.enable2faCallMethod) {
-                                        viewModel.postEvent(
-                                            NavigateDestinations.TwoFactorSetup(
-                                                method = TwoFactorMethod.PHONE,
-                                                action = TwoFactorSetupAction.SETUP,
-                                                network = it.network!!,
-                                                isSmsBackup = true
-                                            )
+                viewModel.postEvent(Events.ResolveTwoFactorCode(code = code))
+
+                if (isHelp == true) {
+                    appCoroutine.launch {
+                        dialog.openDialog(OpenDialogData(
+                            title = StringHolder.create(Res.string.id_are_you_not_receiving_your_2fa),
+                            message = StringHolder.create(Res.string.id_try_again_using_another_2fa),
+                            primaryText = getString(if (resolverData.enable2faCallMethod) Res.string.id_enable_2fa_call_method else Res.string.id_try_again),
+                            secondaryText = getString(Res.string.id_contact_support),
+                            onPrimary = {
+                                if (resolverData.enable2faCallMethod) {
+                                    viewModel.postEvent(
+                                        NavigateDestinations.TwoFactorSetup(
+                                            method = TwoFactorMethod.PHONE,
+                                            action = TwoFactorSetupAction.SETUP,
+                                            network = resolverData.network!!,
+                                            isSmsBackup = true
                                         )
-                                    }
-                                },
-                                onSecondary = {
-                                    appCoroutine.launch {
-                                        dialog.openErrorReportDialog(
-                                            platformManager = platformManager,
-                                            viewModel = viewModel,
-                                            errorReport = ErrorReport.createForMultisig("Android: I am not receiving my 2FA code"),
-                                            onSubmitErrorReport = { submitErrorReport ->
-                                                viewModel.postEvent(submitErrorReport)
-                                            }
-                                        )
-                                    }
+                                    )
                                 }
-                            ))
-                        }
+                            },
+                            onSecondary = {
+                                appCoroutine.launch {
+                                    dialog.openErrorReportDialog(
+                                        platformManager = platformManager,
+                                        viewModel = viewModel,
+                                        errorReport = ErrorReport.createForMultisig("Android: I am not receiving my 2FA code"),
+                                        onSubmitErrorReport = { submitErrorReport ->
+                                            viewModel.postEvent(submitErrorReport)
+                                        }
+                                    )
+                                }
+                            }
+                        ))
                     }
                 }
 
@@ -252,7 +256,23 @@ fun HandleSideEffect(
         }
     }
 
-    LaunchedEffect(Unit) {
+    // Device Passphrase
+    PassphraseBottomSheet.getResult {
+        viewModel.postEvent(Events.DeviceRequestResponse(it))
+    }
+
+    // Device PinMatrix
+    PinMatrixBottomSheet.getResult {
+        viewModel.postEvent(Events.DeviceRequestResponse(it))
+    }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val state by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
+
+    // Handle sideEffect only on resumed state
+    LaunchedEffect(state) {
+        if(state != Lifecycle.State.RESUMED) return@LaunchedEffect
+
         viewModel.sideEffect.onEach {
             handler.invoke(this, it)
 
@@ -267,6 +287,10 @@ fun HandleSideEffect(
                             openSystemBrowser = it.openSystemBrowser
                         )
                     }
+                }
+
+                is SideEffects.RequestCipher -> {
+                    biometricsState?.getBiometricsCipher(viewModel)
                 }
 
                 is SideEffects.OpenFeeBottomSheet -> {
@@ -447,6 +471,10 @@ fun HandleSideEffect(
                     }
                 }
 
+                is SideEffects.CloseDrawer -> {
+                    drawer.close()
+                }
+
                 is SideEffects.NavigateToRoot -> {
                     when (it.popTo) {
                         PopTo.Receive -> navigator?.popUntil { it is ReceiveScreen }
@@ -498,10 +526,6 @@ fun HandleSideEffect(
                     platformManager.enableBluetooth()
                 }
 
-                is SideEffects.AskForBluetoothPermissions -> {
-                    platformManager.enableLocationService()
-                }
-
                 is SideEffects.EnableLocationService -> {
                     dialog.openDialog(
                         OpenDialogData(
@@ -509,11 +533,8 @@ fun HandleSideEffect(
                             message = StringHolder(stringResource = Res.string.id_location_services_are_disabled),
                             primaryText = getString(Res.string.id_enable),
                             secondaryText = getString(Res.string.id_cancel),
-                            onDismiss = {
-                                viewModel.postEvent(Events.NavigateBack)
-                            },
                             onPrimary = {
-                                platformManager.openBluetoothSettings()
+                                platformManager.enableLocationService()
                             }
                         )
                     )
@@ -521,6 +542,14 @@ fun HandleSideEffect(
 
                 is SideEffects.SelectEnvironment -> {
                     bottomSheetNavigator?.show(EnvironmentBottomSheet)
+                }
+
+                is SideEffects.DeviceRequestPassphrase -> {
+                    bottomSheetNavigator?.show(PassphraseBottomSheet)
+                }
+
+                is SideEffects.DeviceRequestPin -> {
+                    bottomSheetNavigator?.show(PinMatrixBottomSheet)
                 }
 
                 is SideEffects.DeviceInteraction -> {
@@ -865,9 +894,7 @@ fun HandleSideEffect(
                                 Call2ActionBottomSheet(
                                     greenWallet = viewModel.greenWallet,
                                     network = destination.network
-                                ).also {
-                                    it.parentViewModel = viewModel
-                                }
+                                )
                             )
                         }
 
@@ -875,9 +902,7 @@ fun HandleSideEffect(
                             bottomSheetNavigator?.show(
                                 LightningNodeBottomSheet(
                                     viewModel.greenWallet,
-                                ).also {
-                                    it.parentViewModel = viewModel
-                                }
+                                )
                             )
                         }
 
@@ -906,9 +931,7 @@ fun HandleSideEffect(
                                 TwoFactorResetBottomSheet(
                                     greenWallet = viewModel.greenWallet,
                                     network = destination.network
-                                ).also {
-                                    it.parentViewModel = viewModel
-                                }
+                                )
                             )
                         }
 
@@ -966,10 +989,29 @@ fun HandleSideEffect(
                         is NavigateDestinations.JadeQR -> {
                             navigator?.push(
                                 JadeQRScreen(
-                                    psbt = destination.psbt,
-                                    isLightningMnemonicExport = destination.isLightningMnemonicExport
+                                    greenWallet = viewModel.greenWalletOrNull,
+                                    operation = destination.operation,
+                                    deviceBrand = destination.deviceBrand ?: viewModel.sessionOrNull?.deviceBrand ?: DeviceBrand.Generic
                                 )
                             )
+                        }
+
+                        is NavigateDestinations.AskJadeUnlock -> {
+                            bottomSheetNavigator?.push(AskJadeUnlockBottomSheet(isOnboarding = destination.isOnboarding))
+                        }
+
+                        is NavigateDestinations.JadePinUnlock -> {
+                            navigator?.push(JadePinUnlockScreen)
+                        }
+
+                        is NavigateDestinations.ImportPubKey -> {
+                            ImportPubKeyScreen(deviceBrand = destination.deviceBrand).also { screen ->
+                                if (navigator?.lastItemOrNull is JadePinUnlockScreen) {
+                                    navigator.replace(screen)
+                                } else {
+                                    navigator?.push(screen)
+                                }
+                            }
                         }
 
                         is NavigateDestinations.WatchOnlyPolicy -> {
@@ -1132,9 +1174,6 @@ fun HandleSideEffect(
                         is NavigateDestinations.ChooseAssetAccounts -> {
                             bottomSheetNavigator?.push(
                                 ChooseAssetAccountBottomSheet(greenWallet = viewModel.greenWallet)
-                                    .also {
-                                        it.parentViewModel = viewModel
-                                    }
                             )
                         }
 
@@ -1143,6 +1182,15 @@ fun HandleSideEffect(
                                 ReceiveScreen(
                                     greenWallet = viewModel.greenWallet,
                                     accountAsset = destination.accountAsset
+                                )
+                            )
+                        }
+
+                        is NavigateDestinations.Promo -> {
+                            navigator?.push(
+                                PromoScreen(
+                                    greenWallet = viewModel.greenWallet,
+                                    promo = destination.promo
                                 )
                             )
                         }
@@ -1196,7 +1244,9 @@ fun DeviceHandleSideEffect(
     var askForBluetoothPermissions by remember { mutableStateOf(false) }
 
     if (askForBluetoothPermissions) {
-        askForBluetoothPermissions(viewModel)
+        askForBluetoothPermissions(viewModel) {
+            askForBluetoothPermissions = false
+        }
     }
 
     HandleSideEffect(viewModel = viewModel, handler = {

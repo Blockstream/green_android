@@ -1,0 +1,25 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.greenaddress.greenbits_android_wallet",
+    "sha256_cert_fingerprints":
+    [
+      "32:F9:CC:00:B1:3F:BE:AC:E5:1E:2F:B5:1D:F4:82:04:4E:42:AD:34:A9:BD:91:2F:17:9F:ED:B1:6A:42:97:0E",
+      "69:27:29:EE:84:A1:36:8F:5F:A9:43:70:63:6D:12:9D:90:6B:BC:C1:57:30:EE:96:AC:BE:96:AF:9E:BA:40:4D"
+    ]
+  }
+},
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.greenaddress.greenbits_android_wallet.dev",
+      "sha256_cert_fingerprints":
+      [
+        "DF:0F:79:B2:19:20:0A:28:1F:62:75:4F:24:CC:F6:8C:97:4C:24:13:AB:EA:A4:2D:4C:D0:77:3A:C9:FC:26:7D",
+        "69:27:29:EE:84:A1:36:8F:5F:A9:43:70:63:6D:12:9D:90:6B:BC:C1:57:30:EE:96:AC:BE:96:AF:9E:BA:40:4D"
+      ]
+    }
+  }
+]

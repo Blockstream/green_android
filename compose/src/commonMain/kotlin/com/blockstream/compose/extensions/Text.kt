@@ -1,5 +1,6 @@
 package com.blockstream.compose.extensions
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -23,13 +24,14 @@ import androidx.compose.ui.unit.sp
 import com.blockstream.common.utils.lastNthIndexOf
 import com.blockstream.common.utils.nthIndexOf
 import com.blockstream.compose.theme.md_theme_primary
-import com.blockstream.compose.theme.whiteHigh
+import com.blockstream.compose.theme.textHigh
 import kotlin.math.sqrt
 
+@Composable
 fun colorText(
     text: String,
     coloredTexts: List<String>,
-    baseColor: Color = whiteHigh,
+    baseColor: Color = textHigh,
     color: Color = md_theme_primary
 ): AnnotatedString {
     return buildAnnotatedString {
@@ -53,9 +55,10 @@ fun colorText(
     }
 }
 
+@Composable
 fun colorTextEdges(text: String, numberOfSections: Int = 1, color: Color = md_theme_primary): AnnotatedString {
     return buildAnnotatedString {
-        withStyle(style = SpanStyle(color = whiteHigh)){
+        withStyle(style = SpanStyle(color = textHigh)){
             append(text)
         }
 

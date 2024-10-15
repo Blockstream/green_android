@@ -54,6 +54,19 @@ class SettingsManager constructor(
         settings[keyForCustomPinServer(url)] = true
     }
 
+    private fun keyForPromo(id: String): String {
+        return "${KEY_PROMO_DISMISSED}_$id"
+    }
+    fun isPromoDismissed(id: String) = settings[keyForPromo(id), false]
+    fun dismissPromo(id: String){
+        settings[keyForPromo(id)] = true
+    }
+    fun resetPromoDismissals(){
+        settings.keys.filter { it.startsWith(KEY_PROMO_DISMISSED) }.forEach {
+            settings.remove(it)
+        }
+    }
+
     fun isAskedAboutAnalyticsConsent() = settings[KEY_ASKED_ANALYTICS_CONSENT, 0] == 1
 
     fun setAskedAboutAnalyticsConsent() = settings.set(KEY_ASKED_ANALYTICS_CONSENT, 1)
@@ -118,6 +131,7 @@ class SettingsManager constructor(
         const val KEY_COUNTLY_DEVICE_ID = "countly_device_id"
         const val KEY_COUNTLY_OFFSET = "countly_offset"
         const val KEY_ALLOW_CUSTOM_PIN_SERVER = "allow_custom_pin_server"
+        const val KEY_PROMO_DISMISSED = "promo_dismissed"
         const val KEY_WALLET_COUNTER = "wallet_counter"
     }
 }

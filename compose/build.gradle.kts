@@ -83,12 +83,17 @@ kotlin {
             implementation(libs.qrose)
             implementation(libs.mpfilepicker)
             implementation(libs.middle.ellipsis.text3)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.svg)
+            implementation(libs.coil.test)
+            implementation(libs.coil.network.ktor3)
             /** ----------------------------------------------------------------------------------------- */
         }
 
         val desktopMain by getting
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
+            implementation(libs.ktor.client.java)
         }
 
         androidMain.dependencies {
@@ -112,6 +117,7 @@ kotlin {
             /**  --- Android / Google ------------------------------------------------------------------- */
             api(libs.androidx.browser)
             implementation (libs.accompanist.permissions)
+            implementation(libs.ktor.client.android)
             /** ----------------------------------------------------------------------------------------- */
 
             /**  --- QR Scanner ------------------------------------------------------------------------- */
@@ -122,11 +128,13 @@ kotlin {
             api(libs.rive.android)
             /** ----------------------------------------------------------------------------------------- */
 
+
             implementation(libs.peekaboo.image.picker)
         }
 
         iosMain.dependencies {
             implementation(libs.peekaboo.image.picker)
+            implementation(libs.ktor.client.darwin)
         }
     }
 }

@@ -23,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
@@ -36,7 +35,6 @@ import blockstream_green.common.generated.resources.qr_code
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.md_theme_surfaceTint
-import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.utils.ifTrue
 import io.github.alexzhirkevich.qrose.options.QrErrorCorrectionLevel
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
@@ -113,14 +111,14 @@ fun GreenQR(
                 ),
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .widthIn(100.dp, 300.dp)
+                    .widthIn(100.dp, 400.dp)
                     .aspectRatio(1f)
                     .combinedClickable(
                         onClick = {
                             if (isVisibleAndNotBlank) {
                                 if (onQrClick != null) {
                                     onQrClick()
-                                } else {
+                                } else if(!isJadeQR) {
                                     isFullscreen = true
                                 }
                             } else {
@@ -128,7 +126,7 @@ fun GreenQR(
                             }
                         },
                         onLongClick = {
-                            if (isVisibleAndNotBlank) {
+                            if (isVisibleAndNotBlank && !isJadeQR) {
                                 isFullscreen = true
                             } else {
                                 visibilityClick()
@@ -149,7 +147,7 @@ fun GreenQR(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight()
-                                .padding(qrPadding)
+                                .padding(if(isJadeQR) 0.dp else qrPadding)
                         )
                     } else if (isVisible) {
                         Image(
@@ -171,7 +169,7 @@ fun GreenQR(
             }
         }
 
-        if(isVisibleAndNotBlank) {
+        if(isVisibleAndNotBlank && !isJadeQR) {
             ZoomButton {
                 isFullscreen = true
             }

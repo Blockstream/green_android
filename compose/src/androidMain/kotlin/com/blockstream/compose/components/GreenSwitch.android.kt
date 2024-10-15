@@ -6,22 +6,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.blockstream.compose.R
-import com.blockstream.compose.theme.GreenTheme
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.globe
+import com.blockstream.compose.GreenPreview
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 @Preview
 fun GreenSwitchPreview() {
-    GreenTheme {
+    GreenPreview {
         GreenColumn(padding = 0, space = 0) {
             var checked by remember { mutableStateOf(false) }
             GreenSwitch(
                 title = "Title $checked is very large title with all the info athanks sdfa asdf",
                 caption = "Caption Caption afad asd asdf asdf asdf asd ads fads asf asd fasd asdf as adf",
                 checked = checked,
-                painter = painterResource(id = R.drawable.globe),
+                painter = painterResource(Res.drawable.globe),
                 onCheckedChange = {
                     checked = it
                 }
@@ -34,7 +35,7 @@ fun GreenSwitchPreview() {
                 title = "Enhanced Privacy $checked2",
                 caption = "Use secure display and Screen Lock",
                 checked = checked2,
-                painter = painterResource(id = R.drawable.globe),
+                painter = painterResource(Res.drawable.globe),
                 onCheckedChange = {
                     checked2 = it
                 }

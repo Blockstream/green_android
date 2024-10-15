@@ -13,13 +13,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.blockstream.compose.theme.GreenThemePreview
+import com.blockstream.compose.theme.GreenChromePreview
 
 
 @Composable
 @Preview
 fun GreenCardPreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         GreenColumn(
             Modifier
                 .padding(24.dp)

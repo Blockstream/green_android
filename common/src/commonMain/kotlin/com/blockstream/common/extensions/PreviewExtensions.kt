@@ -61,7 +61,7 @@ fun previewWallet(
 }
 
 fun previewNetwork(isMainnet: Boolean = true) =
-    Network("mainnet", "Bitcoin", "mainet", isMainnet, false, false)
+    Network("mainnet", "Bitcoin", isMainnet, false, false)
 
 fun previewWalletListView(
     isHardware: Boolean = false,

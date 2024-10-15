@@ -13,14 +13,14 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 
 interface TwoFactorResolver {
-    suspend fun withSelectMethod(availableMethods: List<String>): CompletableDeferred<String>
+    suspend fun selectTwoFactorMethod(availableMethods: List<String>): CompletableDeferred<String>
 
-    suspend fun getCode(network: Network, enable2faCallMethod: Boolean, authHandlerStatus: AuthHandlerStatus): CompletableDeferred<String>
+    suspend fun getTwoFactorCode(network: Network, enable2faCallMethod: Boolean, authHandlerStatus: AuthHandlerStatus): CompletableDeferred<String>
 }
 
-fun TwoFactorResolver.withSelectMethod(method: String): TwoFactorResolver {
+fun TwoFactorResolver.selectTwoFactorMethod(method: String): TwoFactorResolver {
     return object : TwoFactorResolver by this {
-        override suspend fun withSelectMethod(availableMethods: List<String>): CompletableDeferred<String> =
+        override suspend fun selectTwoFactorMethod(availableMethods: List<String>): CompletableDeferred<String> =
             CompletableDeferred(method)
     }
 }
@@ -32,6 +32,7 @@ interface HardwareWalletResolver {
 
 interface BcurResolver {
     fun requestData(): CompletableDeferred<String>
+    fun progress(progress: Int): Unit
 }
 
 class AuthHandler constructor(
@@ -57,7 +58,7 @@ class AuthHandler constructor(
         return hardwareWalletResolver ?: gdkHwWallet?.let { gdkHwWallet -> DeviceResolver(gdkHwWallet) }
     }
 
-    fun resolve(
+    suspend fun resolve(
         twoFactorResolver: TwoFactorResolver? = null,
         hardwareWalletResolver: HardwareWalletResolver? = null,
         bcurResolver: BcurResolver? = null
@@ -66,6 +67,8 @@ class AuthHandler constructor(
             while (!isCompleted) {
 
                 val authHandlerStatus: AuthHandlerStatus = gdk.getAuthHandlerStatus(gaAuthHandler)
+
+                authHandlerStatus.progress?.also { bcurResolver?.progress(it) }
 
                 when (authHandlerStatus.status) {
                     CALL -> {
@@ -78,7 +81,7 @@ class AuthHandler constructor(
                                 requestCode(authHandlerStatus.methods.first())
                             }else{
                                 try {
-                                    requestCode(runBlocking { it.withSelectMethod(authHandlerStatus.methods).await() })
+                                    requestCode(it.selectTwoFactorMethod(authHandlerStatus.methods).await())
                                 }catch (e: Exception){
                                     throw Exception("id_action_canceled")
                                 }
@@ -92,14 +95,12 @@ class AuthHandler constructor(
                     RESOLVE_CODE -> {
                         if (authHandlerStatus.requiredData == null) {
                             bcurResolver?.also {
-                                resolveCode(runBlocking {
-                                    it.requestData().await()
-                                })
+                                resolveCode(it.requestData().await())
                             } ?:
                             twoFactorResolver?.also {
                                 try {
                                     resolveCode(runBlocking {
-                                        it.getCode(
+                                        it.getTwoFactorCode(
                                             network = network,
                                             enable2faCallMethod = session.getTwoFactorConfig(
                                                 network = network
@@ -157,7 +158,7 @@ class AuthHandler constructor(
         return this
     }
 
-    inline fun <reified T> result(
+    suspend inline fun <reified T> result(
         twoFactorResolver: TwoFactorResolver? = null,
         hardwareWalletResolver: HardwareWalletResolver? = null,
         bcurResolver: BcurResolver? = null

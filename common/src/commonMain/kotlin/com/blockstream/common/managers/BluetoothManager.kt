@@ -8,4 +8,6 @@ enum class BluetoothState {
 
 expect class BluetoothManager {
     val bluetoothState: StateFlow<BluetoothState>
+
+    fun permissionsGranted()
 }

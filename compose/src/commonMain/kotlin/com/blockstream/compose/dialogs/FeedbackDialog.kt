@@ -35,7 +35,7 @@ import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.extensions.onValueChange
-import com.blockstream.compose.theme.GreenThemePreview
+import com.blockstream.compose.theme.GreenChromePreview
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.titleSmall
 import org.jetbrains.compose.resources.stringResource
@@ -130,7 +130,7 @@ fun FeedbackDialog(
 @Composable
 @Preview
 fun FeedbackDialogPreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         FeedbackDialog(viewModel = AboutViewModelPreview.preview()) {
 
         }

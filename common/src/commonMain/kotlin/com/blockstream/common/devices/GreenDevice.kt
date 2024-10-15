@@ -1,5 +1,6 @@
 package com.blockstream.common.devices
 
+import com.blockstream.common.extensions.tryCatchNull
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.Network
@@ -179,7 +180,10 @@ abstract class GreenDeviceImpl constructor(
     override fun disconnect() {
         scope.cancel()
 
-        gdkHardwareWallet?.disconnect()
+        tryCatchNull {
+            gdkHardwareWallet?.disconnect()
+        }
+
         gdkHardwareWallet = null
 
         if (isBle) {

@@ -6,13 +6,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
-import com.blockstream.compose.theme.GreenThemePreview
+import com.blockstream.compose.theme.GreenChromePreview
 
 
 @Preview
 @Composable
 fun GreenSearchFieldPreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         GreenColumn {
             var text by remember {
                 mutableStateOf("")

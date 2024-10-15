@@ -33,8 +33,6 @@ import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.data.data
 import com.blockstream.common.data.isEmpty
 import com.blockstream.common.database.LoginCredentials
-import com.blockstream.common.devices.ConnectionType
-import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
@@ -53,12 +51,9 @@ import com.blockstream.common.extensions.previewLoginCredentials
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.extensions.richWatchOnly
 import com.blockstream.common.extensions.watchOnlyCredentials
-import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.GdkSession
-import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.TorEvent
 import com.blockstream.common.gdk.device.DeviceResolver
-import com.blockstream.common.gdk.device.HardwareConnectInteraction
 import com.blockstream.common.gdk.params.LoginCredentialsParams
 import com.blockstream.common.lightning.AppGreenlightCredentials
 import com.blockstream.common.managers.DeviceManager
@@ -547,7 +542,7 @@ class LoginViewModel constructor(
                     }
 
                 } else {
-                    val watchOnlyCredentials = greenKeystore.decryptData(encryptedData).let {
+                    val watchOnlyCredentials = (greenKeystore.decryptData(encryptedData).let {
                         if(loginCredentials.credential_type == CredentialType.KEYSTORE_PASSWORD){
                             WatchOnlyCredentials(
                                 password = it.decodeToString()
@@ -555,11 +550,10 @@ class LoginViewModel constructor(
                         }else{
                             WatchOnlyCredentials.fromByteArray(it)
                         }
-                    }
+                    }).copy(username = greenWallet.watchOnlyUsername ?: "")
 
                     session.loginWatchOnly(
                         wallet = greenWallet,
-                        username = greenWallet.watchOnlyUsername ?: "",
                         watchOnlyCredentials = watchOnlyCredentials
                     )
                 }
@@ -569,7 +563,7 @@ class LoginViewModel constructor(
 
     private fun loginWatchOnlyWithWatchOnlyCredentials(loginCredentials: LoginCredentials, watchOnlyCredentials: WatchOnlyCredentials){
         login(loginCredentials, isWatchOnly = true, updateWatchOnlyPassword = false) {
-            session.loginWatchOnly(wallet = greenWallet, username = greenWallet.watchOnlyUsername ?: "", watchOnlyCredentials)
+            session.loginWatchOnly(wallet = greenWallet, watchOnlyCredentials)
         }
     }
 
@@ -588,7 +582,10 @@ class LoginViewModel constructor(
             if(loginCredentials.credential_type == CredentialType.BIOMETRICS_PINDATA){
                 loginWithPin(decryptedData.decodeToString(), loginCredentials)
             }else{
-                loginWatchOnlyWithWatchOnlyCredentials(loginCredentials, WatchOnlyCredentials.fromByteArray(decryptedData))
+                loginWatchOnlyWithWatchOnlyCredentials(loginCredentials,
+                    WatchOnlyCredentials.fromByteArray(decryptedData)
+                        .copy(username = greenWallet.watchOnlyUsername ?: "")
+                )
             }
         }
     }
@@ -615,8 +612,7 @@ class LoginViewModel constructor(
         login(null, isWatchOnly = true, updateWatchOnlyPassword = !greenWallet.isWatchOnlySingleSig) {
             session.loginWatchOnly(
                 wallet = greenWallet,
-                username = watchOnlyUsername.value,
-                watchOnlyCredentials = WatchOnlyCredentials(password = watchOnlyPassword.value)
+                watchOnlyCredentials = WatchOnlyCredentials(username = watchOnlyUsername.value, password = watchOnlyPassword.value)
             )
         }
     }

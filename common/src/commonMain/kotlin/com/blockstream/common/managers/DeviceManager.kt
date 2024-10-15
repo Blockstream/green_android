@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -53,7 +54,7 @@ open class DeviceManager constructor(
     private val deviceDiscovery = MutableStateFlow(false)
 
     protected val usbDevices = MutableStateFlow<List<GreenDevice>>(listOf())
-    protected val bleDevices = MutableStateFlow<List<GreenDevice>>(listOf())
+    private val bleDevices = MutableStateFlow<List<GreenDevice>>(listOf())
 
     private val _status = MutableStateFlow<ScanStatus>(ScanStatus.Stopped)
     val status = _status.asStateFlow()
@@ -63,7 +64,11 @@ open class DeviceManager constructor(
     private var scanScope: CoroutineScope = scope.supervisorJob()
 
     private val disconnectEvent = bleDevices.flatMapLatest { devices ->
-        combine(devices.map { it.deviceState }) { }
+        if (devices.isEmpty()) {
+            flowOf(Unit)
+        } else {
+            combine(devices.map { it.deviceState }) { }
+        }
     }
 
     val devices = combine(usbDevices, bleDevices, disconnectEvent) { usb, ble, _ ->
@@ -76,7 +81,7 @@ open class DeviceManager constructor(
         bluetoothManager.bluetoothState.onEach {
             logger.d { "Bluetooth state: $it , status = ${status.value}" }
 
-            if (it == BluetoothState.ON && status.value == ScanStatus.Started) {
+            if (it == BluetoothState.ON && deviceDiscovery.value) {
                 startBluetoothScanning()
             } else if (it != BluetoothState.ON && status.value == ScanStatus.Started) {
                 logger.d { "Pausing BLE scanning state: $it" }

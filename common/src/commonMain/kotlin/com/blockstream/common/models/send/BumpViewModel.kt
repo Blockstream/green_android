@@ -14,7 +14,9 @@ import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewWallet
+import com.blockstream.common.extensions.tryCatch
 import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.PendingTransaction
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.utils.Loggable
@@ -22,6 +24,7 @@ import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.toAmountLook
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -102,6 +105,9 @@ class BumpViewModel(
 
     private val transaction = Json.parseToJsonElement(transactionAsString)
 
+    private val _isWatchOnly = MutableStateFlow(false)
+    override val isWatchOnly = _isWatchOnly
+
     init {
 
         viewModelScope.launch {
@@ -117,8 +123,10 @@ class BumpViewModel(
         session.ifConnected {
             _network.value = account.network
 
+            _isWatchOnly.value = session.isWatchOnly
+
             combine(_feePriorityPrimitive, _feeEstimation.filterNotNull()) { _, _ ->
-                createTransactionParams.value = createTransactionParams()
+                createTransactionParams.value = tryCatch(context = Dispatchers.Default) { createTransactionParams() }
             }.launchIn(this)
         }
 
@@ -135,6 +143,16 @@ class BumpViewModel(
                 segmentation = TransactionSegmentation(
                     transactionType = TransactionType.BUMP
                 ),
+                broadcast = event.broadcastTransaction
+            )
+        } else if (event is LocalEvents.BroadcastTransaction){
+            signAndSendTransaction(
+                params = createTransactionParams.value,
+                originalTransaction = createTransaction.value,
+                segmentation = TransactionSegmentation(
+                    transactionType = TransactionType.BUMP
+                ),
+                psbt = event.psbt,
                 broadcast = event.broadcastTransaction
             )
         }
@@ -231,6 +249,17 @@ class BumpViewModel(
         }, postAction = {
 
         }, onSuccess = {
+
+            if(params != null && it != null) {
+                session.pendingTransaction = PendingTransaction(
+                    params = params,
+                    transaction = it,
+                    segmentation = TransactionSegmentation(
+                        transactionType = TransactionType.BUMP,
+                    )
+                )
+            }
+
             createTransaction.value = it
             _isValid.value = it != null
             _error.value = null
@@ -256,6 +285,7 @@ class BumpViewModelPreview(greenWallet: GreenWallet) :
     override val oldFee: StateFlow<String?> = MutableStateFlow("1,000 L-BTC")
     override val oldFeeFiat: StateFlow<String?> = MutableStateFlow("~ 5.00 USD")
     override val oldFeeRate: StateFlow<String?> = MutableStateFlow("1 sats/vbyte")
+    override val isWatchOnly: StateFlow<Boolean> = MutableStateFlow(false)
 
     init {
         _feePriority.value = FeePriority.Low(

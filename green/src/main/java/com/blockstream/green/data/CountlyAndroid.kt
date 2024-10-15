@@ -1,5 +1,6 @@
 package com.blockstream.green.data
 
+import android.app.Activity
 import android.content.res.Configuration
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.CountlyBase
@@ -8,7 +9,6 @@ import com.blockstream.common.data.CountlyWidget
 import com.blockstream.common.database.Database
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.managers.SettingsManager
-import com.blockstream.green.ui.AppActivity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import ly.count.android.sdk.ModuleFeedback
@@ -27,7 +27,7 @@ abstract class CountlyAndroid constructor(
 
     abstract fun showFeedbackWidget(supportFragmentManager: FragmentManager)
 
-    abstract fun onStart(activity: AppActivity)
+    abstract fun onStart(activity: Activity)
 
     abstract fun onStop()
 

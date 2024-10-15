@@ -7,6 +7,7 @@ import com.blockstream.common.data.Banner
 import com.blockstream.common.data.CountlyAsset
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.Promo
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.database.Database
 import com.blockstream.common.database.LoginCredentials
@@ -64,6 +65,7 @@ abstract class CountlyBase(
     private var _torProxy: String? = null
     private var _appSettingsAsString: String? = null
     private var _cachedBanners: List<Banner>? = null
+    private var _cachedPromos: List<Promo>? = null
     private val _remoteConfigUpdateEvent =
         MutableSharedFlow<Unit>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
@@ -149,6 +151,7 @@ abstract class CountlyBase(
         logger.d { "remoteConfigUpdated" }
         _remoteConfigUpdate = Clock.System.now()
         _cachedBanners = null
+        _cachedPromos = null
         _remoteConfigUpdateEvent.tryEmit(Unit)
     }
 
@@ -254,7 +257,7 @@ abstract class CountlyBase(
     }
 
     private fun deviceSegmentation(
-        device: DeviceInterface,
+        device: GreenDevice,
         segmentation: HashMap<String, Any> = hashMapOf()
     ): HashMap<String, Any> {
         device.deviceBrand.brand.let { segmentation[PARAM_BRAND] = it }
@@ -266,6 +269,14 @@ abstract class CountlyBase(
 
         return segmentation
     }
+
+    private fun promoSegmentation(
+        session: GdkSession?,
+        promo: Promo
+    ): HashMap<String, Any> = (session?.let { sessionSegmentation(it) } ?: hashMapOf())
+            .also { segmentation ->
+                segmentation[PARAM_PROMO_ID] = promo.id
+            }
 
 
     private fun transactionSegmentation(
@@ -706,6 +717,22 @@ abstract class CountlyBase(
         return _cachedBanners
     }
 
+    fun getRemoteConfigValueForPromos(): List<Promo>? {
+        if (_cachedPromos == null) {
+            _cachedPromos = try {
+                getRemoteConfigValueAsString("promos")?.let {
+                    logger.d { "getRemoteConfigValueForPromos $it" }
+                    JsonConverter.JsonDeserializer.decodeFromString<List<Promo>>(it)
+                } ?: listOf()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
+
+        return _cachedPromos
+    }
+
     fun getRemoteConfigForOnOffRamps() = getRemoteConfigValueAsBoolean("feature_on_off_ramps")
 
     fun getRemoteConfigValueForAssets(key: String): List<CountlyAsset>? {
@@ -719,15 +746,31 @@ abstract class CountlyBase(
         }
     }
 
-    fun hardwareConnect(device: DeviceInterface) {
+    fun promoDismiss(session: GdkSession?, promo: Promo) {
+        eventRecord(Events.PROMO_DISMISS.toString(), promoSegmentation(session, promo))
+    }
+
+    fun promoAction(session: GdkSession?, promo: Promo) {
+        eventRecord(Events.PROMO_ACTION.toString(), promoSegmentation(session, promo))
+    }
+
+    fun promoOpen(session: GdkSession?, promo: Promo) {
+        eventRecord(Events.PROMO_OPEN.toString(), promoSegmentation(session, promo))
+    }
+
+    fun promoView(session: GdkSession?, promo: Promo) {
+        eventRecord(Events.PROMO_IMPRESSION.toString(), promoSegmentation(session, promo))
+    }
+
+    fun hardwareConnect(device: GreenDevice) {
         eventRecord(Events.HWW_CONNECT.toString(), deviceSegmentation(device))
     }
 
-    fun hardwareConnected(device: DeviceInterface) {
+    fun hardwareConnected(device: GreenDevice) {
         eventRecord(Events.HWW_CONNECTED.toString(), deviceSegmentation(device))
     }
 
-    fun jadeOtaStart(device: DeviceInterface, config: String, isDelta: Boolean, version: String) {
+    fun jadeOtaStart(device: GreenDevice, config: String, isDelta: Boolean, version: String) {
         eventRecord(
             Events.OTA_START.toString(),
             deviceSegmentation(device, baseSegmentation()).also { segmentation ->
@@ -740,7 +783,7 @@ abstract class CountlyBase(
         eventStart(Events.OTA_COMPLETE.toString())
     }
 
-    fun jadeOtaRefuse(device: DeviceInterface, config: String, isDelta: Boolean, version: String) {
+    fun jadeOtaRefuse(device: GreenDevice, config: String, isDelta: Boolean, version: String) {
         eventRecord(
             Events.OTA_REFUSE.toString(),
             deviceSegmentation(device, baseSegmentation()).also { segmentation ->
@@ -753,7 +796,7 @@ abstract class CountlyBase(
     }
 
     fun jadeOtaFailed(
-        device: DeviceInterface,
+        device: GreenDevice,
         error: String,
         config: String,
         isDelta: Boolean,
@@ -772,7 +815,7 @@ abstract class CountlyBase(
     }
 
     fun jadeOtaComplete(
-        device: DeviceInterface,
+        device: GreenDevice,
         config: String,
         isDelta: Boolean,
         version: String
@@ -801,12 +844,16 @@ abstract class CountlyBase(
         HWW_CONNECT("hww_connect"),
         HWW_CONNECTED("hww_connected"),
         JADE_INITIALIZE("jade_initialize"),
-        JADE_OTA("jade_ota"),
 
         OTA_START("ota_start"),
         OTA_REFUSE("ota_refuse"),
         OTA_FAILED("ota_failed"),
         OTA_COMPLETE("ota_complete"),
+
+        PROMO_IMPRESSION("promo_impression"),
+        PROMO_DISMISS("promo_dismiss"),
+        PROMO_OPEN("promo_open"),
+        PROMO_ACTION("promo_action"),
 
         BUY_INITIATE("buy_initiate"),
         BUY_REDIRECT("buy_redirect"),
@@ -906,6 +953,8 @@ abstract class CountlyBase(
         const val PARAM_TRANSACTION_TYPE = "transaction_type"
         const val PARAM_ADDRESS_INPUT = "address_input"
         const val PARAM_WITH_MEMO = "with_memo"
+
+        const val PARAM_PROMO_ID = "promo_id"
 
         const val PARAM_WALLET_FUNDED = "wallet_funded"
         const val PARAM_ACCOUNTS = "accounts"

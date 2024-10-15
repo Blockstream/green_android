@@ -29,7 +29,7 @@ class SideEffects : SideEffect {
     data class ErrorSnackbar(val error: Throwable, val errorReport: ErrorReport? = null) :
         SideEffect
     data class Dialog(val title: StringHolder? = null, val message: StringHolder, val icon: DrawableResource? = null) : SideEffect
-    data class ErrorDialog(val error: Throwable, val errorReport: ErrorReport? = null) : SideEffect
+    data class ErrorDialog constructor(val error: Throwable, val errorReport: ErrorReport? = null) : SideEffect
     data class OpenDenomination(val denominatedValue: DenominatedValue): SideEffect
     data class OpenFeeBottomSheet(
         val greenWallet: GreenWallet,
@@ -48,35 +48,37 @@ class SideEffects : SideEffect {
         val errorReport: ErrorReport? = null,
     ) : SideEffect
     data class NavigateToRoot(val popTo: PopTo? = null) : SideEffect
+    object CloseDrawer: SideEffect
     data class TransactionSent(val data: ProcessedTransactionDetails) : SideEffect
-    data class Logout constructor(val reason: LogoutReason) : SideEffect
-    object WalletDelete : SideEffect
+    data class Logout(val reason: LogoutReason) : SideEffect
+    data object WalletDelete : SideEffect
     data class CopyToClipboard(val value: String, val message: String? = null, val label: String? = null, val isSensitive: Boolean = false) : SideEffect
     data class AccountArchived(val account: Account) : SideEffect
     data class AccountUnarchived(val account: Account) : SideEffect
     data class AccountCreated(val accountAsset: AccountAsset): SideEffect
     data class UrlWarning(val urls: List<String>): SideEffect
-    object TorWarning: SideEffect
-    object AppReview: SideEffect
-    object DeviceRequestPassphrase: SideEffect
-    object DeviceRequestPin: SideEffect
-    class DeviceInteraction(
+    data object TorWarning: SideEffect
+    data object AppReview: SideEffect
+    data object DeviceRequestPassphrase: SideEffect
+    data object DeviceRequestPin: SideEffect
+    data class DeviceInteraction(
         val device: Device,
         val message: String?,
         val isMasterBlindingKeyRequest: Boolean,
         val completable: CompletableDeferred<Boolean>?
     ) : SideEffect
-    object Dismiss : SideEffect
+    data object Dismiss : SideEffect
     data class Share(val text: String? = null) : SideEffect
     data class ShareFile(val path: Path) : SideEffect
     data class TwoFactorResolver(val data: TwoFactorResolverData) : SideEffect
-    object OpenDenominationExchangeRate : SideEffect
-    object LightningShortcut : SideEffect
+    data object OpenDenominationExchangeRate : SideEffect
+    data object LightningShortcut : SideEffect
     data class AskRemoveLightningShortcut(val wallet: GreenWallet) : SideEffect
-    object EnableBluetooth: SideEffect
-    object EnableLocationService: SideEffect
-    object AskForBluetoothPermissions: SideEffect
+    data object EnableBluetooth: SideEffect
+    data object EnableLocationService: SideEffect
+    data object AskForBluetoothPermissions: SideEffect
 
-    object SelectEnvironment: SideEffect
-    object BleRequireRebonding: SideEffect
+    data object SelectEnvironment: SideEffect
+    data object BleRequireRebonding: SideEffect
+    data object RequestCipher : SideEffect
 }

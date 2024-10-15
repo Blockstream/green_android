@@ -10,13 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.share_network
-import com.blockstream.compose.theme.GreenThemePreview
+import com.blockstream.compose.GreenPreview
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
 @Preview
 fun GreenButtonPreview() {
-    GreenThemePreview {
+    GreenPreview {
         GreenColumn(
             space = 6,
             modifier = Modifier.verticalScroll(rememberScrollState())

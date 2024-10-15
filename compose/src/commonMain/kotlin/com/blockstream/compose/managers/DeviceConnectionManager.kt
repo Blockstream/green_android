@@ -20,7 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 
 
 
-open class DeviceConnectionManager constructor(
+open class DeviceConnectionManager(
     val gdk: Gdk,
     val wally: Wally,
     val scope: CoroutineScope

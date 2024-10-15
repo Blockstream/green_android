@@ -103,8 +103,10 @@ class JadeAPI internal constructor(
         return null
     }
 
-    suspend fun disconnect() {
-        logout()
+    suspend fun disconnect(logout: Boolean = true) {
+        if (logout) {
+            logout()
+        }
         jade.disconnect()
     }
 
@@ -496,7 +498,7 @@ class JadeAPI internal constructor(
 
     // Helper to make http requests (with retries)
     // NOTE: Uses GDKSession's httpRequest() call to ensure Tor use as appropriate.
-    private fun makeHttpRequest(
+    private suspend fun makeHttpRequest(
         httpRequest: HttpRequest
     ): JsonElement {
         // If it fails retry up to 3 times

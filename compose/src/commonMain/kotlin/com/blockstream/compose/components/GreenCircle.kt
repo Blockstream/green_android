@@ -7,7 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.blockstream.compose.theme.GreenThemePreview
+import com.blockstream.compose.theme.GreenChromePreview
 import com.blockstream.compose.theme.md_theme_primary
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -25,7 +25,7 @@ fun GreenCircle(size: Int, color: Color = md_theme_primary) {
 @Composable
 @Preview
 fun GreenCirclePreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         GreenColumn(horizontalAlignment = Alignment.CenterHorizontally) {
             GreenCircle(size = 1)
             GreenCircle(size = 8)

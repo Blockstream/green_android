@@ -1,32 +1,16 @@
 package com.blockstream.common.models.onboarding.watchonly
 
-import com.blockstream.common.crypto.PlatformCipher
-import com.blockstream.common.data.CredentialType
-import com.blockstream.common.data.EncryptedData
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.data.WatchOnlyCredentials
-import com.blockstream.common.database.LoginCredentials
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
-import com.blockstream.common.extensions.createLoginCredentials
 import com.blockstream.common.extensions.launchIn
-import com.blockstream.common.extensions.objectId
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.platformFileSystem
 import com.blockstream.common.sideeffects.SideEffect
-import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.generateWalletName
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.stateIn
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -37,7 +21,6 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import okio.Path.Companion.toPath
 import okio.Source
 import okio.buffer
 import okio.use
@@ -100,8 +83,6 @@ class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs) :
     override val canUseBiometrics: MutableStateFlow<Boolean>
     override val withBiometrics: MutableStateFlow<Boolean>
 
-    private var biometricsPlatformCipher: CompletableDeferred<PlatformCipher>? = null
-
     class LocalEvents {
         data class AppendWatchOnlyDescriptor(val value: String) : Event
         class ImportFile(val source: Source) : Event
@@ -113,8 +94,8 @@ class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs) :
 
     init {
         greenKeystore.canUseBiometrics().also {
-            canUseBiometrics = MutableStateFlow(viewModelScope, it)
-            withBiometrics = MutableStateFlow(viewModelScope, it)
+            canUseBiometrics = MutableStateFlow(it)
+            withBiometrics = MutableStateFlow(it)
         }
 
         watchOnlyDescriptor.onEach {
@@ -147,27 +128,7 @@ class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs) :
         super.handleEvent(event)
         when (event) {
             is Events.Continue -> {
-                createNewWatchOnlyWallet(
-                    biometricsCipherProvider = viewModelScope.coroutineScope.async(
-                        start = CoroutineStart.LAZY
-                    ) {
-                        CompletableDeferred<PlatformCipher>().let {
-                            biometricsPlatformCipher = it
-                            postSideEffect(LocalSideEffects.RequestCipher)
-                            it.await()
-                        }
-                    }
-                )
-            }
-
-            is Events.ProvideCipher -> {
-                event.platformCipher?.also {
-                    biometricsPlatformCipher?.complete(it)
-                }
-
-                event.exception?.also {
-                    biometricsPlatformCipher?.completeExceptionally(it)
-                }
+                createNewWatchOnlyWallet()
             }
 
             is LocalEvents.AppendWatchOnlyDescriptor -> {
@@ -185,90 +146,30 @@ class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs) :
             .let { it + (if (it.isNotBlank()) ",\n" else "") + value.joinToString(",\n") }
     }
 
-    private fun createNewWatchOnlyWallet(
-        biometricsCipherProvider: Deferred<PlatformCipher>
-    ) {
-        doAsync({
-            val watchOnlyDescriptors =
-                watchOnlyDescriptor.value.takeIf { it.isNotBlank() }?.split("|", "\n")
-                    ?.map { it.trim().trimIndent().trimMargin() }?.filter { it.isNotBlank() }
-                    ?.toSet()
-                    ?.toList()
+    private fun createNewWatchOnlyWallet() {
+        val watchOnlyDescriptors =
+            watchOnlyDescriptor.value.takeIf { it.isNotBlank() }?.split("|", "\n")
+                ?.map { it.trim().trimIndent().trimMargin() }?.filter { it.isNotBlank() }
+                ?.toSet()
+                ?.toList()
 
-            val watchOnlyCredentials = if (setupArgs.isSinglesig == true) {
-                if (isOutputDescriptors.value || setupArgs.network?.isLiquid == true) {
-                    WatchOnlyCredentials(coreDescriptors = watchOnlyDescriptors)
-                } else {
-                    WatchOnlyCredentials(slip132ExtendedPubkeys = watchOnlyDescriptors)
-                }
+        val watchOnlyCredentials = if (setupArgs.isSinglesig == true) {
+            if (isOutputDescriptors.value || setupArgs.network?.isLiquid == true) {
+                WatchOnlyCredentials(coreDescriptors = watchOnlyDescriptors)
             } else {
-                WatchOnlyCredentials(password = password.value)
+                WatchOnlyCredentials(slip132ExtendedPubkeys = watchOnlyDescriptors)
             }
+        } else {
+            WatchOnlyCredentials(username = username.value, password = password.value)
+        }
 
-            val network = setupArgs.network!!
+        createNewWatchOnlyWallet(
+            network = setupArgs.network!!,
+            persistLoginCredentials = isRememberMe.value,
+            watchOnlyCredentials = watchOnlyCredentials,
+            withBiometrics = withBiometrics.value,
 
-            val loginData = session.loginWatchOnly(network, username.value, watchOnlyCredentials)
-
-            // First get login credentials before creating the wallet
-            val loginCredentials: LoginCredentials? =
-                if (isRememberMe.value || setupArgs.isSinglesig == true) {
-                    val credentialType: CredentialType
-                    val encryptedData: EncryptedData
-                    if (withBiometrics.value) {
-                        encryptedData = greenKeystore.encryptData(
-                            biometricsCipherProvider.await(),
-                            watchOnlyCredentials.toString().encodeToByteArray()
-                        )
-                        credentialType = CredentialType.BIOMETRICS_WATCHONLY_CREDENTIALS
-                    } else {
-                        encryptedData = greenKeystore.encryptData(
-                            watchOnlyCredentials.toString().encodeToByteArray()
-                        )
-                        credentialType = CredentialType.KEYSTORE_WATCHONLY_CREDENTIALS
-                    }
-
-                    createLoginCredentials(
-                        walletId = objectId().toString(), // temp
-                        network = network.id,
-                        credentialType = credentialType,
-                        encryptedData = encryptedData
-                    )
-                } else {
-                    null
-                }
-
-            // Check if wallet already exists
-            database.getWalletWithXpubHashId(
-                xPubHashId = loginData.networkHashId,
-                isTestnet = network.isTestnet,
-                isHardware = false
-            )?.also { wallet ->
-                throw Exception("id_wallet_already_restored_s|${wallet.name}")
-            }
-
-            val wallet = GreenWallet.createWallet(
-                name = generateWalletName(settingsManager),
-                xPubHashId = loginData.networkHashId, // Use networkHashId as the watch-only is linked to a specific network
-                activeNetwork = session.activeAccount.value?.networkId
-                    ?: session.defaultNetwork.id,
-                activeAccount = session.activeAccount.value?.pointer ?: 0,
-                watchOnlyUsername = if (network.isSinglesig) "" else username.value, // empty string helps us hide the username and still identify it as a wo
-                isTestnet = network.isTestnet
-            ).also {
-                database.insertWallet(it)
-            }
-
-            loginCredentials?.also {
-                database.replaceLoginCredential(it.copy(wallet_id = wallet.id))
-            }
-
-            sessionManager.upgradeOnBoardingSessionToWallet(wallet)
-            countly.importWallet(session)
-
-            wallet
-        }, onSuccess = {
-            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))
-        })
+        )
     }
 
     private fun importFile(source: Source) {

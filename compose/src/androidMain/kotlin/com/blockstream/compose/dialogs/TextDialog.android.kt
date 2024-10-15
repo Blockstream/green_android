@@ -6,14 +6,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.data.Denomination
-import com.blockstream.compose.components.GreenAmount
 import com.blockstream.compose.components.GreenAmountField
-import com.blockstream.compose.theme.GreenThemePreview
+import com.blockstream.compose.theme.GreenChromePreview
 
 @Composable
 @Preview
 fun TextDialogPreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         GreenAmountField(value = "", onValueChange = {
 
         }, denomination = Denomination.BTC)

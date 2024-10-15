@@ -33,7 +33,6 @@ import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.LocalActivity
 import com.blockstream.compose.LocalDialog
 import com.blockstream.compose.LocalSnackbar
-import com.blockstream.compose.R
 import com.blockstream.compose.extensions.showErrorSnackbar
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.managers.PlatformManager
@@ -326,7 +325,7 @@ actual class BiometricsState(
         } catch (e: InvalidAlgorithmParameterException) {
             // At least one biometric must be enrolled
             coroutineScope.launch {
-                dialogState.openDialog(OpenDialogData(message = StringHolder.create(R.string.id_please_activate_at_least_one)))
+                dialogState.openDialog(OpenDialogData(message = StringHolder.create(Res.string.id_please_activate_at_least_one)))
             }
         } catch (e: Exception) {
             coroutineScope.launch {

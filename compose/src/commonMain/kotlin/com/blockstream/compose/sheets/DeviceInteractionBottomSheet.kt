@@ -39,6 +39,7 @@ import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.LearnMoreButton
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.theme.bodyLarge
+import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -86,7 +87,7 @@ fun DeviceInteractionBottomSheet(
 ) {
 
     val title = when {
-        isMasterBlindingKeyRequest -> stringResource(Res.string.id_green_needs_the_master_blinding)
+        isMasterBlindingKeyRequest -> null
         transactionConfirmLook != null || verifyAddress != null -> stringResource(Res.string.id_confirm_on_your_device)
         else -> {
             message?.stringOrNull()
@@ -151,20 +152,29 @@ fun DeviceInteractionBottomSheet(
                 }
 
                 if (isMasterBlindingKeyRequest) {
-                    Text(
-                        text = stringResource(Res.string.id_to_show_balances_and),
-                        color = whiteMedium,
-                        textAlign = TextAlign.Center,
-                        style = bodyLarge
-                    )
+
+                    Column {
+
+                        Text(
+                            text = stringResource(Res.string.id_green_needs_the_master_blinding),
+                            color = whiteMedium,
+                            textAlign = TextAlign.Center,
+                            style = titleSmall,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Text(
+                            text = stringResource(Res.string.id_to_show_balances_and),
+                            color = whiteMedium,
+                            textAlign = TextAlign.Center,
+                            style = bodyLarge,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
 
                     LearnMoreButton {
                         viewModel.postEvent(Events.OpenBrowser(Urls.HELP_MASTER_BLINDING_KEY))
                     }
-                }
-
-                if(message != null) {
-
                 }
             }
         }
