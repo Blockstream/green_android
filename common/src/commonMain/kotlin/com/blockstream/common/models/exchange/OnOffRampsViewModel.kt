@@ -15,6 +15,7 @@ import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.launchIn
+import com.blockstream.common.extensions.logException
 import com.blockstream.common.extensions.previewAccountAssetBalance
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.extensions.tryCatch
@@ -164,7 +165,7 @@ class OnOffRampsViewModel(greenWallet: GreenWallet) :
                 if (isLightning) {
                     // Cache SwapInfo
                     if (swapInfo == null) {
-                        swapInfo = tryCatch(context = Dispatchers.Main) {
+                        swapInfo = tryCatch(context = Dispatchers.Default) {
                             session.receiveOnchain()
                         }
                     }

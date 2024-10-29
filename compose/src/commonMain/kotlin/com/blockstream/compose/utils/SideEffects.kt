@@ -323,8 +323,8 @@ fun HandleSideEffect(
                 is SideEffects.ErrorDialog -> {
                     appCoroutine.launch {
                         dialog.openErrorDialog(
-                            it.error,
-                            it.errorReport,
+                            throwable = it.error,
+                            errorReport = it.errorReport,
                             onErrorReport = { errorReport ->
                                 appCoroutine.launch {
                                     dialog.openErrorReportDialog(

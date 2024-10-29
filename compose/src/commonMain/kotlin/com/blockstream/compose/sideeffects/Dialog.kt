@@ -85,7 +85,7 @@ class DialogState {
         openDialog(
             OpenDialogData(
                 title = StringHolder.create(Res.string.id_error),
-                message = StringHolder.create(throwable.message),
+                message = StringHolder.create(throwable.message ?: throwable.cause?.message),
                 onDismiss = onClose,
                 onPrimary = onClose,
                 secondaryText = getString(Res.string.id_contact_support)
