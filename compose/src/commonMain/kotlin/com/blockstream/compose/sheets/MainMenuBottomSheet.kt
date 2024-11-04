@@ -23,6 +23,8 @@ import blockstream_green.common.generated.resources.id_redeposit_expired_2fa_coi
 import blockstream_green.common.generated.resources.id_scan_qr_code
 import blockstream_green.common.generated.resources.qr_code
 import com.blockstream.common.CountlyBase
+import com.blockstream.common.Parcelable
+import com.blockstream.common.Parcelize
 import com.blockstream.compose.LocalAppInfo
 import com.blockstream.compose.components.GreenArrow
 import com.blockstream.compose.components.GreenBottomSheet
@@ -41,7 +43,8 @@ enum class MainMenuEntry {
     BUY_SELL, ACCOUNT_TRANSFER, SCAN, REDEPOSIT;
 }
 
-object MainMenuBottomSheet : BottomScreen() {
+@Parcelize
+data class MainMenuBottomSheet(val isTestnet: Boolean) : BottomScreen(), Parcelable {
     @Composable
     override fun Content() {
         val onDismissRequest = onDismissRequest()
@@ -50,16 +53,19 @@ object MainMenuBottomSheet : BottomScreen() {
                 setResult(menuEntry)
                 onDismissRequest.invoke()
             },
+            isTestnet = isTestnet,
             onDismissRequest = onDismissRequest
         )
     }
 
-    @Composable
-    fun getResult(fn: (MainMenuEntry) -> Unit) =
-        getNavigationResult(this::class, fn)
+    companion object{
+        @Composable
+        fun getResult(fn: (MainMenuEntry) -> Unit) =
+            getNavigationResult(this::class, fn)
 
-    private fun setResult(result: MainMenuEntry) =
-        setNavigationResult(this::class, result)
+        private fun setResult(result: MainMenuEntry) =
+            setNavigationResult(this::class, result)
+    }
 }
 
 @Composable
@@ -84,6 +90,7 @@ fun MainMenuItem(title: String, subtitle: String, icon: Painter, onClick: (() ->
 @Composable
 fun MainMenuBottomSheetView(
     onSelect: (item: MainMenuEntry) -> Unit,
+    isTestnet: Boolean,
     onDismissRequest: () -> Unit,
 ) {
     GreenBottomSheet(
@@ -102,7 +109,7 @@ fun MainMenuBottomSheetView(
 
 
         GreenColumn {
-            if(countly.getRemoteConfigForOnOffRamps() != false) {
+            if(countly.getRemoteConfigForOnOffRamps() != false && !isTestnet) {
                 MainMenuItem(
                     title = stringResource(Res.string.id_buy),
                     subtitle = "BTC",

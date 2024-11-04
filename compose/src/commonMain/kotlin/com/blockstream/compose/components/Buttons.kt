@@ -1,13 +1,13 @@
 package com.blockstream.compose.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.arrow_square_out
+import blockstream_green.common.generated.resources.arrows_counter_clockwise
 import blockstream_green.common.generated.resources.clipboard
 import blockstream_green.common.generated.resources.green_shield
 import blockstream_green.common.generated.resources.id_about
@@ -32,20 +33,17 @@ import blockstream_green.common.generated.resources.id_increase_qr_size
 import blockstream_green.common.generated.resources.id_learn_more
 import blockstream_green.common.generated.resources.id_paste
 import blockstream_green.common.generated.resources.id_scan_qr_code
-import blockstream_green.common.generated.resources.id_watchonly
 import blockstream_green.common.generated.resources.magnifying_glass_plus
 import blockstream_green.common.generated.resources.qr_code
 import blockstream_green.common.generated.resources.question
-import blockstream_green.common.generated.resources.share_network
-import com.blockstream.compose.theme.GreenThemePreview
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.labelSmall
 import com.blockstream.compose.theme.whiteMedium
+import com.blockstream.compose.utils.Rotating
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 enum class GreenButtonSize {
     NORMAL, SMALL, TINY, BIG
@@ -74,6 +72,7 @@ fun GreenButton(
     size: GreenButtonSize = GreenButtonSize.NORMAL,
     icon: Painter? = null,
     enabled: Boolean = true,
+    onProgress: Boolean = false,
     onClick: () -> Unit,
 ) {
 
@@ -148,15 +147,24 @@ fun GreenButton(
                 contentPadding = contentPadding,
                 shape = MaterialTheme.shapes.small,
             ) {
-                icon?.also {
-                    Icon(
-                        painter = it,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(end = 6.dp)
-                            .size(18.dp)
-                    )
+
+                if (icon != null || onProgress) {
+                    Box(modifier = Modifier.padding(end = 6.dp)) {
+                        Rotating(
+                            duration = 2000,
+                            enabled = onProgress,
+                        ) {
+                            Icon(
+                                painter = icon.takeIf { !onProgress }
+                                    ?: painterResource(Res.drawable.arrows_counter_clockwise),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(18.dp)
+                            )
+                        }
+                    }
                 }
+
                 GreenButtonText(text = text, textStyle = textStyle)
             }
         }
@@ -358,231 +366,6 @@ fun AppSettingsButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
             style = labelMedium,
             color = whiteMedium
         )
-    }
-}
-
-@Composable
-@Preview
-fun GreenButtonPreview() {
-    GreenThemePreview {
-        GreenColumn(
-            space = 6,
-//            modifier = Modifier.verticalScroll(rememberScrollState())
-        ) {
-            Text("Specific")
-
-            GreenRow(padding = 0) {
-                ScanQrButton {
-
-                }
-
-                LearnMoreButton {
-
-                }
-            }
-
-            GreenRow(padding = 0) {
-                AboutButton { }
-                AppSettingsButton { }
-                HelpButton { }
-            }
-
-            GreenRow(padding = 0) {
-                ZoomButton { }
-            }
-
-            HorizontalDivider()
-            Text("Normal")
-            GreenRow(padding = 0) {
-                GreenButton(text = "Normal Enabled", icon = painterResource(Res.drawable.share_network)) { }
-                GreenButton(text = "Norma Disabled", enabled = false) { }
-            }
-            GreenRow(padding = 0) {
-                GreenButton(text = "Big Enabled", size = GreenButtonSize.BIG) { }
-                GreenButton(text = "Big Disabled", size = GreenButtonSize.BIG, enabled = false) { }
-            }
-            GreenRow(padding = 0) {
-                GreenButton(text = "S", size = GreenButtonSize.SMALL) { }
-                GreenButton(text = "Small Enabled", size = GreenButtonSize.SMALL) { }
-                GreenButton(
-                    text = "Small Disabled",
-                    size = GreenButtonSize.SMALL,
-                    enabled = false
-                ) { }
-            }
-            GreenRow(padding = 0) {
-                GreenButton(text = "T", size = GreenButtonSize.TINY) { }
-                GreenButton(text = "Tiny Enabled", size = GreenButtonSize.TINY) { }
-                GreenButton(
-                    text = "Tiny Disabled",
-                    size = GreenButtonSize.TINY,
-                    enabled = false
-                ) { }
-            }
-            GreenRow(padding = 0) {
-                GreenButton(text = "Greener", color = GreenButtonColor.RED) { }
-                GreenButton(text = "Red", color = GreenButtonColor.RED) { }
-                GreenButton(text = "White", color = GreenButtonColor.WHITE) { }
-            }
-
-
-            HorizontalDivider()
-            Text("Outline")
-            GreenRow(padding = 0, space = 4) {
-                GreenButton(text = "Normal Enabled", type = GreenButtonType.OUTLINE) { }
-                GreenButton(
-                    text = "Norma Disabled",
-                    type = GreenButtonType.OUTLINE,
-                    enabled = false
-                ) { }
-            }
-
-            GreenRow(padding = 0, space = 4) {
-                GreenButton(
-                    text = "Big Enabled",
-                    type = GreenButtonType.OUTLINE,
-                    size = GreenButtonSize.BIG
-                ) { }
-                GreenButton(
-                    text = "Big Disabled",
-                    type = GreenButtonType.OUTLINE,
-                    size = GreenButtonSize.BIG,
-                    enabled = false
-                ) { }
-            }
-
-            GreenRow(padding = 0, space = 4) {
-                GreenButton(
-                    text = "S",
-                    type = GreenButtonType.OUTLINE,
-                    size = GreenButtonSize.SMALL
-                ) { }
-                GreenButton(
-                    text = "Small Enabled",
-                    type = GreenButtonType.OUTLINE,
-                    size = GreenButtonSize.SMALL
-                ) { }
-                GreenButton(
-                    text = "Small Disabled",
-                    type = GreenButtonType.OUTLINE,
-                    size = GreenButtonSize.SMALL,
-                    enabled = false
-                ) { }
-            }
-
-            GreenRow(padding = 0, space = 4) {
-                GreenButton(
-                    text = "T",
-                    type = GreenButtonType.OUTLINE,
-                    size = GreenButtonSize.TINY
-                ) { }
-                GreenButton(
-                    text = "Tiny Enabled",
-                    type = GreenButtonType.OUTLINE,
-                    size = GreenButtonSize.TINY
-                ) { }
-                GreenButton(
-                    text = "Tiny Disabled",
-                    type = GreenButtonType.OUTLINE,
-                    size = GreenButtonSize.TINY,
-                    enabled = false
-                ) { }
-            }
-
-            GreenRow(padding = 0, space = 4) {
-                GreenButton(
-                    text = "Green",
-                    type = GreenButtonType.OUTLINE,
-                    color = GreenButtonColor.GREENER
-                ) { }
-                GreenButton(
-                    text = "Green",
-                    type = GreenButtonType.OUTLINE,
-                    color = GreenButtonColor.RED
-                ) { }
-                GreenButton(
-                    text = "Green",
-                    type = GreenButtonType.OUTLINE,
-                    color = GreenButtonColor.WHITE
-                ) { }
-            }
-
-            HorizontalDivider()
-            Text("Text")
-            GreenRow(padding = 0, space = 4) {
-                GreenButton(text = "Normal Enabled", type = GreenButtonType.TEXT) { }
-                GreenButton(
-                    text = "Norma Disabled",
-                    type = GreenButtonType.TEXT,
-                    enabled = false
-                ) { }
-            }
-
-            GreenRow(padding = 0, space = 4) {
-                GreenButton(
-                    text = "Big Enabled",
-                    type = GreenButtonType.TEXT,
-                    size = GreenButtonSize.BIG
-                ) { }
-                GreenButton(
-                    text = "Big Disabled",
-                    type = GreenButtonType.TEXT,
-                    size = GreenButtonSize.BIG,
-                    enabled = false
-                ) { }
-            }
-
-            GreenRow(padding = 0, space = 4) {
-                GreenButton(
-                    text = "S",
-                    type = GreenButtonType.TEXT,
-                    size = GreenButtonSize.SMALL
-                ) { }
-                GreenButton(
-                    text = "Small Enabled",
-                    type = GreenButtonType.TEXT,
-                    size = GreenButtonSize.SMALL
-                ) { }
-                GreenButton(
-                    text = "Small Disabled",
-                    type = GreenButtonType.TEXT,
-                    size = GreenButtonSize.SMALL,
-                    enabled = false
-                ) { }
-            }
-
-            GreenRow(padding = 0, space = 4) {
-                GreenButton(
-                    text = "T",
-                    type = GreenButtonType.TEXT,
-                    size = GreenButtonSize.TINY
-                ) { }
-                GreenButton(
-                    text = "Tiny Enabled",
-                    type = GreenButtonType.TEXT,
-                    size = GreenButtonSize.TINY
-                ) { }
-                GreenButton(
-                    text = "Tiny Disabled",
-                    type = GreenButtonType.TEXT,
-                    size = GreenButtonSize.TINY,
-                    enabled = false
-                ) { }
-            }
-
-            GreenRow(padding = 0, space = 4) {
-                GreenButton(
-                    text = "Green",
-                    type = GreenButtonType.TEXT,
-                    color = GreenButtonColor.RED
-                ) { }
-                GreenButton(
-                    text = "Green",
-                    type = GreenButtonType.TEXT,
-                    color = GreenButtonColor.WHITE
-                ) { }
-            }
-        }
     }
 }
 

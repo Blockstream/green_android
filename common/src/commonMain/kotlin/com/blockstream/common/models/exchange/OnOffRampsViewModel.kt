@@ -1,7 +1,7 @@
 package com.blockstream.common.models.exchange
 
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_buy_sell
+import blockstream_green.common.generated.resources.id_buy
 import blockstream_green.common.generated.resources.id_type_an_amount_between_s_and_s
 import breez_sdk.SwapInfo
 import com.blockstream.common.data.DenominatedValue
@@ -17,6 +17,7 @@ import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccountAssetBalance
 import com.blockstream.common.extensions.previewWallet
+import com.blockstream.common.extensions.tryCatch
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.lightning.satoshi
@@ -28,12 +29,10 @@ import com.blockstream.common.utils.toAmountLook
 import com.blockstream.common.utils.toAmountLookOrNa
 import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
 
 abstract class OnOffRampsViewModelAbstract(
@@ -64,7 +63,8 @@ abstract class OnOffRampsViewModelAbstract(
 class OnOffRampsViewModel(greenWallet: GreenWallet) :
     OnOffRampsViewModelAbstract(greenWallet = greenWallet) {
 
-    override val isSandboxEnvironment: MutableStateFlow<Boolean> = MutableStateFlow(appInfo.isDevelopment)
+    override val isSandboxEnvironment: MutableStateFlow<Boolean> =
+        MutableStateFlow(appInfo.isDevelopment)
 
     private val availableBuyAssets = session.ifConnected {
         listOfNotNull(
@@ -88,7 +88,7 @@ class OnOffRampsViewModel(greenWallet: GreenWallet) :
 
     override val buyAccount: MutableStateFlow<AccountAssetBalance?> =
         MutableStateFlow(session.ifConnected {
-            session.accounts.value.firstOrNull { it.network.policyAsset == buyAsset.value?.assetId }?.accountAssetBalance
+            (listOfNotNull(session.activeAccount.value) + session.accounts.value).firstOrNull { it.network.policyAsset == buyAsset.value?.assetId }?.accountAssetBalance
         })
 
     override val amount: MutableStateFlow<String> = MutableStateFlow("")
@@ -102,19 +102,21 @@ class OnOffRampsViewModel(greenWallet: GreenWallet) :
     private val _amountHint = MutableStateFlow<String?>(null)
     override val amountHint = _amountHint
 
-    private var swapInfo : SwapInfo? = null
+    private var swapInfo: SwapInfo? = null
 
     init {
         viewModelScope.launch {
-            _navData.value = NavData(title = getString(Res.string.id_buy_sell))
+            _navData.value = NavData(title = getString(Res.string.id_buy))
         }
 
         session.ifConnected {
 
             buyAsset.onEach { buyAsset ->
-                _buyAccounts.value = session.accounts.value.filter { it.network.policyAsset == buyAsset?.assetId }.map {
-                    it.accountAssetBalance
-                }
+                _buyAccounts.value =
+                    session.accounts.value.filter { it.network.policyAsset == buyAsset?.assetId }
+                        .map {
+                            it.accountAssetBalance
+                        }
 
                 if (buyAccount.value?.account?.network?.policyAsset != buyAsset?.assetId) {
                     buyAccount.value = _buyAccounts.value.firstOrNull()
@@ -159,10 +161,10 @@ class OnOffRampsViewModel(greenWallet: GreenWallet) :
                 var isError = false
                 var hintOrError: String? = null
 
-                if(isLightning){
+                if (isLightning) {
                     // Cache SwapInfo
-                    if(swapInfo == null){
-                        swapInfo = withContext(context = Dispatchers.IO) {
+                    if (swapInfo == null) {
+                        swapInfo = tryCatch(context = Dispatchers.Main) {
                             session.receiveOnchain()
                         }
                     }
@@ -193,7 +195,9 @@ class OnOffRampsViewModel(greenWallet: GreenWallet) :
                         )
                     }
 
-                    isError = (balance?.satoshi?.let { it >= (minValue ?: 0) && it < (maxValue ?: 0) } ?: true).not()
+                    isError =
+                        (balance?.satoshi?.let { it >= (minValue ?: 0) && it < (maxValue ?: 0) }
+                            ?: true).not()
                 }
 
                 if (isError) {
@@ -224,7 +228,8 @@ class OnOffRampsViewModel(greenWallet: GreenWallet) :
     private fun redirectToRamps() {
         doAsync({
 
-            val meldKey = if(isSandboxEnvironment.value) MELD_DEVELOPMENT_KEY else MELD_PRODUCTION_KEY
+            val meldKey =
+                if (isSandboxEnvironment.value) MELD_DEVELOPMENT_KEY else MELD_PRODUCTION_KEY
 
             if (isBuy.value) {
                 val address = session.getReceiveAddressAsString(buyAccount.value!!.account)
@@ -277,14 +282,17 @@ class OnOffRampsViewModel(greenWallet: GreenWallet) :
         amount.value = denominatedValue.asInput ?: ""
     }
 
-    companion object: Loggable() {
+    companion object : Loggable() {
         private const val MELD_PRODUCTION = "https://meldcrypto.com"
         private const val MELD_SANDBOX = "https://sb.meldcrypto.com"
 
-        private const val MELD_PRODUCTION_KEY = "WXDhJPMkahPCQ9AjtjS4Mi:49txEyv53WtUvXfVg1FNYvQdzWJc"
-        private const val MELD_DEVELOPMENT_KEY = "WQ59eghSwdJxyfaKbk87Cm:D2J97iJX5XjutTot6PAcxNnt4NTuCSWaH"
+        private const val MELD_PRODUCTION_KEY =
+            "WXDhJPMkahPCQ9AjtjS4Mi:49txEyv53WtUvXfVg1FNYvQdzWJc"
+        private const val MELD_DEVELOPMENT_KEY =
+            "WQ59eghSwdJxyfaKbk87Cm:D2J97iJX5XjutTot6PAcxNnt4NTuCSWaH"
 
-        fun meldUrl(isSandboxEnvironment: Boolean) = if(isSandboxEnvironment) MELD_SANDBOX else MELD_PRODUCTION
+        fun meldUrl(isSandboxEnvironment: Boolean) =
+            if (isSandboxEnvironment) MELD_SANDBOX else MELD_PRODUCTION
     }
 }
 

@@ -465,7 +465,7 @@ fun WalletOverviewScreen(
                 }, onReceiveClick = {
                     viewModel.postEvent(WalletOverviewViewModel.LocalEvents.Receive)
                 }, onCircleClick = {
-                    bottomSheetNavigator?.show(MainMenuBottomSheet)
+                    bottomSheetNavigator?.show(MainMenuBottomSheet(isTestnet = viewModel.greenWallet.isTestnet))
                 }
             )
         }

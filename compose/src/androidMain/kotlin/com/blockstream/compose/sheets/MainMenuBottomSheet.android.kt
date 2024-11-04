@@ -31,6 +31,7 @@ fun MainMenuBottomSheetPreview() {
                     onSelect = { menuEntry ->
 
                     },
+                    isTestnet = false,
                     onDismissRequest = {
                         showBottomSheet = false
                     }

@@ -19,11 +19,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.arrow_square_out
 import blockstream_green.common.generated.resources.id_account
 import blockstream_green.common.generated.resources.id_asset_to_buy
 import blockstream_green.common.generated.resources.id_buy
+import blockstream_green.common.generated.resources.id_buy_with_s
 import blockstream_green.common.generated.resources.id_create_new_account
-import blockstream_green.common.generated.resources.id_finalize_on_browser
 import blockstream_green.common.generated.resources.id_provided_by_
 import blockstream_green.common.generated.resources.id_select_account
 import blockstream_green.common.generated.resources.id_sell
@@ -61,6 +62,7 @@ import com.blockstream.compose.theme.md_theme_surface
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 
@@ -241,6 +243,7 @@ fun OnOffRampsScreen(
         }
 
         val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
+        val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
 
         if(viewModel.appInfo.isDevelopment) {
             val isSandboxEnvironment by viewModel.isSandboxEnvironment.collectAsStateWithLifecycle()
@@ -275,10 +278,12 @@ fun OnOffRampsScreen(
             )
 
             GreenButton(
-                text = stringResource(Res.string.id_finalize_on_browser),
+                text = stringResource(Res.string.id_buy_with_s, "meld.io"),
                 modifier = Modifier.fillMaxWidth(),
                 size = GreenButtonSize.BIG,
-                enabled = buttonEnabled
+                icon = painterResource(Res.drawable.arrow_square_out),
+                enabled = buttonEnabled,
+                onProgress = onProgress
             ) {
                 viewModel.postEvent(Events.Continue)
             }

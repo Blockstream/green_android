@@ -1563,5 +1563,5 @@
     <string name="id_asset_to_sell">Asset to sell</string>
     <string name="id_provided_by_">Provided by %1$s</string>
     <string name="id_type_an_amount_between_s_and_s">Type an amount between %1$s and %2$s. A minimum setup fee of %3$s will be applied to the received amount.</string>
-    <string name="id_finalize_on_browser">Finalize on Browser</string>
+    <string name="id_buy_with_s">Buy with %1$s</string>
 </resources>

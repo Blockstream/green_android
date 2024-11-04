@@ -94,7 +94,7 @@ fun AlphaPulse(pulseFraction: Float = 0.75f, duration : Int = 500, modifier: Mod
 }
 
 @Composable
-fun Rotating(duration: Int = 1000, content: @Composable () -> Unit) {
+fun Rotating(duration: Int = 1000, enabled: Boolean = true, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     val infiniteTransition = rememberInfiniteTransition()
 
     val rotate by infiniteTransition.animateFloat(
@@ -106,7 +106,9 @@ fun Rotating(duration: Int = 1000, content: @Composable () -> Unit) {
         )
     )
 
-    Box(modifier = Modifier.rotate(rotate)) {
+    Box(modifier = Modifier.ifTrue(enabled){
+        rotate(rotate)
+    }.then(modifier)) {
         content()
     }
 }
