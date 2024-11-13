@@ -3,6 +3,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.0.38] - 2024-11-13
+
+### Added
+- Jade QR Mode
+
+### Changed
+- Refactor UI to Jetpack Compose Multiplatform
+- Refactor Jade API to Kotlin
+
 ## [4.0.37] - 2024-10-29
 
 ### Changed
