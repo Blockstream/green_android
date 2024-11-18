@@ -71,7 +71,8 @@ class CountlyIOS(
         logger.i { "Countly starting." }
         _countly.startWithConfig(config)
     }
-    override fun updateRemoteConfig() {
+
+    override fun updateRemoteConfig(force: Boolean) {
         logger.i { "updateRemoteConfig" }
         _countly.remoteConfig().downloadKeys { s, nsError, b, map ->
             logger.d { "Download all keys" }

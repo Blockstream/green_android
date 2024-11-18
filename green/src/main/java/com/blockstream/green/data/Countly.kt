@@ -265,7 +265,7 @@ class Countly constructor(
     }
 
     override fun viewRecord(viewName: String, segmentation: Map<String, Any>?) {
-        _views.recordView(viewName, segmentation)
+        _views.startAutoStoppedView(viewName, segmentation)
     }
 
     override fun getRemoteConfigValueAsString(key: String): String? {

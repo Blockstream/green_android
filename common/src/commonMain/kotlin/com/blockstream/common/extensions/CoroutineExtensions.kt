@@ -28,7 +28,14 @@ suspend fun <T> tryCatch(context: CoroutineContext = EmptyCoroutineContext, bloc
 
 fun <T> tryCatchNull(block: () -> T): T? = try {
     block()
-} catch (e: Exception) { null }
+} catch (e: Exception) {
+    e.printStackTrace()
+
+    KoinPlatformTools.defaultContext().get().getOrNull<CountlyBase>()?.also {
+        it.recordException(e)
+    }
+    null
+}
 
 fun logException(
     countly: CountlyBase

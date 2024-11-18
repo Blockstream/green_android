@@ -100,7 +100,7 @@ fun WalletIcon.resource() = when (this) {
     else -> Res.drawable.wallet
 }
 
-fun GreenDevice.icon(): DrawableResource = deviceBrand.icon()
+fun GreenDevice?.icon(): DrawableResource = this?.deviceBrand?.icon() ?: Res.drawable.generic_device
 
 fun DeviceBrand.icon(): DrawableResource = when (this) {
     DeviceBrand.Ledger -> Res.drawable.ledger_device
@@ -216,9 +216,7 @@ fun String?.assetIcon(session: GdkSession? = null, isLightning: Boolean = false)
             painterResource(it)
         }
     } else {
-        session?.networkAssetManager?.getAssetIcon(this, session)?.let {
-            it.toPainter()
-        } ?: painterResource(Res.drawable.unknown)
+        session?.networkAssetManager?.getAssetIcon(this, session)?.toPainter() ?: painterResource(Res.drawable.unknown)
     }
 }
 

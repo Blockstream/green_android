@@ -27,7 +27,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -115,7 +114,6 @@ import com.blockstream.compose.theme.textHigh
 import com.blockstream.compose.theme.textMedium
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.titleSmall
-import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.noRippleClickable
@@ -307,7 +305,37 @@ fun WalletOverviewScreen(
                     var cardSize by remember {
                         mutableStateOf(IntSize.Zero)
                     }
-                    val hasContextMenu = !viewModel.isLightningShortcut
+
+                    val menuEntries = when {
+                        viewModel.greenWallet.isWatchOnly || viewModel.isLightningShortcut -> emptyList()
+                        it.account.isLightning -> listOf(
+                            MenuEntry(
+                                title = stringResource(Res.string.id_remove),
+                                iconRes = Res.drawable.trash,
+                                onClick = {
+                                    viewModel.postEvent(Events.RemoveAccount(it.account))
+                                }
+                            )
+                        )
+                        else -> listOfNotNull(
+                            MenuEntry(
+                                title = stringResource(Res.string.id_rename_account),
+                                iconRes = Res.drawable.text_aa,
+                                onClick = {
+                                    viewModel.postEvent(NavigateDestinations.RenameAccount(it.account))
+                                }
+                            ),
+                            if (viewModel.accounts.value.size > 1) {
+                                MenuEntry(
+                                    title = stringResource(Res.string.id_archive_account),
+                                    iconRes = Res.drawable.box_arrow_down,
+                                    onClick = {
+                                        viewModel.postEvent(Events.ArchiveAccount(it.account))
+                                    }
+                                )
+                            } else null
+                        )
+                    }
 
                     Box {
                         GreenAccountCard(
@@ -347,42 +375,17 @@ fun WalletOverviewScreen(
                                     )
                                 )
                             }, onLongClick = { _: AccountBalance, offset: Offset ->
-                                if (hasContextMenu) {
+                                if (menuEntries.isNotEmpty()) {
                                     popupState.offset.value = offset.toMenuDpOffset(cardSize, density)
                                     popupState.isContextMenuVisible.value = true
                                 }
                             }
                         )
 
-                        if (hasContextMenu) {
+                        if (menuEntries.isNotEmpty()) {
                             PopupMenu(
                                 state = popupState,
-                                entries = if (it.account.isLightning) listOf(
-                                    MenuEntry(
-                                        title = stringResource(Res.string.id_remove),
-                                        iconRes = Res.drawable.trash,
-                                        onClick = {
-                                            viewModel.postEvent(Events.RemoveAccount(it.account))
-                                        }
-                                    )
-                                ) else listOfNotNull(
-                                    MenuEntry(
-                                        title = stringResource(Res.string.id_rename_account),
-                                        iconRes = Res.drawable.text_aa,
-                                        onClick = {
-                                            viewModel.postEvent(NavigateDestinations.RenameAccount(it.account))
-                                        }
-                                    ),
-                                    if (viewModel.accounts.value.size > 1) {
-                                        MenuEntry(
-                                            title = stringResource(Res.string.id_archive_account),
-                                            iconRes = Res.drawable.box_arrow_down,
-                                            onClick = {
-                                                viewModel.postEvent(Events.ArchiveAccount(it.account))
-                                            }
-                                        )
-                                    } else null
-                                )
+                                entries = menuEntries
                             )
                         }
                     }

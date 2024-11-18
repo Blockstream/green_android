@@ -21,11 +21,9 @@ import blockstream_green.common.generated.resources.id_rescan_swaps
 import blockstream_green.common.generated.resources.id_share_logs
 import blockstream_green.common.generated.resources.id_show_recovery_phrase
 import cafe.adriel.voyager.koin.koinScreenModel
-import com.arkivanov.essenty.parcelable.IgnoredOnParcel
 import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.sheets.LightningNodeViewModel
 import com.blockstream.common.models.sheets.LightningNodeViewModelAbstract
 import com.blockstream.compose.components.GreenBottomSheet
@@ -36,7 +34,6 @@ import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.views.DataListItem
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
-import kotlin.jvm.Transient
 
 @Parcelize
 data class LightningNodeBottomSheet(

@@ -10,9 +10,7 @@ import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 import com.rickclephas.kmp.observableviewmodel.launch
-import org.koin.core.annotation.Factory
 
-@Factory
 class HomeViewModel: WalletsViewModel(isHome = true){
 
     class LocalEvents {

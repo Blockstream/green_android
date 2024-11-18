@@ -433,20 +433,20 @@ open class GreenViewModel constructor(
                 promo.value?.also {
                     if (!promoImpression) {
                         promoImpression = true
-                        countly.promoView(sessionOrNull, it)
+                        countly.promoView(sessionOrNull, screenName(), it)
                     }
                 }
             }
             is Events.PromoOpen -> {
                 promo.value?.also {
-                    countly.promoOpen(sessionOrNull, it)
+                    countly.promoOpen(sessionOrNull, screenName(), it)
                     postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Promo(promo = it)))
                 }
             }
             is Events.PromoDismiss -> {
                 promo.value?.also {
                     settingsManager.dismissPromo(it.id)
-                    countly.promoDismiss(sessionOrNull, it)
+                    countly.promoDismiss(sessionOrNull, screenName(), it)
                 }
                 promo.value = null
             }
@@ -459,7 +459,7 @@ open class GreenViewModel constructor(
             is Events.PromoAction -> {
                 promo.value?.also { promo ->
                     promo.link?.also { link ->
-                        countly.promoAction(session = sessionOrNull, promo = promo)
+                        countly.promoAction(session = sessionOrNull, screenName = screenName(), promo = promo)
                         if (link == "green://onofframps" && greenWalletOrNull != null ) {
                             postSideEffect(SideEffects.NavigateTo(NavigateDestinations.OnOffRamps))
                         } else {

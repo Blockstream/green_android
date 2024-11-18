@@ -186,7 +186,7 @@ class GdkSession constructor(
     var jadeHttpRequestUrlValidator: JadeHttpRequestUrlValidator? = null
 
     val isTestnet: Boolean // = false
-        get() = defaultNetwork.isTestnet
+        get() = defaultNetworkOrNull?.isTestnet == true
 
     val isMainnet: Boolean
         get() = !isTestnet

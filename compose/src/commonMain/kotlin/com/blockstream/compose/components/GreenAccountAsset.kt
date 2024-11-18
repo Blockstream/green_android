@@ -23,7 +23,6 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_select_account
 import blockstream_green.common.generated.resources.id_select_account__asset
 import blockstream_green.common.generated.resources.pencil_simple_line
-import blockstream_green.common.generated.resources.unknown
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.utils.StringHolder
@@ -60,10 +59,9 @@ fun GreenAccountAsset(
         ) {
             Box {
                 Image(
-                    painter = accountAssetBalance?.let {
-                        it.asset.assetId.assetIcon(session = session, isLightning = accountAssetBalance.account.isLightning)
-                    } ?: painterResource(
-                        Res.drawable.unknown
+                    painter = (accountAssetBalance?.asset?.assetId).assetIcon(
+                        session = session,
+                        isLightning = accountAssetBalance?.account?.isLightning == true
                     ),
                     contentDescription = null,
                     contentScale = ContentScale.Fit,

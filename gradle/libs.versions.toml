@@ -2,11 +2,11 @@
 jvm = "17"
 accompanistPermissions = "0.34.0"
 constraintlayoutComposeMultiplatform = "0.4.0"
-kotlin = "2.1.0-Beta2"
+kotlin = "2.1.0-RC"
 kotlinx-coroutines = "1.9.0"
 kotlinx-datetime = "0.6.1"
 kotlinx-serialization = "1.7.3"
-kotlin-ksp = "2.1.0-Beta2-1.0.25"
+kotlin-ksp = "2.1.0-RC-1.0.27"
 kable = "0.34.0"
 coil = "3.0.0-rc02"
 ktor = "3.0.0"
@@ -32,9 +32,7 @@ kase64 = "1.0.6"
 kermit = "2.0.4"
 kmp-observableviewmodel = "1.0.0-BETA-7"
 splash-screen = "1.1.0-rc01"
-koin = "3.5.6"
-koin-compose = "1.1.5"
-koin-annotations = "1.3.1"
+koin-bom = "4.0.0"
 ksoupEntites = "0.1.2"
 lifecycle = "2.8.3"
 middleEllipsisText3 = "1.2.0"
@@ -51,9 +49,9 @@ preference-ktx = "1.2.1"
 guava = "31.1-android"
 recyclerview = "1.3.2"
 review-ktx = "2.0.2"
-rive-android = "9.9.5"
+rive-android = "9.11.0"
 startup-runtime = "1.2.0"
-uriKmp = "0.0.16"
+uriKmp = "0.0.18"
 workRuntimeKtx = "2.9.1"
 zendesk = "5.2.0"
 parcelable = "1.3.0"
@@ -62,16 +60,16 @@ swiperefreshlayout = "1.1.0"
 turbine = "1.0.0"
 usb-serial = "6.0.6"
 uuid = "0.8.4"
-desugar = "2.1.2"
+desugar = "2.1.3"
 viewpager2 = "1.1.0"
 zxing-android-embedded = "4.3.0"
 kmp-nativecoroutines = "1.0.0-ALPHA-37"
 compose-material3 = "1.3.1"
 compose-tooling-preview = "1.7.5"
-jetbrains-compose = "1.7.0"
-voyager = "1.1.0-beta02"
+jetbrains-compose = "1.7.1"
+voyager = "1.1.0-beta03"
 google-services = "4.4.2"
-firebase-bom = "33.5.1"
+firebase-bom = "33.6.0"
 jna = "5.14.0"
 material = "1.12.0"
 room = "2.5.2"
@@ -131,12 +129,12 @@ junit = { module = "junit:junit", version.ref = "junit" }
 kase64 = { module = "de.peilicke.sascha:kase64", version.ref = "kase64" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 kmp-observableviewmodel = { module = "com.rickclephas.kmp:kmp-observableviewmodel-core", version.ref = "kmp-observableviewmodel" }
-koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
-koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations" }
-koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
-koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin-compose" }
-koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4", version.ref = "koin" }
-koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
+koin-android = { module = "io.insert-koin:koin-android" }
+koin-core = { module = "io.insert-koin:koin-core" }
+koin-compose = { module = "io.insert-koin:koin-compose" }
+koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4" }
+koin-test = { module = "io.insert-koin:koin-test" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }

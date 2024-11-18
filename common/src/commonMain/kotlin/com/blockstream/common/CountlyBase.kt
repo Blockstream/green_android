@@ -272,10 +272,14 @@ abstract class CountlyBase(
 
     private fun promoSegmentation(
         session: GdkSession?,
+        screenName: String?,
         promo: Promo
     ): HashMap<String, Any> = (session?.let { sessionSegmentation(it) } ?: hashMapOf())
             .also { segmentation ->
                 segmentation[PARAM_PROMO_ID] = promo.id
+                screenName?.also {
+                    segmentation[PARAM_SCREEN] = it
+                }
             }
 
 
@@ -746,20 +750,20 @@ abstract class CountlyBase(
         }
     }
 
-    fun promoDismiss(session: GdkSession?, promo: Promo) {
-        eventRecord(Events.PROMO_DISMISS.toString(), promoSegmentation(session, promo))
+    fun promoDismiss(session: GdkSession?, screenName: String?, promo: Promo) {
+        eventRecord(Events.PROMO_DISMISS.toString(), promoSegmentation(session, screenName, promo))
     }
 
-    fun promoAction(session: GdkSession?, promo: Promo) {
-        eventRecord(Events.PROMO_ACTION.toString(), promoSegmentation(session, promo))
+    fun promoAction(session: GdkSession?, screenName: String?, promo: Promo) {
+        eventRecord(Events.PROMO_ACTION.toString(), promoSegmentation(session, screenName, promo))
     }
 
-    fun promoOpen(session: GdkSession?, promo: Promo) {
-        eventRecord(Events.PROMO_OPEN.toString(), promoSegmentation(session, promo))
+    fun promoOpen(session: GdkSession?, screenName: String?, promo: Promo) {
+        eventRecord(Events.PROMO_OPEN.toString(), promoSegmentation(session, screenName, promo))
     }
 
-    fun promoView(session: GdkSession?, promo: Promo) {
-        eventRecord(Events.PROMO_IMPRESSION.toString(), promoSegmentation(session, promo))
+    fun promoView(session: GdkSession?, screenName: String?, promo: Promo) {
+        eventRecord(Events.PROMO_IMPRESSION.toString(), promoSegmentation(session, screenName, promo))
     }
 
     fun hardwareConnect(device: GreenDevice) {

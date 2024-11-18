@@ -14,6 +14,7 @@ import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.hasHistory
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.previewWallet
+import com.blockstream.common.extensions.tryCatchNull
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.gdk.data.Network
@@ -195,7 +196,7 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
         }
     }
 
-    private fun chooseAccountType(accountType: AccountType) {
+    private fun chooseAccountType(accountType: AccountType) = tryCatchNull {
         val network = networkForAccountType(accountType, asset.value.asset)
 
         var sideEffect: SideEffect? = null

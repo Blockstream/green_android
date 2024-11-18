@@ -14,8 +14,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.koin.koinScreenModel
-import com.arkivanov.essenty.parcelable.IgnoredOnParcel
-import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
 import com.blockstream.common.data.EnrichedAsset
@@ -23,22 +21,18 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.navigation.PopTo
-import com.blockstream.compose.LocalRootNavigator
-import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAssetAccounts
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.navigation.getNavigationResult
 import com.blockstream.compose.navigation.setNavigationResult
 import org.koin.core.parameter.parametersOf
-import kotlin.jvm.Transient
 
 @Parcelize
 data class ChooseAssetAccountBottomSheet(

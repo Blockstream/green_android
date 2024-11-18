@@ -18,7 +18,6 @@ import com.blockstream.green.database.WalletDao
 import com.blockstream.green.database.roomToDelight
 import kotlinx.coroutines.runBlocking
 import com.blockstream.common.utils.Loggable
-import org.koin.core.annotation.Single
 import java.security.KeyStore
 import java.security.UnrecoverableKeyException
 

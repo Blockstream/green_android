@@ -63,7 +63,6 @@ fun initKoinAndroid(context: Context, doOnStartup: () -> Unit = {}) {
                 ActivityLifecycle(get(), get())
             } binds (arrayOf(Application.ActivityLifecycleCallbacks::class, LifecycleObserver::class))
         },
-//        com_blockstream_green_di_AndroidModule,
         databaseModule,
         greenModules,
         viewModels,

@@ -13,15 +13,10 @@ import com.blockstream.gms.InstallReferrerImpl
 import com.blockstream.gms.ZendeskSdkAndroid
 import com.google.android.play.core.review.ReviewManagerFactory
 import okio.internal.commonToUtf8String
-import org.koin.core.annotation.Module
 import org.koin.dsl.binds
 import org.koin.dsl.module
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
-
-
-@Module
-class GmsModule
 
 val gmsModule = module {
     single {

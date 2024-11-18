@@ -70,9 +70,8 @@ import com.blockstream.common.models.transaction.TransactionViewModel
 import com.blockstream.common.models.twofactor.ReEnable2FAViewModel
 import com.blockstream.common.models.wallet.WalletDeleteViewModel
 import com.blockstream.common.models.wallet.WalletNameViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.viewModel
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val viewModels = module {

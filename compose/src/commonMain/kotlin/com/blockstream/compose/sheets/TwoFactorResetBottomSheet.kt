@@ -27,7 +27,6 @@ import blockstream_green.common.generated.resources.id_undo_2fa_dispute
 import blockstream_green.common.generated.resources.id_your_wallet_is_locked_for_a
 import blockstream_green.common.generated.resources.id_your_wallet_is_locked_under_2fa
 import cafe.adriel.voyager.koin.koinScreenModel
-import com.arkivanov.essenty.parcelable.IgnoredOnParcel
 import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
 import com.blockstream.common.data.GreenWallet
@@ -38,7 +37,6 @@ import com.blockstream.common.gdk.data.TwoFactorReset
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.compose.LocalRootNavigator
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenColumn
@@ -46,7 +44,6 @@ import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelLarge
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
-import kotlin.jvm.Transient
 
 @Parcelize
 data class TwoFactorResetBottomSheet(

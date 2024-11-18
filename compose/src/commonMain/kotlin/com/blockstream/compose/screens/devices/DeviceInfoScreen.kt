@@ -131,7 +131,7 @@ fun DeviceInfoScreen(
         }
     }
 
-    val device = viewModel.device
+    val device = viewModel.deviceOrNull
     val jadeIsUninitialized by viewModel.jadeIsUninitialized.collectAsStateWithLifecycle()
     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
 
@@ -163,8 +163,8 @@ fun DeviceInfoScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = device.name, style = titleMedium, textAlign = TextAlign.Center)
-                Text(text = device.manufacturer ?: "", style = bodyLarge, textAlign = TextAlign.Center)
+                Text(text = device?.name ?: "", style = titleMedium, textAlign = TextAlign.Center)
+                Text(text = device?.manufacturer ?: "", style = bodyLarge, textAlign = TextAlign.Center)
             }
         }
 

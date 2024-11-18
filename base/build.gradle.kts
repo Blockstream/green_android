@@ -31,11 +31,7 @@ dependencies {
     /**  --- Android / Google ------------------------------------------------------------------- */
     api(libs.androidx.core.ktx)
     api(libs.androidx.appcompat)
-    api(libs.material)
-    api(libs.androidx.swiperefreshlayout)
     api(libs.androidx.browser)
-    api(libs.androidx.recyclerview)
-    api(libs.androidx.viewpager2)
     api(libs.androidx.startup.runtime)
     api(libs.compose.material3)
     api(libs.androidx.work.runtime.ktx)
