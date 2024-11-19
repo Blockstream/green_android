@@ -53,7 +53,7 @@ class AssetDetailsViewModel(
     init {
         if (session.isConnected) {
             combine(
-                session.block(assetId.networkForAsset(session)),
+                session.block(assetId.networkForAsset(session) ?: session.defaultNetwork),
                 (accountAsset?.let { session.accountAssets(it.account) }
                     ?: session.walletAssets)
             ) { block, assets ->

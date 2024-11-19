@@ -90,7 +90,12 @@ fun String?.isPolicyAsset(network: Network?): Boolean = (this == null || this ==
 fun String?.isPolicyAsset(session: GdkSession): Boolean = isBitcoinPolicyAsset() || session.gdkSessions.keys.any { isPolicyAsset(it) }
 
 // If no Bitcoin network is available, fallback to Liquid
-fun String?.networkForAsset(session: GdkSession): Network = (if(this == null || this == BTC_POLICY_ASSET) (session.activeBitcoin ?: session.activeLiquid) else session.activeLiquid ) ?: session.defaultNetwork
+fun String?.networkForAsset(session: GdkSession): Network? = when {
+    isBitcoinPolicyAsset() -> session.activeBitcoin ?: session.bitcoin
+    else -> {
+        session.activeLiquid ?: session.liquid
+    }
+}
 
 fun String?.assetTicker(
     session: GdkSession,

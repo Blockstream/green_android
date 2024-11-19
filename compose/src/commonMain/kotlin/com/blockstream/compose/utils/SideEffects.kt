@@ -1123,6 +1123,7 @@ fun HandleSideEffect(
                                 ChooseAccountTypeScreen(
                                     greenWallet = viewModel.greenWallet,
                                     assetBalance = destination.assetBalance,
+                                    allowAssetSelection = destination.allowAssetSelection,
                                     popTo = destination.popTo
                                 )
                             )

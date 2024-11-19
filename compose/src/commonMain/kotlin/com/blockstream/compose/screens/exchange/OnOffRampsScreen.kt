@@ -177,6 +177,7 @@ fun OnOffRampsScreen(
                                 viewModel.postEvent(
                                     NavigateDestinations.ChooseAccountType(
                                         assetBalance = viewModel.buyAsset.value,
+                                        allowAssetSelection = false,
                                         popTo = PopTo.OnOffRamps
                                     )
                                 )

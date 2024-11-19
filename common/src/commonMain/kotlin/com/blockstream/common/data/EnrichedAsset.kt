@@ -9,6 +9,7 @@ import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
 import com.blockstream.common.extensions.isBitcoinPolicyAsset
 import com.blockstream.common.extensions.isPolicyAsset
+import com.blockstream.common.extensions.networkForAsset
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.gdk.data.Account
@@ -67,7 +68,7 @@ data class EnrichedAsset constructor(
 
     fun sortWeight(session: GdkSession) = when {
         assetId == BTC_POLICY_ASSET -> Int.MAX_VALUE
-        isLiquid(session) -> Int.MAX_VALUE - 1
+        isLiquidPolicyAsset(session) -> Int.MAX_VALUE - 1
         isAnyAsset -> Int.MIN_VALUE + 1
         else -> {
             val hasAssetIcon = session.hasAssetIcon(assetId)
@@ -85,7 +86,9 @@ data class EnrichedAsset constructor(
     val isBitcoin
         get() = assetId == BTC_POLICY_ASSET
 
-    fun isLiquid(session: GdkSession) = !isAnyAsset && assetId.isPolicyAsset(session.liquid)
+    fun isLiquidPolicyAsset(session: GdkSession) = !isAnyAsset && assetId.isPolicyAsset(session.liquid)
+
+    fun isLiquidNetwork(session: GdkSession) = assetId.networkForAsset(session)?.isLiquid == true
 
     override fun kSerializer() = serializer()
 

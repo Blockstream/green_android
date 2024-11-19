@@ -3,6 +3,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.1.0] - 2024-11-19
+
+### Changed
+- Bump GDK to version 0.73.4
+- Bump Breez to version 0.6.3-rc2
+- Update dependencies
+
+### Fixed
+- Various bug fixes
+
 ## [4.0.38] - 2024-11-13
 
 ### Added

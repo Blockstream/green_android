@@ -2489,7 +2489,7 @@ class GdkSession constructor(
     // if no asset is given, no conversion is needed (conversion will be identified as a btc value in gdk)
     // onlyInAcceptableRange return MIN, MAX values so that the error pop in different gdk call
     suspend fun convert(assetId: String? = null, asString: String? = null, asLong: Long? = null, denomination: String? = null, onlyInAcceptableRange: Boolean = true): Balance? {
-        val network = assetId.networkForAsset(this)
+        val network = assetId.networkForAsset(this) ?: defaultNetwork
         val isPolicyAsset = assetId.isPolicyAsset(this)
         val asset = assetId?.let { getAsset(it) }
 

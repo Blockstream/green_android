@@ -33,7 +33,7 @@ fun getBitcoinOrLiquidUnit(
     val network = assetId.networkForAsset(session)
     var unit = denomination?.denomination ?: session.getSettings(network)?.unit ?: "n/a"
 
-    if (network.isTestnet) {
+    if (network?.isTestnet == true) {
         unit = when (unit) {
             BTC_UNIT -> "TEST"
             MBTC_UNIT -> "mTEST"
@@ -44,7 +44,7 @@ fun getBitcoinOrLiquidUnit(
         }
     }
 
-    return if (network.isLiquid) {
+    return if (network?.isLiquid == true) {
         "L-$unit"
     } else {
         unit

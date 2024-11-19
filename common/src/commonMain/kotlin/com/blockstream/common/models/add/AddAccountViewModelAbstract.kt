@@ -211,13 +211,13 @@ abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet, val assetId
             AccountType.BIP86_TAPROOT -> {
                 when {
                     asset.isBitcoin -> session.bitcoinSinglesig!!
-                    asset.isLiquid(session) -> session.liquidSinglesig!!
+                    asset.isLiquidNetwork(session) -> session.liquidSinglesig!!
                     else -> throw Exception("Network not found")
                 }
-                }
+            }
             AccountType.STANDARD -> when {
                 asset.isBitcoin -> session.bitcoinMultisig!!
-                asset.isLiquid(session) -> session.liquidMultisig!!
+                asset.isLiquidNetwork(session) -> session.liquidMultisig!!
                 else -> throw Exception("Network not found")
             }
             AccountType.AMP_ACCOUNT -> session.liquidMultisig!!

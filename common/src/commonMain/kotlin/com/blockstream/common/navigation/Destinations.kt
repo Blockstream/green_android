@@ -70,7 +70,11 @@ sealed class NavigateDestinations : NavigateDestination {
     data class ArchivedAccounts(val navigateToRoot: Boolean = false) : NavigateDestination
     object WalletAssets : NavigateDestination
     data class AccountOverview(val accountAsset: AccountAsset) : NavigateDestination
-    data class ChooseAccountType(val assetBalance: AssetBalance? = null, val popTo: PopTo? = null) : NavigateDestination
+    data class ChooseAccountType(
+        val assetBalance: AssetBalance? = null,
+        val allowAssetSelection: Boolean = true,
+        val popTo: PopTo? = null
+    ) : NavigateDestination
     object WatchOnly : NavigateDestination
     object ChangePin : NavigateDestination
     data class SystemMessage(val network: Network, val message: String) : NavigateDestination

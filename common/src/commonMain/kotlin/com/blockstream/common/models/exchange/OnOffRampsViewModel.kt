@@ -15,7 +15,6 @@ import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.launchIn
-import com.blockstream.common.extensions.logException
 import com.blockstream.common.extensions.previewAccountAssetBalance
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.extensions.tryCatch
@@ -113,6 +112,13 @@ class OnOffRampsViewModel(greenWallet: GreenWallet) :
         }
 
         session.ifConnected {
+
+            // Check if account match the assetId
+            buyAccount.onEach {
+                if(it?.assetId != buyAsset.value?.assetId){
+                    buyAccount.value = null
+                }
+            }.launchIn(this)
 
             buyAsset.onEach { buyAsset ->
                 _buyAccounts.value =

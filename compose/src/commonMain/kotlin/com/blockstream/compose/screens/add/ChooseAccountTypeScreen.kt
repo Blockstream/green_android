@@ -93,6 +93,7 @@ import org.koin.core.parameter.parametersOf
 data class ChooseAccountTypeScreen(
     val greenWallet: GreenWallet,
     val assetBalance: AssetBalance?,
+    val allowAssetSelection: Boolean = true,
     val popTo: PopTo?,
 ) : Parcelable, Screen {
     @Composable
@@ -105,7 +106,7 @@ data class ChooseAccountTypeScreen(
 
         AppBar(navData)
 
-        ChooseAccountTypeScreen(viewModel = viewModel)
+        ChooseAccountTypeScreen(viewModel = viewModel, allowAssetSelection = allowAssetSelection)
     }
 
     companion object {
@@ -116,7 +117,8 @@ data class ChooseAccountTypeScreen(
 
 @Composable
 fun ChooseAccountTypeScreen(
-    viewModel: ChooseAccountTypeViewModelAbstract
+    viewModel: ChooseAccountTypeViewModelAbstract,
+    allowAssetSelection: Boolean = true,
 ) {
     val dialog = LocalDialog.current
 
@@ -196,9 +198,11 @@ fun ChooseAccountTypeScreen(
                 modifier = Modifier.padding(bottom = 16.dp),
                 assetBalance = asset, session = viewModel.sessionOrNull, title = stringResource(
                     resource = Res.string.id_asset
-                ), withEditIcon = true
+                ), withEditIcon = allowAssetSelection
             ) {
-                viewModel.postEvent(NavigateDestinations.Assets())
+                if (allowAssetSelection) {
+                    viewModel.postEvent(NavigateDestinations.Assets())
+                }
             }
 
             val accountTypes by viewModel.accountTypes.collectAsStateWithLifecycle()
