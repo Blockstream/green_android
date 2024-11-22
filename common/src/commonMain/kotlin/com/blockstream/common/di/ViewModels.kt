@@ -12,6 +12,9 @@ import com.blockstream.common.models.addresses.SignMessageViewModel
 import com.blockstream.common.models.archived.ArchivedAccountsViewModel
 import com.blockstream.common.models.camera.CameraViewModel
 import com.blockstream.common.models.demo.DemoViewModel
+import com.blockstream.common.models.devices.DeviceInfoViewModel
+import com.blockstream.common.models.devices.DeviceListViewModel
+import com.blockstream.common.models.devices.DeviceScanViewModel
 import com.blockstream.common.models.devices.ImportPubKeyViewModel
 import com.blockstream.common.models.devices.JadeGuideViewModel
 import com.blockstream.common.models.drawer.DrawerViewModel
@@ -58,6 +61,7 @@ import com.blockstream.common.models.settings.WatchOnlyCredentialsSettingsViewMo
 import com.blockstream.common.models.settings.WatchOnlyViewModel
 import com.blockstream.common.models.sheets.AnalyticsViewModel
 import com.blockstream.common.models.sheets.AssetDetailsViewModel
+import com.blockstream.common.models.sheets.JadeFirmwareUpdateViewModel
 import com.blockstream.common.models.sheets.LightningNodeViewModel
 import com.blockstream.common.models.sheets.NoteViewModel
 import com.blockstream.common.models.sheets.RecoveryHelpViewModel
@@ -122,6 +126,10 @@ val factoryViewModels = module {
     factoryOf(::WatchOnlyCredentialsSettingsViewModel)
     factoryOf(::OnOffRampsViewModel)
     factoryOf(::ImportPubKeyViewModel)
+    factoryOf(::DeviceListViewModel)
+    factoryOf(::DeviceInfoViewModel)
+    factoryOf(::DeviceScanViewModel)
+    factoryOf(::JadeFirmwareUpdateViewModel)
     factory {
         AssetDetailsViewModel(get(), get(), getOrNull())
     }

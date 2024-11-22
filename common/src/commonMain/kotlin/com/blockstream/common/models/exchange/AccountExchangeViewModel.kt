@@ -286,8 +286,7 @@ class AccountExchangeViewModel(
                 isSendAll,
                 _feePriorityPrimitive,
                 denomination
-            ) { arr ->
-                val accountAssets = arr[0] as List<AccountAsset>
+            ) {
                 val network = accountAsset.value?.account?.network
 
                 // Check if the current AccountAsset operates on the same network only.
