@@ -41,11 +41,11 @@ import org.koin.core.parameter.parametersOf
 
 
 @Parcelize
-data class PromoScreen(val greenWallet: GreenWallet, val promo: Promo) : Screen, Parcelable {
+data class PromoScreen(val promo: Promo, val greenWallet: GreenWallet?) : Screen, Parcelable {
     @Composable
     override fun Content() {
         val viewModel = koinScreenModel<PromoViewModel> {
-            parametersOf(greenWallet, promo)
+            parametersOf(promo, greenWallet)
         }
 
         val navData by viewModel.navData.collectAsStateWithLifecycle()

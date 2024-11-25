@@ -1,4 +1,4 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
@@ -229,20 +229,6 @@ android {
         minSdk = libs.versions.androidMinSdk.get().toInt()
     }
 }
-
-
-compose.desktop {
-    application {
-        mainClass = "MainKt"
-
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.blockstream.rover"
-            packageVersion = "1.0.0"
-        }
-    }
-}
-
 
 task("useBlockstreamKeys") {
     doLast {

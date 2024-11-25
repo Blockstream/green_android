@@ -1190,8 +1190,8 @@ fun HandleSideEffect(
                         is NavigateDestinations.Promo -> {
                             navigator?.push(
                                 PromoScreen(
-                                    greenWallet = viewModel.greenWallet,
-                                    promo = destination.promo
+                                    promo = destination.promo,
+                                    greenWallet = viewModel.greenWalletOrNull
                                 )
                             )
                         }

@@ -11,6 +11,8 @@ import com.blockstream.common.di.initKoin
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.fcm.Firebase
 import com.blockstream.common.lightning.BreezNotification
+import com.blockstream.common.managers.BluetoothManager
+import com.blockstream.common.managers.DeviceManager
 import org.koin.dsl.module
 
 fun initKoinDesktop(appConfig: AppConfig, appInfo: AppInfo, doOnStartup: () -> Unit = {}) {
@@ -23,7 +25,9 @@ fun initKoinDesktop(appConfig: AppConfig, appInfo: AppInfo, doOnStartup: () -> U
             single<CountlyBase> {
                 // Dummy
                 object : CountlyBase(get(), get(), get(), get()){
-                    override fun updateRemoteConfig() {}
+                    override fun updateRemoteConfig(force: Boolean) {
+
+                    }
 
                     override fun updateOffset() {
                     }
@@ -84,6 +88,17 @@ fun initKoinDesktop(appConfig: AppConfig, appInfo: AppInfo, doOnStartup: () -> U
             }
             single {
                 Firebase()
+            }
+            single {
+                BluetoothManager()
+            }
+            single {
+                DeviceManager(
+                    get(),
+                    get(),
+                    get(),
+                    emptyList()
+                )
             }
             single<FcmCommon> {
                 object : FcmCommon(get()){

@@ -76,7 +76,6 @@ import org.koin.dsl.module
 val factoryViewModels = module {
     factoryOf(::MainViewModel)
     factoryOf(::AboutViewModel)
-    factoryOf(::PromoViewModel)
     factoryOf(::DemoViewModel)
     factoryOf(::SetupNewWalletViewModel)
     factoryOf(::AddWalletViewModel)
@@ -130,6 +129,9 @@ val factoryViewModels = module {
     factoryOf(::DeviceInfoViewModel)
     factoryOf(::DeviceScanViewModel)
     factoryOf(::JadeFirmwareUpdateViewModel)
+    factory {
+        PromoViewModel(get(),  getOrNull())
+    }
     factory {
         AssetDetailsViewModel(get(), get(), getOrNull())
     }

@@ -77,7 +77,6 @@ import org.koin.dsl.module
 val viewModels = module {
     viewModelOf(::MainViewModel)
     viewModelOf(::AboutViewModel)
-    viewModelOf(::PromoViewModel)
     viewModelOf(::DemoViewModel)
     viewModelOf(::SetupNewWalletViewModel)
     viewModelOf(::AddWalletViewModel)
@@ -131,6 +130,9 @@ val viewModels = module {
     viewModelOf(::DeviceScanViewModel)
     viewModelOf(::JadeFirmwareUpdateViewModel)
     viewModelOf(::ImportPubKeyViewModel)
+    viewModel {
+        PromoViewModel(get(), getOrNull())
+    }
     viewModel {
         AssetDetailsViewModel(get(), get(), getOrNull())
     }

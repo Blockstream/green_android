@@ -15,17 +15,6 @@ actual fun getWally(): Wally {
         override val ecSignatureRecoverableLen: Int
             get() = TODO("Not yet implemented")
 
-        override fun recoveryChainCodeBranchDerivation(
-            version: Int,
-            depth: Int,
-            childNum: Int,
-            chainCode: ByteArray,
-            publicKey: ByteArray,
-            branch: Long
-        ): String {
-            TODO("Not yet implemented")
-        }
-
         override fun ecPrivateKeyVerify(privateKey: ByteArray): Boolean {
             TODO("Not yet implemented")
         }
@@ -51,6 +40,10 @@ actual fun getWally(): Wally {
         }
 
         override fun hashPrevouts(txHashes: ByteArray, utxoIndexes: List<Int>): ByteArray {
+            TODO("Not yet implemented")
+        }
+
+        override fun recoveryXpubBranchDerivation(recoveryXpub: String, branch: Long): String {
             TODO("Not yet implemented")
         }
 

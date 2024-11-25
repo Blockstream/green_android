@@ -14,6 +14,7 @@ import com.blockstream.common.gdk.params.AssetsParams
 import com.blockstream.common.gdk.params.BalanceParams
 import com.blockstream.common.gdk.params.BcurDecodeParams
 import com.blockstream.common.gdk.params.BcurEncodeParams
+import com.blockstream.common.gdk.params.BroadcastTransactionParams
 import com.blockstream.common.gdk.params.ConnectionParams
 import com.blockstream.common.gdk.params.CredentialsParams
 import com.blockstream.common.gdk.params.CsvParams
@@ -276,7 +277,10 @@ actual fun getGdkBinding(
             TODO("Not yet implemented")
         }
 
-        override fun broadcastTransaction(session: GASession, transaction: String): String {
+        override fun broadcastTransaction(
+            session: GASession,
+            broadcastTransactionParams: BroadcastTransactionParams
+        ): GAAuthHandler {
             TODO("Not yet implemented")
         }
 
