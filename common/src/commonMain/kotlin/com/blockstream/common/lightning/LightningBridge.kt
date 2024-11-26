@@ -22,13 +22,16 @@ import breez_sdk.LnUrlWithdrawRequest
 import breez_sdk.LnUrlWithdrawRequestData
 import breez_sdk.LnUrlWithdrawResult
 import breez_sdk.LspInformation
-import breez_sdk.MaxReverseSwapAmountResponse
 import breez_sdk.NodeConfig
 import breez_sdk.NodeState
+import breez_sdk.OnchainPaymentLimitsResponse
 import breez_sdk.OpenChannelFeeRequest
 import breez_sdk.OpenChannelFeeResponse
 import breez_sdk.OpeningFeeParams
+import breez_sdk.PayOnchainRequest
+import breez_sdk.PayOnchainResponse
 import breez_sdk.Payment
+import breez_sdk.PrepareOnchainPaymentRequest
 import breez_sdk.PrepareRedeemOnchainFundsRequest
 import breez_sdk.PrepareRedeemOnchainFundsResponse
 import breez_sdk.PrepareRefundRequest
@@ -47,16 +50,14 @@ import breez_sdk.ReverseSwapFeesRequest
 import breez_sdk.ReverseSwapInfo
 import breez_sdk.ReverseSwapPairInfo
 import breez_sdk.ReverseSwapStatus
-import breez_sdk.SendOnchainRequest
-import breez_sdk.SendOnchainResponse
 import breez_sdk.SendPaymentRequest
 import breez_sdk.SendPaymentResponse
+import breez_sdk.SwapAmountType
 import breez_sdk.SwapInfo
 import breez_sdk.connect
 import breez_sdk.defaultConfig
 import breez_sdk.mnemonicToSeed
 import breez_sdk.parseInput
-import co.touchlab.kermit.Logger
 import com.blockstream.common.data.AppInfo
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.platformFileSystem
@@ -368,7 +369,7 @@ class LightningBridge constructor(
     }
 
     private fun updateReverseSwapInfo(){
-        _reverseSwapInfoStateFlow.value = breezSdkOrNull?.inProgressReverseSwaps().also {
+        _reverseSwapInfoStateFlow.value = breezSdkOrNull?.inProgressOnchainPayments().also {
             it?.also {
                 logger.d { it.joinToString { it.toString() } }
             }
@@ -459,9 +460,9 @@ class LightningBridge constructor(
         breezSdk.recommendedFees()
     }
 
-    fun maxReverseSwapAmount(): MaxReverseSwapAmountResponse {
-        return breezSdk.maxReverseSwapAmount().also {
-            logger.d { "maxReverseSwapAmount: $it" }
+    fun onchainPaymentLimits(): OnchainPaymentLimitsResponse {
+        return breezSdk.onchainPaymentLimits().also {
+            logger.d { "onchainPaymentLimits: $it" }
         }
     }
 
@@ -471,19 +472,19 @@ class LightningBridge constructor(
             }
     }
 
-    fun sendOnchain(address: String, satPerVbyte: UInt?): SendOnchainResponse {
+    fun payOnchain(address: String, satPerVbyte: UInt?): PayOnchainResponse {
         return try {
-            val amount = maxReverseSwapAmount().totalSat
-            val fee = breezSdk.fetchReverseSwapFees(ReverseSwapFeesRequest(sendAmountSat = amount))
+            val amount = onchainPaymentLimits().maxPayableSat
 
-            breezSdk.sendOnchain(
-                SendOnchainRequest(
-                    amountSat = amount,
-                    onchainRecipientAddress = address,
-                    pairHash = fee.feesHash,
-                    satPerVbyte = satPerVbyte ?: breezSdk.recommendedFees().economyFee.toUInt()
+            val prepareRes = breezSdk.prepareOnchainPayment(
+                PrepareOnchainPaymentRequest(
+                    amount,
+                    SwapAmountType.SEND,
+                    satPerVbyte ?: 10.toUInt()
                 )
             )
+
+            breezSdk.payOnchain(PayOnchainRequest(address, prepareRes))
         } catch (e: Exception) {
             throw exceptionWithNodeId(e)
         } finally {

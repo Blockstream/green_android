@@ -341,7 +341,7 @@ class RecoverFundsViewModel(
             }
 
             if (isSendAll) {
-                val maxReverseSwapAmount = session.lightningSdk.maxReverseSwapAmount().totalSat
+                val maxReverseSwapAmount = session.lightningSdk.onchainPaymentLimits().maxPayableSat
                 val minAmount =
                     session.lightningSdk.fetchReverseSwapFees(ReverseSwapFeesRequest()).min
 
@@ -497,7 +497,7 @@ class RecoverFundsViewModel(
 
             if (isSendAll) {
                 // Send Onchain all funds emptying the wallet
-                session.lightningSdk.sendOnchain(
+                session.lightningSdk.payOnchain(
                     address = address,
                     satPerVbyte = getFee()?.toUInt()
                 )
