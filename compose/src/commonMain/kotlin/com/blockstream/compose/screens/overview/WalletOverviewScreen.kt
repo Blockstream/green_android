@@ -78,7 +78,6 @@ import com.blockstream.common.models.overview.WalletOverviewViewModelAbstract
 import com.blockstream.common.models.settings.DenominationExchangeRateViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.compose.LocalRootNavigator
 import com.blockstream.compose.components.BottomNav
 import com.blockstream.compose.components.GreenAccountCard
 import com.blockstream.compose.components.GreenAlert
@@ -149,7 +148,6 @@ fun WalletOverviewScreen(
     viewModel: WalletOverviewViewModelAbstract
 ) {
     val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
-    val navigator = LocalRootNavigator.current
 
     var denominationExchangeRateViewModel by remember {
         mutableStateOf<DenominationExchangeRateViewModel?>(null)
@@ -270,24 +268,26 @@ fun WalletOverviewScreen(
             isRefreshing = true
         }) {
             if (!viewModel.isLightningShortcut) {
-                item {
+                item(key = "WalletBalance") {
                     WalletBalance(viewModel)
                 }
             }
 
-            item {
+            item(key = "WalletAssets") {
                 WalletAssets(viewModel = viewModel) {
                     viewModel.postEvent(NavigateDestinations.WalletAssets)
                 }
             }
 
-            item {
+            item(key = "GreenSpacer") {
                 GreenSpacer()
             }
 
             if (!isWalletOnboarding) {
 
-                items(items = alerts) {
+                items(items = alerts, key = {
+                    it.hashCode()
+                }) {
                     GreenAlert(
                         modifier = Modifier
                             .padding(horizontal = 16.dp)
@@ -392,21 +392,21 @@ fun WalletOverviewScreen(
                 }
 
                 lightningInfo?.also { lightningInfo ->
-                    item {
+                    item(key = "LightningInfo") {
                         LightningInfo(lightningInfoLook = lightningInfo, onLearnMore = {
                             viewModel.postEvent(WalletOverviewViewModel.LocalEvents.ClickLightningLearnMore)
                         })
                     }
                 }
 
-                item {
+                item(key = "Promo") {
                     Promo(
                         viewModel = viewModel,
                         modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp)
                     )
                 }
 
-                item {
+                item(key = "Transactions Header") {
                     Text(
                         text = stringResource(Res.string.id_latest_transactions),
                         style = titleSmall,
@@ -438,9 +438,9 @@ fun WalletOverviewScreen(
                     }
                 }
 
-                transactions.data()?.also {
-                    items(items = it, key = {
-                        it.transaction.txHash.hashCode() + it.transaction.txType.gdkType.hashCode()
+                transactions.data()?.also { transactions ->
+                    items(items = transactions, key = { tx ->
+                        tx.transaction.account.id.hashCode() + tx.transaction.txHash.hashCode() + tx.transaction.txType.gdkType.hashCode()
                     }) { item ->
                         GreenTransaction(transactionLook = item) {
                             viewModel.postEvent(Events.Transaction(transaction = it.transaction))
