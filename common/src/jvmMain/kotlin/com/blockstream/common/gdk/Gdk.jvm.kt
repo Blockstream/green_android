@@ -28,6 +28,7 @@ import com.blockstream.common.gdk.params.LoginCredentialsParams
 import com.blockstream.common.gdk.params.PreviousAddressParams
 import com.blockstream.common.gdk.params.ReceiveAddressParams
 import com.blockstream.common.gdk.params.ReconnectHintParams
+import com.blockstream.common.gdk.params.RsaVerifyParams
 import com.blockstream.common.gdk.params.SignMessageParams
 import com.blockstream.common.gdk.params.SubAccountParams
 import com.blockstream.common.gdk.params.SubAccountsParams
@@ -348,6 +349,10 @@ actual fun getGdkBinding(
             session: GASession,
             params: GreenJson<*>
         ): GAAuthHandler {
+            TODO("Not yet implemented")
+        }
+
+        override fun rsaVerify(session: GASession, params: RsaVerifyParams): GAAuthHandler {
             TODO("Not yet implemented")
         }
 

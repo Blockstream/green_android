@@ -6,9 +6,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SharedNonceRequestParams(
-//    @ByteString
     val script: ByteArray,
-//    @ByteString
     @SerialName("their_pubkey")
     val theirPubKey: ByteArray
 ) :

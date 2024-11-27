@@ -5,7 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class BlindingKeyRequestParams(
-//    @ByteString
     val script: ByteArray,
 ) :
     JadeSerializer<BlindingKeyRequestParams>() {

@@ -9,7 +9,6 @@ import kotlinx.serialization.Serializable
 data class OtaDataRequest(
     override val id: String = jadeId(),
     override val method: String = "ota_data",
-//    @ByteString
     override val params: ByteArray
 ) : Request<OtaDataRequest, ByteArray>() {
     override val timeout: Int = TIMEOUT_USER_INTERACTION

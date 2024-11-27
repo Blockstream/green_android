@@ -104,6 +104,7 @@ import kotlinx.coroutines.withTimeout
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.native.ObjCName
+import kotlin.time.Duration
 
 class SimpleGreenViewModel(
     greenWalletOrNull: GreenWallet? = null,
@@ -609,14 +610,14 @@ open class GreenViewModel constructor(
     protected fun <T: Any?> doAsync(
         action: suspend () -> T,
         mutex: Mutex? = null,
-        timeout: Long = 0,
+        timeout: Duration? = null, // The timeout is respected only on suspend functions, check documentation of withTimeout
         preAction: (() -> Unit)? = {
             onProgress.value = true
         },
         postAction: ((Exception?) -> Unit)? = {
             onProgress.value = false
         },
-        onSuccess: suspend (T) -> Unit,
+        onSuccess: suspend (T) -> Unit = {},
         onError: suspend ((Throwable) -> Unit) = {
             if (appInfo.isDebug) {
                 it.printStackTrace()
@@ -629,8 +630,8 @@ open class GreenViewModel constructor(
                 try {
                     preAction?.invoke()
 
-                    withContext(context = Dispatchers.IO) {
-                        if (timeout <= 0L) {
+                    withContext(context = Dispatchers.Default) {
+                        if(timeout == null) {
                             action.invoke()
                         } else {
                             withTimeout(timeout) {

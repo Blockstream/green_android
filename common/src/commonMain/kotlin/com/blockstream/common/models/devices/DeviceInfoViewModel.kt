@@ -8,15 +8,18 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavAction
 import com.blockstream.common.data.NavData
 import com.blockstream.common.devices.DeviceState
+import com.blockstream.common.devices.JadeDevice
 import com.blockstream.common.events.Event
 import com.blockstream.common.extensions.getWallet
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewGreenDevice
+import com.blockstream.common.gdk.params.RsaVerifyParams
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.StringHolder
+import com.blockstream.common.utils.randomChars
 import com.blockstream.jade.firmware.JadeFirmwareManager
 import com.juul.kable.ConnectionLostException
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
@@ -33,6 +36,7 @@ abstract class DeviceInfoViewModelAbstract : AbstractDeviceViewModel() {
     abstract val jadeIsUninitialized: StateFlow<Boolean>
 }
 
+@OptIn(ExperimentalStdlibApi::class)
 class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbstract() {
 
     private val _jadeIsUninitialized = MutableStateFlow(false)
@@ -88,7 +92,11 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
                     }).takeIf { deviceOrNull?.isJade == true },
                     NavAction(title = "Update Firmware", isMenuEntry = true, onClick = {
                         postSideEffect(LocalSideEffects.SelectFirmwareChannel())
+                    }).takeIf { appInfo.isDevelopmentOrDebug && deviceOrNull?.isJade == true },
+                    NavAction(title = "Genuine Check", isMenuEntry = true, onClick = {
+                        genuineCheck()
                     }).takeIf { appInfo.isDevelopmentOrDebug && deviceOrNull?.isJade == true }
+
                 )
             )
         }
@@ -115,6 +123,40 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
                 }
             }
         }
+    }
+
+    private fun genuineCheck(){
+        doAsync({
+            (device as JadeDevice).let {
+
+                val challenge = randomChars(32).encodeToByteArray()
+                val attestation = it.jadeApi!!.signAttestation(challenge = challenge)
+
+                val verifyChallenge = sessionManager.httpRequestHandler.rsaVerify(
+                    RsaVerifyParams(
+                        pem = attestation.pubkeyPem,
+                        challenge = challenge.toHexString(),
+                        signature = attestation.signature.toHexString()
+                    )
+                )
+                val verifyPubKey = sessionManager.httpRequestHandler.rsaVerify(
+                    RsaVerifyParams(
+                        pem = RsaVerifyParams.VerifyingAuthorityPubKey,
+                        challenge = attestation.pubkeyPem.encodeToByteArray().toHexString(),
+                        signature = attestation.extSignature.toHexString()
+                    )
+                )
+
+                if (verifyChallenge.result == true && verifyPubKey.result == true){
+                    true
+                } else {
+                    throw Exception(verifyChallenge.error ?: verifyPubKey.error)
+                }
+            }
+
+        }, onSuccess = {
+            postSideEffect(SideEffects.Dialog(title = StringHolder.create("Success"), message = StringHolder.create("Your device is Genuine")))
+        })
     }
 
     private fun connectDevice() {

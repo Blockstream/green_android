@@ -58,6 +58,7 @@ import com.blockstream.common.gdk.data.PendingTransaction
 import com.blockstream.common.gdk.data.PreviousAddresses
 import com.blockstream.common.gdk.data.ProcessedTransactionDetails
 import com.blockstream.common.gdk.data.Psbt
+import com.blockstream.common.gdk.data.RsaVerify
 import com.blockstream.common.gdk.data.Settings
 import com.blockstream.common.gdk.data.SignMessage
 import com.blockstream.common.gdk.data.TorEvent
@@ -93,6 +94,7 @@ import com.blockstream.common.gdk.params.LoginCredentialsParams
 import com.blockstream.common.gdk.params.PreviousAddressParams
 import com.blockstream.common.gdk.params.ReceiveAddressParams
 import com.blockstream.common.gdk.params.ReconnectHintParams
+import com.blockstream.common.gdk.params.RsaVerifyParams
 import com.blockstream.common.gdk.params.SignMessageParams
 import com.blockstream.common.gdk.params.SubAccountParams
 import com.blockstream.common.gdk.params.SubAccountsParams
@@ -2695,6 +2697,18 @@ class GdkSession constructor(
         network,
         gdk.completeSwapTransaction(gdkSession(network), params)
     ).result<CreateTransaction>(twoFactorResolver = twoFactorResolver)
+
+    suspend fun rsaVerify(params: RsaVerifyParams): RsaVerify {
+        // TODO clean it
+        if(!isNetworkInitialized){
+            prepareHttpRequest()
+        }
+
+        return authHandler(
+            defaultNetwork,
+            gdk.rsaVerify(gdkSession(defaultNetwork), params)
+        ).result<RsaVerify>()
+    }
 
     suspend fun signMessage(network: Network, params: SignMessageParams, hardwareWalletResolver: HardwareWalletResolver? = null): SignMessage = authHandler(
         network,

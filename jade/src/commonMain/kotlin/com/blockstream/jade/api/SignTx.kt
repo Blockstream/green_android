@@ -34,5 +34,3 @@ data class SignTransactionRequest(
 
     override fun kSerializer(): KSerializer<SignTransactionRequest> = kotlinx.serialization.serializer()
 }
-
-data class SignedTransaction(val signatures: List<String>, val signerCommitments: List<String>?)

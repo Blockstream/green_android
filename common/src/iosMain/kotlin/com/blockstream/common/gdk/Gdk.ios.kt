@@ -29,6 +29,7 @@ import com.blockstream.common.gdk.params.LoginCredentialsParams
 import com.blockstream.common.gdk.params.PreviousAddressParams
 import com.blockstream.common.gdk.params.ReceiveAddressParams
 import com.blockstream.common.gdk.params.ReconnectHintParams
+import com.blockstream.common.gdk.params.RsaVerifyParams
 import com.blockstream.common.gdk.params.SignMessageParams
 import com.blockstream.common.gdk.params.SubAccountParams
 import com.blockstream.common.gdk.params.SubAccountsParams
@@ -97,6 +98,7 @@ import gdk.GA_reconnect_hint
 import gdk.GA_refresh_assets
 import gdk.GA_register_network
 import gdk.GA_register_user
+import gdk.GA_rsa_verify
 import gdk.GA_send_nlocktimes
 import gdk.GA_send_transaction
 import gdk.GA_set_csvtime
@@ -1062,6 +1064,18 @@ class IOSGdkBinding constructor(config: InitConfig) : GdkBinding {
                 GA_complete_swap_transaction(
                     session = session.asGASession(),
                     swap_details = params.toGaJson(this),
+                    call = gaAuthHandler.ptr
+                ).okOrThrow(gaAuthHandler)
+            }
+        }
+    }
+
+    override fun rsaVerify(session: GASession, params: RsaVerifyParams): GAAuthHandler {
+        return memScoped {
+            gaAuthHandler().let { gaAuthHandler ->
+                GA_rsa_verify(
+                    session = session.asGASession(),
+                    details = params.toGaJson(this),
                     call = gaAuthHandler.ptr
                 ).okOrThrow(gaAuthHandler)
             }

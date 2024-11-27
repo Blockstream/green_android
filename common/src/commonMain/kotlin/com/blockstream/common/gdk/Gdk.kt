@@ -29,6 +29,7 @@ import com.blockstream.common.gdk.params.LoginCredentialsParams
 import com.blockstream.common.gdk.params.PreviousAddressParams
 import com.blockstream.common.gdk.params.ReceiveAddressParams
 import com.blockstream.common.gdk.params.ReconnectHintParams
+import com.blockstream.common.gdk.params.RsaVerifyParams
 import com.blockstream.common.gdk.params.SignMessageParams
 import com.blockstream.common.gdk.params.SubAccountParams
 import com.blockstream.common.gdk.params.SubAccountsParams
@@ -265,6 +266,9 @@ interface GdkBinding {
 
     @Throws(Exception::class)
     fun completeSwapTransaction(session: GASession, params: GreenJson<*>): GAAuthHandler
+
+    @Throws(Exception::class)
+    fun rsaVerify(session: GASession, params: RsaVerifyParams): GAAuthHandler
 
     fun httpRequest(session: GASession, data: JsonElement): JsonElement
 

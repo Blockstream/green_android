@@ -212,7 +212,7 @@ class SendConfirmViewModel constructor(
                     postSideEffect(SideEffects.Dismiss)
                 }
 
-            }, preAction = null, postAction = null, timeout = 30, onSuccess = {
+            }, preAction = null, postAction = null, onSuccess = {
                 postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_the_address_is_valid)))
                 // Dismiss Verify Transaction Dialog
                 postSideEffect(SideEffects.Dismiss)

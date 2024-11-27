@@ -33,6 +33,10 @@ import com.blockstream.jade.api.Request
 import com.blockstream.jade.api.Response
 import com.blockstream.jade.api.SharedNonceRequest
 import com.blockstream.jade.api.SharedNonceRequestParams
+import com.blockstream.jade.api.SignAttestation
+import com.blockstream.jade.api.SignAttestationRequest
+import com.blockstream.jade.api.SignAttestationRequestParams
+import com.blockstream.jade.api.SignAttestationResponse
 import com.blockstream.jade.api.SignMessageRequest
 import com.blockstream.jade.api.SignMessageRequestParams
 import com.blockstream.jade.api.SignTransactionRequest
@@ -109,36 +113,6 @@ class JadeAPI internal constructor(
         }
         jade.disconnect()
     }
-
-    // Generate the blinding factors and commitments for a given output.
-    // Can optionally get a "custom" VBF, normally used for the last
-    // input where the VBF is not random, but generated accordingly to
-    // all the others.
-    // `hash_prevouts` and `output_index` have the same meaning as in
-    //   the `get_blinding_factor` call.
-    // NOTE: the `asset_id` should be passed as it is normally displayed, so
-    // reversed compared to the "consensus" representation.
-//    @Throws(IOException::class)
-//    fun getCommitments(
-//        assetId: ByteArray?,
-//        value: Long?,
-//        hashPrevouts: ByteArray,
-//        outputIdx: Int?,
-//        vbf: ByteArray?
-//    ): Commitment {
-//        val params = makeParams("hash_prevouts", hashPrevouts)
-//            .put("output_index", outputIdx)
-//            .put("asset_id", assetId)
-//            .put("value", value)
-//
-//        // Optional vbf param
-//        if (vbf != null) {
-//            params.put("vbf", vbf)
-//        }
-//
-//        val result = this.jadeRpc("get_commitments", params, TIMEOUT_AUTONOMOUS)
-//        return CborMapper.treeToValue(result, Commitment::class.java)
-//    }
 
     @Throws(JadeError::class)
     private fun <T, P>resultOrThrow(
@@ -217,6 +191,12 @@ class JadeAPI internal constructor(
         }
 
         return jadeRpc(OtaCompleteRequest(), BooleanResponse.serializer())
+    }
+
+    @Throws(Exception::class)
+    suspend fun signAttestation(challenge: ByteArray): SignAttestation {
+        val request = SignAttestationRequest(params = SignAttestationRequestParams(challenge = challenge))
+        return jadeRpc(request, SignAttestationResponse.serializer())
     }
 
     // Get a "trusted" blinding factor to blind an output. Normally the blinding
@@ -456,9 +436,9 @@ class JadeAPI internal constructor(
         return jadeRpc(request, ByteArrayResponse.serializer())
     }
 
-    private suspend fun <R: Response<*, P>, P> jadeRpc(request: Request<*, *>, serializer: DeserializationStrategy<R>): P {
+    private suspend fun <R: Response<*, P>, P> jadeRpc(request: Request<*, *>, responseSerializer: DeserializationStrategy<R>): P {
 
-        val response = jade.makeRpcCall(request = request, serializer = serializer, timeout = request.timeout, drain = false)
+        val response = jade.makeRpcCall(request = request, serializer = responseSerializer, timeout = request.timeout, drain = false)
 
         val result = resultOrThrow(request, response)
 
@@ -473,21 +453,26 @@ class JadeAPI internal constructor(
             val httpResponse = makeHttpRequest(result.httpRequest)
 
 
-            if (result.httpRequest.onReply == "pin") {
-                val data = httpResponse.jsonObject["data"]!!.jsonPrimitive.content
-                jadeRpc(request = PinRequest(params = PinRequestParams(data = data)), serializer)
-            } else if (result.httpRequest.onReply == "handshake_init") {
-                val sig = httpResponse.jsonObject["sig"]?.jsonPrimitive?.content!!
-                val ske = httpResponse.jsonObject["ske"]?.jsonPrimitive?.content!!
+            when (result.httpRequest.onReply) {
+                "pin" -> {
+                    val data = httpResponse.jsonObject["data"]!!.jsonPrimitive.content
+                    jadeRpc(request = PinRequest(params = PinRequestParams(data = data)), responseSerializer)
+                }
+                "handshake_init" -> {
+                    val sig = httpResponse.jsonObject["sig"]?.jsonPrimitive?.content!!
+                    val ske = httpResponse.jsonObject["ske"]?.jsonPrimitive?.content!!
 
-                jadeRpc(request = HandshakeInitRequest(params = HandshakeInitRequestParams(sig = sig, ske = ske)), serializer)
-            } else if (result.httpRequest.onReply == "handshake_complete") {
-                val encryptedKey = httpResponse.jsonObject["encrypted_key"]?.jsonPrimitive?.content!!
-                val hmac = httpResponse.jsonObject["hmac"]?.jsonPrimitive?.content!!
+                    jadeRpc(request = HandshakeInitRequest(params = HandshakeInitRequestParams(sig = sig, ske = ske)), responseSerializer)
+                }
+                "handshake_complete" -> {
+                    val encryptedKey = httpResponse.jsonObject["encrypted_key"]?.jsonPrimitive?.content!!
+                    val hmac = httpResponse.jsonObject["hmac"]?.jsonPrimitive?.content!!
 
-                jadeRpc(request = HandshakeCompleteRequest(params = HandshakeCompleteRequestParams(encryptedKey = encryptedKey, hmac = hmac)), serializer)
-            } else {
-                throw Exception("Unsupported on-reply operation")
+                    jadeRpc(request = HandshakeCompleteRequest(params = HandshakeCompleteRequestParams(encryptedKey = encryptedKey, hmac = hmac)), responseSerializer)
+                }
+                else -> {
+                    throw Exception("Unsupported on-reply operation")
+                }
             }
 
         } else {

@@ -149,9 +149,9 @@ abstract class ReceiveViewModelAbstract(greenWallet: GreenWallet, accountAssetOr
 
 }
 
+@OptIn(ExperimentalStdlibApi::class)
 class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWallet) :
     ReceiveViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = initialAccountAsset) {
-
     private val _receiveAddress = MutableStateFlow<String?>(null)
     private val _receiveAddressUri = MutableStateFlow<String?>(null)
     private val _showVerifyOnDevice = MutableStateFlow(false)
@@ -507,7 +507,7 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
                     ) != address.address){
                         throw Exception("id_the_addresses_dont_match")
                     }
-                }, preAction = null, postAction = null, timeout = 30, onSuccess = {
+                }, preAction = null, postAction = null, onSuccess = {
                     postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_the_address_is_valid)))
                     // Dismiss Verify Transaction Dialog
                     postSideEffect(SideEffects.Dismiss)

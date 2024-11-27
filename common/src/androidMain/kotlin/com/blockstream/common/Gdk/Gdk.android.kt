@@ -29,6 +29,7 @@ import com.blockstream.common.gdk.params.LoginCredentialsParams
 import com.blockstream.common.gdk.params.PreviousAddressParams
 import com.blockstream.common.gdk.params.ReceiveAddressParams
 import com.blockstream.common.gdk.params.ReconnectHintParams
+import com.blockstream.common.gdk.params.RsaVerifyParams
 import com.blockstream.common.gdk.params.SignMessageParams
 import com.blockstream.common.gdk.params.SubAccountParams
 import com.blockstream.common.gdk.params.SubAccountsParams
@@ -325,6 +326,9 @@ class AndroidGdk(log: Boolean, config: InitConfig) : GdkBinding {
         return GDK.complete_swap_transaction(session, params)
     }
 
+    override fun rsaVerify(session: GASession, params: RsaVerifyParams): GAAuthHandler {
+        return GDK.rsa_verify(session, params)
+    }
 
     override fun httpRequest(session: GASession, data: JsonElement): JsonElement {
         return GDK.http_request(session, data) as JsonElement

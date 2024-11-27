@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 data class Error(
     val code: Int,
     val message: String,
-//    @ByteString
     val data: ByteArray? = null
 ) : JadeSerializer<Error>() {
     override fun kSerializer(): KSerializer<Error> = kotlinx.serialization.serializer()

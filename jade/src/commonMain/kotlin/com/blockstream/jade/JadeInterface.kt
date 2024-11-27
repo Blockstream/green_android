@@ -119,7 +119,6 @@ class JadeInterface internal constructor(private val connection: JadeConnection)
 
                 // Platform specific cbor de-serializer
                 val json: String? = null
-                // json = CborMapper.readTree(collected.toByteArray())
 
                 // Is it a response to a request ?
                 if (response != null) {
