@@ -91,7 +91,7 @@ class DeviceScanViewModel(greenWallet: GreenWallet) :
                     NavAction(title = getString(Res.string.id_troubleshoot), onClick = {
                         postEvent(LocalEvents.Troubleshoot)
                     }),
-                ), onBackPressed = { !onProgress.value }
+                )
             )
         }
 
