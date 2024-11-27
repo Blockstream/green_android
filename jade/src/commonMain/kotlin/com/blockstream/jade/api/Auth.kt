@@ -3,7 +3,6 @@ package com.blockstream.jade.api
 import com.blockstream.jade.TIMEOUT_NONE
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
 @Serializable
 data class AuthRequestParams(val network: String, val epoch: Long) :
@@ -19,6 +18,5 @@ data class AuthRequest(
 ) : Request<AuthRequest, AuthRequestParams>() {
     override fun kSerializer(): KSerializer<AuthRequest> = kotlinx.serialization.serializer()
 
-    @Transient
-    override val timeout: Int = TIMEOUT_NONE
+    override fun timeout(): Int = TIMEOUT_NONE
 }

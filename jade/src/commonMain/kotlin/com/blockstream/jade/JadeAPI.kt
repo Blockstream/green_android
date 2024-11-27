@@ -438,7 +438,7 @@ class JadeAPI internal constructor(
 
     private suspend fun <R: Response<*, P>, P> jadeRpc(request: Request<*, *>, responseSerializer: DeserializationStrategy<R>): P {
 
-        val response = jade.makeRpcCall(request = request, serializer = responseSerializer, timeout = request.timeout, drain = false)
+        val response = jade.makeRpcCall(request = request, serializer = responseSerializer, timeout = request.timeout(), drain = false)
 
         val result = resultOrThrow(request, response)
 

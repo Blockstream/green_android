@@ -22,5 +22,5 @@ data class PinRequest(
     override fun kSerializer(): KSerializer<PinRequest> = kotlinx.serialization.serializer()
 
     // User interaction can be asked for BIP39 Passphrase setup
-    override val timeout: Int = TIMEOUT_USER_INTERACTION
+    override fun timeout(): Int = TIMEOUT_USER_INTERACTION
 }

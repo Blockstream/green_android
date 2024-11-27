@@ -21,5 +21,5 @@ data class SignatureRequest(
 ) : Request<SignatureRequest, SignatureRequestParams>() {
     override fun kSerializer() = serializer()
 
-    override val timeout: Int = TIMEOUT_USER_INTERACTION
+    override fun timeout(): Int = TIMEOUT_USER_INTERACTION
 }

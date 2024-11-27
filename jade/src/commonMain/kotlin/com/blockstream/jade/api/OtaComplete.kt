@@ -12,6 +12,6 @@ data class OtaCompleteRequest(
     override val params: Unit = Unit
 ) : Request<OtaCompleteRequest, Unit>() {
     // ota_complete sometimes takes a bit more than 2 secs
-    override val timeout: Int = TIMEOUT_AUTONOMOUS_LONG
+    override fun timeout(): Int = TIMEOUT_AUTONOMOUS_LONG
     override fun kSerializer(): KSerializer<OtaCompleteRequest> = kotlinx.serialization.serializer()
 }

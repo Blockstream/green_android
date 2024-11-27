@@ -24,7 +24,7 @@ data class SignMessageRequest(
 
     override fun kSerializer(): KSerializer<SignMessageRequest> = kotlinx.serialization.serializer()
 
-    override val timeout: Int = TIMEOUT_USER_INTERACTION
+    override fun timeout(): Int = TIMEOUT_USER_INTERACTION
 }
 
 @OptIn(ExperimentalStdlibApi::class)

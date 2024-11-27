@@ -30,7 +30,7 @@ data class SignTransactionRequest(
 ) : Request<SignTransactionRequest, SignTransactionRequestParams>() {
     override fun encodeDefaultsValues(): Boolean = false
 
-    override val timeout: Int = TIMEOUT_USER_INTERACTION
+    override fun timeout(): Int = TIMEOUT_USER_INTERACTION
 
     override fun kSerializer(): KSerializer<SignTransactionRequest> = kotlinx.serialization.serializer()
 }

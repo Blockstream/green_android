@@ -27,7 +27,7 @@ data class OtaRequest(
     override val method: String,
     override val params: OtaRequestParams
 ) : Request<OtaRequest, OtaRequestParams>() {
-    override val timeout: Int = TIMEOUT_USER_INTERACTION
+    override fun timeout(): Int = TIMEOUT_USER_INTERACTION
     override fun kSerializer(): KSerializer<OtaRequest> = kotlinx.serialization.serializer()
 
     companion object {

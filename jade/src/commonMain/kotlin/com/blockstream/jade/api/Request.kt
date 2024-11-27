@@ -2,7 +2,6 @@ package com.blockstream.jade.api
 
 import com.blockstream.jade.TIMEOUT_AUTONOMOUS
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
 @Serializable
 sealed class Request<T, P> : JadeSerializer<T>() {
@@ -10,6 +9,5 @@ sealed class Request<T, P> : JadeSerializer<T>() {
     abstract val method: String
     abstract val params: P?
 
-    @Transient
-    open val timeout: Int = TIMEOUT_AUTONOMOUS
+    open fun timeout(): Int = TIMEOUT_AUTONOMOUS
 }

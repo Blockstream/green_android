@@ -32,7 +32,7 @@ data class SignAttestationRequest(
 ) : Request<SignAttestationRequest, SignAttestationRequestParams>() {
     override fun kSerializer(): KSerializer<SignAttestationRequest> = kotlinx.serialization.serializer()
 
-    override val timeout: Int = TIMEOUT_USER_INTERACTION
+    override fun timeout(): Int = TIMEOUT_USER_INTERACTION
 }
 
 @Serializable
