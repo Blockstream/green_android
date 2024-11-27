@@ -33,8 +33,8 @@ import com.blockstream.common.models.promo.PromoViewModelAbstract
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.theme.bodyMedium
-import com.blockstream.compose.theme.titleMedium
+import com.blockstream.compose.theme.bodyLarge
+import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import org.koin.core.parameter.parametersOf
@@ -94,11 +94,11 @@ fun PromoScreen(
                     promo.titleLarge?.also {
                         Text(
                             text = it,
-                            style = titleMedium,
+                            style = titleLarge,
                         )
                     }
 
-                    promo.textLarge?.also { Text(it, style = bodyMedium) }
+                    promo.textLarge?.also { Text(it, style = bodyLarge) }
                 }
 
                 promo.ctaLarge?.also { ctaSmall ->

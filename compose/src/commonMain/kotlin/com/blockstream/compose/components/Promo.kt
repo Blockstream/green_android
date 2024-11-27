@@ -28,7 +28,7 @@ import com.blockstream.common.extensions.isBlank
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.compose.theme.bodyMedium
-import com.blockstream.compose.theme.titleSmall
+import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import org.jetbrains.compose.resources.painterResource
 
@@ -92,7 +92,7 @@ fun Promo(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = promo.titleSmall ?: "",
-                        style = titleSmall,
+                        style = titleMedium,
                         modifier = Modifier
                             .padding(
                                 start = 16.dp,

@@ -31,6 +31,7 @@ import com.blockstream.common.extensions.needs2faActivation
 import com.blockstream.common.extensions.networkForAsset
 import com.blockstream.common.extensions.title
 import com.blockstream.common.extensions.toSortedLinkedHashMap
+import com.blockstream.common.extensions.tryCatch
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountType
@@ -1958,7 +1959,7 @@ class GdkSession constructor(
         }
     }
 
-    suspend fun getFeeEstimates(network: Network): FeeEstimation = try {
+    suspend fun getFeeEstimates(network: Network): FeeEstimation = tryCatch(context = Dispatchers.Default) {
         if(network.isLightning){
             lightningSdk.recommendedFees().let { fees ->
                 (
@@ -1985,10 +1986,7 @@ class GdkSession constructor(
                 logger.d { "FeeEstimation: ${network.id} $it" }
             }
         }
-    } catch (e: Exception) {
-        e.printStackTrace()
-        FeeEstimation(fees = mutableListOf(network.defaultFee))
-    }
+    }  ?: FeeEstimation(fees = mutableListOf(network.defaultFee))
 
     suspend fun getTransactions(account: Account, params: TransactionParams = TransactionParams(subaccount = 0)) = (if (account.network.isLightning) {
         getLightningTransactions()
@@ -2488,9 +2486,10 @@ class GdkSession constructor(
     // asset_info in Convert object can be null for liquid assets that don't have asset metadata
     // if no asset is given, no conversion is needed (conversion will be identified as a btc value in gdk)
     // onlyInAcceptableRange return MIN, MAX values so that the error pop in different gdk call
-    suspend fun convert(assetId: String? = null, asString: String? = null, asLong: Long? = null, denomination: String? = null, onlyInAcceptableRange: Boolean = true): Balance? {
-        val network = assetId.networkForAsset(this) ?: defaultNetwork
-        val isPolicyAsset = assetId.isPolicyAsset(this)
+    suspend fun convert(assetId: String? = null, asString: String? = null, asLong: Long? = null, denomination: String? = null, onlyInAcceptableRange: Boolean = true): Balance? = withContext(context = Dispatchers.Default) {
+        
+        val network = assetId.networkForAsset(this@GdkSession) ?: defaultNetwork
+        val isPolicyAsset = assetId.isPolicyAsset(this@GdkSession)
         val asset = assetId?.let { getAsset(it) }
 
         val convert = if (isPolicyAsset || assetId == null || asString == null) {
@@ -2507,7 +2506,7 @@ class GdkSession constructor(
                 put(assetId, asString)
             }
         } else {
-            return Balance.fromAssetWithoutMetadata(asLong ?: 0)
+            return@withContext Balance.fromAssetWithoutMetadata(asLong ?: 0)
         }
 
         val balance = try {
@@ -2536,10 +2535,9 @@ class GdkSession constructor(
             }
         }
 
-
         balance?.asset = asset
 
-        return balance
+        return@withContext balance
     }
 
     private suspend fun getUnspentOutputs(network: Network, params: BalanceParams) = authHandler(
