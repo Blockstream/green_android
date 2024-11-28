@@ -1,3 +1,7 @@
+@file:OptIn(ExperimentalStdlibApi::class, ExperimentalUnsignedTypes::class,
+    ExperimentalStdlibApi::class
+)
+
 package com.blockstream.common.lightning
 
 import breez_sdk.AesSuccessActionDataResult
@@ -225,7 +229,9 @@ fun Transaction.Companion.fromSwapInfo(account: Account, swapInfo: SwapInfo, isR
         feeRate = 0,
         memo = "",
         spvVerified = "",
-        txHash = swapInfo.refundTxIds.firstOrNull() ?: "",
+        txHash = swapInfo.refundTxIds.firstOrNull() ?: swapInfo.confirmedTxIds.firstOrNull()
+        ?: swapInfo.unconfirmedTxIds.firstOrNull() ?: swapInfo.paymentHash.toList().toUByteArray()
+            .toHexString(),
         type = Transaction.Type.IN.gdkType,
         satoshi = mapOf(BTC_POLICY_ASSET to swapInfo.confirmedSats.toLong() + (if(isRefundableSwap) 0 else swapInfo.unconfirmedSats.toLong())),
         isLightningSwap = true,
