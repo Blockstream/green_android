@@ -6,11 +6,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_amount
-import com.blockstream.compose.R
+import blockstream_green.common.generated.resources.id_error
 import com.blockstream.compose.theme.GreenChromePreview
 import org.jetbrains.compose.resources.stringResource
 
@@ -32,7 +31,7 @@ fun GreenDataLayoutPreview() {
                 mutableStateOf<String?>("Error")
             }
 
-            GreenDataLayout(title = stringResource(R.string.id_error), helperText = error, onClick = {
+            GreenDataLayout(title = stringResource(Res.string.id_error), helperText = error, onClick = {
                 if (error == null) {
                     error = "This is an error"
                 } else {
