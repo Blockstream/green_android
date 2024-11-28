@@ -335,7 +335,7 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
                 }
 
                 val activeWord = activeWord()
-                if(activeWord != null && matchedWords.value.firstOrNull() == activeWord){
+                if(activeWord != null && matchedWords.value.let { it.size == 1 && it.firstOrNull() == activeWord }){
                     append(activeWord)
                 }
             }
