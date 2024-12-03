@@ -89,7 +89,7 @@ fun Promo(
                 )
             ) {
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row {
                     Text(
                         text = promo.titleSmall ?: "",
                         style = titleMedium,
@@ -123,6 +123,7 @@ fun Promo(
                 promo.ctaSmall?.also { ctaSmall ->
                     GreenButton(
                         text = ctaSmall,
+                        size = GreenButtonSize.BIG,
                         modifier = Modifier.fillMaxWidth()
                             .padding(horizontal = 16.dp)
                     ) {
