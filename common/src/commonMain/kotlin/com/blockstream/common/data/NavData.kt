@@ -6,6 +6,7 @@ data class NavData(
     val title: String? = null,
     val subtitle: String? = null,
     val isVisible: Boolean = true,
+    val showNavigationIcon: Boolean = true,
     val onBackPressed: () -> Boolean = { true },
     val actions: List<NavAction> = listOf()
 )

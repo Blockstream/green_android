@@ -74,6 +74,7 @@ import com.blockstream.compose.screens.devices.DeviceScanScreen
 import com.blockstream.compose.screens.login.LoginScreen
 import com.blockstream.compose.screens.onboarding.phone.PinScreen
 import com.blockstream.compose.screens.overview.WalletOverviewScreen
+import com.blockstream.compose.screens.promo.PromoScreen
 import com.blockstream.compose.screens.recovery.RecoveryCheckScreen
 import com.blockstream.compose.screens.recovery.RecoveryIntroScreen
 import com.blockstream.compose.screens.recovery.RecoveryPhraseScreen
@@ -89,6 +90,7 @@ import com.blockstream.compose.theme.GreenChrome
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.utils.AppBarState
 import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.ifTrue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -145,10 +147,10 @@ fun GreenApp(mainViewModel: MainViewModel, modifier: Modifier = Modifier) {
         val deviceManager = koinInject<DeviceManager>()
         val isLocked by mainViewModel.lockScreen.collectAsStateWithLifecycle()
 
-        Box(modifier = modifier) {
+        Box {
 
             Navigator(screen = HomeScreen, onBackPressed = { _ ->
-                !isLocked && appBarState.data.value.isVisible && appBarState.data.value.onBackPressed()
+                !isLocked && appBarState.data.value.onBackPressed()
             }) { navigator ->
 
                 val settings by mainViewModel.settingsManager.appSettingsStateFlow.collectAsStateWithLifecycle()
@@ -237,44 +239,76 @@ fun GreenApp(mainViewModel: MainViewModel, modifier: Modifier = Modifier) {
                                         )
                                     },
                                     content = { innerPadding ->
-                                        Box(
-                                            modifier = Modifier
-                                                .padding(innerPadding),
-                                        ) {
 
-                                            var showUrlWarning by remember { mutableStateOf<List<String>?>(null) }
+                                        var showUrlWarning by remember {
+                                            mutableStateOf<List<String>?>(
+                                                null
+                                            )
+                                        }
 
-                                            showUrlWarning?.also {
-                                                UrlWarningDialog(viewModel = mainViewModel, urls = it, onDismiss = { allow, remember ->
-                                                    mainViewModel.postEvent(MainViewModel.LocalEvents.UrlWarningResponse(allow = allow, remember = remember))
-                                                    showUrlWarning = null
-                                                })
-                                            }
-
-                                            // Handle side effects from MainViewModel like navigating from handled intent
-                                            HandleSideEffect(mainViewModel) {
-                                                if (it is SideEffects.UrlWarning) {
-                                                    showUrlWarning = it.urls
-                                                } else if (it is SideEffects.TorWarning) {
-                                                    dialogState.openDialog(
-                                                        OpenDialogData(
-                                                            title = StringHolder.create(Res.string.id_warning),
-                                                            message = StringHolder.create(Res.string.id_do_you_want_to_enable_tor),
-                                                            primaryText = getString(Res.string.id_enable),
-                                                            onPrimary = {
-                                                                mainViewModel.postEvent(MainViewModel.LocalEvents.TorWarningResponse(enable = true))
-                                                            }, onSecondary = {
-                                                                mainViewModel.postEvent(MainViewModel.LocalEvents.TorWarningResponse(enable = false))
-                                                            }, onDismiss = {
-                                                                mainViewModel.postEvent(MainViewModel.LocalEvents.TorWarningResponse(enable = false))
-                                                            }
+                                        showUrlWarning?.also {
+                                            UrlWarningDialog(
+                                                viewModel = mainViewModel,
+                                                urls = it,
+                                                onDismiss = { allow, remember ->
+                                                    mainViewModel.postEvent(
+                                                        MainViewModel.LocalEvents.UrlWarningResponse(
+                                                            allow = allow,
+                                                            remember = remember
                                                         )
                                                     )
+                                                    showUrlWarning = null
+                                                })
+                                        }
+
+                                        // Handle side effects from MainViewModel like navigating from handled intent
+                                        HandleSideEffect(mainViewModel) {
+                                            if (it is SideEffects.UrlWarning) {
+                                                showUrlWarning = it.urls
+                                            } else if (it is SideEffects.TorWarning) {
+                                                dialogState.openDialog(
+                                                    OpenDialogData(
+                                                        title = StringHolder.create(Res.string.id_warning),
+                                                        message = StringHolder.create(Res.string.id_do_you_want_to_enable_tor),
+                                                        primaryText = getString(Res.string.id_enable),
+                                                        onPrimary = {
+                                                            mainViewModel.postEvent(
+                                                                MainViewModel.LocalEvents.TorWarningResponse(
+                                                                    enable = true
+                                                                )
+                                                            )
+                                                        }, onSecondary = {
+                                                            mainViewModel.postEvent(
+                                                                MainViewModel.LocalEvents.TorWarningResponse(
+                                                                    enable = false
+                                                                )
+                                                            )
+                                                        }, onDismiss = {
+                                                            mainViewModel.postEvent(
+                                                                MainViewModel.LocalEvents.TorWarningResponse(
+                                                                    enable = false
+                                                                )
+                                                            )
+                                                        }
+                                                    )
+                                                )
+                                            }
+                                        }
+
+                                        FadeSlideTransition(navigator = navigator, content = {
+                                            Box(
+                                                modifier = Modifier.ifTrue(it !is PromoScreen) {
+                                                    padding(innerPadding)
+                                                }
+                                            ) {
+                                                // Allow PromoScreen to cover the whole screen
+                                                if (it is PromoScreen) {
+                                                    it.Content(innerPadding)
+                                                } else {
+                                                    it.Content()
                                                 }
                                             }
-
-                                            FadeSlideTransition(navigator)
-                                        }
+                                        })
                                     },
                                 )
 
@@ -369,7 +403,7 @@ fun GreenPreview(content: @Composable () -> Unit) {
 
     // Coil preview faker
     val previewHandler = AsyncImagePreviewHandler {
-        FakeImage(color = 0xFFFF00, width = 300, height = 300)
+        FakeImage(color = 0xFFFF00)
     }
 
     GreenChrome()

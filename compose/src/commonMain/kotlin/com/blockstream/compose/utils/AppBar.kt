@@ -11,8 +11,7 @@ import com.blockstream.compose.LocalRootNavigator
 
 @Stable
 class AppBarState(navData: NavData = NavData()) {
-    var data = mutableStateOf(navData)
-        private set
+    val data = mutableStateOf(navData)
 
     fun update(data : NavData){
         this.data.value = data

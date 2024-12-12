@@ -2,12 +2,14 @@ package com.blockstream.common.models
 
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.data.AppInfo
+import com.blockstream.common.managers.PromoManager
 import com.blockstream.common.managers.SessionManager
 import io.mockk.every
 import io.mockk.mockkClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -47,6 +49,10 @@ abstract class TestViewModel<VM : GreenViewModel>: KoinTest {
 
                     declareMock<SessionManager> {
 
+                    }
+
+                    declareMock<PromoManager> {
+                        every { promos } returns MutableStateFlow(listOf())
                     }
                 }
             )

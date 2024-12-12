@@ -5,10 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.blockstream.compose.LocalAppCoroutine
-import com.blockstream.compose.LocalSnackbar
 import com.blockstream.compose.managers.LocalPlatformManager
-import kotlinx.coroutines.launch
 
 
 @Composable

@@ -1,8 +1,12 @@
 package com.blockstream.common.models.promo
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.x
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.NavAction
 import com.blockstream.common.data.NavData
 import com.blockstream.common.data.Promo
+import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.models.GreenViewModel
 import com.rickclephas.kmp.observableviewmodel.launch
@@ -16,7 +20,7 @@ abstract class PromoViewModelAbstract(promo: Promo, greenWallet: GreenWallet?) :
         this.promo.value = promo
     }
 
-    override fun initPromo() { }
+    override fun initPromo() {}
 }
 
 class PromoViewModel(promo: Promo, greenWallet: GreenWallet?) :
@@ -24,7 +28,17 @@ class PromoViewModel(promo: Promo, greenWallet: GreenWallet?) :
 
     init {
         viewModelScope.launch {
-            _navData.value = NavData(title = promo.title)
+            _navData.value = NavData(title = promo.title,
+                showNavigationIcon = promo.layoutLarge == 0,
+                actions = listOfNotNull(
+                    (NavAction(
+                        title = "Close",
+                        icon = Res.drawable.x,
+                        isMenuEntry = false
+                    ) {
+                        postEvent(Events.NavigateBack)
+                    }).takeIf { promo.layoutLarge == 1 }
+                ))
         }
 
         bootstrap()

@@ -65,7 +65,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.buildJsonObject
 import org.jetbrains.compose.resources.getString
 import saschpe.kase64.base64DecodedBytes
@@ -620,7 +619,8 @@ class SendViewModel(
             onProgress.value = true
             _onProgressSending.value = true
             _navData.value = _navData.value.copy(
-                isVisible = false
+                isVisible = false,
+                onBackPressed = { false }
             )
         }, postAction = {
             (it == null).also {
@@ -628,7 +628,8 @@ class SendViewModel(
                 onProgress.value = it
             }
             _navData.value = _navData.value.copy(
-                isVisible = true
+                isVisible = true,
+                onBackPressed = { true }
             )
         }, onSuccess = {
             countly.endSendTransaction(

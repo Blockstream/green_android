@@ -93,7 +93,6 @@ kotlin {
         val desktopMain by getting
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
-            implementation(libs.ktor.client.java)
         }
 
         androidMain.dependencies {
@@ -117,7 +116,6 @@ kotlin {
             /**  --- Android / Google ------------------------------------------------------------------- */
             api(libs.androidx.browser)
             implementation (libs.accompanist.permissions)
-            implementation(libs.ktor.client.android)
             /** ----------------------------------------------------------------------------------------- */
 
             /**  --- QR Scanner ------------------------------------------------------------------------- */
@@ -128,13 +126,16 @@ kotlin {
             api(libs.rive.android)
             /** ----------------------------------------------------------------------------------------- */
 
+            /**  --- media3 ----------------------------------------------------------------------------- */
+            implementation(libs.androidx.media3.exoplayer)
+            implementation(libs.androidx.media3.ui)
+            /** ----------------------------------------------------------------------------------------- */
 
             implementation(libs.peekaboo.image.picker)
         }
 
         iosMain.dependencies {
             implementation(libs.peekaboo.image.picker)
-            implementation(libs.ktor.client.darwin)
         }
     }
 }

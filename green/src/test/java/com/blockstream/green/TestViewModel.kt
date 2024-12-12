@@ -5,6 +5,7 @@ import com.blockstream.common.CountlyBase
 import com.blockstream.common.data.AppInfo
 import com.blockstream.common.database.Database
 import com.blockstream.common.gdk.GdkSession
+import com.blockstream.common.managers.PromoManager
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.models.GreenViewModel
@@ -14,6 +15,7 @@ import io.mockk.mockkClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -74,6 +76,10 @@ open class TestViewModel<VM : GreenViewModel>: KoinTest {
                         every { getOnBoardingSession() } returns mockk()
                         every { getWalletSessionOrOnboarding(any()) } returns mockk()
                         every { connectionChangeEvent } returns mockk()
+                    }
+
+                    declareMock<PromoManager> {
+                        every { promos } returns MutableStateFlow(listOf())
                     }
 
                     declareMock<Database> {

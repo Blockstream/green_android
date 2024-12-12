@@ -100,6 +100,7 @@ class AboutViewModel : AboutViewModelAbstract() {
             postSideEffect(SideEffects.Snackbar(text = StringHolder.create("Countly offset reset to zero")))
         } else if (event is LocalEvents.ResetPromos) {
             settingsManager.resetPromoDismissals()
+            promoManager.clearCache()
             postSideEffect(SideEffects.Snackbar(text = StringHolder.create("Reset promos")))
         } else if (event is LocalEvents.CountlyCopyDeviceId) {
             countly.getDeviceId().let { deviceId ->

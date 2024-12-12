@@ -102,7 +102,7 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
         }
 
         onProgress.onEach {
-            _navData.value = _navData.value.copy(isVisible = !it)
+            _navData.value = _navData.value.copy(isVisible = !it, onBackPressed = { !it })
         }.launchIn(this)
 
         bootstrap()

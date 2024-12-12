@@ -57,7 +57,6 @@ class GreenActivity : FragmentActivity() {
 
         enableEdgeToEdge()
         setContent {
-
             GreenChrome()
             GreenTheme {
                 CompositionLocalProvider(LocalActivity provides this) {

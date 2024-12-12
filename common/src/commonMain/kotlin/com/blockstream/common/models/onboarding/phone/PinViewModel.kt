@@ -20,8 +20,8 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.generateWalletName
-import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -66,7 +66,7 @@ class PinViewModel constructor(
         }
 
         onProgress.onEach {
-            _navData.value = _navData.value.copy(isVisible = !it)
+            _navData.value = _navData.value.copy(isVisible = !it, onBackPressed = { !it })
         }.launchIn(this)
 
         bootstrap()

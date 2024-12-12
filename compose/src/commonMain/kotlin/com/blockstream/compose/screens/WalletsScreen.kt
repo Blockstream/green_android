@@ -35,6 +35,7 @@ import com.blockstream.common.models.wallets.WalletsViewModel
 import com.blockstream.common.models.wallets.WalletsViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.Promo
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.views.WalletListItem
@@ -112,6 +113,10 @@ fun WalletsScreen(
                 .weight(1f),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
+            item {
+                Promo(viewModel = viewModel, modifier = Modifier.padding(top = 16.dp))
+            }
+
             softwareWallets?.takeIf { it.isNotEmpty() }?.also {
                 walletSection(
                     title = Res.string.id_digital_wallets,

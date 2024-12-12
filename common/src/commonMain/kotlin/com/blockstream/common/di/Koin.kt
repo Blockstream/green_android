@@ -1,8 +1,8 @@
 package com.blockstream.common.di
 
-import co.touchlab.kermit.chunked
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
+import co.touchlab.kermit.chunked
 import co.touchlab.kermit.platformLogWriter
 import com.blockstream.common.data.AppConfig
 import com.blockstream.common.data.AppInfo
@@ -15,6 +15,7 @@ import com.blockstream.common.lightning.GreenlightKeys
 import com.blockstream.common.lightning.LightningManager
 import com.blockstream.common.managers.AssetManager
 import com.blockstream.common.managers.LifecycleManager
+import com.blockstream.common.managers.PromoManager
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import kotlinx.coroutines.MainScope
@@ -83,6 +84,9 @@ private fun commonModules(appConfig: AppConfig): List<Module> {
         }
         single {
             Database(get(), get())
+        }
+        single {
+            PromoManager(get(), get(), get())
         }
         single {
             SettingsManager(

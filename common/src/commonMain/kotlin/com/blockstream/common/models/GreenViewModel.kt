@@ -61,6 +61,7 @@ import com.blockstream.common.gdk.device.GdkHardwareWallet
 import com.blockstream.common.gdk.device.HardwareWalletInteraction
 import com.blockstream.common.managers.BluetoothManager
 import com.blockstream.common.managers.NotificationManager
+import com.blockstream.common.managers.PromoManager
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.navigation.NavigateDestination
@@ -128,6 +129,7 @@ open class GreenViewModel constructor(
     val appInfo: AppInfo by inject()
     protected val database: Database by inject()
     protected val countly: CountlyBase by inject()
+    protected val promoManager: PromoManager by inject()
     val sessionManager: SessionManager by inject()
     val settingsManager: SettingsManager by inject()
     protected val applicationScope: ApplicationScope by inject()
@@ -365,15 +367,15 @@ open class GreenViewModel constructor(
     }
 
     protected open fun initPromo() {
-        countly.remoteConfigUpdateEvent.onEach {
+        promoManager.promos.onEach { promos ->
             val oldPromo = promo.value
-            countly.getRemoteConfigValueForPromos()?.filter {
-                it.isVisible &&
+
+            promos.filter {
                 // Filter closed promos
                 !settingsManager.isPromoDismissed(it.id) &&
                 // Filter based on screen name
                 (it.screens == null || it.screens.contains(screenName()) || it.screens.contains("*"))
-            }?.let {
+            }.let {
                     // Search for the already displayed promo, else give priority to those with screen name, else "*"
                     it.find { it == oldPromo } ?: it.find { it.screens?.contains(screenName()) == true } ?: it.firstOrNull()
                 }.also {

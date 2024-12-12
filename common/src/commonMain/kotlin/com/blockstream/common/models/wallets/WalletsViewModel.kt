@@ -3,6 +3,7 @@ package com.blockstream.common.models.wallets
 import com.blockstream.common.data.Banner
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.Promo
 import com.blockstream.common.events.Event
 import com.blockstream.common.extensions.previewWalletListView
 import com.blockstream.common.gdk.GdkSession
@@ -162,7 +163,9 @@ class WalletsViewModelPreview(
 
     init {
         banner.value = Banner.preview3
+        promo.value = Promo.preview6
     }
+
     companion object {
         fun previewEmpty() = WalletsViewModelPreview(
             listOf(), listOf(), listOf()

@@ -112,6 +112,10 @@ kotlin {
             api(libs.kotlinx.datetime)
             /** ----------------------------------------------------------------------------------------- */
 
+            /**  --- Ktor ------------------------------------------------------------------------------- */
+            api(libs.ktor.client.core)
+            /** ----------------------------------------------------------------------------------------- */
+
             /**  --- Compose ---------------------------------------------------------------------------- */
             api(compose.components.resources)
             /** ----------------------------------------------------------------------------------------- */
@@ -145,6 +149,8 @@ kotlin {
             api(libs.kase64) // base64
             api(libs.ksoup.entites) // html entities
             api(libs.kable.core)
+            api(libs.kotlincrypto.hash.md)
+            api(libs.kotlincrypto.hash.sha2)
 
             implementation(libs.tuulbox.coroutines)
             /** ----------------------------------------------------------------------------------------- */
@@ -165,6 +171,7 @@ kotlin {
             api(libs.kotlinx.coroutines.swing)
             implementation(compose.desktop.currentOs)
             implementation(libs.sqldelight.sqlite.driver)
+            implementation(libs.ktor.client.java)
         }
 
         androidMain.dependencies {
@@ -174,7 +181,7 @@ kotlin {
             api(libs.androidx.biometric)
 
             api(libs.androidx.preference.ktx)
-
+            implementation(libs.ktor.client.android)
 
             /**  --- Breez FDroid ----------------------------------------------------------------------- */
             // Temp fix for FDroid breez dependencies
@@ -197,6 +204,7 @@ kotlin {
 
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
+            implementation(libs.ktor.client.darwin)
         }
     }
 }

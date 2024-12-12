@@ -25,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.constraintlayout.compose.ConstraintLayout
 import blockstream_green.common.generated.resources.Res
@@ -57,7 +58,7 @@ fun GreenTopAppBar(
     // CenterAlignedTopAppBar if you want center aligned
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background,
+            containerColor = Color.Transparent,
             titleContentColor = MaterialTheme.colorScheme.onPrimary,
         ),
         title = {
@@ -102,7 +103,7 @@ fun GreenTopAppBar(
         },
         navigationIcon = {
             AnimatedVisibility(
-                visible = navData.isVisible,
+                visible = navData.isVisible && navData.showNavigationIcon,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {

@@ -1,5 +1,6 @@
 package com.blockstream.compose
 
+import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -10,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.blockstream.common.data.AppInfo
 import com.blockstream.common.managers.BluetoothManager
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.utils.AndroidKeystore
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.managers.rememberPlatformManager
@@ -17,8 +19,9 @@ import com.blockstream.compose.sheets.BottomSheetNavigatorM3
 import com.blockstream.compose.sideeffects.DialogHost
 import com.blockstream.compose.sideeffects.DialogState
 import com.blockstream.compose.theme.GreenTheme
+import com.russhwolf.settings.Settings
+import com.russhwolf.settings.SharedPreferencesSettings
 import org.koin.android.ext.koin.androidContext
-import org.koin.compose.koinInject
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
@@ -36,6 +39,21 @@ fun GreenAndroidPreview(content: @Composable () -> Unit) {
             }
             single {
                 AndroidKeystore(androidContext())
+            }
+            single<Settings> {
+                val sharedPreferences = androidContext().getSharedPreferences(
+                    SettingsManager.APPLICATION_SETTINGS_NAME,
+                    Context.MODE_PRIVATE
+                )
+                SharedPreferencesSettings(sharedPreferences)
+            }
+            single {
+                SettingsManager(
+                    settings = get(),
+                    analyticsFeatureEnabled = true,
+                    lightningFeatureEnabled = true,
+                    storeRateEnabled = true
+                )
             }
             single {
                 AppInfo(

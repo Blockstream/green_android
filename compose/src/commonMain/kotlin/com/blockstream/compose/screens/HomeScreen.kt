@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -102,18 +104,18 @@ fun HomeScreen(
 
         val isEmptyWallet by viewModel.isEmptyWallet.collectAsStateWithLifecycle()
 
-        if (isEmptyWallet == false) {
-            Promo(viewModel = viewModel, modifier = Modifier.padding(top = 16.dp))
-        }
-
         when (isEmptyWallet) {
             true -> {
                 Column(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f)
+                        .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceAround
                 ) {
-                    Column {
+
+                    Promo(viewModel = viewModel, withAnimation = true, modifier = Modifier.padding(top = 16.dp))
+
+                    Column(modifier = Modifier.padding(vertical = 32.dp)) {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
                             text = stringResource(Res.string.id_simple__secure_selfcustody),
@@ -131,6 +133,7 @@ fun HomeScreen(
 
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(bottom = 24.dp)
                     ) {
 
                         val termsOfServiceIsChecked by viewModel.termsOfServiceIsChecked.collectAsStateWithLifecycle()
