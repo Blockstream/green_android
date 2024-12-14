@@ -1,11 +1,10 @@
-package com.blockstream.compose.utils
+package com.blockstream.common.utils
 
 import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.ErrorReport
 import com.mohamedrejeb.ksoup.entities.KsoupEntities
 
-
-fun openNewTicketUrl(
+fun createNewTicketUrl(
     appInfo: AppInfo,
     subject: String? = null,
     errorReport: ErrorReport? = null,

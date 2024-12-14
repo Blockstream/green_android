@@ -16,6 +16,7 @@ import com.blockstream.common.models.devices.DeviceInfoViewModel
 import com.blockstream.common.models.devices.DeviceListViewModel
 import com.blockstream.common.models.devices.DeviceScanViewModel
 import com.blockstream.common.models.devices.ImportPubKeyViewModel
+import com.blockstream.common.models.devices.JadeGenuineCheckViewModel
 import com.blockstream.common.models.devices.JadeGuideViewModel
 import com.blockstream.common.models.drawer.DrawerViewModel
 import com.blockstream.common.models.exchange.AccountExchangeViewModel
@@ -130,6 +131,9 @@ val viewModels = module {
     viewModelOf(::DeviceScanViewModel)
     viewModelOf(::JadeFirmwareUpdateViewModel)
     viewModelOf(::ImportPubKeyViewModel)
+    viewModel {
+        JadeGenuineCheckViewModel(getOrNull(), getOrNull())
+    }
     viewModel {
         PromoViewModel(get(), getOrNull())
     }

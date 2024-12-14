@@ -7,10 +7,12 @@ import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.launchIn
+import com.blockstream.common.gdk.events.GenericEvent
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
@@ -58,6 +60,7 @@ class AboutViewModel : AboutViewModelAbstract() {
         object CountlyResetDeviceId : Event
         object CountlyZeroOffset : Event
         object ResetPromos : Event
+        object DeleteEvents : Event
         object SendFeedback: Event
     }
 
@@ -75,6 +78,10 @@ class AboutViewModel : AboutViewModelAbstract() {
         }.onEach {
             _isValid.value = it
         }.launchIn(this)
+
+        viewModelScope.launch {
+            database.insertEvent(GenericEvent(deviceId = settingsManager.getCountlyDeviceId()).sha256())
+        }
 
         bootstrap()
     }
@@ -102,6 +109,9 @@ class AboutViewModel : AboutViewModelAbstract() {
             settingsManager.resetPromoDismissals()
             promoManager.clearCache()
             postSideEffect(SideEffects.Snackbar(text = StringHolder.create("Reset promos")))
+        } else if (event is LocalEvents.DeleteEvents) {
+            database.deleteEvents()
+            postSideEffect(SideEffects.Snackbar(text = StringHolder.create("Events deleted")))
         } else if (event is LocalEvents.CountlyCopyDeviceId) {
             countly.getDeviceId().let { deviceId ->
                 postSideEffect(

@@ -45,6 +45,7 @@ import blockstream_green.common.generated.resources.id_copy_support_id
 import blockstream_green.common.generated.resources.id_denomination__exchange_rate
 import blockstream_green.common.generated.resources.id_display_values_in_s_and
 import blockstream_green.common.generated.resources.id_enabled
+import blockstream_green.common.generated.resources.id_genuine_check
 import blockstream_green.common.generated.resources.id_i_lost_my_2fa
 import blockstream_green.common.generated.resources.id_legacy_script_coins
 import blockstream_green.common.generated.resources.id_login_with_biometrics
@@ -59,6 +60,7 @@ import blockstream_green.common.generated.resources.id_set_twofactor_threshold
 import blockstream_green.common.generated.resources.id_support
 import blockstream_green.common.generated.resources.id_touch_to_display
 import blockstream_green.common.generated.resources.id_twofactor_authentication
+import blockstream_green.common.generated.resources.id_verify_the_authenticity_of
 import blockstream_green.common.generated.resources.id_version
 import blockstream_green.common.generated.resources.id_watchonly
 import blockstream_green.common.generated.resources.sign_out
@@ -81,7 +83,6 @@ import com.blockstream.common.models.settings.WalletSettingsViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.getBitcoinOrLiquidUnit
-
 import com.blockstream.compose.LocalBiometricState
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
@@ -362,6 +363,16 @@ fun WalletSettingsScreen(
                         modifier = Modifier.clickable {
                             viewModel.postEvent(WalletSettingsViewModel.LocalEvents.AutologoutTimeout)
                         })
+                }
+
+                is WalletSetting.JadeGenuineCheck -> {
+                    Setting(
+                        title = stringResource(Res.string.id_genuine_check),
+                        subtitle = stringResource(Res.string.id_verify_the_authenticity_of),
+                        modifier = Modifier.clickable {
+                             viewModel.postEvent(NavigateDestinations.JadeGenuineCheck())
+                        }
+                    )
                 }
 
                 is WalletSetting.RecoveryTransactionEmails -> {

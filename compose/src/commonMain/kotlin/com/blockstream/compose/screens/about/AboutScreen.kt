@@ -24,6 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.brand
 import blockstream_green.common.generated.resources.copy
+import blockstream_green.common.generated.resources.eye
 import blockstream_green.common.generated.resources.facebook_logo
 import blockstream_green.common.generated.resources.github_logo
 import blockstream_green.common.generated.resources.globe
@@ -165,6 +166,12 @@ fun AboutScreen(
                             iconRes = Res.drawable.x,
                             onClick = {
                                 viewModel.postEvent(AboutViewModel.LocalEvents.ResetPromos)
+                            }
+                        ), MenuEntry(
+                            title = "Delete Events",
+                            iconRes = Res.drawable.eye,
+                            onClick = {
+                                viewModel.postEvent(AboutViewModel.LocalEvents.DeleteEvents)
                             }
                         )
                     )

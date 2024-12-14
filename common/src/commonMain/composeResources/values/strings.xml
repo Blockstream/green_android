@@ -1592,4 +1592,21 @@
     <string name="id_signer_unlocked">Signer Unlocked</string>
     <string name="id_unlock_your_signing_device_before">Unlock your signing device before signing the transaction.</string>
     <string name="id_unlock_jade">Unlock Jade</string>
+    <string name="id_retry">Retry</string>
+    <string name="id_genuine_check">Genuine Check</string>
+    <string name="id_new_jade_plus_connected">New Jade Plus Connected</string>
+    <string name="id_a_new_device_has_been_detected">A new device has been detected, please set it up to start using it.</string>
+    <string name="id_genuine_check_is_mandatory_for">Genuine Check is mandatory for first time Jade connection. This way we make sure that you have a safe Jade.</string>
+    <string name="id_verify_the_authenticity_of">Verify the authenticity of your Jade.</string>
+    <string name="id_continue_as_diy">Continue as DIY</string>
+    <string name="id_authenticate_your_jade">Authenticate you Jade</string>
+    <string name="id_confirm_your_jade">Confirm on your Jade</string>
+    <string name="id_continue_with_jade">Continue with Jade</string>
+    <string name="id_your_jade_is_genuine">Your Jade is genuine!</string>
+    <string name="id_this_jade_is_not_genuine">This Jade is not genuine</string>
+    <string name="id_genuine_check_canceled">Genuine check canceled</string>
+    <string name="id_we_were_unable_to_complete_the_genuine">We were unable to complete the genuine check because it was canceled on Jade.</string>
+    <string name="id_perform_a_genuine_check_to">Perform a genuine check to ensure that the Jade you received was manufactured by Blockstream.</string>
+    <string name="id_we_could_successfully_verify_your">We could successfully verify your Jade, enjoy the best Blockstream can offer you with your brand new jade.</string>
+    <string name="id_this_device_was_not_manufactured_by">This device was not manufactured by Blockstream. It could be DIY hardware or possibly a malicious clone. Please contact support for more assistance.</string>
 </resources>

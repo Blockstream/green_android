@@ -38,7 +38,6 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             /** ----------------------------------------------------------------------------------------- */
 
-            implementation(libs.kotlincrypto.hash.md)
             implementation(libs.kotlincrypto.hash.sha2)
             implementation(libs.kable.core)
             implementation(libs.kermit)

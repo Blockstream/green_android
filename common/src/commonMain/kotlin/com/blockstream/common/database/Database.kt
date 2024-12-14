@@ -231,5 +231,21 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
         )
     }
 
+    suspend fun insertEvent(eventId: String) = io {
+        db.eventsQueries.insertEvent(
+            id = eventId
+        )
+    }
+
+    suspend fun eventExist(eventId: String) = io {
+        db.eventsQueries.eventExists(
+            id = eventId
+        ).executeAsOne()
+    }
+
+    suspend fun deleteEvents() = io {
+        db.eventsQueries.deleteEvents()
+    }
+
     companion object : Loggable()
 }

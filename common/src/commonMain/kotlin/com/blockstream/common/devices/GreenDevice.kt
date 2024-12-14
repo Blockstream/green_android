@@ -62,6 +62,8 @@ interface GreenDevice: DeviceOperatingNetwork {
     fun canVerifyAddressOnDevice(account: Account): Boolean
 }
 
+fun GreenDevice.jadeDevice(): JadeDevice? = this as? JadeDevice
+
 abstract class GreenDeviceImpl constructor(
     override val deviceBrand: DeviceBrand,
     override val type: ConnectionType,

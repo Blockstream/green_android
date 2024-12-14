@@ -81,6 +81,7 @@ import com.blockstream.compose.screens.devices.DeviceInfoScreen
 import com.blockstream.compose.screens.devices.DeviceListScreen
 import com.blockstream.compose.screens.devices.DeviceScanScreen
 import com.blockstream.compose.screens.devices.ImportPubKeyScreen
+import com.blockstream.compose.screens.devices.JadeGenuineCheckScreen
 import com.blockstream.compose.screens.exchange.AccountExchangeScreen
 import com.blockstream.compose.screens.exchange.OnOffRampsScreen
 import com.blockstream.compose.screens.jade.JadePinUnlockScreen
@@ -138,6 +139,7 @@ import com.blockstream.compose.sheets.FeeRateBottomSheet
 import com.blockstream.compose.sheets.JadeFirmwareUpdateBottomSheet
 import com.blockstream.compose.sheets.LightningNodeBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
+import com.blockstream.compose.sheets.NewJadeConnectedBottomSheet
 import com.blockstream.compose.sheets.NoteBottomSheet
 import com.blockstream.compose.sheets.PassphraseBottomSheet
 import com.blockstream.compose.sheets.PinMatrixBottomSheet
@@ -1000,6 +1002,10 @@ fun HandleSideEffect(
                             bottomSheetNavigator?.push(AskJadeUnlockBottomSheet(isOnboarding = destination.isOnboarding))
                         }
 
+                        is NavigateDestinations.NewJadeConnected -> {
+                            bottomSheetNavigator?.push(NewJadeConnectedBottomSheet)
+                        }
+
                         is NavigateDestinations.JadePinUnlock -> {
                             navigator?.push(JadePinUnlockScreen)
                         }
@@ -1207,6 +1213,15 @@ fun HandleSideEffect(
                         is NavigateDestinations.DeviceInfo -> {
                             navigator?.push(
                                 DeviceInfoScreen(
+                                    deviceId = destination.deviceId
+                                )
+                            )
+                        }
+
+                        is NavigateDestinations.JadeGenuineCheck -> {
+                            navigator?.push(
+                                JadeGenuineCheckScreen(
+                                    greenWallet = viewModel.greenWalletOrNull,
                                     deviceId = destination.deviceId
                                 )
                             )

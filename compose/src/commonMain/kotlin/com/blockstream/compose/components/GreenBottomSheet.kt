@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetDefaults
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -40,6 +42,7 @@ fun GreenBottomSheet(
     withHorizontalPadding: Boolean = true,
     withBottomPadding: Boolean = true,
     sheetState: SheetState = rememberModalBottomSheetState(),
+    properties: ModalBottomSheetProperties = ModalBottomSheetDefaults.properties,
     sideEffectHandler: CoroutineScope.(sideEffect: SideEffect) -> Unit = {},
     onDismissRequest: () -> Unit,
     content: @Composable ColumnScope.() -> Unit
@@ -57,7 +60,8 @@ fun GreenBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         containerColor = MaterialTheme.colorScheme.background,
-        sheetState = sheetState
+        sheetState = sheetState,
+        properties = properties
     ) {
         GreenColumn(
             padding = 0,

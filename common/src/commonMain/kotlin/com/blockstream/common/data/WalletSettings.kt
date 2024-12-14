@@ -2,7 +2,6 @@ package com.blockstream.common.data
 
 import com.blockstream.common.events.Event
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.models.settings.WalletSettingsViewModel
 
 sealed class WalletSetting{
     data object Logout : WalletSetting()
@@ -21,6 +20,7 @@ sealed class WalletSetting{
     data object TwoFactorAuthentication : WalletSetting()
     data class PgpKey(val enabled: Boolean) : WalletSetting()
     data class AutoLogoutTimeout(val timeout: Int) : WalletSetting()
+    data object JadeGenuineCheck : WalletSetting()
     data object RecoveryPhrase : WalletSetting()
     data class Version(val version: String) : WalletSetting()
     data class TwoFactorMethod(

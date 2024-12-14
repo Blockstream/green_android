@@ -11,10 +11,16 @@ interface JadeDevice : JadeDeviceApi, GreenDevice
 
 interface JadeDeviceApi : DeviceOperatingNetwork {
     var jadeApi: JadeAPI?
+
+    suspend fun supportsGenuineCheck(): Boolean
 }
 
 class JadeDeviceApiImpl: JadeDeviceApi {
     override var jadeApi: JadeAPI? = null
+
+    override suspend fun supportsGenuineCheck(): Boolean {
+        return jadeApi?.getVersionInfo(useCache = true)?.isBoardV2 == true
+    }
 
     override suspend fun getOperatingNetworkForEnviroment(greenDevice: GreenDevice, gdk: Gdk, isTestnet: Boolean): Network {
         return (greenDevice.gdkHardwareWallet as? JadeHWWallet)?.let { jadeHWWallet ->

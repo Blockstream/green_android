@@ -43,6 +43,7 @@ import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorSetupAction
 import com.blockstream.common.data.WalletExtras
 import com.blockstream.common.data.WalletSetting
+import com.blockstream.common.devices.JadeDevice
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.biometricsPinData
@@ -342,6 +343,10 @@ class WalletSettingsViewModel(
                         }
     
                         list += listOf(WalletSetting.AutoLogoutTimeout(settings.altimeout))
+
+                        if((session.device as? JadeDevice)?.supportsGenuineCheck() == true){
+                            list += listOf(WalletSetting.JadeGenuineCheck)
+                        }
     
                         if (!session.isHardwareWallet) {
                             list += listOf(

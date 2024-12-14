@@ -48,6 +48,7 @@ import com.blockstream.compose.sheets.EnvironmentBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
 import com.blockstream.compose.sheets.MenuBottomSheet
 import com.blockstream.compose.sheets.MenuEntry
+import com.blockstream.compose.sheets.NewJadeConnectedBottomSheet
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.green
@@ -101,6 +102,16 @@ fun DeviceInfoScreen(
                 else -> true
             })
         )
+    }
+
+    NewJadeConnectedBottomSheet.getResult {
+        viewModel.postEvent(NavigateDestinations.JadeGenuineCheck(deviceId = viewModel.deviceId))
+    }
+
+    JadeGenuineCheckScreen.getResult {
+        if(it){
+            viewModel.postEvent(DeviceInfoViewModel.LocalEvents.GenuineCheckSuccess)
+        }
     }
 
     var channels by remember { mutableStateOf<List<String>?>(null) }

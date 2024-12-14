@@ -2,8 +2,11 @@ package com.blockstream.common.models
 
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.data.AppInfo
+import com.blockstream.common.database.Database
 import com.blockstream.common.managers.PromoManager
 import com.blockstream.common.managers.SessionManager
+import com.blockstream.common.managers.SettingsManager
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockkClass
 import kotlinx.coroutines.Dispatchers
@@ -49,6 +52,14 @@ abstract class TestViewModel<VM : GreenViewModel>: KoinTest {
 
                     declareMock<SessionManager> {
 
+                    }
+
+                    declareMock<Database> {
+                        coEvery { insertEvent(any()) } returns Unit
+                    }
+
+                    declareMock<SettingsManager> {
+                        every { getCountlyDeviceId() } returns ""
                     }
 
                     declareMock<PromoManager> {

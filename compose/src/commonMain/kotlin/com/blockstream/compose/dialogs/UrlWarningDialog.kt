@@ -35,6 +35,7 @@ import blockstream_green.common.generated.resources.id_warning
 import blockstream_green.common.generated.resources.warning
 import blockstream_green.common.generated.resources.x_bold
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.utils.createNewTicketUrl
 import com.blockstream.common.utils.hostname
 import com.blockstream.compose.LocalAppCoroutine
 import com.blockstream.compose.LocalDialog
@@ -55,7 +56,6 @@ import com.blockstream.compose.theme.textMedium
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.titleSmall
-import com.blockstream.compose.utils.openNewTicketUrl
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -180,7 +180,7 @@ fun UrlWarningDialog(
                         size = GreenButtonSize.BIG,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        openNewTicketUrl(
+                        createNewTicketUrl(
                             appInfo = viewModel.appInfo,
                             subject = "Non-default PIN server",
                             isJade = true

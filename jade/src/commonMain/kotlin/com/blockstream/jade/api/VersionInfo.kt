@@ -33,6 +33,9 @@ data class VersionInfo constructor(
     val jadeHasPin: Boolean,
 ) : JadeSerializer<VersionInfo>() {
     override fun kSerializer(): KSerializer<VersionInfo> = serializer()
+
+    val isBoardV2
+        get() = boardType == "JADE_V2"
 }
 
 @Serializable

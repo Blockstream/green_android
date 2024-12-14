@@ -52,6 +52,8 @@ sealed class NavigateDestinations : NavigateDestination {
     data class Xpub(val setupArgs: SetupArgs) : NavigateDestination
     data class DeviceList(val isJade: Boolean) : NavigateDestination
     data class DeviceInfo(val deviceId: String) : NavigateDestination
+    data object NewJadeConnected : NavigateDestination
+    data class JadeGenuineCheck(val deviceId: String? = null) : NavigateDestination
     data class DeviceScan(val greenWallet: GreenWallet) : NavigateDestination
     data class JadeFirmwareUpdate(val deviceId: String) : NavigateDestination
 
@@ -161,6 +163,7 @@ sealed class NavigateDestinations : NavigateDestination {
     data class AskJadeUnlock(
         val isOnboarding: Boolean
     ) : NavigateDestination
+
 
     object JadePinUnlock: NavigateDestination
 

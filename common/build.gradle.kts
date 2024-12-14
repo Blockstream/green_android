@@ -96,6 +96,7 @@ kotlin {
                 optIn("kotlin.experimental.ExperimentalObjCName")
                 optIn("kotlinx.cinterop.ExperimentalForeignApi")
                 optIn("kotlinx.coroutines.FlowPreview")
+                optIn("kotlin.ExperimentalStdlibApi")
             }
         }
 

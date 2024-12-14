@@ -8,6 +8,7 @@ import kotlinx.serialization.Transient
 import kotlinx.serialization.cbor.Cbor
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+import org.kotlincrypto.hash.sha2.SHA256
 
 @OptIn(ExperimentalSerializationApi::class)
 abstract class GreenJson<T>: JavaSerializable {
@@ -36,6 +37,8 @@ abstract class GreenJson<T>: JavaSerializable {
     }
 
     fun toJson() = toString()
+
+    fun sha256(): String = SHA256().digest(toJson().encodeToByteArray()).toHexString()
 
     @Suppress("UNCHECKED_CAST")
     fun toCbor() = Cbor {

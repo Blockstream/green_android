@@ -22,11 +22,11 @@ import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.utils.StringHolder
+import com.blockstream.common.utils.createNewTicketUrl
 import com.blockstream.compose.dialogs.ErrorReportDialog
 import com.blockstream.compose.dialogs.SingleChoiceDialog
 import com.blockstream.compose.managers.PlatformManager
 import com.blockstream.compose.theme.whiteHigh
-import com.blockstream.compose.utils.openNewTicketUrl
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
@@ -113,7 +113,7 @@ class DialogState {
                 platformManager = platformManager,
                 dialogState = this,
                 isTor = viewModel.settingsManager.appSettings.tor,
-                url = openNewTicketUrl(
+                url = createNewTicketUrl(
                     appInfo = viewModel.appInfo,
                     subject = errorReport.subject ?: viewModel.screenName()?.let { "Android Issue in $it" } ?: "Android Error Report",
                     errorReport = errorReport,

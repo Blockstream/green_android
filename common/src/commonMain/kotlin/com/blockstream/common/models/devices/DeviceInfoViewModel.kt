@@ -8,18 +8,17 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavAction
 import com.blockstream.common.data.NavData
 import com.blockstream.common.devices.DeviceState
-import com.blockstream.common.devices.JadeDevice
+import com.blockstream.common.devices.jadeDevice
 import com.blockstream.common.events.Event
 import com.blockstream.common.extensions.getWallet
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewGreenDevice
-import com.blockstream.common.gdk.params.RsaVerifyParams
+import com.blockstream.common.gdk.events.JadeGenuineCheck
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.StringHolder
-import com.blockstream.common.utils.randomChars
 import com.blockstream.jade.firmware.JadeFirmwareManager
 import com.juul.kable.ConnectionLostException
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
@@ -29,25 +28,25 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
 import org.jetbrains.compose.resources.getString
 
-abstract class DeviceInfoViewModelAbstract : AbstractDeviceViewModel() {
+abstract class DeviceInfoViewModelAbstract(val deviceId: String) : AbstractDeviceViewModel() {
     override fun screenName(): String = "DeviceInfo"
 
     @NativeCoroutinesState
     abstract val jadeIsUninitialized: StateFlow<Boolean>
 }
 
-@OptIn(ExperimentalStdlibApi::class)
-class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbstract() {
+class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbstract(deviceId = deviceId) {
 
     private val _jadeIsUninitialized = MutableStateFlow(false)
     override val jadeIsUninitialized: StateFlow<Boolean> = _jadeIsUninitialized
 
-    val deviceIsConnected = MutableStateFlow(false)
+
+    private val deviceIsConnected = MutableStateFlow(false)
 
     class LocalEvents {
         data class AuthenticateAndContinue(val updateFirmwareFromChannel: String? = null) : Event
         data class SelectEnviroment(val isTestnet: Boolean?): Event
-
+        data object GenuineCheckSuccess: Event
     }
 
     class LocalSideEffects {
@@ -94,7 +93,7 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
                         postSideEffect(LocalSideEffects.SelectFirmwareChannel())
                     }).takeIf { appInfo.isDevelopmentOrDebug && deviceOrNull?.isJade == true },
                     NavAction(title = "Genuine Check", isMenuEntry = true, onClick = {
-                        genuineCheck()
+                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.JadeGenuineCheck(deviceId = deviceId)))
                     }).takeIf { appInfo.isDevelopmentOrDebug && deviceOrNull?.isJade == true }
 
                 )
@@ -113,50 +112,16 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
 
         if (event is LocalEvents.AuthenticateAndContinue) {
             authenticateAndContinue(event.updateFirmwareFromChannel)
-        } else if(event is LocalEvents.SelectEnviroment) {
+        } else if (event is LocalEvents.SelectEnviroment) {
 
             if (event.isTestnet == null) {
                 requestNetworkEmitter?.completeExceptionally(Exception("id_action_canceled"))
             } else {
                 requestNetworkEmitter?.also {
-                     it.complete(if(event.isTestnet) gdk.networks().testnetBitcoinElectrum else gdk.networks().bitcoinElectrum)
+                    it.complete(if (event.isTestnet) gdk.networks().testnetBitcoinElectrum else gdk.networks().bitcoinElectrum)
                 }
             }
         }
-    }
-
-    private fun genuineCheck(){
-        doAsync({
-            (device as JadeDevice).let {
-
-                val challenge = randomChars(32).encodeToByteArray()
-                val attestation = it.jadeApi!!.signAttestation(challenge = challenge)
-
-                val verifyChallenge = sessionManager.httpRequestHandler.rsaVerify(
-                    RsaVerifyParams(
-                        pem = attestation.pubkeyPem,
-                        challenge = challenge.toHexString(),
-                        signature = attestation.signature.toHexString()
-                    )
-                )
-                val verifyPubKey = sessionManager.httpRequestHandler.rsaVerify(
-                    RsaVerifyParams(
-                        pem = RsaVerifyParams.VerifyingAuthorityPubKey,
-                        challenge = attestation.pubkeyPem.encodeToByteArray().toHexString(),
-                        signature = attestation.extSignature.toHexString()
-                    )
-                )
-
-                if (verifyChallenge.result == true && verifyPubKey.result == true){
-                    true
-                } else {
-                    throw Exception(verifyChallenge.error ?: verifyPubKey.error)
-                }
-            }
-
-        }, onSuccess = {
-            postSideEffect(SideEffects.Dialog(title = StringHolder.create("Success"), message = StringHolder.create("Your device is Genuine")))
-        })
     }
 
     private fun connectDevice() {
@@ -168,6 +133,18 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
             deviceIsConnected.value = true
             countly.hardwareConnected(device)
             _jadeIsUninitialized.value = it.isJadeUninitialized == true
+
+            device.jadeDevice()?.also { jadeDevice ->
+
+                val noEvent = jadeDevice.jadeApi?.getVersionInfo()?.efuseMac?.let { efuseMac ->
+                    database.eventExist(JadeGenuineCheck(jadeId = efuseMac).sha256())
+                } == false
+
+                if(jadeDevice.supportsGenuineCheck() && noEvent){
+                    postSideEffect(SideEffects.NavigateTo(NavigateDestinations.NewJadeConnected))
+                }
+            }
+
         }, onError = {
             it.printStackTrace()
 
@@ -304,7 +281,7 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
     companion object: Loggable()
 }
 
-class DeviceInfoViewModelPreview : DeviceInfoViewModelAbstract() {
+class DeviceInfoViewModelPreview : DeviceInfoViewModelAbstract(deviceId = "") {
     override val jadeIsUninitialized: StateFlow<Boolean> = MutableStateFlow(false)
 
     init {

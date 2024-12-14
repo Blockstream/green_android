@@ -8,13 +8,14 @@ import com.blockstream.common.data.ScreenLockSetting
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.common.gdk.events.GenericEvent
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -207,6 +208,8 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
                     true
                 }
             })
+
+            database.insertEvent(GenericEvent(deviceId = settingsManager.getCountlyDeviceId()).sha256())
         }
 
         spvEnabled.onEach {
