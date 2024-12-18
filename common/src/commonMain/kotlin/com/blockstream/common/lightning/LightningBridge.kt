@@ -59,6 +59,7 @@ import breez_sdk.defaultConfig
 import breez_sdk.mnemonicToSeed
 import breez_sdk.parseInput
 import com.blockstream.common.data.AppInfo
+import com.blockstream.common.extensions.tryCatch
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.platformFileSystem
 import com.blockstream.common.platformName
@@ -71,7 +72,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import kotlinx.datetime.Clock
 import okio.Path.Companion.toPath
@@ -456,8 +456,8 @@ class LightningBridge constructor(
     }
 
     @NativeCoroutinesIgnore
-    suspend fun recommendedFees(): RecommendedFees = withContext(context = Dispatchers.IO) {
-        breezSdk.recommendedFees()
+    suspend fun recommendedFees(): RecommendedFees? = tryCatch(context = Dispatchers.IO) {
+        breezSdkOrNull?.recommendedFees()
     }
 
     fun onchainPaymentLimits(): OnchainPaymentLimitsResponse {

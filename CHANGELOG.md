@@ -3,6 +3,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.1.1] - 2024-12-18
+
+### Added
+- Jade genuine check
+
+### Changed
+- Bump GDK to version 0.74.0
+- Bump Breez to version 0.6.6
+- Update dependencies
+- Support video content on promo screen 
+
+### Fixed
+- Fix Jade BIP39 Passphrase input timeout
+- Fix recovery keyboard matching words pre-emptively
+- Various bug fixes
+
 ## [4.1.0] - 2024-11-19
 
 ### Changed

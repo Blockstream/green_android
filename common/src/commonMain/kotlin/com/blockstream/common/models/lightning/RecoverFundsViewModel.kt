@@ -144,7 +144,7 @@ class RecoverFundsViewModel(
         session.ifConnectedSuspend {
             emit(
                 session.lightningSdk.recommendedFees().also {
-                    _customFeeRate.value = it.minimumFee.toLong()
+                    _customFeeRate.value = it?.minimumFee?.toLong()
                 }
             )
         }

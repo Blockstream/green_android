@@ -1962,8 +1962,8 @@ class GdkSession constructor(
     }
 
     suspend fun getFeeEstimates(network: Network): FeeEstimation = tryCatch(context = Dispatchers.Default) {
-        if(network.isLightning){
-            lightningSdk.recommendedFees().let { fees ->
+        if (network.isLightning) {
+            lightningSdk.recommendedFees()?.let { fees ->
                 (
                         listOf(fees.minimumFee) +
                         List(FeeBlockTarget[0] - 0) { fees.fastestFee } +
@@ -1973,8 +1973,7 @@ class GdkSession constructor(
                     FeeEstimation(it)
                 }
             }
-
-        }else{
+        } else {
             gdk.getFeeEstimates(gdkSession(network)).let {
                 // Temp fix
                 if (network.isSinglesig && network.isLiquid) {
