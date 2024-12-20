@@ -298,35 +298,18 @@ class JadeHWWallet constructor(
                     // Get the inputs in the form Jade expects
                     val txInputs = inputs.map { input ->
 
-                        val swInput = input.isSegwit()
-                        val script = input.prevoutScript?.hexToByteArray()
+                        // Send the prevout transaction (so it can verify the tx input).
+                        val txhex = transactions[input.txHash]
+                            ?: throw Exception("Required input transaction not found: ${input.txHash}")
 
-                        if (swInput && inputs.size == 1) {
-                            // Single SegWit input - can skip sending entire tx and just send the sats amount
-                            TxInput(
-                                isWitness = true,
-                                script = script,
-                                satoshi = input.satoshi,
-                                path = input.userPath,
-                                aeHostCommitment = input.aeHostCommitment?.hexToByteArray(),
-                                aeHostEntropy = input.aeHostEntropy?.hexToByteArray()
-                            )
-                        } else {
-                            // Non-SegWit input or there are several inputs - in which case we always send
-                            // the entire prior transaction up to Jade (so it can verify the spend amounts).
-                            val txhex = transactions[input.txHash]
-                                ?: throw Exception("Required input transaction not found: ${input.txHash}")
-                            val inputTx = txhex.hexToByteArray()
-
-                            TxInput(
-                                isWitness = swInput,
-                                inputTx = inputTx,
-                                script = script,
-                                path = input.userPath,
-                                aeHostCommitment = input.aeHostCommitment?.hexToByteArray(),
-                                aeHostEntropy = input.aeHostEntropy?.hexToByteArray()
-                            )
-                        }
+                        TxInput(
+                            isWitness = input.isSegwit(),
+                            inputTx = txhex.hexToByteArray(),
+                            script = input.prevoutScript?.hexToByteArray(),
+                            path = input.userPath,
+                            aeHostCommitment = input.aeHostCommitment?.hexToByteArray(),
+                            aeHostEntropy = input.aeHostEntropy?.hexToByteArray()
+                        )
                     }
 
                     // Get the change outputs and paths
