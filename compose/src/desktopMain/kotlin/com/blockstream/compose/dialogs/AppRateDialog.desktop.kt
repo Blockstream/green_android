@@ -9,5 +9,5 @@ actual fun AppRateDialog(
     viewModel: GreenViewModel,
     onDismissRequest: () -> Unit
 ) {
-    Text("BarcodeScanner Not yet implemented")
+    Text("AppRateDialog Not yet implemented")
 }

@@ -5,5 +5,5 @@ import androidx.compose.runtime.Composable
 
 @Composable
 actual fun Rive(riveAnimation: RiveAnimation) {
-    Text("BarcodeScanner Not yet implemented")
+    Text("Rive Not yet implemented")
 }
