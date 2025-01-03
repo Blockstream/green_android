@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.1.2] - 2024-01-03
+
+### Added
+- Bump GDK to version 0.74.2
+
 ## [4.1.1] - 2024-12-18
 
 ### Added
