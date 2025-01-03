@@ -7,7 +7,7 @@ fi
 echo ${JAVA_HOME:?}
 echo ${ANDROID_NDK:?}
 
-TAGNAME="release_0.74.1"
+TAGNAME="release_0.74.2"
 
 if [ -d gdk ]; then
     cd gdk
