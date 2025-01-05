@@ -16,9 +16,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_2fa_protected_accounts_are_2of2_wallets
 import blockstream_green.common.generated.resources.id_learn_more
 import blockstream_green.common.generated.resources.id_redeposit_expired_2fa_coins
-import blockstream_green.common.generated.resources.id_some_coins_in_your_wallet
 import blockstream_green.common.generated.resources.re_enable_two_factor
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
@@ -83,7 +83,7 @@ fun ReEnable2FAScreen(
 
             Text(
                 modifier = Modifier.padding(horizontal = 24.dp),
-                text = stringResource(Res.string.id_some_coins_in_your_wallet),
+                text = stringResource(Res.string.id_2fa_protected_accounts_are_2of2_wallets),
                 style = bodyLarge,
                 textAlign = TextAlign.Center
             )
