@@ -390,6 +390,7 @@ abstract class CreateTransactionViewModelAbstract(
                     postSideEffect(
                         SideEffects.NavigateTo(
                             NavigateDestinations.DeviceInteraction(
+                                deviceId = sessionOrNull?.device?.connectionIdentifier,
                                 transactionConfirmLook = transactionConfirmLook()
                             )
                         )
@@ -456,7 +457,7 @@ abstract class CreateTransactionViewModelAbstract(
                                 transactionConfirmLook = transactionConfirmLook(),
                                 askForJadeUnlock = true
                             ),
-                            deviceBrand = session.deviceBrand
+                            deviceModel = session.deviceModel
                         )
                     )
                 )

@@ -250,19 +250,19 @@ fun BoxScope.PromoLayout2(promo: Promo, viewModel: GreenViewModel, painter: Asyn
             promo.overlineSmall?.also {
                 Text(
                     text = it,
-                    style = bodyMedium, textAlign = TextAlign.Center
+                    style = bodyMedium, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()
                 )
             }
 
             promo.titleSmall?.also {
                 Text(
-                    it, style = headlineSmall, textAlign = TextAlign.Center
+                    it, style = headlineSmall, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()
                 )
             }
 
             promo.textSmall?.also {
                 Text(
-                    it, style = bodyLarge, textAlign = TextAlign.Center
+                    it, style = bodyLarge, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()
                 )
             }
 

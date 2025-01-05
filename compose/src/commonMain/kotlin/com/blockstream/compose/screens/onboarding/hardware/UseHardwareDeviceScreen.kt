@@ -1,6 +1,5 @@
 package com.blockstream.compose.screens.onboarding.hardware
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -81,7 +80,6 @@ object UseHardwareDeviceScreen : Screen {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun UseHardwareDeviceScreen(
     viewModel: UseHardwareDeviceViewModelAbstract

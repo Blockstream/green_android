@@ -400,6 +400,7 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
                         postSideEffect(
                             SideEffects.NavigateTo(
                                 NavigateDestinations.DeviceInteraction(
+                                    deviceId = sessionOrNull?.device?.connectionIdentifier,
                                     verifyAddress = it.address
                                 )
                             )

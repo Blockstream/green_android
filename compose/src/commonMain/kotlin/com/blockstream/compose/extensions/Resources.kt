@@ -9,7 +9,11 @@ import blockstream_green.common.generated.resources.bitcoin
 import blockstream_green.common.generated.resources.bitcoin_lightning
 import blockstream_green.common.generated.resources.bitcoin_lightning_testnet
 import blockstream_green.common.generated.resources.bitcoin_testnet
+import blockstream_green.common.generated.resources.blockstream_devices
+import blockstream_green.common.generated.resources.blockstream_jade_action
 import blockstream_green.common.generated.resources.blockstream_jade_device
+import blockstream_green.common.generated.resources.blockstream_jade_plus_action
+import blockstream_green.common.generated.resources.blockstream_jade_plus_device
 import blockstream_green.common.generated.resources.code_block
 import blockstream_green.common.generated.resources.currency_btc
 import blockstream_green.common.generated.resources.eye
@@ -61,6 +65,7 @@ import com.blockstream.common.LBTC_POLICY_ASSET
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.WalletIcon
 import com.blockstream.common.devices.DeviceBrand
+import com.blockstream.common.devices.DeviceModel
 import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.GdkSession
@@ -100,13 +105,31 @@ fun WalletIcon.resource() = when (this) {
     else -> Res.drawable.wallet
 }
 
-fun GreenDevice?.icon(): DrawableResource = this?.deviceBrand?.icon() ?: Res.drawable.generic_device
+fun GreenDevice?.icon(): DrawableResource = this?.deviceModel?.icon() ?: this?.deviceBrand?.deviceBrandIcon() ?: Res.drawable.generic_device
 
-fun DeviceBrand.icon(): DrawableResource = when (this) {
+fun GreenDevice?.actionIcon(): DrawableResource = this?.deviceModel?.actionIcon() ?: this?.deviceBrand?.deviceBrandIcon() ?: Res.drawable.generic_device
+
+fun DeviceBrand.deviceBrandIcon(): DrawableResource = when (this) {
     DeviceBrand.Ledger -> Res.drawable.ledger_device
     DeviceBrand.Trezor -> Res.drawable.trezor_device
     DeviceBrand.Generic -> Res.drawable.generic_device
-    else -> Res.drawable.blockstream_jade_device
+    else -> Res.drawable.blockstream_devices
+}
+
+fun DeviceModel.icon(): DrawableResource = when (this) {
+    DeviceModel.BlockstreamGeneric -> Res.drawable.blockstream_devices
+    DeviceModel.BlockstreamJade -> Res.drawable.blockstream_jade_device
+    DeviceModel.BlockstreamJadePlus -> Res.drawable.blockstream_jade_plus_device
+    DeviceModel.TrezorGeneric, DeviceModel.TrezorModelT, DeviceModel.TrezorModelOne ->  Res.drawable.trezor_device
+    DeviceModel.LedgerGeneric, DeviceModel.LedgerNanoS, DeviceModel.LedgerNanoX -> Res.drawable.ledger_device
+    DeviceModel.Generic -> Res.drawable.generic_device
+}
+
+fun DeviceModel.actionIcon(): DrawableResource = when (this) {
+    DeviceModel.BlockstreamGeneric -> Res.drawable.blockstream_jade_plus_action
+    DeviceModel.BlockstreamJade -> Res.drawable.blockstream_jade_action
+    DeviceModel.BlockstreamJadePlus -> Res.drawable.blockstream_jade_plus_action
+    else -> icon()
 }
 
 fun String.getNetworkIcon(): DrawableResource {

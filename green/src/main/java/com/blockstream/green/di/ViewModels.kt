@@ -153,7 +153,7 @@ val viewModels = module {
         SendViewModel(get(), getOrNull(), getOrNull())
     }
     viewModel {
-        SimpleGreenViewModel(getOrNull(), getOrNull(), getOrNull())
+        SimpleGreenViewModel(getOrNull(), getOrNull(), getOrNull(), getOrNull())
     }
     viewModel {
         SweepViewModel(get(), getOrNull(), getOrNull())

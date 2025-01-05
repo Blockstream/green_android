@@ -21,6 +21,7 @@ import com.blockstream.common.data.RichWatchOnly
 import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.database.LoginCredentials
 import com.blockstream.common.devices.DeviceBrand
+import com.blockstream.common.devices.DeviceModel
 import com.blockstream.common.devices.DeviceState
 import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.extensions.hasHistory
@@ -416,7 +417,7 @@ class GdkSession constructor(
     var device: GreenDevice? = null
         private set
 
-    var deviceBrand: DeviceBrand? = null
+    var deviceModel: DeviceModel? = null
         private set
 
     var ephemeralWallet: GreenWallet? = null
@@ -1334,7 +1335,14 @@ class GdkSession constructor(
         isAirgapped = isWatchOnly && wallet?.isHardware ?: false
 
         this.device = device
-        this.deviceBrand = device?.deviceBrand ?: wallet?.deviceIdentifiers?.firstOrNull()?.brand
+        this.deviceModel = device?.deviceModel ?: wallet?.deviceIdentifiers?.firstOrNull()?.model ?: wallet?.deviceIdentifiers?.firstOrNull()?.brand?.let {
+            when(it){
+                DeviceBrand.Blockstream -> DeviceModel.BlockstreamGeneric
+                DeviceBrand.Ledger -> DeviceModel.LedgerGeneric
+                DeviceBrand.Trezor -> DeviceModel.TrezorGeneric
+                DeviceBrand.Generic -> DeviceModel.Generic
+            }
+        }
 
         _disableNotificationHandling = true
         _walletActiveEventInvalidated = true

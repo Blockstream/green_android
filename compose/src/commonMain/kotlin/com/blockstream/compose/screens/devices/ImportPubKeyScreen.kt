@@ -33,7 +33,7 @@ import blockstream_green.common.generated.resources.id_navigate_on_your_hardware
 import blockstream_green.common.generated.resources.id_navigate_on_your_jade_to_options
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.devices.DeviceBrand
+import com.blockstream.common.devices.DeviceModel
 import com.blockstream.common.models.devices.ImportPubKeyViewModel
 import com.blockstream.common.models.devices.ImportPubKeyViewModelAbstract
 import com.blockstream.compose.components.GreenButton
@@ -56,11 +56,11 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 
 
-data class ImportPubKeyScreen(val deviceBrand: DeviceBrand) : Screen {
+data class ImportPubKeyScreen(val deviceModel: DeviceModel) : Screen {
     @Composable
     override fun Content() {
         val viewModel = koinScreenModel<ImportPubKeyViewModel> {
-            parametersOf(deviceBrand)
+            parametersOf(deviceModel)
         }
 
         val navData by viewModel.navData.collectAsStateWithLifecycle()
@@ -96,7 +96,7 @@ fun ImportPubKeyScreen(
 
     HandleSideEffect(viewModel = viewModel)
 
-    val deviceBrand = viewModel.deviceBrand
+    val deviceModel = viewModel.deviceModel
     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -115,7 +115,7 @@ fun ImportPubKeyScreen(
                 )
 
                 Image(
-                    painter = painterResource(deviceBrand.icon()),
+                    painter = painterResource(deviceModel.icon()),
                     contentDescription = null,
                     contentScale = ContentScale.FillBounds,
                     modifier = Modifier.align(Alignment.Center)
@@ -133,7 +133,7 @@ fun ImportPubKeyScreen(
                 )
 
                 Text(
-                    text = stringResource(if (deviceBrand.isJade) Res.string.id_navigate_on_your_jade_to_options else Res.string.id_navigate_on_your_hardware_device),
+                    text = stringResource(if (deviceModel.isJade) Res.string.id_navigate_on_your_jade_to_options else Res.string.id_navigate_on_your_hardware_device),
                     style = bodyLarge,
                     textAlign = TextAlign.Center
                 )

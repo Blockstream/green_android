@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.blockstream_jade_device
+import blockstream_green.common.generated.resources.blockstream_jade_plus_device
 import blockstream_green.common.generated.resources.id_jade_already_unlocked
 import blockstream_green.common.generated.resources.id_learn_more
 import blockstream_green.common.generated.resources.id_qr_airgapped_mode
@@ -48,7 +48,7 @@ data class AskJadeUnlockBottomSheet(
     override fun Content() {
 
         val viewModel = koinScreenModel<SimpleGreenViewModel> {
-            parametersOf(null, null, "AskJadeUnlock", false)
+            parametersOf(null, null, "AskJadeUnlock")
         }
 
         AskJadeUnlockBottomSheet(
@@ -93,7 +93,7 @@ fun AskJadeUnlockBottomSheet(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
             Image(
-                painter = painterResource(Res.drawable.blockstream_jade_device),
+                painter = painterResource(Res.drawable.blockstream_jade_plus_device),
                 contentDescription = null,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)

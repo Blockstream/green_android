@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.blockstream.common.devices.DeviceModel;
 import com.blockstream.common.extensions.GdkExtensionsKt;
 import com.blockstream.common.gdk.data.Account;
 import com.blockstream.common.gdk.data.AccountType;
@@ -47,14 +48,21 @@ public class TrezorHWWallet extends GdkHardwareWallet {
     private final Map<String, Object> mPrevTxs = new HashMap<>();
 
     private final Device device;
-    private final String model;
+    private final DeviceModel model;
     private final String firmwareVersion;
 
     public TrezorHWWallet(final Trezor t, Device device, final String firmwareVersion) {
         mTrezor = t;
         this.device = device;
         this.firmwareVersion = firmwareVersion;
-        this.model = "Trezor " + mTrezor.getModel();
+        String model = mTrezor.getModel();
+        if (model.equalsIgnoreCase("one")) {
+            this.model = DeviceModel.TrezorModelOne;
+        } else if (model.equalsIgnoreCase("t")) {
+            this.model = DeviceModel.TrezorModelT;
+        } else {
+            this.model = DeviceModel.TrezorGeneric;
+        }
     }
 
     @Override
@@ -516,7 +524,7 @@ public class TrezorHWWallet extends GdkHardwareWallet {
 
     @NonNull
     @Override
-    public String getModel() {
+    public DeviceModel getModel() {
         return model;
     }
 

@@ -2,7 +2,7 @@ package com.blockstream.common.models.devices
 
 import com.blockstream.common.Urls
 import com.blockstream.common.data.WatchOnlyCredentials
-import com.blockstream.common.devices.DeviceBrand
+import com.blockstream.common.devices.DeviceModel
 import com.blockstream.common.events.Event
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.models.GreenViewModel
@@ -14,7 +14,7 @@ import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-abstract class ImportPubKeyViewModelAbstract(val deviceBrand: DeviceBrand) : GreenViewModel() {
+abstract class ImportPubKeyViewModelAbstract(val deviceModel: DeviceModel) : GreenViewModel() {
     override fun screenName(): String = "ImportPubKey"
 
     @NativeCoroutinesState
@@ -24,8 +24,8 @@ abstract class ImportPubKeyViewModelAbstract(val deviceBrand: DeviceBrand) : Gre
     abstract val withBiometrics: MutableStateFlow<Boolean>
 }
 
-class ImportPubKeyViewModel constructor(deviceBrand: DeviceBrand) :
-    ImportPubKeyViewModelAbstract(deviceBrand = deviceBrand) {
+class ImportPubKeyViewModel constructor(deviceModel: DeviceModel) :
+    ImportPubKeyViewModelAbstract(deviceModel = deviceModel) {
 
     override val canUseBiometrics: MutableStateFlow<Boolean>
     override val withBiometrics: MutableStateFlow<Boolean>
@@ -63,7 +63,7 @@ class ImportPubKeyViewModel constructor(deviceBrand: DeviceBrand) :
                         SideEffects.NavigateTo(
                             NavigateDestinations.JadeQR(
                                 operation = JadeQrOperation.ExportXpub,
-                                deviceBrand = deviceBrand
+                                deviceModel = deviceModel
                             )
                         )
                     )
@@ -78,7 +78,7 @@ class ImportPubKeyViewModel constructor(deviceBrand: DeviceBrand) :
                     SideEffects.NavigateTo(
                         NavigateDestinations.JadeQR(
                             operation = JadeQrOperation.ExportXpub,
-                            deviceBrand = deviceBrand
+                            deviceModel = deviceModel
                         )
                     )
                 )
@@ -88,7 +88,7 @@ class ImportPubKeyViewModel constructor(deviceBrand: DeviceBrand) :
             is LocalEvents.LearnMore -> {
                 postSideEffect(
                     SideEffects.OpenBrowser(
-                        if (deviceBrand.isJade) Urls.HELP_JADE_EXPORT_XPUB else Urls.HELP_HW_EXPORT_XPUB
+                        if (deviceModel.isJade) Urls.HELP_JADE_EXPORT_XPUB else Urls.HELP_HW_EXPORT_XPUB
                     )
                 )
             }
@@ -99,7 +99,7 @@ class ImportPubKeyViewModel constructor(deviceBrand: DeviceBrand) :
                     persistLoginCredentials = true,
                     watchOnlyCredentials = WatchOnlyCredentials(coreDescriptors = listOf(event.pubKey)),
                     withBiometrics = withBiometrics.value,
-                    deviceBrand = deviceBrand
+                    deviceModel = deviceModel
                 )
             }
         }
@@ -110,7 +110,7 @@ class ImportPubKeyViewModel constructor(deviceBrand: DeviceBrand) :
 }
 
 class ImportPubKeyViewModelPreview :
-    ImportPubKeyViewModelAbstract(deviceBrand = DeviceBrand.Blockstream) {
+    ImportPubKeyViewModelAbstract(deviceModel = DeviceModel.BlockstreamGeneric) {
 
     override val canUseBiometrics: MutableStateFlow<Boolean> = MutableStateFlow(true)
     override val withBiometrics: MutableStateFlow<Boolean> = MutableStateFlow(true)

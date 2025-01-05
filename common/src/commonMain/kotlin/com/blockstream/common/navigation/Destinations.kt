@@ -8,7 +8,7 @@ import com.blockstream.common.data.LnUrlWithdrawRequestSerializable
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorSetupAction
-import com.blockstream.common.devices.DeviceBrand
+import com.blockstream.common.devices.DeviceModel
 import com.blockstream.common.events.Event
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
@@ -157,7 +157,7 @@ sealed class NavigateDestinations : NavigateDestination {
 
     data class JadeQR constructor(
         val operation: JadeQrOperation,
-        val deviceBrand: DeviceBrand? = null,
+        val deviceModel: DeviceModel? = null,
     ) : NavigateDestination
 
     data class AskJadeUnlock(
@@ -167,7 +167,7 @@ sealed class NavigateDestinations : NavigateDestination {
 
     object JadePinUnlock: NavigateDestination
 
-    data class ImportPubKey(val deviceBrand: DeviceBrand): NavigateDestination
+    data class ImportPubKey(val deviceModel: DeviceModel): NavigateDestination
 
     data class Qr(
         val title: String? = null,
@@ -187,6 +187,7 @@ sealed class NavigateDestinations : NavigateDestination {
     data class Promo(val promo: com.blockstream.common.data.Promo) : NavigateDestination
 
     data class DeviceInteraction(
+        val deviceId: String?,
         val transactionConfirmLook: TransactionConfirmLook? = null,
         val verifyAddress: String? = null,
         val isMasterBlindingKeyRequest: Boolean = false,

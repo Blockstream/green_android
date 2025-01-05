@@ -418,7 +418,8 @@ fun ReceiveScreen(
                                                     type = GreenButtonType.OUTLINE,
                                                     color = GreenButtonColor.GREENER,
                                                     icon = painterResource(Res.drawable.seal_check),
-                                                    modifier = Modifier.fillMaxWidth()
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    enabled = !onProgress
                                                 ) {
                                                     viewModel.postEvent(ReceiveViewModel.LocalEvents.VerifyOnDevice)
                                                 }

@@ -5,12 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
-import com.blockstream.common.data.EncryptedData
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.DeviceIdentifier
+import com.blockstream.common.data.EncryptedData
 import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
 import com.blockstream.common.gdk.data.PinData
-import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.green.utils.isDevelopmentFlavor
 import kotlinx.serialization.encodeToString
 
@@ -87,11 +86,5 @@ class Converters {
 
     @TypeConverter
     fun fromDeviceIdentifierList(value: List<DeviceIdentifier>?): String? = value?.let { JsonDeserializer.encodeToString(it)}
-
-    @TypeConverter
-    fun toDeviceBrand(value: Int) = enumValues<DeviceBrand>()[value]
-
-    @TypeConverter
-    fun fromDeviceBrand(value: DeviceBrand) = value.ordinal
 }
 

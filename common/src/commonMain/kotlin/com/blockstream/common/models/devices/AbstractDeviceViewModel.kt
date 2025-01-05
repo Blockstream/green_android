@@ -11,6 +11,7 @@ import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.Wally
 import com.blockstream.common.gdk.data.Network
+import com.blockstream.common.gdk.device.GdkHardwareWallet
 import com.blockstream.common.gdk.device.HardwareConnectInteraction
 import com.blockstream.common.interfaces.DeviceConnectionInterface
 import com.blockstream.common.managers.BluetoothState
@@ -134,6 +135,22 @@ abstract class AbstractDeviceViewModel constructor(
             askForFirmwareUpgradeEmitter = it
             postSideEffect(LocalSideEffects.AskForFirmwareUpgrade(firmwareUpgradeRequest))
         }
+    }
+
+    override fun interactionRequest(
+        gdkHardwareWallet: GdkHardwareWallet,
+        message: String?,
+        isMasterBlindingKeyRequest: Boolean,
+        completable: CompletableDeferred<Boolean>?
+    ) {
+        postSideEffect(
+            SideEffects.DeviceInteraction(
+                deviceId = deviceOrNull?.connectionIdentifier,
+                message = message,
+                isMasterBlindingKeyRequest = isMasterBlindingKeyRequest,
+                completable = completable
+            )
+        )
     }
 
     override fun firmwareUpdateState(state: FirmwareUpdateState) {

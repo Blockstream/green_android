@@ -1,6 +1,7 @@
 package com.blockstream.common.gdk.device
 
 import com.blockstream.common.devices.DeviceBrand
+import com.blockstream.common.devices.DeviceModel
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.Device
 import com.blockstream.common.gdk.data.InputOutput
@@ -31,7 +32,7 @@ abstract class GdkHardwareWallet {
 
     abstract val firmwareVersion: String?
 
-    abstract val model: String
+    abstract val model: DeviceModel
 
     abstract val device: Device
 

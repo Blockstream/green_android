@@ -22,7 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.blockstream_jade_device
+import blockstream_green.common.generated.resources.blockstream_jade_plus_device
 import blockstream_green.common.generated.resources.hw_matrix_bg
 import blockstream_green.common.generated.resources.id_a_new_device_has_been_detected
 import blockstream_green.common.generated.resources.id_genuine_check
@@ -51,7 +51,7 @@ object NewJadeConnectedBottomSheet : BottomScreen(), Parcelable {
     override fun Content() {
 
         val viewModel = koinScreenModel<SimpleGreenViewModel> {
-            parametersOf(null, null, "NewJadeConnected", false)
+            parametersOf(null, null, "NewJadeConnected")
         }
 
         NewJadeConnectedBottomSheet(
@@ -100,7 +100,7 @@ fun NewJadeConnectedBottomSheet(
                 )
 
                 Image(
-                    painter = painterResource(Res.drawable.blockstream_jade_device),
+                    painter = painterResource(Res.drawable.blockstream_jade_plus_device),
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
                     modifier = Modifier.align(Alignment.Center)

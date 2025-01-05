@@ -19,7 +19,7 @@ import blockstream_green.common.generated.resources.id_set_your_pin_via_qr
 import blockstream_green.common.generated.resources.id_start_scan_qr_on_jade_and
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.devices.DeviceBrand
+import com.blockstream.common.devices.DeviceModel
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.models.jade.JadeQrOperation
@@ -62,7 +62,7 @@ fun JadePinUnlockScreen(
     HandleSideEffect(viewModel = viewModel)
 
     JadeQRScreen.getResultPinUnlock {
-        viewModel.postEvent(NavigateDestinations.ImportPubKey(deviceBrand = DeviceBrand.Blockstream))
+        viewModel.postEvent(NavigateDestinations.ImportPubKey(deviceModel = DeviceModel.BlockstreamGeneric))
     }
 
     val texts = listOf(
@@ -88,7 +88,7 @@ fun JadePinUnlockScreen(
         }
 
         GreenButton(stringResource(Res.string.id_qr_pin_unlock), size = GreenButtonSize.BIG, modifier = Modifier.fillMaxWidth(), onClick = {
-            viewModel.postEvent(NavigateDestinations.JadeQR(operation = JadeQrOperation.PinUnlock, deviceBrand = DeviceBrand.Blockstream))
+            viewModel.postEvent(NavigateDestinations.JadeQR(operation = JadeQrOperation.PinUnlock, deviceModel = DeviceModel.BlockstreamGeneric))
         })
     }
 }

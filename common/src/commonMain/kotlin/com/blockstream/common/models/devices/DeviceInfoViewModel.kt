@@ -248,7 +248,7 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
                             DeviceIdentifier(
                                 name = device.name,
                                 uniqueIdentifier = device.uniqueIdentifier,
-                                brand = device.deviceBrand,
+                                model = device.deviceModel,
                                 connectionType = device.type
                             )
                         ).toSet().toList() // Make it unique

@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.blockstream.common.devices.DeviceModel;
 import com.blockstream.common.extensions.GdkExtensionsKt;
 import com.blockstream.common.gdk.Gdk;
 import com.blockstream.common.gdk.data.Account;
@@ -58,7 +59,7 @@ public class BTChipHWWallet extends GdkHardwareWallet {
 
     private final Network mNetwork;
     private final Device device;
-    private final String model;
+    private final DeviceModel model;
     private final String firmwareVersion;
 
     @SuppressLint("CheckResult")
@@ -71,18 +72,18 @@ public class BTChipHWWallet extends GdkHardwareWallet {
         mPin = pin;
         mNetwork = network;
         this.device = device;
-        if(dongle.getTransport().isUsb()){
-            if(dongle.getTransport() instanceof BTChipTransportAndroidHID){
-                if(BTChipTransportAndroid.isNanoX(((BTChipTransportAndroidHID) dongle.getTransport()).getUsbDevice())){
-                    model = "Ledger Nano X";
-                }else{
-                    model = "Ledger Nano S";
+        if (dongle.getTransport().isUsb()) {
+            if (dongle.getTransport() instanceof BTChipTransportAndroidHID) {
+                if (BTChipTransportAndroid.isNanoX(((BTChipTransportAndroidHID) dongle.getTransport()).getUsbDevice())) {
+                    model = DeviceModel.LedgerNanoX;
+                } else {
+                    model = DeviceModel.LedgerNanoS;
                 }
-            }else{
-                model = "Ledger TChipTransportAndroidWinUSB";
+            } else {
+                model = DeviceModel.LedgerGeneric;
             }
-        } else{
-            model = "Ledger Nano X";
+        } else {
+            model = DeviceModel.LedgerNanoX;
         }
         this.firmwareVersion = firmwareVersion;
 
@@ -599,7 +600,7 @@ public class BTChipHWWallet extends GdkHardwareWallet {
 
     @NonNull
     @Override
-    public String getModel() {
+    public DeviceModel getModel() {
         return model;
     }
 

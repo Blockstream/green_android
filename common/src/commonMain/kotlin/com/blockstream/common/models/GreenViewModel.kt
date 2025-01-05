@@ -38,6 +38,8 @@ import com.blockstream.common.database.Database
 import com.blockstream.common.database.LoginCredentials
 import com.blockstream.common.devices.ConnectionType
 import com.blockstream.common.devices.DeviceBrand
+import com.blockstream.common.devices.DeviceModel
+import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.EventWithSideEffect
@@ -107,20 +109,26 @@ import org.koin.core.component.inject
 import kotlin.native.ObjCName
 import kotlin.time.Duration
 
-class SimpleGreenViewModel(
+open class SimpleGreenViewModel(
     greenWalletOrNull: GreenWallet? = null,
     accountAssetOrNull: AccountAsset? = null,
-    val screenName: String? = null
+    val screenName: String? = null,
+    val device: GreenDevice? = null
 ) : GreenViewModel(greenWalletOrNull = greenWalletOrNull, accountAssetOrNull = accountAssetOrNull) {
 
     override fun screenName(): String? = screenName
 
     init {
-        bootstrap()
+        if(!isPreview) {
+            bootstrap()
+        }
     }
 }
 
-class SimpleGreenViewModelPreview(greenWalletOrNull: GreenWallet? = null, accountAssetOrNull: AccountAsset? = null): GreenViewModel(greenWalletOrNull, accountAssetOrNull)
+class SimpleGreenViewModelPreview(
+    greenWalletOrNull: GreenWallet? = null,
+    accountAssetOrNull: AccountAsset? = null
+) : SimpleGreenViewModel(greenWalletOrNull, accountAssetOrNull)
 
 open class GreenViewModel constructor(
     val greenWalletOrNull: GreenWallet? = null,
@@ -854,7 +862,7 @@ open class GreenViewModel constructor(
     ) {
         postSideEffect(
             SideEffects.DeviceInteraction(
-                device = gdkHardwareWallet.device,
+                deviceId = sessionOrNull?.device?.uniqueIdentifier,
                 message = message,
                 isMasterBlindingKeyRequest = isMasterBlindingKeyRequest,
                 completable = completable
@@ -922,7 +930,7 @@ open class GreenViewModel constructor(
         persistLoginCredentials: Boolean,
         watchOnlyCredentials: WatchOnlyCredentials,
         withBiometrics: Boolean,
-        deviceBrand: DeviceBrand? = null
+        deviceModel: DeviceModel? = null
     ) {
 
         val biometricsCipherProvider = viewModelScope.coroutineScope.async(
@@ -970,7 +978,7 @@ open class GreenViewModel constructor(
             database.getWalletWithXpubHashId(
                 xPubHashId = loginData.networkHashId,
                 isTestnet = network.isTestnet,
-                isHardware = deviceBrand != null
+                isHardware = deviceModel != null
             )?.also { wallet ->
                 throw Exception("id_wallet_already_restored_s|${wallet.name}")
             }
@@ -983,13 +991,13 @@ open class GreenViewModel constructor(
                 activeAccount = session.activeAccount.value?.pointer ?: 0,
                 watchOnlyUsername = if (network.isSinglesig) "" else watchOnlyCredentials.username, // empty string helps us hide the username and still identify it as a wo
                 isTestnet = network.isTestnet,
-                isHardware = deviceBrand != null,
-                deviceIdentifier = deviceBrand?.let {
+                isHardware = deviceModel != null,
+                deviceIdentifier = deviceModel?.let {
                     listOf(
                         DeviceIdentifier(
                             name = "",
                             uniqueIdentifier = "",
-                            brand = it,
+                            model = deviceModel,
                             connectionType = ConnectionType.QR
                         )
                     )

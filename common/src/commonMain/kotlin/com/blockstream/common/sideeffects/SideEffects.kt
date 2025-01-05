@@ -9,7 +9,6 @@ import com.blockstream.common.data.TwoFactorResolverData
 import com.blockstream.common.events.Event
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.gdk.data.Device
 import com.blockstream.common.gdk.data.ProcessedTransactionDetails
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.navigation.NavigateDestination
@@ -62,7 +61,7 @@ class SideEffects : SideEffect {
     data object DeviceRequestPassphrase: SideEffect
     data object DeviceRequestPin: SideEffect
     data class DeviceInteraction(
-        val device: Device,
+        val deviceId: String?,
         val message: String?,
         val isMasterBlindingKeyRequest: Boolean,
         val completable: CompletableDeferred<Boolean>?

@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.generic_device
 import blockstream_green.common.generated.resources.hw_matrix_bg
 import blockstream_green.common.generated.resources.id_blockstream_green_needs_access
 import blockstream_green.common.generated.resources.id_connect_usb_cable_or_enable
@@ -28,7 +29,6 @@ import blockstream_green.common.generated.resources.id_give_bluetooth_permission
 import blockstream_green.common.generated.resources.id_looking_for_device
 import blockstream_green.common.generated.resources.id_more_info
 import blockstream_green.common.generated.resources.id_unlock_your_device_to_continue
-import blockstream_green.common.generated.resources.question
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import com.blockstream.common.Parcelable
@@ -43,6 +43,7 @@ import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.extensions.deviceBrandIcon
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.navigation.getNavigationResult
 import com.blockstream.compose.navigation.setNavigationResult
@@ -105,7 +106,10 @@ fun DeviceScanScreen(
             )
 
             Image(
-                painter = painterResource(device?.icon() ?: viewModel.greenWallet.deviceIdentifiers?.firstOrNull()?.brand?.icon() ?: Res.drawable.question),
+                painter = painterResource(
+                    viewModel.greenWallet.deviceIdentifiers?.firstOrNull()?.let {
+                        it.model?.icon() ?: it.brand?.deviceBrandIcon()
+                    } ?: device?.icon() ?: Res.drawable.generic_device),
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.align(Alignment.Center)

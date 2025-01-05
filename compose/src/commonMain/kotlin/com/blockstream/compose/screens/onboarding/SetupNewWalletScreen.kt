@@ -86,10 +86,11 @@ fun KeysPolicyListItem(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
-                    .padding(16.dp)
-            ) {
-                GreenColumn(padding = 0, space = 8, modifier = Modifier.padding(end = 80.dp)) {
+                    .height(180.dp)
+                    .padding(16.dp),
+                ) {
+
+                GreenColumn(padding = 0, space = 8, modifier = Modifier.padding(end = 90.dp)) {
                     Text(text = title, style = titleMedium)
                     Text(
                         text = message,
@@ -112,7 +113,8 @@ fun KeysPolicyListItem(
         Image(
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(end = 6.dp),
+                .padding(end = 6.dp)
+                .height(150.dp),
             painter = painter,
             contentDescription = ""
         )

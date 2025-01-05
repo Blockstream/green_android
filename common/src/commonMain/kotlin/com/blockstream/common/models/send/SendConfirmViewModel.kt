@@ -194,6 +194,7 @@ class SendConfirmViewModel constructor(
                     postSideEffect(
                         SideEffects.NavigateTo(
                             NavigateDestinations.DeviceInteraction(
+                                deviceId = session.device?.connectionIdentifier,
                                 verifyAddress = output.address
                             )
                         )

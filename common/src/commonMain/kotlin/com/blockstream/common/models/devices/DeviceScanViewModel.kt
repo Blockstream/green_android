@@ -5,7 +5,6 @@ import blockstream_green.common.generated.resources.id_troubleshoot
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavAction
 import com.blockstream.common.data.NavData
-import com.blockstream.common.devices.ConnectionType
 import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewGreenDevice
@@ -16,7 +15,6 @@ import com.blockstream.common.utils.Loggable
 import com.juul.kable.ConnectionLostException
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,10 +41,6 @@ class DeviceScanViewModel(greenWallet: GreenWallet) :
         set(value) {
             _deviceFlow.value = value
         }
-
-    val hasBleConnectivity = greenWallet.deviceIdentifiers?.any { it.connectionType == ConnectionType.BLUETOOTH } ?: false
-
-    var requestUserActionEmitter: CompletableDeferred<Boolean>? = null
 
     init {
         session.device.takeIf { session.isConnected }?.also { device ->

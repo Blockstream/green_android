@@ -152,7 +152,7 @@ val factoryViewModels = module {
         SendViewModel(get(), getOrNull(), getOrNull())
     }
     factory {
-        SimpleGreenViewModel(getOrNull(), getOrNull(), getOrNull())
+        SimpleGreenViewModel(getOrNull(), getOrNull(), getOrNull(), getOrNull())
     }
     factory {
         SweepViewModel(get(), getOrNull(), getOrNull())

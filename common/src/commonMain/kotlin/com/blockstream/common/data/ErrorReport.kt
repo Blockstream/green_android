@@ -1,5 +1,6 @@
 package com.blockstream.common.data
 
+import com.blockstream.common.devices.DeviceModel
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Network
 
@@ -26,14 +27,17 @@ data class ErrorReport(
                     }
                 },
                 zendeskHardwareWallet = session?.let {
-                    session.gdkHwWallet?.model?.lowercase()?.let {
-                        when{
-                            it.contains("jade") -> "jade"
-                            it.contains("ledger") && it.contains("s")-> "ledger_nano_s"
-                            it.contains("ledger") && it.contains("x")-> "ledger_nano_x"
-                            it.contains("trezor") && it.contains("one")-> "trezor_one"
-                            it.contains("trezor") -> "trezor_t"
-                            else -> null
+                    session.gdkHwWallet?.model?.let {
+                        when(it) {
+                            DeviceModel.BlockstreamGeneric, DeviceModel.BlockstreamJade -> "jade"
+                            DeviceModel.BlockstreamJadePlus -> "jade_plus"
+                            DeviceModel.TrezorModelT -> "trezor_t"
+                            DeviceModel.TrezorModelOne -> "trezor_one"
+                            DeviceModel.LedgerNanoS -> "ledger_nano_s"
+                            DeviceModel.LedgerNanoX -> "ledger_nano_x"
+                            DeviceModel.TrezorGeneric -> "trezor"
+                            DeviceModel.LedgerGeneric -> "ledger"
+                            DeviceModel.Generic -> "generic"
                         }
                     }
                 }

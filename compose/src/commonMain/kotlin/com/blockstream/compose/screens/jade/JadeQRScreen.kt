@@ -33,7 +33,7 @@ import com.arkivanov.essenty.parcelable.IgnoredOnParcel
 import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.devices.DeviceBrand
+import com.blockstream.common.devices.DeviceModel
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.jade.JadeQRViewModel
 import com.blockstream.common.models.jade.JadeQRViewModelAbstract
@@ -69,13 +69,13 @@ import org.koin.core.parameter.parametersOf
 data class JadeQRScreen(
     val greenWallet: GreenWallet? = null,
     val operation: JadeQrOperation,
-    val deviceBrand: DeviceBrand
+    val deviceModel: DeviceModel
 ) : Screen, Parcelable {
 
     @Composable
     override fun Content() {
         val viewModel = koinScreenModel<JadeQRViewModel> {
-            parametersOf(greenWallet, operation, deviceBrand)
+            parametersOf(greenWallet, operation, deviceModel)
         }
 
         val navData by viewModel.navData.collectAsStateWithLifecycle()

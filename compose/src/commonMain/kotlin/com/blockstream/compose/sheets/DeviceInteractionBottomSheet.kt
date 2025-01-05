@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -15,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.blockstream_jade_device
+import blockstream_green.common.generated.resources.generic_device
 import blockstream_green.common.generated.resources.id_change
 import blockstream_green.common.generated.resources.id_confirm_on_your_device
 import blockstream_green.common.generated.resources.id_fee
@@ -29,7 +30,7 @@ import com.blockstream.common.Urls
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.looks.transaction.TransactionConfirmLook
-import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.components.GreenAddress
@@ -37,31 +38,39 @@ import com.blockstream.compose.components.GreenAmount
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.LearnMoreButton
+import com.blockstream.compose.extensions.actionIcon
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
 
 @Parcelize
 data class DeviceInteractionBottomSheet(
     val greenWalletOrNull: GreenWallet? = null,
+    val deviceId: String?,
     val transactionConfirmLook: TransactionConfirmLook? = null,
     val verifyAddress: String? = null,
     val isMasterBlindingKeyRequest: Boolean = false,
     val message: String? = null
 ) : BottomScreen(), Parcelable {
+
     @Composable
     override fun Content() {
+
+        val deviceManager = koinInject<DeviceManager>()
+
         val screenName = when {
             verifyAddress != null -> "VerifyAddress"
             transactionConfirmLook != null -> "VerifyTransaction"
             else -> null
         }
+
         val viewModel = koinScreenModel<SimpleGreenViewModel> {
-            parametersOf(greenWalletOrNull, null, screenName, false)
+            parametersOf(greenWalletOrNull, null, screenName, deviceManager.getDevice(deviceId))
         }
 
         DeviceInteractionBottomSheet(
@@ -78,7 +87,7 @@ data class DeviceInteractionBottomSheet(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeviceInteractionBottomSheet(
-    viewModel: GreenViewModel,
+    viewModel: SimpleGreenViewModel,
     transactionConfirmLook: TransactionConfirmLook? = null,
     verifyAddress: String? = null,
     isMasterBlindingKeyRequest: Boolean = false,
@@ -94,6 +103,13 @@ fun DeviceInteractionBottomSheet(
         }
     }
 
+    val deviceIcon = viewModel.device?.let {
+        if (transactionConfirmLook != null || verifyAddress != null) {
+            it.actionIcon()
+        } else {
+            it.icon()
+        }
+    }
 
     GreenBottomSheet(
         title = title,
@@ -105,12 +121,12 @@ fun DeviceInteractionBottomSheet(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
             Image(
-                painter = painterResource(viewModel.sessionOrNull?.device?.icon() ?: Res.drawable.blockstream_jade_device),
+                painter = painterResource(deviceIcon ?: Res.drawable.generic_device),
                 contentDescription = null,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .height(100.dp)
-
+                    .height(160.dp)
+                    .padding(bottom = 16.dp)
             )
 
             GreenColumn(

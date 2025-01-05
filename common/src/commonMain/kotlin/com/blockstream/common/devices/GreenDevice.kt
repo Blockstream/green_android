@@ -30,10 +30,12 @@ interface DeviceOperatingNetwork {
 }
 
 interface GreenDevice: DeviceOperatingNetwork {
+    val connectionIdentifier: String
+    val uniqueIdentifier: String
     val peripheral: Peripheral?
     var gdkHardwareWallet: GdkHardwareWallet?
     val deviceBrand: DeviceBrand
-    val uniqueIdentifier: String
+    val deviceModel: DeviceModel?
     val type: ConnectionType
     val isBonded: Boolean
     val isUsb: Boolean
@@ -41,7 +43,6 @@ interface GreenDevice: DeviceOperatingNetwork {
     val deviceState: StateFlow<DeviceState>
     val firmwareState: StateFlow<FirmwareUpdateState?>
     val name: String
-    val connectionIdentifier: String
     val manufacturer: String?
     val isJade: Boolean
     val isTrezor: Boolean
@@ -87,6 +88,9 @@ abstract class GreenDeviceImpl constructor(
 
     override val uniqueIdentifier: String
         get() = name
+
+    override val deviceModel: DeviceModel?
+        get() = gdkHardwareWallet?.model
 
     final override var heartbeat: Long = Clock.System.now().toEpochMilliseconds()
         private set

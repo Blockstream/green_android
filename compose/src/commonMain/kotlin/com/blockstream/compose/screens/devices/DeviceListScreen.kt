@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.ble
+import blockstream_green.common.generated.resources.blockstream_devices
 import blockstream_green.common.generated.resources.hw_matrix_bg
 import blockstream_green.common.generated.resources.id_blockstream_green_needs_access
 import blockstream_green.common.generated.resources.id_choose_a_usb_or_bluetooth
@@ -66,8 +68,6 @@ import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenRow
-import com.blockstream.compose.components.Rive
-import com.blockstream.compose.components.RiveAnimation
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.navigation.getNavigationResult
 import com.blockstream.compose.navigation.setNavigationResult
@@ -206,6 +206,14 @@ fun DeviceListScreen(
                                 }
                             }
 
+                            Box(modifier = Modifier.weight(1f)) {
+                                Image(
+                                    painter = painterResource(Res.drawable.blockstream_devices),
+                                    contentDescription = null,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+
                             HorizontalPager(
                                 state = pagerState,
                                 modifier = Modifier.weight(1f)
@@ -239,15 +247,15 @@ fun DeviceListScreen(
                                     space = 0,
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    Box(modifier = Modifier.weight(1f)) {
-                                        Rive(
-                                            riveAnimation = when (page) {
-                                                0 -> RiveAnimation.JADE_POWER
-                                                1 -> RiveAnimation.JADE_BUTTON
-                                                else -> RiveAnimation.JADE_SCROLL
-                                            }
-                                        )
-                                    }
+//                                    Box(modifier = Modifier.weight(1f)) {
+//                                        Rive(
+//                                            riveAnimation = when (page) {
+//                                                0 -> RiveAnimation.JADE_POWER
+//                                                1 -> RiveAnimation.JADE_BUTTON
+//                                                else -> RiveAnimation.JADE_SCROLL
+//                                            }
+//                                        )
+//                                    }
 
                                     GreenCard {
                                         GreenColumn(

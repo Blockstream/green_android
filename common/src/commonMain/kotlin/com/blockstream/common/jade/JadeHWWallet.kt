@@ -1,5 +1,6 @@
 package com.blockstream.common.jade
 
+import com.blockstream.common.devices.DeviceModel
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.Wally
@@ -45,8 +46,11 @@ class JadeHWWallet constructor(
     override val firmwareVersion: String
         get() = getVersionInfo(useCache = true).jadeVersion
 
-    override val model: String
-        get() = getVersionInfo(useCache = true).boardType
+    override val model: DeviceModel
+        get() = when(getVersionInfo(useCache = true).isBoardV2){
+            false -> DeviceModel.BlockstreamJade
+            true -> DeviceModel.BlockstreamJadePlus
+        }
 
     val isMainnet: Boolean
         get() = getVersionInfo().jadeNetworks.let { it == JadeNetworks.MAIN || it == JadeNetworks.ALL }

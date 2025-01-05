@@ -44,6 +44,7 @@ import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorResolverData
 import com.blockstream.common.data.TwoFactorSetupAction
 import com.blockstream.common.devices.DeviceBrand
+import com.blockstream.common.devices.DeviceModel
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.handleException
 import com.blockstream.common.extensions.isNotBlank
@@ -557,6 +558,7 @@ fun HandleSideEffect(
                 is SideEffects.DeviceInteraction -> {
                     val screen = bottomSheetNavigator?.show(
                         DeviceInteractionBottomSheet(
+                            deviceId = it.deviceId,
                             isMasterBlindingKeyRequest = it.isMasterBlindingKeyRequest,
                             message = it.message
                         )
@@ -941,6 +943,7 @@ fun HandleSideEffect(
                             bottomSheetNavigator?.show(
                                 DeviceInteractionBottomSheet(
                                     greenWalletOrNull = viewModel.greenWalletOrNull,
+                                    deviceId = destination.deviceId,
                                     transactionConfirmLook = destination.transactionConfirmLook,
                                     verifyAddress = destination.verifyAddress,
                                     isMasterBlindingKeyRequest = destination.isMasterBlindingKeyRequest,
@@ -993,7 +996,7 @@ fun HandleSideEffect(
                                 JadeQRScreen(
                                     greenWallet = viewModel.greenWalletOrNull,
                                     operation = destination.operation,
-                                    deviceBrand = destination.deviceBrand ?: viewModel.sessionOrNull?.deviceBrand ?: DeviceBrand.Generic
+                                    deviceModel = destination.deviceModel ?: viewModel.sessionOrNull?.deviceModel ?: DeviceModel.Generic
                                 )
                             )
                         }
@@ -1011,7 +1014,7 @@ fun HandleSideEffect(
                         }
 
                         is NavigateDestinations.ImportPubKey -> {
-                            ImportPubKeyScreen(deviceBrand = destination.deviceBrand).also { screen ->
+                            ImportPubKeyScreen(deviceModel = destination.deviceModel).also { screen ->
                                 if (navigator?.lastItemOrNull is JadePinUnlockScreen) {
                                     navigator.replace(screen)
                                 } else {
