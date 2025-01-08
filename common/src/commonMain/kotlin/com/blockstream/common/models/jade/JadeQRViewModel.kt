@@ -50,6 +50,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -129,7 +130,7 @@ class JadeQRViewModel(
     private val _urPart: MutableStateFlow<String?> = MutableStateFlow(null)
     override val urPart: StateFlow<String?> = _urPart.asStateFlow()
 
-    private var _step = 0
+    private var _step = MutableStateFlow(0)
 
     private var _scenario = MutableStateFlow(scenarionForOperation())
     override val scenario = _scenario
@@ -161,7 +162,7 @@ class JadeQRViewModel(
             }
         }.launchIn(this)
 
-        scenario.onEach { scenario ->
+        combine(scenario, _step) { scenario, step ->
             _navData.value = NavData(
                 title = getString(if (deviceBrand.isJade) (if (scenario.isPinUnlock) Res.string.id_qr_pin_unlock else Res.string.id_scan_qr_with_jade) else Res.string.id_scan_qr_with_device),
                 actions = listOfNotNull(NavAction(
@@ -171,7 +172,7 @@ class JadeQRViewModel(
                     onClick = {
                         restart()
                     }
-                ).takeIf { scenario.allowReset })
+                ).takeIf { scenario.allowReset && step > 0  })
             )
         }.launchIn(this)
 
@@ -237,7 +238,7 @@ class JadeQRViewModel(
     }
 
     private fun restart() {
-        _step = 0
+        _step.value = 0
         _stepInfo.value = scenario.value.steps.first()
 
         when (operation) {
@@ -267,10 +268,10 @@ class JadeQRViewModel(
     }
 
     private fun nextStep() {
-        _step++
+        _step.value++
 
-        if (_step < scenario.value.steps.size) {
-            _stepInfo.value = scenario.value.steps[_step]
+        if (_step.value < scenario.value.steps.size) {
+            _stepInfo.value = scenario.value.steps[_step.value]
         } else {
             postSideEffect(SideEffects.Success(true))
             postSideEffect(SideEffects.NavigateBack())
@@ -338,6 +339,12 @@ class JadeQRViewModel(
                             throw Exception(httpResponse.jsonObject["error"]?.jsonPrimitive?.content)
                         }
                     } ?: run {
+                        // Delay resetScanner to prevent error dialog flooding
+                        viewModelScope.launch {
+                            delay(3000L)
+                            resetScanner()
+                        }
+
                         throw Exception("QR code is not related to PIN Unlock")
                     }
 
