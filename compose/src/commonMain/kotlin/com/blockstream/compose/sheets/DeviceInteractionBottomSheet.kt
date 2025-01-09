@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.generic_device
+import blockstream_green.common.generated.resources.blockstream_devices
 import blockstream_green.common.generated.resources.id_change
 import blockstream_green.common.generated.resources.id_confirm_on_your_device
 import blockstream_green.common.generated.resources.id_fee
@@ -121,7 +121,7 @@ fun DeviceInteractionBottomSheet(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
             Image(
-                painter = painterResource(deviceIcon ?: Res.drawable.generic_device),
+                painter = painterResource(deviceIcon ?: Res.drawable.blockstream_devices),
                 contentDescription = null,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)

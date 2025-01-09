@@ -40,8 +40,8 @@ android {
     defaultConfig {
         minSdk = libs.versions.androidMinSdk.get().toInt()
         targetSdk = libs.versions.androidTargetSdk.get().toInt()
-        versionCode = 441
-        versionName = "4.1.2"
+        versionCode = 442
+        versionName = "4.1.3"
 
         setProperty("archivesBaseName", "BlockstreamGreen-v$versionName")
         proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

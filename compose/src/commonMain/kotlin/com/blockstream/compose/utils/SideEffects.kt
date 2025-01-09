@@ -171,17 +171,15 @@ fun HandleSideEffectDialog(
     onDismiss: CoroutineScope.() -> Unit = {},
     handler: CoroutineScope.(sideEffect: SideEffect) -> Unit = {}
 ) {
-    LaunchedEffect(Unit) {
-        viewModel.sideEffect.onEach {
-            handler.invoke(this, it)
+    HandleSideEffect(viewModel, handler = {
+        handler.invoke(this, it)
 
-            when (it) {
-                is SideEffects.Dismiss -> {
-                    onDismiss()
-                }
+        when (it) {
+            is SideEffects.Dismiss -> {
+                onDismiss()
             }
-        }.collect()
-    }
+        }
+    })
 }
 
 
