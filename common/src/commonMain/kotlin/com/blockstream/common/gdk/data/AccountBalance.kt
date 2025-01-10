@@ -35,7 +35,7 @@ data class AccountBalance constructor(
     val asMasked: AccountBalance
         get() = copy(
             balance = "*****",
-            balanceExchange = "******"
+            balanceExchange = "*****"
         )
 
     companion object {

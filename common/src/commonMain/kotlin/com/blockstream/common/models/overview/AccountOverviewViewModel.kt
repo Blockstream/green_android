@@ -162,14 +162,9 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
         }
     }.filter { session.isConnected }
         .map { transactionsLooks ->
-            val hideAmounts = settingsManager.appSettings.hideAmounts
             transactionsLooks.mapSuccess {
                 it.map {
-                    TransactionLook.create(it, session).let { look ->
-                        if (hideAmounts) {
-                            look.asMasked
-                        } else look
-                    }
+                    TransactionLook.create(it, session)
                 }
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), DataState.Loading)
