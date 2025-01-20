@@ -4,7 +4,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
@@ -60,7 +61,7 @@ fun AddWalletScreen(
 ) {
 
     EnvironmentBottomSheet.getResult {
-        if(it >= 0) {
+        if (it >= 0) {
             viewModel.postEvent(
                 AddWalletViewModel.LocalEvents.SelectEnviroment(
                     isTestnet = it == 1,
@@ -74,15 +75,14 @@ fun AddWalletScreen(
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(),
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
 
         Box(
             modifier = Modifier
-                .weight(6f)
+                .weight(2f)
                 .padding(horizontal = 24.dp),
         ) {
             Image(
@@ -102,7 +102,6 @@ fun AddWalletScreen(
 
         GreenColumn(
             space = 8,
-            modifier = Modifier.padding(horizontal = 0.dp).weight(4f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -118,32 +117,32 @@ fun AddWalletScreen(
             )
         }
 
-        Column {
-            GreenColumn(
-                padding = 24,
-                modifier = Modifier,
-                horizontalAlignment = Alignment.CenterHorizontally,
+        Spacer(modifier = Modifier.weight(1f))
+
+        GreenColumn(
+            padding = 0,
+            modifier = Modifier.padding(horizontal = 24.dp).padding(bottom = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+
+            GreenButton(
+                stringResource(Res.string.id_new_wallet),
+                modifier = Modifier.fillMaxWidth(),
+                size = GreenButtonSize.BIG,
             ) {
-
-                GreenButton(
-                    stringResource(Res.string.id_new_wallet),
-                    modifier = Modifier.fillMaxWidth(),
-                    size = GreenButtonSize.BIG,
-                ) {
-                    viewModel.postEvent(AddWalletViewModel.LocalEvents.NewWallet)
-                }
-
-                GreenButton(
-                    stringResource(Res.string.id_restore_wallet),
-                    modifier = Modifier.fillMaxWidth(),
-                    type = GreenButtonType.OUTLINE,
-                    color = GreenButtonColor.WHITE,
-                    size = GreenButtonSize.BIG,
-                ) {
-                    viewModel.postEvent(AddWalletViewModel.LocalEvents.RestoreWallet)
-                }
-
+                viewModel.postEvent(AddWalletViewModel.LocalEvents.NewWallet)
             }
+
+            GreenButton(
+                stringResource(Res.string.id_restore_wallet),
+                modifier = Modifier.fillMaxWidth(),
+                type = GreenButtonType.OUTLINE,
+                color = GreenButtonColor.WHITE,
+                size = GreenButtonSize.BIG,
+            ) {
+                viewModel.postEvent(AddWalletViewModel.LocalEvents.RestoreWallet)
+            }
+
         }
     }
 

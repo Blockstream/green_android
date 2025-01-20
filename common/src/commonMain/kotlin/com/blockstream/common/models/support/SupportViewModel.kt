@@ -2,11 +2,12 @@ package com.blockstream.common.models.support
 
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_contact_support
+import blockstream_green.common.generated.resources.id_thank_you_for_your_feedback
 import blockstream_green.common.generated.resources.id_thanks_your_message_has_been_sent
 import com.blockstream.common.SupportType
-import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavData
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
@@ -98,7 +99,7 @@ class SupportViewModel(type: SupportType, supportData: SupportData, greenWalletO
                 autoRetry = false
             )
         }, onSuccess = {
-            postSideEffect(SideEffects.Snackbar(text = StringHolder.create(Res.string.id_thanks_your_message_has_been_sent)))
+            postSideEffect(SideEffects.Snackbar(text = StringHolder.create(if (type == SupportType.FEEDBACK) Res.string.id_thank_you_for_your_feedback else Res.string.id_thanks_your_message_has_been_sent)))
             postSideEffect(SideEffects.NavigateBack())
         })
     }
