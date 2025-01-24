@@ -6,6 +6,7 @@ import breez_sdk.InvoicePaidDetails
 import breez_sdk.LnUrlPayResult
 import breez_sdk.ReceivePaymentResponse
 import breez_sdk.SwapInfo
+import co.touchlab.stately.collections.ConcurrentMutableMap
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.BTC_UNIT
 import com.blockstream.common.CountlyBase
@@ -376,7 +377,7 @@ class GdkSession constructor(
 
     val activeSinglesig get() = listOfNotNull(activeBitcoinSinglesig, activeLiquidSinglesig)
 
-    val gdkSessions = linkedMapOf<Network, GASession>()
+    val gdkSessions: ConcurrentMutableMap<Network, GASession> = ConcurrentMutableMap()
     val activeSessions = mutableSetOf<Network>()
 
     fun hasActiveNetwork(network: Network?) = activeSessions.contains(network)

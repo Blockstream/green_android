@@ -16,6 +16,7 @@ android-gradle-plugin = "8.7.3"
 androidCompileSdk = "34"
 androidTargetSdk = "34"
 androidMinSdk = "24"
+statelyConcurrentCollections = "2.1.0"
 buildTools = "34.0.0"
 breez = "0.6.6"
 androidx-junit = "1.2.1"
@@ -93,6 +94,7 @@ phosphor-icon = { module = "com.adamglin:phosphor-icon", version.ref = "phosphor
 tuulbox-coroutines = { module = "com.juul.tuulbox:coroutines", version.ref = "tuulbox-coroutines" }
 desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar" }
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
+stately-concurrent-collections = { module = "co.touchlab:stately-concurrent-collections", version.ref = "statelyConcurrentCollections" }
 androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }

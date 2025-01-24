@@ -135,6 +135,7 @@ kotlin {
             /** ----------------------------------------------------------------------------------------- */
 
             /**  --- Misc. ------------------------------------------------------------------------------ */
+            api(libs.stately.concurrent.collections)
             api(libs.sqldelight.coroutines.extensions)
             api(libs.kmp.observableviewmodel)
             api(libs.uri.kmp)
