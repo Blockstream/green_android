@@ -2777,7 +2777,7 @@ class GdkSession constructor(
 
                 try {
                     val response = lightningSdk.sendPayment(
-                        bolt11 = inputType.invoice.bolt11,
+                        invoice = inputType.invoice,
                         satoshi = satoshi.takeIf { inputType.invoice.amountMsat == null }
                     )
 
