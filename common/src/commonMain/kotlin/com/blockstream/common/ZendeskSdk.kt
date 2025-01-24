@@ -1,16 +1,22 @@
 package com.blockstream.common
 
-import com.blockstream.common.data.ErrorReport
+import com.blockstream.common.data.SupportData
+
+enum class SupportType(val zendeskValue: String){
+    INCIDENT("incident"), FEEDBACK("feedback"),
+}
 
 open class ZendeskSdk {
-    var appVersion: String? = null
+    open val appVersion: String = ""
 
     open val isAvailable = false
 
-    open fun submitNewTicket(
-        subject: String?,
+    open suspend fun submitNewTicket(
+        type: SupportType,
+        subject: String,
         email: String,
         message: String,
-        errorReport: ErrorReport
-    ) { }
+        supportData: SupportData,
+        autoRetry: Boolean = true
+    ) : Boolean { return false}
 }

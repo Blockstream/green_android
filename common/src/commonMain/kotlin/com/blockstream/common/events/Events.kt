@@ -2,7 +2,6 @@ package com.blockstream.common.events
 
 import com.blockstream.common.crypto.PlatformCipher
 import com.blockstream.common.data.DenominatedValue
-import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.gdk.data.Account
@@ -51,7 +50,6 @@ class Events : Event {
     data class AskRemoveLightningShortcut(val wallet: GreenWallet? = null): Event
     data class SetAccountAsset(val accountAsset: AccountAsset, val setAsActive: Boolean = false): Event
     data class SetBarcodeScannerResult(val scannedText : String): Event
-    data class SubmitErrorReport(val email : String, val message: String, val errorReport: ErrorReport): Event
     class ProvideCipher(
         val platformCipher: PlatformCipher? = null,
         val exception: Exception? = null

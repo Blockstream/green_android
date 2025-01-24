@@ -332,7 +332,7 @@ class TwoFactorSetupViewModel(
         }, onSuccess = {
             postSideEffect(SideEffects.NavigateBack())
         }, onError = {
-            postSideEffect(SideEffects.NavigateBack(error = it, errorReport = errorReport(it)))
+            postSideEffect(SideEffects.NavigateBack(error = it, supportData = errorReport(it)))
         })
     }
 }

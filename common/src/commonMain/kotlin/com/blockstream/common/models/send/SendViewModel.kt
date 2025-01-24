@@ -15,12 +15,12 @@ import com.blockstream.common.TransactionType
 import com.blockstream.common.data.Banner
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
-import com.blockstream.common.data.ErrorReport
-import com.blockstream.common.data.ExceptionWithErrorReport
+import com.blockstream.common.data.ExceptionWithSupportData
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavAction
 import com.blockstream.common.data.NavData
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnected
@@ -40,7 +40,6 @@ import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.gdk.params.toJsonElement
 import com.blockstream.common.lightning.lnUrlPayDescription
 import com.blockstream.common.lightning.lnUrlPayImage
-import com.blockstream.common.models.send.SendConfirmViewModel.LocalEvents
 import com.blockstream.common.models.sheets.NoteType
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
@@ -653,8 +652,8 @@ class SendViewModel(
 
             postSideEffect(
                 SideEffects.ErrorDialog(
-                    it, errorReport = (it as? ExceptionWithErrorReport)?.errorReport
-                        ?: ErrorReport.create(
+                    error = it, supportData = (it as? ExceptionWithSupportData)?.supportData
+                        ?: SupportData.create(
                             throwable = it,
                             network = account.network,
                             session = session

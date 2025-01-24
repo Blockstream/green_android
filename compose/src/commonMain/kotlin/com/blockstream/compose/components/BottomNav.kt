@@ -24,8 +24,10 @@ import blockstream_green.common.generated.resources.broom
 import blockstream_green.common.generated.resources.id_receive
 import blockstream_green.common.generated.resources.id_send
 import blockstream_green.common.generated.resources.id_sweep
-import blockstream_green.common.generated.resources.plus
-import blockstream_green.common.generated.resources.qr_code
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Plus
+import com.adamglin.phosphoricons.regular.QrCode
 import com.blockstream.compose.theme.GreenSmallEnd
 import com.blockstream.compose.theme.GreenSmallStart
 import com.blockstream.compose.theme.bottom_nav_bg
@@ -116,9 +118,9 @@ fun BottomNav(
             },
         ) {
             if (showMenu) {
-                Icon(painterResource(Res.drawable.plus), "Floating action button.")
+                Icon(PhosphorIcons.Regular.Plus, "Floating action button.")
             } else {
-                Icon(painterResource(Res.drawable.qr_code), "Scan")
+                Icon(PhosphorIcons.Regular.QrCode, "Scan")
             }
         }
     }

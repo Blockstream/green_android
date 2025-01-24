@@ -15,7 +15,7 @@ import breez_sdk.LnUrlWithdrawResult
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
-import com.blockstream.common.data.ErrorReport
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavData
 import com.blockstream.common.events.Event
@@ -267,8 +267,8 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
         _denomination.value = denominatedValue.denomination
     }
 
-    override fun errorReport(exception: Throwable): ErrorReport {
-        return ErrorReport.create(
+    override fun errorReport(exception: Throwable): SupportData {
+        return SupportData.create(
             throwable = exception,
             network = session.lightning,
             session = session

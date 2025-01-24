@@ -149,6 +149,7 @@ kotlin {
             api(libs.kable.core)
             api(libs.kotlincrypto.hash.md)
             api(libs.kotlincrypto.hash.sha2)
+            api(libs.phosphor.icon)
 
             implementation(libs.tuulbox.coroutines)
             /** ----------------------------------------------------------------------------------------- */

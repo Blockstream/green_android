@@ -27,4 +27,17 @@ enum class DeviceModel(val deviceModel: String) {
             BlockstreamGeneric, BlockstreamJade, BlockstreamJadePlus -> true
             else -> false
         }
+
+    val zendeskValue: String
+        get() = when (this) {
+            BlockstreamGeneric, BlockstreamJade -> "jade"
+            BlockstreamJadePlus -> "jade_plus"
+            TrezorModelT -> "trezor_t"
+            TrezorModelOne -> "trezor_one"
+            LedgerNanoS -> "ledger_nano_s"
+            LedgerNanoX -> "ledger_nano_x"
+            TrezorGeneric -> "trezor"
+            LedgerGeneric -> "ledger"
+            Generic -> "generic"
+        }
 }

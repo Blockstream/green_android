@@ -13,11 +13,11 @@ import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.CountlyAsset
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.EnrichedAsset
-import com.blockstream.common.data.ErrorReport
-import com.blockstream.common.data.ExceptionWithErrorReport
+import com.blockstream.common.data.ExceptionWithSupportData
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.RichWatchOnly
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.database.LoginCredentials
 import com.blockstream.common.devices.DeviceBrand
@@ -188,6 +188,9 @@ class GdkSession constructor(
     private val parentJob = SupervisorJob()
 
     var jadeHttpRequestUrlValidator: JadeHttpRequestUrlValidator? = null
+
+    val logs: String
+        get() = gdk.logs.toString()
 
     val isTestnet: Boolean // = false
         get() = defaultNetworkOrNull?.isTestnet == true
@@ -2779,9 +2782,9 @@ class GdkSession constructor(
 
                     ProcessedTransactionDetails(paymentId = response.payment.id)
                 } catch (e: Exception){
-                    throw ExceptionWithErrorReport(
+                    throw ExceptionWithSupportData(
                         throwable = e,
-                        ErrorReport.create(
+                        supportData = SupportData.create(
                             throwable = e,
                             paymentHash = inputType.invoice.paymentHash,
                             network = lightningAccount.network,
@@ -2806,9 +2809,9 @@ class GdkSession constructor(
                         }
                         is LnUrlPayResult.PayError -> {
                             val exception = Exception(it.data.reason)
-                            throw ExceptionWithErrorReport(
+                            throw ExceptionWithSupportData(
                                 throwable = exception,
-                                ErrorReport.create(
+                                supportData = SupportData.create(
                                     throwable = exception,
                                     paymentHash = it.data.paymentHash,
                                     network = lightningAccount.network,

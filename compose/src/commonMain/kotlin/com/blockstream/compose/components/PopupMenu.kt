@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.DpOffset
 import com.blockstream.common.data.NavAction
 import org.jetbrains.compose.resources.DrawableResource
@@ -16,6 +17,7 @@ import org.jetbrains.compose.resources.painterResource
 data class MenuEntry(
     val title: String,
     val iconRes: DrawableResource? = null,
+    val imageVector: ImageVector? = null,
     val onClick: () -> Unit = {}
 ){
     companion object{
@@ -58,6 +60,13 @@ fun PopupMenu(modifier: Modifier = Modifier, state: PopupState, entries: List<Me
                     {
                         Icon(
                             painterResource(it),
+                            contentDescription = null
+                        )
+                    }
+                } ?: it.imageVector?.let {
+                    {
+                        Icon(
+                            imageVector = it,
                             contentDescription = null
                         )
                     }

@@ -11,13 +11,21 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.IntSize
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlin.math.min
 
 fun MutableState<Boolean>.toggle() {
     this.value = !this.value
 }
 
-fun <T> MutableStateFlow<T>.onValueChange(): (T) -> Unit = { newValue ->
-    this.value = newValue
+fun <T> MutableStateFlow<T>.onValueChange(maxChars: Int? = null): (T) -> Unit = { newValue ->
+    if(maxChars != null && newValue is String) {
+        (newValue as? String)?.also {
+            @Suppress("UNCHECKED_CAST")
+            this.value = newValue.substring(0, min(newValue.length, 1000)) as T
+        }
+    }else{
+        this.value = newValue
+    }
 }
 
 @Composable

@@ -4,7 +4,7 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_authentication_successful
 import breez_sdk.LnUrlAuthRequestData
 import breez_sdk.LnUrlCallbackStatus
-import com.blockstream.common.data.ErrorReport
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavData
 import com.blockstream.common.events.Event
@@ -56,7 +56,7 @@ class LnUrlAuthViewModel(greenWallet: GreenWallet, requestData: LnUrlAuthRequest
             postSideEffect(
                 SideEffects.NavigateBack(
                     error = it,
-                    errorReport = ErrorReport.create(
+                    supportData = SupportData.create(
                         throwable = it,
                         network = session.lightning,
                         session = session
@@ -66,8 +66,8 @@ class LnUrlAuthViewModel(greenWallet: GreenWallet, requestData: LnUrlAuthRequest
         })
     }
 
-    override fun errorReport(exception: Throwable): ErrorReport {
-        return ErrorReport.create(
+    override fun errorReport(exception: Throwable): SupportData {
+        return SupportData.create(
             throwable = exception,
             network = session.lightning,
             session = session

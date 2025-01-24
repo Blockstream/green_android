@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.copy
 import blockstream_green.common.generated.resources.eye
 import blockstream_green.common.generated.resources.id_enabled_1s
 import blockstream_green.common.generated.resources.id_extended_public_key
@@ -39,6 +38,9 @@ import blockstream_green.common.generated.resources.key_multisig
 import blockstream_green.common.generated.resources.qr_code
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Copy
 import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
 import com.blockstream.common.data.GreenWallet
@@ -331,7 +333,7 @@ fun Descriptor(
                 Row {
                     IconButton(onCopy) {
                         Icon(
-                            painter = painterResource(Res.drawable.copy),
+                            imageVector = PhosphorIcons.Regular.Copy,
                             contentDescription = "Copy",
                             modifier = Modifier.minimumInteractiveComponentSize()
                         )

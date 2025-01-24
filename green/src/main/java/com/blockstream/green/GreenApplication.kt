@@ -12,7 +12,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_hide_amounts
-import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.fcm.Firebase
 import com.blockstream.common.managers.LifecycleManager
@@ -29,8 +28,6 @@ class GreenApplication : Application() {
     private val androidMigrator: AndroidMigrator by inject()
 
     private val activityLifecycle: ActivityLifecycle by inject()
-
-    private val zendeskSdk: ZendeskSdk by inject()
 
     private val firebase: Firebase by inject()
 
@@ -63,8 +60,6 @@ class GreenApplication : Application() {
                 initShortcuts()
             }
         }
-
-        zendeskSdk.appVersion = BuildConfig.VERSION_NAME
 
         firebase.initialize()
     }

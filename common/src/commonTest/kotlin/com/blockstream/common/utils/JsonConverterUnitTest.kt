@@ -12,7 +12,11 @@ class JsonConverterUnitTest {
 
     @BeforeTest
     fun init() {
-        jsonConverter = JsonConverter(log = true, maskSensitiveFields = true)
+        jsonConverter = JsonConverter(
+            printGdkMessages = true,
+            maskSensitiveFields = true,
+            appendGdkLogs = { }
+        )
     }
 
     @Test

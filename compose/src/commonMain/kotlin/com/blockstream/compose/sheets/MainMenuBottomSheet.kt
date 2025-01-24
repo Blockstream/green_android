@@ -8,12 +8,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.arrow_u_left_down
-import blockstream_green.common.generated.resources.arrows_down_up
-import blockstream_green.common.generated.resources.coins
 import blockstream_green.common.generated.resources.id_account_transfer
 import blockstream_green.common.generated.resources.id_buy
 import blockstream_green.common.generated.resources.id_move_across_accounts
@@ -21,7 +18,12 @@ import blockstream_green.common.generated.resources.id_qr_scanner
 import blockstream_green.common.generated.resources.id_redeposit
 import blockstream_green.common.generated.resources.id_redeposit_expired_2fa_coins
 import blockstream_green.common.generated.resources.id_scan_qr_code
-import blockstream_green.common.generated.resources.qr_code
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.ArrowULeftDown
+import com.adamglin.phosphoricons.regular.ArrowsDownUp
+import com.adamglin.phosphoricons.regular.Coins
+import com.adamglin.phosphoricons.regular.QrCode
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
@@ -35,7 +37,6 @@ import com.blockstream.compose.navigation.getNavigationResult
 import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteLow
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -69,11 +70,11 @@ data class MainMenuBottomSheet(val isTestnet: Boolean) : BottomScreen(), Parcela
 }
 
 @Composable
-fun MainMenuItem(title: String, subtitle: String, icon: Painter, onClick: (() -> Unit)? = null) {
+fun MainMenuItem(title: String, subtitle: String, icon: ImageVector, onClick: (() -> Unit)? = null) {
     GreenCard(onClick = onClick) {
         GreenRow(padding = 0, space = 16) {
             Icon(
-                painter = icon,
+                imageVector = icon,
                 contentDescription = null,
                 modifier = Modifier.size(30.dp)
             )
@@ -113,7 +114,7 @@ fun MainMenuBottomSheetView(
                 MainMenuItem(
                     title = stringResource(Res.string.id_buy),
                     subtitle = "BTC",
-                    icon = painterResource(Res.drawable.coins),
+                    icon = PhosphorIcons.Regular.Coins,
                     onClick = {
                         countly.buyInitiate()
                         onSelect(MainMenuEntry.BUY_SELL)
@@ -127,7 +128,7 @@ fun MainMenuBottomSheetView(
                      subtitle = stringResource(
                          Res.string.id_move_across_accounts
                      ),
-                     icon = painterResource(Res.drawable.arrows_down_up),
+                     icon = PhosphorIcons.Regular.ArrowsDownUp,
                      onClick = {
                          onSelect(MainMenuEntry.ACCOUNT_TRANSFER)
                      }
@@ -135,7 +136,7 @@ fun MainMenuBottomSheetView(
                  MainMenuItem(
                      title = stringResource(Res.string.id_redeposit),
                      subtitle = stringResource(Res.string.id_redeposit_expired_2fa_coins),
-                     icon = painterResource(Res.drawable.arrow_u_left_down), onClick = {
+                     icon = PhosphorIcons.Regular.ArrowULeftDown, onClick = {
                          onSelect(MainMenuEntry.REDEPOSIT)
                      }
                  )
@@ -144,7 +145,7 @@ fun MainMenuBottomSheetView(
             MainMenuItem(
                 title = stringResource(Res.string.id_qr_scanner),
                 subtitle = stringResource(Res.string.id_scan_qr_code),
-                icon = painterResource(Res.drawable.qr_code), onClick = {
+                icon = PhosphorIcons.Regular.QrCode, onClick = {
                     onSelect(MainMenuEntry.SCAN)
                 }
             )

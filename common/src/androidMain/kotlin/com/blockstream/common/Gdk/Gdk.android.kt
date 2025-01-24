@@ -1,5 +1,6 @@
 package com.blockstream.common.gdk
 
+import com.blockstream.common.gdk.GdkBinding.Companion.LOGS_SIZE
 import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
 import com.blockstream.common.gdk.data.AuthHandlerStatus
 import com.blockstream.common.gdk.data.FeeEstimation
@@ -41,19 +42,35 @@ import com.blockstream.green_gdk.GDK
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 
-class AndroidGdk(log: Boolean, config: InitConfig) : GdkBinding {
+class AndroidGdk(printGdkMessages: Boolean, config: InitConfig) : GdkBinding {
+    override val logs: StringBuilder = StringBuilder()
     private val _dataDir: String = config.datadir
 
     init {
         // Set maskSensitiveFields always as true for QA peace of mind
         GDK.init(
-            GdkJsonConverter(JsonConverter(log = log, maskSensitiveFields = true)),
+            GdkJsonConverter(
+                JsonConverter(
+                    printGdkMessages = printGdkMessages,
+                    maskSensitiveFields = true,
+                    appendGdkLogs = {
+                        appendGdkLogs(it)
+                    }
+                )
+            ),
             config
         )
     }
 
     override val dataDir: String
         get() = _dataDir
+
+    override fun appendGdkLogs(json: String) {
+        logs.append("$json\n")
+        if (logs.length > LOGS_SIZE) {
+            logs.deleteRange(0, 1_000_000)
+        }
+    }
 
     override fun setNotificationHandler(notificationHandler: (session: GASession, jsonObject: Any) -> Unit) {
         GDK.setNotificationHandler(notificationHandler)
@@ -345,7 +362,7 @@ class AndroidGdk(log: Boolean, config: InitConfig) : GdkBinding {
 
 
 
-actual fun getGdkBinding(log: Boolean, config: InitConfig): GdkBinding = AndroidGdk(log, config)
+actual fun getGdkBinding(printGdkMessages: Boolean, config: InitConfig): GdkBinding = AndroidGdk(printGdkMessages, config)
 
 actual val GA_ERROR: Int = GDK.GA_ERROR
 actual val GA_RECONNECT: Int = GDK.GA_RECONNECT

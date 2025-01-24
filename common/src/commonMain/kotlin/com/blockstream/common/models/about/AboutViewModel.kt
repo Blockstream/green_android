@@ -2,13 +2,16 @@ package com.blockstream.common.models.about
 
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_thank_you_for_your_feedback
+import com.blockstream.common.SupportType
 import com.blockstream.common.Urls
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.gdk.events.GenericEvent
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
@@ -55,12 +58,14 @@ class AboutViewModel : AboutViewModelAbstract() {
         object ClickYouTube : Events.OpenBrowser(Urls.BLOCKSTREAM_YOUTUBE)
         object ClickHelp : Events.OpenBrowser(Urls.HELP_CENTER)
         object ClickFeedback : Event
+        object ClickGetSupport : Event
         object ClickLogo : Event
         object CountlyCopyDeviceId : Event
         object CountlyResetDeviceId : Event
         object CountlyZeroOffset : Event
         object ResetPromos : Event
         object DeleteEvents : Event
+        object CrashReport : Event
         object SendFeedback: Event
     }
 
@@ -97,7 +102,23 @@ class AboutViewModel : AboutViewModelAbstract() {
                 )
             }
         } else if (event is LocalEvents.ClickFeedback) {
-            postSideEffect(SideEffects.OpenDialog())
+            postSideEffect(
+                SideEffects.NavigateTo(
+                    NavigateDestinations.Support(
+                        type = SupportType.FEEDBACK,
+                        supportData = SupportData.create()
+                    )
+                )
+            )
+        } else if (event is LocalEvents.ClickGetSupport) {
+            postSideEffect(
+                SideEffects.NavigateTo(
+                    NavigateDestinations.Support(
+                        type = SupportType.INCIDENT,
+                        supportData = SupportData.create()
+                    )
+                )
+            )
         } else if (event is LocalEvents.CountlyResetDeviceId) {
             countly.resetDeviceId()
             postSideEffect(SideEffects.Snackbar(text = StringHolder.create("DeviceID reset. New DeviceId ${countly.getDeviceId()}")))
@@ -112,6 +133,10 @@ class AboutViewModel : AboutViewModelAbstract() {
         } else if (event is LocalEvents.DeleteEvents) {
             database.deleteEvents()
             postSideEffect(SideEffects.Snackbar(text = StringHolder.create("Events deleted")))
+        } else if (event is LocalEvents.CrashReport) {
+            Exception("About Crash Report").also {
+                postSideEffect(SideEffects.ErrorDialog(error = it, supportData = SupportData.create(throwable = it)))
+            }
         } else if (event is LocalEvents.CountlyCopyDeviceId) {
             countly.getDeviceId().let { deviceId ->
                 postSideEffect(

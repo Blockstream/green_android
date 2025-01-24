@@ -49,7 +49,7 @@ private val EmailAddressRegex = Regex(
             ")+"
 )
 
-fun String.isEmailValid() = matches(EmailAddressRegex)
+fun String?.isEmailValid() = this != null && matches(EmailAddressRegex)
 
 fun String.nthIndexOf(substring: String, nth: Int): Int {
     return if (nth == 1) {

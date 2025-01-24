@@ -18,14 +18,9 @@ import blockstream_green.common.generated.resources.id_cancel
 import blockstream_green.common.generated.resources.id_contact_support
 import blockstream_green.common.generated.resources.id_error
 import blockstream_green.common.generated.resources.id_ok
-import com.blockstream.common.data.ErrorReport
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.utils.StringHolder
-import com.blockstream.common.utils.createNewTicketUrl
-import com.blockstream.compose.dialogs.ErrorReportDialog
 import com.blockstream.compose.dialogs.SingleChoiceDialog
-import com.blockstream.compose.managers.PlatformManager
 import com.blockstream.compose.theme.whiteHigh
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -44,8 +39,7 @@ data class OpenDialogData constructor(
     val icon: DrawableResource? = null,
     val primaryText: String? = null,
     val secondaryText: String? = null,
-    var errorReport: ErrorReport? = null,
-    val onSubmitErrorReport: ((submitErrorReport: Events.SubmitErrorReport) -> Unit)? = null,
+    var supportData: SupportData? = null,
     val items: List<String>? = null,
     val onItem: (index: Int?) -> Unit = {},
     val onPrimary: () -> Unit = {},
@@ -74,8 +68,8 @@ class DialogState {
 
     suspend fun openErrorDialog(
         throwable: Throwable,
-        errorReport: ErrorReport? = null,
-        onErrorReport: (errorReport: ErrorReport) -> Unit = {},
+        supportData: SupportData? = null,
+        onErrorReport: (supportData: SupportData) -> Unit = {},
         onClose: () -> Unit = {},
     ) {
 
@@ -92,44 +86,12 @@ class DialogState {
                 onDismiss = onClose,
                 onPrimary = onClose,
                 secondaryText = getString(Res.string.id_contact_support)
-                    .takeIf { errorReport != null },
+                    .takeIf { supportData != null },
                 onSecondary = {
-                    onErrorReport.invoke(errorReport!!)
-                    onClose()
-                }.takeIf { errorReport != null }
+                    onErrorReport.invoke(supportData!!)
+                }.takeIf { supportData != null }
             )
         )
-    }
-
-    suspend fun openErrorReportDialog(
-        platformManager: PlatformManager,
-        errorReport: ErrorReport,
-        viewModel: GreenViewModel,
-        onSubmitErrorReport: (submitErrorReport: Events.SubmitErrorReport) -> Unit,
-        onClose: () -> Unit = {},
-    ) {
-        if (viewModel.settingsManager.appSettings.tor || !viewModel.zendeskSdk.isAvailable) {
-            openBrowser(
-                platformManager = platformManager,
-                dialogState = this,
-                isTor = viewModel.settingsManager.appSettings.tor,
-                url = createNewTicketUrl(
-                    appInfo = viewModel.appInfo,
-                    subject = errorReport.subject ?: viewModel.screenName()?.let { "Android Issue in $it" } ?: "Android Error Report",
-                    errorReport = errorReport,
-                )
-            )
-            platformManager.copyToClipboard(content = errorReport.error, label = "Error Report")
-            onClose()
-        } else {
-            openDialog(
-                OpenDialogData(
-                    errorReport = errorReport,
-                    onSubmitErrorReport = onSubmitErrorReport,
-                    onDismiss = onClose,
-                )
-            )
-        }
     }
 
     suspend fun openDialog(openDialogData: OpenDialogData): Unit = mutex.withLock {
@@ -150,7 +112,6 @@ fun DialogHost(state: DialogState) {
     state.data?.also { data ->
 
         val items = data.items
-        val errorReport = data.errorReport
         when {
             items != null -> {
                 SingleChoiceDialog(
@@ -165,16 +126,6 @@ fun DialogHost(state: DialogState) {
                     onDismissRequest = {
                         data.onItem.invoke(it)
                         data.onDismiss.invoke()
-                        state.clear()
-                    }
-                )
-            }
-            errorReport != null -> {
-                ErrorReportDialog(
-                    errorReport = errorReport,
-                    onSubmitErrorReport = data.onSubmitErrorReport,
-                    onDismiss = {
-                        data.onDismiss()
                         state.clear()
                     }
                 )
@@ -222,7 +173,7 @@ fun DialogHost(state: DialogState) {
                         }
                     },
                     dismissButton = {
-                        if (state.data?.onSecondary != null) {
+                        if (state.data?.onSecondary != null || data.secondaryText != null) {
                             TextButton(
                                 onClick = {
                                     data.onSecondary?.invoke()

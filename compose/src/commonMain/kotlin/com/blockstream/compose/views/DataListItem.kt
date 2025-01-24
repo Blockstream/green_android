@@ -11,8 +11,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.copy
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Copy
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenDataLayout
@@ -25,7 +26,6 @@ import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.noRippleClickable
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun DataListItem(
@@ -56,7 +56,7 @@ fun DataListItem(
                     }
                 ) {
                     Icon(
-                        painter = painterResource(Res.drawable.copy),
+                        imageVector = PhosphorIcons.Regular.Copy,
                         contentDescription = null,
                     )
                 }
@@ -74,7 +74,7 @@ fun DataListItem(
             }
 
             Icon(
-                painter = painterResource(Res.drawable.copy),
+                imageVector = PhosphorIcons.Regular.Copy,
                 contentDescription = "Copy",
                 tint = whiteLow,
                 modifier = Modifier.noRippleClickable {

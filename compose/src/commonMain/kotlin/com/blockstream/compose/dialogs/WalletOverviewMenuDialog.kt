@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -24,23 +25,29 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.arrows_counter_clockwise
-import blockstream_green.common.generated.resources.box_arrow_down
-import blockstream_green.common.generated.resources.coins
-import blockstream_green.common.generated.resources.gear_six
 import blockstream_green.common.generated.resources.id_accounts
 import blockstream_green.common.generated.resources.id_add_new_account
 import blockstream_green.common.generated.resources.id_denomination
 import blockstream_green.common.generated.resources.id_general
+import blockstream_green.common.generated.resources.id_get_support
 import blockstream_green.common.generated.resources.id_logout
 import blockstream_green.common.generated.resources.id_refresh
 import blockstream_green.common.generated.resources.id_rename
 import blockstream_green.common.generated.resources.id_settings
 import blockstream_green.common.generated.resources.id_view_archived_accounts
 import blockstream_green.common.generated.resources.id_wallet
-import blockstream_green.common.generated.resources.plus
-import blockstream_green.common.generated.resources.sign_out
-import blockstream_green.common.generated.resources.text_aa
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.ArrowsCounterClockwise
+import com.adamglin.phosphoricons.regular.BoxArrowDown
+import com.adamglin.phosphoricons.regular.Coins
+import com.adamglin.phosphoricons.regular.GearSix
+import com.adamglin.phosphoricons.regular.Headset
+import com.adamglin.phosphoricons.regular.Plus
+import com.adamglin.phosphoricons.regular.SignOut
+import com.adamglin.phosphoricons.regular.TextAa
+import com.blockstream.common.SupportType
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.overview.WalletOverviewViewModel
@@ -55,8 +62,6 @@ import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.noRippleClickable
-import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -94,7 +99,7 @@ fun WalletOverviewMenuDialog(viewModel: WalletOverviewViewModelAbstract, onDismi
 
                     MenuItem(
                         text = stringResource(Res.string.id_rename),
-                        icon = Res.drawable.text_aa
+                        icon = PhosphorIcons.Regular.TextAa
                     ) {
                         viewModel.postEvent(NavigateDestinations.RenameWallet(viewModel.greenWallet))
                         onDismissRequest()
@@ -102,7 +107,7 @@ fun WalletOverviewMenuDialog(viewModel: WalletOverviewViewModelAbstract, onDismi
 
                     MenuItem(
                         text = stringResource(Res.string.id_denomination),
-                        icon = Res.drawable.coins
+                        icon = PhosphorIcons.Regular.Coins
                     ) {
                         viewModel.postEvent(WalletOverviewViewModel.LocalEvents.DenominationExchangeRate)
                         onDismissRequest()
@@ -110,7 +115,7 @@ fun WalletOverviewMenuDialog(viewModel: WalletOverviewViewModelAbstract, onDismi
 
                     MenuItem(
                         text = stringResource(Res.string.id_settings),
-                        icon = Res.drawable.gear_six
+                        icon = PhosphorIcons.Regular.GearSix
                     ) {
                         viewModel.postEvent(NavigateDestinations.WalletSettings())
                         onDismissRequest()
@@ -122,7 +127,7 @@ fun WalletOverviewMenuDialog(viewModel: WalletOverviewViewModelAbstract, onDismi
 
                         MenuItem(
                             text = stringResource(Res.string.id_add_new_account),
-                            icon = Res.drawable.plus
+                            icon = PhosphorIcons.Regular.Plus
                         ) {
                             viewModel.postEvent(WalletOverviewViewModel.LocalEvents.MenuNewAccountClick)
                             onDismissRequest()
@@ -133,7 +138,7 @@ fun WalletOverviewMenuDialog(viewModel: WalletOverviewViewModelAbstract, onDismi
                     if(!viewModel.isLightningShortcut && archivedAccounts > 0) {
                         MenuItem(
                             text = stringResource(Res.string.id_view_archived_accounts),
-                            icon = Res.drawable.box_arrow_down,
+                            icon = PhosphorIcons.Regular.BoxArrowDown,
                             count = archivedAccounts.takeIf { it > 0 }?.let { "$it" }
                         ) {
                             viewModel.postEvent(NavigateDestinations.ArchivedAccounts())
@@ -145,15 +150,30 @@ fun WalletOverviewMenuDialog(viewModel: WalletOverviewViewModelAbstract, onDismi
 
                     MenuItem(
                         text = stringResource(Res.string.id_refresh),
-                        icon = Res.drawable.arrows_counter_clockwise
+                        icon = PhosphorIcons.Regular.ArrowsCounterClockwise
                     ) {
                         viewModel.postEvent(WalletOverviewViewModel.LocalEvents.Refresh)
                         onDismissRequest()
                     }
 
                     MenuItem(
+                        text = stringResource(Res.string.id_get_support),
+                        icon = PhosphorIcons.Regular.Headset
+                    ) {
+                        viewModel.postEvent(
+                            NavigateDestinations.Support(
+                                type = SupportType.INCIDENT,
+                                supportData = SupportData.create(session = viewModel.sessionOrNull)
+                            )
+                        )
+                        onDismissRequest()
+                    }
+
+                    MenuHeader()
+
+                    MenuItem(
                         text = stringResource(Res.string.id_logout),
-                        icon = Res.drawable.sign_out,
+                        icon = PhosphorIcons.Regular.SignOut,
                         color = red
                     ) {
                         viewModel.postEvent(Events.Logout(reason = LogoutReason.USER_ACTION))
@@ -166,7 +186,7 @@ fun WalletOverviewMenuDialog(viewModel: WalletOverviewViewModelAbstract, onDismi
 }
 
 @Composable
-fun MenuItem(text: String, icon: DrawableResource, count: String? = null, color: Color = whiteHigh, onClick: () -> Unit = {}) {
+fun MenuItem(text: String, icon: ImageVector, count: String? = null, color: Color = whiteHigh, onClick: () -> Unit = {}) {
     GreenRow(
         padding = 0,
         space = 8,
@@ -176,7 +196,7 @@ fun MenuItem(text: String, icon: DrawableResource, count: String? = null, color:
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .fillMaxWidth()
     ) {
-        Icon(painter = painterResource(resource = icon), contentDescription = null, tint = color)
+        Icon(imageVector = icon, contentDescription = null, tint = color)
         Text(text = text, color = color, style = bodyLarge, overflow = TextOverflow.Ellipsis, maxLines = 1, modifier = Modifier.weight(1f))
         if (count != null) {
             Card(colors = CardDefaults.cardColors(containerColor = md_theme_outline, contentColor = whiteMedium)) {
@@ -187,7 +207,7 @@ fun MenuItem(text: String, icon: DrawableResource, count: String? = null, color:
 }
 
 @Composable
-fun MenuHeader(text: String) {
+fun MenuHeader(text: String? = null) {
     GreenRow(
         padding = 0,
         space = 8,
@@ -196,7 +216,9 @@ fun MenuHeader(text: String) {
             .padding(horizontal = 16.dp, vertical = 4.dp)
             .fillMaxWidth()
     ) {
-        Text(text = text.uppercase(), color = whiteLow, style = bodySmall)
+        text?.also {
+            Text(text = it.uppercase(), color = whiteLow, style = bodySmall)
+        }
         HorizontalDivider(color = whiteLow.copy(alpha = 0.2f))
     }
 }

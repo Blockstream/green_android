@@ -9,7 +9,7 @@ import blockstream_green.common.generated.resources.id_sweep_initiated
 import breez_sdk.RecommendedFees
 import breez_sdk.ReverseSwapFeesRequest
 import com.blockstream.common.data.Denomination
-import com.blockstream.common.data.ErrorReport
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavData
@@ -541,8 +541,8 @@ class RecoverFundsViewModel(
         })
     }
 
-    override fun errorReport(exception: Throwable): ErrorReport {
-        return ErrorReport.create(
+    override fun errorReport(exception: Throwable): SupportData {
+        return SupportData.create(
             throwable = exception,
             network = session.lightning,
             session = session

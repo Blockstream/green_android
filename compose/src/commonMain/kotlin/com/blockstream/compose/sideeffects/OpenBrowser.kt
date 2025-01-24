@@ -19,7 +19,7 @@ suspend fun openBrowser(platformManager: PlatformManager, dialogState: DialogSta
             onPrimary = {
                 platformManager.openBrowser(url = url, openSystemBrowser = openSystemBrowser)
             },
-            secondaryText = getString(Res.string.id_cancel)
+            secondaryText = getString(Res.string.id_cancel),
         ))
 
     } else {

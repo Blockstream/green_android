@@ -1610,4 +1610,9 @@
     <string name="id_we_could_successfully_verify_your">We could successfully verify your Jade, enjoy the best Blockstream can offer you with your brand new jade.</string>
     <string name="id_this_device_was_not_manufactured_by">This device was not manufactured by Blockstream. It could be DIY hardware or possibly a malicious clone. Please contact support for more assistance.</string>
     <string name="id_2fa_protected_accounts_are_2of2_wallets">2FA Protected accounts are 2-of-2 wallets needing the user’s key and Blockstream’s 2FA signature. After a ~1-year timelock, they become 1-of-1, disabling 2FA, to ultimately keep you in control. Redeposit your coins to reactivate 2FA protection.</string>
+    <string name="id_get_support">Get Support</string>
+    <string name="id_issue_description">Issue description</string>
+    <string name="id_please_be_as_detailed_as_possible">Please be as detailed as possible when describing the issue.</string>
+    <string name="id_thanks_your_message_has_been_sent">Thanks, your message has been sent.</string>
+    <string name="id_i_understand_that_asking_for_support">I understand that asking for support through Tor will reduce my anonymity</string>
 </resources>
