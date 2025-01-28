@@ -3,7 +3,7 @@ package com.blockstream.common.models.support
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_contact_support
 import blockstream_green.common.generated.resources.id_thank_you_for_your_feedback
-import blockstream_green.common.generated.resources.id_thanks_your_message_has_been_sent
+import blockstream_green.common.generated.resources.id_you_will_receive_an_email_from
 import com.blockstream.common.SupportType
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavData
@@ -99,7 +99,7 @@ class SupportViewModel(type: SupportType, supportData: SupportData, greenWalletO
                 autoRetry = false
             )
         }, onSuccess = {
-            postSideEffect(SideEffects.Snackbar(text = StringHolder.create(if (type == SupportType.FEEDBACK) Res.string.id_thank_you_for_your_feedback else Res.string.id_thanks_your_message_has_been_sent)))
+            postSideEffect(SideEffects.Snackbar(text = StringHolder.create(if (type == SupportType.FEEDBACK) Res.string.id_thank_you_for_your_feedback else Res.string.id_you_will_receive_an_email_from)))
             postSideEffect(SideEffects.NavigateBack())
         })
     }
