@@ -22,8 +22,8 @@ kotlin {
 }
 
 dependencies {
+    implementation(project(":base-gms"))
     /**  --- Modules ---------------------------------------------------------------------------- */
-    implementation(project(":base"))
     implementation(project(":common"))
     /** ----------------------------------------------------------------------------------------- */
 

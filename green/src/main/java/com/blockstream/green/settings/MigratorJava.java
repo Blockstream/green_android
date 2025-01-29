@@ -5,7 +5,6 @@ import static android.content.Context.MODE_PRIVATE;
 import android.content.Context;
 import android.content.SharedPreferences;
 import androidx.preference.PreferenceManager;
-import com.blockstream.base.Preferences;
 import java.util.Map;
 import java.util.Set;
 

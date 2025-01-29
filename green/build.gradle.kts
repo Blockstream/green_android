@@ -179,8 +179,8 @@ val productionGoogleImplementation by configurations
 val productionFDroidImplementation by configurations
 
 dependencies {
+    implementation(project(":base-gms"))
     /**  --- Modules ---------------------------------------------------------------------------- */
-    implementation(project(":base"))
     implementation(project(":compose"))
 
     developmentImplementation(project(":gms"))

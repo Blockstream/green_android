@@ -15,9 +15,7 @@ android {
 kotlin {
     jvmToolchain(libs.versions.jvm.get().toInt())
 }
-
 dependencies {
-    /**  --- Modules ---------------------------------------------------------------------------- */
-    implementation(project(":base"))
-    /** ----------------------------------------------------------------------------------------- */
+    implementation(project(":base-gms"))
 }
+

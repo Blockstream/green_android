@@ -16,4 +16,18 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-include(":green", ":base", ":compose", ":hardware", ":jade", ":gms" ,":no-gms", ":common", ":gdk")
+
+include(
+    ":green",
+    ":gdk",
+    ":compose",
+    "ui-common",
+    ":hardware",
+    ":jade",
+    ":base-gms",
+    ":gms",
+    ":no-gms",
+    ":common",
+    ":gdk",
+    "ui-common"
+)

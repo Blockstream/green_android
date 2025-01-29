@@ -1,4 +1,4 @@
-package com.blockstream.base
+package com.blockstream.green.settings
 
 
 object Preferences {

@@ -3,7 +3,6 @@ package com.blockstream.green.settings
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Base64
-import com.blockstream.base.Preferences
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.EncryptedData
 import com.blockstream.common.data.toGreenWallet

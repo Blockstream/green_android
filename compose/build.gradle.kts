@@ -99,7 +99,8 @@ kotlin {
             implementation(compose.preview)
 
             /**  --- Modules ---------------------------------------------------------------------------- */
-            implementation(project(":base"))
+            implementation(project(":ui-common"))
+            implementation(project(":base-gms"))
             api(project(":hardware"))
             /** ----------------------------------------------------------------------------------------- */
 
