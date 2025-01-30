@@ -41,13 +41,13 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.navigation.PopTo
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAmountField
-import com.blockstream.compose.components.GreenArrow
+import com.blockstream.ui.components.GreenArrow
 import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenDataLayout
-import com.blockstream.compose.components.GreenRow
+import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.screens.add.ReviewAddAccountScreen
 import com.blockstream.compose.sheets.AssetsAccountsBottomSheet

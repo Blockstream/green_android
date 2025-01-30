@@ -18,18 +18,17 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.clipboard
-import blockstream_green.common.generated.resources.qr_code
-import blockstream_green.common.generated.resources.x_circle
-import com.blockstream.common.extensions.isBlank
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Clipboard
+import com.adamglin.phosphoricons.regular.QrCode
+import com.adamglin.phosphoricons.regular.XCircle
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.ifTrue
-import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun GreenTextField(
@@ -95,7 +94,7 @@ fun GreenTextField(
                     if(onQrClick != null){
                         IconButton(onClick = { onQrClick.invoke() }, enabled = enabled) {
                             Icon(
-                                painter = painterResource(Res.drawable.qr_code),
+                                imageVector = PhosphorIcons.Regular.QrCode,
                                 contentDescription = "Scan QR"
                             )
                         }
@@ -106,14 +105,14 @@ fun GreenTextField(
                         enabled = enabled
                     ) {
                         Icon(
-                            painter = painterResource(Res.drawable.clipboard),
+                            imageVector = PhosphorIcons.Regular.Clipboard,
                             contentDescription = "Edit"
                         )
                     }
                 } else {
                     IconButton(onClick = { onValueChange("") }, enabled = enabled) {
                         Icon(
-                            painter = painterResource(Res.drawable.x_circle),
+                            imageVector = PhosphorIcons.Regular.XCircle,
                             contentDescription = "Clear"
                         )
                     }

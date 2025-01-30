@@ -31,7 +31,7 @@ import com.blockstream.common.models.settings.WalletSettingsViewModel
 import com.blockstream.common.models.settings.WalletSettingsViewModelAbstract
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.LocalSnackbar
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.ScreenContainer
 import com.blockstream.compose.dialogs.LightningShortcutDialog
 import com.blockstream.compose.theme.bodyLarge

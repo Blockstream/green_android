@@ -53,8 +53,8 @@ import com.blockstream.common.looks.account.AddressLook
 import com.blockstream.common.models.addresses.AddressesViewModel
 import com.blockstream.common.models.addresses.AddressesViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenRow
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.components.GreenSearchField
 import com.blockstream.compose.components.MenuEntry
 import com.blockstream.compose.components.PopupMenu

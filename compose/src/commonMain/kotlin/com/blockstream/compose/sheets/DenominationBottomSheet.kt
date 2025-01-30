@@ -25,7 +25,7 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.models.send.DenominationViewModel
 import com.blockstream.common.models.send.DenominationViewModelAbstract
 import com.blockstream.compose.components.GreenBottomSheet
-import com.blockstream.compose.components.GreenRow
+import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.navigation.getNavigationResult
 import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.theme.bodyLarge

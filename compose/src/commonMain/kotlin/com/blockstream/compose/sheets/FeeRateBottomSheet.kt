@@ -27,12 +27,12 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.models.send.FeeViewModel
 import com.blockstream.common.models.send.FeeViewModelAbstract
-import com.blockstream.compose.components.GreenArrow
+import com.blockstream.ui.components.GreenArrow
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
-import com.blockstream.compose.components.GreenRow
+import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.navigation.getNavigationResult
 import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.theme.bodyMedium

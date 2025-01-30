@@ -1,4 +1,4 @@
-package com.blockstream.compose.components
+package com.blockstream.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

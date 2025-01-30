@@ -40,7 +40,7 @@ import com.blockstream.common.models.lightning.RecoverFundsViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAmount
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenIconButton
 import com.blockstream.compose.components.GreenNetworkFee
 import com.blockstream.compose.components.GreenTextField

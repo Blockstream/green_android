@@ -33,7 +33,7 @@ import com.blockstream.common.models.promo.PromoViewModel
 import com.blockstream.common.models.promo.PromoViewModelAbstract
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.VideoSurface
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium

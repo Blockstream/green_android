@@ -22,7 +22,7 @@ import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyNetworkViewModel
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyNetworkViewModelAbstract
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenContentCard
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.theme.bodyLarge

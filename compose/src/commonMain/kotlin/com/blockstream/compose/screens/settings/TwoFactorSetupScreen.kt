@@ -52,9 +52,9 @@ import com.blockstream.common.models.settings.TwoFactorSetupViewModel
 import com.blockstream.common.models.settings.TwoFactorSetupViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenQR
-import com.blockstream.compose.components.GreenRow
+import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.components.ScreenContainer
 import com.blockstream.compose.extensions.colorText
 import com.blockstream.compose.extensions.onValueChange

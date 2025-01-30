@@ -8,7 +8,7 @@ import blockstream_green.common.generated.resources.id_make_sure_you_are_alone_a
 import blockstream_green.common.generated.resources.id_safe_environment
 import com.blockstream.common.models.recovery.RecoveryIntroViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.theme.GreenChromePreview
 import org.jetbrains.compose.resources.stringResource
 

@@ -36,13 +36,13 @@ import cafe.adriel.voyager.koin.koinScreenModel
 import com.blockstream.common.models.onboarding.SetupNewWalletViewModel
 import com.blockstream.common.models.onboarding.SetupNewWalletViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.ui.components.GreenArrow
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.AppSettingsButton
-import com.blockstream.compose.components.GreenArrow
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.titleMedium

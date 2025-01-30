@@ -18,7 +18,7 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.LocalDrawer
 import com.blockstream.compose.components.AboutButton
 import com.blockstream.compose.components.AppSettingsButton
-import com.blockstream.compose.components.GreenSpacer
+import com.blockstream.ui.components.GreenSpacer
 import com.blockstream.compose.components.HelpButton
 import com.blockstream.compose.utils.HandleSideEffect
 import kotlinx.coroutines.launch

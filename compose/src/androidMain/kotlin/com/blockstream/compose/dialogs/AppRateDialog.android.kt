@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import app.rive.runtime.kotlin.RiveAnimationView
 import app.rive.runtime.kotlin.controllers.RiveFileController
 import app.rive.runtime.kotlin.core.PlayableInstance
@@ -40,7 +39,7 @@ import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.LocalActivity
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenCard
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.Rive
 import com.blockstream.compose.components.RiveAnimation
 import com.blockstream.compose.theme.bodyLarge

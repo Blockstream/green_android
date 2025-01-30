@@ -82,10 +82,10 @@ import com.blockstream.compose.components.BottomNav
 import com.blockstream.compose.components.GreenAccountCard
 import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenGradient
-import com.blockstream.compose.components.GreenRow
-import com.blockstream.compose.components.GreenSpacer
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenGradient
+import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.components.GreenSpacer
 import com.blockstream.compose.components.GreenTransaction
 import com.blockstream.compose.components.MenuEntry
 import com.blockstream.compose.components.PopupMenu

@@ -27,7 +27,7 @@ import com.blockstream.common.models.lightning.LnUrlWithdrawViewModel
 import com.blockstream.common.models.lightning.LnUrlWithdrawViewModelAbstract
 import com.blockstream.compose.components.GreenAmountField
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenTextField
 import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.sheets.DenominationBottomSheet

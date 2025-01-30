@@ -24,7 +24,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyPolicyViewModel
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyPolicyViewModelAbstract
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenContentCard
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.displayMedium

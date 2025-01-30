@@ -89,8 +89,8 @@ import com.blockstream.common.utils.getBitcoinOrLiquidUnit
 import com.blockstream.compose.LocalBiometricState
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenRow
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.components.LearnMoreButton
 import com.blockstream.compose.dialogs.DenominationExchangeDialog
 import com.blockstream.compose.dialogs.SingleChoiceDialog

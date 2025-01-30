@@ -19,7 +19,7 @@ import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.models.sheets.TransactionDetailsViewModel
 import com.blockstream.common.models.sheets.TransactionDetailsViewModelAbstract
 import com.blockstream.compose.components.GreenBottomSheet
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.views.DataListItem
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf

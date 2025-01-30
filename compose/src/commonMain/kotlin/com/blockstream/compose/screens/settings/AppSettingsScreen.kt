@@ -92,10 +92,10 @@ import com.blockstream.compose.LocalDialog
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenGradient
-import com.blockstream.compose.components.GreenRow
-import com.blockstream.compose.components.GreenSwitch
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.components.GreenGradient
+import com.blockstream.ui.components.GreenSwitch
 import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.sheets.AnalyticsBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3

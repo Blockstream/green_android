@@ -45,8 +45,8 @@ import com.blockstream.compose.LocalBiometricState
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenCard
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenRow
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.managers.rememberStateKeeperFactory
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodySmall

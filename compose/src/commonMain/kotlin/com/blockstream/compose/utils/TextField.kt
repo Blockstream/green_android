@@ -12,8 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.clipboard
-import blockstream_green.common.generated.resources.eye
-import blockstream_green.common.generated.resources.eye_slash
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Eye
+import com.adamglin.phosphoricons.regular.EyeSlash
 import com.blockstream.compose.managers.LocalPlatformManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.painterResource
@@ -26,12 +28,12 @@ fun TextInputPaste(state: MutableStateFlow<String>) {
 
     if (value.isEmpty()) {
         Icon(painterResource(Res.drawable.clipboard),
-            contentDescription = "clear text",
+            contentDescription = "Paste text",
             modifier = Modifier.clickable {
                 state.value = platformManager.getClipboard() ?: ""
             })
     } else {
-        Icon(Icons.Default.Clear, contentDescription = "clear text", modifier = Modifier.clickable {
+        Icon(Icons.Default.Clear, contentDescription = "Clear text", modifier = Modifier.clickable {
             state.value = ""
         })
     }
@@ -43,8 +45,8 @@ fun TextInputPassword(passwordVisibility: MutableState<Boolean>) {
         passwordVisibility.value = !passwordVisibility.value
     }) {
         Icon(
-            painter = painterResource(if(passwordVisibility.value) Res.drawable.eye_slash else Res.drawable.eye),
-            contentDescription = "Password visibility",
+            imageVector = if (passwordVisibility.value) PhosphorIcons.Regular.EyeSlash else PhosphorIcons.Regular.Eye,
+            contentDescription = "Password visibility toggle",
         )
     }
 }

@@ -9,7 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 
 
 @Composable

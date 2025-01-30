@@ -3,6 +3,7 @@ package com.blockstream.compose.components
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.theme.GreenChromePreview
 
 @Preview

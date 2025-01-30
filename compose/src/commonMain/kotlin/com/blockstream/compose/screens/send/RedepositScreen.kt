@@ -45,11 +45,10 @@ import com.blockstream.common.utils.DecimalFormat
 import com.blockstream.common.utils.stringResourceFromId
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenNetworkFee
 import com.blockstream.compose.components.ScreenContainer
 import com.blockstream.compose.dialogs.TextDialog
-import com.blockstream.compose.sheets.AccountsBottomSheet
 import com.blockstream.compose.sheets.DenominationBottomSheet
 import com.blockstream.compose.sheets.FeeRateBottomSheet
 import com.blockstream.compose.theme.labelLarge

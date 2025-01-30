@@ -53,8 +53,8 @@ import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenRow
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.theme.MonospaceFont

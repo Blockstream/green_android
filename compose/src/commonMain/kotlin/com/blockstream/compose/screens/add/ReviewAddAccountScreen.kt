@@ -34,7 +34,7 @@ import com.blockstream.common.models.add.ReviewAddAccountViewModel
 import com.blockstream.common.models.add.ReviewAddAccountViewModelAbstract
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.ScreenContainer
 import com.blockstream.compose.navigation.getNavigationResult
 import com.blockstream.compose.navigation.setNavigationResult

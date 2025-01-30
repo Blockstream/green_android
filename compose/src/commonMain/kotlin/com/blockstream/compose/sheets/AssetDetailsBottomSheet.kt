@@ -23,7 +23,7 @@ import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.models.sheets.AssetDetailsViewModel
 import com.blockstream.common.models.sheets.AssetDetailsViewModelAbstract
 import com.blockstream.compose.components.GreenBottomSheet
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.whiteHigh

@@ -36,6 +36,7 @@ import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.looks.transaction.Confirmed
 import com.blockstream.common.looks.transaction.TransactionLook
 import com.blockstream.common.utils.formatAuto
+import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.extensions.directionColor
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.theme.bodyMedium

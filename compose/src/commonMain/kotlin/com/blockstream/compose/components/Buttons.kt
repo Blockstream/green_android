@@ -39,6 +39,7 @@ import blockstream_green.common.generated.resources.question
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Spinner
+import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium

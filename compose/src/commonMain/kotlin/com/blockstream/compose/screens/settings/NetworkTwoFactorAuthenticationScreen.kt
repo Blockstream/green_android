@@ -3,8 +3,6 @@ package com.blockstream.compose.screens.settings
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_enable_twofactor_authentication
 import blockstream_green.common.generated.resources.id_tip_we_recommend_you_enable
@@ -18,7 +16,7 @@ import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.models.settings.WalletSettingsSection
 import com.blockstream.common.models.settings.WalletSettingsViewModel
 import com.blockstream.common.models.settings.WalletSettingsViewModelAbstract
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.whiteMedium

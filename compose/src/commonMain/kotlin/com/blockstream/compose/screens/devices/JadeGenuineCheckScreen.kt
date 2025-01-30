@@ -45,7 +45,7 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.navigation.getNavigationResult
 import com.blockstream.compose.navigation.setNavigationResult

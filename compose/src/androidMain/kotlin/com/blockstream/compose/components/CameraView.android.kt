@@ -33,6 +33,7 @@ import com.blockstream.common.models.camera.CameraViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.compose.LocalActivity
 import com.blockstream.compose.R
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.android.views.ViewFinderView
 import com.google.zxing.client.android.Intents
 import com.journeyapps.barcodescanner.BarcodeCallback

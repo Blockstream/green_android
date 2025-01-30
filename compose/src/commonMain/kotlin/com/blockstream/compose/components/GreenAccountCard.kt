@@ -42,6 +42,8 @@ import blockstream_green.common.generated.resources.id_experimental
 import blockstream_green.common.generated.resources.shield_warning
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.AccountBalance
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.extensions.getAccountColor
 import com.blockstream.compose.extensions.policyAndType

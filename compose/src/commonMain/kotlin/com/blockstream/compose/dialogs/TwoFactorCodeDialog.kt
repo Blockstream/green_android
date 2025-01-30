@@ -29,7 +29,7 @@ import com.blockstream.common.extensions.twoFactorMethodsLocalized
 import com.blockstream.common.gdk.data.AuthHandlerStatus
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.extensions.colorText
 import com.blockstream.compose.extensions.getIcon
 import com.blockstream.compose.theme.bodyMedium

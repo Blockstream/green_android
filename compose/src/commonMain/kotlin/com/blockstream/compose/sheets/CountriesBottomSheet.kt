@@ -34,7 +34,7 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenCard
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenSearchField
 import com.blockstream.compose.navigation.getNavigationResult
 import com.blockstream.compose.navigation.setNavigationResult

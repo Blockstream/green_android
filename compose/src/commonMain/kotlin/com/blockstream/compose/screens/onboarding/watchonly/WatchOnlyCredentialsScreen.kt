@@ -65,9 +65,9 @@ import com.blockstream.compose.LocalBiometricState
 import com.blockstream.compose.components.AppSettingsButton
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenIconButton
-import com.blockstream.compose.components.GreenSpacer
+import com.blockstream.ui.components.GreenSpacer
 import com.blockstream.compose.components.ScanQrButton
 import com.blockstream.compose.components.ScreenContainer
 import com.blockstream.compose.extensions.onValueChange

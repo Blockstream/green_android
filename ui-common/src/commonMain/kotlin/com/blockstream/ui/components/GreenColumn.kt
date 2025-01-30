@@ -1,4 +1,4 @@
-package com.blockstream.compose.components
+package com.blockstream.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

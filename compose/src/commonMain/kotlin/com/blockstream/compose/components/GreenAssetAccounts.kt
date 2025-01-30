@@ -41,6 +41,8 @@ import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.ui.components.GreenArrow
+import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.extensions.policyAndType
 import com.blockstream.compose.extensions.policyIcon

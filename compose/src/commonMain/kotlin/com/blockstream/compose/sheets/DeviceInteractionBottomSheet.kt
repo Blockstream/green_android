@@ -36,7 +36,7 @@ import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.components.GreenAddress
 import com.blockstream.compose.components.GreenAmount
 import com.blockstream.compose.components.GreenBottomSheet
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.LearnMoreButton
 import com.blockstream.compose.extensions.actionIcon
 import com.blockstream.compose.extensions.icon

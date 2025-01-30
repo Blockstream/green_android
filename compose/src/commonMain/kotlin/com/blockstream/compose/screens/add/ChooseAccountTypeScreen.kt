@@ -58,13 +58,13 @@ import com.blockstream.common.navigation.PopTo
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.LocalDialog
-import com.blockstream.compose.components.GreenArrow
+import com.blockstream.ui.components.GreenArrow
 import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenRow
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.components.ScreenContainer
 import com.blockstream.compose.dialogs.LightningShortcutDialog
 import com.blockstream.compose.extensions.drawDiagonalLabel

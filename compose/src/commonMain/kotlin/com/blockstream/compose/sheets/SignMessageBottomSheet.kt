@@ -34,7 +34,7 @@ import com.blockstream.common.models.addresses.SignMessageViewModelAbstract
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenTextField
 import com.blockstream.compose.components.Rive
 import com.blockstream.compose.components.RiveAnimation

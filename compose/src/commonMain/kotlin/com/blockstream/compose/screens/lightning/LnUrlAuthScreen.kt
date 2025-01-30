@@ -25,7 +25,7 @@ import com.blockstream.common.events.Events
 import com.blockstream.common.models.lightning.LnUrlAuthViewModel
 import com.blockstream.common.models.lightning.LnUrlAuthViewModelAbstract
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.titleSmall

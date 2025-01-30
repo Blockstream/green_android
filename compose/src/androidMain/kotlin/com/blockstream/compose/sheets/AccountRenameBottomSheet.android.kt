@@ -13,7 +13,7 @@ import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.models.SimpleGreenViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

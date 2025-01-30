@@ -65,8 +65,8 @@ import com.blockstream.common.models.onboarding.phone.EnterRecoveryPhraseViewMod
 import com.blockstream.compose.LocalSnackbar
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenRow
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.components.PasteButton
 import com.blockstream.compose.components.ScanQrButton
 import com.blockstream.compose.dialogs.TextDialog

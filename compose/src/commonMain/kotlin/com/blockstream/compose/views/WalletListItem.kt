@@ -38,8 +38,8 @@ import blockstream_green.common.generated.resources.trash
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.WalletIcon
 import com.blockstream.common.looks.wallet.WalletListLook
-import com.blockstream.compose.components.GreenCircle
-import com.blockstream.compose.components.GreenSpacer
+import com.blockstream.ui.components.GreenCircle
+import com.blockstream.ui.components.GreenSpacer
 import com.blockstream.compose.components.MenuEntry
 import com.blockstream.compose.components.PopupMenu
 import com.blockstream.compose.components.PopupState

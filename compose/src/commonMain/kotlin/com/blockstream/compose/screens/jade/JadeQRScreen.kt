@@ -44,7 +44,7 @@ import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenQR
 import com.blockstream.compose.components.GreenScanner
 import com.blockstream.compose.navigation.getNavigationResult

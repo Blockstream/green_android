@@ -10,7 +10,7 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.sign_out
 import com.blockstream.common.models.settings.WalletSettingsViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.theme.GreenChromePreview
 import com.blockstream.compose.theme.titleMedium
 import org.jetbrains.compose.resources.painterResource

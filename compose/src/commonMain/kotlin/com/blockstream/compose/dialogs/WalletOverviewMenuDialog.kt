@@ -53,7 +53,7 @@ import com.blockstream.common.events.Events
 import com.blockstream.common.models.overview.WalletOverviewViewModel
 import com.blockstream.common.models.overview.WalletOverviewViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.compose.components.GreenRow
+import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.md_theme_outline

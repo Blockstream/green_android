@@ -10,6 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.LBTC_POLICY_ASSET
 import com.blockstream.common.extensions.previewAccountBalance
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.theme.GreenChromePreview
 
 @Composable

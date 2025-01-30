@@ -28,11 +28,11 @@ import com.blockstream.common.CountlyBase
 import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
 import com.blockstream.compose.LocalAppInfo
-import com.blockstream.compose.components.GreenArrow
+import com.blockstream.ui.components.GreenArrow
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenCard
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenRow
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.navigation.getNavigationResult
 import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.theme.titleSmall

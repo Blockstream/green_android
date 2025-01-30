@@ -7,6 +7,7 @@ import blockstream_green.common.generated.resources.id_account
 import blockstream_green.common.generated.resources.id_account__asset
 import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalance
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.theme.GreenChromePreview
 import org.jetbrains.compose.resources.stringResource
 

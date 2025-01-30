@@ -36,11 +36,13 @@ import com.blockstream.common.data.Promo
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.headlineSmall
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
+import com.blockstream.ui.components.GreenSpacer
 import org.jetbrains.compose.resources.painterResource
 
 @Composable

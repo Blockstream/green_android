@@ -77,9 +77,9 @@ import com.blockstream.common.models.transaction.TransactionViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenAddress
 import com.blockstream.compose.components.GreenAmounts
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenRow
-import com.blockstream.compose.components.GreenSpacer
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.components.GreenSpacer
 import com.blockstream.compose.components.TransactionStatusIcon
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.extensions.color

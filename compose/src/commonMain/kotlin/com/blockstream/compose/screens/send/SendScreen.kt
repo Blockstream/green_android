@@ -57,7 +57,7 @@ import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAmountField
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.components.GreenNetworkFee
 import com.blockstream.compose.components.GreenTextField

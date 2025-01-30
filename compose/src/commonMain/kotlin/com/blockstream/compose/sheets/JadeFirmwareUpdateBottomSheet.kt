@@ -24,7 +24,7 @@ import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.models.sheets.JadeFirmwareUpdateViewModel
 import com.blockstream.common.models.sheets.JadeFirmwareUpdateViewModelAbstract
 import com.blockstream.compose.components.GreenBottomSheet
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.navigation.getNavigationResult
 import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.theme.MonospaceFont

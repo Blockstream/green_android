@@ -6,7 +6,7 @@ import com.blockstream.common.data.FeePriority
 import com.blockstream.common.models.send.FeeViewModelPreview
 import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.compose.GreenAndroidPreview
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.theme.GreenChromePreview
 
 @Composable

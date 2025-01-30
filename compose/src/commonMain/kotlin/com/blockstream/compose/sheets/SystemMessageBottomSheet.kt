@@ -33,7 +33,7 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.theme.bodyMedium
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf

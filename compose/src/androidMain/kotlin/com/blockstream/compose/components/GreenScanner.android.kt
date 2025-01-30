@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.models.camera.CameraViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
+import com.blockstream.ui.components.GreenColumn
 
 
 @Composable

@@ -35,7 +35,7 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.LocalSnackbar
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.RiveAnimation
 import com.blockstream.compose.components.ScreenContainer
 import com.blockstream.compose.dialogs.LightningShortcutDialog

@@ -52,10 +52,10 @@ import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.compose.components.GreenCircle
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenRow
-import com.blockstream.compose.components.GreenSpacer
+import com.blockstream.ui.components.GreenCircle
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.components.GreenSpacer
 import com.blockstream.compose.navigation.getNavigationResult
 import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.theme.whiteHigh

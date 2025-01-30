@@ -7,6 +7,7 @@ import blockstream_green.common.generated.resources.id_lightning_account
 import blockstream_green.common.generated.resources.id_the_lightning_service_is_currently_unavailable_we
 import blockstream_green.common.generated.resources.lightning
 import blockstream_green.common.generated.resources.warning
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.theme.GreenChromePreview
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource

@@ -23,7 +23,7 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.Rive
 import com.blockstream.compose.components.RiveAnimation
 import com.blockstream.compose.theme.bodyLarge

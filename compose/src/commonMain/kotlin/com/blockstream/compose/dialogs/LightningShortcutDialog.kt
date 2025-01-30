@@ -20,7 +20,7 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.utils.HandleSideEffectDialog

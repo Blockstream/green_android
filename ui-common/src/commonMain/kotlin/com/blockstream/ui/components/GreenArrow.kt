@@ -1,22 +1,21 @@
-package com.blockstream.compose.components
+package com.blockstream.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.arrow_right
-import com.blockstream.compose.theme.green
-import com.blockstream.compose.theme.md_theme_outline
-import com.blockstream.compose.theme.whiteHigh
-import org.jetbrains.compose.resources.painterResource
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.ArrowRight
+
 
 @Composable
 fun GreenArrow(modifier: Modifier = Modifier, enabled: Boolean = true) {
@@ -26,8 +25,8 @@ fun GreenArrow(modifier: Modifier = Modifier, enabled: Boolean = true) {
             .then(modifier)
             .size(40.dp),
         colors = CardDefaults.cardColors(
-            contentColor = whiteHigh,
-            containerColor = if(enabled) green else md_theme_outline
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            containerColor = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
         )
     ) {
         Box(
@@ -35,10 +34,10 @@ fun GreenArrow(modifier: Modifier = Modifier, enabled: Boolean = true) {
                 .fillMaxWidth()
                 .fillMaxHeight()
         ) {
-            Image(
+            Icon(
                 modifier = Modifier.align(Alignment.Center),
-                painter = painterResource(Res.drawable.arrow_right),
-                contentDescription = ""
+                imageVector = PhosphorIcons.Regular.ArrowRight,
+                contentDescription = "Arrow"
             )
         }
     }

@@ -24,6 +24,7 @@ import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteHigh

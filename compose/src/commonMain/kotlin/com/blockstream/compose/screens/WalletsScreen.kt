@@ -34,7 +34,7 @@ import com.blockstream.common.looks.wallet.WalletListLook
 import com.blockstream.common.models.wallets.WalletsViewModel
 import com.blockstream.common.models.wallets.WalletsViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.Promo
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.whiteLow

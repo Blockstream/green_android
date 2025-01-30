@@ -27,7 +27,7 @@ import com.blockstream.common.events.Events
 import com.blockstream.common.models.add.XpubViewModel
 import com.blockstream.common.models.add.XpubViewModelAbstract
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenTextField
 import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.sheets.CameraBottomSheet

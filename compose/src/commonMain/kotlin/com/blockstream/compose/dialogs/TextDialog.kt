@@ -38,7 +38,7 @@ import com.blockstream.common.utils.DecimalFormat
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.titleSmall

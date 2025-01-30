@@ -11,6 +11,7 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Question
 import com.blockstream.compose.GreenPreview
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.extensions.toggle
 
 

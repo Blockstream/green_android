@@ -26,6 +26,7 @@ import blockstream_green.common.generated.resources.pencil_simple_line
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.utils.StringHolder
+import com.blockstream.ui.components.GreenArrow
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.extensions.policyIcon
 import com.blockstream.compose.theme.bodyMedium

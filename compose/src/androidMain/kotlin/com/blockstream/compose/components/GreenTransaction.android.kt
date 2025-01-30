@@ -5,6 +5,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.extensions.previewTransactionLook
 import com.blockstream.common.looks.transaction.Confirmed
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.theme.GreenChromePreview
 
 

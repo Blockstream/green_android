@@ -11,6 +11,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.share_network
 import com.blockstream.compose.GreenPreview
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
