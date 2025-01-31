@@ -22,6 +22,7 @@ data class ConnectionParams constructor(
     @SerialName("blob_server_url") val blobServerUrl: String? = null,
     @SerialName("blob_server_onion_url") val blobServerOnionUrl: String? = null,
     @SerialName("gap_limit") val gapLimit: Int? = null,
+    @SerialName("discount_fees") val discountFees: Boolean = false,
 ) : GreenJson<ConnectionParams>() {
 
     override fun encodeDefaultsValues() = false
