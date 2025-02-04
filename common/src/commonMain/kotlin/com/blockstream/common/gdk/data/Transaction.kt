@@ -116,7 +116,7 @@ data class Transaction constructor(
         get() = txType == Type.OUT
 
     val satoshiPolicyAsset: Long
-        get() = satoshi[BTC_POLICY_ASSET] ?: 0L
+        get() = satoshi[accountInjected?.network?.policyAssetOrNull ?: BTC_POLICY_ASSET] ?: 0L
 
     // Lightning on chain address
     val onChainAddress
