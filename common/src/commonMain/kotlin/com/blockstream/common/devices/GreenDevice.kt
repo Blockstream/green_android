@@ -40,6 +40,7 @@ interface GreenDevice: DeviceOperatingNetwork {
     val isBonded: Boolean
     val isUsb: Boolean
     val isBle: Boolean
+    val isNfc: Boolean // SATODEBUG
     val deviceState: StateFlow<DeviceState>
     val firmwareState: StateFlow<FirmwareUpdateState?>
     val name: String
@@ -47,6 +48,7 @@ interface GreenDevice: DeviceOperatingNetwork {
     val isJade: Boolean
     val isTrezor: Boolean
     val isLedger: Boolean
+    val isSatochip: Boolean // SATODEBUG
     val isOffline: Boolean
     val isConnected: Boolean
     val heartbeat: Long
@@ -105,6 +107,10 @@ abstract class GreenDeviceImpl constructor(
     override val isBle
         get() = type == ConnectionType.BLUETOOTH
 
+    // SATODEBUG
+    override val isNfc
+        get() = type == ConnectionType.NFC
+
     override val isOffline: Boolean
         get() = deviceState.value == DeviceState.DISCONNECTED
 
@@ -119,6 +125,10 @@ abstract class GreenDeviceImpl constructor(
 
     override val isLedger: Boolean
         get() = deviceBrand.isLedger
+
+    // SATODEBUG
+    override val isSatochip: Boolean
+        get() = deviceBrand.isSatochip
 
     override var gdkHardwareWallet: GdkHardwareWallet? by Delegates.observable(null) { _, _, gdkHardwareWallet ->
         logger.i { "Set GdkHardwareWallet" }

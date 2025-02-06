@@ -38,6 +38,7 @@ data class ErrorReport(
                             DeviceModel.TrezorGeneric -> "trezor"
                             DeviceModel.LedgerGeneric -> "ledger"
                             DeviceModel.Generic -> "generic"
+                            DeviceModel.SatochipGeneric -> "satochip"
                         }
                     }
                 }

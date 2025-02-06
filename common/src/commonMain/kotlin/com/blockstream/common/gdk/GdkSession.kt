@@ -1341,6 +1341,7 @@ class GdkSession constructor(
                 DeviceBrand.Ledger -> DeviceModel.LedgerGeneric
                 DeviceBrand.Trezor -> DeviceModel.TrezorGeneric
                 DeviceBrand.Generic -> DeviceModel.Generic
+                DeviceBrand.Satochip -> DeviceModel.SatochipGeneric
             }
         }
 

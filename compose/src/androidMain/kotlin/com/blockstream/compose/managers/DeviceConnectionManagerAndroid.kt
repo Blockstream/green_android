@@ -59,6 +59,7 @@ class DeviceConnectionManagerAndroid constructor(
         } ?: (device as? LedgerDevice)?.let {
             connectLedgerDevice(it, interaction)
         } ?: super.connectDevice(device, httpRequestHandler, interaction))
+        // TODO SATODEBUG
     }
 
     override suspend fun disconnectDevice(device: GreenDevice) {

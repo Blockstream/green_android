@@ -123,6 +123,7 @@ fun DeviceModel.icon(): DrawableResource = when (this) {
     DeviceModel.TrezorGeneric, DeviceModel.TrezorModelT, DeviceModel.TrezorModelOne ->  Res.drawable.trezor_device
     DeviceModel.LedgerGeneric, DeviceModel.LedgerNanoS, DeviceModel.LedgerNanoX -> Res.drawable.ledger_device
     DeviceModel.Generic -> Res.drawable.generic_device
+    DeviceModel.SatochipGeneric -> Res.drawable.generic_device // todo SATODEBUG
 }
 
 fun DeviceModel.actionIcon(): DrawableResource = when (this) {
