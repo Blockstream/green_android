@@ -5,7 +5,11 @@ package com.blockstream.green.di
 import android.content.Context
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
+import androidx.fragment.app.FragmentActivity
+//import androidx.fragment.app.FragmentActivity
 import com.benasher44.uuid.Uuid
+import com.blockstream.common.devices.ActivityProvider
+import com.blockstream.common.devices.AndroidActivityProvider
 import com.blockstream.common.devices.DeviceManagerAndroid
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.interfaces.DeviceConnectionInterface
@@ -15,6 +19,7 @@ import com.blockstream.compose.devices.LedgerDevice
 import com.blockstream.compose.devices.TrezorDevice
 import com.blockstream.compose.managers.DeviceConnectionManager
 import com.blockstream.compose.managers.DeviceConnectionManagerAndroid
+import com.blockstream.green.GreenActivity
 import com.blockstream.green.managers.FcmAndroid
 import com.blockstream.green.managers.NotificationManagerAndroid
 import com.blockstream.jade.connection.JadeBleConnection
@@ -36,8 +41,12 @@ val greenModules = module {
             get()
         )
     } binds (arrayOf(NotificationManagerAndroid::class, NotificationManager::class))
+
+    single { AndroidActivityProvider() } binds arrayOf(ActivityProvider::class)
+
     single {
         DeviceManagerAndroid(
+            get(),
             get(),
             androidContext(),
             get(),
@@ -54,6 +63,7 @@ val greenModules = module {
             } ?: peripheral?.let {
                 LedgerDevice.fromScan(deviceManager = deviceManagerAndroid, bleService = bleService, peripheral = peripheral, isBonded = isBonded == true)
             }
+            // TODO SATODEBUG
         }
     } binds (arrayOf(DeviceManager::class, DeviceManagerAndroid::class))
     single {

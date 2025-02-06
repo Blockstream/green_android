@@ -1,6 +1,7 @@
 package com.blockstream.common.devices
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.bluetooth.BluetoothDevice
@@ -8,6 +9,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.nfc.NfcAdapter // SATODEBUG
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import androidx.core.content.ContextCompat
@@ -25,9 +27,9 @@ import com.juul.kable.PlatformAdvertisement
 import com.juul.kable.peripheral
 import java.lang.ref.WeakReference
 
-
 class DeviceManagerAndroid constructor(
     scope: ApplicationScope,
+    val activityProvider: ActivityProvider,
     val context: Context,
     sessionManager: SessionManager,
     bluetoothManager: BluetoothManager,
@@ -75,6 +77,7 @@ class DeviceManagerAndroid constructor(
     }
 
     init {
+        logger.i { "SATODEBUG DeviceManagerAndroid init() start" }
         val intentFilter = IntentFilter().also {
             it.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED)
             it.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
@@ -89,11 +92,16 @@ class DeviceManagerAndroid constructor(
             ContextCompat.RECEIVER_EXPORTED
         )
 
+
+        scanNfcDevices() // SATODEBUG
         scanUsbDevices()
 
+        logger.i { "SATODEBUG DeviceManagerAndroid init() end" }
     }
 
+    // SATODEBUG: for bluetooth?
     override fun advertisedDevice(advertisement: PlatformAdvertisement) {
+        logger.i { "SATODEBUG advertisedDevice() start" }
         val isJade = advertisement.isJade
 
         // Jade is added in Common code
@@ -108,11 +116,13 @@ class DeviceManagerAndroid constructor(
                     addBluetoothDevice(it)
                 }
         }
+        logger.i { "SATODEBUG advertisedDevice() end" }
     }
 
     fun hasPermissions(device: UsbDevice) = usbManager.hasPermission(device)
 
     fun askForUsbPermissions(device: UsbDevice, onSuccess: (() -> Unit), onError: ((throwable: Throwable?) -> Unit)? = null) {
+        logger.i { "SATODEBUG askForUsbPermissions() start" }
         onPermissionSuccess = WeakReference(onSuccess)
         onPermissionError = onError?.let { WeakReference(it) }
         val permissionIntent = PendingIntent.getBroadcast(context, 748, Intent(ACTION_USB_PERMISSION).also {
@@ -120,21 +130,28 @@ class DeviceManagerAndroid constructor(
             it.putExtra(UsbManager.EXTRA_DEVICE, device)
         }, FLAG_IMMUTABLE)
         usbManager.requestPermission(device, permissionIntent)
+        logger.i { "SATODEBUG askForUsbPermissions() end" }
     }
 
     override fun refreshDevices(){
         super.refreshDevices()
-
+        logger.i { "SATODEBUG refreshDevices() start" }
+        scanNfcDevices() // SATODEBUG
         scanUsbDevices()
+        logger.i { "SATODEBUG refreshDevices() end" }
     }
 
     fun scanUsbDevices() {
+        logger.i { "SATODEBUG scanUsbDevices() start" }
         logger.i { "Scan for USB devices" }
 
         val newUsbDevices = usbManager.deviceList.values
 
+        logger.i { "SATODEBUG scanUsbDevices() newUsbDevices: $newUsbDevices" }
+
         // Disconnect devices
         val oldDevices = usbDevices.value.filter {
+            logger.i { "SATODEBUG scanUsbDevices() usbDevice: $it" }
             if(newUsbDevices.contains(it.toAndroidDevice()?.usbDevice)){
                 true
             }else{
@@ -142,9 +159,11 @@ class DeviceManagerAndroid constructor(
                 false
             }
         }
+        logger.i { "SATODEBUG scanUsbDevices() oldDevices: $oldDevices" }
 
         val newDevices = mutableListOf<AndroidDevice>()
         for (usbDevice in newUsbDevices){
+            logger.i { "SATODEBUG scanUsbDevices() usbDevice: $usbDevice" }
             if(oldDevices.find { it.toAndroidDevice()?.usbDevice == usbDevice } == null) {
 
                 // Jade or UsbDeviceMapper
@@ -154,9 +173,46 @@ class DeviceManagerAndroid constructor(
                 }
             }
         }
+        logger.i { "SATODEBUG scanUsbDevices() newDevices: $newDevices" }
 
         usbDevices.value = oldDevices + newDevices
+        logger.i { "SATODEBUG scanUsbDevices() end" }
     }
+
+    // SATODEBUG
+    fun scanNfcDevices() {
+        logger.i { "SATODEBUG scanNfcDevices() start" }
+        logger.i { "Scan for NFC devices" }
+
+        val cardManager = NfcCardManager()
+        cardManager.setCardListener(SatochipCardListenerForAction)
+        cardManager.start()
+        logger.i { "SATODEBUG scanNfcDevices() after cardManager start" }
+
+        // ugly hack
+        //val countly = sessionManager.countly as Countly
+        //val activity = countly.activityCopy
+        val activity = activityProvider.getCurrentActivity()
+
+        //val activity = activity //context as Activity?
+        //val activity = context as Activity?
+        //val activity = LocalActivity.current //activity
+        //val activity = LocalContext
+        val nfcAdapter = NfcAdapter.getDefaultAdapter(context) //context)
+        nfcAdapter?.enableReaderMode(
+            activity,
+            cardManager,
+            NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_NFC_B or NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK,
+            null
+        )
+        logger.d { "SATODEBUG scanNfcDevices() after nfcAdapter" }
+
+
+        logger.i { "SATODEBUG scanNfcDevices() end" }
+    }
+
+
+
 
     companion object : Loggable() {
         private const val ACTION_USB_PERMISSION = "com.blockstream.green.USB_PERMISSION"
