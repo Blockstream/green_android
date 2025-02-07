@@ -9,6 +9,7 @@ package com.blockstream.common.devices
 
 private const val TAG = "SatochipCardListener"
 
+// todo remove deprecated
 object SatochipCardListenerForAction : CardListener {
 
     override fun onConnected(channel: CardChannel) {

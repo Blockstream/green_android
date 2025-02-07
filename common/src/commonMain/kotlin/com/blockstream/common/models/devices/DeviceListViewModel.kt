@@ -42,6 +42,7 @@ class DeviceListViewModel(isJade: Boolean = true) :
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
     init {
+        println("SATODEBUG DeviceListViewModel init()")
         viewModelScope.launch {
             _navData.value =
                 NavData(title = if (isJade) "Blockstream Jade" else "", actions = listOfNotNull(
@@ -56,6 +57,7 @@ class DeviceListViewModel(isJade: Boolean = true) :
 
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
+        println("SATODEBUG DeviceListViewModel handleEvent() event: $event")
 
         if(event is LocalEvents.ConnectViaQR){
             if(isJade) {
@@ -70,6 +72,8 @@ class DeviceListViewModel(isJade: Boolean = true) :
                 postSideEffect(SideEffects.NavigateTo(NavigateDestinations.ImportPubKey(deviceModel = DeviceModel.Generic)))
             }
         }else if (event is LocalEvents.SelectDevice) {
+            println("SATODEBUG DeviceListViewModel handleEvent() event is SelectDevice")
+
             val navigateTo =
                 SideEffects.NavigateTo(NavigateDestinations.DeviceInfo(deviceId = event.device.connectionIdentifier))
             if (event.device.hasPermissions()) {

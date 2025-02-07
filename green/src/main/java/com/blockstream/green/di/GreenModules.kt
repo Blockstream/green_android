@@ -16,6 +16,7 @@ import com.blockstream.common.interfaces.DeviceConnectionInterface
 import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.managers.NotificationManager
 import com.blockstream.compose.devices.LedgerDevice
+import com.blockstream.compose.devices.SatochipDevice
 import com.blockstream.compose.devices.TrezorDevice
 import com.blockstream.compose.managers.DeviceConnectionManager
 import com.blockstream.compose.managers.DeviceConnectionManagerAndroid
@@ -53,7 +54,7 @@ val greenModules = module {
             get(),
             get(),
             listOf(LedgerDeviceBLE.SERVICE_UUID.toString(), JadeBleConnection.JADE_SERVICE)
-        ) { deviceManagerAndroid: DeviceManagerAndroid, usbDevice: UsbDevice?, bleService: Uuid?, peripheral: Peripheral?, isBonded: Boolean? ->
+        ) { deviceManagerAndroid: DeviceManagerAndroid, usbDevice: UsbDevice?, bleService: Uuid?, peripheral: Peripheral?, isBonded: Boolean?, activityProvider: ActivityProvider? ->
             usbDevice?.let {
                 TrezorDevice.fromUsbDevice(deviceManager = deviceManagerAndroid, usbDevice = usbDevice)
                     ?: LedgerDevice.fromUsbDevice(
@@ -62,8 +63,7 @@ val greenModules = module {
                     )
             } ?: peripheral?.let {
                 LedgerDevice.fromScan(deviceManager = deviceManagerAndroid, bleService = bleService, peripheral = peripheral, isBonded = isBonded == true)
-            }
-            // TODO SATODEBUG
+            } ?: SatochipDevice.fromNfcDevice(deviceManager = deviceManagerAndroid, activityProvider = activityProvider) // SATODEBUG
         }
     } binds (arrayOf(DeviceManager::class, DeviceManagerAndroid::class))
     single {

@@ -60,17 +60,21 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
     }
 
     init {
+        println("SATODEBUG DeviceInfoViewModel init()")
         deviceOrNull = deviceManager.getDevice(deviceId)
 
         if(deviceOrNull == null){
+            println("SATODEBUG DeviceInfoViewModel init() device is null!")
             postSideEffect(SideEffects.NavigateBack())
         }else {
 
             if (device.gdkHardwareWallet == null) {
+                println("SATODEBUG DeviceInfoViewModel init() gdkHardwareWallet is null")
                 connectDevice()
             }
 
             device.deviceState.onEach {
+                println("SATODEBUG DeviceInfoViewModel init() deviceState loop: $it")
                 // Device went offline
                 if (it == DeviceState.DISCONNECTED) {
                     postSideEffect(SideEffects.Snackbar(StringHolder(stringResource = Res.string.id_your_device_was_disconnected)))
@@ -80,6 +84,7 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
         }
 
         viewModelScope.launch {
+            println("SATODEBUG DeviceInfoViewModel init() viewModelScope.launch")
             _navData.value = NavData(
                 title = deviceOrNull?.deviceBrand?.name,
                 onBackPressed = {
@@ -109,11 +114,12 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
 
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
+        println("SATODEBUG DeviceInfoViewModel handleEvent() event: $event")
 
         if (event is LocalEvents.AuthenticateAndContinue) {
             authenticateAndContinue(event.updateFirmwareFromChannel)
         } else if (event is LocalEvents.SelectEnviroment) {
-
+            println("SATODEBUG DeviceInfoViewModel handleEvent() LocalEvents.SelectEnviroment")
             if (event.isTestnet == null) {
                 requestNetworkEmitter?.completeExceptionally(Exception("id_action_canceled"))
             } else {
@@ -125,11 +131,14 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
     }
 
     private fun connectDevice() {
+        println("SATODEBUG DeviceInfoViewModel connectDevice()")
         doAsync({
+            println("SATODEBUG DeviceInfoViewModel connectDevice() doAsync start")
             deviceConnectionManager.connectDevice(device, sessionManager.httpRequestHandler, this).also {
                 countly.hardwareConnect(device)
             }
         }, onSuccess = {
+            println("SATODEBUG DeviceInfoViewModel connectDevice() doAsync onSuccess")
             deviceIsConnected.value = true
             countly.hardwareConnected(device)
             _jadeIsUninitialized.value = it.isJadeUninitialized == true
@@ -146,6 +155,7 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
             }
 
         }, onError = {
+            println("SATODEBUG DeviceInfoViewModel connectDevice() doAsync onError")
             it.printStackTrace()
 
             if (it is ConnectionLostException) {
@@ -157,6 +167,7 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
     }
 
     private fun authenticateAndContinue(updateFirmwareFromChannel: String? = null) {
+        println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() start")
         val gdkHardwareWallet = device.gdkHardwareWallet ?: return
 
         doAsync({

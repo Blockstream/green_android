@@ -394,6 +394,7 @@ open class GreenViewModel constructor(
     }
 
     open suspend fun handleEvent(event: Event) {
+        println("SATODEBUG GreenViewModel handleEvent() event: $event")
         when(event){
             is Events.ProvideCipher -> {
                 event.platformCipher?.also {

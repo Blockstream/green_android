@@ -73,9 +73,9 @@ open class DeviceManager constructor(
         }
     }
 
-    // TODO SATODEBUG
-    val devices = combine(usbDevices, bleDevices, disconnectEvent) { usb, ble, _ ->
-        ble.filter { it.deviceState.value == DeviceState.CONNECTED } + usb
+    // SATODEBUG
+    val devices = combine(usbDevices, bleDevices, disconnectEvent, nfcDevices) { usb, ble, _, nfc->
+        ble.filter { it.deviceState.value == DeviceState.CONNECTED } + usb + nfc
     }.stateIn(scope, SharingStarted.Eagerly, emptyList())
 
     var savedDevice: GreenDevice? = null
@@ -109,6 +109,7 @@ open class DeviceManager constructor(
     }
 
     fun getDevice(deviceId: String?): GreenDevice? {
+        logger.d { "SATODEBUG DeviceManager getDevice Start deviceId: $deviceId" }
         return devices.value.find { it.connectionIdentifier == deviceId }
             // Check if device is already in a session
             ?: sessionManager.getConnectedHardwareWalletSessions()

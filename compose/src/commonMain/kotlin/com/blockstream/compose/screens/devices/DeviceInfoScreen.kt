@@ -68,6 +68,8 @@ data class DeviceInfoScreen(val deviceId: String) : Screen, Parcelable {
 
     @Composable
     override fun Content() {
+        println("SATODEBUG DeviceInfoScreen Content() Start deviceId: $deviceId")
+
         val viewModel = koinScreenModel<DeviceInfoViewModel> {
             parametersOf(deviceId)
         }

@@ -29,18 +29,23 @@ import java.lang.ref.WeakReference
 
 class DeviceManagerAndroid constructor(
     scope: ApplicationScope,
-    val activityProvider: ActivityProvider,
+    val activityProvider: ActivityProvider, // provide Activity reference needed by NfcAdapter
     val context: Context,
     sessionManager: SessionManager,
     bluetoothManager: BluetoothManager,
     val usbManager: UsbManager,
     supportedBleDevices: List<String>,
     val deviceMapper: (
-        deviceManager: DeviceManagerAndroid, usbDevice: UsbDevice?, bleService: Uuid?,
+        deviceManager: DeviceManagerAndroid,
+        usbDevice: UsbDevice?,
+        bleService: Uuid?,
         peripheral: Peripheral?,
-        isBonded: Boolean?
+        isBonded: Boolean?,
+        activityProvider: ActivityProvider?,
     ) -> AndroidDevice?
-): DeviceManager(scope, sessionManager, bluetoothManager, supportedBleDevices) {
+): CardListener, DeviceManager(scope, sessionManager, bluetoothManager, supportedBleDevices) {
+
+    private val nfcAdapter = NfcAdapter.getDefaultAdapter(context)
 
     private var onPermissionSuccess: WeakReference<(() -> Unit)>? = null
     private var onPermissionError: WeakReference<((throwable: Throwable?) -> Unit)>? = null
@@ -111,7 +116,7 @@ class DeviceManagerAndroid constructor(
             val peripheral = scope.peripheral(advertisement)
             val bleService = advertisement.uuids.firstOrNull()
 
-            deviceMapper.invoke(this, null, bleService, peripheral, advertisement.isBonded())
+            deviceMapper.invoke(this, null, bleService, peripheral, advertisement.isBonded(), null)
                 ?.also {
                     addBluetoothDevice(it)
                 }
@@ -168,7 +173,7 @@ class DeviceManagerAndroid constructor(
 
                 // Jade or UsbDeviceMapper
                 (JadeUsbDevice.fromUsbDevice(deviceManager = this, usbDevice = usbDevice)
-                    ?: deviceMapper.invoke(this, usbDevice, null, null, null))?.let {
+                    ?: deviceMapper.invoke(this, usbDevice, null, null, null, null))?.let {
                     newDevices += it
                 }
             }
@@ -185,7 +190,8 @@ class DeviceManagerAndroid constructor(
         logger.i { "Scan for NFC devices" }
 
         val cardManager = NfcCardManager()
-        cardManager.setCardListener(SatochipCardListenerForAction)
+        //cardManager.setCardListener(SatochipCardListenerForAction)
+        cardManager.setCardListener(this)
         cardManager.start()
         logger.i { "SATODEBUG scanNfcDevices() after cardManager start" }
 
@@ -198,7 +204,7 @@ class DeviceManagerAndroid constructor(
         //val activity = context as Activity?
         //val activity = LocalActivity.current //activity
         //val activity = LocalContext
-        val nfcAdapter = NfcAdapter.getDefaultAdapter(context) //context)
+        //val nfcAdapter = NfcAdapter.getDefaultAdapter(context) //context)
         nfcAdapter?.enableReaderMode(
             activity,
             cardManager,
@@ -211,7 +217,59 @@ class DeviceManagerAndroid constructor(
         logger.i { "SATODEBUG scanNfcDevices() end" }
     }
 
+    // SATODEBUG
+    override fun onConnected(channel: CardChannel) {
 
+        println("SATODEBUG DeviceManagerAndroid onConnected: Card is connected")
+        try {
+            val cmdSet = SatochipCommandSet(channel)
+            // start to interact with card
+            //NfcCardService.initialize(cmdSet)
+
+            val rapduSelect = cmdSet.cardSelect("satochip").checkOK()
+            // cardStatus
+            val rapduStatus = cmdSet.cardGetStatus()//To update status if it's not the first reading
+            val cardStatus = cmdSet.getApplicationStatus() //applicationStatus ?: return
+            println("SATODEBUG DeviceManagerAndroid readCard cardStatus: $cardStatus")
+            println("SATODEBUG DeviceManagerAndroid readCard cardStatus: ${cardStatus.toString()}")
+
+            // add device
+            val newDevices = mutableListOf<AndroidDevice>()
+            deviceMapper.invoke(this, null, null, null, null, activityProvider)?.let {
+                newDevices += it
+                println("SATODEBUG DeviceManagerAndroid readCard newDevice: ${it}")
+                println("SATODEBUG DeviceManagerAndroid readCard newDevice manufacturer: ${it.manufacturer}")
+                println("SATODEBUG DeviceManagerAndroid readCard newDevice name: ${it.name}")
+                println("SATODEBUG DeviceManagerAndroid readCard newDevice deviceBrand: ${it.deviceBrand}")
+                println("SATODEBUG DeviceManagerAndroid readCard newDevice deviceModel: ${it.deviceModel}")
+                println("SATODEBUG DeviceManagerAndroid readCard newDevice deviceState: ${it.deviceState}")
+                println("SATODEBUG DeviceManagerAndroid readCard newDevice type: ${it.type}")
+                println("SATODEBUG DeviceManagerAndroid readCard newDevice connectionIdentifier: ${it.connectionIdentifier}")
+                println("SATODEBUG DeviceManagerAndroid readCard newDevice uniqueIdentifier: ${it.uniqueIdentifier}")
+            }
+            println("SATODEBUG DeviceManagerAndroid readCard newDevices: ${newDevices}")
+            nfcDevices.value = newDevices
+
+            // TODO: disconnect?
+            println("SATODEBUG DeviceManagerAndroid onConnected: trigger disconnection!")
+            onDisconnected()
+
+            // stop polling?
+            val activity = activityProvider.getCurrentActivity()
+            nfcAdapter?.disableReaderMode(activity)
+
+        } catch (e: Exception) {
+            println("SATODEBUG DeviceManagerAndroid onConnected: an exception has been thrown during card init.")
+            //Log.e(TAG, Log.getStackTraceString(e))
+            onDisconnected()
+        }
+    }
+
+    // SATODEBUG
+    override fun onDisconnected() {
+        //NfcCardService.isConnected.postValue(false)
+        println("SATODEBUG DeviceManagerAndroid onDisconnected: Card disconnected!")
+    }
 
 
     companion object : Loggable() {
