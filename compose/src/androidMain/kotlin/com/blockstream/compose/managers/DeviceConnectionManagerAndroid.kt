@@ -35,6 +35,7 @@ import com.btchip.comm.BTChipTransport
 import com.btchip.comm.android.BTChipTransportAndroid
 import com.greenaddress.greenbits.wallets.BTChipHWWallet
 import com.greenaddress.greenbits.wallets.LedgerBLEAdapter
+import com.greenaddress.greenbits.wallets.SatochipHWWallet
 import com.greenaddress.greenbits.wallets.TrezorHWWallet
 import com.satoshilabs.trezor.Trezor
 import kotlinx.coroutines.CoroutineScope
@@ -60,6 +61,7 @@ class DeviceConnectionManagerAndroid constructor(
 
     private var nfcAdapter: NfcAdapter? = null
     private var activity: Activity? = null
+    private var satochipDevice: SatochipDevice? = null
 
     override suspend fun connectDevice(
         device: GreenDevice,
@@ -166,6 +168,8 @@ class DeviceConnectionManagerAndroid constructor(
     private suspend fun connectSatochipDevice(device: SatochipDevice, interaction: HardwareConnectInteraction): ConnectionResult {
         logger.i {"SATODEBUG DeviceConnectionManagerAndroid connectSatochipDevice() start device: $device"}
 
+        satochipDevice = device
+
         val cardManager = NfcCardManager()
         cardManager.setCardListener(this)
         cardManager.start()
@@ -182,6 +186,18 @@ class DeviceConnectionManagerAndroid constructor(
 
         logger.i { "SATODEBUG DeviceConnectionManagerAndroid connectSatochipDevice() end" }
 
+
+//        val satochipDevice = com.blockstream.common.gdk.data.Device(
+//            name = "Satochip",
+//            supportsArbitraryScripts = false,
+//            supportsLowR = false,
+//            supportsHostUnblinding = false,
+//            supportsExternalBlinding = false,
+//            supportsLiquid = DeviceSupportsLiquid.None,
+//            supportsAntiExfilProtocol = DeviceSupportsAntiExfilProtocol.None
+//        )
+//
+//        device.gdkHardwareWallet = SatochipHWWallet(satochipDevice)
 
         //return onSatochipConnected(device)
         return ConnectionResult()
@@ -210,15 +226,31 @@ class DeviceConnectionManagerAndroid constructor(
             println("SATODEBUG DeviceConnectionManagerAndroid readCard cardStatus: $cardStatus")
             println("SATODEBUG DeviceConnectionManagerAndroid readCard cardStatus: ${cardStatus.toString()}")
 
+
+            val satoDevice = com.blockstream.common.gdk.data.Device(
+                name = "Satochip",
+                supportsArbitraryScripts = false,
+                supportsLowR = false,
+                supportsHostUnblinding = false,
+                supportsExternalBlinding = false,
+                supportsLiquid = DeviceSupportsLiquid.None,
+                supportsAntiExfilProtocol = DeviceSupportsAntiExfilProtocol.None
+            )
+
+            // provide channel for later request?
+            // todo: provide activity and context instead??
+            satochipDevice?.gdkHardwareWallet = SatochipHWWallet(satoDevice, channel)
+
             // TODO: disconnect?
             println("SATODEBUG DeviceConnectionManagerAndroid onConnected: trigger disconnection!")
             onDisconnected()
 
             // stop polling?
-            nfcAdapter?.disableReaderMode(activity)
+            //nfcAdapter?.disableReaderMode(activity)
 
             //
             //return onSatochipConnected(device)
+
 
         } catch (e: Exception) {
             println("SATODEBUG DeviceConnectionManagerAndroid onConnected: an exception has been thrown during card init.")
