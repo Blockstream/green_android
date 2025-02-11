@@ -5,6 +5,7 @@ import com.blockstream.common.CountlyBase
 import com.blockstream.common.CountlyIOS
 import com.blockstream.common.database.DriverFactory
 import com.blockstream.common.managers.BluetoothManager
+import com.blockstream.common.managers.LocaleManager
 import com.blockstream.common.managers.LifecycleManager
 import com.russhwolf.settings.NSUserDefaultsSettings
 import com.russhwolf.settings.Settings
@@ -20,6 +21,9 @@ actual val platformModule = module {
     }
     single<CountlyBase> {
         CountlyIOS(get(), get(), get(), get())
+    }
+    single {
+        LocaleManager()
     }
     single<Settings> { NSUserDefaultsSettings(NSUserDefaults.standardUserDefaults()) }
 

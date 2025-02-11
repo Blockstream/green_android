@@ -1615,4 +1615,5 @@
     <string name="id_please_be_as_detailed_as_possible">Please be as detailed as possible when describing the issue.</string>
     <string name="id_i_understand_that_asking_for_support">I understand that asking for support through Tor will reduce my anonymity</string>
     <string name="id_you_will_receive_an_email_from">You will receive an email from Blockstream support</string>
+    <string name="id_system_default">System Default</string>
 </resources>

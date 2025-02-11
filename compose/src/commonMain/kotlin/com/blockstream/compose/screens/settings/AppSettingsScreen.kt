@@ -17,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -55,6 +56,7 @@ import blockstream_green.common.generated.resources.id_enhanced_privacy
 import blockstream_green.common.generated.resources.id_experimental_features_might
 import blockstream_green.common.generated.resources.id_help_green_improve
 import blockstream_green.common.generated.resources.id_host_ip
+import blockstream_green.common.generated.resources.id_language
 import blockstream_green.common.generated.resources.id_liquid_electrum_server
 import blockstream_green.common.generated.resources.id_liquid_testnet_electrum_server
 import blockstream_green.common.generated.resources.id_more_info
@@ -66,6 +68,7 @@ import blockstream_green.common.generated.resources.id_remember_hardware_devices
 import blockstream_green.common.generated.resources.id_save
 import blockstream_green.common.generated.resources.id_screen_lock
 import blockstream_green.common.generated.resources.id_spv_verification
+import blockstream_green.common.generated.resources.id_system_default
 import blockstream_green.common.generated.resources.id_testnet_electrum_server
 import blockstream_green.common.generated.resources.id_these_settings_apply_for_every
 import blockstream_green.common.generated.resources.id_use_secure_display_and_screen
@@ -78,6 +81,9 @@ import blockstream_green.common.generated.resources.tor
 import blockstream_green.common.generated.resources.users_three
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Translate
 import com.blockstream.common.data.ScreenLockSetting
 import com.blockstream.common.models.settings.AppSettingsViewModel
 import com.blockstream.common.models.settings.AppSettingsViewModelAbstract
@@ -88,6 +94,7 @@ import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenGradient
+import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.GreenSwitch
 import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.sheets.AnalyticsBottomSheet
@@ -162,6 +169,64 @@ fun AppSettingsScreen(
                     .padding(bottom = 8.dp)
             )
 
+            var languageExpanded by remember { mutableStateOf(false) }
+
+            GreenRow(
+                space = 16,
+                padding = 0,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Icon(
+                    imageVector = PhosphorIcons.Regular.Translate,
+                    contentDescription = "Language",
+                )
+
+                val locales by viewModel.locales.collectAsStateWithLifecycle()
+                val locale by viewModel.locale.collectAsStateWithLifecycle()
+
+                // We want to react on tap/press on TextField to show menu
+                ExposedDropdownMenuBox(
+                    expanded = languageExpanded,
+                    onExpandedChange = { languageExpanded = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        // The `menuAnchor` modifier must be passed to the text field for correctness.
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor(),
+                        readOnly = true,
+                        value = locale?.let {locales[it] } ?: locale ?: stringResource(Res.string.id_system_default),
+                        onValueChange = {},
+                        label = { Text(stringResource(Res.string.id_language)) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = languageExpanded) },
+                        colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = languageExpanded,
+                        onDismissRequest = { languageExpanded = false },
+                    ) {
+                        locales.forEach {
+                            DropdownMenuItem(
+                                text = { Text(it.value ?: stringResource(Res.string.id_system_default)) },
+                                onClick = {
+                                    viewModel.locale.value = it.key
+                                    languageExpanded = false
+                                },
+                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                            )
+                        }
+                    }
+                }
+            }
+
+            HorizontalDivider(modifier = Modifier.padding(start = 54.dp))
+
             val enhancedPrivacyEnabled by viewModel.enhancedPrivacyEnabled.collectAsStateWithLifecycle()
 
             GreenSwitch(
@@ -179,7 +244,7 @@ fun AppSettingsScreen(
                 }
                 val screenLockInSeconds by viewModel.screenLockInSeconds.collectAsStateWithLifecycle()
 
-                var expanded by remember { mutableStateOf(false) }
+                var screenLockExpanded by remember { mutableStateOf(false) }
                 val selectedOptionText by remember {
                     derivedStateOf {
                         screenLockSettings[screenLockInSeconds.ordinal]
@@ -188,8 +253,8 @@ fun AppSettingsScreen(
 
                 // We want to react on tap/press on TextField to show menu
                 ExposedDropdownMenuBox(
-                    expanded = expanded,
-                    onExpandedChange = { expanded = it },
+                    expanded = screenLockExpanded,
+                    onExpandedChange = { screenLockExpanded = it },
                     modifier = Modifier
                         .padding(start = 54.dp, end = 16.dp, bottom = 8.dp)
                         .fillMaxWidth()
@@ -203,12 +268,12 @@ fun AppSettingsScreen(
                         value = selectedOptionText,
                         onValueChange = {},
                         label = { Text(stringResource(Res.string.id_screen_lock)) },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = screenLockExpanded) },
                         colors = ExposedDropdownMenuDefaults.textFieldColors(),
                     )
                     ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
+                        expanded = screenLockExpanded,
+                        onDismissRequest = { screenLockExpanded = false },
                     ) {
                         screenLockSettings.forEachIndexed { index, selectionOption ->
                             DropdownMenuItem(
@@ -217,7 +282,7 @@ fun AppSettingsScreen(
                                     ScreenLockSetting.byPosition(index).let {
                                         viewModel.screenLockInSeconds.value = it
                                     }
-                                    expanded = false
+                                    screenLockExpanded = false
                                 },
                                 contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                             )

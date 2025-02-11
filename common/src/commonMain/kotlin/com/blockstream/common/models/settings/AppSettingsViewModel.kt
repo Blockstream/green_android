@@ -9,6 +9,8 @@ import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.events.GenericEvent
+import com.blockstream.common.managers.LocaleManager
+import com.blockstream.common.managers.Locales
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
@@ -21,6 +23,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.jetbrains.compose.resources.getString
+import org.koin.core.component.inject
 
 abstract class AppSettingsViewModelAbstract() :
     GreenViewModel() {
@@ -98,6 +101,12 @@ abstract class AppSettingsViewModelAbstract() :
     @NativeCoroutinesState
     abstract val spvTestnetLiquidElectrumServer: MutableStateFlow<String>
 
+    @NativeCoroutinesState
+    abstract val locales: MutableStateFlow<Map<String?, String?>>
+
+    @NativeCoroutinesState
+    abstract val locale: MutableStateFlow<String?>
+
     companion object {
         const val DEFAULT_BITCOIN_ELECTRUM_URL = "blockstream.info:700"
         const val DEFAULT_LIQUID_ELECTRUM_URL = "blockstream.info:995"
@@ -112,6 +121,8 @@ abstract class AppSettingsViewModelAbstract() :
 }
 
 class AppSettingsViewModel : AppSettingsViewModelAbstract() {
+    private val localeManager: LocaleManager by inject()
+
     private var appSettings: ApplicationSettings = settingsManager.getApplicationSettings()
 
     override val multiServerValidationFeatureEnabled = appInfo.isDevelopmentOrDebug
@@ -185,6 +196,12 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
     @NativeCoroutinesState
     override val spvTestnetLiquidElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, appSettings.spvTestnetLiquidElectrumServer ?: "")
 
+    @NativeCoroutinesState
+    override val locales = MutableStateFlow(viewModelScope, Locales)
+
+    @NativeCoroutinesState
+    override val locale: MutableStateFlow<String?> = MutableStateFlow(viewModelScope, localeManager.getLocale())
+
     class LocalEvents{
         object AnalyticsMoreInfo: Events.EventSideEffect(LocalSideEffects.AnalyticsMoreInfo)
         object OnBack: Event
@@ -232,6 +249,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
 
         when (event) {
             is LocalEvents.Save -> {
+                localeManager.setLocale(locale.value)
                 settingsManager.saveApplicationSettings(getSettings())
                 postSideEffect(SideEffects.NavigateBack())
             }
@@ -256,13 +274,14 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         testnet = testnetEnabled.value,
         analytics = analyticsEnabled.value,
         experimentalFeatures = experimentalFeaturesEnabled.value,
+        locale = locale.value,
         proxyUrl =  proxyUrl.value.takeIf { it.isNotBlank() && proxyEnabled.value },
         rememberHardwareDevices = rememberHardwareDevices.value,
         electrumNode = electrumNodeEnabled.value,
         tor = torEnabled.value,
         spv = spvEnabled.value,
         multiServerValidation = multiServerValidationEnabled.value,
-        electrumServerGapLimit = electrumServerGapLimit.value?.takeIf { it.isNotBlank() }?.toIntOrNull(),
+        electrumServerGapLimit = electrumServerGapLimit.value.takeIf { it.isNotBlank() }?.toIntOrNull(),
 
         // use null value as a reset to re-set the default urls and blank as a way to disabled it for a specific network
         personalBitcoinElectrumServer = personalBitcoinElectrumServer.value.takeIf { electrumNodeEnabled.value },
@@ -316,4 +335,6 @@ class AppSettingsViewModelPreview(initValue: Boolean = false) : AppSettingsViewM
     override val spvLiquidElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
     override val spvTestnetElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
     override val spvTestnetLiquidElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
+    override val locales: MutableStateFlow<Map<String?, String?>> = MutableStateFlow(viewModelScope, mapOf("en" to "English"))
+    override val locale: MutableStateFlow<String?> = MutableStateFlow(viewModelScope, "en")
 }

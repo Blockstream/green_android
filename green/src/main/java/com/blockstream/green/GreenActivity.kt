@@ -6,11 +6,11 @@ import android.os.Bundle
 import android.util.Base64
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.core.content.IntentCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.CredentialType
@@ -40,7 +40,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class GreenActivity : FragmentActivity() {
+class GreenActivity : AppCompatActivity() {
     private val appInfo by inject<AppInfo>()
     private val gdk: Gdk by inject()
     private val countly: CountlyAndroid by inject()

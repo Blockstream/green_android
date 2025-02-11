@@ -40,6 +40,8 @@ data class ApplicationSettings constructor(
     val analytics: Boolean = false,
     val experimentalFeatures: Boolean = false,
 
+    val locale: String? = null,
+
     val hideAmounts: Boolean = false,
     val electrumServerGapLimit: Int? = null,
 
@@ -98,6 +100,7 @@ data class ApplicationSettings constructor(
         private const val MULTI_SERVER_VALIDATION = "multiServerValidation"
         private const val ANALYTICS = "analytics"
         private const val EXPERIMENTAL_FEATURES = "experimental_features"
+        private const val LOCALE = "locale"
         private const val HIDE_AMOUNTS = "hideAmounts"
         private const val ELECTRUM_SERVER_GAP_LIMIT = "electrumServerGapLimit"
 
@@ -127,6 +130,7 @@ data class ApplicationSettings constructor(
                     multiServerValidation = settings.getBoolean(MULTI_SERVER_VALIDATION, false),
                     analytics = settings.getBoolean(ANALYTICS, false),
                     experimentalFeatures = settings.getBoolean(EXPERIMENTAL_FEATURES, false),
+                    locale = settings.getStringOrNull(LOCALE),
 
                     hideAmounts = settings.getBoolean(HIDE_AMOUNTS, false),
                     electrumServerGapLimit = settings.getIntOrNull(
@@ -172,6 +176,7 @@ data class ApplicationSettings constructor(
                 it.putBoolean(MULTI_SERVER_VALIDATION, appSettings.multiServerValidation)
                 it.putBoolean(ANALYTICS, appSettings.analytics)
                 it.putBoolean(EXPERIMENTAL_FEATURES, appSettings.experimentalFeatures)
+                it.putStringOrRemove(LOCALE, appSettings.locale)
                 it.putBoolean(HIDE_AMOUNTS, appSettings.hideAmounts)
 
                 it.putIntOrRemove(ELECTRUM_SERVER_GAP_LIMIT, appSettings.electrumServerGapLimit)

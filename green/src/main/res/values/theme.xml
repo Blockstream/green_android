@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.Green" parent="@android:style/Theme.Material.Light.NoActionBar" />
+    <style name="Theme.Green" parent="Theme.AppCompat.Light.NoActionBar" />
 
     <style name="Theme.Green.Splash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/brand_background</item>

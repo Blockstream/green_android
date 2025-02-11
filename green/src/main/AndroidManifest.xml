@@ -65,6 +65,7 @@
         android:hardwareAccelerated="true"
         android:enableOnBackInvokedCallback="false"
         android:networkSecurityConfig="@xml/network_security_config"
+        android:localeConfig="@xml/locales_config"
         tools:targetApi="tiramisu">
         <!--        Disable Predictive Back until this is fixed-->
         <!--        https://issuetracker.google.com/issues/271303558 -->
@@ -164,6 +165,15 @@
         </provider>
 
         <service android:name=".services.TaskService"/>
+
+        <service
+            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:enabled="false"
+            android:exported="false">
+            <meta-data
+                android:name="autoStoreLocales"
+                android:value="true" />
+        </service>
 
     </application>
 

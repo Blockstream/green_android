@@ -6,6 +6,7 @@ import androidx.preference.PreferenceManager
 import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.database.DriverFactory
 import com.blockstream.common.managers.BluetoothManager
+import com.blockstream.common.managers.LocaleManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.utils.AndroidKeystore
 import com.russhwolf.settings.Settings
@@ -21,6 +22,9 @@ actual val platformModule: Module = module {
     }
     single {
         PreferenceManager.getDefaultSharedPreferences(androidContext())
+    }
+    single {
+        LocaleManager(get())
     }
     single<Settings> {
         val sharedPreferences = androidContext().getSharedPreferences(
