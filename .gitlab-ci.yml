@@ -1,6 +1,6 @@
 stages:
-  - test
   - build
+  - test
   - deploy
   - upload
 
@@ -55,8 +55,7 @@ build_default_image:
     ANDROID_IMAGE_LATEST: ${ANDROID_IMAGE}:latest
   rules:
     - changes:
-        paths:
-          - ${DOCKERFILE}
+      - ${DOCKERFILE}
   script:
     - apk add jq curl
     - docker buildx build

@@ -56,7 +56,9 @@
 
     <application
         android:name="com.blockstream.green.GreenApplication"
-        android:allowBackup="false"
+        android:allowBackup="true"
+        android:fullBackupContent="@xml/full_backup_content"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:icon="${appIcon}"
         android:roundIcon="${appIconRound}"
         android:label="@string/app_name"

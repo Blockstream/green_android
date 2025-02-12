@@ -5,6 +5,10 @@ import app.cash.sqldelight.db.SqlDriver
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.toGreenWallet
+import com.blockstream.common.database.local.LocalDB
+import com.blockstream.common.database.wallet.LoginCredentials
+import com.blockstream.common.database.wallet.Wallet
+import com.blockstream.common.database.wallet.WalletDB
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.utils.Loggable
 import kotlinx.coroutines.CoroutineScope
@@ -15,15 +19,17 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withContext
 
-const val DATABASE_NAME = "green.sqlite"
+const val DATABASE_NAME_WALLET = "green.sqlite"
+const val DATABASE_NAME_LOCAL = "local.sqlite"
 
 expect class DriverFactory {
-    fun createDriver(): SqlDriver
+    fun createWalletDriver(): SqlDriver
+    fun createLocalDriver(): SqlDriver
 }
 
-fun createDatabase(driverFactory: DriverFactory): GreenDB {
-    val driver = driverFactory.createDriver()
-    val database = GreenDB(
+fun createWalletDatabase(driverFactory: DriverFactory): WalletDB {
+    val driver = driverFactory.createWalletDriver()
+    val database = WalletDB(
         driver = driver,
         loginCredentialsAdapter = LoginCredentials.Adapter(
             credential_typeAdapter = credentialsTypeAdapter,
@@ -36,13 +42,24 @@ fun createDatabase(driverFactory: DriverFactory): GreenDB {
     return database
 }
 
+fun createLocalDatabase(driverFactory: DriverFactory): LocalDB {
+    val driver = driverFactory.createLocalDriver()
+    val database = LocalDB(
+        driver = driver
+    )
+
+    return database
+}
+
 class Database(driverFactory: DriverFactory, val settingsManager: SettingsManager) {
 
-    private var db: GreenDB
+    private var walletDB: WalletDB
+    private var localDB: LocalDB
 
     init {
-        logger.d { "Init Database" }
-        db = createDatabase(driverFactory)
+        logger.d { "Init Databases" }
+        walletDB = createWalletDatabase(driverFactory)
+        localDB = createLocalDatabase(driverFactory)
     }
 
     private suspend fun <T> io(block: suspend CoroutineScope.() -> T): T {
@@ -52,18 +69,18 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
     }
 
     suspend fun getWallet(id: String): GreenWallet? = io {
-        db.walletQueries.getWallet(id).executeAsOneOrNull()?.toGreenWallet()
+        walletDB.walletQueries.getWallet(id).executeAsOneOrNull()?.toGreenWallet()
     }
 
     fun getWalletFlow(id: String): Flow<GreenWallet> =
-        db.walletQueries.getWallet(id).asFlow().mapNotNull {
+        walletDB.walletQueries.getWallet(id).asFlow().mapNotNull {
             io {
                 it.executeAsOneOrNull()?.toGreenWallet()
             }
         }
 
     fun getWalletFlowOrNull(id: String): Flow<GreenWallet?> =
-        db.walletQueries.getWallet(id).asFlow().map {
+        walletDB.walletQueries.getWallet(id).asFlow().map {
             io {
                 it.executeAsOneOrNull()?.toGreenWallet()
             }
@@ -72,7 +89,7 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
     suspend fun getMainnetWalletWithXpubHashId(
         xPubHashId: String,
     ): GreenWallet? = io {
-        db.walletQueries.getMainnetWalletWithXpubHashId(
+        walletDB.walletQueries.getMainnetWalletWithXpubHashId(
             xPubHashId
         ).executeAsOneOrNull()?.toGreenWallet()
     }
@@ -82,7 +99,7 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
         isTestnet: Boolean,
         isHardware: Boolean
     ): GreenWallet? = io {
-        db.walletQueries.getWalletWithXpubHashId(
+        walletDB.walletQueries.getWalletWithXpubHashId(
             xPubHashId,
             isTestnet,
             isHardware
@@ -94,7 +111,7 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
         network: String,
         isHardware: Boolean
     ): GreenWallet? = io {
-        db.walletQueries.getWalletWatchOnlyXpubHashId(
+        walletDB.walletQueries.getWalletWatchOnlyXpubHashId(
             xPubHashId,
             network,
             isHardware
@@ -103,7 +120,7 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
 
     suspend fun insertWallet(greenWallet: GreenWallet) = io {
         val wallet = greenWallet.wallet
-        db.walletQueries.insertWallet(
+        walletDB.walletQueries.insertWallet(
             id = wallet.id,
             name = wallet.name,
             xpub_hash_id = wallet.xpub_hash_id,
@@ -122,7 +139,7 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
 
     suspend fun updateWallet(greenWallet: GreenWallet) = io {
         val wallet = greenWallet.wallet
-        db.walletQueries.updateWallet(
+        walletDB.walletQueries.updateWallet(
             name = wallet.name,
             xpub_hash_id = wallet.xpub_hash_id,
             active_network = wallet.active_network,
@@ -140,49 +157,49 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
     }
 
     suspend fun deleteWallet(id: String) = io {
-        db.walletQueries.deleteWallet(id)
+        walletDB.walletQueries.deleteWallet(id)
     }
 
     suspend fun walletExists(xPubHashId: String, isHardware: Boolean): Boolean = io {
-        db.walletQueries.walletExists(xpub_hash_id = xPubHashId, is_hardware = isHardware)
+        walletDB.walletQueries.walletExists(xpub_hash_id = xPubHashId, is_hardware = isHardware)
             .executeAsOne()
     }
 
     suspend fun walletsExists(): Boolean = io {
-        db.walletQueries.walletsExists().executeAsOne()
+        walletDB.walletQueries.walletsExists().executeAsOne()
     }
 
-    fun walletsExistsFlow(): Flow<Boolean> = db.walletQueries.walletsExists().asFlow().map {
+    fun walletsExistsFlow(): Flow<Boolean> = walletDB.walletQueries.walletsExists().asFlow().map {
         io {
             it.executeAsOne()
         }
     }
 
     suspend fun getWallets(isHardware: Boolean) : List<GreenWallet> = io {
-        db.walletQueries.getWallets(is_hardware = isHardware).executeAsList().map { it.toGreenWallet() }
+        walletDB.walletQueries.getWallets(is_hardware = isHardware).executeAsList().map { it.toGreenWallet() }
     }
 
     fun getWalletsFlow(isHardware: Boolean) : Flow<List<GreenWallet>> =
-        db.walletQueries.getWallets(is_hardware = isHardware).asFlow().map {
+        walletDB.walletQueries.getWallets(is_hardware = isHardware).asFlow().map {
             io {
                 it.executeAsList().map { it.toGreenWallet() }
             }
         }
 
     fun getWalletsFlow(credentialType: CredentialType, isHardware: Boolean) : Flow<List<GreenWallet>> =
-        db.walletQueries.getWalletsWithCredentialType(credentialType, isHardware).asFlow().map {
+        walletDB.walletQueries.getWalletsWithCredentialType(credentialType, isHardware).asFlow().map {
             io {
                 it.executeAsList().map { it.toGreenWallet() }
             }
         }
 
     suspend fun getAllWallets(): List<GreenWallet> = io {
-        db.walletQueries.getAllWallets().executeAsList().map {
+        walletDB.walletQueries.getAllWallets().executeAsList().map {
             it.toGreenWallet()
         }
     }
 
-    fun getAllWalletsFlow(): Flow<List<GreenWallet>> = db.walletQueries.getAllWallets().asFlow().map {
+    fun getAllWalletsFlow(): Flow<List<GreenWallet>> = walletDB.walletQueries.getAllWallets().asFlow().map {
         io {
             it.executeAsList().map {
                 it.toGreenWallet()
@@ -191,22 +208,22 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
     }
 
     suspend fun getLoginCredentials(id: String) = io {
-        db.loginCredentialsQueries.getLoginCredentials(wallet_id = id).executeAsList()
+        walletDB.loginCredentialsQueries.getLoginCredentials(wallet_id = id).executeAsList()
     }
 
     suspend fun getLoginCredential(id: String, credentialType: CredentialType) = io {
-        db.loginCredentialsQueries.getLoginCredential(wallet_id = id, credential_type = credentialType).executeAsOneOrNull()
+        walletDB.loginCredentialsQueries.getLoginCredential(wallet_id = id, credential_type = credentialType).executeAsOneOrNull()
     }
 
     fun getLoginCredentialsFlow(id: String) =
-        db.loginCredentialsQueries.getLoginCredentials(wallet_id = id).asFlow().map {
+        walletDB.loginCredentialsQueries.getLoginCredentials(wallet_id = id).asFlow().map {
             io {
                 it.executeAsList()
             }
         }
 
     suspend fun replaceLoginCredential(loginCredentials: LoginCredentials) = io {
-        db.loginCredentialsQueries.replaceLoginCredential(
+        walletDB.loginCredentialsQueries.replaceLoginCredential(
             wallet_id = loginCredentials.wallet_id,
             credential_type = loginCredentials.credential_type,
             network = loginCredentials.network,
@@ -218,33 +235,33 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
     }
 
     suspend fun deleteLoginCredentials(loginCredentials: LoginCredentials) = io {
-        db.loginCredentialsQueries.deleteLoginCredentials(
+        walletDB.loginCredentialsQueries.deleteLoginCredentials(
             wallet_id = loginCredentials.wallet_id,
             credential_type = loginCredentials.credential_type
         )
     }
 
     suspend fun deleteLoginCredentials(walletId: String, type: CredentialType) = io {
-        db.loginCredentialsQueries.deleteLoginCredentials(
+        walletDB.loginCredentialsQueries.deleteLoginCredentials(
             wallet_id = walletId,
             credential_type = type
         )
     }
 
     suspend fun insertEvent(eventId: String) = io {
-        db.eventsQueries.insertEvent(
+        localDB.eventsQueries.insertEvent(
             id = eventId
         )
     }
 
     suspend fun eventExist(eventId: String) = io {
-        db.eventsQueries.eventExists(
+        localDB.eventsQueries.eventExists(
             id = eventId
         ).executeAsOne()
     }
 
     suspend fun deleteEvents() = io {
-        db.eventsQueries.deleteEvents()
+        localDB.eventsQueries.deleteEvents()
     }
 
     companion object : Loggable()

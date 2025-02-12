@@ -6,7 +6,7 @@ import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.WalletSerializable
-import com.blockstream.common.database.LoginCredentials
+import com.blockstream.common.database.wallet.LoginCredentials
 import com.blockstream.common.devices.ConnectionType
 import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.common.devices.GreenDevice

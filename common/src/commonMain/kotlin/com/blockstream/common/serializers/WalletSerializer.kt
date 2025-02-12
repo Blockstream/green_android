@@ -3,7 +3,7 @@ package com.blockstream.common.serializers
 import com.blockstream.common.data.toDeviceIdentifierList
 import com.blockstream.common.data.toJson
 import com.blockstream.common.data.toWalletExtras
-import com.blockstream.common.database.Wallet
+import com.blockstream.common.database.wallet.Wallet
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.serializer

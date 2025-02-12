@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup disableIfNoEncryptionCapabilities="false">
+        <include domain="database" path="green.sqlite" />
+        <include domain="sharedpref" path="application_settings.xml" />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="database" path="green.sqlite" />
+        <include domain="database" path="local.sqlite" />
+        <include domain="sharedpref" path="application_settings.xml" />
+    </device-transfer>
+</data-extraction-rules>

@@ -9,6 +9,7 @@ import android.security.keystore.KeyProperties
 import android.security.keystore.UserNotAuthenticatedException
 import androidx.annotation.VisibleForTesting
 import com.blockstream.common.crypto.GreenKeystore
+import com.blockstream.common.crypto.KeystoreInvalidatedException
 import com.blockstream.common.crypto.PlatformCipher
 import com.blockstream.common.data.EncryptedData
 import java.security.*
@@ -34,6 +35,8 @@ class AndroidKeystore(val context: Context) : GreenKeystore {
 
         return false
     }
+
+    fun biometricsKeyExists() = keyStoreKeyExists(BIOMETRICS_KEYSTORE_ALIAS)
 
     private fun keyStoreKeyExists(keystoreAlias: String): Boolean {
         try {
@@ -193,7 +196,11 @@ class AndroidKeystore(val context: Context) : GreenKeystore {
 
     @Throws(Exception::class)
     override fun decryptData(cipher: PlatformCipher, encryptedData: EncryptedData): ByteArray {
-        return (cipher as Cipher).doFinal(encryptedData.getEncryptedData())
+        try {
+            return (cipher as Cipher).doFinal(encryptedData.getEncryptedData())
+        } catch (e: BadPaddingException){
+            throw KeystoreInvalidatedException("Keystore is invalided.")
+        }
     }
 
     override fun canUseBiometrics(): Boolean {

@@ -20,7 +20,7 @@ import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.RichWatchOnly
 import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.WatchOnlyCredentials
-import com.blockstream.common.database.LoginCredentials
+import com.blockstream.common.database.wallet.LoginCredentials
 import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.common.devices.DeviceModel
 import com.blockstream.common.devices.DeviceState
@@ -1520,7 +1520,7 @@ class GdkSession constructor(
                 start = CoroutineStart.LAZY
             ) {
 
-                if(isHardwareWallet && derivedLightningMnemonic == null){
+                if (isHardwareWallet && derivedLightningMnemonic == null) {
                     return@async null
                 }
 

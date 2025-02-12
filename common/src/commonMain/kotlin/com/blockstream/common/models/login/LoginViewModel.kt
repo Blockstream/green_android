@@ -17,22 +17,23 @@ import blockstream_green.common.generated.resources.question
 import blockstream_green.common.generated.resources.text_aa
 import blockstream_green.common.generated.resources.trash
 import com.blockstream.common.Urls
+import com.blockstream.common.crypto.KeystoreInvalidatedException
 import com.blockstream.common.crypto.PlatformCipher
 import com.blockstream.common.data.ApplicationSettings
 import com.blockstream.common.data.Banner
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.DataState
-import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.NavAction
 import com.blockstream.common.data.NavData
 import com.blockstream.common.data.Redact
 import com.blockstream.common.data.SetupArgs
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.data.data
 import com.blockstream.common.data.isEmpty
-import com.blockstream.common.database.LoginCredentials
+import com.blockstream.common.database.wallet.LoginCredentials
 import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
@@ -50,6 +51,7 @@ import com.blockstream.common.extensions.previewGreenDevice
 import com.blockstream.common.extensions.previewLoginCredentials
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.extensions.richWatchOnly
+import com.blockstream.common.extensions.tryCatchNull
 import com.blockstream.common.extensions.watchOnlyCredentials
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.TorEvent
@@ -509,7 +511,10 @@ class LoginViewModel constructor(
 
         val appGreenlightCredentials = try {
             lightningCredentials.data().takeIf { !isBip39Login }?.encrypted_data?.let { ed ->
-                greenKeystore.decryptData(ed).let { AppGreenlightCredentials.fromJsonString(it.decodeToString()) }
+                // No need to decrypt them as we use them just as a flag.
+                // TODO move to a flag implementation
+                AppGreenlightCredentials(emptyList(), emptyList())
+                // greenKeystore.decryptData(ed).let { AppGreenlightCredentials.fromJsonString(it.decodeToString()) }
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -573,7 +578,10 @@ class LoginViewModel constructor(
         loginCredentials.encrypted_data?.let { encryptedData ->
             try {
                 greenKeystore.decryptData(cipher, encryptedData)
-            }catch (e: Exception){
+            } catch (e: Exception) {
+                if(e is KeystoreInvalidatedException) {
+                    deleteLoginCredentials(loginCredentials = loginCredentials)
+                }
                 countly.recordException(e)
                 postSideEffect(SideEffects.ErrorDialog(e))
                 null
@@ -783,11 +791,16 @@ class LoginViewModel constructor(
 
     private fun lightningShortcutLogin(lightningWallet: GreenWallet) {
         doAsync({
-            val mnemonic = lightningMnemonic.data()?.encrypted_data?.let {
-                greenKeystore.decryptData(it).decodeToString()
-            } ?: throw Exception("Can't decrypt your lightning mnemonic.")
-
             countly.loginWalletStart()
+
+            val mnemonic = tryCatchNull {  lightningMnemonic.data()?.encrypted_data?.let {
+                greenKeystore.decryptData(it).decodeToString()
+            } } ?: run {
+                lightningMnemonic.data()?.also {
+                    database.deleteLoginCredentials(it)
+                }
+                throw Exception("Can't decrypt your lightning mnemonic. Please login into your wallet.")
+            }
 
             // Create an ephemeral lightning session
             val lightningSession = sessionManager.getWalletSessionOrCreate(lightningWallet)
@@ -808,9 +821,9 @@ class LoginViewModel constructor(
             )
             postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(pair.first)))
         }, onError = {
-            if(device == null){
+            if (device == null) {
                 postSideEffect(SideEffects.ErrorSnackbar(it))
-            }else{
+            } else {
                 postSideEffect(SideEffects.NavigateBack(error = it))
             }
 

@@ -35,7 +35,7 @@ import com.blockstream.common.data.TwoFactorResolverData
 import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.data.toSerializable
 import com.blockstream.common.database.Database
-import com.blockstream.common.database.LoginCredentials
+import com.blockstream.common.database.wallet.LoginCredentials
 import com.blockstream.common.devices.ConnectionType
 import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.common.devices.DeviceModel

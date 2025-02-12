@@ -15,8 +15,8 @@ import com.arkivanov.essenty.parcelable.writeString
 import com.arkivanov.essenty.parcelable.writeStringOrNull
 import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
-import com.blockstream.common.database.GetWalletsWithCredentialType
-import com.blockstream.common.database.Wallet
+import com.blockstream.common.database.wallet.GetWalletsWithCredentialType
+import com.blockstream.common.database.wallet.Wallet
 import com.blockstream.common.devices.ConnectionType
 import com.blockstream.common.extensions.isBlank
 import com.blockstream.common.extensions.objectId

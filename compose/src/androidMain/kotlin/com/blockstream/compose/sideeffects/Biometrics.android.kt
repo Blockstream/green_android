@@ -22,7 +22,7 @@ import blockstream_green.common.generated.resources.id_login_with_biometrics
 import blockstream_green.common.generated.resources.id_please_activate_at_least_one
 import blockstream_green.common.generated.resources.id_user_authentication
 import blockstream_green.common.generated.resources.id_you_have_to_authenticate_to
-import com.blockstream.common.database.LoginCredentials
+import com.blockstream.common.database.wallet.LoginCredentials
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.login.LoginViewModel
@@ -208,19 +208,28 @@ actual class BiometricsState(
                 })
             try {
 
-                // v4 uses a default keystore and a crypto object
-                if (isV4Authentication) {
-                    activeBiometricPrompt?.authenticate(
-                        promptInfo.build(),
-                        BiometricPrompt.CryptoObject(
-                            androidKeystore.getBiometricsDecryptionCipher(
-                                encryptedData = encryptedData
+                if (androidKeystore.biometricsKeyExists()) {
+                    // v4 uses a default keystore and a crypto object
+                    if (isV4Authentication) {
+                        activeBiometricPrompt?.authenticate(
+                            promptInfo.build(),
+                            BiometricPrompt.CryptoObject(
+                                androidKeystore.getBiometricsDecryptionCipher(
+                                    encryptedData = encryptedData
+                                )
                             )
                         )
-                    )
+                    } else {
+                        // v3 required only for user to be Authenticated
+                        activeBiometricPrompt?.authenticate(promptInfo.build())
+                    }
                 } else {
-                    // v3 required only for user to be Authenticated
-                    activeBiometricPrompt?.authenticate(promptInfo.build())
+                    viewModel.postEvent(
+                        LoginViewModel.LocalEvents.DeleteLoginCredentials(
+                            loginCredentials
+                        )
+                    )
+                    throw Exception("Biometrics are invalidated")
                 }
 
             } catch (e: KeyPermanentlyInvalidatedException) {

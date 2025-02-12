@@ -6,9 +6,8 @@ import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.EncryptedData
 import com.blockstream.common.data.RichWatchOnly
 import com.blockstream.common.data.toRichWatchOnly
-import com.blockstream.common.database.LoginCredentials
+import com.blockstream.common.database.wallet.LoginCredentials
 import com.blockstream.common.gdk.data.PinData
-import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.getSecureRandom
 import kotlinx.datetime.Clock
 

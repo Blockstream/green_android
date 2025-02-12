@@ -11,7 +11,7 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.Promo
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.database.Database
-import com.blockstream.common.database.LoginCredentials
+import com.blockstream.common.database.wallet.LoginCredentials
 import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.gdk.GdkSession

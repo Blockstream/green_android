@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS `events` (
+    `id` TEXT NOT NULL PRIMARY KEY
+);
+
+insertEvent:
+INSERT OR REPLACE INTO events(id)
+VALUES (?);
+
+eventExists:
+SELECT EXISTS(SELECT id FROM events WHERE id = ? LIMIT 1);
+
+deleteEvents:
+DELETE FROM events;

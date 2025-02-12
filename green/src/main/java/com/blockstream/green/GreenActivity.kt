@@ -16,7 +16,7 @@ import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.database.Database
-import com.blockstream.common.database.LoginCredentials
+import com.blockstream.common.database.wallet.LoginCredentials
 import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.data.Network

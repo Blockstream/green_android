@@ -19,8 +19,13 @@ compose.resources {
 
 sqldelight {
     databases {
-        create("GreenDB") {
-            packageName.set("com.blockstream.common.database")
+        create("WalletDB") {
+            packageName.set("com.blockstream.common.database.wallet")
+            srcDirs.setFrom("src/commonMain/database_wallet")
+        }
+        create("LocalDB") {
+            packageName.set("com.blockstream.common.database.local")
+            srcDirs.setFrom("src/commonMain/database_local")
         }
     }
     linkSqlite.set(true)
