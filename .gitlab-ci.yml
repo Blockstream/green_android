@@ -1,11 +1,12 @@
 stages:
-  - build
   - test
+  - build
   - deploy
   - upload
 
 variables:
   GRADLE_USER_HOME: "${CI_PROJECT_DIR}/.gradle"
+  ANDROID_IMAGE: blockstream/green_android
 
 cache:
   - key:
@@ -15,13 +16,70 @@ cache:
       - .gradle/wrapper
       - .gradle/caches
 
+# Defaults applied to all jobs unless overridden
+default:
+  image: # 5592d41c-20250213165311
+    name: blockstream/green_android@sha256:38662be11766c3c07218ae158979deff6d40e001253b4796d1b28454bcf54bb3
+    entrypoint: [""]
+  tags:
+    - ga
+
+#####################################
+# Build blockstream/green_android
+.prep_dind:
+  image: docker:27
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_BUILDKIT: 1
+  services:
+    - name: docker:27-dind
+      command: ["dockerd", "--host=tcp://0.0.0.0:2375"]
+      alias: "docker"
+  tags:
+    - cloud
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - unknown_failure
+      - stuck_or_timeout_failure
+
+# Pushes two tags - :short_commit_sha and :latest
+build_default_image:
+  extends: .prep_dind
+  stage: .pre
+  variables:
+    DOCKERFILE: contrib/Dockerfile
+    ANDROID_IMAGE_SHA: ${ANDROID_IMAGE}:${CI_COMMIT_SHORT_SHA}
+    ANDROID_IMAGE_LATEST: ${ANDROID_IMAGE}:latest
+  rules:
+    - changes:
+        paths:
+          - ${DOCKERFILE}
+  script:
+    - apk add jq curl
+    - docker buildx build
+      --push
+      -f ${DOCKERFILE}
+      --build-arg BUILDKIT_INLINE_CACHE=1
+      --cache-from ${ANDROID_IMAGE_LATEST}
+      -t ${ANDROID_IMAGE_SHA}
+      -t ${ANDROID_IMAGE_LATEST}
+      contrib/
+    - digest=$(docker inspect ${ANDROID_IMAGE_SHA} | jq -r '.[] | .RepoDigests')
+    - echo "Cancelling the rest of the pipeline"
+    - echo "Update the default.image version with the new image SHA digest"
+    - echo "${digest}"
+    - |
+      curl -s --request POST --header "PRIVATE-TOKEN: $CI_CANCEL_PIPELINE_TOKEN" \
+        "$CI_API_V4_URL/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel"
+
+
 #####################################
 # Build XCFramework
 
 xcframework:
-  image:
-    name: greenaddress/android@sha256:2e1c287e43417d4d69c11bf517f03043d23aba75f9aba1ee97cb47870c2106ca
-    entrypoint: [""]
   stage: build
   when: manual
   artifacts:
@@ -45,9 +103,6 @@ xcframework:
 # Build Signed APKs
 
 production:
-  image:
-    name: greenaddress/android@sha256:2e1c287e43417d4d69c11bf517f03043d23aba75f9aba1ee97cb47870c2106ca
-    entrypoint: [""]
   stage: build
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
@@ -55,8 +110,6 @@ production:
     when: on_success
     paths:
       - green/build/outputs/apk/productionGoogle/release/*.apk
-  tags:
-    - ga
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   script:
@@ -66,9 +119,6 @@ production:
     - ./gradlew assembleProductionGoogleRelease
 
 production_fdroid:
-  image:
-    name: greenaddress/android@sha256:2e1c287e43417d4d69c11bf517f03043d23aba75f9aba1ee97cb47870c2106ca
-    entrypoint: [""]
   stage: build
   when: manual
   artifacts:
@@ -77,8 +127,6 @@ production_fdroid:
     when: on_success
     paths:
       - green/build/outputs/apk/productionFDroid/release/*.apk
-  tags:
-    - ga
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   script:
@@ -90,9 +138,6 @@ production_fdroid:
 
 
 development:
-  image:
-    name: greenaddress/android@sha256:2e1c287e43417d4d69c11bf517f03043d23aba75f9aba1ee97cb47870c2106ca
-    entrypoint: [""]
   stage: build
   when: manual
   artifacts:
@@ -101,8 +146,6 @@ development:
     when: on_success
     paths:
       - green/build/outputs/apk/development/release/*.apk
-  tags:
-    - ga
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   script:
@@ -112,9 +155,6 @@ development:
     - ./gradlew assembleDevelopmentRelease
 
 production_debug:
-  image:
-    name: greenaddress/android@sha256:2e1c287e43417d4d69c11bf517f03043d23aba75f9aba1ee97cb47870c2106ca
-    entrypoint: [""]
   stage: build
   when: manual
   cache:
@@ -125,8 +165,6 @@ production_debug:
     when: on_success
     paths:
       - green/build/outputs/apk/productionGoogle/debug/*.apk
-  tags:
-    - ga
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   script:
@@ -136,9 +174,6 @@ production_debug:
     - ./gradlew assembleProductionGoogleDebug
 
 gdk_commit:
-  image:
-    name: greenaddress/android@sha256:2e1c287e43417d4d69c11bf517f03043d23aba75f9aba1ee97cb47870c2106ca
-    entrypoint: [""]
   stage: build
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA-gdk-$GDK_COMMIT"
@@ -146,8 +181,6 @@ gdk_commit:
     when: on_success
     paths:
       - green/build/outputs/apk/development/debug/*.apk
-  tags:
-    - ga
   when: manual
   cache:
     policy: pull
@@ -166,9 +199,6 @@ gdk_commit:
 # Build Unsigned APK
 
 build_google_play:
-  image:
-    name: greenaddress/android@sha256:2e1c287e43417d4d69c11bf517f03043d23aba75f9aba1ee97cb47870c2106ca
-    entrypoint: [""]
   stage: build
   when: manual
   cache:
@@ -180,8 +210,6 @@ build_google_play:
     paths:
       - green/build/outputs/apk/productionGoogle/release/*.apk
       - green/build/outputs/mapping/*/mapping.txt
-  tags:
-    - ga
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   script:
@@ -206,15 +234,9 @@ build_osx:
 # Test
 
 unit_tests:
-  image:
-    name: greenaddress/android@sha256:2e1c287e43417d4d69c11bf517f03043d23aba75f9aba1ee97cb47870c2106ca
-    entrypoint: [""]
   stage: test
-  needs: []
   cache:
     policy: pull
-  tags:
-    - ga
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   script:
@@ -247,10 +269,10 @@ sign_google_play:
 # Upload to GCS bucket
 .gcp_prep:
   stage: upload
-  image: blockstream/gcloud-docker-tf:1.1.9
+  image: blockstream/gcloud-docker:502.0.0-27.3
   cache: []
   tags:
-    - ga
+    - k8s # Simple, non-resource intensive jobs
 
 gcp_auth:
   extends: .gcp_prep

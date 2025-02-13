@@ -16,6 +16,6 @@ COPY gradle /gradle
 COPY gradlew /gradlew
 RUN ./gradlew --version && rm -rf /gradle*
 
-# Entry point
+# Entrypoint
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
