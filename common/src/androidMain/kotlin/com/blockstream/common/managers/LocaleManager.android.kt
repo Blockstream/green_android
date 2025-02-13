@@ -1,17 +1,23 @@
 package com.blockstream.common.managers
 
 import android.content.Context
+import android.telephony.TelephonyManager
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.LocaleManagerCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.os.LocaleListCompat
-import com.blockstream.jade.Loggable
+import com.blockstream.common.extensions.tryCatchNull
+import com.blockstream.green.utils.Loggable
+import java.util.Locale
 
-actual class LocaleManager(
+
+actual class LocaleManager constructor(
     private val context: Context
 ) {
 
     actual fun getLocale(): String? {
-        return LocaleManagerCompat.getApplicationLocales(context).toLanguageTags().takeIf { it.isNotBlank() }.also {
+        return LocaleManagerCompat.getApplicationLocales(context).toLanguageTags()
+            .takeIf { it.isNotBlank() }.also {
             logger.d { "Current locale is $it" }
         }
     }
@@ -21,5 +27,14 @@ actual class LocaleManager(
         AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(locale))
     }
 
-    companion object: Loggable()
+    actual fun getCountry(): String? {
+        return tryCatchNull {
+            getSystemService(
+                context,
+                TelephonyManager::class.java
+            )?.networkCountryIso
+        } ?: Locale.getDefault().country
+    }
+
+    companion object : Loggable()
 }

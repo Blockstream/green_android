@@ -7,10 +7,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.sideeffects.SideEffect
-import com.blockstream.compose.components.AppBar
+import com.blockstream.ui.sideeffects.SideEffect
 import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.components.ScreenContainer
+import com.blockstream.ui.navigation.AppBarState
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -29,7 +29,7 @@ fun SetupScreen(
     content: @Composable (ColumnScope.(innerPadding: PaddingValues) -> Unit)? = null
 ) {
 
-    AppBar(viewModel)
+    AppBarState(viewModel)
 
     HandleSideEffect(viewModel, handler = sideEffectsHandler)
 

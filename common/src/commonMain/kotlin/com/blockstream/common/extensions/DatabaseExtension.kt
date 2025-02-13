@@ -32,8 +32,12 @@ fun createLoginCredentials(
 
 val List<LoginCredentials>.pinPinData
     get() = find { it.credential_type == CredentialType.PIN_PINDATA && it.counter < 3 }
+val List<LoginCredentials>.mnemonic
+    get() = find { it.credential_type == CredentialType.KEYSTORE_MNEMONIC }
 val List<LoginCredentials>.biometricsPinData
     get() = find { it.credential_type == CredentialType.BIOMETRICS_PINDATA }
+val List<LoginCredentials>.biometricsMnemonic
+    get() = find { it.credential_type == CredentialType.BIOMETRICS_MNEMONIC }
 val List<LoginCredentials>.passwordPinData
     get() = find { it.credential_type == CredentialType.PASSWORD_PINDATA }
 
@@ -48,6 +52,11 @@ val List<LoginCredentials>.watchOnlyCredentials
         it.credential_type == CredentialType.KEYSTORE_PASSWORD || // Deprecated
                 it.credential_type == CredentialType.KEYSTORE_WATCHONLY_CREDENTIALS ||
                 it.credential_type == CredentialType.BIOMETRICS_WATCHONLY_CREDENTIALS
+    }
+
+val List<LoginCredentials>.hwWatchOnlyCredentials
+    get() = find {
+        it.credential_type == CredentialType.KEYSTORE_HW_WATCHONLY_CREDENTIALS
     }
 
 val List<LoginCredentials>.biometricsWatchOnlyCredentials
@@ -69,6 +78,21 @@ fun LoginCredentials.lightningMnemonic(
         null
     }
 }
+
+fun LoginCredentials.mnemonic(
+    greenKeystore: GreenKeystore,
+    onError: ((exception: Exception) -> Unit) = {}
+): String? {
+    return try {
+        if(credential_type != CredentialType.KEYSTORE_MNEMONIC) throw Exception("credential_type is not KEYSTORE_MNEMONIC")
+        greenKeystore.decryptData(encrypted_data!!).decodeToString()
+    } catch (e: Exception) {
+        e.printStackTrace()
+        onError.invoke(e)
+        null
+    }
+}
+
 
 fun LoginCredentials.richWatchOnly(
     greenKeystore: GreenKeystore,

@@ -304,7 +304,7 @@ fun BumpScreen(
                 }
             }
 
-            GreenConfirmButton(viewModel = viewModel) { isWatchOnly ->
+            GreenConfirmButton(viewModel = viewModel) {
                 viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SignTransaction())
             }
         }

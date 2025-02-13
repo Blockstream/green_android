@@ -5,13 +5,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.models.overview.WalletOverviewViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.compose.components.WalletBalance
-import com.blockstream.compose.theme.GreenChromePreview
 
 
 @Composable
 @Preview
 fun WalletBalancePreview() {
-    GreenChromePreview {
+    GreenAndroidPreview {
         WalletBalance(viewModel = WalletOverviewViewModelPreview.create())
     }
 }
@@ -19,8 +18,8 @@ fun WalletBalancePreview() {
 @Composable
 @Preview
 fun WalletAssetsPreview() {
-    GreenChromePreview {
-        WalletAssets(viewModel = WalletOverviewViewModelPreview.create())
+    GreenAndroidPreview {
+        // WalletAssets(viewModel = WalletOverviewViewModelPreview.create())
     }
 }
 
@@ -36,6 +35,6 @@ fun WalletOverviewPreview() {
 @Preview
 fun WalletOverviewEmptyPreview() {
     GreenAndroidPreview {
-        WalletOverviewScreen(viewModel = WalletOverviewViewModelPreview.create(true))
+        WalletOverviewScreen(viewModel = WalletOverviewViewModelPreview.create(isEmpty = true))
     }
 }

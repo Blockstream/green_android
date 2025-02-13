@@ -6,33 +6,44 @@ import blockstream_green.common.generated.resources.id_enter_your_24_or_27_words
 import blockstream_green.common.generated.resources.id_enter_your_27_words_recovery
 import blockstream_green.common.generated.resources.id_help
 import blockstream_green.common.generated.resources.id_invalid_mnemonic_continue
+import blockstream_green.common.generated.resources.id_recovery_phrase_check
+import blockstream_green.common.generated.resources.id_restoring_your_wallet
 import blockstream_green.common.generated.resources.id_well_done_you_can_continue
 import blockstream_green.common.generated.resources.id_well_done_you_can_continue_with
 import blockstream_green.common.generated.resources.question
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
-import com.blockstream.common.data.NavAction
-import com.blockstream.common.data.NavData
+import com.blockstream.common.crypto.PlatformCipher
+import com.blockstream.ui.navigation.NavAction
+import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.Redact
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.gdk.Wally
 import com.blockstream.common.gdk.getBip39WordList
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.ui.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
+import com.blockstream.common.usecases.CheckRecoveryPhraseUseCase
+import com.blockstream.common.usecases.RestoreWalletUseCase
+import com.blockstream.green.utils.Loggable
+import com.blockstream.common.utils.randomChars
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.launch
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
@@ -89,24 +100,39 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
     EnterRecoveryPhraseViewModelAbstract(setupArgs) {
     val wally: Wally by inject()
 
+    private val restoreWalletUseCase: RestoreWalletUseCase by inject()
+    private val checkRecoveryPhraseUseCase: CheckRecoveryPhraseUseCase by inject()
+
+    @NativeCoroutinesState
     override val recoveryPhrase: MutableStateFlow<List<String>> =
         MutableStateFlow(viewModelScope, listOf())
+    @NativeCoroutinesState
     override val rows: MutableStateFlow<Int> = MutableStateFlow(viewModelScope, 12)
+    @NativeCoroutinesState
     override val activeWord: MutableStateFlow<Int> = MutableStateFlow(viewModelScope, -1)
 
+    @NativeCoroutinesState
     override val matchedWords = MutableStateFlow(viewModelScope, listOf<String>())
+    @NativeCoroutinesState
     override val enabledKeys = MutableStateFlow(viewModelScope, setOf<String>())
 
+    @NativeCoroutinesState
     override val isRecoveryPhraseValid: MutableStateFlow<Boolean> =
         MutableStateFlow(viewModelScope, false)
+    @NativeCoroutinesState
     override val showInputButtons: MutableStateFlow<Boolean> =
         MutableStateFlow(viewModelScope, true)
+    @NativeCoroutinesState
     override val showHelpButton: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, false)
+    @NativeCoroutinesState
     override val showTypeNextWordHint: MutableStateFlow<Boolean> =
         MutableStateFlow(viewModelScope, false)
+    @NativeCoroutinesState
     override val showInvalidMnemonicError: MutableStateFlow<Boolean> =
         MutableStateFlow(viewModelScope, false)
+    @NativeCoroutinesState
     override val recoveryPhraseSize: MutableStateFlow<Int> = MutableStateFlow(viewModelScope, 12)
+    @NativeCoroutinesState
     override val hintMessage: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
 
     override val bip39WordList: List<String> by lazy { wally.getBip39WordList() }
@@ -128,6 +154,10 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
     init {
         bootstrap()
 
+        onProgress.onEach {
+            _navData.value = _navData.value.copy(isVisible = !it)
+        }.launchIn(this)
+
         stateKeeper.register(STATE, State.serializer()) {
             State(mnemonic = toMnemonic())
         }
@@ -144,7 +174,7 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
                     title = getString(Res.string.id_help),
                     icon = Res.drawable.question,
                     onClick = {
-                        SideEffects.NavigateTo(NavigateDestinations.RecoveryHelp)
+                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.RecoveryHelp))
                     }
                 ))
             )
@@ -189,14 +219,12 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
     }
 
     private fun proceed(setupArgs: SetupArgs) {
-        setupArgs.let { args ->
-            if (args.isAddAccount()) {
-                NavigateDestinations.ReviewAddAccount(args)
-            } else {
-                NavigateDestinations.SetPin(args)
+        when {
+            setupArgs.isAddAccount() -> postSideEffect(SideEffects.NavigateTo(NavigateDestinations.ReviewAddAccount(setupArgs)))
+            !greenKeystore.canUseBiometrics() -> postSideEffect(SideEffects.NavigateTo(NavigateDestinations.SetPin(setupArgs)))
+            else -> {
+                restoreWallet(setupArgs)
             }
-        }.also {
-            postSideEffect(SideEffects.NavigateTo(it))
         }
     }
 
@@ -348,6 +376,52 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
     private class State(
         val mnemonic: String
     )
+
+    private fun restoreWallet(setupArgs: SetupArgs) {
+
+        if (!greenKeystore.canUseBiometrics()) {
+            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.SetPin(setupArgs = setupArgs)))
+            return
+        }
+
+        val biometricsCipherProvider = viewModelScope.coroutineScope.async(
+            start = CoroutineStart.LAZY
+        ) {
+            CompletableDeferred<PlatformCipher>().let {
+                biometricsPlatformCipher = it
+                postSideEffect(SideEffects.RequestBiometricsCipher)
+                it.await()
+            }
+        }
+
+        doAsync({
+            onProgressDescription.value = getString(Res.string.id_recovery_phrase_check)
+
+            checkRecoveryPhraseUseCase.invoke(
+                session = session,
+                isTestnet = setupArgs.isTestnet == true,
+                mnemonic = setupArgs.mnemonic,
+                password = setupArgs.password
+            )
+
+            onProgressDescription.value = getString(Res.string.id_restoring_your_wallet)
+
+            val cipher = biometricsCipherProvider.await()
+
+            val pin = randomChars(15)
+
+            restoreWalletUseCase.invoke(
+                session = session,
+                setupArgs = setupArgs,
+                pin = pin,
+                greenWallet = greenWalletOrNull,
+                cipher = cipher
+            )
+
+        }, onSuccess = {
+            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))
+        })
+    }
 
     companion object: Loggable() {
         const val STATE = "STATE"

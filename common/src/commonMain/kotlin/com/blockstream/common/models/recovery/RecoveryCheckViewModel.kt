@@ -2,16 +2,16 @@ package com.blockstream.common.models.recovery
 
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_wrong_choice_check_your
-import com.blockstream.common.data.AppInfo
-import com.blockstream.common.data.NavData
+import com.blockstream.green.data.config.AppInfo
+import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.gdk.Wally
 import com.blockstream.common.gdk.getBip39WordList
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.getSecureRandom
 import com.rickclephas.kmp.observableviewmodel.launch
@@ -90,6 +90,8 @@ class RecoveryCheckViewModel(setupArgs: SetupArgs) : RecoveryCheckViewModelAbstr
                 if (isLastPage) {
                     if (setupArgs.greenWallet == null) {
                         postSideEffect(SideEffects.NavigateTo(NavigateDestinations.SetPin(setupArgs = setupArgs.pageOne())))
+                    } else if (setupArgs.greenWallet.isRecoveryConfirmed == false) {
+                        recoveryConfirmed()
                     } else {
                         postSideEffect(
                             SideEffects.NavigateTo(
@@ -114,6 +116,15 @@ class RecoveryCheckViewModel(setupArgs: SetupArgs) : RecoveryCheckViewModelAbstr
                 postSideEffect(SideEffects.NavigateBack())
             }
         }
+    }
+
+    private fun recoveryConfirmed() {
+        doAsync({
+            greenWallet.isRecoveryConfirmed = true
+            database.updateWallet(greenWallet)
+        }, onSuccess = {
+            postSideEffect(SideEffects.NavigateToRoot())
+        })
     }
 
     companion object: Loggable() {

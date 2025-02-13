@@ -1,0 +1,207 @@
+package com.blockstream.compose.screens.exchange
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.arrow_square_out
+import blockstream_green.common.generated.resources.id_account
+import blockstream_green.common.generated.resources.id_buy_with_s
+import blockstream_green.common.generated.resources.id_provider
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Fill
+import com.adamglin.phosphoricons.fill.CaretDown
+import com.blockstream.common.data.AlertType
+import com.blockstream.common.data.Country
+import com.blockstream.common.data.DenominatedValue
+import com.blockstream.common.events.Events
+import com.blockstream.common.gdk.data.AccountAssetBalance
+import com.blockstream.common.models.exchange.BuyViewModelAbstract
+import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.compose.components.GreenAlert
+import com.blockstream.compose.components.GreenAmountField
+import com.blockstream.compose.components.GreenButton
+import com.blockstream.compose.components.GreenButtonColor
+import com.blockstream.compose.components.GreenButtonSize
+import com.blockstream.compose.components.GreenButtonType
+import com.blockstream.compose.components.MeldProvider
+import com.blockstream.compose.components.OnProgressStyle
+import com.blockstream.compose.extensions.onValueChange
+import com.blockstream.compose.theme.bodyLarge
+import com.blockstream.compose.theme.green20
+import com.blockstream.compose.theme.whiteMedium
+import com.blockstream.compose.utils.OpenKeyboard
+import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.compose.utils.noRippleClickable
+import com.blockstream.green.data.meld.data.QuoteResponse
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.navigation.getResult
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+
+@Composable
+fun BuyScreen(
+    viewModel: BuyViewModelAbstract
+) {
+    NavigateDestinations.Denomination.getResult<DenominatedValue> {
+        viewModel.postEvent(Events.SetDenominatedValue(it))
+    }
+
+    val showRecoveryConfirmation by viewModel.showRecoveryConfirmation.collectAsStateWithLifecycle()
+
+    val focusRequester = remember { FocusRequester() }
+    OpenKeyboard(focusRequester)
+
+    NavigateDestinations.Countries.getResult<Country> {
+        viewModel.changeCountry(it)
+    }
+
+    NavigateDestinations.Accounts.getResult<AccountAssetBalance> {
+        viewModel.accountAsset.value = it.accountAsset
+    }
+
+    NavigateDestinations.BuyQuotes.getResult<QuoteResponse> {
+        viewModel.changeQuote(it)
+    }
+
+    val showAccountSelector by viewModel.showAccountSelector.collectAsStateWithLifecycle()
+    val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
+    val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
+    val onProgressQuote by viewModel.onProgressQuote.collectAsStateWithLifecycle()
+    val onProgressBuy by viewModel.onProgressBuy.collectAsStateWithLifecycle()
+
+    val quote by viewModel.quote.collectAsStateWithLifecycle()
+
+    SetupScreen(
+        viewModel = viewModel,
+        withPadding = false,
+        onProgressStyle = if (onProgressBuy) OnProgressStyle.Full(bluBackground = false) else OnProgressStyle.Disabled
+    ) {
+
+        if (showRecoveryConfirmation) {
+            GreenAlert(
+                alertType = AlertType.RecoveryIsUnconfirmed(withCloseButton = true),
+                viewModel = viewModel,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+        }
+
+        GreenColumn(
+            modifier = Modifier.imePadding()
+        ) {
+
+            GreenColumn(
+                space = 24,
+                padding = 0,
+                modifier = Modifier.weight(1f).verticalScroll(rememberScrollState())
+            ) {
+
+                val accountAsset by viewModel.accountAsset.collectAsStateWithLifecycle()
+
+                val amount by viewModel.amount.collectAsStateWithLifecycle()
+                val amountHint by viewModel.amountHint.collectAsStateWithLifecycle()
+                val denomination by viewModel.denomination.collectAsStateWithLifecycle()
+                val suggestedAmounts by viewModel.suggestedAmounts.collectAsStateWithLifecycle()
+
+                GreenColumn(padding = 0, space = 5) {
+                    GreenAmountField(
+                        value = amount,
+                        onValueChange = viewModel.amount.onValueChange(),
+                        secondaryValue = if (onProgressQuote) null else (quote?.destinationAmount?.let { "$it ${quote?.destinationCurrencyCode}".trim() } ?: ""),
+                        assetId = accountAsset?.assetId,
+                        session = viewModel.sessionOrNull,
+                        denomination = denomination,
+                        focusRequester = focusRequester,
+                        helperText = amountHint,
+                        helperContainerColor = green20,
+                    )
+
+                    GreenRow(padding = 0, space = 8) {
+                        suggestedAmounts.forEach {
+                            GreenButton(
+                                text = it,
+                                size = GreenButtonSize.NORMAL,
+                                type = GreenButtonType.OUTLINE,
+                                color = if (it == amount) GreenButtonColor.GREENER else GreenButtonColor.GREEN,
+                                modifier = Modifier.weight(1f),
+                            ) {
+                                viewModel.amount.value = it
+                            }
+                        }
+                    }
+                }
+
+                AnimatedVisibility(visible = amount.isNotBlank()) {
+
+                    MeldProvider(
+                        title = stringResource(Res.string.id_provider),
+                        quote = quote,
+                        onProgress = onProgressQuote,
+                        withEditIcon = true,
+                        onClick = {
+                            viewModel.changeQuote()
+                        }
+                    )
+                }
+
+                accountAsset.takeIf { showAccountSelector }?.also {
+
+                    GreenRow(padding = 0) {
+                        Text(
+                            text = stringResource(Res.string.id_account),
+                            style = bodyLarge,
+                            color = whiteMedium
+                        )
+
+                        GreenRow(space = 8, padding = 0, modifier = Modifier.noRippleClickable {
+                            viewModel.changeAccount()
+                        }.align(Alignment.CenterVertically)) {
+                            Text(
+                                text = it.account.name,
+                                textAlign = TextAlign.End,
+                                modifier = Modifier.weight(1f)
+                            )
+
+                            Icon(
+                                imageVector = PhosphorIcons.Fill.CaretDown,
+                                contentDescription = null,
+                                modifier = Modifier.size(12.dp)
+                            )
+                        }
+                    }
+                }
+            }
+
+            GreenColumn(padding = 0) {
+                GreenButton(
+                    text = stringResource(
+                        Res.string.id_buy_with_s, quote?.serviceProvider ?: "meld.io"
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                    size = GreenButtonSize.BIG,
+                    icon = painterResource(Res.drawable.arrow_square_out),
+                    enabled = buttonEnabled,
+                    onProgress = onProgress
+                ) {
+                    viewModel.buy()
+                }
+            }
+        }
+    }
+}

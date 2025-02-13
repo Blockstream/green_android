@@ -1,6 +1,5 @@
 package com.blockstream.common
 
-import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.ApplicationSettings
 import com.blockstream.common.data.Banner
 import com.blockstream.common.data.CountlyAsset
@@ -19,7 +18,8 @@ import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.managers.SettingsManager
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.data.config.AppInfo
+import com.blockstream.green.utils.Loggable
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -422,11 +422,11 @@ abstract class CountlyBase(
                         LOGIN_TYPE_PIN
                     }
 
-                    loginCredentials?.credential_type == CredentialType.BIOMETRICS_PINDATA -> {
+                    loginCredentials?.credential_type?.let { it == CredentialType.BIOMETRICS_PINDATA || it == CredentialType.BIOMETRICS_MNEMONIC } == true -> {
                         LOGIN_TYPE_BIOMETRICS
                     }
 
-                    session.isWatchOnly -> {
+                    session.isWatchOnlyValue -> {
                         LOGIN_TYPE_WATCH_ONLY
                     }
 

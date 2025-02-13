@@ -17,7 +17,6 @@ import com.blockstream.common.ViewModelView
 import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.crypto.PlatformCipher
-import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.Banner
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.DenominatedValue
@@ -25,8 +24,8 @@ import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.DeviceIdentifier
 import com.blockstream.common.data.EncryptedData
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.HwWatchOnlyCredentials
 import com.blockstream.common.data.LogoutReason
-import com.blockstream.common.data.NavData
 import com.blockstream.common.data.Promo
 import com.blockstream.common.data.Redact
 import com.blockstream.common.data.SupportData
@@ -40,7 +39,6 @@ import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.common.devices.DeviceModel
 import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.di.ApplicationScope
-import com.blockstream.common.events.Event
 import com.blockstream.common.events.EventWithSideEffect
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.cleanup
@@ -67,31 +65,29 @@ import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.navigation.NavigateDestination
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.generateWalletName
+import com.blockstream.green.data.config.AppInfo
+import com.blockstream.green.utils.Loggable
 import com.blockstream.jade.firmware.FirmwareInteraction
 import com.blockstream.jade.firmware.FirmwareUpdateState
 import com.blockstream.jade.firmware.FirmwareUpgradeRequest
 import com.blockstream.jade.firmware.HardwareQATester
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.models.BaseViewModel
+import com.blockstream.ui.sideeffects.SideEffect
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
-import com.rickclephas.kmp.observableviewmodel.ViewModel
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -99,7 +95,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -109,7 +104,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import kotlin.native.ObjCName
 import kotlin.time.Duration
 
 open class SimpleGreenViewModel(
@@ -123,7 +117,7 @@ open class SimpleGreenViewModel(
 
     init {
         deviceOrNull = device
-        if(!isPreview) {
+        if (!isPreview) {
             bootstrap()
         }
     }
@@ -134,21 +128,11 @@ class SimpleGreenViewModelPreview(
     accountAssetOrNull: AccountAsset? = null
 ) : SimpleGreenViewModel(greenWalletOrNull, accountAssetOrNull)
 
-interface IOnProgress {
-    @NativeCoroutinesState
-    val onProgress: StateFlow<Boolean>
-    @NativeCoroutinesState
-    val onProgressDescription: StateFlow<String?>
-}
-
-interface IGreenViewModel {
-    fun postEvent(event: Event)
-}
-
 open class GreenViewModel constructor(
     val greenWalletOrNull: GreenWallet? = null,
     accountAssetOrNull: AccountAsset? = null,
-) : IGreenViewModel, IOnProgress, ViewModel(), KoinComponent, ViewModelView, HardwareWalletInteraction, TwoFactorResolver,
+) : BaseViewModel(), KoinComponent, ViewModelView, HardwareWalletInteraction,
+    TwoFactorResolver,
     FirmwareInteraction {
     val appInfo: AppInfo by inject()
     protected val database: Database by inject()
@@ -165,39 +149,21 @@ open class GreenViewModel constructor(
 
     internal val isPreview by lazy { this::class.simpleName?.contains("Preview") == true }
 
-    private val _event: MutableSharedFlow<Event> = MutableSharedFlow()
-    private val _sideEffect: Channel<SideEffect> = Channel()
-    // Check with Don't Keep activities if the logout event is persisted
-
-    // Helper method to force the use of MutableStateFlow(viewModelScope)
-    @NativeCoroutinesIgnore
-    protected fun <T> MutableStateFlow(value: T) = MutableStateFlow(viewModelScope, value)
-
-    @NativeCoroutines
-    val sideEffect = _sideEffect.receiveAsFlow()
-
-    @NativeCoroutinesState
-    override val onProgress = MutableStateFlow(viewModelScope, false)
-
-    @NativeCoroutinesState
-    override val onProgressDescription = MutableStateFlow<String?>(null)
-
-    protected val _navData = MutableStateFlow(NavData())
-    @NativeCoroutinesState
-    val navData: StateFlow<NavData> = _navData
-
     // Main action validation
     internal val _isValid = MutableStateFlow(viewModelScope, isPreview)
+
     //@NativeCoroutinesState
     val isValid: StateFlow<Boolean> = _isValid
 
     // Main button enabled flag
     private val _buttonEnabled = MutableStateFlow(isPreview)
+
     @NativeCoroutinesState
-    val buttonEnabled : StateFlow<Boolean> = _buttonEnabled
+    val buttonEnabled: StateFlow<Boolean> = _buttonEnabled
 
     override fun screenName(): String? = null
-    override fun segmentation(): HashMap<String, Any>? = sessionOrNull?.let { countly.sessionSegmentation(session = session) }
+    override fun segmentation(): HashMap<String, Any>? =
+        sessionOrNull?.let { countly.sessionSegmentation(session = session) }
 
     internal var _greenWallet: GreenWallet? = null
     val greenWallet: GreenWallet
@@ -229,11 +195,11 @@ open class GreenViewModel constructor(
         get() = accountAsset.value?.account
 
     val sessionOrNull: GdkSession? by lazy {
-        if(isPreview) return@lazy null
+        if (isPreview) return@lazy null
         greenWalletOrNull?.let { sessionManager.getWalletSessionOrNull(it) }
     }
 
-    val session: GdkSession by lazy {
+    open val session: GdkSession by lazy {
         if (greenWalletOrNull == null) {
             // If GreenWallet is null, we can create an onboarding session
             sessionManager.getWalletSessionOrOnboarding(greenWalletOrNull)
@@ -242,9 +208,9 @@ open class GreenViewModel constructor(
         }
     }
 
-
     protected val _denomination by lazy {
-        MutableStateFlow(sessionOrNull?.ifConnected { Denomination.default(session) } ?: Denomination.BTC)
+        MutableStateFlow(sessionOrNull?.ifConnected { Denomination.default(session) }
+            ?: Denomination.BTC)
     }
 
     @NativeCoroutinesState
@@ -265,12 +231,18 @@ open class GreenViewModel constructor(
 
     private var askForFirmwareUpgradeEmitter: CompletableDeferred<Int?>? = null
 
+    private val _isWatchOnly = MutableStateFlow(false)
+    val isWatchOnly = _isWatchOnly
+
+    private val _isHwWatchOnly = MutableStateFlow(false)
+    val isHwWatchOnly = _isHwWatchOnly
+
     init {
         // It's better to initiate the ViewModel with a bootstrap() call
         // https://kotlinlang.org/docs/inheritance.html#derived-class-initialization-order
     }
 
-    protected open fun bootstrap(){
+    protected open fun bootstrap() {
         logger.d { "Bootstrap ${this::class.simpleName}" }
 
         _bootstrapped = true
@@ -296,7 +268,7 @@ open class GreenViewModel constructor(
             // Update account (eg. rename)
             session.accounts.drop(1).onEach { accounts ->
                 accountAsset.value?.also { accountAsset ->
-                    accounts.firstOrNull { it.id == accountAsset.account.id}?.also {
+                    accounts.firstOrNull { it.id == accountAsset.account.id }?.also {
                         this.accountAsset.value = accountAsset.copy(
                             account = it
                         )
@@ -306,6 +278,11 @@ open class GreenViewModel constructor(
             }.launchIn(this)
         }
 
+        sessionOrNull?.isWatchOnly?.onEach {
+            _isWatchOnly.value = it
+            _isHwWatchOnly.value = session.isHwWatchOnly
+        }?.launchIn(this)
+
         _event.onEach {
             handleEvent(it)
         }.launchIn(this)
@@ -313,7 +290,7 @@ open class GreenViewModel constructor(
         countly.viewModel(this)
 
         // If session is connected, listen for network events
-        if(sessionOrNull?.isConnected == true){
+        if (sessionOrNull?.isConnected == true) {
             listenForNetworksEvents()
         }
 
@@ -327,46 +304,43 @@ open class GreenViewModel constructor(
         initPromo()
     }
 
-    @ObjCName(name = "post", swiftName = "postEvent")
-    override fun postEvent(@ObjCName(swiftName = "_") event: Event) {
-        if(!_bootstrapped){
-            if(isPreview){
-                logger.i { "postEvent() Preview ViewModel detected"}
+    override fun postEvent(event: Event) {
+        if (!_bootstrapped) {
+            if (isPreview) {
+                logger.i { "postEvent() Preview ViewModel detected" }
                 return
             }
             throw RuntimeException("ViewModel wasn't bootstrapped")
         }
 
-        if(event is Redact){
-            if(appInfo.isDebug){
+        if (event is Redact) {
+            if (appInfo.isDebug) {
                 logger.d { "postEvent: Redacted(${event::class.simpleName}) Debug: $event" }
-            }else{
+            } else {
                 logger.d { "postEvent: Redacted(${event::class.simpleName})" }
             }
-        }else{
+        } else {
             logger.d { "postEvent: $event" }
         }
 
-        viewModelScope.coroutineScope.launch { _event.emit(event) }
+        super.postEvent(event)
     }
 
-    protected fun postSideEffect(sideEffect: SideEffect) {
+    override fun postSideEffect(sideEffect: SideEffect) {
         if (sideEffect is Redact) {
-            if(appInfo.isDebug){
+            if (appInfo.isDebug) {
                 logger.d { "postSideEffect: Redacted(${sideEffect::class.simpleName}) Debug: $sideEffect" }
-            }else{
+            } else {
                 logger.d { "postSideEffect: Redacted(${sideEffect::class.simpleName})" }
             }
         } else {
             logger.d { "postSideEffect: $sideEffect" }
         }
 
-        viewModelScope.coroutineScope.launch {
-            _sideEffect.send(sideEffect)
-        }
+        super.postSideEffect(sideEffect)
     }
 
-    private fun listenForNetworksEvents(){
+    private fun listenForNetworksEvents() {
         session.networkErrors.onEach {
             postSideEffect(SideEffects.ErrorDialog(Exception("id_your_personal_electrum_server|${it.first.canonicalName}")))
         }.launchIn(this)
@@ -382,7 +356,9 @@ open class GreenViewModel constructor(
                     !closedBanners.contains(it) &&
 
                             // Filter networks
-                            (!it.hasNetworks || ((it.networks ?: listOf()).intersect((sessionOrNull?.activeSessions?.map { it.network } ?: setOf()).toSet()).isNotEmpty()))  &&
+                            (!it.hasNetworks || ((it.networks
+                                ?: listOf()).intersect((sessionOrNull?.activeSessions?.map { it.network }
+                                ?: setOf()).toSet()).isNotEmpty())) &&
 
                             // Filter based on screen name
                             (it.screens?.contains(screenName()) == true || it.screens?.contains("*") == true)
@@ -390,7 +366,9 @@ open class GreenViewModel constructor(
                 ?.shuffled()
                 ?.let {
                     // Search for the already displayed banner, else give priority to those with screen name, else "*"
-                    it.find { it == oldBanner } ?: it.find { it.screens?.contains(screenName()) == true } ?: it.firstOrNull()
+                    it.find { it == oldBanner }
+                        ?: it.find { it.screens?.contains(screenName()) == true }
+                        ?: it.firstOrNull()
                 }.also {
                     // Set banner to ViewModel
                     banner.value = it
@@ -405,20 +383,23 @@ open class GreenViewModel constructor(
             promos.filter {
                 // Filter closed promos
                 !settingsManager.isPromoDismissed(it.id) &&
-                // Filter based on screen name
-                (it.screens == null || it.screens.contains(screenName()) || it.screens.contains("*"))
+                        // Filter based on screen name
+                        (it.screens == null || it.screens.contains(screenName()) || it.screens.contains(
+                            "*"
+                        ))
             }.let {
-                    // Search for the already displayed promo, else give priority to those with screen name, else "*"
-                    it.find { it == oldPromo } ?: it.find { it.screens?.contains(screenName()) == true } ?: it.firstOrNull()
-                }.also {
-                    // Set promo to ViewModel
-                    promo.value = it
-                }
+                // Search for the already displayed promo, else give priority to those with screen name, else "*"
+                it.find { it == oldPromo } ?: it.find { it.screens?.contains(screenName()) == true }
+                ?: it.firstOrNull()
+            }.also {
+                // Set promo to ViewModel
+                promo.value = it
+            }
         }.launchIn(this)
     }
 
     open suspend fun handleEvent(event: Event) {
-        when(event){
+        when (event) {
             is Events.ProvideCipher -> {
                 event.platformCipher?.also {
                     biometricsPlatformCipher?.complete(it)
@@ -428,36 +409,50 @@ open class GreenViewModel constructor(
                     biometricsPlatformCipher?.completeExceptionally(it)
                 }
             }
+
             is Events.NotificationPermissionGiven -> {
-                 notificationManager.notificationPermissionGiven()
+                notificationManager.notificationPermissionGiven()
             }
+
             is Events.BluetoothPermissionGiven -> {
                 bluetoothManager.permissionsGranted()
             }
+
             is Events.SetAccountAsset -> {
                 accountAsset.value = event.accountAsset
-                if(event.setAsActive){
+                if (event.setAsActive) {
                     setActiveAccount(event.accountAsset.account)
                 }
             }
+
             is Events.RenameAccount -> {
                 renameAccount(account = event.account, name = event.name)
             }
+
             is Events.ArchiveAccount -> {
                 updateAccount(account = event.account, isHidden = true)
             }
+
             is Events.UnArchiveAccount -> {
-                updateAccount(account = event.account, isHidden = false, navigateToRoot = event.navigateToRoot)
+                updateAccount(
+                    account = event.account,
+                    isHidden = false,
+                    navigateToRoot = event.navigateToRoot
+                )
             }
+
             is Events.RemoveAccount -> {
-                 removeAccount(account = event.account)
+                removeAccount(account = event.account)
             }
+
             is EventWithSideEffect -> {
                 postSideEffect(event.sideEffect)
             }
+
             is NavigateDestination -> {
                 postSideEffect(SideEffects.NavigateTo(event))
             }
+
             is Events.PromoImpression -> {
                 promo.value?.also {
                     if (!promoImpression) {
@@ -466,12 +461,21 @@ open class GreenViewModel constructor(
                     }
                 }
             }
+
             is Events.PromoOpen -> {
                 promo.value?.also {
                     countly.promoOpen(sessionOrNull, screenName(), it)
-                    postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Promo(promo = it, greenWalletOrNull = greenWalletOrNull)))
+                    postSideEffect(
+                        SideEffects.NavigateTo(
+                            NavigateDestinations.Promo(
+                                promo = it,
+                                greenWalletOrNull = greenWalletOrNull
+                            )
+                        )
+                    )
                 }
             }
+
             is Events.PromoDismiss -> {
                 promo.value?.also {
                     settingsManager.dismissPromo(it.id)
@@ -479,24 +483,37 @@ open class GreenViewModel constructor(
                 }
                 promo.value = null
             }
+
             is Events.BannerDismiss -> {
                 banner.value?.also {
                     closedBanners += it
                 }
                 banner.value = null
             }
+
             is Events.PromoAction -> {
                 promo.value?.also { promo ->
                     promo.link?.also { link ->
-                        countly.promoAction(session = sessionOrNull, screenName = screenName(), promo = promo)
+                        countly.promoAction(
+                            session = sessionOrNull,
+                            screenName = screenName(),
+                            promo = promo
+                        )
                         if (link == "green://onofframps" && greenWalletOrNull != null) {
-                            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.OnOffRamps(greenWallet = greenWallet)))
+                            postSideEffect(
+                                SideEffects.NavigateTo(
+                                    NavigateDestinations.OnOffRamps(
+                                        greenWallet = greenWallet
+                                    )
+                                )
+                            )
                         } else {
                             postSideEffect(SideEffects.OpenBrowser(url = link))
                         }
                     }
                 }
             }
+
             is Events.BannerAction -> {
                 banner.value?.also { banner ->
                     banner.link?.takeIf { it.isNotBlank() }?.also { url ->
@@ -504,6 +521,7 @@ open class GreenViewModel constructor(
                     }
                 }
             }
+
             is Events.DeleteWallet -> {
                 doAsync(action = {
                     sessionManager.destroyWalletSession(event.wallet)
@@ -512,6 +530,7 @@ open class GreenViewModel constructor(
                     countly.deleteWallet()
                 })
             }
+
             is Events.RenameWallet -> {
                 doAsync(action = {
                     event.name.cleanup().takeIf { it.isNotBlank() }?.also { name ->
@@ -522,17 +541,19 @@ open class GreenViewModel constructor(
                     countly.renameWallet()
                 })
             }
+
             is Events.DeviceRequestResponse -> {
-                if(event.data == null){
+                if (event.data == null) {
                     _deviceRequest?.completeExceptionally(Exception("id_action_canceled"))
-                }else{
+                } else {
                     _deviceRequest?.complete(event.data)
                 }
             }
+
             is Events.SelectDenomination -> {
                 viewModelScope.coroutineScope.launch {
                     denominatedValue()?.also {
-                        if(it.assetId.isPolicyAsset(session)){
+                        if (it.assetId.isPolicyAsset(session)) {
                             postSideEffect(
                                 SideEffects.NavigateTo(
                                     NavigateDestinations.Denomination(
@@ -545,35 +566,40 @@ open class GreenViewModel constructor(
                     }
                 }
             }
+
             is Events.SetDenominatedValue -> {
                 setDenominatedValue(event.denominatedValue)
             }
+
             is Events.Logout -> {
-                if(sessionOrNull?.disconnectAsync(event.reason) == false){
+                if (sessionOrNull?.disconnectAsync(event.reason) == false) {
                     // Already disconnected, logout the UI, else wait for disconnect event
                     logoutSideEffect(event.reason)
                 }
             }
+
             is Events.SelectTwoFactorMethod -> {
                 _twoFactorDeferred?.takeIf { !it.isCompleted }?.also {
-                    if(event.method == null){
+                    if (event.method == null) {
                         it.completeExceptionally(Exception("id_action_canceled"))
-                    }else{
+                    } else {
                         it.complete(event.method)
                     }
                 }
                 _twoFactorDeferred = null
             }
+
             is Events.ResolveTwoFactorCode -> {
                 _twoFactorDeferred?.takeIf { !it.isCompleted }?.also {
-                    if(event.code == null){
+                    if (event.code == null) {
                         it.completeExceptionally(Exception("id_action_canceled"))
-                    }else{
+                    } else {
                         it.complete(event.code)
                     }
                 }
                 _twoFactorDeferred = null
             }
+
             is Events.AckSystemMessage -> {
                 ackSystemMessage(event.network, event.message)
             }
@@ -581,13 +607,15 @@ open class GreenViewModel constructor(
             is Events.ReconnectFailedNetworks -> {
                 tryFailedNetworks()
             }
+
             is Events.HandleUserInput -> {
                 handleUserInput(event.data, event.isQr)
             }
+
             is Events.Transaction -> {
-                if(event.transaction.isLightningSwap && !event.transaction.isRefundableSwap){
+                if (event.transaction.isLightningSwap && !event.transaction.isRefundableSwap) {
                     postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_swap_is_in_progress)))
-                }else{
+                } else {
                     postSideEffect(
                         SideEffects.NavigateTo(
                             NavigateDestinations.Transaction(
@@ -598,14 +626,18 @@ open class GreenViewModel constructor(
                     )
                 }
             }
+
             is Events.ChooseAccountType -> {
                 postSideEffect(
                     SideEffects.NavigateTo(
-                        NavigateDestinations.ChooseAccountType(greenWallet = greenWallet, popTo = event.popTo)
+                        NavigateDestinations.ChooseAccountType(
+                            greenWallet = greenWallet,
+                            popTo = event.popTo
+                        )
                     )
                 )
 
-                if(event.isFirstAccount){
+                if (event.isFirstAccount) {
                     countly.firstAccount(session)
                 }
             }
@@ -616,23 +648,26 @@ open class GreenViewModel constructor(
         }
     }
 
-    private fun logoutSideEffect(reason: LogoutReason){
+    private fun logoutSideEffect(reason: LogoutReason) {
         postSideEffect(SideEffects.Logout(reason))
-        when(reason){
+        when (reason) {
             LogoutReason.CONNECTION_DISCONNECTED -> {
                 postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_unstable_internet_connection)))
             }
+
             LogoutReason.AUTO_LOGOUT_TIMEOUT -> {
                 postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_auto_logout_timeout_expired)))
             }
+
             LogoutReason.DEVICE_DISCONNECTED -> {
                 postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_your_device_was_disconnected)))
             }
+
             else -> {}
         }
     }
 
-    protected fun <T: Any?> doAsync(
+    protected fun <T : Any?> doAsync(
         action: suspend () -> T,
         mutex: Mutex? = null,
         timeout: Duration? = null, // The timeout is respected only on suspend functions, check documentation of withTimeout
@@ -656,7 +691,7 @@ open class GreenViewModel constructor(
                     preAction?.invoke()
 
                     withContext(context = Dispatchers.Default) {
-                        if(timeout == null) {
+                        if (timeout == null) {
                             action.invoke()
                         } else {
                             withTimeout(timeout) {
@@ -681,29 +716,34 @@ open class GreenViewModel constructor(
         }
     }
 
-    private fun renameAccount(account: Account, name: String){
+    private fun renameAccount(account: Account, name: String) {
         if (name.isBlank()) return
 
         doAsync({
-            session.updateAccount(account = account, name = name.cleanup() ?: account.name).also { updatedAccount ->
-                accountAsset.value?.let {
-                    // Update active account if needed
-                    if(it.account.id == updatedAccount.id){
-                        accountAsset.value = it.copy(account = updatedAccount)
+            session.updateAccount(account = account, name = name.cleanup() ?: account.name)
+                .also { updatedAccount ->
+                    accountAsset.value?.let {
+                        // Update active account if needed
+                        if (it.account.id == updatedAccount.id) {
+                            accountAsset.value = it.copy(account = updatedAccount)
+                        }
                     }
                 }
-            }
         }, onSuccess = {
             countly.renameAccount(session, it)
             postSideEffect(SideEffects.Dismiss)
         })
     }
 
-    private fun updateAccount(account: Account, isHidden: Boolean, navigateToRoot: Boolean = false){
+    private fun updateAccount(
+        account: Account,
+        isHidden: Boolean,
+        navigateToRoot: Boolean = false
+    ) {
         doAsync({
             session.updateAccount(account = account, isHidden = isHidden, userInitiated = true)
         }, onSuccess = {
-            if(isHidden){
+            if (isHidden) {
                 // Update active account from Session if it was archived
                 session.activeAccount.value?.also {
                     setActiveAccount(it)
@@ -711,24 +751,27 @@ open class GreenViewModel constructor(
 
                 postSideEffect(SideEffects.AccountArchived(account = account))
                 postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_account_has_been_archived)))
-                
+
                 // This only have effect on AccountOverview
                 postSideEffect(SideEffects.NavigateToRoot())
-            }else{
+            } else {
                 // Make it active
                 setActiveAccount(account)
                 postSideEffect(SideEffects.AccountUnarchived(account = account))
-                if(navigateToRoot){
+                if (navigateToRoot) {
                     postSideEffect(SideEffects.NavigateToRoot())
                 }
             }
         })
     }
 
-    private fun removeAccount(account: Account){
-        if(account.isLightning) {
+    private fun removeAccount(account: Account) {
+        if (account.isLightning) {
             doAsync({
-                database.deleteLoginCredentials(greenWallet.id, CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS)
+                database.deleteLoginCredentials(
+                    greenWallet.id,
+                    CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS
+                )
                 database.deleteLoginCredentials(greenWallet.id, CredentialType.LIGHTNING_MNEMONIC)
                 session.removeAccount(account)
             }, onSuccess = {
@@ -749,8 +792,8 @@ open class GreenViewModel constructor(
             it.activeNetwork = account.networkId
             it.activeAccount = account.pointer
 
-            if(!it.isEphemeral) {
-                viewModelScope.coroutineScope.launch(context = logException(countly)){
+            if (!it.isEphemeral) {
+                viewModelScope.coroutineScope.launch(context = logException(countly)) {
                     database.updateWallet(it)
                 }
             }
@@ -763,7 +806,7 @@ open class GreenViewModel constructor(
         })
     }
 
-    private fun ackSystemMessage(network: Network, message : String){
+    private fun ackSystemMessage(network: Network, message: String) {
         doAsync({
             session.ackSystemMessage(network, message)
             session.updateSystemMessage()
@@ -804,7 +847,7 @@ open class GreenViewModel constructor(
                                     )
                                 )
                             )
-                        }else{
+                        } else {
                             postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_you_dont_have_a_lightning)))
                         }
                     }
@@ -814,7 +857,7 @@ open class GreenViewModel constructor(
                             var account = activeAccount
 
                             // Different network
-                            if(!account.network.isSameNetwork(checkedInput.first)){
+                            if (!account.network.isSameNetwork(checkedInput.first)) {
                                 session.allAccounts.value.find {
                                     it.network.isSameNetwork(
                                         checkedInput.first
@@ -878,8 +921,10 @@ open class GreenViewModel constructor(
     }
 
     protected open suspend fun denominatedValue(): DenominatedValue? = null
-    protected open fun setDenominatedValue(denominatedValue: DenominatedValue) { }
-    protected open fun errorReport(exception: Throwable): SupportData? { return null}
+    protected open fun setDenominatedValue(denominatedValue: DenominatedValue) {}
+    protected open fun errorReport(exception: Throwable): SupportData? {
+        return null
+    }
 
     private var _twoFactorDeferred: CompletableDeferred<String>? = null
     override suspend fun selectTwoFactorMethod(availableMethods: List<String>): CompletableDeferred<String> {
@@ -914,7 +959,9 @@ open class GreenViewModel constructor(
         }
     }
 
-    override fun getAntiExfilCorruptionForMessageSign() = qaTester.getAntiExfilCorruptionForMessageSign()
+    override fun getAntiExfilCorruptionForMessageSign() =
+        qaTester.getAntiExfilCorruptionForMessageSign()
+
     override fun getAntiExfilCorruptionForTxSign() = qaTester.getAntiExfilCorruptionForTxSign()
     override fun getFirmwareCorruption() = qaTester.getFirmwareCorruption()
 
@@ -928,13 +975,19 @@ open class GreenViewModel constructor(
     }
 
     override fun firmwareUpdateState(state: FirmwareUpdateState) {
-        if(deviceOrNull == null) return
+        if (deviceOrNull == null) return
 
         device.updateFirmwareState(state)
 
-        when(state) {
+        when (state) {
             is FirmwareUpdateState.Initiate -> {
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.JadeFirmwareUpdate(deviceId = device.connectionIdentifier)))
+                postSideEffect(
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.JadeFirmwareUpdate(
+                            deviceId = device.connectionIdentifier
+                        )
+                    )
+                )
                 countly.jadeOtaStart(
                     device = device,
                     config = state.firmwareFileData.image.config,
@@ -942,13 +995,15 @@ open class GreenViewModel constructor(
                     version = state.firmwareFileData.image.version
                 )
             }
+
             is FirmwareUpdateState.Uploading -> {
 
             }
+
             is FirmwareUpdateState.Uploaded -> {
                 logger.i { "firmwareComplete: ${state.success}" }
 
-                if(state.success) {
+                if (state.success) {
                     deviceOrNull?.also {
                         countly.jadeOtaComplete(
                             device = it,
@@ -959,18 +1014,19 @@ open class GreenViewModel constructor(
                     }
                 }
             }
+
             is FirmwareUpdateState.Failed -> {
                 logger.i { "firmwareFailed: userCancelled ${state.userCancelled}" }
 
                 deviceOrNull?.also {
-                    if(state.userCancelled) {
+                    if (state.userCancelled) {
                         countly.jadeOtaRefuse(
                             device = it,
                             state.firmwareFileData.image.config,
                             state.firmwareFileData.image.patchSize != null,
                             state.firmwareFileData.image.version
                         )
-                    }else{
+                    } else {
                         countly.jadeOtaFailed(
                             device = it,
                             error = state.error,
@@ -981,6 +1037,7 @@ open class GreenViewModel constructor(
                     }
                 }
             }
+
             is FirmwareUpdateState.Completed -> {
                 if (state.requireBleRebonding) {
                     postSideEffect(SideEffects.BleRequireRebonding)
@@ -992,34 +1049,27 @@ open class GreenViewModel constructor(
         }
     }
 
-    private var biometricsPlatformCipher: CompletableDeferred<PlatformCipher>? = null
+    internal var biometricsPlatformCipher: CompletableDeferred<PlatformCipher>? = null
 
     internal fun createNewWatchOnlyWallet(
         network: Network,
         persistLoginCredentials: Boolean,
         watchOnlyCredentials: WatchOnlyCredentials,
-        withBiometrics: Boolean,
         deviceModel: DeviceModel? = null
     ) {
 
-        val biometricsCipherProvider = viewModelScope.coroutineScope.async(
-            start = CoroutineStart.LAZY
-        ) {
-            CompletableDeferred<PlatformCipher>().let {
-                biometricsPlatformCipher = it
-                postSideEffect(SideEffects.RequestCipher)
-                it.await()
-            }
-        }
-
         doAsync({
-            val loginData = session.loginWatchOnly(network = network, wallet = null, watchOnlyCredentials = watchOnlyCredentials)
+            val loginData = session.loginWatchOnly(
+                network = network,
+                wallet = null,
+                watchOnlyCredentials = HwWatchOnlyCredentials.fromWatchOnlyCredentials(network = network.id, watchOnlyCredentials = watchOnlyCredentials)
+            )
 
             // First get login credentials before creating the wallet
             val loginCredentials: LoginCredentials? =
                 if (persistLoginCredentials || network.isSinglesig) {
-                    val credentialType: CredentialType
-                    val encryptedData: EncryptedData
+
+                    /* Disable BIOMETRICS_WATCHONLY_CREDENTIALS, prefer Keystore based
                     if (withBiometrics) {
                         encryptedData = greenKeystore.encryptData(
                             biometricsCipherProvider.await(),
@@ -1032,6 +1082,12 @@ open class GreenViewModel constructor(
                         )
                         credentialType = CredentialType.KEYSTORE_WATCHONLY_CREDENTIALS
                     }
+                     */
+
+                    val encryptedData: EncryptedData = greenKeystore.encryptData(
+                        watchOnlyCredentials.toString().encodeToByteArray()
+                    )
+                    val credentialType: CredentialType = CredentialType.KEYSTORE_WATCHONLY_CREDENTIALS
 
                     createLoginCredentials(
                         walletId = objectId().toString(), // temp
@@ -1082,7 +1138,11 @@ open class GreenViewModel constructor(
 
             // Disconnect and reconnect with wallet
             session.disconnectAsync()
-            session.loginWatchOnly(network = network, wallet = wallet, watchOnlyCredentials = watchOnlyCredentials)
+            session.loginWatchOnly(
+                network = network,
+                wallet = wallet,
+                watchOnlyCredentials = HwWatchOnlyCredentials.fromWatchOnlyCredentials(network = network.id, watchOnlyCredentials = watchOnlyCredentials)
+            )
 
             sessionManager.upgradeOnBoardingSessionToWallet(wallet)
             countly.importWallet(session)
@@ -1093,7 +1153,11 @@ open class GreenViewModel constructor(
         })
     }
 
-    companion object: Loggable(){
-        fun preview() = object : GreenViewModel() { }
+    override fun navigateBack() {
+        postEvent(Events.NavigateBackUserAction)
+    }
+
+    companion object : Loggable() {
+        fun preview() = object : GreenViewModel() {}
     }
 }

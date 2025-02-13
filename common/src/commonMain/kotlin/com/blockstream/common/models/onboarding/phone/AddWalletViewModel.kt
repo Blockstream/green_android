@@ -1,23 +1,31 @@
 package com.blockstream.common.models.onboarding.phone
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_creating_wallet
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.events.Event
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestination
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
+import com.blockstream.common.usecases.NewWalletUseCase
+import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
+import org.jetbrains.compose.resources.getString
+import org.koin.core.component.inject
 
 abstract class AddWalletViewModelAbstract() : GreenViewModel()
 
-class AddWalletViewModel : AddWalletViewModelAbstract() {
+class AddWalletViewModel :
+    AddWalletViewModelAbstract() {
     override fun screenName(): String = "AddWallet"
+
+    private val newWalletUseCase: NewWalletUseCase by inject()
 
     class LocalEvents {
         data object NewWallet : Event
         data object RestoreWallet : Event
-        data class SelectEnviroment(val isTestnet: Boolean, val customNetwork: Network?): Event
+        data class SelectEnviroment(val isTestnet: Boolean, val customNetwork: Network?) : Event
     }
 
     private val isTestnetEnabled
@@ -34,29 +42,26 @@ class AddWalletViewModel : AddWalletViewModelAbstract() {
 
         when (event) {
             is LocalEvents.NewWallet -> {
-                (if (appInfo.enableNewFeatures) {
-                    NavigateDestinations.SetPin(setupArgs = SetupArgs(isRestoreFlow = false))
+                if (isTestnetEnabled) {
+                    postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Environment))
                 } else {
-                    NavigateDestinations.RecoveryIntro(setupArgs = SetupArgs(isRestoreFlow = false))
-                }).let {
-                    SideEffects.NavigateTo(it)
-                }.also {
-                    if (isTestnetEnabled) {
-                        pendingDestination = it.destination
-                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Environment))
-                    } else {
-                        postSideEffect(it)
-                    }
+                    createNewWallet(isTestnet = false)
                 }
                 countly.newWallet()
             }
 
             is LocalEvents.RestoreWallet -> {
-                SideEffects.NavigateTo(NavigateDestinations.EnterRecoveryPhrase(setupArgs = SetupArgs(isRestoreFlow = true))).also {
-                    if(isTestnetEnabled){
+                SideEffects.NavigateTo(
+                    NavigateDestinations.EnterRecoveryPhrase(
+                        setupArgs = SetupArgs(
+                            isRestoreFlow = true
+                        )
+                    )
+                ).also {
+                    if (isTestnetEnabled) {
                         pendingDestination = it.destination
                         postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Environment))
-                    }else{
+                    } else {
                         postSideEffect(it)
                     }
                 }
@@ -73,6 +78,7 @@ class AddWalletViewModel : AddWalletViewModelAbstract() {
                                 )
                             )
                         }
+
                         is NavigateDestinations.RecoveryIntro -> {
                             it.copy(
                                 setupArgs = it.setupArgs.copy(
@@ -88,18 +94,36 @@ class AddWalletViewModel : AddWalletViewModelAbstract() {
                                 )
                             )
                         }
+
                         else -> {
                             null
                         }
                     }
                 }?.also {
                     postSideEffect(SideEffects.NavigateTo(it))
+                } ?: run {
+                    createNewWallet(isTestnet = event.isTestnet)
                 }
             }
         }
     }
 
-    companion object: Loggable()
+    private fun createNewWallet(isTestnet: Boolean = false) {
+        doAsync({
+            onProgressDescription.value = getString(Res.string.id_creating_wallet)
+//            newWalletUseCase(session = session, "0000", isTestnet = isTestnet)
+        }, preAction = {
+            onProgress.value = true
+            // rocketAnimation.value = true
+        }, postAction = {
+            onProgress.value = it == null
+            // rocketAnimation.value = it == null
+        }, onSuccess = {
+            //postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))
+        })
+    }
+
+    companion object : Loggable()
 }
 
 class AddWalletViewModelPreview() : AddWalletViewModelAbstract() {

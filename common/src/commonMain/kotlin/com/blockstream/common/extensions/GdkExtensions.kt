@@ -61,7 +61,7 @@ fun AccountType?.title(): String = when (this) {
 }
 
 fun Account.needs2faActivation(session: GdkSession): Boolean {
-    if (isSinglesig || isAmp || session.isWatchOnly) {
+    if (isSinglesig || isAmp || session.isWatchOnlyValue) {
         return false
     }
 
@@ -70,7 +70,7 @@ fun Account.needs2faActivation(session: GdkSession): Boolean {
 
 fun Network.needs2faActivation(session: GdkSession): Boolean {
     return try {
-        !session.isWatchOnly && session.getTwoFactorConfig(network = this)?.anyEnabled == false
+        !session.isWatchOnlyValue && session.getTwoFactorConfig(network = this)?.anyEnabled == false
     } catch (e: Exception) {
         e.printStackTrace()
         false
@@ -78,7 +78,7 @@ fun Network.needs2faActivation(session: GdkSession): Boolean {
 }
 
 fun Account.hasExpiredUtxos(session: GdkSession): Boolean {
-    return !session.isWatchOnly && isMultisig && session.expired2FA.value.contains(this)
+    return !session.isWatchOnlyValue && isMultisig && session.expired2FA.value.contains(this)
 }
 
 fun Account.hasTwoFactorReset(session: GdkSession): Boolean {

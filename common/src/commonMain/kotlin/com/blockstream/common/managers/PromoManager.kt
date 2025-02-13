@@ -6,7 +6,7 @@ import com.blockstream.common.data.Promo
 import com.blockstream.common.data.PromoFile
 import com.blockstream.common.extensions.tryCatch
 import com.blockstream.common.extensions.tryCatchNull
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.prepareGet
@@ -44,11 +44,11 @@ class PromoManager constructor(
     init {
         logger.d { "PromoManager init" }
 
-        Promo.CacheDir = cacheDir
-
         tryCatchNull {
             FileSystem.SYSTEM.createDirectory(cacheDir.toPath())
         }
+
+        Promo.CacheDir = cacheDir
 
         combine(
             merge(flowOf(Unit), countly.remoteConfigUpdateEvent),
@@ -103,7 +103,7 @@ class PromoManager constructor(
     private fun fileExists(path: String) = FileSystem.SYSTEM.exists(path.toPath())
 
     private suspend fun downloadPromoFile(promoFile: PromoFile): Boolean {
-        logger.d { "downloadFile $promoFile.url to ${promoFile.filePath}" }
+        logger.d { "downloadFile ${promoFile.url} to ${promoFile.filePath}" }
 
         val path = promoFile.filePath.toPath()
 

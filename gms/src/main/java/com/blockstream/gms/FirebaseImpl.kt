@@ -3,7 +3,7 @@ package com.blockstream.gms
 
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.fcm.Firebase
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import org.koin.core.component.KoinComponent

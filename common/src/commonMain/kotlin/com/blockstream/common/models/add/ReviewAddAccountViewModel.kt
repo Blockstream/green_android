@@ -1,8 +1,8 @@
 package com.blockstream.common.models.add
 
-import com.blockstream.common.data.NavData
+import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.previewNetwork
 import com.blockstream.common.extensions.previewWallet

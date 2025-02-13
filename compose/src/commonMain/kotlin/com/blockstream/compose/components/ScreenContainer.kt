@@ -29,11 +29,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.blockstream.common.models.IOnProgress
-import com.blockstream.compose.navigation.LocalInnerPadding
 import com.blockstream.compose.theme.titleMedium
-import com.blockstream.compose.utils.ifTrue
+import com.blockstream.ui.models.IOnProgress
+import com.blockstream.ui.navigation.LocalInnerPadding
 import com.blockstream.ui.utils.excludeBottom
+import com.blockstream.ui.utils.ifTrue
 
 sealed class OnProgressStyle {
     data object Disabled : OnProgressStyle()
@@ -116,7 +116,7 @@ fun ScreenContainer(
                     Column(
                         modifier = Modifier
                             .align(Alignment.Center),
-                        verticalArrangement = Arrangement.spacedBy(space = 24.dp),
+                        verticalArrangement = Arrangement.spacedBy(space = 16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
 
                     ) {
@@ -144,11 +144,13 @@ fun ScreenContainer(
             AnimatedVisibility(
                 visible = onProgress,
                 enter = fadeIn(),
-                exit = fadeOut()
+                exit = fadeOut(),
+                modifier = Modifier.fillMaxWidth()
             ) {
                 LinearProgressIndicator(
                     modifier = Modifier
-                        .padding(top = innerPadding.calculateTopPadding())
+                        .padding(top = innerPadding.calculateTopPadding() - 64.dp)
+                        .padding(horizontal = 16.dp)
                         .fillMaxWidth()
                 )
             }

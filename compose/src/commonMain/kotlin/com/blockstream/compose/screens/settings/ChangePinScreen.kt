@@ -20,8 +20,9 @@ import blockstream_green.common.generated.resources.id_youll_need_your_pin_to_lo
 import com.blockstream.common.models.settings.WalletSettingsViewModel
 import com.blockstream.common.models.settings.WalletSettingsViewModelAbstract
 import com.blockstream.compose.LocalSnackbar
+import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.theme.bodyLarge
-import com.blockstream.compose.theme.displayMedium
+import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.views.PinView
 import com.blockstream.ui.components.GreenColumn
@@ -40,7 +41,8 @@ fun ChangePinScreen(
 
     SetupScreen(
         viewModel = viewModel,
-        withPadding = false
+        withPadding = false,
+        onProgressStyle = OnProgressStyle.Full()
     ) {
         Column(
             modifier = Modifier
@@ -51,7 +53,7 @@ fun ChangePinScreen(
             GreenColumn(padding = 0, space = 8) {
                 Text(
                     stringResource(if (isVerify) Res.string.id_verify_your_pin else Res.string.id_change_pin),
-                    style = displayMedium
+                    style = titleLarge
                 )
                 Text(
                     stringResource(Res.string.id_youll_need_your_pin_to_log_in),

@@ -45,7 +45,6 @@ import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenConfirmButton
 import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.components.OnProgressStyle
-import com.blockstream.compose.navigation.LocalNavigator
 import com.blockstream.compose.screens.jade.JadeQRResult
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelLarge
@@ -55,6 +54,7 @@ import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.navigation.LocalNavigator
 import com.blockstream.ui.navigation.bottomsheet.BottomSheetNavigator
 import com.blockstream.ui.navigation.getResult
 import org.jetbrains.compose.resources.painterResource
@@ -83,6 +83,7 @@ fun SendConfirmScreen(
     SetupScreen(
         viewModel = viewModel,
         onProgressStyle = if (onProgressSending) OnProgressStyle.Full(bluBackground = true) else OnProgressStyle.Disabled,
+        withPadding = false,
         sideEffectsHandler = {
             when (it) {
                 is SideEffects.Dismiss -> {

@@ -1,12 +1,12 @@
 package com.blockstream.compose.screens.login
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -40,6 +39,7 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.bip39_passphrase
 import blockstream_green.common.generated.resources.eye
 import blockstream_green.common.generated.resources.eye_slash
+import blockstream_green.common.generated.resources.id_authenticate
 import blockstream_green.common.generated.resources.id_bip39_passphrase_login
 import blockstream_green.common.generated.resources.id_connecting_through_tor
 import blockstream_green.common.generated.resources.id_emergency_recovery_phrase
@@ -52,13 +52,14 @@ import blockstream_green.common.generated.resources.id_pin
 import blockstream_green.common.generated.resources.id_restore_with_recovery_phrase
 import blockstream_green.common.generated.resources.id_too_many_pin_attempts
 import blockstream_green.common.generated.resources.id_username
-import blockstream_green.common.generated.resources.id_you_have_to_authenticate_using
 import blockstream_green.common.generated.resources.id_youve_entered_an_invalid_pin
-import blockstream_green.common.generated.resources.lightning_fill
 import blockstream_green.common.generated.resources.qr_code
 import blockstream_green.common.generated.resources.shield_warning
 import blockstream_green.common.generated.resources.tor
 import blockstream_green.common.generated.resources.x
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Fingerprint
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.managers.LifecycleManager
@@ -75,12 +76,10 @@ import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.components.RichWatchOnlyButton
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.extensions.onValueChange
-import com.blockstream.compose.navigation.LocalNavigator
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.headlineMedium
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium
-import com.blockstream.compose.theme.lightning
 import com.blockstream.compose.theme.red
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.titleSmall
@@ -89,6 +88,7 @@ import com.blockstream.compose.utils.AlphaPulse
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.TextInputPassword
+import com.blockstream.compose.utils.noRippleClickable
 import com.blockstream.compose.views.PinView
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
@@ -96,6 +96,7 @@ import com.blockstream.ui.components.GreenSpacer
 import com.blockstream.ui.navigation.getResult
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -104,11 +105,13 @@ import org.koin.compose.koinInject
 fun LoginScreen(
     viewModel: LoginViewModelAbstract,
 ) {
-    val navigator = LocalNavigator.current
     val biometricsState = LocalBiometricState.current
 
     val pinCredentials by viewModel.pinCredentials.collectAsStateWithLifecycle()
     val passwordCredentials by viewModel.passwordCredentials.collectAsStateWithLifecycle()
+    val biometricsCredentials by viewModel.biometricsCredentials.collectAsStateWithLifecycle()
+    val biometricsMnemonicCredentials by viewModel.biometricsMnemonicCredentials.collectAsStateWithLifecycle()
+    val mnemonicCredentials by viewModel.mnemonicCredentials.collectAsStateWithLifecycle()
 
     NavigateDestinations.Bip39Passphrase.getResult<String> {
         viewModel.postEvent(
@@ -137,12 +140,16 @@ fun LoginScreen(
                 biometricsState?.launchBiometricPrompt(it.loginCredentials, viewModel = viewModel)
             }
 
-            is LoginViewModel.LocalSideEffects.LaunchUserPresenceForLightning -> {
-                biometricsState?.launchUserPresencePromptForLightningShortcut(viewModel = viewModel)
+            is LoginViewModel.LocalSideEffects.LaunchUserPresence -> {
+                biometricsState?.launchUserPresencePrompt(title = getString(Res.string.id_authenticate)) {
+                    if(it != false){
+                        viewModel.postEvent(LoginViewModel.LocalEvents.Authenticated(it == true))
+                    }
+                }
             }
 
             is SideEffects.WalletDelete -> {
-                navigator.navigate(NavigateDestinations.Home)
+                viewModel.postEvent(NavigateDestinations.Home)
             }
         }
     }, withPadding = false, onProgressStyle = OnProgressStyle.Disabled) {
@@ -222,31 +229,8 @@ fun LoginScreen(
             }
         }
 
-        if (viewModel.isLightningShortcut && !onProgress) {
-            GreenColumn(horizontalAlignment = Alignment.CenterHorizontally) {
-                Image(
-                    painter = painterResource(Res.drawable.lightning_fill),
-                    contentDescription = "Lightning",
-                    colorFilter = ColorFilter.tint(lightning),
-                    modifier = Modifier
-                        .size(128.dp)
-                        .clickable {
-                            viewModel.postEvent(
-                                LoginViewModel.LocalEvents.LoginLightningShortcut(
-                                    false
-                                )
-                            )
-                        }
-                )
-
-                Text(
-                    text = stringResource(Res.string.id_you_have_to_authenticate_using),
-                    style = labelMedium
-                )
-            }
-        }
-
-        if (!viewModel.isLightningShortcut && pinCredentials.isEmpty() && !viewModel.greenWallet.isWatchOnly && !viewModel.greenWallet.isHardware && passwordCredentials.isEmpty() && !onProgress) {
+        val showRestoreWithRecovery by viewModel.showRestoreWithRecovery.collectAsStateWithLifecycle()
+        if (showRestoreWithRecovery) {
             GreenColumn(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = stringResource(Res.string.id_too_many_pin_attempts), style = titleSmall)
 
@@ -275,7 +259,7 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .padding(start = 16.dp, end = 16.dp),
+                .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
 
@@ -388,7 +372,7 @@ fun LoginScreen(
                     contentAlignment = Alignment.Center
                 ) {
 
-                    if (!viewModel.isLightningShortcut && (pinCredentials.isNotEmpty() || passwordCredentials.isNotEmpty()) && !onProgress) {
+                    if ((pinCredentials.isNotEmpty() || passwordCredentials.isNotEmpty()) && !onProgress) {
                         ConstraintLayout(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -486,7 +470,7 @@ fun LoginScreen(
                 ) {
 
                     val error by viewModel.error.collectAsStateWithLifecycle()
-                    if (!viewModel.isLightningShortcut && !onProgress) {
+                    if (!onProgress) {
                         if (pinCredentials.isNotEmpty()) {
                             PinView(
                                 modifier = Modifier
@@ -553,6 +537,41 @@ fun LoginScreen(
                                     )
                                 }
                             }
+                        } else if (mnemonicCredentials.isNotEmpty()) {
+
+                            Image(
+                                painter = painterResource(if (viewModel.greenWallet.isWatchOnlyQr) Res.drawable.qr_code else Res.drawable.eye),
+                                contentDescription = "Watch Only",
+                                // colorFilter = ColorFilter.tint(green),
+                                alpha = 0.25f,
+                                modifier = Modifier
+                                    .size(128.dp)
+                            )
+
+                            GreenColumn(modifier = Modifier.align(Alignment.BottomCenter)) {
+                                GreenButton(
+                                    text = stringResource(Res.string.id_log_in),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    viewModel.postEvent(
+                                        LoginViewModel.LocalEvents.Login
+                                    )
+                                }
+                            }
+                        } else if (biometricsCredentials.isNotEmpty() || biometricsMnemonicCredentials.isNotEmpty()) {
+
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                Icon(
+                                    imageVector = PhosphorIcons.Regular.Fingerprint,
+                                    contentDescription = "Fingerprint",
+                                    modifier = Modifier
+                                        .size(128.dp)
+                                        .align(Alignment.Center)
+                                        .noRippleClickable {
+                                            viewModel.postEvent(LoginViewModel.LocalEvents.ClickBiometrics)
+                                        }
+                                )
+                            }
                         }
                     }
                 }
@@ -563,8 +582,7 @@ fun LoginScreen(
                     .fillMaxWidth()
             ) {
 
-                val biometricsCredentials by viewModel.biometricsCredentials.collectAsStateWithLifecycle()
-                if (!viewModel.isLightningShortcut && biometricsCredentials.isNotEmpty() && !onProgress) {
+                if ((biometricsCredentials.isNotEmpty() || biometricsMnemonicCredentials.isNotEmpty()) && !onProgress) {
                     BiometricsButton(modifier = Modifier.align(Alignment.CenterStart)) {
                         viewModel.postEvent(LoginViewModel.LocalEvents.ClickBiometrics)
                     }

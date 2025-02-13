@@ -1,7 +1,6 @@
 package com.blockstream.compose.screens.overview
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,7 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -43,13 +41,11 @@ import com.blockstream.common.events.Events
 import com.blockstream.common.models.overview.AccountOverviewViewModel
 import com.blockstream.common.models.overview.AccountOverviewViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.compose.components.BottomNav
 import com.blockstream.compose.components.GreenAccountCard
 import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.components.GreenContentCard
 import com.blockstream.compose.components.GreenTransaction
-import com.blockstream.compose.navigation.LocalInnerPadding
 import com.blockstream.compose.sheets.MainMenuEntry
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.green
@@ -57,12 +53,12 @@ import com.blockstream.compose.theme.green20
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.compose.utils.reachedBottom
 import com.blockstream.compose.views.LightningInfo
-import com.blockstream.ui.components.GreenGradient
 import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.navigation.LocalInnerPadding
 import com.blockstream.ui.navigation.getResult
 import com.blockstream.ui.utils.bottom
+import com.blockstream.ui.utils.reachedBottom
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -142,7 +138,8 @@ fun AccountOverviewScreen(
                 }
             }
 
-            LazyColumn(contentPadding = PaddingValues(bottom = 96.dp), state = listState) {
+            LazyColumn(contentPadding = innerPadding
+                .bottom(), state = listState) {
 
                 items(alerts) {
                     GreenAlert(
@@ -318,44 +315,11 @@ fun AccountOverviewScreen(
                     items(
                         items = it,
                         key = { it.transaction.txHash.hashCode() + it.transaction.txType.gdkType.hashCode() }) {
-                        GreenTransaction(transactionLook = it) {
+                        GreenTransaction(modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 6.dp), transactionLook = it) {
                             viewModel.postEvent(Events.Transaction(transaction = it.transaction))
                         }
                     }
                 }
-            }
-
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-            ) {
-                GreenGradient(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter),
-                    size = 32
-                )
-
-                BottomNav(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(horizontal = 16.dp)
-                        .padding(innerPadding.bottom())
-                        .padding(bottom = 8.dp),
-                    canSend = viewModel.sessionOrNull?.canSendTransaction ?: false,
-                    isSweepEnabled = viewModel.sessionOrNull?.defaultNetworkOrNull?.isBitcoin == true,
-                    onSendClick = {
-                        viewModel.postEvent(AccountOverviewViewModel.LocalEvents.Send)
-                    }, onReceiveClick = {
-                        viewModel.postEvent(AccountOverviewViewModel.LocalEvents.Receive)
-                    }, onCircleClick = {
-                        viewModel.postEvent(
-                            NavigateDestinations.Camera(
-                                isDecodeContinuous = true,
-                                parentScreenName = viewModel.screenName()
-                            )
-                        )
-                    }
-                )
             }
         }
     }

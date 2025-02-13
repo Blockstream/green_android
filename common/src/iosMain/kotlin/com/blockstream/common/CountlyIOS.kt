@@ -13,11 +13,11 @@ import cocoapods.Countly.CLYConsentUserDetails
 import cocoapods.Countly.CLYConsentViewTracking
 import cocoapods.Countly.Countly
 import cocoapods.Countly.CountlyConfig
-import com.blockstream.common.data.AppInfo
+import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.database.Database
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.managers.SettingsManager
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import kotlinx.cinterop.convert
 import platform.Foundation.NSException
 

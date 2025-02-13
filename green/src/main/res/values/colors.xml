@@ -2,15 +2,15 @@
 <resources>
 
     <!-- M3 -->
-    <color name="seed">#00b45a</color>
-    <color name="md_theme_dark_primary">#00b45a</color>
+    <color name="seed">#00BCFF</color>
+    <color name="md_theme_dark_primary">#00BCFF</color>
     <color name="md_theme_dark_onPrimary">#ffffff</color>
-    <color name="md_theme_dark_primaryContainer">#00b45a</color>
+    <color name="md_theme_dark_primaryContainer">#00BCFF</color>
     <color name="md_theme_dark_onPrimaryContainer">#ffffff</color>
 
-    <color name="md_theme_dark_secondary">#00b45a</color>
+    <color name="md_theme_dark_secondary">#00BCFF</color>
     <color name="md_theme_dark_onSecondary">#ffffff</color>
-    <color name="md_theme_dark_secondaryContainer">#00b45a</color>
+    <color name="md_theme_dark_secondaryContainer">#00BCFF</color>
     <color name="md_theme_dark_onSecondaryContainer">#ffffff</color>
 
     <color name="md_theme_dark_tertiary">#BBC3FF</color>
@@ -41,9 +41,9 @@
     <color name="md_theme_dark_outline">#2d2d31</color>
     <color name="md_theme_dark_inverseOnSurface">#001945</color>
     <color name="md_theme_dark_inverseSurface">#273545</color>
-    <color name="md_theme_dark_inversePrimary">#006D34</color>
+    <color name="md_theme_dark_inversePrimary">#00BCFF</color>
     <color name="md_theme_dark_shadow">#000000</color>
-    <color name="md_theme_dark_surfaceTint">#4FE080</color>
+    <color name="md_theme_dark_surfaceTint">#00BCFF</color>
     <color name="md_theme_dark_outlineVariant">#414941</color>
     <color name="md_theme_dark_scrim">#000000</color>
     <!-- End M3   -->
@@ -53,11 +53,11 @@
 
 
     <!--  Main Brand colors  -->
-    <color name="brand_green">#00b45a</color>
+    <color name="brand_green">#00BCFF</color>
 <!--    <color name="brand_green_dark">#00832e</color>-->
 
-    <color name="brand_green_20">#2000b45a</color>
-    <color name="green_20">#3300f113</color>
+    <color name="brand_green_20">#2000BCFF</color>
+    <color name="green_20">#3300BCFF</color>
 
     <color name="brand_surface">#19222c</color>
     <color name="brand_surface_light">#273545</color>

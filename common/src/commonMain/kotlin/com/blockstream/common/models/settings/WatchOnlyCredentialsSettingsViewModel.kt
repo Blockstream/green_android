@@ -3,8 +3,8 @@ package com.blockstream.common.models.settings
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_watchonly
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavData
-import com.blockstream.common.events.Event
+import com.blockstream.ui.navigation.NavData
+import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.launchIn

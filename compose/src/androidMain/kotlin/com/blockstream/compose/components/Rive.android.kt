@@ -3,7 +3,8 @@ package com.blockstream.compose.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,7 +37,8 @@ actual fun Rive(riveAnimation: RiveAnimation) {
         RiveAnimation.JADE_SCROLL -> "jade_scroll.riv"
         RiveAnimation.JADE_POWER -> "jade_power.riv"
         RiveAnimation.RECOVERY_PHRASE -> "recovery_phrase.riv"
-    }.let {
+        RiveAnimation.NONE -> null
+    }?.let {
         "files/rive/$it"
     }
 
@@ -48,7 +50,8 @@ actual fun Rive(riveAnimation: RiveAnimation) {
 
     if (isPreview) {
         Box(modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
+            .height(100.dp)
             .border(BorderStroke(1.dp, Color.Gray))) {
             Text(text = "Rive Preview", modifier = Modifier.align(Alignment.Center))
         }
@@ -65,7 +68,7 @@ actual fun Rive(riveAnimation: RiveAnimation) {
         })
 
         LaunchedEffect(path) {
-            bytes = Res.readBytes(path)
+            bytes = path?.let { Res.readBytes(it) }
         }
     }
 }

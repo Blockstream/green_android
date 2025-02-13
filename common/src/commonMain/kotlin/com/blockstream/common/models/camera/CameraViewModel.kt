@@ -4,7 +4,7 @@ import com.blockstream.common.data.ScanResult
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.models.abstract.AbstractScannerViewModel
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 
 
 abstract class CameraViewModelAbstract(

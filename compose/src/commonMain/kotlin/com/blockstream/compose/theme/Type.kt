@@ -58,13 +58,13 @@ fun GreenTypography() = Typography().let {
         titleMedium = copyTextStyle(it.titleMedium, fontSize = 18.sp, fontWeight = FontWeight.Bold),
         titleSmall = copyTextStyle(it.titleSmall, fontSize = 16.sp, fontWeight = FontWeight.Bold),
 
-        bodyLarge = copyTextStyle(it.bodyLarge, fontSize = 14.sp, lineHeight = 20.sp),
-        bodyMedium = copyTextStyle(it.bodyMedium, fontSize = 12.sp, lineHeight = 16.sp),
-        bodySmall = copyTextStyle(it.bodySmall, fontSize = 11.sp, lineHeight = 14.sp),
+        bodyLarge = copyTextStyle(it.bodyLarge, fontSize = 15.sp, lineHeight = 24.sp),
+        bodyMedium = copyTextStyle(it.bodyMedium, fontSize = 14.sp, lineHeight = 20.sp),
+        bodySmall = copyTextStyle(it.bodySmall, fontSize = 12.sp, lineHeight = 14.sp),
 
-        labelLarge = copyTextStyle(it.labelLarge, fontSize = 14.sp, fontWeight = FontWeight.Bold),
-        labelMedium = copyTextStyle(it.labelMedium, fontSize = 12.sp, fontWeight = FontWeight.Bold),
-        labelSmall = copyTextStyle(it.labelSmall, fontSize = 11.sp, fontWeight = FontWeight.Bold),
+        labelLarge = copyTextStyle(it.labelLarge, fontSize = 15.sp, lineHeight = 24.sp, fontWeight = FontWeight.Bold),
+        labelMedium = copyTextStyle(it.labelMedium, fontSize = 14.sp, lineHeight = 20.sp, fontWeight = FontWeight.Bold),
+        labelSmall = copyTextStyle(it.labelSmall, fontSize = 12.sp, lineHeight = 14.sp, fontWeight = FontWeight.Bold),
     )
 }
 
@@ -135,8 +135,8 @@ val textHigh
 
 val textMedium
     @Composable
-    get() = LocalContentColor.current.copy(alpha = 0.75f)
+    get() = LocalContentColor.current.copy(alpha = 0.8f)
 
 val textLow
     @Composable
-    get() = LocalContentColor.current.copy(alpha = 0.5f)
+    get() = LocalContentColor.current.copy(alpha = 0.6f)

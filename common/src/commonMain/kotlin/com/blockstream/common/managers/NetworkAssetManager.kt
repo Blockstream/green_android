@@ -3,7 +3,7 @@ package com.blockstream.common.managers
 import com.blockstream.common.gdk.data.Asset
 import com.blockstream.common.gdk.params.AssetsParams
 import com.blockstream.common.gdk.params.GetAssetsParams
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

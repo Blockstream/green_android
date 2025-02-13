@@ -13,7 +13,7 @@ import com.blockstream.common.extensions.isBonded
 import com.blockstream.common.extensions.isJade
 import com.blockstream.common.extensions.setupJade
 import com.blockstream.common.extensions.supervisorJob
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.juul.kable.Filter
 import com.juul.kable.PlatformAdvertisement
 import com.juul.kable.Scanner

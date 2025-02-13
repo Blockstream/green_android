@@ -2,6 +2,7 @@ package com.blockstream.common.data
 
 import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.gdk.data.LoginData
+import com.blockstream.common.gdk.params.LoginCredentialsParams
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -17,6 +18,16 @@ data class WatchOnlyCredentials constructor(
     override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()
+
+    fun toLoginCredentials() = if (username == null && password == null) {
+        if (coreDescriptors != null) {
+            LoginCredentialsParams(coreDescriptors = coreDescriptors)
+        } else {
+            LoginCredentialsParams(slip132ExtendedPubkeys = slip132ExtendedPubkeys)
+        }
+    } else {
+        LoginCredentialsParams(username = username, password = password)
+    }
 
     companion object{
         fun fromByteArray(byteArray: ByteArray): WatchOnlyCredentials {

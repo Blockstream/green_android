@@ -49,7 +49,7 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.arrow_fat_lines_right
 import blockstream_green.common.generated.resources.id_slide_to_send
 import co.touchlab.kermit.Logger
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.md_theme_backgroundVariant

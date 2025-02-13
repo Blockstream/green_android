@@ -10,16 +10,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
-import com.blockstream.common.data.AppInfo
 import com.blockstream.common.managers.BluetoothManager
+import com.blockstream.common.managers.LocaleManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.utils.AndroidKeystore
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.managers.rememberPlatformManager
-import com.blockstream.compose.navigation.LocalNavigator
 import com.blockstream.compose.sideeffects.DialogHost
 import com.blockstream.compose.sideeffects.DialogState
 import com.blockstream.compose.theme.GreenTheme
+import com.blockstream.green.data.config.AppInfo
+import com.blockstream.ui.navigation.LocalNavigator
+import com.blockstream.ui.navigation.bottomsheet.rememberBottomSheetNavigator
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.SharedPreferencesSettings
 import org.koin.android.ext.koin.androidContext
@@ -37,6 +39,9 @@ fun GreenAndroidPreview(content: @Composable () -> Unit) {
             single { context }
             single {
                 BluetoothManager(get(), null)
+            }
+            single {
+                LocaleManager(get())
             }
             single {
                 AndroidKeystore(androidContext())
@@ -61,7 +66,7 @@ fun GreenAndroidPreview(content: @Composable () -> Unit) {
                     userAgent = "GreenAndroidPreview",
                     version = "1.0.0-preview",
                     isDebug = true,
-                    isDevelopment = true
+                    isDevelopment = false
                 )
             }
         })
@@ -70,7 +75,8 @@ fun GreenAndroidPreview(content: @Composable () -> Unit) {
 
     val dialogState = remember { DialogState() }
     val platformManager = rememberPlatformManager()
-    val navController = rememberNavController()
+    val bottomSheetNavigator = rememberBottomSheetNavigator()
+    val navController = rememberNavController(bottomSheetNavigator)
 
     GreenTheme {
         CompositionLocalProvider(

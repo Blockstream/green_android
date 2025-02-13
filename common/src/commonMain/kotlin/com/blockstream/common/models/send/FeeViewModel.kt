@@ -4,7 +4,7 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_network_fee
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavData
+import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccountAsset
@@ -12,7 +12,7 @@ import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.lightning.fee
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.feeRateWithUnit
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
@@ -51,8 +51,6 @@ class FeeViewModel(
     override val feePriorities: StateFlow<List<FeePriority>> = _feePriorities.asStateFlow()
 
     private var params: CreateTransactionParams? = null
-
-    override val isWatchOnly = MutableStateFlow(false)
 
     init {
 
@@ -158,8 +156,6 @@ class FeeViewModel(
 
 class FeeViewModelPreview(greenWallet: GreenWallet) :
     FeeViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = previewAccountAsset()) {
-
-    override val isWatchOnly: StateFlow<Boolean> = MutableStateFlow(false)
 
     override val feePriorities: StateFlow<List<FeePriority>> =
         MutableStateFlow(listOf(FeePriority.High(error = "id_insufficient_funds"), FeePriority.Medium(), FeePriority.Low()))

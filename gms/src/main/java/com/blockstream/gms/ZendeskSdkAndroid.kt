@@ -5,11 +5,11 @@ import android.os.Build
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.SupportType
 import com.blockstream.common.ZendeskSdk
-import com.blockstream.common.data.AppInfo
+import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.data.SupportData
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.extensions.logException
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
 import kotlinx.coroutines.delay

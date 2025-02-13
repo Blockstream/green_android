@@ -4,7 +4,7 @@ import com.blockstream.common.Urls
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.common.devices.GreenDevice
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.Gdk
@@ -18,9 +18,9 @@ import com.blockstream.common.managers.BluetoothState
 import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.ui.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.StringHolder
 import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.CompletableDeferred

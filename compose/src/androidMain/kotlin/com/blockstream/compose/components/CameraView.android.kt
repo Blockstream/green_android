@@ -10,6 +10,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,7 +26,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import co.touchlab.kermit.Logger
 import com.blockstream.common.events.Events
@@ -33,8 +34,8 @@ import com.blockstream.common.models.camera.CameraViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.compose.LocalActivity
 import com.blockstream.compose.R
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.android.views.ViewFinderView
+import com.blockstream.ui.components.GreenColumn
 import com.google.zxing.client.android.Intents
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.CaptureManager
@@ -138,35 +139,29 @@ actual fun CameraView(
     }
 
     val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
+
+    LaunchedEffect(lifecycleState) {
+        when(lifecycleState){
+            Lifecycle.State.STARTED, Lifecycle.State.RESUMED -> {
+                Logger.d { "BarcodeScanner Started/Resumed" }
+                captureManager?.onResume()
+            }
+            Lifecycle.State.DESTROYED -> {
+                Logger.d { "BarcodeScanner Destroyed" }
+                captureManager?.onPause()
+            }
+
+            else -> {}
+        }
+    }
 
     DisposableEffect(lifecycleOwner) {
-        // Create an observer that triggers our remembered callbacks
-        // for sending analytics events
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_RESUME -> {
-                    Logger.d { "BarcodeScanner OnResume" }
-                    captureManager?.onResume()
-                }
-
-                Lifecycle.Event.ON_PAUSE -> {
-                    Logger.d { "BarcodeScanner OnPause" }
-                    captureManager?.onPause()
-                }
-
-                else -> {}
-            }
-        }
-
-        // Add the observer to the lifecycle
-        lifecycleOwner.lifecycle.addObserver(observer)
-
         // When the effect leaves the Composition, remove the observer
         onDispose {
             Logger.d { "BarcodeScanner onDispose" }
             captureManager?.onPause()
             captureManager?.onDestroy()
-            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 }

@@ -18,7 +18,6 @@ import com.blockstream.common.models.devices.DeviceScanViewModel
 import com.blockstream.common.models.devices.ImportPubKeyViewModel
 import com.blockstream.common.models.devices.JadeGenuineCheckViewModel
 import com.blockstream.common.models.devices.JadeGuideViewModel
-import com.blockstream.common.models.drawer.DrawerViewModel
 import com.blockstream.common.models.exchange.AccountExchangeViewModel
 import com.blockstream.common.models.exchange.OnOffRampsViewModel
 import com.blockstream.common.models.home.HomeViewModel
@@ -37,6 +36,8 @@ import com.blockstream.common.models.onboarding.watchonly.WatchOnlyCredentialsVi
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyNetworkViewModel
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyPolicyViewModel
 import com.blockstream.common.models.overview.AccountOverviewViewModel
+import com.blockstream.common.models.overview.SecurityViewModel
+import com.blockstream.common.models.overview.TransactViewModel
 import com.blockstream.common.models.overview.WalletAssetsViewModel
 import com.blockstream.common.models.overview.WalletOverviewViewModel
 import com.blockstream.common.models.promo.PromoViewModel
@@ -72,7 +73,6 @@ import com.blockstream.common.models.transaction.TransactionViewModel
 import com.blockstream.common.models.twofactor.ReEnable2FAViewModel
 import com.blockstream.common.models.wallet.WalletDeleteViewModel
 import com.blockstream.common.models.wallet.WalletNameViewModel
-import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -89,7 +89,6 @@ val viewModels = module {
     viewModelOf(::WatchOnlyPolicyViewModel)
     viewModelOf(::WatchOnlyCredentialsViewModel)
     viewModelOf(::HomeViewModel)
-    viewModelOf(::DrawerViewModel)
     viewModelOf(::EnterRecoveryPhraseViewModel)
     viewModelOf(::PinViewModel)
     viewModelOf(::RecoveryWordsViewModel)
@@ -133,6 +132,8 @@ val viewModels = module {
     viewModelOf(::DeviceScanViewModel)
     viewModelOf(::JadeFirmwareUpdateViewModel)
     viewModelOf(::ImportPubKeyViewModel)
+    viewModelOf(::TransactViewModel)
+    viewModelOf(::SecurityViewModel)
     viewModel {
         SupportViewModel(get(), get(), getOrNull())
     }
@@ -182,7 +183,7 @@ val viewModels = module {
     }
     viewModel {
         // https://github.com/InsertKoinIO/koin/issues/1352
-        LoginViewModel(get(), get(), getOrNull(), get())
+        LoginViewModel(get(), getOrNull(), get(), get())
     }
     viewModel {
         // https://github.com/InsertKoinIO/koin/issues/1352

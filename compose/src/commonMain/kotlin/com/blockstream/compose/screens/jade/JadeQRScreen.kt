@@ -38,7 +38,7 @@ import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenQR
 import com.blockstream.compose.components.GreenScanner
-import com.blockstream.compose.navigation.LocalInnerPadding
+import com.blockstream.ui.navigation.LocalInnerPadding
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.headlineSmall

@@ -2,7 +2,7 @@ package com.blockstream.common.fcm
 
 import breez_sdk.BreezEvent
 import com.blockstream.common.crypto.GreenKeystore
-import com.blockstream.common.data.AppInfo
+import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.database.Database
 import com.blockstream.common.di.ApplicationScope
@@ -11,7 +11,7 @@ import com.blockstream.common.extensions.logException
 import com.blockstream.common.lightning.BreezNotification
 import com.blockstream.common.lightning.satoshi
 import com.blockstream.common.managers.SessionManager
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.randomChars
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import kotlinx.coroutines.flow.filter

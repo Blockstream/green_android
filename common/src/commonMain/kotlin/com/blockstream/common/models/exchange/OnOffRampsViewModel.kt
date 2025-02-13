@@ -8,8 +8,6 @@ import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavData
-import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isNotBlank
@@ -18,22 +16,30 @@ import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccountAssetBalance
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.extensions.tryCatch
+import com.blockstream.common.extensions.tryCatchNullSuspend
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.lightning.satoshi
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.UserInput
 import com.blockstream.common.utils.toAmountLook
 import com.blockstream.common.utils.toAmountLookOrNa
+import com.blockstream.domain.meld.CreateCryptoQuoteUseCase
+import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavData
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
+import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
 import org.jetbrains.compose.resources.getString
+import org.koin.core.component.inject
 
 abstract class OnOffRampsViewModelAbstract(
     greenWallet: GreenWallet
@@ -41,6 +47,9 @@ abstract class OnOffRampsViewModelAbstract(
     greenWallet = greenWallet
 ) {
     override fun screenName(): String = "OnOffRamps"
+
+    @NativeCoroutinesState
+    abstract val showRecoveryConfirmation: StateFlow<Boolean>
 
     abstract val buyAsset: MutableStateFlow<AssetBalance?>
 
@@ -58,12 +67,23 @@ abstract class OnOffRampsViewModelAbstract(
     abstract val amountHint: StateFlow<String?>
 
     abstract val isSandboxEnvironment: MutableStateFlow<Boolean>
-
-    override val isWatchOnly: StateFlow<Boolean> = MutableStateFlow(false)
 }
 
 class OnOffRampsViewModel(greenWallet: GreenWallet) :
     OnOffRampsViewModelAbstract(greenWallet = greenWallet) {
+
+    private val createCryptoQuoteUseCase: CreateCryptoQuoteUseCase by inject()
+
+    private val hideWalletBackupAlert = MutableStateFlow(false)
+
+    override val showRecoveryConfirmation: StateFlow<Boolean> =
+        combine(greenWalletFlow, hideWalletBackupAlert) { greenWallet, hideWalletBackupAlert ->
+            !hideWalletBackupAlert && greenWallet?.isRecoveryConfirmed == false
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000L),
+            false
+        )
 
     override val isSandboxEnvironment: MutableStateFlow<Boolean> =
         MutableStateFlow(appInfo.isDevelopment)
@@ -115,7 +135,7 @@ class OnOffRampsViewModel(greenWallet: GreenWallet) :
 
             // Check if account match the assetId
             buyAccount.onEach {
-                if(it?.assetId != buyAsset.value?.assetId){
+                if (it?.assetId != buyAsset.value?.assetId) {
                     buyAccount.value = null
                 }
             }.launchIn(this)
@@ -141,6 +161,34 @@ class OnOffRampsViewModel(greenWallet: GreenWallet) :
             }.launchIn(this)
 
             combine(buyAsset, buyAccount, amount) { asset, account, amount ->
+
+                tryCatchNullSuspend {
+                    if(amount.isNotBlank()) {
+//                        val quote = createCryptoQuoteUseCase(cryptoQuote = CryptoQuoteRequest(
+//                            sourceAmount = amount,
+//                            sourceCurrencyCode = session.settings().value?.pricing?.currency ?: "USD",
+//                            destinationCurrencyCode = asset?.asset?.ticker ?: "BTC"
+//                        )
+//                        ).first()
+
+//                        logger.d { "$quote" }
+
+//                        _amountExchange.value = session.convert(
+//                            assetId = BTC_POLICY_ASSET,
+//                            asString = quote.destinationAmount.toString(),
+//                            denomination = BTC_UNIT
+//                        )?.toAmountLook(
+//                            session = session,
+//                            assetId = asset?.asset?.assetId,
+//                            denomination = Denomination.exchange(session, denomination.value),
+//                            withUnit = true,
+//                            withGrouping = true,
+//                            withMinimumDigits = false
+//                        ) ?: ""
+
+                    }
+                }
+
 
                 // TODO support sellAsset
                 val balance = asset?.assetId?.takeIf { it.isPolicyAsset(session) }?.let { assetId ->
@@ -229,8 +277,15 @@ class OnOffRampsViewModel(greenWallet: GreenWallet) :
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
-        if (event is Events.Continue) {
-            redirectToRamps()
+        when(event) {
+            is Events.DismissWalletBackupAlert -> {
+                viewModelScope.launch {
+                    hideWalletBackupAlert.value = true
+                }
+            }
+            is Events.Continue -> {
+                redirectToRamps()
+            }
         }
     }
 
@@ -292,13 +347,14 @@ class OnOffRampsViewModel(greenWallet: GreenWallet) :
     }
 
     companion object : Loggable() {
-        private const val MELD_PRODUCTION = "https://meldcrypto.com"
-        private const val MELD_SANDBOX = "https://sb.meldcrypto.com"
+        private const val MELD_PRODUCTION = "https://ramps.blockstream.com"
+        private const val MELD_SANDBOX = "https://ramps-sb.blockstream.com"
 
+        // TODO
         private const val MELD_PRODUCTION_KEY =
-            "WXDhJPMkahPCQ9AjtjS4Mi:49txEyv53WtUvXfVg1FNYvQdzWJc"
+            "WXDgw7kt8bwb7xTUXv1zMq:7Cp7PgRXHgui27QX5cLKcmMsA3GybZ"
         private const val MELD_DEVELOPMENT_KEY =
-            "WQ59eghSwdJxyfaKbk87Cm:D2J97iJX5XjutTot6PAcxNnt4NTuCSWaH"
+            "WQ55yQMaD8BCbULXdrMwUU:MexHFod7bds1SUTpWC86wUaVqWeqGbebBb"
 
         fun meldUrl(isSandboxEnvironment: Boolean) =
             if (isSandboxEnvironment) MELD_SANDBOX else MELD_PRODUCTION
@@ -307,6 +363,8 @@ class OnOffRampsViewModel(greenWallet: GreenWallet) :
 
 class OnOffRampsViewModelPreview(greenWallet: GreenWallet) :
     OnOffRampsViewModelAbstract(greenWallet = greenWallet) {
+
+    override val showRecoveryConfirmation: StateFlow<Boolean> = MutableStateFlow(false)
 
     override val isSandboxEnvironment: MutableStateFlow<Boolean> = MutableStateFlow(true)
 
@@ -319,7 +377,7 @@ class OnOffRampsViewModelPreview(greenWallet: GreenWallet) :
     override val buyAssets: StateFlow<List<AssetBalance>> = MutableStateFlow(
         listOf(
             AssetBalance.create(EnrichedAsset.PreviewBTC),
-            AssetBalance.create(EnrichedAsset.PreviewLBTC)
+            // AssetBalance.create(EnrichedAsset.PreviewLBTC)
         )
     )
 

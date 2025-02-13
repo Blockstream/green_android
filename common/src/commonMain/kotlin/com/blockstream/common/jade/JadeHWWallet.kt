@@ -14,7 +14,7 @@ import com.blockstream.common.gdk.device.HardwareWalletInteraction
 import com.blockstream.common.gdk.device.HwWalletLogin
 import com.blockstream.common.gdk.device.SignMessageResult
 import com.blockstream.common.gdk.device.SignTransactionResult
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.blockstream.jade.JadeAPI
 import com.blockstream.jade.api.TxInput
 import com.blockstream.jade.api.VersionInfo

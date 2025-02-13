@@ -1,7 +1,7 @@
 package com.blockstream.compose.managers
 
 import android.bluetooth.BluetoothAdapter
-import com.blockstream.common.data.AppInfo
+import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.devices.AndroidDevice
 import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.common.devices.GreenDevice

@@ -7,7 +7,7 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SupportData
 import com.blockstream.common.devices.DeviceState
 import com.blockstream.common.devices.JadeDevice
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewGreenDevice
@@ -17,7 +17,7 @@ import com.blockstream.common.gdk.params.RsaVerifyParams
 import com.blockstream.common.models.devices.JadeGenuineCheckViewModel.GenuineState
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.randomChars
 import com.blockstream.jade.data.JadeError

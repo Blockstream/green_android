@@ -13,7 +13,6 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_authenticate
 import blockstream_green.common.generated.resources.id_authentication_error_s
 import blockstream_green.common.generated.resources.id_authentication_failed
 import blockstream_green.common.generated.resources.id_cancel
@@ -22,13 +21,13 @@ import blockstream_green.common.generated.resources.id_login_with_biometrics
 import blockstream_green.common.generated.resources.id_please_activate_at_least_one
 import blockstream_green.common.generated.resources.id_user_authentication
 import blockstream_green.common.generated.resources.id_you_have_to_authenticate_to
+import com.blockstream.common.crypto.BiometricsException
 import com.blockstream.common.database.wallet.LoginCredentials
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.login.LoginViewModel
 import com.blockstream.common.models.login.LoginViewModelAbstract
 import com.blockstream.common.utils.AndroidKeystore
-import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.LocalActivity
 import com.blockstream.compose.LocalDialog
@@ -36,6 +35,7 @@ import com.blockstream.compose.LocalSnackbar
 import com.blockstream.compose.extensions.showErrorSnackbar
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.managers.PlatformManager
+import com.blockstream.green.utils.Loggable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -227,7 +227,7 @@ actual class BiometricsState(
                             loginCredentials
                         )
                     )
-                    throw Exception("Biometrics are invalidated")
+                    throw BiometricsException("Biometrics are invalidated")
                 }
 
             } catch (e: KeyPermanentlyInvalidatedException) {
@@ -299,7 +299,7 @@ actual class BiometricsState(
                     result.cryptoObject?.cipher?.also {
                         viewModel.postEvent(Events.ProvideCipher(platformCipher = it))
                     } ?: kotlin.run {
-                        viewModel.postEvent(Events.ProvideCipher(exception = Exception("No Cipher Provided")))
+                        viewModel.postEvent(Events.ProvideCipher(exception = BiometricsException("No Cipher Provided")))
                     }
                 }
 
@@ -307,8 +307,10 @@ actual class BiometricsState(
                     scope.launch {
                         (if (errorCode == BiometricPrompt.ERROR_USER_CANCELED || errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON || errorCode == BiometricPrompt.ERROR_CANCELED) {
                             Exception("id_action_canceled")
+                        } else if(errorCode == BiometricPrompt.ERROR_NO_BIOMETRICS) {
+                            BiometricsException(errString.toString())
                         } else {
-                            Exception(
+                            BiometricsException(
                                 getString(Res.string.id_authentication_error_s,
                                     "$errorCode $errString"
                                 )
@@ -341,58 +343,58 @@ actual class BiometricsState(
         }
     }
 
-    actual suspend fun launchUserPresencePromptForLightningShortcut(viewModel: LoginViewModelAbstract) {
-        activeBiometricPrompt?.cancelAuthentication()
-
-        val promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle(getString(Res.string.id_authenticate))
-            .setConfirmationRequired(true)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            promptInfo.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
-        } else {
-            promptInfo.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
-        }
-
-        activeBiometricPrompt = BiometricPrompt(
-            activity,
-            ContextCompat.getMainExecutor(activity),
-            object : AuthenticationCallback(state = this@BiometricsState) {
-                override fun onAuthenticationError(
-                    errorCode: Int,
-                    errString: CharSequence
-                ) {
-                    if (errorCode == BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL) {
-                        // User hasn't enabled any device credential,
-                        viewModel.postEvent(LoginViewModel.LocalEvents.LoginLightningShortcut(true))
-                    } else {
-                        super.onAuthenticationError(errorCode, errString)
-                    }
-                }
-
-                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    super.onAuthenticationSucceeded(result)
-                    viewModel.postEvent(LoginViewModel.LocalEvents.LoginLightningShortcut(true))
-                }
-            })
-
-        try {
-            // Ask for user presence
-            activeBiometricPrompt?.authenticate(promptInfo.build())
-        } catch (e: Exception) {
-            scope.launch {
-                dialogState.openErrorDialog(e) {
-                    // If an unsupported method is initiated, it's better to show the words rather than
-                    // block the user from retrieving his words
-                    viewModel.postEvent(LoginViewModel.LocalEvents.LoginLightningShortcut(true))
-                }
-            }
-        }
-    }
+//    actual suspend fun launchUserPresencePromptForLightningShortcut(viewModel: LoginViewModelAbstract) {
+//        activeBiometricPrompt?.cancelAuthentication()
+//
+//        val promptInfo = BiometricPrompt.PromptInfo.Builder()
+//            .setTitle(getString(Res.string.id_authenticate))
+//            .setConfirmationRequired(true)
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            promptInfo.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+//        } else {
+//            promptInfo.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+//        }
+//
+//        activeBiometricPrompt = BiometricPrompt(
+//            activity,
+//            ContextCompat.getMainExecutor(activity),
+//            object : AuthenticationCallback(state = this@BiometricsState) {
+//                override fun onAuthenticationError(
+//                    errorCode: Int,
+//                    errString: CharSequence
+//                ) {
+//                    if (errorCode == BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL) {
+//                        // User hasn't enabled any device credential,
+//                        viewModel.postEvent(LoginViewModel.LocalEvents.LoginLightningShortcut(true))
+//                    } else {
+//                        super.onAuthenticationError(errorCode, errString)
+//                    }
+//                }
+//
+//                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+//                    super.onAuthenticationSucceeded(result)
+//                    viewModel.postEvent(LoginViewModel.LocalEvents.LoginLightningShortcut(true))
+//                }
+//            })
+//
+//        try {
+//            // Ask for user presence
+//            activeBiometricPrompt?.authenticate(promptInfo.build())
+//        } catch (e: Exception) {
+//            scope.launch {
+//                dialogState.openErrorDialog(e) {
+//                    // If an unsupported method is initiated, it's better to show the words rather than
+//                    // block the user from retrieving his words
+//                    viewModel.postEvent(LoginViewModel.LocalEvents.LoginLightningShortcut(true))
+//                }
+//            }
+//        }
+//    }
 
     actual suspend  fun launchUserPresencePrompt(
         title: String,
-        authenticated: (authenticated: Boolean) -> Unit
+        authenticated: (authenticated: Boolean?) -> Unit
     ) {
         activeBiometricPrompt?.cancelAuthentication()
 
@@ -414,11 +416,12 @@ actual class BiometricsState(
                     errorCode: Int,
                     errString: CharSequence
                 ) {
-                    if (errorCode == BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL) {
+                    if (errorCode == BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL || errorCode == BiometricPrompt.ERROR_NO_BIOMETRICS) {
                         // User hasn't enabled any device credential,
-                        authenticated.invoke(false)
+                        authenticated.invoke(null)
                     } else {
                         super.onAuthenticationError(errorCode, errString)
+                        authenticated.invoke(false)
                     }
                 }
 
@@ -436,7 +439,7 @@ actual class BiometricsState(
                 dialogState.openErrorDialog(e) {
                     // If an unsupported method is initiated, it's better to show the words rather than
                     // block the user from retrieving his words
-                    authenticated.invoke(false)
+                    authenticated.invoke(null)
                 }
             }
         }

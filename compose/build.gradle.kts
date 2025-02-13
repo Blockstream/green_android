@@ -1,5 +1,4 @@
 
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
@@ -8,12 +7,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinxSerialization)
-//    alias(libs.plugins.composeHotReload)
 }
-
-//composeCompiler {
-//    featureFlags.add(ComposeFeatureFlag.OptimizeNonSkippingGroups)
-//}
 
 kotlin {
     compilerOptions {
@@ -28,9 +22,9 @@ kotlin {
 
     val xcf = XCFramework()
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
+        // iosX64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
@@ -49,8 +43,8 @@ kotlin {
 
         commonMain.dependencies {
             /**  --- Modules ---------------------------------------------------------------------------- */
-            implementation(project(":common"))
-            implementation(project(":ui-common"))
+            api(project(":common"))
+            api(project(":ui-common"))
             /** ----------------------------------------------------------------------------------------- */
 
             /**  --- Compose ---------------------------------------------------------------------------- */
@@ -58,13 +52,10 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material)
             implementation(compose.material3)
+            implementation(compose.materialIconsExtended)
             implementation(compose.ui)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.constraintlayout.compose.multiplatform)
-            /** ----------------------------------------------------------------------------------------- */
-
-            /**  --- Lifecycle -------------------------------------------------------------------------- */
-            implementation(libs.androidx.lifecycle.runtime.compose)
             /** ----------------------------------------------------------------------------------------- */
 
             /**  --- Koin   ----------------------------------------------------------------------------- */
@@ -79,14 +70,15 @@ kotlin {
             implementation(libs.coil.svg)
             implementation(libs.coil.test)
             implementation(libs.coil.network.ktor3)
-            implementation(libs.compose.action.menu)
+            // implementation(libs.compose.action.menu)
             /** ----------------------------------------------------------------------------------------- */
         }
 
         val desktopMain by getting
         desktopMain.dependencies {
+            api(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
-            implementation(compose.desktop.currentOs)
+            api(libs.kotlin.multiplatform.appdirs)
         }
 
         androidMain.dependencies {
@@ -96,7 +88,7 @@ kotlin {
             implementation(project(":base-gms"))
             api(project(":hardware"))
             /** ----------------------------------------------------------------------------------------- */
-
+            
             /**  --- Android / Google ------------------------------------------------------------------- */
             api(libs.androidx.browser)
             implementation (libs.accompanist.permissions)
@@ -147,19 +139,3 @@ android {
         debugImplementation(compose.uiTooling)
     }
 }
-
-compose.desktop {
-    application {
-        mainClass = "MainKt"
-
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.blockstream.green"
-            packageVersion = "1.0.0"
-        }
-    }
-}
-
-//tasks.register<ComposeHotRun>("runHot") {
-//    mainClass.set("com.blockstream.compose.DevMainKt")
-//}

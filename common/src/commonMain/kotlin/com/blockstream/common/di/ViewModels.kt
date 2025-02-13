@@ -18,7 +18,6 @@ import com.blockstream.common.models.devices.DeviceScanViewModel
 import com.blockstream.common.models.devices.ImportPubKeyViewModel
 import com.blockstream.common.models.devices.JadeGenuineCheckViewModel
 import com.blockstream.common.models.devices.JadeGuideViewModel
-import com.blockstream.common.models.drawer.DrawerViewModel
 import com.blockstream.common.models.exchange.AccountExchangeViewModel
 import com.blockstream.common.models.exchange.OnOffRampsViewModel
 import com.blockstream.common.models.home.HomeViewModel
@@ -37,6 +36,8 @@ import com.blockstream.common.models.onboarding.watchonly.WatchOnlyCredentialsVi
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyNetworkViewModel
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyPolicyViewModel
 import com.blockstream.common.models.overview.AccountOverviewViewModel
+import com.blockstream.common.models.overview.SecurityViewModel
+import com.blockstream.common.models.overview.TransactViewModel
 import com.blockstream.common.models.overview.WalletAssetsViewModel
 import com.blockstream.common.models.overview.WalletOverviewViewModel
 import com.blockstream.common.models.promo.PromoViewModel
@@ -87,7 +88,6 @@ val factoryViewModels = module {
     factoryOf(::WatchOnlyPolicyViewModel)
     factoryOf(::WatchOnlyCredentialsViewModel)
     factoryOf(::HomeViewModel)
-    factoryOf(::DrawerViewModel)
     factoryOf(::EnterRecoveryPhraseViewModel)
     factoryOf(::PinViewModel)
     factoryOf(::RecoveryWordsViewModel)
@@ -131,6 +131,8 @@ val factoryViewModels = module {
     factoryOf(::DeviceInfoViewModel)
     factoryOf(::DeviceScanViewModel)
     factoryOf(::JadeFirmwareUpdateViewModel)
+    factoryOf(::TransactViewModel)
+    factoryOf(::SecurityViewModel)
     factory {
         SupportViewModel(get(), get(), getOrNull())
     }
@@ -180,7 +182,7 @@ val factoryViewModels = module {
     }
     factory {
         // https://github.com/InsertKoinIO/koin/issues/1352
-        LoginViewModel(get(), get(), getOrNull(), get())
+        LoginViewModel(get(), getOrNull(), get(), get())
     }
     factory {
         // https://github.com/InsertKoinIO/koin/issues/1352

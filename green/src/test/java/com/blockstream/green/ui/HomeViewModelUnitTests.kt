@@ -15,8 +15,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.test.get
 import org.mockito.junit.MockitoJUnitRunner
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -36,6 +34,7 @@ class HomeViewModelUnitTests : TestViewModel<HomeViewModel>() {
         get<Database>().also {
             every { it.walletsExistsFlow() } returns flowOf(walletExists)
             every { it.getWalletsFlow(any(), any()) } returns flowOf(mockk())
+            every { it.getAllWalletsFlow() } returns flowOf(mockk())
             coEvery { it.walletsExists() } returns walletExists
         }
 
@@ -45,31 +44,5 @@ class HomeViewModelUnitTests : TestViewModel<HomeViewModel>() {
     @Test
     fun test_initial_value() {
         init()
-
-        assertFalse(viewModel.termsOfServiceIsChecked.value)
-    }
-
-    @Test
-    fun test_when_checked() {
-        init()
-
-        viewModel.termsOfServiceIsChecked.value = true
-        assertTrue(viewModel.termsOfServiceIsChecked.value)
-    }
-
-    @Test
-    fun test_when_toggled() {
-        init()
-
-        viewModel.termsOfServiceIsChecked.value = true
-        assertTrue(viewModel.termsOfServiceIsChecked.value)
-        viewModel.termsOfServiceIsChecked.value = false
-        assertFalse(viewModel.termsOfServiceIsChecked.value)
-    }
-
-    @Test
-    fun whenWalletExists_termsShouldBeChecked() {
-        init(true)
-        assertTrue(viewModel.termsOfServiceIsChecked.value)
     }
 }

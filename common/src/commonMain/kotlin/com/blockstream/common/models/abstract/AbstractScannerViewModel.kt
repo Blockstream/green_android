@@ -2,14 +2,14 @@ package com.blockstream.common.models.abstract
 
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.ScanResult
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.BcurResolver
 import com.blockstream.common.gdk.params.BcurDecodeParams
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred

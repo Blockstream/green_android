@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.res.Configuration
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.CountlyBase
-import com.blockstream.common.data.AppInfo
+import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.data.CountlyWidget
 import com.blockstream.common.database.Database
 import com.blockstream.common.di.ApplicationScope

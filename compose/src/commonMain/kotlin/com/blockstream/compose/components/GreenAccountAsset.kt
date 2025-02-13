@@ -23,6 +23,9 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_select_account
 import blockstream_green.common.generated.resources.id_select_account__asset
 import blockstream_green.common.generated.resources.pencil_simple_line
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.CaretRight
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.utils.StringHolder
@@ -34,8 +37,7 @@ import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.utils.ifTrue
-import com.blockstream.ui.components.GreenArrow
+import com.blockstream.ui.utils.ifTrue
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -55,7 +57,7 @@ fun GreenAccountAsset(
     GreenDataLayout(modifier = modifier, title = title, onClick = onClick, withPadding = false) {
 
         Row(
-            modifier = Modifier.padding(start = 10.dp),
+            modifier = Modifier.padding(start = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box {
@@ -68,8 +70,8 @@ fun GreenAccountAsset(
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .padding(vertical = 16.dp)
-                        .padding(end = 7.dp)
-                        .size(32.dp)
+                        .padding(end = 8.dp)
+                        .size(24.dp)
                 )
 
                 if (accountAssetBalance != null) {
@@ -88,6 +90,7 @@ fun GreenAccountAsset(
                 modifier = Modifier
                     .padding(start = 8.dp)
                     .padding(end = if (withEditIcon && onClick != null) 0.dp else 10.dp)
+                    .padding(vertical = 16.dp)
                     .weight(1f),
                 contentAlignment = Alignment.CenterStart
             ) {
@@ -188,7 +191,12 @@ fun GreenAccountAsset(
             }
 
             if(withArrow) {
-                GreenArrow(modifier = Modifier.padding(end = 16.dp))
+                Icon(
+                    PhosphorIcons.Regular.CaretRight,
+                    contentDescription = null,
+                    tint = whiteMedium,
+                    modifier = Modifier.padding(end = 12.dp)
+                )
             }
         }
     }

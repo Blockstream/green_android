@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS `wallet` (
     `active_network` TEXT NOT NULL DEFAULT '',
     `active_account` INTEGER NOT NULL DEFAULT 0,
 
+    `is_recovery_confirmed` INTEGER AS Boolean NOT NULL DEFAULT 1,
+
     `is_testnet` INTEGER AS Boolean NOT NULL DEFAULT 0,
     `is_hardware` INTEGER AS Boolean NOT NULL DEFAULT 0,
     `is_lightning` INTEGER AS Boolean NOT NULL DEFAULT 0,
@@ -31,8 +33,8 @@ CREATE INDEX IF NOT EXISTS index_wallet_is_hardware ON wallet(`is_hardware`);
 CREATE INDEX IF NOT EXISTS index_wallet_wallet_hash_id ON wallet(`xpub_hash_id`);
 
 insertWallet:
-INSERT INTO wallet(id, name, xpub_hash_id, active_network, active_account, is_testnet, is_hardware, is_lightning, ask_bip39_passphrase, watch_only_username, device_identifiers, `order`)
-VALUES (?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?);
+INSERT INTO wallet(id, name, xpub_hash_id, active_network, active_account, is_recovery_confirmed, is_testnet, is_hardware, is_lightning, ask_bip39_passphrase, watch_only_username, device_identifiers, `order`)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?);
 
 getWallet:
 SELECT * FROM wallet WHERE id = ?;
@@ -54,6 +56,7 @@ SET
     xpub_hash_id = ?,
     active_network = ?,
     active_account = ?,
+    is_recovery_confirmed = ?,
     is_testnet = ?,
     is_hardware = ?,
     is_lightning = ?,

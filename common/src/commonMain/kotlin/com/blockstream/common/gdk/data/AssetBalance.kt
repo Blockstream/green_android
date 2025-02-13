@@ -35,13 +35,13 @@ data class AssetBalance constructor(
         ): AssetBalance {
             return AssetBalance(
                 asset = EnrichedAsset.create(session, assetId),
-                balance = balance?.toAmountLook(
+                balance = session.starsOrNull ?: balance?.toAmountLook(
                     session = session,
                     assetId = assetId,
                     withUnit = true,
                     denomination = denomination
                 ),
-                balanceExchange = balance?.toAmountLook(
+                balanceExchange = session.starsOrNull ?: balance?.toAmountLook(
                     session = session,
                     assetId = assetId,
                     withUnit = true,

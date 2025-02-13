@@ -3,15 +3,15 @@ package com.blockstream.common.models.devices
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_troubleshoot
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavAction
-import com.blockstream.common.data.NavData
 import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewGreenDevice
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.navigation.NavAction
+import com.blockstream.ui.navigation.NavData
 import com.juul.kable.ConnectionLostException
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
@@ -30,7 +30,7 @@ abstract class DeviceScanViewModelAbstract(greenWallet: GreenWallet) :
     abstract val deviceFlow: StateFlow<GreenDevice?>
 }
 
-class DeviceScanViewModel(greenWallet: GreenWallet) :
+class DeviceScanViewModel(greenWallet: GreenWallet, private val isWatchOnlyUpgrade: Boolean) :
     DeviceScanViewModelAbstract(greenWallet = greenWallet) {
 
     private val _deviceFlow: MutableStateFlow<GreenDevice?> = MutableStateFlow(null)
@@ -47,21 +47,12 @@ class DeviceScanViewModel(greenWallet: GreenWallet) :
 
             deviceManager.savedDevice = device
 
-            postSideEffect(
-                SideEffects.NavigateTo(
-                    NavigateDestinations.Login(
-                        greenWallet = greenWallet,
-                        autoLoginWallet = true,
-                        deviceId = device.connectionIdentifier
-                    )
-                )
-            )
-
+            navigate(greenWallet = greenWallet, deviceId = device.connectionIdentifier)
         } ?: run {
 
             combine(deviceFlow, deviceManager.devices) { _, devices ->
 
-                if(deviceFlow.value == null) {
+                if (deviceFlow.value == null) {
                     var foundDevice = devices.firstOrNull { device ->
                         greenWallet.deviceIdentifiers?.any { it.uniqueIdentifier == device.uniqueIdentifier } == true
                     }
@@ -82,7 +73,7 @@ class DeviceScanViewModel(greenWallet: GreenWallet) :
 
         viewModelScope.launch {
             _navData.value = NavData(
-                title = greenWallet.name,actions = listOfNotNull(
+                title = greenWallet.name, actions = listOfNotNull(
                     NavAction(title = getString(Res.string.id_troubleshoot), onClick = {
                         postEvent(LocalEvents.Troubleshoot)
                     }),
@@ -101,7 +92,9 @@ class DeviceScanViewModel(greenWallet: GreenWallet) :
             doAsync({
 
                 if (device.gdkHardwareWallet == null) {
-                    session.disconnect()
+                    if (!isWatchOnlyUpgrade) {
+                        session.disconnect()
+                    }
                     deviceConnectionManager.connectDevice(
                         device,
                         httpRequestHandler = sessionManager.httpRequestHandler,
@@ -110,68 +103,79 @@ class DeviceScanViewModel(greenWallet: GreenWallet) :
                     countly.hardwareConnect(device)
                 }
 
-                val gdkHardwareWallet = device.gdkHardwareWallet ?: throw Exception("Not HWWallet initiated")
+                val gdkHardwareWallet =
+                    device.gdkHardwareWallet ?: throw Exception("Not HWWallet initiated")
 
-                deviceConnectionManager.authenticateDeviceIfNeeded(httpRequestHandler = sessionManager.httpRequestHandler, interaction = this, gdkHardwareWallet = gdkHardwareWallet)
+                deviceConnectionManager.authenticateDeviceIfNeeded(
+                    httpRequestHandler = sessionManager.httpRequestHandler,
+                    interaction = this,
+                    gdkHardwareWallet = gdkHardwareWallet
+                )
 
-                val network = device.getOperatingNetworkForEnviroment(device, gdk, greenWallet.isTestnet)
-                    ?: throw Exception("No network is available")
+                val network =
+                    device.getOperatingNetworkForEnviroment(device, gdk, greenWallet.isTestnet)
+                        ?: throw Exception("No network is available")
 
-                if(greenWallet.isTestnet != network.isTestnet){
+                if (greenWallet.isTestnet != network.isTestnet) {
                     throw Exception("The device is operating on the wrong Environment")
                 }
 
-                if(device.isLedger){
+                if (device.isLedger) {
                     // Change network based on user applet
                     greenWallet.activeNetwork = network.id
                 }
 
-                val walletHashId = getWalletHashId(session, network, device)
+                val walletHashId =
+                    getWalletHashId(session = session, network = network, device = device)
+
+                logger.d { "Wallet: ${greenWallet.xPubHashId} == $walletHashId" }
 
                 if (greenWallet.xPubHashId.isNotBlank() && greenWallet.xPubHashId != walletHashId) {
                     // Disconnect only if there are no other connected sessions
                     // If it's Trezor, disconect the device as BIP39 Passphrase can be requested
-                    if(sessionManager.getConnectedHardwareWalletSessions().none { it.device?.connectionIdentifier == device.connectionIdentifier } || device.isTrezor){
+                    if (sessionManager.getConnectedHardwareWalletSessions()
+                            .none { it.device?.connectionIdentifier == device.connectionIdentifier } || device.isTrezor
+                    ) {
                         device.disconnect()
                     }
                     throw Exception("The wallet hash is different from the previous wallet.")
                 }
 
-    //// Disable Wallet Hash ID checking until we can have a more UX friendly experience
-    //            // Check wallet hash id
-    //            val walletHashId = getWalletHashId(session, network, device)
-    //
-    //            if (greenWallet.xPubHashId.isNotBlank() && greenWallet.xPubHashId != walletHashId) {
-    //
-    //                // Wallet has different hash id, ask user if he wants to continue
-    //                val userAction = CompletableDeferred<Boolean>().also{
-    //                    requestUserActionEmitter = it
-    //                    onEvent.postValue(ConsumableEvent(DeviceScanFragment.DeviceScanFragmentEvent.RequestWalletIsDifferent))
-    //                }
-    //
-    //                if (userAction.await()) {
-    //                    val onboardingSession = sessionManager.getOnBoardingSession()
-    //                    val epheneralWallet = Wallet.createEphemeralWallet(
-    //                        networkId = network.id,
-    //                        name = getWalletName(session, network, device),
-    //                        isHardware = true,
-    //                        isTestnet = network.isTestnet
-    //                    ).also {
-    //                        onboardingSession.ephemeralWallet = it
-    //                        sessionManager.upgradeOnBoardingSessionToWallet(it)
-    //                    }
-    //
-    //                    epheneralWallet to device
-    //                } else {
-    //                    // Disconnect only if there are no other connected sessions
-    //                    if(sessionManager.getConnectedHardwareWalletSessions().none { it.device?.connectionIdentifier == device.connectionIdentifier }){
-    //                        device.disconnect()
-    //                    }
-    //                    throw Exception("id_action_canceled")
-    //                }
-    //            }else{
-    //                greenWallet to device
-    //            }
+                //// Disable Wallet Hash ID checking until we can have a more UX friendly experience
+                //            // Check wallet hash id
+                //            val walletHashId = getWalletHashId(session, network, device)
+                //
+                //            if (greenWallet.xPubHashId.isNotBlank() && greenWallet.xPubHashId != walletHashId) {
+                //
+                //                // Wallet has different hash id, ask user if he wants to continue
+                //                val userAction = CompletableDeferred<Boolean>().also{
+                //                    requestUserActionEmitter = it
+                //                    onEvent.postValue(ConsumableEvent(DeviceScanFragment.DeviceScanFragmentEvent.RequestWalletIsDifferent))
+                //                }
+                //
+                //                if (userAction.await()) {
+                //                    val onboardingSession = sessionManager.getOnBoardingSession()
+                //                    val epheneralWallet = Wallet.createEphemeralWallet(
+                //                        networkId = network.id,
+                //                        name = getWalletName(session, network, device),
+                //                        isHardware = true,
+                //                        isTestnet = network.isTestnet
+                //                    ).also {
+                //                        onboardingSession.ephemeralWallet = it
+                //                        sessionManager.upgradeOnBoardingSessionToWallet(it)
+                //                    }
+                //
+                //                    epheneralWallet to device
+                //                } else {
+                //                    // Disconnect only if there are no other connected sessions
+                //                    if(sessionManager.getConnectedHardwareWalletSessions().none { it.device?.connectionIdentifier == device.connectionIdentifier }){
+                //                        device.disconnect()
+                //                    }
+                //                    throw Exception("id_action_canceled")
+                //                }
+                //            }else{
+                //                greenWallet to device
+                //            }
 
                 greenWallet to device
 
@@ -185,15 +189,8 @@ class DeviceScanViewModel(greenWallet: GreenWallet) :
 
                 deviceManager.savedDevice = it.second
 
-                postSideEffect(
-                    SideEffects.NavigateTo(
-                        NavigateDestinations.Login(
-                            greenWallet = it.first,
-                            autoLoginWallet = true,
-                            deviceId = it.second.connectionIdentifier
-                        )
-                    )
-                )
+                navigate(greenWallet = it.first, deviceId = it.second.connectionIdentifier)
+
                 countly.hardwareConnected(device)
             })
         } else {
@@ -216,13 +213,26 @@ class DeviceScanViewModel(greenWallet: GreenWallet) :
         })
     }
 
-    companion object: Loggable()
+    fun navigate(greenWallet: GreenWallet, deviceId: String) {
+        postSideEffect(
+            SideEffects.NavigateTo(
+                NavigateDestinations.Login(
+                    greenWallet = greenWallet,
+                    autoLoginWallet = !isWatchOnlyUpgrade,
+                    deviceId = deviceId,
+                    isWatchOnlyUpgrade = isWatchOnlyUpgrade
+                )
+            )
+        )
+    }
+
+    companion object : Loggable()
 }
 
 
 class DeviceScanViewModelPreview() : DeviceScanViewModelAbstract(greenWallet = previewWallet()) {
 
-    override val deviceFlow: StateFlow<GreenDevice?> =  MutableStateFlow(previewGreenDevice())
+    override val deviceFlow: StateFlow<GreenDevice?> = MutableStateFlow(previewGreenDevice())
     override var deviceOrNull: GreenDevice? = previewGreenDevice()
 
     companion object {

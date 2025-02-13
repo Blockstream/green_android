@@ -2,7 +2,7 @@ package com.blockstream.common.managers
 
 import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.di.ApplicationScope
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

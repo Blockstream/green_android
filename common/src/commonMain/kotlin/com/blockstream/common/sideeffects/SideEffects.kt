@@ -5,7 +5,6 @@ import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.Redact
 import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.TwoFactorResolverData
-import com.blockstream.common.events.Event
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.ProcessedTransactionDetails
@@ -14,12 +13,14 @@ import com.blockstream.common.navigation.NavigateDestination
 import com.blockstream.common.navigation.PopTo
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.jade.firmware.FirmwareUpgradeRequest
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.sideeffects.SideEffect
 import kotlinx.coroutines.CompletableDeferred
 import okio.Path
 import org.jetbrains.compose.resources.DrawableResource
 
 
-class SideEffects : SideEffect {
+object SideEffects {
     open class SideEffectEvent(override val event: Event) : SideEffectWithEvent
     data class OpenBrowser(val url: String, val openSystemBrowser: Boolean = false) : SideEffect
     data class OpenMenu(val id: Int = 0) : SideEffect
@@ -39,7 +40,7 @@ class SideEffects : SideEffect {
     data class Mnemonic(val mnemonic: String) : SideEffect, Redact
     data class Navigate(val data: Any? = null) : SideEffect
     data class NavigateTo(val destination: NavigateDestination) : SideEffect
-    data class NavigateBack(
+    data class NavigateBack constructor(
         val title: StringHolder? = null,
         val message: StringHolder? = null,
         val error: Throwable? = null,
@@ -48,7 +49,7 @@ class SideEffects : SideEffect {
     data class NavigateToRoot(val popTo: PopTo? = null) : SideEffect
     object CloseDrawer: SideEffect
     data class TransactionSent(val data: ProcessedTransactionDetails) : SideEffect
-    data class Logout(val reason: LogoutReason) : SideEffect
+    data class Logout constructor(val reason: LogoutReason) : SideEffect
     data object WalletDelete : SideEffect
     data class CopyToClipboard(val value: String, val message: String? = null, val label: String? = null, val isSensitive: Boolean = false) : SideEffect
     data class AccountArchived(val account: Account) : SideEffect
@@ -71,7 +72,7 @@ class SideEffects : SideEffect {
     data object AskForBluetoothPermissions: SideEffect
 
     data object BleRequireRebonding: SideEffect
-    data object RequestCipher : SideEffect
+    data object RequestBiometricsCipher : SideEffect
 
     // Devices
     data class AskForFirmwareUpgrade(val request: FirmwareUpgradeRequest) : SideEffect

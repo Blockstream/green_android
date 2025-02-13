@@ -13,6 +13,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_account_selector
 import blockstream_green.common.generated.resources.id_no_available_accounts
 import com.blockstream.common.gdk.data.AccountAssetBalanceList
 import com.blockstream.common.models.GreenViewModel
@@ -30,9 +31,11 @@ fun AccountsBottomSheet(
     viewModel: GreenViewModel,
     accountsBalance: AccountAssetBalanceList,
     withAsset: Boolean,
+    withArrow: Boolean = false,
     onDismissRequest: () -> Unit,
 ) {
     GreenBottomSheet(
+        title = stringResource(Res.string.id_account_selector),
         sheetState = rememberModalBottomSheetState(
             skipPartiallyExpanded = false,
         ),
@@ -40,20 +43,26 @@ fun AccountsBottomSheet(
     ) {
 
         GreenColumn(
-            padding = 0, space = 8, modifier = Modifier
-                .padding(top = 16.dp)
+            padding = 0,
+            space = 8,
+            modifier = Modifier
                 .verticalScroll(
                     rememberScrollState()
                 )
         ) {
             accountsBalance.list.forEach { accountAssetBalance ->
-                GreenAccountAsset(accountAssetBalance = accountAssetBalance, session = viewModel.sessionOrNull, withAsset = withAsset) {
+                GreenAccountAsset(
+                    accountAssetBalance = accountAssetBalance,
+                    session = viewModel.sessionOrNull,
+                    withAsset = withAsset,
+                    withArrow = withArrow
+                ) {
                     NavigateDestinations.Accounts.setResult(accountAssetBalance)
                     onDismissRequest()
                 }
             }
 
-            if(accountsBalance.list.isEmpty()){
+            if (accountsBalance.list.isEmpty()) {
                 Text(
                     text = stringResource(Res.string.id_no_available_accounts),
                     style = bodyMedium,

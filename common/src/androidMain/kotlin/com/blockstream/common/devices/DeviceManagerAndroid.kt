@@ -19,7 +19,7 @@ import com.blockstream.common.extensions.isJade
 import com.blockstream.common.managers.BluetoothManager
 import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.managers.SessionManager
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.juul.kable.Peripheral
 import com.juul.kable.PlatformAdvertisement
 import com.juul.kable.peripheral

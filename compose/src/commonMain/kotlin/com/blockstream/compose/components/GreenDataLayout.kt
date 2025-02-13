@@ -4,12 +4,13 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.blockstream.compose.theme.bodyLarge
+import com.blockstream.compose.theme.whiteMedium
 
 @Composable
 fun GreenDataLayout(
@@ -30,7 +31,8 @@ fun GreenDataLayout(
         title?.also {
             Text(
                 text = it,
-                style = MaterialTheme.typography.labelMedium,
+                style = bodyLarge,
+                color = whiteMedium,
                 modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
             )
         }

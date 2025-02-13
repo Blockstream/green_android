@@ -101,7 +101,7 @@ fun AboutScreen(
                     painter = painterResource(Res.drawable.brand),
                     contentDescription = null,
                     modifier = Modifier
-                        .heightIn(50.dp, 70.dp)
+                        .heightIn(80.dp, 120.dp)
                         .align(Alignment.Center)
                         .noRippleClickable {
                             viewModel.postEvent(AboutViewModel.LocalEvents.ClickLogo)

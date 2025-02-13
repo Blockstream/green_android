@@ -6,8 +6,8 @@ import blockstream_green.common.generated.resources.id_insufficient_lbtc_to_send
 import blockstream_green.common.generated.resources.id_reenable_2fa
 import com.blockstream.common.Urls
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavData
-import com.blockstream.common.events.Event
+import com.blockstream.ui.navigation.NavData
+import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.previewAccount
 import com.blockstream.common.extensions.previewWallet

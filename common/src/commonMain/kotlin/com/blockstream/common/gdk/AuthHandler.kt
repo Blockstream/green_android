@@ -6,7 +6,7 @@ import com.blockstream.common.gdk.data.DeviceRequiredData
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.gdk.device.GdkHardwareWallet
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.JsonElement

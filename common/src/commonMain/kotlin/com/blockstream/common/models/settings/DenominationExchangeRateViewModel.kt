@@ -7,7 +7,7 @@ import com.blockstream.common.BitcoinUnits
 import com.blockstream.common.TestnetUnits
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.WalletExtras
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewWallet

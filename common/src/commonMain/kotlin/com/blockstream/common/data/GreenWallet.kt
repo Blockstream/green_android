@@ -15,6 +15,7 @@ public data class WalletSerializable(
     public val xpub_hash_id: String,
     public val active_network: String,
     public val active_account: Long,
+    public val is_recovery_confirmed: Boolean,
     public val is_testnet: Boolean,
     public val is_hardware: Boolean,
     public val is_lightning: Boolean,
@@ -32,6 +33,7 @@ fun Wallet.toWalletSerializable(): WalletSerializable {
         xpub_hash_id = xpub_hash_id,
         active_network = active_network,
         active_account = active_account,
+        is_recovery_confirmed = is_recovery_confirmed,
         is_testnet = is_testnet,
         is_hardware = is_hardware,
         is_lightning = is_lightning,
@@ -54,6 +56,7 @@ fun GetWalletsWithCredentialType.toGreenWallet(): GreenWallet {
         xpub_hash_id = xpub_hash_id,
         active_network = active_network,
         active_account = active_account,
+        is_recovery_confirmed = is_recovery_confirmed,
         is_testnet = is_testnet,
         is_hardware = is_hardware,
         is_lightning = is_lightning,
@@ -124,6 +127,12 @@ data class GreenWallet constructor(
     val isWatchOnlySingleSig
         get() = isWatchOnly && watchOnlyUsername.isBlank()
 
+    var isRecoveryConfirmed
+        get() = wallet.is_recovery_confirmed
+        set(value) {
+            wallet = wallet.copy(is_recovery_confirmed = value)
+        }
+
     val isTestnet
         get() = wallet.is_testnet
 
@@ -185,6 +194,7 @@ data class GreenWallet constructor(
             activeNetwork: String = "",
             activeAccount: Long = 0,
             watchOnlyUsername: String? = null,
+            isRecoveryConfirmed: Boolean = true,
             isTestnet: Boolean = false,
             isHardware: Boolean = false,
             deviceIdentifier: List<DeviceIdentifier>? = null,
@@ -196,6 +206,7 @@ data class GreenWallet constructor(
                 xpub_hash_id = xPubHashId,
                 active_network = activeNetwork,
                 active_account = activeAccount,
+                is_recovery_confirmed = isRecoveryConfirmed,
                 is_testnet = isTestnet,
                 is_hardware = isHardware,
                 is_lightning = false,
@@ -222,6 +233,7 @@ data class GreenWallet constructor(
                     xpub_hash_id = networkId,
                     active_network = networkId,
                     active_account = 0,
+                    is_recovery_confirmed = true,
                     is_testnet = isTestnet,
                     is_hardware = isHardware,
                     is_lightning = false,

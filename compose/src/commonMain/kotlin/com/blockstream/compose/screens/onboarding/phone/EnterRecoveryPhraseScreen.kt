@@ -60,25 +60,28 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.LocalSnackbar
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
+import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.components.PasteButton
+import com.blockstream.compose.components.RiveAnimation
 import com.blockstream.compose.components.ScanQrButton
 import com.blockstream.compose.dialogs.TextDialog
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.managers.getClipboard
-import com.blockstream.compose.navigation.LocalInnerPadding
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
-import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.md_theme_brandSurface
+import com.blockstream.compose.theme.titleLarge
+import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.navigation.LocalInnerPadding
 import com.blockstream.ui.navigation.getResult
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
@@ -121,12 +124,18 @@ fun EnterRecoveryPhraseScreen(
         }
     }
 
-    SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false, verticalArrangement = Arrangement.SpaceBetween) {
+    SetupScreen(
+        viewModel = viewModel,
+        withPadding = false,
+        withBottomInsets = false,
+        verticalArrangement = Arrangement.SpaceBetween,
+        onProgressStyle = OnProgressStyle.Full(bluBackground = false, riveAnimation = RiveAnimation.ROCKET)
+    ) {
         Text(
             stringResource(Res.string.id_enter_your_recovery_phrase),
-            style = displayMedium,
+            style = titleLarge,
             modifier = Modifier
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 23.dp)
                 .padding(bottom = 16.dp)
         )
 

@@ -16,7 +16,7 @@ import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletDao
 import com.blockstream.green.database.roomToDelight
 import kotlinx.coroutines.runBlocking
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import java.security.KeyStore
 import java.security.UnrecoverableKeyException
 

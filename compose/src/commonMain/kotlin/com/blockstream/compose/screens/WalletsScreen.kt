@@ -1,6 +1,5 @@
 package com.blockstream.compose.screens
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,7 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,18 +20,19 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.caret_right
-import blockstream_green.common.generated.resources.id_digital_wallets
-import blockstream_green.common.generated.resources.id_ephemeral_wallets
-import blockstream_green.common.generated.resources.id_hardware_devices
+import blockstream_green.common.generated.resources.id_my_wallets
 import blockstream_green.common.generated.resources.id_setup_a_new_wallet
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.looks.wallet.WalletListLook
-import com.blockstream.common.models.wallets.WalletsViewModel
-import com.blockstream.common.models.wallets.WalletsViewModelAbstract
+import com.blockstream.common.models.home.HomeViewModel
+import com.blockstream.common.models.home.HomeViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.Promo
 import com.blockstream.compose.theme.labelMedium
+import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.whiteLow
+import com.blockstream.compose.utils.fadingEdges
 import com.blockstream.compose.views.WalletListItem
 import com.blockstream.compose.views.WalletListItemCallbacks
 import com.blockstream.ui.components.GreenColumn
@@ -41,14 +41,12 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 open class WalletSectionCallbacks constructor(
-    onWalletClick: (wallet: GreenWallet, isLightning: Boolean) -> Unit,
-    onLightningShortcutDelete: ((wallet: GreenWallet) -> Unit),
+    onWalletClick: (wallet: GreenWallet) -> Unit,
     onWalletDelete: ((wallet: GreenWallet) -> Unit),
     onWalletRename: ((wallet: GreenWallet) -> Unit),
     hasContextMenu: Boolean = false
 ) : WalletListItemCallbacks(
     onWalletClick = onWalletClick,
-    onLightningShortcutDelete = onLightningShortcutDelete,
     onWalletDelete = onWalletDelete,
     onWalletRename = onWalletRename,
     hasContextMenu = hasContextMenu
@@ -62,8 +60,8 @@ private fun LazyListScope.walletSection(
     item {
         Text(
             text = stringResource(title),
-            style = labelMedium,
-            modifier = Modifier.padding(top = 8.dp)
+            style = titleMedium,
+//            modifier = Modifier.padding(top = 8.dp)
         )
     }
     items(wallets) { item ->
@@ -74,27 +72,22 @@ private fun LazyListScope.walletSection(
 @Composable
 fun WalletsScreen(
     modifier: Modifier = Modifier,
-    viewModel: WalletsViewModelAbstract,
+    viewModel: HomeViewModelAbstract,
 ) {
     val isEmptyWallet by viewModel.isEmptyWallet.collectAsStateWithLifecycle()
-    val softwareWallets by viewModel.softwareWallets.collectAsStateWithLifecycle()
-    val ephemeralWallets by viewModel.ephemeralWallets.collectAsStateWithLifecycle()
-    val hardwareWallets by viewModel.hardwareWallets.collectAsStateWithLifecycle()
+    val allWallets by viewModel.allWallets.collectAsStateWithLifecycle()
 
-    val callbacks = WalletSectionCallbacks(onWalletClick = { wallet, isLightningShortcut ->
+    val callbacks = WalletSectionCallbacks(onWalletClick = { wallet ->
         viewModel.postEvent(
-            WalletsViewModel.LocalEvents.SelectWallet(
-                greenWallet = wallet,
-                isLightningShortcut = isLightningShortcut
+            HomeViewModel.LocalEvents.SelectWallet(
+                greenWallet = wallet
             )
         )
-    }, onLightningShortcutDelete = {
-        // viewModel.postEvent(Events.AskRemoveLightningShortcut(wallet = it))
     }, onWalletDelete = {
         viewModel.postEvent(NavigateDestinations.DeleteWallet(it))
     }, onWalletRename = {
         viewModel.postEvent(NavigateDestinations.RenameWallet(it))
-    }, hasContextMenu = viewModel.isHome)
+    }, hasContextMenu = true)
 
     GreenColumn(
         space = 8,
@@ -104,48 +97,62 @@ fun WalletsScreen(
             .then(modifier)
     ) {
 
+        val lazyListState = rememberLazyListState()
+
         LazyColumn(
+            state = lazyListState,
             modifier = Modifier
+                .fadingEdges(lazyListState)
                 .weight(1f),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             item {
                 Promo(viewModel = viewModel, modifier = Modifier.padding(top = 16.dp))
             }
 
-            softwareWallets?.takeIf { it.isNotEmpty() }?.also {
+            allWallets?.takeIf { it.isNotEmpty() }?.also {
                 walletSection(
-                    title = Res.string.id_digital_wallets,
+                    title = Res.string.id_my_wallets,
                     wallets = it,
                     callbacks = callbacks
                 )
             }
 
-            ephemeralWallets?.takeIf { it.isNotEmpty() }?.also {
-                walletSection(
-                    title = Res.string.id_ephemeral_wallets,
-                    wallets = it,
-                    callbacks = callbacks
-                )
-            }
-
-            hardwareWallets?.takeIf { it.isNotEmpty() }?.also {
-                walletSection(
-                    title = Res.string.id_hardware_devices,
-                    wallets = it,
-                    callbacks = callbacks
-                )
-            }
+//            softwareWallets?.takeIf { it.isNotEmpty() }?.also {
+//                walletSection(
+//                    title = Res.string.id_my_wallets,
+//                    wallets = it,
+//                    callbacks = callbacks
+//                )
+//            }
+//
+//            ephemeralWallets?.takeIf { it.isNotEmpty() }?.also {
+//                walletSection(
+//                    title = Res.string.id_ephemeral_wallets,
+//                    wallets = it,
+//                    callbacks = callbacks
+//                )
+//            }
+//
+//            hardwareWallets?.takeIf { it.isNotEmpty() }?.also {
+//                walletSection(
+//                    title = Res.string.id_hardware_devices,
+//                    wallets = it,
+//                    callbacks = callbacks
+//                )
+//            }
         }
 
-        if(isEmptyWallet == false) {
-            Card {
-                Row(modifier = Modifier
-                    .clickable {
-                        viewModel.postEvent(NavigateDestinations.SetupNewWallet)
-                    }
-                    .height(52.dp)
-                    .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+        if (isEmptyWallet == false) {
+            GreenCard(onClick = {
+                viewModel.postEvent(NavigateDestinations.SetupNewWallet)
+            }, modifier = Modifier.padding(bottom = 16.dp), padding = 0) {
+                Row(
+                    modifier = Modifier
+                        .height(60.dp)
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
                         text = stringResource(Res.string.id_setup_a_new_wallet),
                         modifier = Modifier.weight(1f),

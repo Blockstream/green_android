@@ -267,11 +267,10 @@ private val _gdkNotificationHandler = staticCFunction { context: COpaquePointer?
     Unit
 }
 
-class IOSGdkBinding constructor(config: InitConfig) : GdkBinding {
+class IOSGdkBinding constructor(private val config: InitConfig) : GdkBinding {
     override val logs: StringBuilder = StringBuilder()
     private val _notifyContexts = mutableMapOf<CPointer<GA_session>, StableRef<NotifyContext>>()
     private var _notificationHandler: ((session: GASession, jsonObject: JsonElement) -> Unit)? = null
-    private val _dataDir: String = config.datadir
 
     init {
         memScoped {
@@ -280,7 +279,7 @@ class IOSGdkBinding constructor(config: InitConfig) : GdkBinding {
     }
 
     override val dataDir: String
-        get() = _dataDir
+        get() = config.datadir
 
     override fun appendGdkLogs(json: String) {
         logs.append("$json\n")

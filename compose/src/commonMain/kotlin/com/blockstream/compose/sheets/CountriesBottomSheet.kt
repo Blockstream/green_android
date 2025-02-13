@@ -31,6 +31,8 @@ import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.GreenSearchField
 import com.blockstream.compose.theme.bodyMedium
+import com.blockstream.compose.theme.labelLarge
+import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.navigation.setResult
 import org.jetbrains.compose.resources.stringResource
@@ -39,9 +41,12 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun CountriesBottomSheet(
     viewModel: GreenViewModel,
+    title: String? = null,
+    showDialCode: Boolean = true,
     onDismissRequest: () -> Unit,
 ) {
     GreenBottomSheet(
+        title = title,
         viewModel = viewModel,
         withHorizontalPadding = false,
         withBottomPadding = false,
@@ -58,7 +63,8 @@ fun CountriesBottomSheet(
                     Countries.Countries
                 } else {
                     Countries.Countries.filter {
-                        it.name.lowercase().contains(query.lowercase()) || it.dialCodeString.contains(query)
+                        it.name.lowercase()
+                            .contains(query.lowercase()) || it.dialCodeString.contains(query)
                     }
                 }
             }
@@ -78,7 +84,7 @@ fun CountriesBottomSheet(
 
             LazyColumn(
                 contentPadding = PaddingValues(top = 8.dp, bottom = 48.dp),
-                verticalArrangement = Arrangement.spacedBy(2.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 items(data) { country ->
                     GreenCard(onClick = {
@@ -86,8 +92,16 @@ fun CountriesBottomSheet(
                         onDismissRequest()
                     }) {
                         Column {
-                            Text(country.name)
-                            Text(country.dialCodeString)
+                            Text(text = country.name, style = labelLarge)
+                            Text(
+                                text = if (showDialCode) {
+                                    country.dialCodeString
+                                } else {
+                                    country.code.uppercase()
+                                },
+                                style = bodyMedium,
+                                color = whiteMedium
+                            )
                         }
                     }
                 }

@@ -12,7 +12,7 @@ class RandomTests {
     private val secureRandom = getSecureRandom()
 
     @Test
-    fun `test randomBytes randomness`() {
+    fun test_randomBytes_randomness() {
         val checks = 10_000
         val random = ArrayList<String>(checks)
 
@@ -25,14 +25,14 @@ class RandomTests {
     }
 
     @Test
-    fun `test randomBytes size`() {
+    fun test_randomBytes_size() {
         (0..1000).forEach {
             assertEquals(it, secureRandom.randomBytes(it).size)
         }
     }
 
     @Test
-    fun `test unsecureRandomInt randomness`() {
+    fun test_unsecureRandomInt_randomness() {
         val checks = 10_000
         val random = ArrayList<Int>(checks)
         (0..checks).forEach {
@@ -44,7 +44,7 @@ class RandomTests {
     }
 
     @Test
-    fun `test unsecureRandomInt until`() {
+    fun test_unsecureRandomInt_until() {
         (1..1000).forEach { i ->
             secureRandom.unsecureRandomInt(i).also { random ->
                 assertTrue(random < i)
@@ -53,7 +53,7 @@ class RandomTests {
     }
 
     @Test
-    fun `test unsecureRandomInt range`() {
+    fun test_unsecureRandomInt_range() {
         (1..1000).forEach { i ->
             val range = i..(i+1000)
             secureRandom.unsecureRandomInt(range.first, range.last).also { random ->

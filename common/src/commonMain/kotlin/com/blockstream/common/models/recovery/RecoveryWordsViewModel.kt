@@ -1,14 +1,14 @@
 package com.blockstream.common.models.recovery
 
-import com.blockstream.common.data.NavData
+import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.recovery.RecoveryCheckViewModel.Companion.RecoveryPhraseChecks
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.rickclephas.kmp.observableviewmodel.launch
 
 abstract class RecoveryWordsViewModelAbstract(val setupArgs: SetupArgs) :

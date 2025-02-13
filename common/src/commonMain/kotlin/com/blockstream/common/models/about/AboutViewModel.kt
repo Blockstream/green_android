@@ -5,7 +5,7 @@ import blockstream_green.common.generated.resources.id_thank_you_for_your_feedba
 import com.blockstream.common.SupportType
 import com.blockstream.common.Urls
 import com.blockstream.common.data.SupportData
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.launchIn
@@ -90,7 +90,7 @@ class AboutViewModel : AboutViewModelAbstract() {
         }.launchIn(this)
 
         viewModelScope.launch {
-            database.insertEvent(GenericEvent(deviceId = settingsManager.getCountlyDeviceId()).sha256())
+            database.insertEvent(GenericEvent(deviceId = settingsManager.getCountlyDeviceId()).sha256(), randomInsert = true)
         }
 
         bootstrap()

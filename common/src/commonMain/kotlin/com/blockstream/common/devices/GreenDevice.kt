@@ -6,7 +6,7 @@ import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.GdkHardwareWallet
 import com.blockstream.common.gdk.device.HardwareConnectInteraction
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.blockstream.jade.firmware.FirmwareUpdateState
 import com.juul.kable.Peripheral
 import kotlinx.coroutines.CoroutineScope

@@ -1,6 +1,6 @@
 package com.blockstream.common.data
 
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.gdk.data.Network
 
 sealed class WalletSetting{

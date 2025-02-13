@@ -10,7 +10,7 @@ import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import androidx.core.content.ContextCompat
 import androidx.core.location.LocationManagerCompat
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.juul.tuulbox.coroutines.flow.broadcastReceiverFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

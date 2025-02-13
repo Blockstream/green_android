@@ -1,7 +1,7 @@
 package com.blockstream.common.models.wallet
 
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.cleanup
 import com.blockstream.common.extensions.isNotBlank

@@ -9,6 +9,7 @@ sealed class AlertType{
     data class Reset2FA(val network: Network, val twoFactorReset: TwoFactorReset): AlertType()
     data object TestnetWarning : AlertType()
     data object EphemeralBip39 : AlertType()
+    data class RecoveryIsUnconfirmed(val withCloseButton: Boolean) : AlertType()
     data class Banner(val banner: com.blockstream.common.data.Banner) : AlertType()
     data object FailedNetworkLogin : AlertType()
     data class LspStatus(val maintenance: Boolean) : AlertType()

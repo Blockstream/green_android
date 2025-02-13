@@ -20,9 +20,9 @@ import com.blockstream.common.gdk.params.SubAccountParams
 import com.blockstream.common.looks.AccountTypeLook
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.PopTo
-import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.ui.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO

@@ -35,7 +35,7 @@ import blockstream_green.common.generated.resources.qr_code
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.md_theme_surfaceTint
-import com.blockstream.compose.utils.ifTrue
+import com.blockstream.ui.utils.ifTrue
 import io.github.alexzhirkevich.qrose.options.QrErrorCorrectionLevel
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import org.jetbrains.compose.resources.painterResource

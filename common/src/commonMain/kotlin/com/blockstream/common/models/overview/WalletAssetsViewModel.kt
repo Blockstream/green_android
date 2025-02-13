@@ -4,13 +4,13 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_my_assets
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavData
+import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.previewAssetBalance
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
 import com.rickclephas.kmp.observableviewmodel.stateIn

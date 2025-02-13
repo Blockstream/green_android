@@ -7,11 +7,10 @@ import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.gdk.params.LoginCredentialsParams
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
 
 @Serializable
 data class RichWatchOnly(
-    @SerialName("networks") val network: String,
+    @SerialName("network") val network: String,
     @SerialName("username") val username: String,
     @SerialName("password") val password: String,
     @SerialName("watch_only_data") val watchOnlyData: String? = null,

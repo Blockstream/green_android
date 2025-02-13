@@ -3,32 +3,23 @@ package com.blockstream.common.models.devices
 import com.blockstream.common.Urls
 import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.devices.DeviceModel
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.jade.JadeQrOperation
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 abstract class ImportPubKeyViewModelAbstract(val deviceModel: DeviceModel) : GreenViewModel() {
     override fun screenName(): String = "ImportPubKey"
-
-    @NativeCoroutinesState
-    abstract val canUseBiometrics: StateFlow<Boolean>
-
-    @NativeCoroutinesState
-    abstract val withBiometrics: MutableStateFlow<Boolean>
 }
 
 class ImportPubKeyViewModel constructor(deviceModel: DeviceModel) :
     ImportPubKeyViewModelAbstract(deviceModel = deviceModel) {
-
-    override val canUseBiometrics: MutableStateFlow<Boolean>
-    override val withBiometrics: MutableStateFlow<Boolean>
 
     private val isTestnetEnabled
         get() = settingsManager.getApplicationSettings().testnet
@@ -43,10 +34,6 @@ class ImportPubKeyViewModel constructor(deviceModel: DeviceModel) :
     }
 
     init {
-        greenKeystore.canUseBiometrics().also {
-            canUseBiometrics = MutableStateFlow(it)
-            withBiometrics = MutableStateFlow(it)
-        }
         bootstrap()
     }
 
@@ -100,7 +87,6 @@ class ImportPubKeyViewModel constructor(deviceModel: DeviceModel) :
                     network = session.networks.bitcoinElectrum(isTestnet),
                     persistLoginCredentials = true,
                     watchOnlyCredentials = WatchOnlyCredentials(coreDescriptors = listOf(event.pubKey)),
-                    withBiometrics = withBiometrics.value,
                     deviceModel = deviceModel
                 )
             }
@@ -113,9 +99,6 @@ class ImportPubKeyViewModel constructor(deviceModel: DeviceModel) :
 
 class ImportPubKeyViewModelPreview :
     ImportPubKeyViewModelAbstract(deviceModel = DeviceModel.BlockstreamGeneric) {
-
-    override val canUseBiometrics: MutableStateFlow<Boolean> = MutableStateFlow(true)
-    override val withBiometrics: MutableStateFlow<Boolean> = MutableStateFlow(true)
 
     companion object {
         fun preview() =

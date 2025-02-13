@@ -33,57 +33,51 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun WalletBalance(viewModel: IWalletBalance) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = stringResource(Res.string.id_total_balance), color = textMedium)
-                val hideAmounts by viewModel.hideAmounts.collectAsStateWithLifecycle()
-                Icon(
-                    painter = painterResource(if (hideAmounts) Res.drawable.eye_slash else Res.drawable.eye),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .noRippleClickable {
-                            viewModel.postEvent(WalletOverviewViewModel.LocalEvents.ToggleHideAmounts)
-                        }
-                        .padding(horizontal = 8.dp)
-                        .align(Alignment.CenterVertically)
+fun WalletBalance(modifier: Modifier = Modifier, viewModel: IWalletBalance) {
+    Column(modifier = Modifier.fillMaxWidth().then(modifier)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(text = stringResource(Res.string.id_total_balance), color = textMedium)
+            val hideAmounts by viewModel.hideAmounts.collectAsStateWithLifecycle()
+            Icon(
+                painter = painterResource(if (hideAmounts) Res.drawable.eye_slash else Res.drawable.eye),
+                contentDescription = null,
+                modifier = Modifier
+                    .noRippleClickable {
+                        viewModel.postEvent(WalletOverviewViewModel.LocalEvents.ToggleHideAmounts)
+                    }
+                    .padding(horizontal = 8.dp)
+                    .align(Alignment.CenterVertically)
+            )
+        }
+
+        Box {
+            val balancePrimary by viewModel.balancePrimary.collectAsStateWithLifecycle()
+            Column(modifier = Modifier.noRippleClickable {
+                viewModel.postEvent(LocalEvents.ToggleBalance)
+            }) {
+                Text(
+                    text = balancePrimary.takeIf { it.isNotBlank() } ?: " ",
+                    color = textHigh,
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                val balanceSecondary by viewModel.balanceSecondary.collectAsStateWithLifecycle()
+                Text(text = balanceSecondary.takeIf { it.isNotBlank() } ?: " ",
+                    color = textMedium,
+                    style = bodyLarge
                 )
             }
 
-            Box {
-                val balancePrimary by viewModel.balancePrimary.collectAsStateWithLifecycle()
-                Column(modifier = Modifier.noRippleClickable {
-                    viewModel.postEvent(LocalEvents.ToggleBalance)
-                }) {
-
-                    Text(
-                        text = balancePrimary.takeIf { it.isNotBlank() } ?: " ",
-                        color = textHigh,
-                        fontSize = 26.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    val balanceSecondary by viewModel.balanceSecondary.collectAsStateWithLifecycle()
-                    Text(text = balanceSecondary.takeIf { it.isNotBlank() } ?: " ",
-                        color = textMedium,
-                        style = bodyLarge)
-                }
-
-                androidx.compose.animation.AnimatedVisibility(
-                    visible = balancePrimary == null,
-                    modifier = Modifier.align(Alignment.Center)
-                ) {
-                    LinearProgressIndicator(
-                        modifier = Modifier
-                            .height(1.dp)
-                            .padding(horizontal = 32.dp)
-                            .fillMaxWidth()
-                    )
-                }
+            androidx.compose.animation.AnimatedVisibility(
+                visible = balancePrimary == null,
+                modifier = Modifier.align(Alignment.Center)
+            ) {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .height(1.dp)
+                        .padding(horizontal = 32.dp)
+                        .fillMaxWidth()
+                )
             }
         }
     }

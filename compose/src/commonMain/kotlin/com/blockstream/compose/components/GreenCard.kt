@@ -10,6 +10,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardElevation
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -27,7 +28,7 @@ import com.blockstream.compose.utils.AnimatedNullableVisibility
 fun GreenCard(
     modifier: Modifier = Modifier,
     colors: CardColors = CardDefaults.outlinedCardColors(),
-    elevation: CardElevation = CardDefaults.cardElevation(),
+    elevation: CardElevation = CardDefaults.outlinedCardElevation(),
     enabled: Boolean = true,
     padding: Int = 16,
     border: BorderStroke? = null,
@@ -38,7 +39,7 @@ fun GreenCard(
     content: @Composable BoxScope.() -> Unit
 ) {
 
-    val borderStroke = border // ?: CardDefaults.outlinedCardBorder()
+    val borderStroke = border ?: CardDefaults.outlinedCardBorder(enabled)
 
     Column(
         modifier = Modifier
@@ -46,8 +47,7 @@ fun GreenCard(
             .then(modifier)
     ) {
         if (onClick == null) {
-            // OutlinedCard
-            Card(
+            OutlinedCard(
                 shape = if (helperText == null) CardDefaults.shape else GreenSmallBottom,
                 elevation = elevation,
                 colors = colors,
@@ -61,8 +61,7 @@ fun GreenCard(
                 )
             }
         } else {
-            // OutlinedCard
-            Card(
+            OutlinedCard(
                 onClick = onClick,
                 enabled = enabled,
                 shape = if (helperText == null) CardDefaults.shape else GreenSmallBottom,

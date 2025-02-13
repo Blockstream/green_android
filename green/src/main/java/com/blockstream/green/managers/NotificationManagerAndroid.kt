@@ -24,7 +24,6 @@ import blockstream_green.common.generated.resources.id_lightning_notifications
 import blockstream_green.common.generated.resources.id_logout
 import blockstream_green.common.generated.resources.id_open_wallet_to_receive_a_payment
 import blockstream_green.common.generated.resources.id_payment_received
-import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.database.Database
@@ -34,7 +33,7 @@ import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.blockstream.compose.extensions.getNetworkColor
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.lightning
@@ -232,7 +231,6 @@ class NotificationManagerAndroid constructor(
         val intent = Intent(context, GreenActivity::class.java).also {
             it.action = GreenActivity.OPEN_WALLET
             it.putExtra(GreenActivity.WALLET, wallet.toJson())
-            it.putExtra(GreenActivity.IS_LIGHTNING, database.getLoginCredential(wallet.id, CredentialType.LIGHTNING_MNEMONIC) != null)
         }
         val pendingIntent = PendingIntent.getActivity(
             context, requestCode(wallet), intent,
@@ -266,7 +264,6 @@ class NotificationManagerAndroid constructor(
         val intent = Intent(context, GreenActivity::class.java).also {
             it.action = GreenActivity.OPEN_WALLET
             it.putExtra(GreenActivity.WALLET, wallet.toJson())
-            it.putExtra(GreenActivity.IS_LIGHTNING, database.getLoginCredential(wallet.id, CredentialType.LIGHTNING_MNEMONIC) != null)
         }
         val pendingIntent = PendingIntent.getActivity(
             context, requestCode(wallet), intent,

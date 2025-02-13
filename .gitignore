@@ -26,14 +26,14 @@ gdk/src/main/java/com/blockstream/libwally/Wally.java
 keystore.properties
 gdk_commit
 local.keystore
-compose/src/commonMain/composeResources/files/app_keys.txt
+app_keys.txt
 
 common/src/include
 common/src/libs
 
 .kotlin/
 
-# iosApp
+# iosGreenApp
 **/build/
 xcuserdata
 !src/**/build/
@@ -47,3 +47,4 @@ captures
 !*.xcodeproj/project.xcworkspace/
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
+report.xml

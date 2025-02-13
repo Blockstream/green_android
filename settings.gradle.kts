@@ -23,7 +23,7 @@ include(
     ":green",
     ":gdk",
     ":compose",
-    "ui-common",
+    ":ui-common",
     ":hardware",
     ":jade",
     ":base-gms",
@@ -31,5 +31,7 @@ include(
     ":no-gms",
     ":common",
     ":gdk",
-    "ui-common"
+    ":desktopApp",
+    ":data",
+    ":utils"
 )

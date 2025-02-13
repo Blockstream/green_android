@@ -59,12 +59,12 @@ import breez_sdk.connect
 import breez_sdk.defaultConfig
 import breez_sdk.mnemonicToSeed
 import breez_sdk.parseInput
-import com.blockstream.common.data.AppInfo
+import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.extensions.tryCatch
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.platformFileSystem
 import com.blockstream.common.platformName
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO

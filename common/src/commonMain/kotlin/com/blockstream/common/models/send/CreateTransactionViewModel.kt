@@ -12,7 +12,6 @@ import com.blockstream.common.data.ExceptionWithSupportData
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SupportData
-import com.blockstream.common.events.Event
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.launchIn
@@ -31,12 +30,13 @@ import com.blockstream.common.looks.transaction.TransactionConfirmLook
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.jade.JadeQrOperation
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.ifNotNull
 import com.blockstream.common.utils.toAmountLook
+import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.sideeffects.SideEffect
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -129,9 +129,6 @@ abstract class CreateTransactionViewModelAbstract(
     open suspend fun createTransactionParams(): CreateTransactionParams? = null
 
     open fun createTransaction(params: CreateTransactionParams?, finalCheckBeforeContinue: Boolean = false) { }
-
-    @NativeCoroutinesState
-    abstract val isWatchOnly: StateFlow<Boolean>
 
     class LocalEvents {
         data class ClickFeePriority(val showCustomFeeRateDialog: Boolean = false) : Event
@@ -382,11 +379,11 @@ abstract class CreateTransactionViewModelAbstract(
                 transaction = session.blindTransaction(network, transaction)
             }
 
-            if (!transaction.isSweep() && (session.isWatchOnly || createPsbt)) {
+            if (!transaction.isSweep() && (session.isWatchOnly.value || createPsbt)) {
                 // Create PSBT
                 ProcessedTransactionDetails(psbt = session.psbtFromJson(account.network, transaction).psbt)
             } else {
-                if (session.isHardwareWallet && !account.isLightning && !transaction.isSweep() && !session.isWatchOnly) {
+                if (session.isHardwareWallet && !account.isLightning && !transaction.isSweep() && !session.isWatchOnlyValue) {
                     postSideEffect(
                         SideEffects.NavigateTo(
                             NavigateDestinations.DeviceInteraction(

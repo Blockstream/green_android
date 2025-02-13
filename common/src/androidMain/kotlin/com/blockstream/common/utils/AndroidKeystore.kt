@@ -12,6 +12,7 @@ import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.crypto.KeystoreInvalidatedException
 import com.blockstream.common.crypto.PlatformCipher
 import com.blockstream.common.data.EncryptedData
+import com.blockstream.green.utils.Loggable
 import java.security.KeyStore
 import java.security.KeyStoreException
 import javax.crypto.BadPaddingException

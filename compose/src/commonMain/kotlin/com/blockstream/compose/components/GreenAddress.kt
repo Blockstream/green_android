@@ -21,7 +21,7 @@ import com.blockstream.compose.extensions.colorTextEdges
 import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.utils.CopyContainer
-import com.blockstream.compose.utils.ifTrue
+import com.blockstream.ui.utils.ifTrue
 
 
 @Composable

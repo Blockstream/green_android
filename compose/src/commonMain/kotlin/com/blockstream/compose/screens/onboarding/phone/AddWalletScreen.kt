@@ -50,7 +50,7 @@ fun AddWalletScreen(
         }
     }
 
-    SetupScreen(viewModel = viewModel, withPadding = false) {
+    SetupScreen(viewModel = viewModel, withPadding = false, horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
             modifier = Modifier
                 .weight(2f)

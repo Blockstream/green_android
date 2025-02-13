@@ -28,16 +28,6 @@ fun LoginScreenPreview2() {
 
 @Composable
 @Preview
-fun LoginScreenPreview3() {
-    GreenAndroidPreview {
-        LoginScreen(viewModel = LoginViewModelPreview.previewWithLightningShortcut().also {
-            it.onProgress.value = false
-        })
-    }
-}
-
-@Composable
-@Preview
 fun LoginScreenPreview4() {
     GreenAndroidPreview {
         LoginScreen(viewModel = LoginViewModelPreview.previewWithDevice().also {

@@ -2,23 +2,17 @@ package com.blockstream.compose.navigation
 
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.toRoute
 import com.blockstream.common.devices.DeviceModel
-import com.blockstream.common.gdk.data.AccountAssetBalanceList
 import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.models.MainViewModel
 import com.blockstream.common.models.SimpleGreenViewModel
@@ -38,6 +32,7 @@ import com.blockstream.common.models.devices.ImportPubKeyViewModel
 import com.blockstream.common.models.devices.JadeGenuineCheckViewModel
 import com.blockstream.common.models.devices.JadeGuideViewModel
 import com.blockstream.common.models.exchange.AccountExchangeViewModel
+import com.blockstream.common.models.exchange.BuyViewModel
 import com.blockstream.common.models.exchange.OnOffRampsViewModel
 import com.blockstream.common.models.home.HomeViewModel
 import com.blockstream.common.models.jade.JadeQRViewModel
@@ -55,6 +50,7 @@ import com.blockstream.common.models.onboarding.watchonly.WatchOnlyCredentialsVi
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyNetworkViewModel
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyPolicyViewModel
 import com.blockstream.common.models.overview.AccountOverviewViewModel
+import com.blockstream.common.models.overview.SecurityViewModel
 import com.blockstream.common.models.overview.TransactViewModel
 import com.blockstream.common.models.overview.WalletAssetsViewModel
 import com.blockstream.common.models.overview.WalletOverviewViewModel
@@ -90,6 +86,7 @@ import com.blockstream.common.models.transaction.TransactionViewModel
 import com.blockstream.common.models.twofactor.ReEnable2FAViewModel
 import com.blockstream.common.models.wallet.WalletDeleteViewModel
 import com.blockstream.common.models.wallet.WalletNameViewModel
+import com.blockstream.common.navigation.NavigateDestination
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.dialogs.TorWarningDialog
@@ -109,6 +106,7 @@ import com.blockstream.compose.screens.devices.DeviceScanScreen
 import com.blockstream.compose.screens.devices.ImportPubKeyScreen
 import com.blockstream.compose.screens.devices.JadeGenuineCheckScreen
 import com.blockstream.compose.screens.exchange.AccountExchangeScreen
+import com.blockstream.compose.screens.exchange.BuyScreen
 import com.blockstream.compose.screens.exchange.OnOffRampsScreen
 import com.blockstream.compose.screens.jade.JadePinUnlockScreen
 import com.blockstream.compose.screens.jade.JadeQRScreen
@@ -126,6 +124,7 @@ import com.blockstream.compose.screens.onboarding.watchonly.WatchOnlyCredentials
 import com.blockstream.compose.screens.onboarding.watchonly.WatchOnlyNetworkScreen
 import com.blockstream.compose.screens.onboarding.watchonly.WatchOnlyPolicyScreen
 import com.blockstream.compose.screens.overview.AccountOverviewScreen
+import com.blockstream.compose.screens.overview.SecurityScreen
 import com.blockstream.compose.screens.overview.TransactScreen
 import com.blockstream.compose.screens.overview.WalletAssetsScreen
 import com.blockstream.compose.screens.overview.WalletOverviewScreen
@@ -157,6 +156,7 @@ import com.blockstream.compose.sheets.AssetDetailsBottomSheet
 import com.blockstream.compose.sheets.AssetsAccountsBottomSheet
 import com.blockstream.compose.sheets.AssetsBottomSheet
 import com.blockstream.compose.sheets.Bip39PassphraseBottomSheet
+import com.blockstream.compose.sheets.BuyQuotesBottomSheet
 import com.blockstream.compose.sheets.Call2ActionBottomSheet
 import com.blockstream.compose.sheets.CameraBottomSheet
 import com.blockstream.compose.sheets.ChooseAssetAccountBottomSheet
@@ -175,6 +175,7 @@ import com.blockstream.compose.sheets.PassphraseBottomSheet
 import com.blockstream.compose.sheets.PinMatrixBottomSheet
 import com.blockstream.compose.sheets.QrBottomSheet
 import com.blockstream.compose.sheets.RecoveryHelpBottomSheet
+import com.blockstream.compose.sheets.SecurityLevelBottomSheet
 import com.blockstream.compose.sheets.SignMessageBottomSheet
 import com.blockstream.compose.sheets.SystemMessageBottomSheet
 import com.blockstream.compose.sheets.TransactionDetailsBottomSheet
@@ -182,27 +183,19 @@ import com.blockstream.compose.sheets.TwoFactorResetBottomSheet
 import com.blockstream.compose.sheets.WalletDeleteBottomSheet
 import com.blockstream.compose.sheets.WalletRenameBottomSheet
 import com.blockstream.compose.sheets.WatchOnlyCredentialsSettingsBottomSheet
-import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.ui.navigation.Dialog
+import com.blockstream.ui.navigation.LocalInnerPadding
 import com.blockstream.ui.navigation.bottomsheet.onDismissRequest
 import com.blockstream.ui.navigation.dialogs.GenericDialog
 import com.blockstream.ui.navigation.setResult
 import org.koin.compose.koinInject
-
-val LocalNavigator: ProvidableCompositionLocal<NavHostController> =
-    staticCompositionLocalOf { error("LocalNavigator not initialized") }
-
-val LocalNavBackStackEntry: ProvidableCompositionLocal<NavBackStackEntry?> =
-    compositionLocalOf { null }
-
-val LocalInnerPadding: ProvidableCompositionLocal<PaddingValues> =
-    compositionLocalOf { PaddingValues() }
 
 @Composable
 fun Router(
     mainViewModel: MainViewModel,
     innerPadding: PaddingValues,
     navController: NavHostController,
+    startDestination: NavigateDestination = NavigateDestinations.Home,
 ) {
 
     CompositionLocalProvider(
@@ -210,9 +203,10 @@ fun Router(
     ) {
         NavHost(
             navController = navController,
-            startDestination = NavigateDestinations.Home
+            startDestination = startDestination
         ) {
             appComposable<NavigateDestinations.Home> {
+                val args = it.toRoute<NavigateDestinations.Home>()
                 HomeScreen(viewModel { HomeViewModel() })
             }
             appComposable<NavigateDestinations.About> {
@@ -300,18 +294,14 @@ fun Router(
                 val args = it.toRoute<NavigateDestinations.DeviceInfo>()
                 DeviceInfoScreen(viewModel { DeviceInfoViewModel(args.deviceId) })
             }
-            appComposable<NavigateDestinations.DeviceScan> {
-                val args = it.toRoute<NavigateDestinations.DeviceScan>()
-                DeviceScanScreen(viewModel { DeviceScanViewModel(args.greenWallet) })
-            }
             appComposable<NavigateDestinations.Login> {
                 val args = it.toRoute<NavigateDestinations.Login>()
                 LoginScreen(viewModel {
                     LoginViewModel(
                         greenWallet = args.greenWallet,
-                        isLightningShortcut = args.isLightningShortcut,
                         deviceId = args.deviceId,
-                        autoLoginWallet = args.autoLoginWallet
+                        autoLoginWallet = args.autoLoginWallet,
+                        isWatchOnlyUpgrade = args.isWatchOnlyUpgrade
                     )
                 })
             }
@@ -319,7 +309,8 @@ fun Router(
                 val args = it.toRoute<NavigateDestinations.WalletOverview>()
                 WalletOverviewScreen(viewModel {
                     WalletOverviewViewModel(
-                        greenWallet = args.greenWallet
+                        greenWallet = args.greenWallet,
+                        showWalletOnboarding = args.showWalletOnboarding
                     )
                 })
             }
@@ -334,9 +325,11 @@ fun Router(
             }
             appComposable<NavigateDestinations.Security> {
                 val args = it.toRoute<NavigateDestinations.Security>()
-                SetupScreen(viewModel = viewModel { SimpleGreenViewModel(greenWalletOrNull = args.greenWallet) }) {
-                    Text("Security ${args.greenWallet.name}")
-                }
+                SecurityScreen(viewModel {
+                    SecurityViewModel(
+                        greenWallet = args.greenWallet
+                    )
+                })
             }
             appComposable<NavigateDestinations.AccountOverview> {
                 val args = it.toRoute<NavigateDestinations.AccountOverview>()
@@ -452,6 +445,14 @@ fun Router(
                 val args = it.toRoute<NavigateDestinations.AccountExchange>()
                 AccountExchangeScreen(viewModel {
                     AccountExchangeViewModel(
+                        greenWallet = args.greenWallet
+                    )
+                })
+            }
+            appComposable<NavigateDestinations.Buy> {
+                val args = it.toRoute<NavigateDestinations.Buy>()
+                BuyScreen(viewModel {
+                    BuyViewModel(
                         greenWallet = args.greenWallet
                     )
                 })
@@ -691,6 +692,10 @@ fun Router(
                     viewModel = viewModel { JadeGuideViewModel() }
                 )
             }
+            appComposable<NavigateDestinations.DeviceScan> {
+                val args = it.toRoute<NavigateDestinations.DeviceScan>()
+                DeviceScanScreen(viewModel { DeviceScanViewModel(args.greenWallet, args.isWatchOnlyUpgrade) })
+            }
             // Bottom sheets
             appBottomSheet<NavigateDestinations.Analytics> {
                 val args = it.toRoute<NavigateDestinations.Analytics>()
@@ -740,6 +745,8 @@ fun Router(
                             screenName = "Countries"
                         )
                     },
+                    title = args.title,
+                    showDialCode = args.showDialCode,
                     onDismissRequest = navController.onDismissRequest()
                 )
             }
@@ -963,6 +970,18 @@ fun Router(
                     },
                     accountsBalance = args.accounts,
                     withAsset = args.withAsset,
+                    withArrow = args.withArrow,
+                    onDismissRequest = navController.onDismissRequest()
+                )
+            }
+            appBottomSheet<NavigateDestinations.SecurityLevel> {
+                val args = it.toRoute<NavigateDestinations.SecurityLevel>()
+                SecurityLevelBottomSheet(
+                    viewModel = viewModel {
+                        SetupNewWalletViewModel(
+                            greenWalletOrNull = args.greenWallet,
+                        )
+                    },
                     onDismissRequest = navController.onDismissRequest()
                 )
             }
@@ -1072,6 +1091,19 @@ fun Router(
                             screenName = "PassphraseHW"
                         )
                     },
+                    onDismissRequest = navController.onDismissRequest()
+                )
+            }
+            appBottomSheet<NavigateDestinations.BuyQuotes> {
+                val args = it.toRoute<NavigateDestinations.BuyQuotes>()
+                BuyQuotesBottomSheet(
+                    viewModel = viewModel {
+                        SimpleGreenViewModel(
+                            greenWalletOrNull = args.greenWallet,
+                            screenName = "BuyQuotes"
+                        )
+                    },
+                    quotes = args.quotes.quotes ?: emptyList(),
                     onDismissRequest = navController.onDismissRequest()
                 )
             }

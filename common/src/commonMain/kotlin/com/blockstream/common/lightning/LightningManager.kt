@@ -4,14 +4,14 @@ import breez_sdk.LogEntry
 import breez_sdk.LogStream
 import breez_sdk.setLogStream
 import com.blockstream.common.data.AppConfig
-import com.blockstream.common.data.AppInfo
+import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.LoginData
 import com.blockstream.common.platformFileSystem
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO

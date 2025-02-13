@@ -164,6 +164,7 @@ fun AccountExchangeScreen(
                             viewModel.isSendAll.value = false
                             viewModel.amount.value = it
                         },
+                        secondaryValue = amountExchange,
                         title = stringResource(Res.string.id_send),
                         assetId = fromAccountAssetBalance?.assetId,
                         session = viewModel.sessionOrNull,
@@ -173,15 +174,6 @@ fun AccountExchangeScreen(
                         supportsSendAll = supportsSendAll,
                         onSendAllClick = {
                             viewModel.postEvent(AccountExchangeViewModel.LocalEvents.ToggleIsSendAll)
-                        },
-                        footerContent = {
-                            Text(
-                                text = amountExchange,
-                                textAlign = TextAlign.End,
-                                style = bodyMedium,
-                                color = whiteLow,
-                                modifier = Modifier.fillMaxWidth()
-                            )
                         },
                         onDenominationClick = {
                             viewModel.postEvent(Events.SelectDenomination)

@@ -61,7 +61,9 @@ actual class PlatformManager(val application: UIApplication) {
 
     actual fun openBrowser(url: String, openSystemBrowser: Boolean) {
         NSURL(string = url).takeIf { application.canOpenURL(it) }?.also {
-            application.openURL(it)
+            application.openURL(url = it, options = emptyMap<Any?, Any>()) {
+
+            }
         }
     }
 

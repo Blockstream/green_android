@@ -18,10 +18,10 @@ import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.ExceptionWithSupportData
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavAction
-import com.blockstream.common.data.NavData
+import com.blockstream.ui.navigation.NavAction
+import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.SupportData
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isBlank
@@ -44,7 +44,7 @@ import com.blockstream.common.lightning.lnUrlPayImage
 import com.blockstream.common.models.sheets.NoteType
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.UserInput
 import com.blockstream.common.utils.feeRateWithUnit
@@ -218,9 +218,6 @@ class SendViewModel(
     private val _isNoteEditable: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val isNoteEditable: StateFlow<Boolean> = _isNoteEditable
 
-    private val _isWatchOnly = MutableStateFlow(false)
-    override val isWatchOnly = _isWatchOnly
-
     override val isAccountEdit: StateFlow<Boolean> = combine(assetsAndAccounts, accountAsset){ assetsAndAccounts, accountAsset ->
         assetsAndAccounts?.isNotEmpty() == true && accountAsset?.account?.isLightning != true
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), true)
@@ -266,8 +263,6 @@ class SendViewModel(
         }.launchIn(this)
 
         session.ifConnected {
-
-            _isWatchOnly.value = session.isWatchOnly
 
             sessionManager.pendingUri.filterNotNull().onEach {
                 sessionManager.pendingUri.value = null
@@ -765,7 +760,6 @@ class SendViewModelPreview(greenWallet: GreenWallet, isLightning: Boolean = fals
     override val metadataDescription: StateFlow<String?> = MutableStateFlow("Metadata Description")
     override val description: StateFlow<String?> = MutableStateFlow(null)
     override val isNoteEditable: StateFlow<Boolean> = MutableStateFlow(true)
-    override val isWatchOnly: StateFlow<Boolean> = MutableStateFlow(false)
 
     init {
         _showFeeSelector.value = true

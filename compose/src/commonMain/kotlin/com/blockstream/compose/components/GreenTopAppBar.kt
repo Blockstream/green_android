@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalComposeUiApi::class)
-
 package com.blockstream.compose.components
 
 import androidx.compose.animation.AnimatedContent
@@ -10,12 +8,17 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,102 +27,178 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.compose.currentBackStackEntryAsState
-import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.dots_three_vertical_bold
-import com.blockstream.common.data.LocalNavData
-import com.blockstream.common.data.NavData
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.compose.navigation.LocalNavBackStackEntry
-import com.blockstream.compose.navigation.LocalNavigator
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Wallet
+import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.theme.bodySmall
-import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.titleSmall
-import org.jetbrains.compose.resources.painterResource
-
-@Composable
-fun AppBar(viewModel: GreenViewModel) {
-    val navigator = LocalNavigator.current
-    val navDataState = LocalNavData.current
-    val selfBackStackEntry = LocalNavBackStackEntry.current
-
-    val navData by viewModel.navData.collectAsStateWithLifecycle()
-    val currentBackStackEntry by navigator.currentBackStackEntryAsState()
-
-    val key = navData.hashCode() + (currentBackStackEntry?.id?.hashCode() ?: 0)
-
-    LaunchedEffect(key) {
-        if(currentBackStackEntry?.id == selfBackStackEntry?.id){
-            navDataState.update(navData)
-        }
-    }
-
-    BackHandler(enabled = !navData.isVisible || navData.backHandlerEnabled) {
-        viewModel.postEvent(Events.NavigateBackUserAction)
-    }
-}
+import com.blockstream.ui.navigation.LocalNavigator
+import com.blockstream.ui.navigation.NavData
+import com.blockstream.ui.utils.ifTrue
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GreenTopAppBar(
-    showDrawerNavigationIcon: Boolean = true,
+    hasBackStack: Boolean = false,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
     navData: NavData,
     modifier: Modifier = Modifier,
-    goBack: () -> Unit = { },
-    openDrawer: () -> Unit = { },
+    goBack: () -> Unit = { }
 ) {
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+    val navigator = LocalNavigator.current
 
     // CenterAlignedTopAppBar if you want center aligned
     TopAppBar(
         modifier = modifier,
+        scrollBehavior = scrollBehavior,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Transparent,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary,
+            scrolledContainerColor = Color.Transparent,
+            titleContentColor = Color.White,
         ),
+        navigationIcon = {
+            AnimatedVisibility(
+                visible = navData.isVisible && navData.showNavigationIcon,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                val targetState = when {
+                    navData.showNavigationIcon == false -> null
+                    hasBackStack && navData.walletName == null -> true
+                    navData.walletName != null -> false
+                    else -> null
+                }
+                AnimatedContent(
+                    targetState = targetState,
+                    transitionSpec = {
+                        slideIntoContainer(
+                            AnimatedContentTransitionScope.SlideDirection.End,
+                            animationSpec = tween(400)
+                        ).togetherWith(
+                            slideOutOfContainer(
+                                AnimatedContentTransitionScope.SlideDirection.Start,
+                                animationSpec = tween(200)
+                            )
+                        )
+                    }, label = "NavigationIcon"
+                ) { targetState ->
+                    when (targetState) {
+                        true -> IconButton(onClick = {
+                            goBack()
+                        }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+
+                        false -> Row {
+                            IconButton(onClick = {
+                                navigator.navigate(route = NavigateDestinations.Home)
+                            }) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(28.dp)
+                                        .background(
+                                            color = MaterialTheme.colorScheme.primary,
+                                            shape = CircleShape
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = PhosphorIcons.Regular.Wallet,
+                                        contentDescription = "Drawer Menu",
+                                        tint = MaterialTheme.colorScheme.onPrimary,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            }
+
+                            TextButton(
+                                onClick = {
+                                    navigator.navigate(route = NavigateDestinations.Home)
+                                },
+                                contentPadding = PaddingValues(),
+                                modifier = Modifier.padding(end = 8.dp),
+                            ) {
+                                Text(
+                                    text = navData.walletName ?: "",
+                                    style = titleSmall,
+                                    modifier = Modifier.ifTrue(navData.title.isNotBlank() || navData.titleRes != null) {
+                                        it.widthIn(max = 180.dp)
+                                    },
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1
+                                )
+                            }
+                        }
+
+                        else -> {
+
+                        }
+                    }
+                }
+            }
+        },
         title = {
             AnimatedVisibility(
                 visible = navData.isVisible,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
-                ConstraintLayout {
+                ConstraintLayout() {
                     val (title, subtitle) = createRefs()
 
-                    Crossfade(targetState = navData.title ?: "", modifier = Modifier.constrainAs(title) {
-                        start.linkTo(parent.start)
-                        // end.linkTo(parent.end)
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                    }) {
-                        Text(
-                            text = it,
-                            maxLines = 1,
-                            style = titleSmall,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
+//                    Crossfade(
+//                        targetState = navData.title ?: "",
+//                        modifier = Modifier.constrainAs(title) {
+//                            start.linkTo(parent.start)
+//                            // end.linkTo(parent.end)
+//                            top.linkTo(parent.top)
+//                            bottom.linkTo(parent.bottom)
+//                        }) {
+//                        Text(
+//                            text = it,
+//                            maxLines = 1,
+//                            style = titleSmall,
+//                            overflow = TextOverflow.Ellipsis,
+//                            modifier = Modifier.fillMaxWidth()
+//                        )
+//                    }
 
-                    Crossfade(targetState = navData.subtitle ?: "", modifier = Modifier.constrainAs(subtitle) {
-                        start.linkTo(parent.start)
-                        // end.linkTo(parent.end)
-                        top.linkTo(title.bottom)
-                    }) {
+                    // Looking good
+                    Text(
+                        text = navData.title ?: navData.titleRes?.let { stringResource(it) } ?: "",
+                        maxLines = 1,
+                        style = titleSmall,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.fillMaxWidth().constrainAs(title) {
+                            start.linkTo(parent.start)
+                            // end.linkTo(parent.end)
+                            top.linkTo(parent.top)
+                            bottom.linkTo(parent.bottom)
+                        }
+                    )
+
+                    Crossfade(
+                        targetState = navData.subtitle ?: "",
+                        modifier = Modifier.constrainAs(subtitle) {
+                            start.linkTo(parent.start)
+                            // end.linkTo(parent.end)
+                            top.linkTo(title.bottom)
+                        }) {
                         Text(
                             text = it,
                             maxLines = 1,
@@ -131,96 +210,9 @@ fun GreenTopAppBar(
                 }
             }
         },
-        navigationIcon = {
-            AnimatedVisibility(
-                visible = navData.isVisible && navData.showNavigationIcon,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                AnimatedContent(targetState = showDrawerNavigationIcon, transitionSpec = {
-                    slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.End,
-                        animationSpec = tween(400)
-                    ).togetherWith(
-                        slideOutOfContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Start,
-                            animationSpec = tween(200)
-                        )
-                    )
-                }, label = "NavigationIcon") { showDrawerNavigationIcon ->
-                    if (showDrawerNavigationIcon) {
-                        IconButton(onClick = { openDrawer() }) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Drawer Menu"
-                            )
-                        }
-                    } else {
-                        IconButton(onClick = {
-                            goBack()
-                        }) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back"
-                            )
-                        }
-                    }
-                }
-            }
-        },
+
         actions = {
-//            ActionMenu(
-//                items = navData.actionsMenu,
-//                colors = ActionMenuDefaults.colors(contentColor = MaterialTheme.colorScheme.onPrimary)
-//            )
-
-            val popupState = remember { PopupState() }
-
-            AnimatedVisibility(
-                visible = navData.isVisible,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                Row {
-                    navData.actions.filter { !it.isMenuEntry }.forEach {
-                        if (it.icon == null) {
-                            TextButton(
-                                onClick = it.onClick,
-                                modifier = Modifier.align(Alignment.CenterVertically)
-                            ) {
-                                Text(text = it.title, style = labelMedium)
-                            }
-                        } else {
-                            IconButton(onClick = {
-                                it.onClick()
-                            }) {
-                                it.icon?.also {
-                                    Image(
-                                        painter = painterResource(it),
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    navData.actions.filter { it.isMenuEntry }.takeIf { it.isNotEmpty() }?.map {
-                        MenuEntry.from(it)
-                    }?.also {
-                        IconButton(onClick = {
-                            popupState.isContextMenuVisible.value = true
-                        }) {
-                            Icon(
-                                painter = painterResource(Res.drawable.dots_three_vertical_bold),
-                                contentDescription = "More Menu"
-                            )
-                        }
-
-                        PopupMenu(state = popupState, entries = it)
-                    }
-                }
-            }
-        },
-        scrollBehavior = scrollBehavior,
+            ActionMenu(navData = navData)
+        }
     )
 }

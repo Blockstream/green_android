@@ -5,7 +5,6 @@ import co.touchlab.kermit.Severity
 import co.touchlab.kermit.chunked
 import co.touchlab.kermit.platformLogWriter
 import com.blockstream.common.data.AppConfig
-import com.blockstream.common.data.AppInfo
 import com.blockstream.common.database.Database
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.getGdkBinding
@@ -18,6 +17,7 @@ import com.blockstream.common.managers.LifecycleManager
 import com.blockstream.common.managers.PromoManager
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
+import com.blockstream.green.data.config.AppInfo
 import kotlinx.coroutines.MainScope
 import okio.internal.commonToUtf8String
 import org.koin.core.KoinApplication
@@ -35,6 +35,7 @@ fun initKoin(appInfo: AppInfo, appConfig: AppConfig, doOnStartup: () -> Unit = {
     val koinApplication = startKoin {
         modules(
             module {
+
                 single {
                     appInfo
                 }
@@ -43,6 +44,7 @@ fun initKoin(appInfo: AppInfo, appConfig: AppConfig, doOnStartup: () -> Unit = {
                 }
             }
         )
+        modules(domainModule)
         modules(*appModules)
         modules(platformModule)
         modules(commonModules(appConfig))

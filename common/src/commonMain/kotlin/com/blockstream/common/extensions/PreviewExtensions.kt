@@ -43,6 +43,7 @@ fun previewWallet(
         xpub_hash_id = "",
         ask_bip39_passphrase = false,
         watch_only_username = if (isWatchOnly) "watch_only" else null,
+        is_recovery_confirmed = true,
         is_testnet = false,
         is_hardware = isHardware,
         is_lightning = false,
@@ -66,21 +67,19 @@ fun previewNetwork(isMainnet: Boolean = true) =
 fun previewWalletListView(
     isHardware: Boolean = false,
     isEphemeral: Boolean = false,
-    hasLightningShortcut: Boolean = false
+    isConnected: Boolean = false
 ): WalletListLook {
     val wallet = previewWallet(
         isHardware = isHardware,
         isEphemeral = isEphemeral,
-        hasLightningShortcut = hasLightningShortcut
     )
 
     return WalletListLook(
         greenWallet = wallet,
         title = wallet.name,
         subtitle = if (wallet.isEphemeral) "Jade".takeIf { isHardware }
-            ?: wallet.ephemeralBip39Name else null,
-        hasLightningShortcut = wallet.hasLightningShortcut,
-        isConnected = false,
+            ?: wallet.ephemeralBip39Name else "",
+        isConnected = isConnected,
         isLightningShortcutConnected = false,
         icon = wallet.icon
     )
@@ -108,9 +107,9 @@ fun previewAccountAsset(isLightning : Boolean = false) = AccountAsset(
     asset = EnrichedAsset.PreviewBTC
 )
 
-fun previewAssetBalance() = AssetBalance(
-    asset = EnrichedAsset.PreviewBTC,
-    "1 BTC", "150.000 USD"
+fun previewAssetBalance(isLiquid: Boolean = false) = AssetBalance(
+    asset = if(isLiquid) EnrichedAsset.PreviewLBTC else EnrichedAsset.PreviewBTC,
+    if(isLiquid) "1 LBTC" else "1 BTC", "150.000 USD"
 )
 
 fun previewAccountAssetBalance() = AccountAssetBalance(

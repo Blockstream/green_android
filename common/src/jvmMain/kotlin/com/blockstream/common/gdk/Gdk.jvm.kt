@@ -38,6 +38,7 @@ import com.blockstream.common.gdk.params.UpdateSubAccountParams
 import com.blockstream.common.gdk.params.ValidateAddresseesParams
 import kotlinx.serialization.json.JsonElement
 
+
 actual fun getGdkBinding(
     printGdkMessages: Boolean,
     config: InitConfig
@@ -45,9 +46,8 @@ actual fun getGdkBinding(
     return object : GdkBinding{
         override val logs: StringBuilder = StringBuilder()
 
-        private val _dataDir: String = config.datadir
         override val dataDir: String
-            get() = _dataDir
+            get() = config.datadir
 
         override fun appendGdkLogs(json: String) {
             TODO("Not yet implemented")

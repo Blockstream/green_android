@@ -1,0 +1,63 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+# default_platform(:ios)
+
+platform :ios do
+
+    desc "Build and sign the application for distribution, upload to Firebase AppDistribution"
+      lane :FirebaseAppDistribution do |options|
+        # Detect if we are running in CI, and create a temporary keychain
+        # and switch match to readonly mode
+        # https://docs.fastlane.tools/actions/setup_ci/
+        setup_ci
+
+        # Download and install the correct signing certificates for the
+        # given build environment
+        # https://docs.fastlane.tools/actions/match/
+#         match(type: 'development', readonly: is_ci, app_identifier: "io.blockstream.greendev")
+
+        if options.has_key?(:message)
+            message = options[:message].gsub("\\n", "\n") + "\n-------------------------------------------------------------------------------------------------\n\n"
+        else
+            message = ""
+        end
+#
+        changelog = message + "Changelog:\n" + changelog_from_git_commits(
+          between: ["origin/master", "HEAD"],
+          pretty: "- %s (%ae %ad)",# Optional, lets you provide a custom format to apply to each commit when generating the changelog text
+          date_format: "format:%d/%m/%y %H:%M %z",# or ios, Optional, lets you provide an additional date format to dates within the pretty-formatted string
+          merge_commit_filtering: "exclude_merges" # Optional, lets you filter out merge commits
+        ) + "\n"
+
+        # Build the app with the supplied configuration settings
+        # Export method is the same as the match step above
+        # Note: the difference between `appstore` and `app-store` is intentional
+        build_app(
+          project: "iosGreenApp/iosGreenApp.xcodeproj",
+          scheme: "iosGreenApp",
+          export_method: "development"
+        )
+
+        # Upload the newly created build to Test Flight using the App Store Connect
+        # API key above, and the app configuration in the Appfile
+        # https://docs.fastlane.tools/actions/upload_to_testflight/
+        firebase_app_distribution(
+            app: "1:177495109301:ios:019b77f173523117cb18fc",
+#             groups: "blockstream",
+            release_notes: changelog
+        )
+      end
+end

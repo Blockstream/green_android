@@ -58,9 +58,9 @@ import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.compose.utils.reachedBottom
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.utils.reachedBottom
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

@@ -1,9 +1,10 @@
 package com.blockstream.compose.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -17,6 +18,8 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.bip39_passphrase
 import blockstream_green.common.generated.resources.id_2fa_dispute_in_progress
 import blockstream_green.common.generated.resources.id_2fa_reset_in_progress
+import blockstream_green.common.generated.resources.id_back_up_your_wallet_now
+import blockstream_green.common.generated.resources.id_backup
 import blockstream_green.common.generated.resources.id_learn_more
 import blockstream_green.common.generated.resources.id_lightning_account
 import blockstream_green.common.generated.resources.id_lightning_service_is_undergoing
@@ -29,16 +32,23 @@ import blockstream_green.common.generated.resources.id_this_wallet_operates_on_a
 import blockstream_green.common.generated.resources.id_try_again
 import blockstream_green.common.generated.resources.id_warning
 import blockstream_green.common.generated.resources.id_warning_wallet_locked_by
+import blockstream_green.common.generated.resources.id_your_recovery_phrase_is_the_only_way
 import blockstream_green.common.generated.resources.id_your_wallet_is_locked_for_a
 import blockstream_green.common.generated.resources.lightning
 import blockstream_green.common.generated.resources.warning
 import blockstream_green.common.generated.resources.x
 import com.blockstream.common.data.AlertType
+import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.compose.theme.blueOutline
+import com.blockstream.compose.theme.blueSurface
 import com.blockstream.compose.theme.bodyMedium
-import com.blockstream.compose.theme.labelLarge
+import com.blockstream.compose.theme.orangeOutline
+import com.blockstream.compose.theme.orangeSurface
+import com.blockstream.compose.theme.titleSmall
+import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
 import org.jetbrains.compose.resources.painterResource
@@ -53,6 +63,31 @@ fun GreenAlert(modifier: Modifier = Modifier, alertType: AlertType, viewModel: G
                 title = stringResource(Res.string.id_warning),
                 message = stringResource(Res.string.id_this_wallet_operates_on_a_test),
                 icon = painterResource(Res.drawable.warning)
+            )
+        }
+
+        is AlertType.RecoveryIsUnconfirmed -> {
+            GreenAlert(
+                modifier = modifier,
+                title = stringResource(Res.string.id_back_up_your_wallet_now),
+                message = stringResource(Res.string.id_your_recovery_phrase_is_the_only_way),
+                icon = painterResource(Res.drawable.warning),
+                primaryButton = stringResource(Res.string.id_backup),
+                onPrimaryClick = {
+                    viewModel.postEvent(
+                        NavigateDestinations.RecoveryIntro(
+                            setupArgs = SetupArgs(
+                                greenWallet = viewModel.greenWallet,
+                                isShowRecovery = true
+                            )
+                        )
+                    )
+                },
+                onCloseClick = if (alertType.withCloseButton) {
+                    {
+                        viewModel.postEvent(Events.DismissWalletBackupAlert)
+                    }
+                } else null
             )
         }
 
@@ -77,6 +112,7 @@ fun GreenAlert(modifier: Modifier = Modifier, alertType: AlertType, viewModel: G
                 }
             )
         }
+
         is AlertType.Dispute2FA -> {
             GreenAlert(
                 modifier = modifier,
@@ -94,11 +130,15 @@ fun GreenAlert(modifier: Modifier = Modifier, alertType: AlertType, viewModel: G
                 }
             )
         }
+
         is AlertType.Reset2FA -> {
             GreenAlert(
                 modifier = modifier,
                 title = stringResource(Res.string.id_2fa_reset_in_progress),
-                message = stringResource(Res.string.id_your_wallet_is_locked_for_a, alertType.twoFactorReset.daysRemaining),
+                message = stringResource(
+                    Res.string.id_your_wallet_is_locked_for_a,
+                    alertType.twoFactorReset.daysRemaining
+                ),
                 primaryButton = stringResource(Res.string.id_learn_more),
                 onPrimaryClick = {
                     viewModel.postEvent(
@@ -120,8 +160,10 @@ fun GreenAlert(modifier: Modifier = Modifier, alertType: AlertType, viewModel: G
                 icon = painterResource(Res.drawable.bip39_passphrase)
             )
         }
+
         is AlertType.Banner -> {
-            Banner(banner = alertType.banner,
+            Banner(
+                banner = alertType.banner,
                 modifier = modifier,
                 onClick = {
                     viewModel.postEvent(Events.BannerAction)
@@ -130,6 +172,7 @@ fun GreenAlert(modifier: Modifier = Modifier, alertType: AlertType, viewModel: G
                 }
             )
         }
+
         is AlertType.FailedNetworkLogin -> {
             GreenAlert(
                 modifier = modifier,
@@ -141,6 +184,7 @@ fun GreenAlert(modifier: Modifier = Modifier, alertType: AlertType, viewModel: G
                 }
             )
         }
+
         is AlertType.LspStatus -> {
             GreenAlert(
                 modifier = modifier,
@@ -159,22 +203,26 @@ fun GreenAlert(
     title: String? = null,
     message: String? = null,
     maxLines: Int = Int.MAX_VALUE,
+    isBlue: Boolean = false,
     icon: Painter? = null,
     primaryButton: String? = null,
     onPrimaryClick: (() -> Unit)? = null,
     onCloseClick: (() -> Unit)? = null,
 ) {
-    Card(modifier = Modifier.then(modifier)) {
+    val containerColor = if(isBlue) blueSurface else orangeSurface
+    val outline = if(isBlue) blueOutline else orangeOutline
+
+    GreenCard(
+        padding = 0,
+        colors = CardDefaults.outlinedCardColors(containerColor = containerColor),
+        border = BorderStroke(1.dp, outline),
+        modifier = Modifier.then(modifier)
+    ) {
         Box {
             GreenRow(
                 padding = 0,
                 modifier = Modifier
-                    .padding(
-                        top = 16.dp,
-                        start = 16.dp,
-                        end = 16.dp,
-                        bottom = if (primaryButton == null) 16.dp else 8.dp
-                    )
+                    .padding(16.dp)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.Top,
             ) {
@@ -192,11 +240,11 @@ fun GreenAlert(
                         Text(
                             text = title,
                             maxLines = 2,
-                            style = labelLarge,
+                            style = titleSmall,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(
-                                    end = if (onCloseClick != null) 24.dp else 0.dp
+                                    end = if (onCloseClick != null) 16.dp else 0.dp
                                 )
                         )
                     }
@@ -206,6 +254,7 @@ fun GreenAlert(
                             style = bodyMedium,
                             maxLines = maxLines,
                             overflow = TextOverflow.Ellipsis,
+                            color = whiteMedium,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(
@@ -217,11 +266,12 @@ fun GreenAlert(
                     primaryButton?.also {
                         GreenButton(
                             text = it,
-                            type = GreenButtonType.TEXT,
+                            type = GreenButtonType.OUTLINE,
                             size = GreenButtonSize.SMALL,
+                            color = GreenButtonColor.WHITE,
                             modifier = Modifier
-                                .padding(0.dp)
-                                .align(Alignment.End)
+                                .padding(top = 4.dp)
+                                .align(Alignment.Start)
                         ) {
                             onPrimaryClick?.invoke()
                         }

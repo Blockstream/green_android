@@ -2,9 +2,9 @@ package com.blockstream.common.models.add
 
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_invalid_xpub
-import com.blockstream.common.data.NavData
+import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isBlank
 import com.blockstream.common.extensions.previewWallet

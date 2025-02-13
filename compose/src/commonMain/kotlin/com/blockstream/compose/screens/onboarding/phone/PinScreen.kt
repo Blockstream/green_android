@@ -29,7 +29,7 @@ import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.components.RiveAnimation
 import com.blockstream.compose.theme.bodyLarge
-import com.blockstream.compose.theme.displayMedium
+import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.views.PinView
 import com.blockstream.ui.components.GreenColumn
@@ -51,6 +51,7 @@ fun PinScreen(
 
     SetupScreen(
         viewModel = viewModel,
+        withPadding = false,
         onProgressStyle = OnProgressStyle.Full(bluBackground = false, riveAnimation = if(rocketAnimation) RiveAnimation.ROCKET else null)
     ) {
         Column(
@@ -62,7 +63,7 @@ fun PinScreen(
             GreenColumn(padding = 0, space = 8) {
                 Text(
                     stringResource(if (isVerify) Res.string.id_verify_your_pin else Res.string.id_set_a_pin),
-                    style = displayMedium
+                    style = titleLarge
                 )
                 Text(
                     stringResource(Res.string.id_youll_need_your_pin_to_log_in),

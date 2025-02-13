@@ -10,7 +10,8 @@ import com.blockstream.common.database.wallet.LoginCredentials
 import com.blockstream.common.database.wallet.Wallet
 import com.blockstream.common.database.wallet.WalletDB
 import com.blockstream.common.managers.SettingsManager
-import com.blockstream.common.utils.Loggable
+import com.blockstream.common.utils.getSecureRandom
+import com.blockstream.green.utils.Loggable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -126,6 +127,7 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
             xpub_hash_id = wallet.xpub_hash_id,
             active_network = wallet.active_network,
             active_account = wallet.active_account,
+            is_recovery_confirmed = wallet.is_recovery_confirmed,
             is_testnet = wallet.is_testnet,
             is_hardware = wallet.is_hardware,
             is_lightning = wallet.is_lightning,
@@ -144,6 +146,7 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
             xpub_hash_id = wallet.xpub_hash_id,
             active_network = wallet.active_network,
             active_account = wallet.active_account,
+            is_recovery_confirmed = wallet.is_recovery_confirmed,
             is_testnet = wallet.is_testnet,
             is_hardware = wallet.is_hardware,
             is_lightning = wallet.is_lightning,
@@ -215,6 +218,16 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
         walletDB.loginCredentialsQueries.getLoginCredential(wallet_id = id, credential_type = credentialType).executeAsOneOrNull()
     }
 
+    fun getLoginCredentialFlow(id: String, credentialType: CredentialType) =
+        walletDB.loginCredentialsQueries.getLoginCredential(
+            wallet_id = id,
+            credential_type = credentialType
+        ).asFlow().map {
+            io {
+                it.executeAsOneOrNull()
+            }
+        }
+
     fun getLoginCredentialsFlow(id: String) =
         walletDB.loginCredentialsQueries.getLoginCredentials(wallet_id = id).asFlow().map {
             io {
@@ -248,7 +261,11 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
         )
     }
 
-    suspend fun insertEvent(eventId: String) = io {
+    suspend fun insertEvent(eventId: String, randomInsert: Boolean = false) = io {
+        if(randomInsert && getSecureRandom().unsecureRandomInt(0, 100) > 90) {
+            return@io
+        }
+
         localDB.eventsQueries.insertEvent(
             id = eventId
         )

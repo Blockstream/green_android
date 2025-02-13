@@ -1,9 +1,9 @@
 package com.blockstream.gms.services
 
-import com.blockstream.common.data.AppInfo
+import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.lightning.BreezNotification
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import org.koin.core.component.KoinComponent
@@ -16,11 +16,12 @@ class FirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
     val appInfo: AppInfo by inject()
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        logger.d { "Received message: ${remoteMessage.data}" }
+
         val data = remoteMessage.data
 
         // Check if message contains a data payload.
         if (data.isNotEmpty()) {
-            logger.d { "Message data payload: ${remoteMessage.data}" }
 
             val notificationType = data["notification_type"]
 
@@ -29,14 +30,14 @@ class FirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
                 val xpubHashId = data["app_data"]
                 val breezNotification = BreezNotification.fromString(data["notification_payload"])
 
-                if(appInfo.isDevelopmentOrDebug){
+                if (appInfo.isDevelopmentOrDebug) {
                     fcm.showDebugNotification(title = "Notification Received", message = breezNotification.toString())
                 }
 
                 if (breezNotification != null && !xpubHashId.isNullOrBlank()) {
                     fcm.handleLightningPushNotification(xpubHashId, breezNotification)
                 } else {
-                    logger.d { "No notification_payload or app_data" }
+                    logger.d { "No notification_payload or app_data $data" }
                 }
             }
         }

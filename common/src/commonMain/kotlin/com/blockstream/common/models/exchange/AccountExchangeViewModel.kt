@@ -9,8 +9,6 @@ import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavData
-import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isBlank
@@ -34,12 +32,14 @@ import com.blockstream.common.gdk.params.toJsonElement
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.UserInput
 import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.getStringFromId
 import com.blockstream.common.utils.ifNotNull
 import com.blockstream.common.utils.toAmountLook
+import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
 import com.rickclephas.kmp.observableviewmodel.stateIn
@@ -215,9 +215,6 @@ class AccountExchangeViewModel(
 
     private var _pendingSetAccountFrom = true
 
-    private val _isWatchOnly = MutableStateFlow(false)
-    override val isWatchOnly = _isWatchOnly
-
     class LocalEvents {
         object ToggleIsSendAll : Event
         data class SetToAccount(val accountAsset: AccountAsset) : Event
@@ -231,8 +228,6 @@ class AccountExchangeViewModel(
         }
 
         session.ifConnected {
-
-            _isWatchOnly.value = session.isWatchOnly
 
             fromAccountAsset.onEach { fromAccount ->
                 _network.value = fromAccount?.account?.network
@@ -339,7 +334,8 @@ class AccountExchangeViewModel(
                             greenWallet = greenWallet,
                             accounts = AccountAssetBalanceList((if (event.isFrom) fromAccounts.value else toAccounts.value)
                                 ?: listOf()),
-                            withAsset = event.isFrom
+                            withAsset = event.isFrom,
+                            withArrow = false
                         )
                     )
                 )
@@ -661,8 +657,6 @@ class AccountExchangeViewModelPreview(greenWallet: GreenWallet) :
 
     override val isSendAll: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val supportsSendAll: StateFlow<Boolean> = MutableStateFlow(true)
-
-    override val isWatchOnly: StateFlow<Boolean> = MutableStateFlow(false)
 
     init {
 

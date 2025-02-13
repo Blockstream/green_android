@@ -10,6 +10,7 @@ fun roomToDelight(wallet: Wallet) : com.blockstream.common.database.wallet.Walle
         xpub_hash_id = wallet.walletHashId,
         ask_bip39_passphrase = wallet.askForBip39Passphrase,
         watch_only_username = wallet.watchOnlyUsername,
+        is_recovery_confirmed = wallet.isRecoveryPhraseConfirmed,
         is_hardware = wallet.isHardware,
         is_testnet = wallet.isTestnet,
         is_lightning = wallet.isLightning,

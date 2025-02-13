@@ -2,7 +2,6 @@ package com.blockstream.common.models.overview
 
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.dots_three_vertical_bold
-import blockstream_green.common.generated.resources.id_lightning_account
 import breez_sdk.HealthCheckStatus
 import com.blockstream.common.Urls
 import com.blockstream.common.data.AlertType
@@ -10,27 +9,34 @@ import com.blockstream.common.data.DataState
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavAction
-import com.blockstream.common.data.NavData
-import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.launchIn
-import com.blockstream.common.extensions.previewAccount
+import com.blockstream.common.extensions.previewAccountAsset
+import com.blockstream.common.extensions.previewAssetBalance
 import com.blockstream.common.extensions.previewTransactionLook
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.Account
-import com.blockstream.common.gdk.data.AccountBalance
+import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.AccountAssetBalance
+import com.blockstream.common.gdk.data.AccountAssetBalanceList
+import com.blockstream.common.gdk.data.AccountType
+import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.gdk.data.WalletEvents
+import com.blockstream.common.lightning.onchainBalanceSatoshi
 import com.blockstream.common.looks.account.LightningInfoLook
 import com.blockstream.common.looks.transaction.TransactionLook
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.AppReviewHelper
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavAction
+import com.blockstream.ui.navigation.NavData
+import com.blockstream.ui.sideeffects.SideEffect
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.launch
 import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -44,7 +50,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
-import org.jetbrains.compose.resources.getString
 
 abstract class WalletOverviewViewModelAbstract(
     greenWallet: GreenWallet
@@ -53,39 +58,66 @@ abstract class WalletOverviewViewModelAbstract(
     override fun screenName(): String = "WalletOverview"
 
     @NativeCoroutinesState
+    abstract val transaction: StateFlow<DataState<TransactionLook?>>
+
+    @NativeCoroutinesState
     abstract val alerts: StateFlow<List<AlertType>>
 
     @NativeCoroutinesState
-    abstract val assetsVisibility: StateFlow<Boolean?>
+    abstract val showWalletOnboarding: MutableStateFlow<Boolean>
 
     @NativeCoroutinesState
-    abstract val isWalletOnboarding: StateFlow<Boolean>
-
-    @NativeCoroutinesState
-    abstract val assetIcons: StateFlow<List<String>>
-
-    @NativeCoroutinesState
-    abstract val totalAssets: StateFlow<Int>
+    abstract val assets: StateFlow<DataState<List<AssetBalance>>>
 
     @NativeCoroutinesState
     abstract val activeAccount: StateFlow<Account?>
 
     @NativeCoroutinesState
-    abstract val accounts: StateFlow<List<AccountBalance>>
+    abstract val accounts: StateFlow<List<AccountAssetBalance>>
 
     @NativeCoroutinesState
     abstract val lightningInfo: StateFlow<LightningInfoLook?>
 
     @NativeCoroutinesState
-    abstract val transactions: StateFlow<DataState<List<TransactionLook>>>
-
-    @NativeCoroutinesState
     abstract val archivedAccounts: StateFlow<Int>
 
-    open val isLightningShortcut: Boolean = false
+    @NativeCoroutinesState
+    abstract val showHardwareTransferFunds: StateFlow<Boolean>
+
+    fun navigateToAccountOverview(asset: EnrichedAsset) {
+        viewModelScope.launch {
+            session.accounts.value.filter {
+                if (asset.isAmp) {
+                    it.type == AccountType.AMP_ACCOUNT
+                } else if (asset.assetId.isPolicyAsset(session)) {
+                    it.network.policyAsset == asset.assetId
+                } else {
+                    it.isLiquid && (it.isAmp == it.isAmp)
+                }
+            }.also { accounts ->
+                postEvent(
+                    NavigateDestinations.Accounts(
+                        greenWallet = greenWallet,
+                        accounts = AccountAssetBalanceList(accounts.map {
+                            AccountAssetBalance.create(
+                                accountAsset = AccountAsset.fromAccountAsset(
+                                    account = it,
+                                    assetId = asset.assetId,
+                                    session = session
+                                ),
+                                session = session
+                            )
+                        }),
+                        withAsset = false,
+                        withArrow = true,
+                    )
+                )
+            }
+        }
+    }
 }
 
-class WalletOverviewViewModel(greenWallet: GreenWallet) :
+class WalletOverviewViewModel(greenWallet: GreenWallet, showWalletOnboarding: Boolean = true) :
     WalletOverviewViewModelAbstract(greenWallet = greenWallet) {
     override fun segmentation(): HashMap<String, Any> =
         countly.sessionSegmentation(session = session)
@@ -94,36 +126,33 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
 
     override val hideAmounts: StateFlow<Boolean> = settingsManager.appSettingsStateFlow.map {
         it.hideAmounts
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), settingsManager.appSettings.hideAmounts)
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(),
+        settingsManager.appSettings.hideAmounts
+    )
 
-    override val assetsVisibility: StateFlow<Boolean?> = session.walletAssets.map {
-        when {
-            it.size > 1 && session.walletHasHistory -> true
-            (session.activeBitcoin != null && session.activeLiquid != null && it.isEmpty()) -> null
-            else -> false
-        }
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    override val showWalletOnboarding: MutableStateFlow<Boolean> = MutableStateFlow(showWalletOnboarding)
 
-    override val isWalletOnboarding: StateFlow<Boolean> = combine(session.zeroAccounts, session.failedNetworks) { zeroAccounts, failedNetworks ->
-        zeroAccounts && failedNetworks.isEmpty() && !session.isWatchOnly
-    }.filter { session.isConnected }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), false)
+    override val assets: StateFlow<DataState<List<AssetBalance>>> =
+        combine(session.walletAssets, hideAmounts) { assets, hideAmounts ->
+            session.ifConnected {
+                DataState.Success(assets.assets.map {
+                    AssetBalance.create(
+                        assetId = it.key,
+                        balance = it.value,
+                        session = session
+                    )
+                })
+            } ?: DataState.Empty
 
-    override val assetIcons: StateFlow<List<String>> = session.walletAssets
-        .filter { session.isConnected }.map {
-            it.assets.keys.map {
-                if (it.isPolicyAsset(session) || session.hasAssetIcon(it)) {
-                    it
-                } else {
-                    "unknown"
-                }
-            }.distinct()
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), listOf())
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(),
+            DataState.Loading
+        )
 
-    override val totalAssets: StateFlow<Int> = session.walletAssets.map {
-        it.size
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), 0)
-
-    private val _accountsBalance = combine(
+    override val accounts = combine(
         session.accounts,
         session.settings(),
         merge(flowOf(Unit), session.accountsAndBalanceUpdated), // set initial value
@@ -132,62 +161,67 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
     ) { accounts, setting, _, _, _ ->
         // Set denomination directly from settings as sometimes the settings/network is not changed yet
         accounts.map {
-            AccountBalance.create(account = it, session = session, denomination = setting?.unit?.let { Denomination.byUnit(it) })
+            AccountAssetBalance.create(
+                accountAsset = it.accountAsset,
+                session = session,
+                denomination = setting?.unit?.let { Denomination.byUnit(it) }
+            )
         }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), listOf())
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, listOf())
 
-    override val accounts: StateFlow<List<AccountBalance>> =
-        combine(hideAmounts, _accountsBalance, session.expired2FA) { hideAmounts, accountsBalance, _ ->
-            if (hideAmounts) {
-                accountsBalance.map { it.asMasked }
-            } else {
-                accountsBalance
-            }
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), listOf())
+    override val lightningInfo: StateFlow<LightningInfoLook?> =
+        (session.lightningSdkOrNull?.nodeInfoStateFlow?.map {
+            if (session.isConnected) {
+                LightningInfoLook.create(session = session, nodeState = it)
+            } else null
+        } ?: emptyFlow()).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), null)
 
-    override val lightningInfo: StateFlow<LightningInfoLook?> = (session.lightningSdkOrNull?.nodeInfoStateFlow?.map {
-        if(session.isConnected && isLightningShortcut){
-            LightningInfoLook.create(session = session, nodeState = it)
-        } else null
-    } ?: emptyFlow()).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), null)
-
-
-    private val _transactions: StateFlow<DataState<List<TransactionLook>>> = combine(
+    private val _transaction: StateFlow<DataState<TransactionLook?>> = combine(
         session.walletTransactions.filter { session.isConnected },
         session.settings()
     ) { transactions, _ ->
         transactions.mapSuccess {
-            it.map {
-                TransactionLook.create(transaction = it, session = session, disableHideAmounts = true)
+            it.firstOrNull()?.let {
+                TransactionLook.create(
+                    transaction = it,
+                    session = session,
+                    disableHideAmounts = true
+                )
             }
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), DataState.Loading)
 
     // Re-calculate if needed (hideAmount or denomination & exchange rate change)
-    override val transactions: StateFlow<DataState<List<TransactionLook>>> =
+    override val transaction: StateFlow<DataState<TransactionLook?>> =
         combine(
             hideAmounts,
-            _transactions
-        ) { hideAmounts, transactionsLooks ->
-            if (transactionsLooks is DataState.Success && hideAmounts) {
-                DataState.Success(transactionsLooks.data.map { it.asMasked })
+            _transaction
+        ) { hideAmounts, transactionsLook ->
+            if (transactionsLook is DataState.Success && hideAmounts) {
+                DataState.Success(transactionsLook.data?.asMasked)
             } else {
-                transactionsLooks
+                transactionsLook
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), DataState.Loading)
 
     private val _systemMessage: MutableStateFlow<AlertType?> = MutableStateFlow(null)
     private val _twoFactorState: MutableStateFlow<AlertType?> = MutableStateFlow(null)
 
+    private val hideWalletBackupAlert = MutableStateFlow(false)
+
     override val alerts: StateFlow<List<AlertType>> = com.blockstream.common.extensions.combine(
-        greenWalletFlow.filterNotNull().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), greenWallet),
+        greenWalletFlow.filterNotNull()
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), greenWallet),
         _twoFactorState,
         _systemMessage,
         session.failedNetworks,
         session.lightningSdkOrNull?.healthCheckStatus ?: MutableStateFlow(null),
-        banner
-    ) { greenWallet, twoFactorState, systemMessage, failedNetworkLogins, lspHeath, banner ->
+        banner,
+        hideWalletBackupAlert,
+        session.walletTotalBalance
+    ) { greenWallet, twoFactorState, systemMessage, failedNetworkLogins, lspHeath, banner, hideWalletBackupAlert, walletTotalBalance ->
         listOfNotNull(
+            if (!greenWallet.isRecoveryConfirmed && !hideWalletBackupAlert && walletTotalBalance > 0) AlertType.RecoveryIsUnconfirmed(withCloseButton = true) else null,
             twoFactorState,
             systemMessage,
             if (greenWallet.isBip39Ephemeral) AlertType.EphemeralBip39 else null,
@@ -197,54 +231,42 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
             lspHeath?.takeIf { it != HealthCheckStatus.OPERATIONAL }
                 ?.let { AlertType.LspStatus(maintenance = it == HealthCheckStatus.MAINTENANCE) },
         )
-    }.filter { session.isConnected }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), listOf())
+    }.filter { session.isConnected }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), listOf())
 
     override val archivedAccounts: StateFlow<Int> = session.allAccounts.map {
         it.filter { it.hidden }.size
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), 0)
 
-    override val isLightningShortcut
-        get() = session.isLightningShortcut
+    override val showHardwareTransferFunds = transaction.map {
+        sessionOrNull?.isHardwareWallet == true && (it is DataState.Success && it.data == null)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), false)
 
     class LocalEvents {
         object ToggleHideAmounts : Event
         object Refresh : Event
-        object Send: Event
-        object Receive: Event
-        object DenominationExchangeRate: Event
+        object Send : Event
+        object Receive : Event
+        object DenominationExchangeRate : Event
+        object ClickLightningSweep : Event
         object ClickLightningLearnMore : Events.OpenBrowser(Urls.HELP_RECEIVE_CAPACITY)
 
-        object OpenOptionsMenu: Event
-        object MenuNewAccountClick: Event
+        object OpenOptionsMenu : Event
+        object MenuNewAccountClick : Event
     }
 
     class LocalSideEffects {
-        object AccountArchivedDialog: SideEffect
+        object AccountArchivedDialog : SideEffect
     }
 
     init {
-        // For animation reasons, set navData title immediately
-        _navData.value = NavData(
-            title = greenWallet.name
-        )
-
         session.ifConnected {
-            combine(greenWalletFlow.filterNotNull(), isWalletOnboarding) { greenWallet, isWalletOnboarding ->
-                _navData.value = NavData(
-                    title = greenWallet.name,
-                    subtitle = if(session.isLightningShortcut) getString(Res.string.id_lightning_account) else null,
-                    isVisible = !isWalletOnboarding,
-                    actions = listOfNotNull(
-                        NavAction(
-                            title = "Menu",
-                            icon = Res.drawable.dots_three_vertical_bold,
-                            isMenuEntry = false,
-                            onClick = {
-                                postSideEffect(SideEffects.OpenDialog())
-                            }
-                        ),
-                    )
-                )
+            combine(
+                greenWalletFlow.filterNotNull(),
+                this.showWalletOnboarding,
+                session.isWatchOnly
+            ) { greenWallet, _, _ ->
+                updateNavData(greenWallet)
             }.launchIn(this)
 
             session.systemMessage.filter { session.isConnected }.onEach {
@@ -271,10 +293,11 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
             }
 
             session.eventsSharedFlow.onEach {
-                when(it){
+                when (it) {
                     WalletEvents.ARCHIVED_ACCOUNT -> {
                         postSideEffect(LocalSideEffects.AccountArchivedDialog)
                     }
+
                     WalletEvents.APP_REVIEW -> {
                         if (AppReviewHelper.shouldAskForReview(settingsManager, countly)) {
                             postSideEffect(SideEffects.AppReview)
@@ -297,13 +320,38 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
         bootstrap()
     }
 
+    private fun updateNavData(greenWallet: GreenWallet){
+        _navData.value = NavData(
+            walletName = greenWallet.name,
+            isVisible = !showWalletOnboarding.value,
+            showBadge = !greenWallet.isRecoveryConfirmed,
+            showBottomNavigation = !showWalletOnboarding.value,
+            actions = listOfNotNull(
+                NavAction(
+                    title = "Menu",
+                    icon = Res.drawable.dots_three_vertical_bold,
+                    isMenuEntry = false,
+                    onClick = {
+                        postSideEffect(SideEffects.OpenDialog())
+                    }
+                )
+            )
+        )
+    }
+
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         when (event) {
+            is Events.DismissWalletBackupAlert -> {
+                viewModelScope.launch {
+                    hideWalletBackupAlert.value = true
+                }
+            }
             is LocalEvents.OpenOptionsMenu -> {
                 postSideEffect(SideEffects.OpenDialog())
             }
+
             is LocalEvents.MenuNewAccountClick -> {
                 postEvent(Events.ChooseAccountType())
                 countly.accountNew(session)
@@ -333,7 +381,14 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
             }
 
             is LocalEvents.Receive -> {
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Receive(accountAsset = session.activeAccount.value!!.accountAsset, greenWallet = greenWallet)))
+                postSideEffect(
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.Receive(
+                            accountAsset = session.activeAccount.value!!.accountAsset,
+                            greenWallet = greenWallet
+                        )
+                    )
+                )
             }
 
             is LocalEvents.DenominationExchangeRate -> {
@@ -352,16 +407,33 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
                     countly.hideAmount(session)
                 }
             }
+            is LocalEvents.ClickLightningSweep -> {
+                postSideEffect(
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.RecoverFunds(
+                            greenWallet = greenWallet,
+                            amount = session.lightningSdk.nodeInfoStateFlow.value.onchainBalanceSatoshi()
+                        )
+                    )
+                )
+            }
         }
     }
 
-    companion object: Loggable()
+    companion object : Loggable()
 }
 
-class WalletOverviewViewModelPreview(val isEmpty: Boolean = false) :
-    WalletOverviewViewModelAbstract(greenWallet = previewWallet()) {
+class WalletOverviewViewModelPreview(val isEmpty: Boolean = false, val isHardware: Boolean = true) :
+    WalletOverviewViewModelAbstract(greenWallet = previewWallet(isHardware = isHardware)) {
 
-    override val isWalletOnboarding: StateFlow<Boolean> = MutableStateFlow(isEmpty)
+    override val transaction: StateFlow<DataState<TransactionLook?>> = MutableStateFlow(
+        DataState.Success(
+            if (isEmpty) null else
+                previewTransactionLook()
+        )
+    )
+
+    override val showWalletOnboarding: MutableStateFlow<Boolean> = MutableStateFlow(isEmpty)
 
     override val alerts: StateFlow<List<AlertType>> = MutableStateFlow(listOf())
 
@@ -371,55 +443,31 @@ class WalletOverviewViewModelPreview(val isEmpty: Boolean = false) :
 
     override val hideAmounts: StateFlow<Boolean> = MutableStateFlow(false)
 
-    override val assetsVisibility: StateFlow<Boolean?> = MutableStateFlow(true)
-
     override val activeAccount: StateFlow<Account?> = MutableStateFlow(null)
 
-    override val assetIcons: StateFlow<List<String>> = MutableStateFlow(if(isEmpty) listOf() else
-        listOf(
-            EnrichedAsset.PreviewBTC,
-            EnrichedAsset.PreviewLBTC,
-            EnrichedAsset.PreviewLBTC,
-            EnrichedAsset.PreviewLBTC,
-            EnrichedAsset.PreviewLBTC,
-            EnrichedAsset.PreviewLBTC,
-            EnrichedAsset.PreviewLBTC,
-            EnrichedAsset.PreviewLBTC,
-            EnrichedAsset.PreviewLBTC
-        ).map {
-            it.assetId
-        }
+    override val assets: StateFlow<DataState<List<AssetBalance>>> = MutableStateFlow(
+        DataState.successOrEmpty(
+            listOf(
+                previewAssetBalance(),
+                previewAssetBalance(isLiquid = true)
+            )
+        )
     )
 
-    override val totalAssets: StateFlow<Int> = MutableStateFlow(7)
-
-    override val accounts: StateFlow<List<AccountBalance>> = MutableStateFlow(
+    override val accounts: StateFlow<List<AccountAssetBalance>> = MutableStateFlow(
         listOf(
-            AccountBalance.create(previewAccount()),
-            AccountBalance.create(previewAccount())
+            AccountAssetBalance.create(previewAccountAsset()),
+            AccountAssetBalance.create(previewAccountAsset())
         )
     )
 
     override val lightningInfo: StateFlow<LightningInfoLook?> = MutableStateFlow(null)
 
-    override val transactions: StateFlow<DataState<List<TransactionLook>>> = MutableStateFlow(DataState.Success(if(isEmpty) listOf() else listOf(
-        previewTransactionLook(),
-        previewTransactionLook(),
-        previewTransactionLook(),
-        previewTransactionLook(),
-        previewTransactionLook(),
-        previewTransactionLook(),
-        previewTransactionLook(),
-        previewTransactionLook(),
-        previewTransactionLook(),
-        previewTransactionLook(),
-        previewTransactionLook(),
-        previewTransactionLook(),
-    )))
-
     override val archivedAccounts: StateFlow<Int> = MutableStateFlow(1)
 
-    companion object: Loggable(){
+    override val showHardwareTransferFunds: StateFlow<Boolean> = MutableStateFlow(true)
+
+    companion object : Loggable() {
         fun create(isEmpty: Boolean = false) = WalletOverviewViewModelPreview(isEmpty = isEmpty)
     }
 }

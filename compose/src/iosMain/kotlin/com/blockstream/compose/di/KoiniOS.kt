@@ -4,7 +4,7 @@ import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.crypto.NoKeystore
 import com.blockstream.common.data.AppConfig
-import com.blockstream.common.data.AppInfo
+import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.di.initKoin
 import com.blockstream.common.fcm.FcmCommon

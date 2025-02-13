@@ -33,11 +33,8 @@ import com.blockstream.common.Urls
 import com.blockstream.common.data.AppConfig
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
-import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavAction
-import com.blockstream.common.data.NavData
-import com.blockstream.common.events.Event
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isBlank
@@ -60,18 +57,25 @@ import com.blockstream.common.models.sheets.NoteType
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.platformFileSystem
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.UserInput
 import com.blockstream.common.utils.formatAuto
 import com.blockstream.common.utils.toAmountLook
 import com.blockstream.common.utils.toAmountLookOrNa
+import com.blockstream.domain.hardware.VerifyAddressUseCase
+import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavAction
+import com.blockstream.ui.navigation.NavData
 import com.eygraber.uri.Uri
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
+import com.rickclephas.kmp.observableviewmodel.launch
+import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
@@ -89,6 +93,9 @@ abstract class ReceiveViewModelAbstract(greenWallet: GreenWallet, accountAssetOr
     GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = accountAssetOrNull) {
 
     override fun screenName(): String = "Receive"
+
+    @NativeCoroutinesState
+    abstract val showRecoveryConfirmation: StateFlow<Boolean>
 
     @NativeCoroutinesState
     abstract val amount: MutableStateFlow<String>
@@ -151,6 +158,8 @@ abstract class ReceiveViewModelAbstract(greenWallet: GreenWallet, accountAssetOr
 
 class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAsset) :
     ReceiveViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = initialAccountAsset) {
+    internal val verifyAddressUseCase: VerifyAddressUseCase by inject()
+
     private val _receiveAddress = MutableStateFlow<String?>(null)
     private val _receiveAddressUri = MutableStateFlow<String?>(null)
     private val _showVerifyOnDevice = MutableStateFlow(false)
@@ -198,6 +207,17 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
     private val _lightningInvoice = MutableStateFlow<LnInvoice?>(null)
 
     private val _appConfig: AppConfig by inject()
+
+    private val hideWalletBackupAlert = MutableStateFlow(false)
+
+    override val showRecoveryConfirmation: StateFlow<Boolean> =
+        combine(greenWalletFlow, hideWalletBackupAlert) { greenWallet, hideWalletBackupAlert ->
+            !hideWalletBackupAlert && greenWallet?.isRecoveryConfirmed == false
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000L),
+            false
+        )
 
     class LocalEvents {
         object ToggleLightning: Event
@@ -379,6 +399,11 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
         super.handleEvent(event)
 
         when (event) {
+            is Events.DismissWalletBackupAlert -> {
+                viewModelScope.launch {
+                    hideWalletBackupAlert.value = true
+                }
+            }
             is LocalEvents.ClearLightningInvoice -> {
                 _receiveAddress.value = null
                 _receiveAddressUri.value = null
@@ -493,30 +518,20 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
     }
 
     private fun verifyAddressOnDevice() {
-        countly.verifyAddress(session, account)
-
         _address.value?.let { address ->
-            session.gdkHwWallet?.let { hwWallet ->
-                doAsync({
-                    if(hwWallet.getGreenAddress(
-                        network = account.network,
-                        hwInteraction = null,
-                        account = account,
-                        path = address.userPath ?: listOf(),
-                        csvBlocks = address.subType ?: 0
-                    ) != address.address){
-                        throw Exception("id_the_addresses_dont_match")
-                    }
-                }, preAction = null, postAction = null, onSuccess = {
-                    postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_the_address_is_valid)))
-                    // Dismiss Verify Transaction Dialog
-                    postSideEffect(SideEffects.Dismiss)
-                }, onError = {
-                    postSideEffect(SideEffects.ErrorDialog(it))
-                    // Dismiss Verify Transaction Dialog
-                    postSideEffect(SideEffects.Dismiss)
-                })
-            }
+            doAsync({
+                verifyAddressUseCase.invoke(
+                    session = session,
+                    account = account,
+                    address = address
+                )
+            }, preAction = null, postAction = null, onSuccess = {
+                postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_the_address_is_valid)))
+                postSideEffect(SideEffects.Dismiss)
+            }, onError = {
+                postSideEffect(SideEffects.ErrorDialog(it))
+                postSideEffect(SideEffects.Dismiss)
+            })
         }
     }
 
@@ -848,6 +863,8 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
 }
 
 class ReceiveViewModelPreview() : ReceiveViewModelAbstract(greenWallet = previewWallet(), accountAssetOrNull = previewAccountAsset(isLightning = true)) {
+
+    override val showRecoveryConfirmation: StateFlow<Boolean> = MutableStateFlow(true)
 
     override val receiveAddress: StateFlow<String?> = MutableStateFlow("lightning:LNBC1bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznubc1qaqtq80759n35gkh7du83nwvt5lgkznubc1qaqtq80759n35gkh7du83nwvt5lgkznubc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznubc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu")
     override val receiveAddressUri: StateFlow<String?> = MutableStateFlow("lightning:LNBC1bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznubc1qaqtq80759n35gkh7du83nwvt5lgkznubc1qaqtq80759n35gkh7du83nwvt5lgkznubc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznubc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu")

@@ -16,9 +16,9 @@ import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavData
+import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.SupportData
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.extensions.previewWallet
@@ -29,7 +29,7 @@ import com.blockstream.common.lightning.maxWithdrawableSatoshi
 import com.blockstream.common.lightning.minWithdrawableSatoshi
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.UserInput
 import com.blockstream.common.utils.toAmountLook

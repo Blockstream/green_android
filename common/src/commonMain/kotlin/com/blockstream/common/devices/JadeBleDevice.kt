@@ -1,6 +1,6 @@
 package com.blockstream.common.devices
 
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.juul.kable.Peripheral
 
 /*

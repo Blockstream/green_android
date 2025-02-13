@@ -69,7 +69,7 @@ import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.compose.utils.ifTrue
+import com.blockstream.ui.utils.ifTrue
 import com.blockstream.compose.utils.roundBackground
 import com.blockstream.ui.components.GreenArrow
 import com.blockstream.ui.components.GreenColumn

@@ -11,7 +11,7 @@ import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.HardwareConnectInteraction
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.btchip.comm.BTChipTransport
 import com.btchip.comm.LedgerDeviceBLE
 import com.greenaddress.greenbits.wallets.BTChipHWWallet

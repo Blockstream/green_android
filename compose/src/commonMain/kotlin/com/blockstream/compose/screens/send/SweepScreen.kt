@@ -210,7 +210,7 @@ fun SweepScreen(
 
             }
 
-            GreenConfirmButton(viewModel = viewModel) {
+            GreenConfirmButton(viewModel = viewModel, isSweep = true) {
                 viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SignTransaction())
             }
         }

@@ -15,7 +15,7 @@ import blockstream_green.common.generated.resources.id_hide_amounts
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.fcm.Firebase
 import com.blockstream.common.managers.LifecycleManager
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.blockstream.green.di.initKoinAndroid
 import com.blockstream.green.lifecycle.ActivityLifecycle
 import com.blockstream.green.settings.AndroidMigrator

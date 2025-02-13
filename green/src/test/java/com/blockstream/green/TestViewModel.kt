@@ -2,7 +2,7 @@ package com.blockstream.green
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.blockstream.common.CountlyBase
-import com.blockstream.common.data.AppInfo
+import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.database.Database
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.managers.PromoManager

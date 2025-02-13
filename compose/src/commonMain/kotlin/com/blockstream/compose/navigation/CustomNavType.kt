@@ -2,8 +2,10 @@
 
 package com.blockstream.compose.navigation
 
-import androidx.core.bundle.Bundle
 import androidx.navigation.NavType
+import androidx.savedstate.SavedState
+import androidx.savedstate.read
+import androidx.savedstate.write
 import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.serializer
@@ -34,11 +36,13 @@ class CustomNavType<T: Any> @PublishedApi internal constructor(
         } ?: "null"
     }
 
-    override fun get(bundle: Bundle, key: String): T? {
-        return parseValue(bundle.getString(key) ?: return null)
+    override fun get(bundle: SavedState, key: String): T? {
+        return parseValue(bundle.read { getStringOrNull(key) } ?: return null)
     }
 
-    override fun put(bundle: Bundle, key: String, value: T?) {
-        bundle.putString(key, serializeAsValue(value))
+    override fun put(bundle: SavedState, key: String, value: T?) {
+        bundle.write {
+            putString(key, serializeAsValue(value))
+        }
     }
 }

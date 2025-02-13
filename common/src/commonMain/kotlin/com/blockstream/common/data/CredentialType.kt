@@ -9,7 +9,10 @@ enum class CredentialType(val value: Long) {
     BIOMETRICS_WATCHONLY_CREDENTIALS(5),
     KEYSTORE_GREENLIGHT_CREDENTIALS(6),
     LIGHTNING_MNEMONIC(7),
-    RICH_WATCH_ONLY(8);
+    RICH_WATCH_ONLY(8),
+    KEYSTORE_MNEMONIC(9),
+    BIOMETRICS_MNEMONIC(10),
+    KEYSTORE_HW_WATCHONLY_CREDENTIALS(11);
 
     companion object{
         fun byPosition(position: Long): CredentialType {

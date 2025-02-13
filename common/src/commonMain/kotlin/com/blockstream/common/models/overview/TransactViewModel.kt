@@ -1,19 +1,15 @@
 package com.blockstream.common.models.overview
 
-import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_lightning_account
-import blockstream_green.common.generated.resources.id_transact
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavData
-import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewTransactionLook
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.looks.transaction.TransactionLook
-import com.blockstream.common.utils.Loggable
+import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.launch
 import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +17,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onEach
-import org.jetbrains.compose.resources.getString
 
 
 abstract class TransactViewModelAbstract(
@@ -32,6 +27,14 @@ abstract class TransactViewModelAbstract(
 
     @NativeCoroutinesState
     abstract val transactions: StateFlow<DataState<List<TransactionLook>>>
+
+    fun buy() {
+        postEvent(
+            NavigateDestinations.Buy(
+                greenWallet = greenWallet
+            )
+        )
+    }
 }
 
 class TransactViewModel(greenWallet: GreenWallet) :
@@ -68,22 +71,21 @@ class TransactViewModel(greenWallet: GreenWallet) :
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), DataState.Loading)
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(
-                title = getString(Res.string.id_transact)
-            )
-        }
+        greenWalletFlow.filterNotNull().onEach {
+            updateNavData(it)
+        }.launchIn(this)
 
-        session.ifConnected {
-            greenWalletFlow.filterNotNull().onEach { greenWallet ->
-                _navData.value = NavData(
-                    title = greenWallet.name,
-                    subtitle = if (session.isLightningShortcut) getString(Res.string.id_lightning_account) else null,
-                )
-            }.launchIn(this)
-        }
+        updateNavData(greenWallet)
 
         bootstrap()
+    }
+
+    private fun updateNavData(greenWallet: GreenWallet){
+        _navData.value = NavData(
+            walletName = greenWallet.name,
+            showBadge = !greenWallet.isRecoveryConfirmed,
+            showBottomNavigation = true
+        )
     }
 }
 

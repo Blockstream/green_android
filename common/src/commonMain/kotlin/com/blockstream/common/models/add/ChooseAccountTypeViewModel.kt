@@ -5,11 +5,11 @@ import blockstream_green.common.generated.resources.id_add_new_account
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavData
+import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.Redact
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.devices.DeviceModel
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.hasHistory
 import com.blockstream.common.extensions.ifConnected
@@ -22,7 +22,7 @@ import com.blockstream.common.looks.AccountTypeLook
 import com.blockstream.common.models.jade.JadeQrOperation
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.navigation.PopTo
-import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.ui.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.coroutineScope

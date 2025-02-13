@@ -4,7 +4,7 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_archived_accounts
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavData
+import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccountAssetBalance
 import com.blockstream.common.extensions.previewWallet

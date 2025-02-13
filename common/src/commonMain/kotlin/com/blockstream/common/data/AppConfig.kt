@@ -1,10 +1,9 @@
 package com.blockstream.common.data
 
 import blockstream_green.common.generated.resources.Res
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import kotlinx.coroutines.runBlocking
 import okio.internal.commonToUtf8String
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 data class AppConfig(
     val isDebug: Boolean,
@@ -18,7 +17,6 @@ data class AppConfig(
     val lightningFeatureEnabled: Boolean = true,
     val storeRateEnabled: Boolean = false
 ) {
-    @OptIn(ExperimentalResourceApi::class)
     companion object: Loggable() {
         fun default(
             isDebug: Boolean,

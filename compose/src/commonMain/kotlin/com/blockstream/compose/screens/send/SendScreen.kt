@@ -205,6 +205,7 @@ fun SendScreen(
                             viewModel.isSendAll.value = false
                             viewModel.amount.value = it
                         },
+                        secondaryValue = amountExchange,
                         assetId = it.assetId,
                         session = viewModel.sessionOrNull,
                         isAmountLocked = isAmountLocked,
@@ -224,13 +225,6 @@ fun SendScreen(
                                     text = amountHint ?: "",
                                     textAlign = TextAlign.Start,
                                     modifier = Modifier.weight(1f),
-                                    style = bodyMedium,
-                                    color = whiteLow
-                                )
-
-                                Text(
-                                    text = amountExchange,
-                                    textAlign = TextAlign.End,
                                     style = bodyMedium,
                                     color = whiteLow
                                 )

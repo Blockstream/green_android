@@ -1,7 +1,7 @@
 package com.blockstream.common.models
 
 import com.blockstream.common.CountlyBase
-import com.blockstream.common.data.AppInfo
+import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.database.Database
 import com.blockstream.common.managers.PromoManager
 import com.blockstream.common.managers.SessionManager

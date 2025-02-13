@@ -3,9 +3,9 @@ package com.blockstream.common.models.demo
 import com.blockstream.common.Urls
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.data.DataState
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.ui.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.toAmountLookOrNa
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow

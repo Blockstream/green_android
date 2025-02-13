@@ -28,16 +28,19 @@ import blockstream_green.common.generated.resources.id_create_new_account
 import blockstream_green.common.generated.resources.id_provided_by_
 import blockstream_green.common.generated.resources.id_select_account
 import blockstream_green.common.generated.resources.id_sell
+import com.blockstream.common.data.AlertType
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.data.AccountAssetBalanceList
 import com.blockstream.common.gdk.data.AssetBalance
+import com.blockstream.common.gdk.data.AssetBalanceList
 import com.blockstream.common.models.exchange.OnOffRampsViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.navigation.PopTo
 import com.blockstream.compose.components.GreenAccountAsset
+import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenAmountField
 import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.components.GreenButton
@@ -81,8 +84,20 @@ fun OnOffRampsScreen(
         viewModel.postEvent(Events.SetDenominatedValue(it))
     }
 
+    val showRecoveryConfirmation by viewModel.showRecoveryConfirmation.collectAsStateWithLifecycle()
+
     SetupScreen(viewModel = viewModel, withPadding = false) {
+
+        if (showRecoveryConfirmation) {
+            GreenAlert(
+                alertType = AlertType.RecoveryIsUnconfirmed(withCloseButton = true),
+                viewModel = viewModel,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+        }
+
         GreenColumn {
+
             GreenColumn(
                 padding = 0,
                 modifier = Modifier.weight(1f).verticalScroll(
@@ -118,29 +133,45 @@ fun OnOffRampsScreen(
                     GreenColumn(padding = 0) {
 
                         val buyAsset by viewModel.buyAsset.collectAsStateWithLifecycle()
+                        val buyAssets by viewModel.buyAssets.collectAsStateWithLifecycle()
 
-                        GreenAsset(
-                            assetBalance = buyAsset,
-                            session = viewModel.sessionOrNull,
-                            title = stringResource(Res.string.id_asset_to_buy),
-                            withEditIcon = false,
-//                        onClick = {
-//                            viewModel.postEvent(NavigateDestinations.Assets(viewModel.buyAssets.value))
-//                        }
-                        )
+                        if (buyAssets.size > 1) {
+                            GreenAsset(
+                                assetBalance = buyAsset,
+                                session = viewModel.sessionOrNull,
+                                title = stringResource(Res.string.id_asset_to_buy),
+                                withEditIcon = false,
+                                onClick = {
+                                    viewModel.postEvent(
+                                        NavigateDestinations.Assets(
+                                            viewModel.greenWallet,
+                                            AssetBalanceList(buyAssets)
+                                        )
+                                    )
+                                }
+                            )
+                        }
 
                         val buyAccount by viewModel.buyAccount.collectAsStateWithLifecycle()
+                        val buyAccounts by viewModel.buyAccounts.collectAsStateWithLifecycle()
 
                         if (buyAccount != null) {
-                            GreenAccountAsset(
-                                accountAssetBalance = buyAccount,
-                                session = viewModel.sessionOrNull,
-                                title = stringResource(Res.string.id_account),
-                                selectText = stringResource(Res.string.id_select_account),
-                                withAsset = false,
-                                withEditIcon = true
-                            ) {
-                                viewModel.postEvent(NavigateDestinations.AssetsAccounts(greenWallet = viewModel.greenWallet, assetsAccounts = AccountAssetBalanceList(viewModel.buyAccounts.value)))
+                            if(buyAccounts.size > 1) {
+                                GreenAccountAsset(
+                                    accountAssetBalance = buyAccount,
+                                    session = viewModel.sessionOrNull,
+                                    title = stringResource(Res.string.id_account),
+                                    selectText = stringResource(Res.string.id_select_account),
+                                    withAsset = false,
+                                    withEditIcon = true
+                                ) {
+                                    viewModel.postEvent(
+                                        NavigateDestinations.AssetsAccounts(
+                                            greenWallet = viewModel.greenWallet,
+                                            assetsAccounts = AccountAssetBalanceList(viewModel.buyAccounts.value)
+                                        )
+                                    )
+                                }
                             }
                         } else {
                             GreenDataLayout(
@@ -182,25 +213,12 @@ fun OnOffRampsScreen(
                             GreenAmountField(
                                 value = amount,
                                 onValueChange = viewModel.amount.onValueChange(),
+                                secondaryValue = amountExchange,
                                 assetId = buyAsset?.assetId,
                                 session = viewModel.sessionOrNull,
                                 denomination = denomination,
                                 helperText = amountError ?: amountHint,
                                 helperContainerColor = if (amountError != null) md_theme_errorContainer else green20,
-                                footerContent = {
-                                    Row(
-                                        modifier = Modifier.padding(horizontal = 2.dp),
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                    ) {
-                                        Text(
-                                            text = amountExchange,
-                                            textAlign = TextAlign.End,
-                                            style = bodyMedium,
-                                            color = whiteLow,
-                                            modifier = Modifier.fillMaxWidth()
-                                        )
-                                    }
-                                },
                                 onDenominationClick = {
                                     viewModel.postEvent(Events.SelectDenomination)
                                 }

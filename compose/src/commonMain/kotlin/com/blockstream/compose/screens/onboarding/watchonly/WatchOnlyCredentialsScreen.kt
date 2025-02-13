@@ -43,7 +43,6 @@ import blockstream_green.common.generated.resources.id_import_from_file
 import blockstream_green.common.generated.resources.id_log_in
 import blockstream_green.common.generated.resources.id_log_in_via_watchonly_to_receive
 import blockstream_green.common.generated.resources.id_login
-import blockstream_green.common.generated.resources.id_login_with_biometrics
 import blockstream_green.common.generated.resources.id_password
 import blockstream_green.common.generated.resources.id_remember_me
 import blockstream_green.common.generated.resources.id_scan_or_paste_your_extended
@@ -68,8 +67,6 @@ import com.blockstream.compose.managers.rememberPlatformManager
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.displayMedium
-import com.blockstream.compose.theme.whiteHigh
-import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.TextInputPassword
@@ -311,33 +308,6 @@ fun WatchOnlyCredentialsScreen(
                                     onCheckedChange = viewModel.isRememberMe.onValueChange()
                                 )
                             }
-                        }
-
-                        val canUseBiometrics by viewModel.canUseBiometrics.collectAsStateWithLifecycle()
-                        val withBiometrics by viewModel.withBiometrics.collectAsStateWithLifecycle()
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.noRippleToggleable(
-                                value = withBiometrics,
-                                enabled = isRememberMe && canUseBiometrics,
-                                onValueChange = viewModel.withBiometrics.onValueChange()
-                            )
-                        ) {
-                            Text(
-                                text = stringResource(Res.string.id_login_with_biometrics),
-                                style = bodyLarge,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier
-                                    .weight(1f),
-                                color = if (isRememberMe && canUseBiometrics) whiteHigh else whiteLow
-                            )
-
-                            Switch(
-                                checked = withBiometrics,
-                                onCheckedChange = viewModel.withBiometrics.onValueChange(),
-                                enabled = isRememberMe && canUseBiometrics
-                            )
                         }
                     }
 

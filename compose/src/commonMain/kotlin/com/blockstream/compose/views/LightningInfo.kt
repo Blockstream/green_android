@@ -19,11 +19,11 @@ import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.md_theme_brandSurface
 import com.blockstream.compose.theme.whiteMedium
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -35,10 +35,7 @@ fun LightningInfo(
 ) {
     GreenColumn(
         padding = 0,
-        space = 8,
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .padding(top = 8.dp)
+        space = 8
     ) {
 
         lightningInfoLook.sweep?.also {

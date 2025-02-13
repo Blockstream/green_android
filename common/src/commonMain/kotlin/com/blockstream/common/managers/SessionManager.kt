@@ -1,7 +1,6 @@
 package com.blockstream.common.managers
 
 import com.blockstream.common.CountlyBase
-import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.devices.GreenDevice
@@ -16,8 +15,9 @@ import com.blockstream.common.gdk.data.TorEvent
 import com.blockstream.common.gdk.params.LoginCredentialsParams
 import com.blockstream.common.lightning.LightningBridge
 import com.blockstream.common.lightning.LightningManager
-import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.Timer
+import com.blockstream.green.data.config.AppInfo
+import com.blockstream.green.utils.Loggable
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -250,6 +250,16 @@ class SessionManager constructor(
             walletSessions[wallet.id] = it
             // fire connection change event so that all listeners can track the new session status
             fireConnectionChangeEvent()
+            onBoardingSession = null
+        }
+    }
+
+    fun upgradeOnBoardingSessionToFullSession(woSession: GdkSession, device: GreenDevice){
+        onBoardingSession?.let {
+            woSession.watchOnlyToFullSession(device = device, gdkSession = it)
+
+            it.destroy(disconnect = false)
+
             onBoardingSession = null
         }
     }

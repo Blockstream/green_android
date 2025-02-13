@@ -43,7 +43,7 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_share
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.stateKeeper
-import com.blockstream.common.data.AppInfo
+import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.managers.BluetoothManager

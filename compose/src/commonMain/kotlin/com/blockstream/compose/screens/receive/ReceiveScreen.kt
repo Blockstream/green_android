@@ -54,6 +54,7 @@ import blockstream_green.common.generated.resources.info
 import blockstream_green.common.generated.resources.seal_check
 import blockstream_green.common.generated.resources.share_network
 import blockstream_green.common.generated.resources.warning
+import com.blockstream.common.data.AlertType
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.MenuEntry
 import com.blockstream.common.data.MenuEntryList
@@ -66,6 +67,7 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAddress
+import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenAmountField
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
@@ -77,7 +79,6 @@ import com.blockstream.compose.components.LearnMoreButton
 import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.managers.rememberPlatformManager
-import com.blockstream.compose.navigation.LocalNavigator
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.green20
@@ -93,6 +94,7 @@ import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenGradient
 import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.navigation.LocalNavigator
 import com.blockstream.ui.navigation.bottomsheet.BottomSheetNavigator
 import com.blockstream.ui.navigation.getResult
 import io.github.alexzhirkevich.qrose.QrCodePainter
@@ -162,6 +164,7 @@ fun ReceiveScreen(
     val amountExchange by viewModel.amountExchange.collectAsStateWithLifecycle()
     val amountError by viewModel.amountError.collectAsStateWithLifecycle()
     val liquidityFee by viewModel.liquidityFee.collectAsStateWithLifecycle()
+    val showRecoveryConfirmation by viewModel.showRecoveryConfirmation.collectAsStateWithLifecycle()
 
     LaunchedEffect(showRequestAmount){
         if(showRequestAmount && amount.isBlank()){
@@ -186,6 +189,12 @@ fun ReceiveScreen(
                     .padding(bottom = 32.dp)
             ) {
 
+                if (showRecoveryConfirmation) {
+                    GreenAlert(
+                        alertType = AlertType.RecoveryIsUnconfirmed(withCloseButton = true),
+                        viewModel = viewModel
+                    )
+                }
 
                 Column {
                     accountAsset?.also {
@@ -234,6 +243,7 @@ fun ReceiveScreen(
                         GreenAmountField(
                             value = amount,
                             onValueChange = viewModel.amount.onValueChange(),
+                            secondaryValue = amountExchange,
                             assetId = viewModel.accountAsset.value?.assetId,
                             session = viewModel.sessionOrNull,
                             title = if (accountAsset?.account?.isLightning == false) stringResource(
@@ -257,13 +267,6 @@ fun ReceiveScreen(
                                             text = maxReceiveAmount,
                                             textAlign = TextAlign.Start,
                                             modifier = Modifier.weight(1f),
-                                            style = bodyMedium,
-                                            color = whiteLow
-                                        )
-
-                                        Text(
-                                            text = amountExchange,
-                                            textAlign = TextAlign.End,
                                             style = bodyMedium,
                                             color = whiteLow
                                         )

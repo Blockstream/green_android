@@ -9,10 +9,11 @@ import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.navigation.NavigateDestination
 import com.blockstream.common.navigation.PopTo
-import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.sideeffects.SideEffect
 
-class Events : Event {
+object Events {
     open class EventSideEffect(override val sideEffect: SideEffect) : EventWithSideEffect
     open class OpenBrowser(val url: String) : EventWithSideEffect {
         override val sideEffect
@@ -26,6 +27,7 @@ class Events : Event {
     object NavigateBack: EventSideEffect(SideEffects.NavigateBack())
     class AckSystemMessage(val network: Network, val message: String) : Event
     object DismissSystemMessage : Event
+    object DismissWalletBackupAlert : Event
     object ReconnectFailedNetworks : Event
     data class Transaction(val transaction: com.blockstream.common.gdk.data.Transaction): Event
     data class ChooseAccountType(val isFirstAccount: Boolean = false, val popTo: PopTo? = null) : Event
@@ -61,4 +63,5 @@ class Events : Event {
 
     // Devices
     data class RespondToFirmwareUpgrade(val index: Int? = null): Event
+    data class SelectEnviroment(val isTestnet: Boolean, val customNetwork: Network?) : Event
 }

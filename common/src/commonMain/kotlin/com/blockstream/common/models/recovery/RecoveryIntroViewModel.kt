@@ -4,14 +4,14 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_before_you_backup
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
-import com.blockstream.common.data.NavData
+import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.ui.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
@@ -47,8 +47,10 @@ class RecoveryIntroViewModel(
         mnemonic = gdk.generateMnemonic12(), mnemonicSize = 12
     )
 
+    @NativeCoroutinesState
     override val mnemonic = MutableStateFlow(viewModelScope, state.mnemonic)
 
+    @NativeCoroutinesState
     override val mnemonicSize = MutableStateFlow(viewModelScope, state.mnemonicSize)
 
     class LocalSideEffects {
@@ -93,7 +95,7 @@ class RecoveryIntroViewModel(
 
     private fun proceed() {
         doAsync({
-            if (setupArgs.isShowRecovery) {
+            if (setupArgs.isShowRecovery && greenWallet.isRecoveryConfirmed) {
                 if (greenKeystore.canUseBiometrics()) {
                     postSideEffect(
                         LocalSideEffects.LaunchUserPresence
@@ -126,6 +128,11 @@ class RecoveryIntroViewModel(
     private suspend fun nextRecoveryArgs(): SetupArgs {
         return if (setupArgs.isGenerateMnemonic) {
             setupArgs.copy(mnemonic = mnemonic.value)
+        } else if (setupArgs.greenWallet?.isRecoveryConfirmed == false) {
+            setupArgs.copy(
+                mnemonic = session.getCredentials().mnemonic
+                    ?: throw Exception("Couldn't get the mnemonic")
+            )
         } else {
             setupArgs
         }
@@ -145,7 +152,9 @@ class RecoveryIntroViewModel(
 
 class RecoveryIntroViewModelPreview(setupArgs: SetupArgs) :
     RecoveryIntroViewModelAbstract(setupArgs = setupArgs) {
+    @NativeCoroutinesState
     override val mnemonicSize: MutableStateFlow<Int> = MutableStateFlow(viewModelScope, 1)
+    @NativeCoroutinesState
     override val mnemonic: MutableStateFlow<String> = MutableStateFlow(
         viewModelScope,
         "chalk verb patch cube sell west penalty fish park worry tribe tourist"

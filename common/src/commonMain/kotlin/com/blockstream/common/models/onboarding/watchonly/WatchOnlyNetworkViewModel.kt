@@ -1,7 +1,7 @@
 package com.blockstream.common.models.onboarding.watchonly
 
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.extensions.previewNetwork
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.Network

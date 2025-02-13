@@ -1,7 +1,7 @@
 package com.blockstream.common.extensions
 
 import com.blockstream.common.CountlyBase
-import com.blockstream.common.data.AppInfo
+import com.blockstream.green.data.config.AppInfo
 import com.rickclephas.kmp.observableviewmodel.ViewModel
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.CancellationException
@@ -27,6 +27,17 @@ suspend fun <T> tryCatch(context: CoroutineContext = EmptyCoroutineContext, bloc
 }
 
 fun <T> tryCatchNull(block: () -> T): T? = try {
+    block()
+} catch (e: Exception) {
+    e.printStackTrace()
+
+    KoinPlatformTools.defaultContext().get().getOrNull<CountlyBase>()?.also {
+        it.recordException(e)
+    }
+    null
+}
+
+suspend fun <T> tryCatchNullSuspend(block: suspend () -> T): T? = try {
     block()
 } catch (e: Exception) {
     e.printStackTrace()

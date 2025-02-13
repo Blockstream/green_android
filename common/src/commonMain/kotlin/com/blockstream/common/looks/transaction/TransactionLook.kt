@@ -10,7 +10,7 @@ import blockstream_green.common.generated.resources.id_swap
 import blockstream_green.common.generated.resources.id_unknown
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Transaction
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.toAmountLookOrNa
 import org.jetbrains.compose.resources.StringResource
 

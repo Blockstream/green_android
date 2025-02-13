@@ -5,8 +5,8 @@ import blockstream_green.common.generated.resources.id_backup_recovery_phrase
 import blockstream_green.common.generated.resources.id_lightning
 import com.blockstream.common.Urls
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavData
-import com.blockstream.common.events.Event
+import com.blockstream.ui.navigation.NavData
+import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnectedSuspend
 import com.blockstream.common.extensions.previewWallet

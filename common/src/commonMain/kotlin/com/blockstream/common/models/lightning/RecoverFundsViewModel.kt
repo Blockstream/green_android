@@ -11,9 +11,9 @@ import breez_sdk.ReverseSwapFeesRequest
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavData
+import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.SupportData
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.ifConnectedSuspend
@@ -23,9 +23,9 @@ import com.blockstream.common.extensions.previewAccountAssetBalance
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.ui.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.getStringFromIdOrNull

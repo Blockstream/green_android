@@ -63,7 +63,7 @@ android {
         create("development") {
             applicationId = "com.greenaddress.greenbits_android_wallet.dev"
             versionNameSuffix  = "-dev" + appendGdkCommitHash(rootProject, true)
-            resValue("string", "app_name", "Green Dev")
+            resValue("string", "app_name", "Blockstream App Dev")
             resValue("string", "application_id", applicationId!!)
             resValue("bool", "feature_lightning", "true")
             resValue("bool", "feature_analytics", "true")
@@ -75,7 +75,7 @@ android {
 
         create("productionGoogle") {
             applicationId = "com.greenaddress.greenbits_android_wallet"
-            resValue("string", "app_name", "Green")
+            resValue("string", "app_name", "Blockstream App (Green)")
             resValue("string", "application_id", applicationId!!)
             resValue("bool", "feature_lightning", "true")
             resValue("bool", "feature_analytics", "true")
@@ -88,7 +88,7 @@ android {
         create("productionFDroid") {
             applicationId = "com.greenaddress.greenbits_android_wallet"
             versionNameSuffix = appendGdkCommitHash(rootProject, false)
-            resValue("string", "app_name", "Green")
+            resValue("string", "app_name", "Blockstream App (Green)")
             resValue("string", "application_id", applicationId!!)
             resValue("bool", "feature_lightning", "false")
             resValue("bool", "feature_analytics", "false")

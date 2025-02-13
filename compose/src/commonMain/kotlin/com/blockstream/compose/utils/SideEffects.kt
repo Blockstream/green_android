@@ -16,7 +16,6 @@ import blockstream_green.common.generated.resources.id_cancel
 import blockstream_green.common.generated.resources.id_choose_method_to_authorize_the
 import blockstream_green.common.generated.resources.id_contact_support
 import blockstream_green.common.generated.resources.id_continue
-import blockstream_green.common.generated.resources.id_disable_notifications
 import blockstream_green.common.generated.resources.id_enable
 import blockstream_green.common.generated.resources.id_enable_2fa_call_method
 import blockstream_green.common.generated.resources.id_install_version_s
@@ -27,16 +26,12 @@ import blockstream_green.common.generated.resources.id_new_jade_firmware_require
 import blockstream_green.common.generated.resources.id_ok
 import blockstream_green.common.generated.resources.id_open
 import blockstream_green.common.generated.resources.id_outdated_hardware_wallet
-import blockstream_green.common.generated.resources.id_payments_will_fail
-import blockstream_green.common.generated.resources.id_remove_lightning_shortcut
 import blockstream_green.common.generated.resources.id_skip
 import blockstream_green.common.generated.resources.id_success
 import blockstream_green.common.generated.resources.id_the_new_firmware_requires_you
 import blockstream_green.common.generated.resources.id_try_again
 import blockstream_green.common.generated.resources.id_try_again_using_another_2fa
 import blockstream_green.common.generated.resources.id_warning
-import blockstream_green.common.generated.resources.id_you_will_stop_receiving_push
-import blockstream_green.common.generated.resources.warning
 import com.blockstream.common.SupportType
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.SupportData
@@ -52,23 +47,22 @@ import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.navigation.PopTo
-import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.createNewTicketUrl
 import com.blockstream.compose.LocalAppCoroutine
 import com.blockstream.compose.LocalBiometricState
 import com.blockstream.compose.LocalDialog
-import com.blockstream.compose.LocalDrawer
 import com.blockstream.compose.LocalSnackbar
 import com.blockstream.compose.dialogs.SingleChoiceDialog
 import com.blockstream.compose.dialogs.TwoFactorCodeDialog
 import com.blockstream.compose.extensions.showErrorSnackbar
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.managers.askForBluetoothPermissions
-import com.blockstream.compose.navigation.LocalNavigator
 import com.blockstream.compose.sideeffects.OpenDialogData
 import com.blockstream.compose.sideeffects.openBrowser
+import com.blockstream.ui.navigation.LocalNavigator
+import com.blockstream.ui.sideeffects.SideEffect
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -105,7 +99,6 @@ fun HandleSideEffect(
     val dialog = LocalDialog.current
     val appCoroutine = LocalAppCoroutine.current
     val platformManager = LocalPlatformManager.current
-    val drawer = LocalDrawer.current
     val scope = rememberCoroutineScope()
     val biometricsState = LocalBiometricState.current
 
@@ -190,7 +183,7 @@ fun HandleSideEffect(
                     }
                 }
 
-                is SideEffects.RequestCipher -> {
+                is SideEffects.RequestBiometricsCipher -> {
                     biometricsState?.getBiometricsCipher(viewModel)
                 }
 
@@ -326,7 +319,6 @@ fun HandleSideEffect(
                         } else {
                             NavigateDestinations.Login(
                                 greenWallet = greenWallet,
-                                isLightningShortcut = greenWallet.isLightning,
                                 autoLoginWallet = !greenWallet.isLightning
                             )
                         }).also { destination ->
@@ -343,10 +335,6 @@ fun HandleSideEffect(
                             }
                         }
                     }
-                }
-
-                is SideEffects.CloseDrawer -> {
-                    drawer.close()
                 }
 
                 is SideEffects.NavigateToRoot -> {
@@ -578,7 +566,13 @@ fun HandleSideEffect(
                                 }
                             }
 
-                            if(it.destination is NavigateDestinations.Login) {
+                            (it.destination as? NavigateDestinations.Login)?.also { destination ->
+                                if(destination.isWatchOnlyUpgrade){
+                                    popUpTo(NavigateDestinations.DeviceScan::class) {
+                                        inclusive = true
+                                    }
+                                }
+
                                 navigator.currentBackStack.value.firstOrNull { entry ->
                                     entry.destination.hasRoute<NavigateDestinations.DeviceList>()
                                 }?.toRoute<NavigateDestinations.DeviceList>()?.also { route ->
@@ -605,6 +599,12 @@ fun HandleSideEffect(
                                 }
 
                                 navigator.graph.setStartDestination(it.destination)
+
+                                // Clear the backstack for Bottom NavigationBar
+//                                navigator.clearBackStack<NavigateDestinations.WalletOverview>()
+//                                navigator.clearBackStack<NavigateDestinations.Transact>()
+//                                navigator.clearBackStack<NavigateDestinations.Security>()
+//                                navigator.clearBackStack<NavigateDestinations.WalletSettings>()
                             }
                         }
                     }

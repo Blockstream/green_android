@@ -7,7 +7,7 @@ import kotlin.test.assertEquals
 
 class DecimalFormatTests {
     @Test
-    fun `test en_US`() {
+    fun test_en_US() {
         DecimalFormat("en_US").apply {
             minimumFractionDigits = 2
             maximumFractionDigits = 3
@@ -22,7 +22,7 @@ class DecimalFormatTests {
     }
 
     @Test
-    fun `test italy`() {
+    fun test_italy() {
         DecimalFormat("it").apply {
             minimumFractionDigits = 2
             maximumFractionDigits = 3
@@ -37,7 +37,7 @@ class DecimalFormatTests {
     }
 
     @Test
-    fun `test parse`() {
+    fun test_parse() {
         DecimalFormat("it").apply {
             minimumFractionDigits = 2
             maximumFractionDigits = 3
@@ -57,7 +57,7 @@ class DecimalFormatTests {
     }
 
     @Test
-    fun `test separators`() {
+    fun test_separators() {
         DecimalFormat(null).apply {
             minimumFractionDigits = 2
             maximumFractionDigits = 2

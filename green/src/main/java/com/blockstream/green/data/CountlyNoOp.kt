@@ -3,12 +3,12 @@ package com.blockstream.green.data
 import android.app.Activity
 import android.content.res.Configuration
 import androidx.fragment.app.FragmentManager
-import com.blockstream.common.data.AppInfo
+import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.data.CountlyWidget
 import com.blockstream.common.database.Database
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.managers.SettingsManager
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import ly.count.android.sdk.ModuleFeedback
 
 

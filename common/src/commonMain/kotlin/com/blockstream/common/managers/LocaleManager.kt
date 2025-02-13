@@ -24,4 +24,6 @@ val Locales = mapOf(
 expect class LocaleManager {
     fun getLocale(): String?
     fun setLocale(locale: String?)
+
+    fun getCountry(): String?
 }

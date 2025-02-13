@@ -79,7 +79,7 @@ fun ComposeUI() {
         HorizontalDivider()
 
         GreenColumn(padding = 0, space = 4) {
-            WalletListItem(look = WalletListLook.preview(hasLightningShortcut = true))
+            WalletListItem(look = WalletListLook.preview())
 
             WalletListItem(look = WalletListLook.preview(false))
             WalletListItem(look = WalletListLook.preview(true, false))

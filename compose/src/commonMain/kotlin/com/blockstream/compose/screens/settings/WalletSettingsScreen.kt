@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -87,7 +87,6 @@ import com.blockstream.compose.dialogs.DenominationExchangeDialog
 import com.blockstream.compose.dialogs.SingleChoiceDialog
 import com.blockstream.compose.dialogs.TextDialog
 import com.blockstream.compose.extensions.colorText
-import com.blockstream.compose.navigation.LocalInnerPadding
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.red
 import com.blockstream.compose.theme.titleMedium
@@ -96,10 +95,11 @@ import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.compose.utils.ifTrue
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.navigation.LocalInnerPadding
 import com.blockstream.ui.utils.bottom
+import com.blockstream.ui.utils.ifTrue
 import com.blockstream.ui.utils.plus
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -249,8 +249,12 @@ fun WalletSettingsScreen(
             }
         }
     }) {
+
+
         LazyColumn(
-            contentPadding = PaddingValues(16.dp) + innerPadding.bottom(),
+            contentPadding = innerPadding.bottom()
+                .plus(PaddingValues(horizontal = 16.dp))
+                .plus(PaddingValues(bottom = (if (viewModel.section == WalletSettingsSection.General) 80.dp else 0.dp) + 16.dp)),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
 
@@ -580,7 +584,7 @@ fun Setting(
     enabled: Boolean = true,
     onCheckedChange: ((Boolean) -> Unit) = {},
 ) {
-    Card(modifier = Modifier.then(modifier)) {
+    OutlinedCard(modifier = Modifier.then(modifier)) {
         GreenRow(space = 8, padding = 0, verticalAlignment = Alignment.Top) {
             GreenColumn(
                 padding = 0, space = 4,

@@ -10,7 +10,7 @@ import blockstream_green.common.generated.resources.id_max_single_payment_amount
 import blockstream_green.common.generated.resources.id_rescan_swaps_initiated
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.lightning.LightningManager
@@ -22,7 +22,7 @@ import com.blockstream.common.lightning.totalInboundLiquiditySatoshi
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.toAmountLookOrNa
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState

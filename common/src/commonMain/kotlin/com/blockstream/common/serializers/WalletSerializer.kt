@@ -23,6 +23,7 @@ object WalletSerializer : KSerializer<Wallet> {
             decoder.decodeString(), // xpub_hash_id
             decoder.decodeString(), // active_network
             decoder.decodeLong(), // active_account
+            decoder.decodeBoolean(), // is_recovery_confirmed
             decoder.decodeBoolean(), // is_testnet
             decoder.decodeBoolean(), // is_hardware
             decoder.decodeBoolean(), // is_lightning
@@ -40,6 +41,7 @@ object WalletSerializer : KSerializer<Wallet> {
         encoder.encodeString(value.xpub_hash_id)
         encoder.encodeString(value.active_network)
         encoder.encodeLong(value.active_account)
+        encoder.encodeBoolean(value.is_recovery_confirmed)
         encoder.encodeBoolean(value.is_testnet)
         encoder.encodeBoolean(value.is_hardware)
         encoder.encodeBoolean(value.is_lightning)

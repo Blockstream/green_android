@@ -4,27 +4,20 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -36,19 +29,14 @@ import coil3.compose.AsyncImagePreviewHandler
 import coil3.compose.LocalAsyncImagePreviewHandler
 import coil3.test.FakeImage
 import com.blockstream.common.crypto.NoKeystore
-import com.blockstream.common.data.AppInfo
-import com.blockstream.common.data.LocalNavData
 import com.blockstream.common.managers.BluetoothManager
 import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.models.MainViewModel
-import com.blockstream.common.models.drawer.DrawerViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.managers.rememberPlatformManager
 import com.blockstream.compose.navigation.AppScaffold
-import com.blockstream.compose.navigation.LocalNavigator
 import com.blockstream.compose.navigation.Router
-import com.blockstream.compose.screens.DrawerScreen
 import com.blockstream.compose.screens.LockScreen
 import com.blockstream.compose.sideeffects.BiometricsState
 import com.blockstream.compose.sideeffects.DialogHost
@@ -57,13 +45,14 @@ import com.blockstream.compose.sideeffects.rememberBiometricsState
 import com.blockstream.compose.theme.GreenChrome
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.utils.HandleSideEffect
-import com.blockstream.ui.navigation.AppNavigationDrawer
+import com.blockstream.green.data.config.AppInfo
+import com.blockstream.ui.navigation.LocalNavData
+import com.blockstream.ui.navigation.LocalNavigator
 import com.blockstream.ui.navigation.bottomsheet.ModalBottomSheetLayout
 import com.blockstream.ui.navigation.bottomsheet.rememberBottomSheetNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.koinInject
 import org.koin.core.context.startKoin
@@ -76,7 +65,6 @@ val LocalAppInfo: ProvidableCompositionLocal<AppInfo> =
 val LocalSnackbar = staticCompositionLocalOf { SnackbarHostState() }
 val LocalAppCoroutine =
     staticCompositionLocalOf { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
-val LocalDrawer = compositionLocalOf { DrawerState(DrawerValue.Closed) }
 val LocalDialog = staticCompositionLocalOf { DialogState() }
 val LocalActivity: ProvidableCompositionLocal<Any?> = compositionLocalOf { null }
 val LocalPreview = compositionLocalOf { false }
@@ -94,7 +82,6 @@ private val SecureScreens = listOf(
 
 @Composable
 fun GreenApp(mainViewModel: MainViewModel, modifier: Modifier = Modifier) {
-    val scope = rememberCoroutineScope()
     val platformManager = rememberPlatformManager()
     val appInfo = koinInject<AppInfo>()
     val deviceManager = koinInject<DeviceManager>()
@@ -104,24 +91,13 @@ fun GreenApp(mainViewModel: MainViewModel, modifier: Modifier = Modifier) {
     val bottomSheetNavigator = rememberBottomSheetNavigator()
     val navController = rememberNavController(bottomSheetNavigator)
 
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val backstackEntry by navController.currentBackStackEntryAsState()
 
     val navData by LocalNavData.current.data
 
-    var showDrawerNavigationIcon by mutableStateOf(true)
-
     navController.addOnDestinationChangedListener { _, destination, _ ->
         // Listen only to ComposeNavigator events
-        if(destination.navigatorName != "composable") return@addOnDestinationChangedListener
-
-        showDrawerNavigationIcon = destination.let {
-            it.hasRoute<NavigateDestinations.Home>() ||
-                    it.hasRoute<NavigateDestinations.Login>() ||
-                    it.hasRoute<NavigateDestinations.WalletOverview>() ||
-                    it.hasRoute<NavigateDestinations.Transact>() ||
-                    it.hasRoute<NavigateDestinations.Security>()
-        }
+        if (destination.navigatorName != "composable") return@addOnDestinationChangedListener
 
         if (destination.let { it.hasRoute<NavigateDestinations.DeviceList>() || it.hasRoute<NavigateDestinations.DeviceScan>() }) {
             deviceManager.startDeviceDiscovery()
@@ -132,7 +108,7 @@ fun GreenApp(mainViewModel: MainViewModel, modifier: Modifier = Modifier) {
         // If enhancedPrivacy is turned off, secure only specific screens
         if (!settings.enhancedPrivacy) {
             // Set secure screen based on current screen
-            platformManager.setSecureScreen(SecureScreens.any {
+            platformManager.setSecureScreen(appInfo.isProduction && SecureScreens.any {
                 destination.hasRoute(it)
             })
         }
@@ -154,7 +130,6 @@ fun GreenApp(mainViewModel: MainViewModel, modifier: Modifier = Modifier) {
     }
 
     CompositionLocalProvider(
-        LocalDrawer provides drawerState,
         LocalPlatformManager provides platformManager,
         LocalAppInfo provides appInfo,
         LocalNavigator provides navController
@@ -179,55 +154,43 @@ fun GreenApp(mainViewModel: MainViewModel, modifier: Modifier = Modifier) {
             }
         }
 
-        val drawerViewModel: DrawerViewModel = viewModel {
-            DrawerViewModel()
-        }
-
         CompositionLocalProvider(
             LocalBiometricState provides biometricsState
         ) {
 
+            val appInitWallet by mainViewModel.appInitWallet.collectAsStateWithLifecycle()
+
             Box(modifier = modifier) {
 
-                AppNavigationDrawer(
-                    drawerState = drawerState,
-                    gesturesEnabled = true,
-                    drawerContent = {
-                        DrawerScreen(viewModel = drawerViewModel)
+                AppScaffold(
+                    navData = navData,
+                    snackbarHostState = snackbarHostState,
+                    goBack = {
+                        navController.navigateUp()
                     }
-                ) {
+                ) { innerPadding ->
 
-                    AppScaffold(
-                        navData = navData,
-                        snackbarHostState = snackbarHostState,
-                        showDrawerNavigationIcon = showDrawerNavigationIcon,
-                        goBack = {
-                            navController.navigateUp()
-                        },
-                        openDrawer = {
-                            scope.launch {
-                                drawerState.open()
-                            }
-                        }
-                    ) { innerPadding ->
+                    val dialogState = LocalDialog.current
 
-                        val dialogState = LocalDialog.current
+                    // Bottom Sheets
+                    ModalBottomSheetLayout(bottomSheetNavigator = bottomSheetNavigator)
 
-                        // Bottom Sheets
-                        ModalBottomSheetLayout(bottomSheetNavigator = bottomSheetNavigator)
+                    // Generic Dialogs
+                    DialogHost(state = dialogState)
 
-                        // Generic Dialogs
-                        DialogHost(state = dialogState)
-
+                    if (appInitWallet.isSuccess()) {
                         Router(
                             mainViewModel = mainViewModel,
                             navController = navController,
                             innerPadding = innerPadding,
+                            startDestination = appInitWallet.data()
+                                ?.let { NavigateDestinations.Login(it) }
+                                ?: NavigateDestinations.Home
                         )
-
-                        // Handle side effects from MainViewModel like navigating from handled intent
-                        HandleSideEffect(mainViewModel)
                     }
+
+                    // Handle side effects from MainViewModel like navigating from handled intent
+                    HandleSideEffect(mainViewModel)
                 }
             }
         }

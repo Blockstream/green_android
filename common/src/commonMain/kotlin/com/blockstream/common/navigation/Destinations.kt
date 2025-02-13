@@ -13,7 +13,6 @@ import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorSetupAction
 import com.blockstream.common.devices.DeviceModel
-import com.blockstream.common.events.Event
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
@@ -25,6 +24,8 @@ import com.blockstream.common.looks.transaction.TransactionConfirmLook
 import com.blockstream.common.models.jade.JadeQrOperation
 import com.blockstream.common.models.settings.WalletSettingsSection
 import com.blockstream.common.models.sheets.NoteType
+import com.blockstream.green.data.meld.data.QuotesResponse
+import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.Route
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import kotlinx.coroutines.Dispatchers
@@ -44,7 +45,7 @@ sealed class NavigateDestination(
 
 sealed class NavigateDestinations : NavigateDestination() {
     @Serializable
-    data class WalletOverview(val greenWallet: GreenWallet) : NavigateDestination(unique = true, makeItRoot = true)
+    data class WalletOverview(val greenWallet: GreenWallet, val showWalletOnboarding: Boolean = false) : NavigateDestination(unique = true, makeItRoot = true)
     @Serializable
     data class Transact(val greenWallet: GreenWallet) : NavigateDestination(unique = true)
     @Serializable
@@ -104,15 +105,15 @@ sealed class NavigateDestinations : NavigateDestination() {
     @Serializable
     data class JadeGenuineCheck(val greenWalletOrNull: GreenWallet? = null, val deviceId: String? = null) : NavigateDestination()
     @Serializable
-    data class DeviceScan(val greenWallet: GreenWallet) : NavigateDestination()
+    data class DeviceScan(val greenWallet: GreenWallet, val isWatchOnlyUpgrade: Boolean = false) : NavigateDestination()
     @Serializable
     data class JadeFirmwareUpdate(val deviceId: String) : NavigateDestination()
     @Serializable
     data class Login(
         val greenWallet: GreenWallet,
-        val isLightningShortcut: Boolean = false,
         val autoLoginWallet: Boolean = true,
-        val deviceId: String? = null
+        val deviceId: String? = null,
+        val isWatchOnlyUpgrade: Boolean = false
     ) : NavigateDestination(unique = true)
     @Serializable
     data class Support(
@@ -130,7 +131,9 @@ sealed class NavigateDestinations : NavigateDestination() {
         val assetsAccounts: AccountAssetBalanceList
     ) : NavigateDestination()
     @Serializable
-    data class Accounts(val greenWallet: GreenWallet, val accounts: AccountAssetBalanceList, val withAsset: Boolean) : NavigateDestination()
+    data class Accounts(val greenWallet: GreenWallet, val accounts: AccountAssetBalanceList, val withAsset: Boolean, val withArrow: Boolean = false) : NavigateDestination()
+    @Serializable
+    data class SecurityLevel(val greenWallet: GreenWallet) : NavigateDestination()
     @Serializable
     data class Assets(val greenWallet: GreenWallet, val assets: AssetBalanceList) : NavigateDestination() {
         companion object {
@@ -267,6 +270,10 @@ sealed class NavigateDestinations : NavigateDestination() {
     @Serializable
     data class OnOffRamps(val greenWallet: GreenWallet) : NavigateDestination()
     @Serializable
+    data class Buy(val greenWallet: GreenWallet) : NavigateDestination()
+    @Serializable
+    data class BuyQuotes(val greenWallet: GreenWallet, val quotes: QuotesResponse) : NavigateDestination()
+    @Serializable
     data class LnUrlAuth(
         val greenWallet: GreenWallet,
         val lnUrlAuthRequest: LnUrlAuthRequestDataSerializable
@@ -311,7 +318,11 @@ sealed class NavigateDestinations : NavigateDestination() {
     @Serializable
     data class ReEnable2FA(val greenWallet: GreenWallet): NavigateDestination()
     @Serializable
-    data class Countries(val greenWallet: GreenWallet): NavigateDestination()
+    data class Countries(
+        val greenWallet: GreenWallet,
+        val title: String? = null,
+        val showDialCode: Boolean = true
+    ) : NavigateDestination()
     @Serializable
     data object JadeGuide: NavigateDestination()
     @Serializable

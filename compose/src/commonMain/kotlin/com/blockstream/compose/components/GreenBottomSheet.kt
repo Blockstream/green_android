@@ -24,17 +24,17 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.get
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.compose.navigation.LocalNavigator
 import com.blockstream.compose.theme.bodyLarge
-import com.blockstream.compose.theme.titleSmall
+import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.HandleSideEffect
-import com.blockstream.compose.utils.ifTrue
 import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.navigation.LocalNavigator
 import com.blockstream.ui.navigation.bottomsheet.BottomSheetNavigator
+import com.blockstream.ui.sideeffects.SideEffect
+import com.blockstream.ui.utils.ifTrue
 import kotlinx.coroutines.CoroutineScope
 
 
@@ -88,16 +88,18 @@ fun GreenBottomSheet(
             if (title?.isNotBlank() == true || subtitle?.isNotBlank() == true) {
                 Column(
                     modifier = Modifier
+                        .ifTrue(!withHorizontalPadding) {
+                            it.padding(horizontal = 16.dp)
+                        }
                         .fillMaxWidth()
                 ) {
                     if (title?.isNotBlank() == true) {
                         Text(
                             text = title,
-                            style = titleSmall,
+                            style = titleMedium,
                             color = whiteHigh,
-                            textAlign = TextAlign.Center,
                             modifier = Modifier
-                                .padding(horizontal = 16.dp)
+                                .fillMaxWidth()
                                 .align(Alignment.CenterHorizontally)
                         )
                     }

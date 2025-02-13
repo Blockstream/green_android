@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk
 
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement

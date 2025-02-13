@@ -79,7 +79,7 @@ import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.extensions.color
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.extensions.title
-import com.blockstream.compose.navigation.LocalInnerPadding
+import com.blockstream.ui.navigation.LocalInnerPadding
 import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium

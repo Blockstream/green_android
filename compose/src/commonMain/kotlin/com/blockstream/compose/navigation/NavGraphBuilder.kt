@@ -40,6 +40,8 @@ import com.blockstream.common.models.jade.JadeQrOperation
 import com.blockstream.common.models.settings.WalletSettingsSection
 import com.blockstream.common.models.sheets.NoteType
 import com.blockstream.common.navigation.PopTo
+import com.blockstream.green.data.meld.data.QuotesResponse
+import com.blockstream.ui.navigation.LocalNavBackStackEntry
 import com.blockstream.ui.navigation.bottomsheet.bottomSheet
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.reflect.typeOf
@@ -79,7 +81,8 @@ val AppTypeMap = mapOf(
     typeOf<NoteType>() to CustomNavType.create<NoteType>(),
     typeOf<AccountAssetBalanceList>() to CustomNavType.create<AccountAssetBalanceList>(),
     typeOf<AssetBalanceList>() to CustomNavType.create<AssetBalanceList>(),
-    typeOf<MenuEntryList>() to CustomNavType.create<MenuEntryList>()
+    typeOf<MenuEntryList>() to CustomNavType.create<MenuEntryList>(),
+    typeOf<QuotesResponse>() to CustomNavType.create<QuotesResponse>()
 )
 
 inline fun <reified T : Any> NavGraphBuilder.appComposable(noinline content: @Composable (AnimatedContentScope.(NavBackStackEntry) -> Unit)) {

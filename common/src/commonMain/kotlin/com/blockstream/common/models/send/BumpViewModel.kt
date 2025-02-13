@@ -7,8 +7,8 @@ import com.blockstream.common.TransactionType
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavData
-import com.blockstream.common.events.Event
+import com.blockstream.ui.navigation.NavData
+import com.blockstream.ui.events.Event
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.launchIn
@@ -19,7 +19,7 @@ import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.PendingTransaction
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.gdk.params.CreateTransactionParams
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.toAmountLook
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
@@ -105,9 +105,6 @@ class BumpViewModel(
 
     private val transaction = Json.parseToJsonElement(transactionAsString)
 
-    private val _isWatchOnly = MutableStateFlow(false)
-    override val isWatchOnly = _isWatchOnly
-
     init {
 
         viewModelScope.launch {
@@ -122,8 +119,6 @@ class BumpViewModel(
 
         session.ifConnected {
             _network.value = account.network
-
-            _isWatchOnly.value = session.isWatchOnly
 
             combine(_feePriorityPrimitive, _feeEstimation.filterNotNull()) { _, _ ->
                 createTransactionParams.value = tryCatch(context = Dispatchers.Default) { createTransactionParams() }
@@ -285,7 +280,6 @@ class BumpViewModelPreview(greenWallet: GreenWallet) :
     override val oldFee: StateFlow<String?> = MutableStateFlow("1,000 LBTC")
     override val oldFeeFiat: StateFlow<String?> = MutableStateFlow("~ 5.00 USD")
     override val oldFeeRate: StateFlow<String?> = MutableStateFlow("1 sats/vbyte")
-    override val isWatchOnly: StateFlow<Boolean> = MutableStateFlow(false)
 
     init {
         _feePriority.value = FeePriority.Low(

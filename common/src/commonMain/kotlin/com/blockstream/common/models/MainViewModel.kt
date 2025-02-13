@@ -1,11 +1,13 @@
 package com.blockstream.common.models
 
+import com.blockstream.common.data.DataState
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.events.Event
 import com.blockstream.common.interfaces.JadeHttpRequestUrlValidator
 import com.blockstream.common.managers.LifecycleManager
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.ui.events.Event
+import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.CompletableDeferred
 import org.koin.core.component.inject
 
@@ -18,6 +20,8 @@ class MainViewModel : GreenViewModel(), JadeHttpRequestUrlValidator {
     private var unsafeUrlWarningEmitter: CompletableDeferred<Boolean>? = null
     private var torWarningEmitter: CompletableDeferred<Boolean>? = null
 
+    val appInitWallet = MutableStateFlow<DataState<GreenWallet?>>(DataState.Loading)
+
     class LocalEvents {
         data class UrlWarningResponse(val allow: Boolean, val remember: Boolean) : Event
         data class TorWarningResponse(val enable: Boolean) : Event
@@ -25,6 +29,10 @@ class MainViewModel : GreenViewModel(), JadeHttpRequestUrlValidator {
 
     init {
         sessionManager.httpRequestHandler.jadeHttpRequestUrlValidator = this
+
+        viewModelScope.launch {
+            appInitWallet.value = DataState.Success(database.getAllWallets().takeIf { it.size == 1 }?.firstOrNull())
+        }
 
         bootstrap()
     }
@@ -66,14 +74,12 @@ class MainViewModel : GreenViewModel(), JadeHttpRequestUrlValidator {
         postSideEffect(SideEffects.NavigateTo(NavigateDestinations.TorWarning))
     }.await()
 
-    fun navigate(wallet: GreenWallet, deviceId: String?, isLightningShortcut: Boolean) {
+    fun navigate(wallet: GreenWallet, deviceId: String?) {
         postSideEffect(
             SideEffects.NavigateTo(
                 NavigateDestinations.Login(
                     greenWallet = wallet,
-                    deviceId = deviceId,
-                    isLightningShortcut = isLightningShortcut,
-                    autoLoginWallet = !isLightningShortcut
+                    deviceId = deviceId
                 )
             )
         )

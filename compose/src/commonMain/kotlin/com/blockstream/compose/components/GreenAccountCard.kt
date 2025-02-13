@@ -50,11 +50,11 @@ import com.blockstream.compose.theme.md_theme_surfaceCircle
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.utils.ifTrue
 import com.blockstream.compose.utils.noRippleClickable
 import com.blockstream.compose.utils.roundBackground
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.utils.ifTrue
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

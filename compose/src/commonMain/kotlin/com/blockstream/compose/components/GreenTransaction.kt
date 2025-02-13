@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,16 +35,16 @@ import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.looks.transaction.Confirmed
 import com.blockstream.common.looks.transaction.TransactionLook
 import com.blockstream.common.utils.formatAuto
-import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.extensions.directionColor
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.theme.bodyMedium
+import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelLarge
-import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.md_theme_inverseSurface
 import com.blockstream.compose.theme.orange
 import com.blockstream.compose.theme.red
 import com.blockstream.compose.theme.whiteMedium
+import com.blockstream.ui.components.GreenRow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -56,14 +55,14 @@ fun GreenTransaction(
     showAccount: Boolean = true,
     onClick: (TransactionLook) -> Unit
 ) {
-    Card(
+    GreenCard(
         onClick = {
             onClick(transactionLook)
         },
+        padding = 0,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .padding(bottom = 4.dp)
+            // .padding(bottom = 4.dp)
             .then(modifier)
     ) {
         Box {
@@ -93,7 +92,7 @@ fun GreenTransaction(
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(start = 8.dp)
+                        .padding(start = 16.dp)
                 ) {
 
                     Row(
@@ -174,7 +173,7 @@ fun GreenTransaction(
                             // Date
                             Text(
                                 text = transactionLook.transaction.createdAtInstant?.formatAuto() ?: "",
-                                style = labelMedium,
+                                style = bodySmall,
                                 color = whiteMedium
                             )
                         }
@@ -183,7 +182,7 @@ fun GreenTransaction(
                         if (showAccount) {
                             Text(
                                 text = transactionLook.transaction.account.name,
-                                style = bodyMedium,
+                                style = bodySmall,
                                 color = whiteMedium
                             )
                         }
@@ -193,7 +192,7 @@ fun GreenTransaction(
                         // Memo
                         Text(
                             text = transactionLook.transaction.memo,
-                            style = bodyMedium,
+                            style = bodySmall,
                             color = whiteMedium
                         )
                     }

@@ -36,14 +36,13 @@ import com.blockstream.common.models.overview.TransactViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.GreenTransaction
+import com.blockstream.compose.components.ListHeader
 import com.blockstream.compose.components.WalletBalance
-import com.blockstream.compose.navigation.LocalInnerPadding
 import com.blockstream.compose.theme.bodyMedium
-import com.blockstream.compose.theme.titleSmall
-import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.navigation.LocalInnerPadding
 import com.blockstream.ui.utils.bottom
 import com.blockstream.ui.utils.plus
 import org.jetbrains.compose.resources.StringResource
@@ -61,17 +60,22 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
         LazyColumn(
             state = listState,
             contentPadding = innerPadding.bottom()
+                .plus(PaddingValues(horizontal = 16.dp))
                 .plus(PaddingValues(bottom = 80.dp + 16.dp)),
         ) {
 
             item(key = "WalletBalance") {
-                WalletBalance(viewModel)
+                WalletBalance(viewModel = viewModel)
             }
 
-            item {
-                GreenRow(space = 8) {
+            item(key = "Row") {
+                GreenRow(
+                    space = 8,
+                    padding = 0,
+                    modifier = Modifier.padding(top = 16.dp)
+                ) {
                     Button(text = Res.string.id_buy, icon = PhosphorIcons.Regular.ShoppingCart) {
-                        viewModel.postEvent(NavigateDestinations.OnOffRamps(greenWallet = viewModel.greenWallet))
+                        viewModel.buy()
                     }
 
                     Button(text = Res.string.id_send, icon = PhosphorIcons.Regular.ArrowLineUp) {
@@ -93,15 +97,7 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
             }
 
             item(key = "Transactions Header") {
-                Text(
-                    text = stringResource(Res.string.id_latest_transactions),
-                    style = titleSmall,
-                    color = whiteMedium,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .padding(bottom = 8.dp)
-                )
+                ListHeader(title = stringResource(Res.string.id_latest_transactions))
 
                 if (transactions.isLoading()) {
                     LinearProgressIndicator(
@@ -127,7 +123,7 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
             items(items = transactions.data() ?: listOf(), key = { tx ->
                 tx.transaction.account.id.hashCode() + tx.transaction.txHash.hashCode() + tx.transaction.txType.gdkType.hashCode()
             }) { item ->
-                GreenTransaction(transactionLook = item) {
+                GreenTransaction(modifier = Modifier.padding(bottom = 6.dp), transactionLook = item) {
                     viewModel.postEvent(Events.Transaction(transaction = it.transaction))
                 }
             }

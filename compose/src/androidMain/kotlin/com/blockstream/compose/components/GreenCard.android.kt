@@ -2,7 +2,6 @@ package com.blockstream.compose.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -12,7 +11,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.ui.components.GreenColumn
 
@@ -21,11 +19,7 @@ import com.blockstream.ui.components.GreenColumn
 @Preview
 fun GreenCardPreview() {
     GreenAndroidPreview {
-        GreenColumn(
-            Modifier
-                .padding(24.dp)
-                .padding(24.dp)
-        ) {
+        GreenColumn {
 
             GreenCard(padding = 0) {
                 Text(text = "No Padding", modifier = Modifier.fillMaxWidth())

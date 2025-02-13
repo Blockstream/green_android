@@ -1,7 +1,7 @@
 package com.blockstream.common.models.onboarding.hardware
 
 import com.blockstream.common.Urls
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations

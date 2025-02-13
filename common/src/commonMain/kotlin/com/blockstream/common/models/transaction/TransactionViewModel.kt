@@ -9,8 +9,6 @@ import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.SATOSHI_UNIT
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavData
-import com.blockstream.common.events.Event
 import com.blockstream.common.extensions.assetTickerOrNull
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.previewAccountAsset
@@ -27,13 +25,15 @@ import com.blockstream.common.looks.transaction.TransactionStatus
 import com.blockstream.common.looks.transaction.Unconfirmed
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.formatFullWithTime
 import com.blockstream.common.utils.toAmountLook
 import com.blockstream.common.utils.toAmountLookOrNa
+import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavData
+import com.blockstream.ui.sideeffects.SideEffect
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.launch
@@ -44,7 +44,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.Clock
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -172,7 +171,7 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
     private val _note: MutableStateFlow<String?> = MutableStateFlow(null)
     override val note: StateFlow<String?> = _note
 
-    override val canEditNote: StateFlow<Boolean> = MutableStateFlow(!account.isLightning && sessionOrNull?.isWatchOnly == false)
+    override val canEditNote: StateFlow<Boolean> = MutableStateFlow(!account.isLightning && sessionOrNull?.isWatchOnlyValue == false)
 
     private val _hasMoreDetails: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val hasMoreDetails: StateFlow<Boolean> = _hasMoreDetails

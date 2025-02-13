@@ -11,9 +11,6 @@ import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.data.Banner
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavAction
-import com.blockstream.common.data.NavData
-import com.blockstream.common.events.Event
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.launchIn
@@ -25,8 +22,11 @@ import com.blockstream.common.looks.transaction.TransactionConfirmLook
 import com.blockstream.common.models.sheets.NoteType
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.StringHolder
+import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavAction
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -62,9 +62,6 @@ class SendConfirmViewModel constructor(
 ) : SendConfirmViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
     private val _showVerifyOnDevice = MutableStateFlow(false)
     override val showVerifyOnDevice = _showVerifyOnDevice
-
-    private val _isWatchOnly = MutableStateFlow(false)
-    override val isWatchOnly = _isWatchOnly
 
     private val _transactionConfirmLook: MutableStateFlow<TransactionConfirmLook?> =
         MutableStateFlow(null)
@@ -109,8 +106,6 @@ class SendConfirmViewModel constructor(
             if (denomination != null && !denomination.isFiat) {
                 _denomination.value = denomination
             }
-
-            isWatchOnly.value = session.isWatchOnly
 
             session.pendingTransaction?.also {
                 viewModelScope.coroutineScope.launch {
@@ -237,7 +232,6 @@ class SendConfirmViewModelPreview(
         MutableStateFlow(transactionConfirmLook)
 
     override val showVerifyOnDevice: StateFlow<Boolean> = MutableStateFlow(false)
-    override val isWatchOnly: StateFlow<Boolean> = MutableStateFlow(true)
 
     init {
         banner.value = Banner.preview3

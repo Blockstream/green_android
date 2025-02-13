@@ -65,6 +65,7 @@ fun LnUrlWithdrawScreen(
                 value = amount,
                 onValueChange = viewModel.amount.onValueChange(),
                 title = stringResource(Res.string.id_amount_to_receive),
+                secondaryValue = exchange,
                 session = viewModel.sessionOrNull,
                 denomination = denomination,
                 enabled = !onProgress,
@@ -78,13 +79,6 @@ fun LnUrlWithdrawScreen(
                             style = bodyMedium,
                             color = whiteLow,
                             modifier = Modifier.weight(1f)
-                        )
-
-                        Text(
-                            text = exchange,
-                            textAlign = TextAlign.End,
-                            style = bodyMedium,
-                            color = whiteLow
                         )
                     }
                 },

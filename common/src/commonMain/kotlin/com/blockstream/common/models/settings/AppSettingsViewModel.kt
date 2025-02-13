@@ -3,9 +3,9 @@ package com.blockstream.common.models.settings
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_app_settings
 import com.blockstream.common.data.ApplicationSettings
-import com.blockstream.common.data.NavData
+import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.ScreenLockSetting
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.events.GenericEvent
@@ -13,9 +13,9 @@ import com.blockstream.common.managers.LocaleManager
 import com.blockstream.common.managers.Locales
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.ui.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
@@ -218,7 +218,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
 
         viewModelScope.launch {
             _navData.value = NavData(title = getString(Res.string.id_app_settings))
-            database.insertEvent(GenericEvent(deviceId = settingsManager.getCountlyDeviceId()).sha256())
+            database.insertEvent(GenericEvent(deviceId = settingsManager.getCountlyDeviceId()).sha256(), randomInsert = true)
         }
 
         spvEnabled.onEach {

@@ -16,11 +16,11 @@ import blockstream_green.common.generated.resources.id_validate_pin_and_unlock
 import blockstream_green.common.generated.resources.id_validate_the_transaction_details
 import com.blockstream.common.Urls
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavAction
-import com.blockstream.common.data.NavData
+import com.blockstream.ui.navigation.NavAction
+import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.ScanResult
 import com.blockstream.common.devices.DeviceModel
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.logException
@@ -41,7 +41,7 @@ import com.blockstream.common.models.jade.JadeQRViewModel.Companion.PinUnlockSce
 import com.blockstream.common.models.jade.JadeQRViewModel.Companion.PsbtScenario
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.launch

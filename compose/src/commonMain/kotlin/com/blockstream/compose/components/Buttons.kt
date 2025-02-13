@@ -39,7 +39,6 @@ import blockstream_green.common.generated.resources.question
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Spinner
-import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium
@@ -48,6 +47,7 @@ import com.blockstream.compose.theme.textHigh
 import com.blockstream.compose.theme.textMedium
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.Rotating
+import com.blockstream.ui.components.GreenRow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -109,10 +109,12 @@ fun GreenButton(
     }
 
     val contentPadding = when (size) {
-        GreenButtonSize.SMALL, GreenButtonSize.TINY -> {
+        GreenButtonSize.TINY -> {
             PaddingValues(horizontal = 8.dp, vertical = 0.dp)
         }
-
+        GreenButtonSize.SMALL -> {
+            PaddingValues(horizontal = 12.dp, vertical = 0.dp)
+        }
         else -> {
             ButtonDefaults.ContentPadding
         }
@@ -190,7 +192,7 @@ fun GreenButton(
             } else if (enabled && color == GreenButtonColor.WHITE) {
                 ButtonDefaults.outlinedButtonColors(contentColor = textHigh)
             } else {
-                ButtonDefaults.outlinedButtonColors()
+                ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.surface)
             }
 
             val border = if (enabled && color == GreenButtonColor.RED) {

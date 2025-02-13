@@ -15,6 +15,7 @@ data class SetupArgs constructor(
     val isWatchOnly: Boolean = false,
     val isTestnet: Boolean? = null,
     val isSinglesig: Boolean? = null,
+    val isRecoveryConfirmed: Boolean = true,
     val greenWallet: GreenWallet? = null,
     val assetId: String? = null,
     val network: Network? = null,

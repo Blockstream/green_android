@@ -26,9 +26,11 @@ import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.theme.bodyMedium
+import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteHigh
+import com.blockstream.compose.theme.whiteMedium
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -45,27 +47,27 @@ fun GreenAsset(
     GreenDataLayout(modifier = modifier, title = title, onClick = onClick, withPadding = false) {
 
         Row(
-            modifier = Modifier.padding(start = 10.dp),
+            modifier = Modifier.padding(start = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box {
                 Image(
-                    painter = assetBalance?.let {
-                        it.asset.assetId.assetIcon(session = session)
-                    } ?: painterResource(Res.drawable.unknown),
+                    painter = assetBalance?.asset?.assetId?.assetIcon(session = session)
+                        ?: painterResource(Res.drawable.unknown),
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .padding(vertical = 16.dp)
-                        .padding(end = 7.dp)
-                        .size(32.dp)
+                        .padding(end = 8.dp)
+                        .size(24.dp)
                 )
             }
 
             Box(
                 modifier = Modifier
                     .padding(start = 8.dp)
-                    .padding(end = if (withEditIcon && onClick != null) 0.dp else 10.dp)
+                    .padding(end = if (withEditIcon && onClick != null) 0.dp else 16.dp)
+                    .padding(vertical = 16.dp)
                     .weight(1f),
                 contentAlignment = Alignment.CenterStart
             ) {
@@ -86,6 +88,7 @@ fun GreenAsset(
                             Text(
                                 text = assetBalance.asset.name(session).string(),
                                 style = titleSmall,
+                                color = whiteHigh,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
@@ -99,7 +102,7 @@ fun GreenAsset(
                                     style = labelLarge,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
-                                    color = whiteHigh
+                                    color = green
                                 )
 
                                 assetBalance.balanceExchange?.also {
@@ -109,7 +112,7 @@ fun GreenAsset(
                                         style = bodyMedium,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
-                                        color = whiteHigh,
+                                        color = whiteMedium,
                                     )
                                 }
                             }

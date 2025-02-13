@@ -1,6 +1,6 @@
 package com.blockstream.common.utils
 
-import com.blockstream.common.data.AppInfo
+import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.data.SupportData
 import com.mohamedrejeb.ksoup.entities.KsoupEntities
 

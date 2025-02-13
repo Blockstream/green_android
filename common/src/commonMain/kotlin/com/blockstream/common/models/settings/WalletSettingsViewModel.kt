@@ -36,7 +36,6 @@ import com.blockstream.common.Urls
 import com.blockstream.common.crypto.PlatformCipher
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavData
 import com.blockstream.common.data.Redact
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.data.TwoFactorMethod
@@ -44,10 +43,9 @@ import com.blockstream.common.data.TwoFactorSetupAction
 import com.blockstream.common.data.WalletExtras
 import com.blockstream.common.data.WalletSetting
 import com.blockstream.common.devices.JadeDevice
-import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
+import com.blockstream.common.extensions.biometricsMnemonic
 import com.blockstream.common.extensions.biometricsPinData
-import com.blockstream.common.extensions.createLoginCredentials
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.indexOfOrNull
 import com.blockstream.common.extensions.isNotBlank
@@ -60,16 +58,18 @@ import com.blockstream.common.gdk.data.SettingsNotification
 import com.blockstream.common.gdk.data.TwoFactorConfig
 import com.blockstream.common.gdk.data.TwoFactorMethodConfig
 import com.blockstream.common.gdk.params.CsvParams
-import com.blockstream.common.gdk.params.EncryptWithPinParams
 import com.blockstream.common.gdk.selectTwoFactorMethod
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.usecases.SetBiometricsUseCase
+import com.blockstream.common.usecases.SetPinUseCase
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.UserInput
-import com.blockstream.common.utils.randomChars
 import com.blockstream.common.utils.toAmountLook
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavData
+import com.blockstream.ui.sideeffects.SideEffect
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.launch
@@ -86,6 +86,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.getString
+import org.koin.core.component.inject
 
 @Serializable
 enum class WalletSettingsSection {
@@ -94,7 +95,7 @@ enum class WalletSettingsSection {
 
 abstract class WalletSettingsViewModelAbstract(
     greenWallet: GreenWallet,
-    private val section: WalletSettingsSection,
+    val section: WalletSettingsSection,
 ) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
     override fun screenName(): String = when(section) {
@@ -111,10 +112,11 @@ abstract class WalletSettingsViewModelAbstract(
 
 class WalletSettingsViewModel(
     greenWallet: GreenWallet,
-    private val section: WalletSettingsSection,
+    section: WalletSettingsSection,
     private val network: Network? = null
-) :
-    WalletSettingsViewModelAbstract(greenWallet = greenWallet, section = section) {
+) : WalletSettingsViewModelAbstract(greenWallet = greenWallet, section = section) {
+    private val setBiometricsUseCase: SetBiometricsUseCase by inject()
+    private val setPinUseCase: SetPinUseCase by inject()
 
     private val _items = MutableStateFlow(listOf<WalletSetting>())
     override val items = _items.asStateFlow()
@@ -161,13 +163,20 @@ class WalletSettingsViewModel(
                 WalletSettingsSection.TwoFactor -> Res.string.id_twofactor_authentication
                 else -> Res.string.id_settings
             }.also {
-                _navData.value = NavData(title = getString(it), subtitle = greenWallet.name)
+                _navData.value = NavData(
+                    title = getString(it).takeIf { section != WalletSettingsSection.General },
+                    subtitle = greenWallet.name.takeIf { section != WalletSettingsSection.General },
+
+                    walletName = greenWallet.name.takeIf { section == WalletSettingsSection.General },
+                    showBadge = !greenWallet.isRecoveryConfirmed && section == WalletSettingsSection.General,
+                    showBottomNavigation = section == WalletSettingsSection.General
+                )
             }
         }
 
         session.ifConnected {
             database.getLoginCredentialsFlow(greenWallet.id).onEach {
-                _hasBiometrics.value = it.biometricsPinData != null
+                _hasBiometrics.value = it.biometricsPinData != null || it.biometricsMnemonic != null
             }.launchIn(viewModelScope.coroutineScope)
 
             combine(
@@ -300,7 +309,7 @@ class WalletSettingsViewModel(
             list += WalletSetting.Logout
 
             if (settings != null) {
-                if (session.isWatchOnly) {
+                if (session.isWatchOnlyValue) {
                     list += listOfNotNull(
                         WalletSetting.Text(getString(Res.string.id_general)),
                         WalletSetting.DenominationExchangeRate(
@@ -425,6 +434,10 @@ class WalletSettingsViewModel(
                         database.deleteLoginCredentials(
                             greenWallet.id,
                             CredentialType.BIOMETRICS_PINDATA
+                        )
+                        database.deleteLoginCredentials(
+                            greenWallet.id,
+                            CredentialType.BIOMETRICS_MNEMONIC
                         )
                     }
                 } else if (greenKeystore.canUseBiometrics()) {
@@ -628,22 +641,7 @@ class WalletSettingsViewModel(
 
     private fun enableBiometrics(cipher: PlatformCipher) {
         doAsync({
-            val pin = randomChars(15)
-            val credentials = session.getCredentials()
-            val encryptWithPin =
-                session.encryptWithPin(null, EncryptWithPinParams(pin, credentials))
-
-            val encryptedData = greenKeystore.encryptData(cipher, pin.encodeToByteArray())
-
-            database.replaceLoginCredential(
-                createLoginCredentials(
-                    walletId = greenWallet.id,
-                    network = encryptWithPin.network.id,
-                    credentialType = CredentialType.BIOMETRICS_PINDATA,
-                    pinData = encryptWithPin.pinData,
-                    encryptedData = encryptedData
-                )
-            )
+            setBiometricsUseCase.invoke(session = session, cipher = cipher, wallet = greenWallet)
         }, onSuccess = {
 
         })
@@ -693,25 +691,13 @@ class WalletSettingsViewModel(
         })
     }
 
-    private fun setPin(pin: String){
+    private fun setPin(pin: String) {
         doAsync({
-            val credentials = session.getCredentials()
-            val encryptWithPin = session.encryptWithPin(null, EncryptWithPinParams(pin, credentials))
-
-            // Replace PinData
-            database.replaceLoginCredential(
-                createLoginCredentials(
-                    walletId = greenWallet.id,
-                    network = encryptWithPin.network.id,
-                    credentialType = CredentialType.PIN_PINDATA,
-                    pinData = encryptWithPin.pinData
-                )
+            setPinUseCase(
+                session = session,
+                pin = pin,
+                wallet = greenWallet
             )
-
-            // We only allow one credential type PIN / Password
-            // Password comes from v2 and should be deleted when a user tries to change his
-            // password to a pin
-            database.deleteLoginCredentials(greenWallet.id, CredentialType.PASSWORD_PINDATA)
         }, onSuccess = {
             postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_you_have_successfully_changed)))
             postSideEffect(SideEffects.NavigateBack())

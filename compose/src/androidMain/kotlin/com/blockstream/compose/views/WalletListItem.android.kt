@@ -15,7 +15,7 @@ import com.blockstream.ui.components.GreenColumn
 fun WalletListItemPreview() {
     GreenPreview {
         GreenColumn(space = 4) {
-            WalletListItem(WalletListLook.preview(hasLightningShortcut = true))
+            WalletListItem(WalletListLook.preview(isConnected = true))
 
             WalletListItem(WalletListLook.preview(false, false))
             WalletListItem(WalletListLook.preview(false, true))

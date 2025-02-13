@@ -8,9 +8,7 @@ import com.blockstream.common.TransactionType
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavData
 import com.blockstream.common.data.Redact
-import com.blockstream.common.events.Event
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isBlank
 import com.blockstream.common.extensions.isNotBlank
@@ -24,9 +22,11 @@ import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.params.AddressParams
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.gdk.params.toJsonElement
-import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.toAmountLook
+import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
 import com.rickclephas.kmp.observableviewmodel.stateIn
@@ -77,8 +77,6 @@ class SweepViewModel(greenWallet: GreenWallet, privateKey: String?, accountAsset
 
     private val _amountFiat: MutableStateFlow<String?> = MutableStateFlow(null)
     override val amountFiat: StateFlow<String?> = _amountFiat.asStateFlow()
-
-    override val isWatchOnly: StateFlow<Boolean> = MutableStateFlow(false)
 
     override val accounts: StateFlow<List<AccountAssetBalance>> = session.accounts.map { accounts ->
         accounts.filter { it.isBitcoin }.map { it.accountAssetBalance }
@@ -247,7 +245,6 @@ class SweepViewModelPreview(greenWallet: GreenWallet) :
     override val privateKey: MutableStateFlow<String> = MutableStateFlow("privatekey")
     override val amount: StateFlow<String?> = MutableStateFlow("1.0 BTC")
     override val amountFiat: StateFlow<String?> = MutableStateFlow("150.000 USD")
-    override val isWatchOnly: StateFlow<Boolean> = MutableStateFlow(false)
 
     init {
         _feePriority.value = FeePriority.Low(fee = "0.000001 BTC", feeFiat = "13.00 USD", feeRate = 2L.feeRateWithUnit(), expectedConfirmationTime = "id_s_hours|2")

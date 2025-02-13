@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinxSerialization)
+    alias(libs.plugins.kmp.nativecoroutines)
 }
 
 kotlin {
@@ -38,17 +39,23 @@ kotlin {
             api(libs.constraintlayout.compose.multiplatform)
             api(libs.navigation.compose)
             api(libs.compose.backhandler)
+            api(libs.androidx.lifecycle.runtime.compose)
+            api(libs.lifecycle.viewmodel.compose)
+            api(compose.components.resources)
+            /** --------------------------------------------------------------------------------- */
 
             /**  --- Kotlin & KotlinX ----------------------------------------------------------- */
             api(libs.kotlinx.serialization.core)
             api(libs.kotlinx.serialization.json)
 
-            /**  --- Phosphor ------------------------------------------------------------------- */
+            /**  --- Misc. ---------------------------------------------------------------------- */
             api(libs.phosphor.icon)
+            api(libs.kmp.observableviewmodel)
+
+            implementation(libs.kermit)
 
             implementation(libs.compose.rebugger)
 
-            implementation(libs.kermit)
         }
 
         val desktopMain by getting

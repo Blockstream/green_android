@@ -11,7 +11,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
-import com.blockstream.common.data.AppInfo
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_success
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.database.Database
@@ -25,14 +26,17 @@ import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.models.MainViewModel
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.utils.Loggable
+import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.GreenApp
 import com.blockstream.compose.LocalActivity
 import com.blockstream.compose.theme.GreenChrome
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.utils.compatTestTagsAsResourceId
 import com.blockstream.green.data.CountlyAndroid
+import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.services.TaskService
+import com.blockstream.green.utils.Loggable
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
@@ -199,6 +203,11 @@ class GreenActivity : AppCompatActivity() {
             intent.data?.toString()?.let { it.contains("/jade/setup") || it.contains("/j/s") } == true
         ) {
             mainViewModel.postEvent(Events.NavigateTo(NavigateDestinations.DeviceList(isJade = true)))
+        }else if (
+            intent?.action == Intent.ACTION_VIEW &&
+            intent.data?.toString()?.contains("/ramps/redirect") == true
+        ) {
+            mainViewModel.postEvent(Events.EventSideEffect(sideEffect = SideEffects.Dialog(message = StringHolder(stringResource = Res.string.id_success))))
         } else if (intent?.action == OPEN_WALLET) {
 
             intent.getStringExtra(WALLET)
@@ -206,8 +215,7 @@ class GreenActivity : AppCompatActivity() {
                 ?.let { wallet ->
                     mainViewModel.navigate(
                         wallet = wallet,
-                        deviceId = intent.getStringExtra(DEVICE_ID),
-                        isLightningShortcut = intent.getBooleanExtra(IS_LIGHTNING, false)
+                        deviceId = intent.getStringExtra(DEVICE_ID)
                     )
                 }
         } else if (intent?.action == HIDE_AMOUNTS) {
@@ -224,7 +232,6 @@ class GreenActivity : AppCompatActivity() {
 
     companion object: Loggable() {
         const val OPEN_WALLET = "OPEN_WALLET"
-        const val IS_LIGHTNING = "IS_LIGHTNING"
         const val WALLET = "WALLET"
         const val DEVICE_ID = "DEVICE_ID"
 

@@ -3,8 +3,8 @@ package com.blockstream.common.models.promo
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.x
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavAction
-import com.blockstream.common.data.NavData
+import com.blockstream.ui.navigation.NavAction
+import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.Promo
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.previewWallet

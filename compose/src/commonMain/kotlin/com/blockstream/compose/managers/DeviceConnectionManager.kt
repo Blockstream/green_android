@@ -106,14 +106,16 @@ open class DeviceConnectionManager(
         gdkHardwareWallet: GdkHardwareWallet,
         jadeFirmwareManager: JadeFirmwareManager?
     ) {
+        val firmwareManager = jadeFirmwareManager ?: JadeFirmwareManager(
+            firmwareInteraction = interaction,
+            httpRequestHandler = httpRequestHandler,
+            jadeFwVersionsFile = JadeFirmwareManager.JADE_FW_VERSIONS_LATEST,
+            forceFirmwareUpdate = false
+        )
+
         if (gdkHardwareWallet is JadeHWWallet && gdkHardwareWallet.getVersionInfo().jadeState != JadeState.READY) {
             try {
-                gdkHardwareWallet.authenticate(interaction, jadeFirmwareManager ?: JadeFirmwareManager(
-                    firmwareInteraction = interaction,
-                    httpRequestHandler = httpRequestHandler,
-                    jadeFwVersionsFile = JadeFirmwareManager.JADE_FW_VERSIONS_LATEST,
-                    forceFirmwareUpdate = false
-                ))
+                gdkHardwareWallet.authenticate(interaction, firmwareManager)
             } catch (e: Exception) {
                 if (e is JadeError) {
                     when (e.code) {
@@ -136,9 +138,14 @@ open class DeviceConnectionManager(
                     throw Exception("id_please_reconnect_your_hardware")
                 }
             }
-        } else if(jadeFirmwareManager != null && gdkHardwareWallet is JadeHWWallet) {
+        } else if(gdkHardwareWallet is JadeHWWallet) {
             // force update if needed
-            jadeFirmwareManager.checkFirmware(jade = gdkHardwareWallet.jade)
+            if(!firmwareManager.checkFirmware(jade = gdkHardwareWallet.jade)){
+                throw JadeError(
+                    JadeError.UNSUPPORTED_FIRMWARE_VERSION,
+                    "Insufficient/invalid firmware version", null
+                )
+            }
         }
     }
 }

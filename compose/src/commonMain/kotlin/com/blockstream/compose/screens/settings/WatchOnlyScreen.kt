@@ -50,7 +50,7 @@ import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.managers.LocalPlatformManager
-import com.blockstream.compose.navigation.LocalInnerPadding
+import com.blockstream.ui.navigation.LocalInnerPadding
 import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.titleMedium

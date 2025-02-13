@@ -2,12 +2,12 @@ package com.blockstream.common.models.onboarding.watchonly
 
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.data.WatchOnlyCredentials
-import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.sideeffects.SideEffect
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.stateIn
@@ -41,9 +41,6 @@ abstract class WatchOnlyCredentialsViewModelAbstract(val setupArgs: SetupArgs) :
     abstract val isLoginEnabled: StateFlow<Boolean>
 
     @NativeCoroutinesState
-    abstract val canUseBiometrics: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val username: MutableStateFlow<String>
 
     @NativeCoroutinesState
@@ -57,9 +54,6 @@ abstract class WatchOnlyCredentialsViewModelAbstract(val setupArgs: SetupArgs) :
 
     @NativeCoroutinesState
     abstract val isRememberMe: MutableStateFlow<Boolean>
-
-    @NativeCoroutinesState
-    abstract val withBiometrics: MutableStateFlow<Boolean>
 }
 
 class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs) :
@@ -80,9 +74,6 @@ class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs) :
 
     override val isLoginEnabled: StateFlow<Boolean>
 
-    override val canUseBiometrics: MutableStateFlow<Boolean>
-    override val withBiometrics: MutableStateFlow<Boolean>
-
     class LocalEvents {
         data class AppendWatchOnlyDescriptor(val value: String) : Event
         class ImportFile(val source: Source) : Event
@@ -93,11 +84,6 @@ class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs) :
     }
 
     init {
-        greenKeystore.canUseBiometrics().also {
-            canUseBiometrics = MutableStateFlow(it)
-            withBiometrics = MutableStateFlow(it)
-        }
-
         watchOnlyDescriptor.onEach {
             if (it.contains("(")) {
                 isOutputDescriptors.value = true
@@ -167,8 +153,6 @@ class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs) :
             network = setupArgs.network!!,
             persistLoginCredentials = isRememberMe.value,
             watchOnlyCredentials = watchOnlyCredentials,
-            withBiometrics = withBiometrics.value,
-
         )
     }
 
@@ -226,13 +210,11 @@ class WatchOnlyCredentialsViewModelPreview(setupArgs: SetupArgs, isLiquid : Bool
     override val isSinglesig: StateFlow<Boolean> = MutableStateFlow(true)
     override val isLiquid: StateFlow<Boolean> = MutableStateFlow(isLiquid)
     override val isLoginEnabled: StateFlow<Boolean> = MutableStateFlow(false)
-    override val canUseBiometrics: StateFlow<Boolean> = MutableStateFlow(true)
     override val username: MutableStateFlow<String> = MutableStateFlow("")
     override val password: MutableStateFlow<String> = MutableStateFlow("")
     override val watchOnlyDescriptor: MutableStateFlow<String> = MutableStateFlow("")
     override val isOutputDescriptors: MutableStateFlow<Boolean> = MutableStateFlow(isLiquid)
     override val isRememberMe: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    override val withBiometrics: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     companion object {
         fun preview(isSinglesig: Boolean = true, isLiquid: Boolean = false) =

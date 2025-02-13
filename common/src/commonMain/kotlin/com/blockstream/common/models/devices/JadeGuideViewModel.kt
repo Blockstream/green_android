@@ -2,7 +2,7 @@ package com.blockstream.common.models.devices
 
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_setup_guide
-import com.blockstream.common.data.NavData
+import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.models.GreenViewModel
 import com.rickclephas.kmp.observableviewmodel.launch
 import org.jetbrains.compose.resources.getString

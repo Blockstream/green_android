@@ -8,8 +8,8 @@ import com.blockstream.common.TransactionType
 import com.blockstream.common.data.Banner
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavData
-import com.blockstream.common.events.Event
+import com.blockstream.ui.navigation.NavData
+import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isBlank
@@ -53,8 +53,6 @@ class RedepositViewModel(
     accountAsset: AccountAsset,
     private val isRedeposit2FA: Boolean
 ) : RedepositViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
-    private val _isWatchOnly = MutableStateFlow(false)
-    override val isWatchOnly = _isWatchOnly
 
     init {
         viewModelScope.launch {
@@ -73,8 +71,6 @@ class RedepositViewModel(
             )
         } else {
             session.ifConnected {
-                _isWatchOnly.value = session.isWatchOnly
-
                 _showFeeSelector.value = accountAsset.account.network.isBitcoin
                         || (accountAsset.account.network.isLiquid && getFeeRate(FeePriority.High()) > accountAsset.account.network.defaultFee)
 
@@ -222,8 +218,6 @@ class RedepositViewModel(
 
 class RedepositViewModelPreview(greenWallet: GreenWallet, accountAsset: AccountAsset) :
     RedepositViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
-
-    override val isWatchOnly: StateFlow<Boolean> = MutableStateFlow(false)
 
     init {
         _showFeeSelector.value = true

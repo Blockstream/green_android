@@ -1,19 +1,21 @@
-
+import com.android.build.api.dsl.androidLibrary
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
-    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.kmp.nativecoroutines)
     alias(libs.plugins.app.cash.sqldelight)
     alias(libs.plugins.nativeCocoapods)
+    alias(libs.plugins.google.devtools.ksp)
 }
 
 compose.resources {
     publicResClass = true
+    generateResClass = auto
 }
 
 sqldelight {
@@ -37,18 +39,39 @@ kotlin {
 
     jvmToolchain(libs.versions.jvm.get().toInt())
 
-    androidTarget()
+    androidLibrary {
+        namespace = "com.blockstream.common"
+        compileSdk = libs.versions.androidCompileSdk.get().toInt()
+        minSdk = libs.versions.androidMinSdk.get().toInt()
 
+        experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
+
+        withHostTestBuilder {
+        }
+
+        withDeviceTestBuilder {
+            sourceSetTreeName = "test"
+        }.configure {
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        }
+
+        packaging {
+            resources {
+                excludes += "/META-INF/{AL2.0,LGPL2.1}"
+                excludes += "/META-INF/LICENSE.md"
+                excludes += "/META-INF/LICENSE-notice.md"
+            }
+        }
+    }
     jvm()
 
     val xcf = XCFramework()
     listOf(
         iosArm64(),
-        iosSimulatorArm64(),
-        iosX64(),
+        iosSimulatorArm64()
     ).forEach {
         it.binaries.framework {
-            baseName = "Common"
+            baseName = "common"
             xcf.add(this)
             isStatic = true
         }
@@ -99,12 +122,12 @@ kotlin {
 
         commonMain.dependencies {
             /**  --- Modules ---------------------------------------------------------------------------- */
-            implementation(project(":ui-common"))
+            api(project(":data"))
+            api(project(":ui-common"))
             api(project(":jade"))
             /** ----------------------------------------------------------------------------------------- */
 
             /**  --- Kotlin & KotlinX ------------------------------------------------------------------- */
-            api(libs.kotlinx.coroutines.core)
             api(libs.kotlinx.serialization.core)
             api(libs.kotlinx.serialization.json)
             api(libs.kotlinx.serialization.cbor)
@@ -142,14 +165,13 @@ kotlin {
             api(libs.uuid)
             api(libs.multiplatform.settings)
             api(libs.okio) // Filesystem
-            api(libs.kermit)
             api(libs.state.keeper)
             api(libs.kase64) // base64
             api(libs.ksoup.entites) // html entities
             api(libs.kable.core)
             api(libs.kotlincrypto.hash.md)
             api(libs.kotlincrypto.hash.sha2)
-            implementation(libs.compose.action.menu)
+            //implementation(libs.compose.action.menu)
             implementation(libs.phosphor.icon)
 
             implementation(libs.tuulbox.coroutines)
@@ -189,16 +211,23 @@ kotlin {
             /** ----------------------------------------------------------------------------------------- */
         }
 
-        val androidUnitTest by getting {
+        getByName("androidDeviceTest") {
             dependencies {
-                implementation(libs.junit)
-                implementation(libs.sqldelight.sqlite.driver)
-                implementation(libs.kotlinx.coroutines.test)
-                implementation(libs.turbine)
-                implementation(libs.koin.test)
-                implementation(libs.koin.test.junit4)
+                implementation(libs.androidx.runner)
+                implementation(libs.androidx.core)
+                implementation(libs.androidx.junit)
                 implementation(libs.mockk)
             }
+        }
+
+        androidUnitTest.dependencies {
+            implementation(libs.junit)
+            implementation(libs.sqldelight.sqlite.driver)
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.turbine)
+            implementation(libs.koin.test)
+            implementation(libs.koin.test.junit4)
+            implementation(libs.mockk)
         }
 
         iosMain.dependencies {
@@ -209,13 +238,13 @@ kotlin {
 }
 
 task("fetchIosBinaries") {
-    doFirst{
+    doFirst {
         val exists = project.file("src/include").exists() && project.file("src/libs").exists()
         if (!exists) {
             exec {
                 commandLine("./fetch_ios_binaries.sh")
             }
-        }else{
+        } else {
             print("-- Skipped --")
         }
     }
@@ -223,17 +252,8 @@ task("fetchIosBinaries") {
 }
 
 tasks.configureEach {
-    if(name.contains("cinterop")){
+    if (name.contains("cinterop")) {
         dependsOn("fetchIosBinaries")
-    }
-}
-
-android {
-    namespace = "com.blockstream.common"
-    compileSdk = libs.versions.androidCompileSdk.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.androidMinSdk.get().toInt()
     }
 }
 
@@ -241,12 +261,15 @@ task("useBlockstreamKeys") {
     doLast {
         println("AppKeys: Use Blockstream Keys")
         rootProject.file("contrib/blockstream_keys.txt")
-            .copyTo(project.file("src/commonMain/composeResources/files/app_keys.txt"), overwrite = true)
+            .copyTo(
+                project.file("src/commonMain/composeResources/files/app_keys.txt"),
+                overwrite = true
+            )
     }
 }
 
-task("appKeys") {
-    doFirst {
+tasks.register("appKeys") {
+    doLast {
         val appKeys = project.file("src/commonMain/composeResources/files/app_keys.txt")
         if (appKeys.exists()) {
             println("AppKeys: ✔")
@@ -258,7 +281,7 @@ task("appKeys") {
     outputs.upToDateWhen { false }
 }
 
-tasks.getByName("preBuild").dependsOn(tasks.getByName("appKeys"))
+tasks.getByName("androidPreBuild").dependsOn(tasks.getByName("appKeys"))
 
 tasks.getByName("clean").doFirst {
     delete(project.file("src/include"))

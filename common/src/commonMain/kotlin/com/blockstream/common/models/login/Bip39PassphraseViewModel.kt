@@ -2,12 +2,12 @@ package com.blockstream.common.models.login
 
 import com.blockstream.common.Urls
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.events.Event
+import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.sideeffects.SideEffect
+import com.blockstream.ui.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState

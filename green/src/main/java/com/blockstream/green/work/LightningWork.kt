@@ -12,7 +12,7 @@ import androidx.work.workDataOf
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.lightning.BreezNotification
-import com.blockstream.common.utils.Loggable
+import com.blockstream.green.utils.Loggable
 import com.blockstream.green.managers.NotificationManagerAndroid
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

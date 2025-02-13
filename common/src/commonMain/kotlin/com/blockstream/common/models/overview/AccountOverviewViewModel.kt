@@ -19,9 +19,6 @@ import com.blockstream.common.data.AlertType
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.NavAction
-import com.blockstream.common.data.NavData
-import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.launchIn
@@ -42,8 +39,11 @@ import com.blockstream.common.looks.transaction.TransactionLook
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.StringHolder
+import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavAction
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -217,7 +217,7 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                             onClick = {
                                 postEvent(NavigateDestinations.RenameAccount(greenWallet = greenWallet, account = account))
                             }
-                        ).takeIf { !session.isWatchOnly && !account.isLightning },
+                        ).takeIf { !session.isWatchOnlyValue && !account.isLightning },
                         NavAction(
                             title = getString(Res.string.id_archive_account),
                             icon = Res.drawable.box_arrow_down,
@@ -225,7 +225,7 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                             onClick = {
                                 postEvent(Events.ArchiveAccount(account))
                             }
-                        ).takeIf { !session.isWatchOnly && !account.isLightning && accounts.size > 1 },
+                        ).takeIf { !session.isWatchOnlyValue && !account.isLightning && accounts.size > 1 },
                         NavAction(
                             title = getString(Res.string.id_node_info),
                             icon = Res.drawable.info,
