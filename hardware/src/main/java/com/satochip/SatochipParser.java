@@ -629,8 +629,7 @@ public class SatochipParser{
         digest.update(msg, 0, msg.length);
         digest.doFinal(hash, 0);
         logger.info("SATOCHIPLIB: verifySig: hash: " + toHexString(hash));
-      
-      
+
         // convert der-sig to bigInteger[]
         BigInteger[] rs= decodeFromDER(dersig);
         

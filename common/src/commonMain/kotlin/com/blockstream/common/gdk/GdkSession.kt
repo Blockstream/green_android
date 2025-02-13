@@ -155,6 +155,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
@@ -1202,6 +1203,13 @@ class GdkSession constructor(
         isCreate: Boolean,
         isRestore: Boolean,
     ): LoginData {
+        println("SATODEBUG GdkSession loginWithMnemonic() wallet: " + wallet)
+        println("SATODEBUG GdkSession loginWithMnemonic() loginCredentialsParams: " + loginCredentialsParams)
+        println("SATODEBUG GdkSession loginWithMnemonic() START")
+        println("SATODEBUG GdkSession loginWithMnemonic() START")
+        println("SATODEBUG GdkSession loginWithMnemonic() START")
+
+
         return loginWithLoginCredentials(
             prominentNetwork = prominentNetwork(isTestnet),
             wallet = wallet,
@@ -1281,6 +1289,13 @@ class GdkSession constructor(
         hardwareWalletResolver: HardwareWalletResolver,
         hwInteraction: HardwareWalletInteraction? = null,
     ): LoginData {
+        println("SATODEBUG GdkSession loginWithDevice() START")
+        println("SATODEBUG GdkSession loginWithDevice() START wallet: " + wallet)
+        println("SATODEBUG GdkSession loginWithDevice() START device: " + device)
+        println("SATODEBUG GdkSession loginWithDevice() START derivedLightningMnemonic: " + derivedLightningMnemonic)
+        println("SATODEBUG GdkSession loginWithDevice() START hardwareWalletResolver: " + hardwareWalletResolver)
+
+
         // If last used network is Lightning, change to bitcoin as the ln network can't be used for login
         val lastUsedNetwork = (wallet.activeNetwork
             .takeIf { !Network.isLightning(it) } ?: Network.ElectrumMainnet)
@@ -1328,6 +1343,15 @@ class GdkSession constructor(
         hardwareWalletResolver: HardwareWalletResolver? = null,
         hwInteraction: HardwareWalletInteraction? = null,
     ): LoginData {
+        println("SATODEBUG GdkSession loginWithLoginCredentials() START")
+        println("SATODEBUG GdkSession loginWithLoginCredentials() START prominentNetwork: " + prominentNetwork)
+        println("SATODEBUG GdkSession loginWithLoginCredentials() START wallet: " + wallet)
+        println("SATODEBUG GdkSession loginWithLoginCredentials() START walletLoginCredentialsParams: " + walletLoginCredentialsParams)
+        println("SATODEBUG GdkSession loginWithLoginCredentials() START appGreenlightCredentials: " + appGreenlightCredentials)
+        println("SATODEBUG GdkSession loginWithLoginCredentials() START device: " + device)
+        println("SATODEBUG GdkSession loginWithLoginCredentials() START appGreenlightCredentials: " + appGreenlightCredentials)
+        println("SATODEBUG GdkSession loginWithLoginCredentials() START derivedLightningMnemonic: " + derivedLightningMnemonic)
+
         isWatchOnly = walletLoginCredentialsParams.isWatchOnly
         isNoBlobWatchOnly = isWatchOnly && richWatchOnly == null
         isRichWatchOnly = isWatchOnly && richWatchOnly != null
@@ -1636,6 +1660,8 @@ class GdkSession constructor(
         initAccount: Long?,
         initializeSession: Boolean
     ) {
+        println("SATODEBUG GdkSession onLoginSuccess() START")
+
         _isConnectedState.value = true
         xPubHashId = if(isNoBlobWatchOnly) loginData.networkHashId else loginData.xpubHashId
 
@@ -1649,6 +1675,8 @@ class GdkSession constructor(
     }
 
     private suspend fun initializeSessionData(initNetwork: String?, initAccount: Long?) {
+        println("SATODEBUG GdkSession initializeSessionData() START")
+
         // Check if active account index was archived from 1) a different client (multisig) or 2) from cached Singlesig hww session
         // Expect refresh = true to be already called
         updateAccounts()

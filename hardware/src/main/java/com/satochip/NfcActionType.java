@@ -2,6 +2,7 @@ package com.satochip;
 
 public enum NfcActionType {
     none,
-    getXpub,
+    getXpubs,
+    signMessage,
     derivePubkey,
 }
