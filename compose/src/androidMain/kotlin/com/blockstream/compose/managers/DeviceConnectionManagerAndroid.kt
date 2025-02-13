@@ -226,6 +226,13 @@ class DeviceConnectionManagerAndroid constructor(
             println("SATODEBUG DeviceConnectionManagerAndroid readCard cardStatus: $cardStatus")
             println("SATODEBUG DeviceConnectionManagerAndroid readCard cardStatus: ${cardStatus.toString()}")
 
+            // TODO: disconnect?
+            println("SATODEBUG DeviceConnectionManagerAndroid onConnected: trigger disconnection!")
+            onDisconnected()
+
+            // stop polling?
+            nfcAdapter?.disableReaderMode(activity)
+            println("SATODEBUG DeviceConnectionManagerAndroid NFC DISABLED")
 
             val satoDevice = com.blockstream.common.gdk.data.Device(
                 name = "Satochip",
@@ -239,18 +246,7 @@ class DeviceConnectionManagerAndroid constructor(
 
             // provide channel for later request?
             // todo: provide activity and context instead??
-            satochipDevice?.gdkHardwareWallet = SatochipHWWallet(satoDevice, channel)
-
-            // TODO: disconnect?
-            println("SATODEBUG DeviceConnectionManagerAndroid onConnected: trigger disconnection!")
-            onDisconnected()
-
-            // stop polling?
-            //nfcAdapter?.disableReaderMode(activity)
-
-            //
-            //return onSatochipConnected(device)
-
+            satochipDevice?.gdkHardwareWallet = SatochipHWWallet(satoDevice, activity, satochipDevice?.context)
 
         } catch (e: Exception) {
             println("SATODEBUG DeviceConnectionManagerAndroid onConnected: an exception has been thrown during card init.")
