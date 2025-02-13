@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 
 inline fun Modifier.ifTrue(
     condition: Boolean,
-    ifTrue: Modifier.() -> Modifier,
+    ifTrue: (Modifier) -> Modifier,
 ): Modifier = if (condition) {
     then(ifTrue(Modifier))
 } else {
@@ -14,8 +14,8 @@ inline fun Modifier.ifTrue(
 
 inline fun Modifier.conditional(
     condition: Boolean,
-    ifTrue: Modifier.() -> Modifier,
-    ifFalse: Modifier.() -> Modifier = { this },
+    ifTrue: (Modifier) -> Modifier,
+    ifFalse: (Modifier) -> Modifier = { this },
 ): Modifier = if (condition) {
     then(ifTrue(Modifier))
 } else {
@@ -24,8 +24,8 @@ inline fun Modifier.conditional(
 
 inline fun <T> Modifier.nullConditional(
     argument: T?,
-    ifNotNull: Modifier.(T) -> Modifier,
-    ifNull: Modifier.() -> Modifier = { this },
+    ifNotNull: (Modifier, T) -> Modifier,
+    ifNull: (Modifier) -> Modifier = { this },
 ): Modifier {
     return if (argument != null) {
         then(ifNotNull(Modifier, argument))

@@ -82,9 +82,7 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
         viewModelScope.launch {
             _navData.value = NavData(
                 title = deviceOrNull?.deviceBrand?.name,
-                onBackPressed = {
-                    !onProgress.value
-                },
+                isVisible = !onProgress.value,
                 actions = listOfNotNull(
                     NavAction(title = getString(Res.string.id_setup_guide), onClick = {
                         postEvent(NavigateDestinations.JadeGuide)
@@ -93,7 +91,7 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
                         postSideEffect(LocalSideEffects.SelectFirmwareChannel())
                     }).takeIf { appInfo.isDevelopmentOrDebug && deviceOrNull?.isJade == true },
                     NavAction(title = "Genuine Check", isMenuEntry = true, onClick = {
-                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.JadeGenuineCheck(deviceId = deviceId)))
+                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.JadeGenuineCheck(greenWalletOrNull = greenWalletOrNull, deviceId = deviceId)))
                     }).takeIf { appInfo.isDevelopmentOrDebug && deviceOrNull?.isJade == true }
 
                 )
@@ -101,7 +99,7 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
         }
 
         onProgress.onEach {
-            _navData.value = _navData.value.copy(isVisible = !it, onBackPressed = { !it })
+            _navData.value = _navData.value.copy(isVisible = !it)
         }.launchIn(this)
 
         bootstrap()
@@ -151,6 +149,7 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
             if (it is ConnectionLostException) {
                 connectDevice()
             } else {
+                postSideEffect(SideEffects.ErrorSnackbar(it))
                 postSideEffect(SideEffects.NavigateBack())
             }
         })
@@ -274,7 +273,15 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
 
             deviceManager.savedDevice = device
 
-            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Login(greenWallet = it, deviceId = device.connectionIdentifier)))
+            postSideEffect(
+                SideEffects.NavigateTo(
+                    NavigateDestinations.Login(
+                        greenWallet = it,
+                        autoLoginWallet = true,
+                        deviceId = device.connectionIdentifier
+                    )
+                )
+            )
         })
     }
 

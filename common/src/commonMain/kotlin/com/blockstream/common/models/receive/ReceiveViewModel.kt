@@ -149,8 +149,7 @@ abstract class ReceiveViewModelAbstract(greenWallet: GreenWallet, accountAssetOr
 
 }
 
-@OptIn(ExperimentalStdlibApi::class)
-class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWallet) :
+class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAsset) :
     ReceiveViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = initialAccountAsset) {
     private val _receiveAddress = MutableStateFlow<String?>(null)
     private val _receiveAddressUri = MutableStateFlow<String?>(null)
@@ -219,7 +218,7 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
     private val _generateAddressLock = Mutex()
 
     init {
-        combine(accountAsset, showLightningOnChainAddress, receiveAddress) { accountAsset, showLightningOnChainAddress, receiveAddress ->
+        combine(accountAsset, showLightningOnChainAddress, receiveAddress, onProgress) { accountAsset, showLightningOnChainAddress, receiveAddress, onProgress ->
             _navData.value = NavData(
                 title = getString(Res.string.id_receive),
                 subtitle = greenWallet.name,
@@ -232,6 +231,7 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
                             postSideEffect(
                                 SideEffects.NavigateTo(
                                     NavigateDestinations.Note(
+                                        greenWallet = greenWallet,
                                         note = note.value ?: "",
                                         noteType = if(accountAsset?.account?.isLightning == true) NoteType.Description else NoteType.Note
                                     )
@@ -262,7 +262,7 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
                         isMenuEntry = true,
                         onClick = {
                             accountAsset?.also {
-                                postEvent(NavigateDestinations.Addresses(accountAsset = it))
+                                postEvent(NavigateDestinations.Addresses(greenWallet = greenWallet, accountAsset = it))
                             }
                         }
                     ).takeIf { receiveAddress.isNotBlank() && accountAsset?.account?.isLightning == false },
@@ -272,19 +272,13 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
                         isMenuEntry = true,
                         onClick = {
                             accountAsset?.also {
-                                postEvent(NavigateDestinations.Sweep(accountAsset = it))
+                                postEvent(NavigateDestinations.Sweep(greenWallet = greenWallet, accountAsset = it))
                             }
                         }
                     ).takeIf { receiveAddress.isNotBlank() && accountAsset?.account?.isLightning == false && !accountAsset.account.isLiquid },
                 ),
-                onBackPressed = {
-                    if(onProgress.value) {
-                        showWaitSnackbar()
-                    }
-                    !onProgress.value
-                },
+                backHandlerEnabled = onProgress
             )
-
         }.launchIn(this)
 
         session.ifConnected {
@@ -400,6 +394,7 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
                         postSideEffect(
                             SideEffects.NavigateTo(
                                 NavigateDestinations.DeviceInteraction(
+                                    greenWalletOrNull = greenWalletOrNull,
                                     deviceId = sessionOrNull?.device?.connectionIdentifier,
                                     verifyAddress = it.address
                                 )
@@ -458,9 +453,13 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
             is LocalEvents.GenerateNewAddress -> {
                 if (onProgress.value) {
                     showWaitSnackbar()
-                }else{
+                } else {
                     generateAddress()
                 }
+            }
+
+            is Events.NavigateBackUserAction -> {
+                showWaitSnackbar()
             }
 
             is LocalEvents.CreateInvoice -> {

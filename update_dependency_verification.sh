@@ -41,9 +41,12 @@ case $key in
     -b | --build)
       TASK="assembleDevelopmentDebug"
       shift ;;
+    -i | --ios)
+        TASK="assembleXCFramework"
+        shift ;;
     -a | --assemble)
-          TASK="assemble"
-          shift ;;
+        TASK="assemble"
+        shift ;;
     -t | --test)
       TASK="test"
       shift ;;

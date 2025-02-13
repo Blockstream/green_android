@@ -17,51 +17,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.check_circle
 import blockstream_green.common.generated.resources.id_enter_amount_in
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.data.DenominatedValue
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.models.send.DenominationViewModel
 import com.blockstream.common.models.send.DenominationViewModelAbstract
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenBottomSheet
-import com.blockstream.ui.components.GreenRow
-import com.blockstream.compose.navigation.getNavigationResult
-import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.titleSmall
+import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.navigation.setResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-data class DenominationBottomSheet(
-    val greenWallet: GreenWallet,
-    val denominatedValue: DenominatedValue
-) : BottomScreen(), Parcelable {
-    @Composable
-    override fun Content() {
-
-        val viewModel = koinScreenModel<DenominationViewModel> {
-            parametersOf(greenWallet, denominatedValue)
-        }
-
-        DenominationBottomSheet(
-            viewModel = viewModel,
-            onDismissRequest = onDismissRequest()
-        )
-    }
-
-    companion object {
-        @Composable
-        fun getResult(fn: (DenominatedValue) -> Unit) =
-            getNavigationResult(this::class, fn)
-
-        internal fun setResult(result: DenominatedValue) =
-            setNavigationResult(this::class, result)
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,7 +53,7 @@ fun DenominationBottomSheet(
                     denominatedValue = denominatedValue,
                     isChecked = denominatedValue.denomination == viewModel.denomination.value,
                     onClick = {
-                        DenominationBottomSheet.setResult(denominatedValue)
+                        NavigateDestinations.Denomination.setResult(denominatedValue)
                         onDismissRequest()
                     })
 

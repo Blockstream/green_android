@@ -12,6 +12,7 @@ import com.blockstream.common.gdk.events.GenericEvent
 import com.blockstream.common.managers.LocaleManager
 import com.blockstream.common.managers.Locales
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
@@ -20,6 +21,7 @@ import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.jetbrains.compose.resources.getString
@@ -203,29 +205,19 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
     override val locale: MutableStateFlow<String?> = MutableStateFlow(viewModelScope, localeManager.getLocale())
 
     class LocalEvents{
-        object AnalyticsMoreInfo: Events.EventSideEffect(LocalSideEffects.AnalyticsMoreInfo)
-        object OnBack: Event
+        object AnalyticsMoreInfo: Events.EventSideEffect(SideEffects.NavigateTo(NavigateDestinations.Analytics))
         object Save: Event
         object Cancel: Event
     }
 
     class LocalSideEffects {
-        object AnalyticsMoreInfo: SideEffect
         object UnsavedAppSettings: SideEffect
     }
 
     init {
 
         viewModelScope.launch {
-            _navData.value = NavData(title = getString(Res.string.id_app_settings), onBackPressed = {
-                if(areSettingsDirty()){
-                    postEvent(LocalEvents.OnBack)
-                    false
-                } else {
-                    true
-                }
-            })
-
+            _navData.value = NavData(title = getString(Res.string.id_app_settings))
             database.insertEvent(GenericEvent(deviceId = settingsManager.getCountlyDeviceId()).sha256())
         }
 
@@ -239,6 +231,33 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
             if (it && !spvEnabled.value) {
                 spvEnabled.value = true
             }
+        }.launchIn(viewModelScope.coroutineScope)
+
+        combine(
+            enhancedPrivacyEnabled,
+            screenLockInSeconds,
+            testnetEnabled,
+            analyticsEnabled,
+            experimentalFeaturesEnabled,
+            locale,
+            proxyUrl,
+            rememberHardwareDevices,
+            electrumNodeEnabled,
+            torEnabled,
+            spvEnabled,
+            multiServerValidationEnabled,
+            electrumServerGapLimit,
+            personalBitcoinElectrumServer,
+            personalLiquidElectrumServer,
+            personalTestnetElectrumServer,
+            personalTestnetLiquidElectrumServer,
+            personalElectrumServerTlsEnabled,
+            spvBitcoinElectrumServer,
+            spvLiquidElectrumServer,
+            spvTestnetElectrumServer,
+            spvTestnetLiquidElectrumServer
+        ) {
+            _navData.value = _navData.value.copy(backHandlerEnabled = areSettingsDirty())
         }.launchIn(viewModelScope.coroutineScope)
 
         bootstrap()
@@ -258,10 +277,10 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
                 postSideEffect(SideEffects.NavigateBack())
             }
 
-            is LocalEvents.OnBack -> {
-                if(areSettingsDirty()){
+            is Events.NavigateBackUserAction -> {
+                if (areSettingsDirty()) {
                     postSideEffect(LocalSideEffects.UnsavedAppSettings)
-                }else{
+                } else {
                     postSideEffect(SideEffects.NavigateBack())
                 }
             }

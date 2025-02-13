@@ -1,9 +1,9 @@
 package com.blockstream.common.gdk.data
 
-import cafe.adriel.voyager.core.lifecycle.JavaSerializable
+import kotlinx.serialization.Serializable
 
-
-enum class AccountType(val gdkType: String): JavaSerializable {
+@Serializable
+enum class AccountType(val gdkType: String) {
     // Mutlisig
     STANDARD("2of2"),
     AMP_ACCOUNT("2of2_no_recovery"),
@@ -50,6 +50,7 @@ enum class AccountType(val gdkType: String): JavaSerializable {
             "p2sh-p2wpkh" -> BIP49_SEGWIT_WRAPPED
             "p2wpkh" -> BIP84_SEGWIT
             "p2tr" -> BIP86_TAPROOT
+            "lightning" -> LIGHTNING
             else -> UNKNOWN
         }
     }

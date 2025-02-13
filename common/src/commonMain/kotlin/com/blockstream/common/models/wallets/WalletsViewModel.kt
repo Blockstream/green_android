@@ -127,6 +127,7 @@ abstract class WalletsViewModel(isHome: Boolean) : WalletsViewModelAbstract(isHo
                     SideEffects.NavigateTo(
                         NavigateDestinations.Login(
                             greenWallet = parentWallet,
+                            autoLoginWallet = !event.isLightningShortcut,
                             isLightningShortcut = event.isLightningShortcut
                         )
                     )

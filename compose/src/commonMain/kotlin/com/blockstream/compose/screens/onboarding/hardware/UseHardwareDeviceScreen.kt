@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,7 +15,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,7 +22,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.arrow_square_out
 import blockstream_green.common.generated.resources.hardware_security
@@ -44,53 +41,33 @@ import blockstream_green.common.generated.resources.id_your_bitcoin_and_liquid_a
 import blockstream_green.common.generated.resources.jade_welcome
 import blockstream_green.common.generated.resources.offline_key_storage
 import blockstream_green.common.generated.resources.qr_airgapped
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
 import com.blockstream.common.models.onboarding.hardware.UseHardwareDeviceViewModel
 import com.blockstream.common.models.onboarding.hardware.UseHardwareDeviceViewModelAbstract
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.md_theme_surfaceCircle
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.noRippleClickable
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-
-
-object UseHardwareDeviceScreen : Screen {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<UseHardwareDeviceViewModel>()
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        UseHardwareDeviceScreen(viewModel = viewModel)
-    }
-}
 
 @Composable
 fun UseHardwareDeviceScreen(
     viewModel: UseHardwareDeviceViewModelAbstract
 ) {
 
-    HandleSideEffect(viewModel = viewModel)
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(),
+    SetupScreen(
+        viewModel = viewModel,
+        withPadding = false,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {

@@ -1,25 +1,21 @@
 package com.blockstream.common.data
 
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.extensions.createLoginCredentials
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.GreenJson
-import com.blockstream.common.gdk.data.Settings
 import com.blockstream.common.gdk.params.LoginCredentialsParams
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 
-@Parcelize
 @Serializable
 data class RichWatchOnly(
     @SerialName("networks") val network: String,
     @SerialName("username") val username: String,
     @SerialName("password") val password: String,
     @SerialName("watch_only_data") val watchOnlyData: String? = null,
-) : GreenJson<RichWatchOnly>(), Parcelable {
+) : GreenJson<RichWatchOnly>() {
     override fun kSerializer() = serializer()
 
     fun toLoginCredentialsParams() : LoginCredentialsParams{

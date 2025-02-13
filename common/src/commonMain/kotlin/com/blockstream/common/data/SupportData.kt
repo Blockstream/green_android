@@ -1,12 +1,10 @@
 package com.blockstream.common.data
 
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.gdk.GdkSession
+import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.gdk.data.Network
 import kotlinx.serialization.Serializable
 
-@Parcelize
 @Serializable
 data class SupportData(
     val subject: String? = null,
@@ -15,7 +13,9 @@ data class SupportData(
     val paymentHash: String? = null,
     val zendeskSecurityPolicy: String? = null,
     val zendeskHardwareWallet: String? = null
-) : Parcelable {
+) : GreenJson<SupportData>() {
+
+    override fun kSerializer() = serializer()
 
     fun withGdkLogs(session: GdkSession?): SupportData =
         copy(error = listOfNotNull(error, session?.logs).takeIf { it.isNotEmpty() }?.joinToString("\n------------------\n"))

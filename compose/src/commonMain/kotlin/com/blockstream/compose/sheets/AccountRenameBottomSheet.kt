@@ -6,10 +6,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -25,50 +23,23 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_account_name
 import blockstream_green.common.generated.resources.id_save
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.utils.OpenKeyboard
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Parcelize
-data class AccountRenameBottomSheet(val greenWallet: GreenWallet, val account: Account) :
-    BottomScreen(), Parcelable {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<SimpleGreenViewModel> {
-            parametersOf(greenWallet, account.accountAsset, "RenameAccount")
-        }
-
-        AccountRenameBottomSheet(
-            viewModel = viewModel,
-            sheetState = sheetState(),
-            onDismissRequest = onDismissRequest()
-        )
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountRenameBottomSheet(
     viewModel: GreenViewModel,
-    sheetState: SheetState = rememberModalBottomSheetState(),
     onDismissRequest: () -> Unit,
 ) {
     GreenBottomSheet(
         title = stringResource(Res.string.id_account_name),
         viewModel = viewModel,
-        sheetState = sheetState,
         onDismissRequest = onDismissRequest
     ) {
 

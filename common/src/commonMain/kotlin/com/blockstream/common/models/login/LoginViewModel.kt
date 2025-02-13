@@ -34,7 +34,6 @@ import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.data.data
 import com.blockstream.common.data.isEmpty
 import com.blockstream.common.database.wallet.LoginCredentials
-import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.biometricsPinData
@@ -47,7 +46,6 @@ import com.blockstream.common.extensions.lightningMnemonic
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.extensions.passwordPinData
 import com.blockstream.common.extensions.pinPinData
-import com.blockstream.common.extensions.previewGreenDevice
 import com.blockstream.common.extensions.previewLoginCredentials
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.extensions.richWatchOnly
@@ -85,8 +83,6 @@ abstract class LoginViewModelAbstract(
     greenWallet: GreenWallet,
     val isLightningShortcut: Boolean = false
 ) : GreenViewModel(greenWalletOrNull = greenWallet) {
-    abstract val device: GreenDevice?
-
     override fun screenName(): String = "Login"
 
     @NativeCoroutinesState
@@ -136,7 +132,6 @@ class LoginViewModel constructor(
     val autoLoginWallet: Boolean
 ) : LoginViewModelAbstract(greenWallet = greenWallet, isLightningShortcut = isLightningShortcut) {
     private val deviceManager : DeviceManager by inject()
-    override val device: GreenDevice?
 
     override val isLoginRequired: Boolean = false
 
@@ -224,7 +219,7 @@ class LoginViewModel constructor(
     }
 
     init {
-        device = deviceId?.let { deviceManager.getDevice(it) ?: run {
+        deviceOrNull = deviceId?.let { deviceManager.getDevice(it) ?: run {
             postSideEffect(SideEffects.ErrorDialog(Exception("Device wasn't found")))
             postSideEffect(SideEffects.Logout(LogoutReason.DEVICE_DISCONNECTED))
             null
@@ -234,13 +229,12 @@ class LoginViewModel constructor(
             postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(greenWallet)))
         } else {
             if (greenWallet.askForBip39Passphrase) {
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Bip39Passphrase(bip39Passphrase.value)))
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Bip39Passphrase(greenWallet = greenWallet, passphrase = bip39Passphrase.value)))
             }
 
-            device?.let {
+            deviceOrNull?.let {
                 loginWithDevice()
             }
-
 
             var handleFirstTime = true
             // Beware as this will fire new values if eg. you change a login credential
@@ -318,7 +312,7 @@ class LoginViewModel constructor(
                         icon = Res.drawable.password,
                         isMenuEntry = true,
                     ) {
-                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Bip39Passphrase(bip39Passphrase.value)))
+                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Bip39Passphrase(greenWallet = greenWallet, passphrase = bip39Passphrase.value)))
                     }.takeIf { check2 && (pinCredentials.value.isNotEmpty() || passwordCredentials.value.isNotEmpty()) },
                     NavAction(
                         title = getString(Res.string.id_show_recovery_phrase),
@@ -478,7 +472,7 @@ class LoginViewModel constructor(
     }
 
     private fun loginWithDevice() {
-        device?.gdkHardwareWallet?.also { gdkHardwareWallet ->
+        deviceOrNull?.gdkHardwareWallet?.also { gdkHardwareWallet ->
             login {
 
                 // Do a database query as the StateFlow is not yet initialized
@@ -744,7 +738,7 @@ class LoginViewModel constructor(
             postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(pair.first)))
         }, onError = {
 
-            if(device == null) {
+            if(deviceOrNull == null) {
                 if (it.isNotAuthorized()) {
                     loginCredentials?.also { loginCredentials ->
 
@@ -821,7 +815,7 @@ class LoginViewModel constructor(
             )
             postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(pair.first)))
         }, onError = {
-            if (device == null) {
+            if (deviceOrNull == null) {
                 postSideEffect(SideEffects.ErrorSnackbar(it))
             } else {
                 postSideEffect(SideEffects.NavigateBack(error = it))
@@ -865,8 +859,6 @@ class LoginViewModelPreview(
     override val passwordCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, if(withPasswprdCredentials) DataState.Success(previewLoginCredentials()) else DataState.Empty)
     override val lightningCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
     override val lightningMnemonic: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
-
-    override val device: GreenDevice? = if(withDevice) previewGreenDevice() else null
 
     init {
         banner.value = Banner.preview3

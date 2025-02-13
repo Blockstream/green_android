@@ -220,7 +220,7 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                             icon = Res.drawable.text_aa,
                             isMenuEntry = true,
                             onClick = {
-                                postEvent(NavigateDestinations.RenameAccount(account))
+                                postEvent(NavigateDestinations.RenameAccount(greenWallet = greenWallet, account = account))
                             }
                         ).takeIf { !session.isWatchOnly && !account.isLightning },
                         NavAction(
@@ -236,7 +236,7 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                             icon = Res.drawable.info,
                             isMenuEntry = true,
                             onClick = {
-                                postEvent(NavigateDestinations.LightningNode)
+                                postEvent(NavigateDestinations.LightningNode(greenWallet = greenWallet))
                             }
                         ).takeIf { account.isLightning },
                         NavAction(
@@ -293,6 +293,7 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                 postSideEffect(
                     SideEffects.NavigateTo(
                         NavigateDestinations.Receive(
+                            greenWallet = greenWallet,
                             accountAsset = accountAsset.value!!
                         )
                     )
@@ -303,9 +304,10 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                 postSideEffect(
                     SideEffects.NavigateTo(
                         if (session.canSendTransaction) {
-                            NavigateDestinations.Send()
+                            NavigateDestinations.Send(greenWallet = greenWallet)
                         } else {
                             NavigateDestinations.Sweep(
+                                greenWallet = greenWallet,
                                 accountAsset = accountAsset.value,
                             )
                         }
@@ -337,6 +339,7 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                 postSideEffect(
                     SideEffects.NavigateTo(
                         NavigateDestinations.RecoverFunds(
+                            greenWallet = greenWallet,
                             amount = session.lightningSdk.nodeInfoStateFlow.value.onchainBalanceSatoshi()
                         )
                     )

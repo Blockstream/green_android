@@ -21,43 +21,15 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_continue
 import blockstream_green.common.generated.resources.id_passphrase
 import blockstream_green.common.generated.resources.id_please_enter_the_passphrase_for
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.models.SimpleGreenViewModel
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.compose.navigation.getNavigationResult
-import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.TextInputPassword
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.navigation.setResult
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-object PassphraseBottomSheet : BottomScreen(), Parcelable {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<SimpleGreenViewModel> {
-            parametersOf(null, null, "PassphraseHW")
-        }
-
-        PassphraseBottomSheet(
-            viewModel = viewModel,
-            onDismissRequest = onDismissRequest()
-        )
-    }
-
-    @Composable
-    fun getResult(fn: (String) -> Unit) =
-        getNavigationResult(this::class, fn)
-
-    fun setResult(result: String) =
-        setNavigationResult(this::class, result)
-
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -107,7 +79,7 @@ fun PassphraseBottomSheet(
                 text = stringResource(Res.string.id_continue),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                PassphraseBottomSheet.setResult(passphrase)
+                NavigateDestinations.DevicePin.setResult(passphrase)
                 onDismissRequest()
             }
         }

@@ -32,16 +32,10 @@ import blockstream_green.common.generated.resources.id_save
 import blockstream_green.common.generated.resources.id_update
 import blockstream_green.common.generated.resources.id_username
 import blockstream_green.common.generated.resources.id_watchonly_credentials
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.models.settings.WatchOnlyCredentialsSettingsViewModel
 import com.blockstream.common.models.settings.WatchOnlyCredentialsSettingsViewModelAbstract
-import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
@@ -54,25 +48,6 @@ import com.blockstream.compose.utils.TextInputPaste
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-data class WatchOnlySettingsCredentialsBottomSheet(
-    val greenWallet: GreenWallet,
-    val network: Network
-) : BottomScreen(), Parcelable {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<WatchOnlyCredentialsSettingsViewModel> {
-            parametersOf(greenWallet, network)
-        }
-
-        WatchOnlyCredentialsSettingsBottomSheet(
-            viewModel = viewModel,
-            onDismissRequest = onDismissRequest()
-        )
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

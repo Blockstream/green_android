@@ -42,7 +42,7 @@ class JadeFirmwareUpdateViewModel(
 
     private val deviceManager: DeviceManager by inject()
 
-    private val deviceOrNull by lazy { deviceManager.getDevice(deviceId) }
+    override var deviceOrNull = deviceManager.getDevice(deviceId)
 
     override val status : StateFlow<FirmwareUpdateState?> = deviceOrNull?.firmwareState ?: MutableStateFlow(null)
 

@@ -36,63 +36,33 @@ import blockstream_green.common.generated.resources.id_privacy_policy
 import blockstream_green.common.generated.resources.id_scan_the_qr_code_with_an
 import blockstream_green.common.generated.resources.id_terms_of_service
 import blockstream_green.common.generated.resources.id_the_recovery_key_below_will_not
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Copy
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.Country
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorSetupAction
 import com.blockstream.common.events.Events
-import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.models.settings.TwoFactorSetupViewModel
 import com.blockstream.common.models.settings.TwoFactorSetupViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenQR
-import com.blockstream.ui.components.GreenRow
-import com.blockstream.compose.components.ScreenContainer
 import com.blockstream.compose.extensions.colorText
 import com.blockstream.compose.extensions.onValueChange
-import com.blockstream.compose.sheets.CountriesBottomSheet
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.CopyContainer
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.navigation.getResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-data class TwoFactorSetupScreen(
-    val greenWallet: GreenWallet,
-    val method: TwoFactorMethod,
-    val action: TwoFactorSetupAction,
-    val network: Network,
-    val isSmsBackup: Boolean = false
-) : Screen, Parcelable {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<TwoFactorSetupViewModel> {
-            parametersOf(greenWallet, network, method, action, isSmsBackup)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        TwoFactorSetupScreen(viewModel = viewModel)
-    }
-}
 
 @Composable
 fun TwoFactorSetupScreen(
@@ -100,19 +70,14 @@ fun TwoFactorSetupScreen(
 ) {
     val focusRequester = remember { FocusRequester() }
 
-    CountriesBottomSheet.getResult {
+    NavigateDestinations.Countries.getResult<Country> {
         viewModel.country.value = it.dialCodeString
         focusRequester.requestFocus()
     }
 
-    HandleSideEffect(viewModel)
-
     val method = viewModel.method
 
-    val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
-    val onProgressDescription by viewModel.onProgressDescription.collectAsStateWithLifecycle()
-
-    ScreenContainer(onProgress = onProgress, onProgressDescription = onProgressDescription) {
+    SetupScreen(viewModel = viewModel) {
 
         GreenColumn(verticalArrangement = Arrangement.SpaceBetween) {
             GreenColumn(
@@ -171,7 +136,7 @@ fun TwoFactorSetupScreen(
                                 modifier = Modifier
                                     .width(140.dp).onFocusChanged {
                                         if (it.isFocused) {
-                                            viewModel.postEvent(NavigateDestinations.Countries)
+                                            viewModel.postEvent(NavigateDestinations.Countries(greenWallet = viewModel.greenWallet))
                                         }
                                     }
                             )

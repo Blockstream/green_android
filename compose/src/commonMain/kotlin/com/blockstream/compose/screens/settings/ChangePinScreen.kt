@@ -12,53 +12,27 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_change_pin
 import blockstream_green.common.generated.resources.id_pins_do_not_match_please_try
 import blockstream_green.common.generated.resources.id_verify_your_pin
 import blockstream_green.common.generated.resources.id_youll_need_your_pin_to_log_in
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.SimpleGreenViewModel
-import com.blockstream.common.models.settings.WalletSettingsSection
 import com.blockstream.common.models.settings.WalletSettingsViewModel
 import com.blockstream.common.models.settings.WalletSettingsViewModelAbstract
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.LocalSnackbar
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.compose.components.ScreenContainer
 import com.blockstream.compose.dialogs.LightningShortcutDialog
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.displayMedium
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.views.PinView
+import com.blockstream.ui.components.GreenColumn
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-data class ChangePinScreen(val greenWallet: GreenWallet) : Screen, Parcelable {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<WalletSettingsViewModel> {
-            parametersOf(greenWallet, WalletSettingsSection.ChangePin, null)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        ChangePinScreen(viewModel = viewModel)
-    }
-}
 
 @Composable
 fun ChangePinScreen(
@@ -68,9 +42,6 @@ fun ChangePinScreen(
 
     val scope = rememberCoroutineScope()
     val snackbar = LocalSnackbar.current
-
-    val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
-    val onProgressDescription by viewModel.onProgressDescription.collectAsStateWithLifecycle()
 
     var lightningShortcutViewModel by remember {
         mutableStateOf<GreenViewModel?>(null)
@@ -83,15 +54,14 @@ fun ChangePinScreen(
         }
     }
 
-    HandleSideEffect(viewModel = viewModel) {
-        if(it is SideEffects.LightningShortcut) {
-            lightningShortcutViewModel = SimpleGreenViewModel(viewModel.greenWallet)
+    SetupScreen(
+        viewModel = viewModel,
+        withPadding = false,
+        sideEffectsHandler = {
+            if(it is SideEffects.LightningShortcut) {
+                lightningShortcutViewModel = SimpleGreenViewModel(viewModel.greenWallet)
+            }
         }
-    }
-
-    ScreenContainer(
-        onProgress = onProgress,
-        onProgressDescription = onProgressDescription
     ) {
         Column(
             modifier = Modifier

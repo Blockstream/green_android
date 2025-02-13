@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalComposeUiApi::class)
+
 package com.blockstream.compose.components
 
 import androidx.compose.animation.AnimatedContent
@@ -11,6 +13,9 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,42 +26,67 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.compose.currentBackStackEntryAsState
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.arrow_left
 import blockstream_green.common.generated.resources.dots_three_vertical_bold
-import blockstream_green.common.generated.resources.list
-import cafe.adriel.voyager.core.screen.Screen
-import com.blockstream.compose.LocalAppBarState
-import com.blockstream.compose.LocalRootNavigator
+import com.blockstream.common.data.LocalNavData
+import com.blockstream.common.data.NavData
+import com.blockstream.common.events.Events
+import com.blockstream.common.models.GreenViewModel
+import com.blockstream.compose.navigation.LocalNavBackStackEntry
+import com.blockstream.compose.navigation.LocalNavigator
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.titleSmall
 import org.jetbrains.compose.resources.painterResource
 
+@Composable
+fun AppBar(viewModel: GreenViewModel) {
+    val navigator = LocalNavigator.current
+    val navDataState = LocalNavData.current
+    val selfBackStackEntry = LocalNavBackStackEntry.current
+
+    val navData by viewModel.navData.collectAsStateWithLifecycle()
+    val currentBackStackEntry by navigator.currentBackStackEntryAsState()
+
+    val key = navData.hashCode() + (currentBackStackEntry?.id?.hashCode() ?: 0)
+
+    LaunchedEffect(key) {
+        if(currentBackStackEntry?.id == selfBackStackEntry?.id){
+            navDataState.update(navData)
+        }
+    }
+
+    BackHandler(enabled = !navData.isVisible || navData.backHandlerEnabled) {
+        viewModel.postEvent(Events.NavigateBackUserAction)
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GreenTopAppBar(
+    showDrawerNavigationIcon: Boolean = true,
+    navData: NavData,
+    modifier: Modifier = Modifier,
+    goBack: () -> Unit = { },
     openDrawer: () -> Unit = { },
-    showDrawer: (Screen) -> Boolean = { false }
 ) {
-    val navigator = LocalRootNavigator.current
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-
-    val showDrawerNavigationIcon =
-        navigator?.lastItemOrNull?.let { showDrawer(it) }
-            ?: false
-
-    val navData by LocalAppBarState.current.data
 
     // CenterAlignedTopAppBar if you want center aligned
     TopAppBar(
+        modifier = modifier,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Transparent,
             titleContentColor = MaterialTheme.colorScheme.onPrimary,
@@ -109,32 +139,28 @@ fun GreenTopAppBar(
             ) {
                 AnimatedContent(targetState = showDrawerNavigationIcon, transitionSpec = {
                     slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Right,
+                        AnimatedContentTransitionScope.SlideDirection.End,
                         animationSpec = tween(400)
                     ).togetherWith(
                         slideOutOfContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            AnimatedContentTransitionScope.SlideDirection.Start,
                             animationSpec = tween(200)
                         )
                     )
                 }, label = "NavigationIcon") { showDrawerNavigationIcon ->
                     if (showDrawerNavigationIcon) {
-                        IconButton(onClick = {
-                            openDrawer()
-                        }) {
+                        IconButton(onClick = { openDrawer() }) {
                             Icon(
-                                painter = painterResource(Res.drawable.list),
+                                imageVector = Icons.Default.Menu,
                                 contentDescription = "Drawer Menu"
                             )
                         }
                     } else {
-                        IconButton(enabled = navData.isVisible, onClick = {
-                            if (navData.isVisible && navData.onBackPressed()) {
-                                navigator?.pop()
-                            }
+                        IconButton(onClick = {
+                            goBack()
                         }) {
                             Icon(
-                                painter = painterResource(Res.drawable.arrow_left),
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Back"
                             )
                         }
@@ -143,6 +169,11 @@ fun GreenTopAppBar(
             }
         },
         actions = {
+//            ActionMenu(
+//                items = navData.actionsMenu,
+//                colors = ActionMenuDefaults.colors(contentColor = MaterialTheme.colorScheme.onPrimary)
+//            )
+
             val popupState = remember { PopupState() }
 
             AnimatedVisibility(

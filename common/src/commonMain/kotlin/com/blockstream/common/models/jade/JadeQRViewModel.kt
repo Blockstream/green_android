@@ -14,9 +14,6 @@ import blockstream_green.common.generated.resources.id_scan_qr_with_jade
 import blockstream_green.common.generated.resources.id_scan_your_xpub_on_jade
 import blockstream_green.common.generated.resources.id_validate_pin_and_unlock
 import blockstream_green.common.generated.resources.id_validate_the_transaction_details
-import cafe.adriel.voyager.core.lifecycle.JavaSerializable
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.Urls
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavAction
@@ -54,21 +51,26 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 
-@Parcelize
-sealed class JadeQrOperation(open val askForJadeUnlock: Boolean = false) : Parcelable, JavaSerializable {
-    class Psbt(
+@Serializable
+sealed class JadeQrOperation {
+    @Serializable
+    data class Psbt(
         val psbt: String,
         val transactionConfirmLook: TransactionConfirmLook? = null,
-        override val askForJadeUnlock: Boolean
+        val askForJadeUnlock: Boolean
     ) : JadeQrOperation()
+    @Serializable
     data object LightningMnemonicExport : JadeQrOperation()
+    @Serializable
     data object ExportXpub : JadeQrOperation()
+    @Serializable
     data object PinUnlock : JadeQrOperation()
 }
 
@@ -216,7 +218,7 @@ class JadeQRViewModel(
 
         bootstrap()
 
-        if (operation.askForJadeUnlock) {
+        if ((operation as? JadeQrOperation.Psbt)?.askForJadeUnlock == true) {
             viewModelScope.launch {
                 delay(400L)
                 postSideEffect(
@@ -280,19 +282,34 @@ class JadeQRViewModel(
 
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
-        if (event is Events.Continue) {
-            nextStep()
-        } else if (event is LocalEvents.CheckTransactionDetails) {
-            postSideEffect(
-                SideEffects.NavigateTo(
-                    NavigateDestinations.DeviceInteraction(
-                        deviceId = null,
-                        transactionConfirmLook = (operation as? JadeQrOperation.Psbt)?.transactionConfirmLook
+        when (event) {
+            is Events.Continue -> {
+                nextStep()
+            }
+
+            is LocalEvents.CheckTransactionDetails -> {
+                postSideEffect(
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.DeviceInteraction(
+                            greenWalletOrNull = greenWalletOrNull,
+                            deviceId = null,
+                            transactionConfirmLook = (operation as? JadeQrOperation.Psbt)?.transactionConfirmLook
+                        )
                     )
                 )
-            )
-        } else if (event is LocalEvents.PinUnlock) {
-            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.JadeQR(operation = JadeQrOperation.PinUnlock)))
+            }
+
+            is LocalEvents.PinUnlock -> {
+                postSideEffect(
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.JadeQR(
+                            greenWalletOrNull = greenWalletOrNull,
+                            operation = JadeQrOperation.PinUnlock,
+                            deviceModel = deviceModel
+                        )
+                    )
+                )
+            }
         }
     }
 

@@ -1,7 +1,5 @@
 package com.blockstream.common.gdk.data
 
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.extensions.isPolicyAsset
@@ -10,7 +8,9 @@ import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.utils.toAmountLook
 import kotlinx.serialization.Serializable
 
-@Parcelize
+@Serializable
+data class AccountAssetBalanceList(val list: List<AccountAssetBalance>)
+
 @Serializable
 data class AccountAssetBalance constructor(
     val account: Account,
@@ -18,7 +18,7 @@ data class AccountAssetBalance constructor(
     val denomination: Denomination? = null,
     val balance: String? = null,
     val balanceExchange: String? = null
-) : GreenJson<AccountAssetBalance>(), Parcelable {
+) : GreenJson<AccountAssetBalance>() {
     override fun kSerializer() = serializer()
 
     val assetId

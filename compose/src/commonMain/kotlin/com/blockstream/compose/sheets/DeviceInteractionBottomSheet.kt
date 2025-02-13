@@ -23,66 +23,23 @@ import blockstream_green.common.generated.resources.id_fee
 import blockstream_green.common.generated.resources.id_green_needs_the_master_blinding
 import blockstream_green.common.generated.resources.id_sent_to
 import blockstream_green.common.generated.resources.id_to_show_balances_and
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.Urls
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.looks.transaction.TransactionConfirmLook
-import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.components.GreenAddress
 import com.blockstream.compose.components.GreenAmount
 import com.blockstream.compose.components.GreenBottomSheet
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.LearnMoreButton
 import com.blockstream.compose.extensions.actionIcon
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
+import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-data class DeviceInteractionBottomSheet(
-    val greenWalletOrNull: GreenWallet? = null,
-    val deviceId: String?,
-    val transactionConfirmLook: TransactionConfirmLook? = null,
-    val verifyAddress: String? = null,
-    val isMasterBlindingKeyRequest: Boolean = false,
-    val message: String? = null
-) : BottomScreen(), Parcelable {
-
-    @Composable
-    override fun Content() {
-
-        val deviceManager = koinInject<DeviceManager>()
-
-        val screenName = when {
-            verifyAddress != null -> "VerifyAddress"
-            transactionConfirmLook != null -> "VerifyTransaction"
-            else -> null
-        }
-
-        val viewModel = koinScreenModel<SimpleGreenViewModel> {
-            parametersOf(greenWalletOrNull, null, screenName, deviceManager.getDevice(deviceId))
-        }
-
-        DeviceInteractionBottomSheet(
-            viewModel = viewModel,
-            transactionConfirmLook = transactionConfirmLook,
-            verifyAddress = verifyAddress,
-            isMasterBlindingKeyRequest = isMasterBlindingKeyRequest,
-            message = StringHolder.create(message),
-            onDismissRequest = onDismissRequest()
-        )
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -103,7 +60,7 @@ fun DeviceInteractionBottomSheet(
         }
     }
 
-    val deviceIcon = viewModel.device?.let {
+    val deviceIcon = viewModel.deviceOrNull?.let {
         if (transactionConfirmLook != null || verifyAddress != null) {
             it.actionIcon()
         } else {

@@ -1,17 +1,12 @@
 package com.blockstream.common.gdk.data
 
-import com.arkivanov.essenty.parcelable.IgnoredOnParcel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.serializers.AccountTypeSerializer
-import com.blockstream.common.utils.hexToByteArray
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Parcelize
 @Serializable
 data class Account constructor(
     private var networkInjected: Network? = null,
@@ -27,7 +22,7 @@ data class Account constructor(
     @SerialName("core_descriptors") val coreDescriptors: List<String>? = null,
     @SerialName("slip132_extended_pubkey") val extendedPubkey: String? = null,
     @SerialName("user_path") val derivationPath: List<Long>? = null
-): GreenJson<Account>(), Parcelable, Comparable<Account> {
+): GreenJson<Account>(), Comparable<Account> {
 
     override fun kSerializer() = serializer()
 
@@ -38,20 +33,16 @@ data class Account constructor(
 
     fun balance(session: GdkSession) = session.accountAssets(this).value.policyAsset
 
-    @IgnoredOnParcel
     val network
         get() = networkInjected!!
 
-    @IgnoredOnParcel
     val id: String by lazy {
         "$networkId:$pointer"
     }
 
-    @IgnoredOnParcel
     val isSinglesig
         get() = network.isSinglesig
 
-    @IgnoredOnParcel
     val isMultisig
         get() = network.isMultisig
 
@@ -94,7 +85,6 @@ data class Account constructor(
     val accountAsset
         get() = AccountAsset(this, policyAsset!!)
 
-    @IgnoredOnParcel
     private val weight by lazy {
         when {
             isBitcoin && isSinglesig -> 0
@@ -107,7 +97,6 @@ data class Account constructor(
         }
     }
 
-    @IgnoredOnParcel
     val name: String by lazy {
         gdkName.ifBlank {
             when (type) {

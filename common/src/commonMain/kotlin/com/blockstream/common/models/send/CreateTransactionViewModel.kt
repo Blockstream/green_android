@@ -390,6 +390,7 @@ abstract class CreateTransactionViewModelAbstract(
                     postSideEffect(
                         SideEffects.NavigateTo(
                             NavigateDestinations.DeviceInteraction(
+                                greenWalletOrNull = greenWalletOrNull,
                                 deviceId = sessionOrNull?.device?.connectionIdentifier,
                                 transactionConfirmLook = transactionConfirmLook()
                             )
@@ -452,6 +453,7 @@ abstract class CreateTransactionViewModelAbstract(
                 postSideEffect(
                     SideEffects.NavigateTo(
                         NavigateDestinations.JadeQR(
+                            greenWalletOrNull = greenWalletOrNull,
                             operation = JadeQrOperation.Psbt(
                                 psbt = it.psbt,
                                 transactionConfirmLook = transactionConfirmLook(),

@@ -1,14 +1,11 @@
 package com.blockstream.common.gdk.data
 
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@Parcelize
 data class TwoFactorConfig(
     @SerialName("all_methods") val allMethods: List<String> = listOf(),
     @SerialName("enabled_methods") val enabledMethods: List<String> = listOf(),
@@ -25,7 +22,7 @@ data class TwoFactorConfig(
 
     @SerialName("limits") val limits: Balance,
     @SerialName("twofactor_reset") val twoFactorReset: TwoFactorReset,
-): GreenJson<TwoFactorConfig>(), Parcelable {
+): GreenJson<TwoFactorConfig>() {
     override fun kSerializer() = serializer()
 
     fun twoFactorMethodConfig(method: TwoFactorMethod) = when(method){

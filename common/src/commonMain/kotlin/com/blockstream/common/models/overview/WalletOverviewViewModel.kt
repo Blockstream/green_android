@@ -7,7 +7,6 @@ import breez_sdk.HealthCheckStatus
 import com.blockstream.common.Urls
 import com.blockstream.common.data.AlertType
 import com.blockstream.common.data.DataState
-import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavAction
@@ -20,25 +19,21 @@ import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccount
 import com.blockstream.common.extensions.previewTransactionLook
 import com.blockstream.common.extensions.previewWallet
-import com.blockstream.common.extensions.toggle
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountBalance
 import com.blockstream.common.gdk.data.WalletEvents
 import com.blockstream.common.looks.account.LightningInfoLook
 import com.blockstream.common.looks.transaction.TransactionLook
-import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.AppReviewHelper
 import com.blockstream.common.utils.Loggable
-import com.blockstream.common.utils.toAmountLook
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.emptyFlow
@@ -52,21 +47,12 @@ import org.jetbrains.compose.resources.getString
 
 abstract class WalletOverviewViewModelAbstract(
     greenWallet: GreenWallet
-) : GreenViewModel(greenWalletOrNull = greenWallet) {
+) : WalletBalanceViewModel(greenWallet = greenWallet) {
 
     override fun screenName(): String = "WalletOverview"
 
     @NativeCoroutinesState
     abstract val alerts: StateFlow<List<AlertType>>
-
-    @NativeCoroutinesState
-    abstract val balancePrimary: StateFlow<String?>
-
-    @NativeCoroutinesState
-    abstract val balanceSecondary: StateFlow<String?>
-
-    @NativeCoroutinesState
-    abstract val hideAmounts: StateFlow<Boolean>
 
     @NativeCoroutinesState
     abstract val assetsVisibility: StateFlow<Boolean?>
@@ -102,12 +88,6 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
     WalletOverviewViewModelAbstract(greenWallet = greenWallet) {
     override fun segmentation(): HashMap<String, Any> =
         countly.sessionSegmentation(session = session)
-    
-    private val _balancePrimary: MutableStateFlow<String?> = MutableStateFlow(null)
-    override val balancePrimary: StateFlow<String?> = _balancePrimary.asStateFlow()
-
-    private val _balanceSecondary: MutableStateFlow<String?> = MutableStateFlow(null)
-    override val balanceSecondary: StateFlow<String?> = _balanceSecondary.asStateFlow()
 
     override val activeAccount: StateFlow<Account?> = session.activeAccount
 
@@ -194,18 +174,17 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), DataState.Loading)
 
-    private val primaryBalanceInFiat: MutableStateFlow<Boolean> = MutableStateFlow(false)
-
     private val _systemMessage: MutableStateFlow<AlertType?> = MutableStateFlow(null)
     private val _twoFactorState: MutableStateFlow<AlertType?> = MutableStateFlow(null)
 
-    override val alerts: StateFlow<List<AlertType>> = combine(
+    override val alerts: StateFlow<List<AlertType>> = com.blockstream.common.extensions.combine(
+        greenWalletFlow.filterNotNull().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), greenWallet),
         _twoFactorState,
         _systemMessage,
         session.failedNetworks,
         session.lightningSdkOrNull?.healthCheckStatus ?: MutableStateFlow(null),
         banner
-    ) { twoFactorState, systemMessage, failedNetworkLogins, lspHeath, banner ->
+    ) { greenWallet, twoFactorState, systemMessage, failedNetworkLogins, lspHeath, banner ->
         listOfNotNull(
             twoFactorState,
             systemMessage,
@@ -226,7 +205,6 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
         get() = session.isLightningShortcut
 
     class LocalEvents {
-        object ToggleBalance : Event
         object ToggleHideAmounts : Event
         object Refresh : Event
         object Send: Event
@@ -290,15 +268,6 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
                 }.launchIn(this)
             }
 
-            combine(session.walletTotalBalance, session.walletAssets, primaryBalanceInFiat, hideAmounts, session.settings()) { _, _, _, _, _ ->
-                session.isConnected
-            }.filter { isConnected ->
-                // Prevent from updating on non connected sessions
-                isConnected
-            }.onEach {
-                updateBalance()
-            }.launchIn(this)
-
             session.eventsSharedFlow.onEach {
                 when(it){
                     WalletEvents.ARCHIVED_ACCOUNT -> {
@@ -326,32 +295,6 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
         bootstrap()
     }
 
-    private suspend fun updateBalance() {
-        // Loading
-        if (session.walletTotalBalance.value == -1L) {
-            _balancePrimary.value = null
-            _balanceSecondary.value = null
-        } else {
-            val balance = session.starsOrNull ?: session.walletTotalBalance.value.toAmountLook(
-                session = session,
-                assetId = session.walletAssets.value.policyId
-            )
-
-            val fiat = session.starsOrNull ?: session.walletTotalBalance.value.toAmountLook(
-                session = session,
-                denomination = Denomination.fiat(session)
-            )
-
-            if (primaryBalanceInFiat.value) {
-                _balancePrimary.value = fiat
-                _balanceSecondary.value = balance
-            } else {
-                _balancePrimary.value = balance
-                _balanceSecondary.value = fiat
-            }
-        }
-    }
-
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
@@ -362,9 +305,6 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
             is LocalEvents.MenuNewAccountClick -> {
                 postEvent(Events.ChooseAccountType())
                 countly.accountNew(session)
-            }
-            is LocalEvents.ToggleBalance -> {
-                primaryBalanceInFiat.toggle()
             }
 
             is LocalEvents.Refresh -> {
@@ -379,9 +319,10 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
                 postSideEffect(
                     SideEffects.NavigateTo(
                         if (session.canSendTransaction) {
-                            NavigateDestinations.Send()
+                            NavigateDestinations.Send(greenWallet = greenWallet)
                         } else {
                             NavigateDestinations.Sweep(
+                                greenWallet = greenWallet,
                                 accountAsset = session.activeAccount.value?.accountAsset
                             )
                         }
@@ -390,7 +331,7 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
             }
 
             is LocalEvents.Receive -> {
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Receive(accountAsset = session.activeAccount.value!!.accountAsset)))
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Receive(accountAsset = session.activeAccount.value!!.accountAsset, greenWallet = greenWallet)))
             }
 
             is LocalEvents.DenominationExchangeRate -> {

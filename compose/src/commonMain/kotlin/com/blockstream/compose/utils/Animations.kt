@@ -107,7 +107,7 @@ fun Rotating(duration: Int = 1000, enabled: Boolean = true, modifier: Modifier =
     )
 
     Box(modifier = Modifier.ifTrue(enabled){
-        rotate(rotate)
+        it.rotate(rotate)
     }.then(modifier)) {
         content()
     }

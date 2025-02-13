@@ -12,9 +12,12 @@ import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.createLoginCredentials
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.title
+import com.blockstream.common.gdk.Gdk
+import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.EncryptWithPin
 import com.blockstream.common.gdk.params.EncryptWithPinParams
 import com.blockstream.common.gdk.params.LoginCredentialsParams
+import com.blockstream.common.gdk.params.SubAccountParams
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
@@ -29,6 +32,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
+import org.koin.core.component.inject
 
 abstract class PinViewModelAbstract(
     val setupArgs: SetupArgs
@@ -44,6 +48,8 @@ abstract class PinViewModelAbstract(
 class PinViewModel constructor(
     setupArgs: SetupArgs
 ) : PinViewModelAbstract(setupArgs) {
+
+    private val gdk: Gdk by inject()
 
     @NativeCoroutinesState
     override val rocketAnimation: MutableStateFlow<Boolean> =
@@ -66,7 +72,7 @@ class PinViewModel constructor(
         }
 
         onProgress.onEach {
-            _navData.value = _navData.value.copy(isVisible = !it, onBackPressed = { !it })
+            _navData.value = _navData.value.copy(isVisible = !it)
         }.launchIn(this)
 
         bootstrap()
@@ -149,9 +155,11 @@ class PinViewModel constructor(
         doAsync({
             onProgressDescription.value = getString(Res.string.id_creating_wallet)
 
+            val mnemonic = if(setupArgs.mnemonic.isEmpty()) gdk.generateMnemonic12() else setupArgs.mnemonic
+
             val loginData = session.loginWithMnemonic(
                 isTestnet = setupArgs.isTestnet == true,
-                loginCredentialsParams = LoginCredentialsParams(mnemonic = setupArgs.mnemonic),
+                loginCredentialsParams = LoginCredentialsParams(mnemonic = mnemonic),
                 initializeSession = true,
                 isSmartDiscovery = false,
                 isCreate = true,
@@ -167,6 +175,22 @@ class PinViewModel constructor(
                 session.updateAccount(
                     account = account, isHidden = true, resetAccountName = account.type.title()
                 )
+            }
+
+            if(appInfo.enableNewFeatures) {
+                // Create Singlesig account
+                val bitcoinSinglesig = session.bitcoinSinglesig
+                val accountType = AccountType.BIP84_SEGWIT
+
+                bitcoinSinglesig?.also {
+                    session.createAccount(
+                        network = it,
+                        params = SubAccountParams(
+                            name = accountType.toString(),
+                            type = accountType,
+                        )
+                    )
+                }
             }
 
             val wallet = GreenWallet.createWallet(

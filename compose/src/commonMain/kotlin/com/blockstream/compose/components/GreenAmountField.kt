@@ -88,7 +88,7 @@ fun GreenAmountField(
                     .padding(start = if (isAmountLocked || supportsSendAll) 0.dp else 16.dp)
                     .padding(vertical = 8.dp)
                     .ifTrue(isAmountLocked){
-                        padding(end = 4.dp)
+                        it.padding(end = 4.dp)
                     }
             ) {
                 val colors = TextFieldDefaults.colors()
@@ -145,7 +145,7 @@ fun GreenAmountField(
                     cursorBrush = SolidColor(colors.cursorColor),
                     modifier = Modifier
                         .weight(1f).ifTrue(focusRequester != null) {
-                            focusRequester(focusRequester!!)
+                            it.focusRequester(focusRequester!!)
                         }
                 )
 
@@ -162,7 +162,7 @@ fun GreenAmountField(
                     modifier = Modifier
                         .padding(start = 8.dp, end = 6.dp)
                         .ifTrue(isEditable && !isReadyOnly) {
-                            clickable {
+                            it.clickable {
                                 onDenominationClick()
                             }
                         }

@@ -52,11 +52,7 @@ import blockstream_green.common.generated.resources.id_username
 import blockstream_green.common.generated.resources.id_watchonly_credentials
 import blockstream_green.common.generated.resources.id_watchonly_mode_can_be_activated
 import blockstream_green.common.generated.resources.id_xpub
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.SetupArgs
+import com.blockstream.common.data.ScanResult
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyCredentialsViewModel
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyCredentialsViewModelAbstract
@@ -65,47 +61,27 @@ import com.blockstream.compose.LocalBiometricState
 import com.blockstream.compose.components.AppSettingsButton
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenIconButton
-import com.blockstream.ui.components.GreenSpacer
 import com.blockstream.compose.components.ScanQrButton
-import com.blockstream.compose.components.ScreenContainer
 import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.managers.rememberPlatformManager
-import com.blockstream.compose.sheets.CameraBottomSheet
-import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.TextInputPassword
 import com.blockstream.compose.utils.TextInputPaste
 import com.blockstream.compose.utils.noRippleToggleable
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenSpacer
+import com.blockstream.ui.navigation.getResult
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
 
-
-@Parcelize
-data class WatchOnlyCredentialsScreen(val setupArgs: SetupArgs) : Screen, Parcelable {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<WatchOnlyCredentialsViewModel> {
-            parametersOf(setupArgs)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        WatchOnlyCredentialsScreen(viewModel = viewModel)
-    }
-}
 
 @Composable
 fun WatchOnlyCredentialsScreen(
@@ -114,7 +90,7 @@ fun WatchOnlyCredentialsScreen(
     val biometricsState = LocalBiometricState.current
     val platformManager = rememberPlatformManager()
 
-    CameraBottomSheet.getResult {
+    NavigateDestinations.Camera.getResult<ScanResult> {
         viewModel.postEvent(
             WatchOnlyCredentialsViewModel.LocalEvents.AppendWatchOnlyDescriptor(
                 value = it.result
@@ -122,27 +98,20 @@ fun WatchOnlyCredentialsScreen(
         )
     }
 
-    HandleSideEffect(viewModel = viewModel) {
+    val isSinglesig = viewModel.isSinglesig.value
+
+    SetupScreen(viewModel, withPadding = false, sideEffectsHandler = {
         if (it is WatchOnlyCredentialsViewModel.LocalSideEffects.RequestCipher) {
             biometricsState?.getBiometricsCipher(viewModel)
         }
-    }
-
-    val isSinglesig = viewModel.isSinglesig.value
-
-    val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
-    ScreenContainer(
-        onProgress = onProgress
-    ) {
-        val focusManager = LocalFocusManager.current
-
+    }) {
         GreenColumn(
             padding = 0,
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth()
-                .fillMaxHeight()
+            modifier = Modifier.padding(horizontal = 16.dp),
         ) {
+            val focusManager = LocalFocusManager.current
+
+
             GreenColumn(
                 padding = 0,
                 modifier = Modifier
@@ -235,11 +204,20 @@ fun WatchOnlyCredentialsScreen(
                                 if (!isLiquid) {
                                     var showFilePicker by remember { mutableStateOf(false) }
 
-                                    FilePicker(show = showFilePicker, fileExtensions = listOf("json")) { platformFile ->
+                                    FilePicker(
+                                        show = showFilePicker,
+                                        fileExtensions = listOf("json")
+                                    ) { platformFile ->
                                         showFilePicker = false
-                                        platformFile?.path?.let { platformManager.fileToSource(it) }?.also {
+                                        platformFile?.path?.let {
+                                            platformManager.fileToSource(
+                                                it
+                                            )
+                                        }?.also {
                                             viewModel.postEvent(
-                                                WatchOnlyCredentialsViewModel.LocalEvents.ImportFile(it)
+                                                WatchOnlyCredentialsViewModel.LocalEvents.ImportFile(
+                                                    it
+                                                )
                                             )
                                         }
                                     }
@@ -255,15 +233,8 @@ fun WatchOnlyCredentialsScreen(
                                     GreenSpacer(space = 0)
                                 }
 
-                                val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
                                 ScanQrButton {
-                                    bottomSheetNavigator?.show(
-                                        CameraBottomSheet(
-                                            isDecodeContinuous = true,
-                                            parentScreenName = viewModel.screenName(),
-                                            setupArgs = viewModel.setupArgs
-                                        )
-                                    )
+                                    viewModel.postEvent(NavigateDestinations.Camera(isDecodeContinuous = true, parentScreenName = viewModel.screenName(), setupArgs = viewModel.setupArgs))
                                 }
                             }
                         }

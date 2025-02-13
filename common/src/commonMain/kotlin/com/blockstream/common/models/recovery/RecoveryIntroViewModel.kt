@@ -36,7 +36,10 @@ abstract class RecoveryIntroViewModelAbstract(val setupArgs: SetupArgs) :
     abstract val mnemonic: MutableStateFlow<String>
 }
 
-class RecoveryIntroViewModel(setupArgs: SetupArgs, stateKeeper: StateKeeper = StateKeeperDispatcher()) :
+class RecoveryIntroViewModel(
+    setupArgs: SetupArgs,
+    stateKeeper: StateKeeper = StateKeeperDispatcher()
+) :
     RecoveryIntroViewModelAbstract(setupArgs = setupArgs) {
     private val gdk: Gdk by inject()
 
@@ -48,12 +51,12 @@ class RecoveryIntroViewModel(setupArgs: SetupArgs, stateKeeper: StateKeeper = St
 
     override val mnemonicSize = MutableStateFlow(viewModelScope, state.mnemonicSize)
 
-    class LocalSideEffects{
+    class LocalSideEffects {
         object LaunchUserPresence : SideEffect
     }
 
     class LocalEvents {
-        class Authenticated(val authenticated: Boolean): Event
+        class Authenticated(val authenticated: Boolean) : Event
     }
 
     init {
@@ -69,7 +72,10 @@ class RecoveryIntroViewModel(setupArgs: SetupArgs, stateKeeper: StateKeeper = St
         }
 
         viewModelScope.launch {
-            _navData.value = NavData(title = getString(Res.string.id_before_you_backup), subtitle = greenWalletOrNull?.name)
+            _navData.value = NavData(
+                title = getString(Res.string.id_before_you_backup),
+                subtitle = greenWalletOrNull?.name
+            )
         }
 
         bootstrap()
@@ -78,7 +84,15 @@ class RecoveryIntroViewModel(setupArgs: SetupArgs, stateKeeper: StateKeeper = St
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
-        if(event is Events.Continue) {
+        if (event is Events.Continue) {
+            proceed()
+        } else if (event is LocalEvents.Authenticated) {
+            navigateToRecoveryPhrase()
+        }
+    }
+
+    private fun proceed() {
+        doAsync({
             if (setupArgs.isShowRecovery) {
                 if (greenKeystore.canUseBiometrics()) {
                     postSideEffect(
@@ -96,12 +110,10 @@ class RecoveryIntroViewModel(setupArgs: SetupArgs, stateKeeper: StateKeeper = St
                     )
                 )
             }
-        } else if (event is LocalEvents.Authenticated){
-            navigateToRecoveryPhrase()
-        }
+        })
     }
 
-    private fun navigateToRecoveryPhrase(){
+    private suspend fun navigateToRecoveryPhrase() {
         postSideEffect(
             SideEffects.NavigateTo(
                 NavigateDestinations.RecoveryPhrase(
@@ -111,10 +123,10 @@ class RecoveryIntroViewModel(setupArgs: SetupArgs, stateKeeper: StateKeeper = St
         )
     }
 
-    private fun nextRecoveryArgs(): SetupArgs {
-        return if(setupArgs.isGenerateMnemonic){
+    private suspend fun nextRecoveryArgs(): SetupArgs {
+        return if (setupArgs.isGenerateMnemonic) {
             setupArgs.copy(mnemonic = mnemonic.value)
-        }else{
+        } else {
             setupArgs
         }
     }
@@ -131,9 +143,13 @@ class RecoveryIntroViewModel(setupArgs: SetupArgs, stateKeeper: StateKeeper = St
     }
 }
 
-class RecoveryIntroViewModelPreview(setupArgs: SetupArgs) : RecoveryIntroViewModelAbstract(setupArgs = setupArgs) {
+class RecoveryIntroViewModelPreview(setupArgs: SetupArgs) :
+    RecoveryIntroViewModelAbstract(setupArgs = setupArgs) {
     override val mnemonicSize: MutableStateFlow<Int> = MutableStateFlow(viewModelScope, 1)
-    override val mnemonic: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "chalk verb patch cube sell west penalty fish park worry tribe tourist")
+    override val mnemonic: MutableStateFlow<String> = MutableStateFlow(
+        viewModelScope,
+        "chalk verb patch cube sell west penalty fish park worry tribe tourist"
+    )
 
     companion object {
         fun preview() = RecoveryIntroViewModelPreview(SetupArgs(mnemonic = ""))

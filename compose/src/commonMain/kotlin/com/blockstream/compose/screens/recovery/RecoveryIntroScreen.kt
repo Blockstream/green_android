@@ -1,11 +1,11 @@
 package com.blockstream.compose.screens.recovery
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
@@ -33,11 +33,6 @@ import blockstream_green.common.generated.resources.id_show_recovery_phrase
 import blockstream_green.common.generated.resources.id_whomever_can_access_your
 import blockstream_green.common.generated.resources.shield_check
 import blockstream_green.common.generated.resources.warning
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.recovery.RecoveryIntroViewModel
 import com.blockstream.common.models.recovery.RecoveryIntroViewModelAbstract
@@ -45,41 +40,18 @@ import com.blockstream.compose.LocalBiometricState
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenCard
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
-import com.blockstream.compose.managers.rememberStateKeeperFactory
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
 
-
-@Parcelize
-data class RecoveryIntroScreen(val setupArgs: SetupArgs) : Screen, Parcelable {
-    @Composable
-    override fun Content() {
-        val stateKeeper = rememberStateKeeperFactory()
-
-        val viewModel = koinScreenModel<RecoveryIntroViewModel>() {
-            parametersOf(setupArgs, stateKeeper.stateKeeper())
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        RecoveryIntroScreen(viewModel = viewModel)
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecoveryIntroScreen(
     viewModel: RecoveryIntroViewModelAbstract
@@ -87,16 +59,17 @@ fun RecoveryIntroScreen(
 
     val biometricsState = LocalBiometricState.current
 
-    HandleSideEffect(viewModel) { sideEffect ->
-        if (sideEffect is RecoveryIntroViewModel.LocalSideEffects.LaunchUserPresence) {
-            biometricsState?.launchUserPresencePrompt(getString(Res.string.id_authenticate_to_view_the)) {
-                viewModel.postEvent(RecoveryIntroViewModel.LocalEvents.Authenticated(it))
+    SetupScreen(
+        viewModel = viewModel, sideEffectsHandler = {
+            if (it is RecoveryIntroViewModel.LocalSideEffects.LaunchUserPresence) {
+                biometricsState?.launchUserPresencePrompt(getString(Res.string.id_authenticate_to_view_the)) {
+                    viewModel.postEvent(RecoveryIntroViewModel.LocalEvents.Authenticated(it))
+                }
             }
-        }
-    }
-
-    GreenColumn(horizontalAlignment = Alignment.CenterHorizontally) {
-
+        },
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
         GreenColumn(
             padding = 0,
             modifier = Modifier
@@ -162,7 +135,11 @@ fun RecoveryIntroScreen(
             viewModel.postEvent(Events.Continue)
         }
 
-        GreenColumn(space = 4, padding = 0, horizontalAlignment = Alignment.CenterHorizontally) {
+        GreenColumn(
+            space = 4,
+            padding = 0,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Icon(
                 painter = painterResource(Res.drawable.house),
                 contentDescription = null,
@@ -174,8 +151,8 @@ fun RecoveryIntroScreen(
                 color = whiteMedium
             )
         }
-    }
 
+    }
 }
 
 @Composable

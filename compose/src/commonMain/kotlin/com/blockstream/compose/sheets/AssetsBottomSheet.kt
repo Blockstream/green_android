@@ -20,56 +20,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_empty
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.isBlank
-import com.blockstream.common.gdk.data.AssetBalance
+import com.blockstream.common.gdk.data.AssetBalanceList
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.models.SimpleGreenViewModel
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.components.GreenBottomSheet
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenSearchField
-import com.blockstream.compose.navigation.getNavigationResult
-import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.theme.bodyMedium
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.navigation.setResult
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-data class AssetsBottomSheet(
-    val greenWallet: GreenWallet,
-    val assetBalance: List<AssetBalance>
-) : BottomScreen(), Parcelable {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<SimpleGreenViewModel> {
-            parametersOf(greenWallet)
-        }
-
-        AssetsBottomSheet(
-            viewModel = viewModel,
-            assetBalance = assetBalance,
-            onDismissRequest = onDismissRequest()
-        )
-    }
-
-    companion object {
-        @Composable
-        fun getResult(fn: (AssetBalance) -> Unit) = getNavigationResult(this::class, fn)
-
-        internal fun setResult(result: AssetBalance) =
-            setNavigationResult(this::class, result)
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AssetsBottomSheet(
     viewModel: GreenViewModel,
-    assetBalance: List<AssetBalance>,
+    assetBalance: AssetBalanceList,
     onDismissRequest: () -> Unit,
 ) {
     GreenBottomSheet(
@@ -84,9 +51,9 @@ fun AssetsBottomSheet(
         val data by remember {
             derivedStateOf {
                 if (query.isBlank()) {
-                    assetBalance
+                    assetBalance.list
                 } else {
-                    assetBalance.filter {
+                    assetBalance.list.filter {
                         it.asset.name(viewModel.sessionOrNull).fallbackString().contains(query) || it.assetId.contains(query)
                     }
                 }
@@ -114,7 +81,7 @@ fun AssetsBottomSheet(
             ) {
                 data.forEach { assetBalance ->
                     GreenAsset(assetBalance = assetBalance, session = viewModel.sessionOrNull) {
-                        AssetsBottomSheet.setResult(assetBalance)
+                        NavigateDestinations.Assets.setResult(assetBalance)
                         onDismissRequest()
                     }
                 }

@@ -23,12 +23,12 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.Rive
 import com.blockstream.compose.components.RiveAnimation
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.utils.HandleSideEffectDialog
+import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.stringResource
 
 
@@ -91,7 +91,7 @@ fun ArchivedAccountsDialog(
                         type = GreenButtonType.OUTLINE,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        viewModel.postEvent(NavigateDestinations.ArchivedAccounts())
+                        viewModel.postEvent(NavigateDestinations.ArchivedAccounts(greenWallet = viewModel.greenWallet))
                         onDismissRequest()
                     }
                 }

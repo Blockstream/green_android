@@ -13,53 +13,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.data.EnrichedAsset
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.data.Account
-import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.navigation.PopTo
 import com.blockstream.compose.components.GreenAssetAccounts
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.ui.components.GreenColumn
-import com.blockstream.compose.navigation.getNavigationResult
-import com.blockstream.compose.navigation.setNavigationResult
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-data class ChooseAssetAccountBottomSheet(
-    val greenWallet: GreenWallet
-) : BottomScreen(), Parcelable {
-
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<SimpleGreenViewModel> {
-            parametersOf(greenWallet, null, "ChooseAssetAndAccount")
-        }
-
-        ChooseAssetAccountBottomSheet(
-            viewModel = viewModel,
-            onDismissRequest = onDismissRequest()
-        )
-    }
-
-    companion object {
-        @Composable
-        fun getResult(fn: (AccountAsset) -> Unit) =
-            getNavigationResult(this::class, fn)
-
-        internal fun setResult(result: AccountAsset) =
-            setNavigationResult(this::class, result)
-    }
-}
+import com.blockstream.ui.navigation.setResult
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -135,7 +100,7 @@ fun ChooseAssetAccountBottomSheet(
                     session = viewModel.sessionOrNull,
                     isExpanded = expanded == it.first,
                     onAccountClick = {
-                        ChooseAssetAccountBottomSheet.setResult(it)
+                        NavigateDestinations.ChooseAssetAccounts.setResult(it)
                         onDismissRequest()
                     },
                     onExpandClick = {
@@ -144,6 +109,7 @@ fun ChooseAssetAccountBottomSheet(
                     onCreateNewAccount = {
                         viewModel.postEvent(
                             NavigateDestinations.ChooseAccountType(
+                                greenWallet = viewModel.greenWallet,
                                 assetBalance = AssetBalance.create(it),
                                 popTo = PopTo.Receive
                             )

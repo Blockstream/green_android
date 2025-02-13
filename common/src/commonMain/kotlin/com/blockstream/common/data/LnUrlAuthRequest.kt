@@ -1,17 +1,15 @@
 package com.blockstream.common.data
 
 import breez_sdk.LnUrlAuthRequestData
-import cafe.adriel.voyager.core.lifecycle.JavaSerializable
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
+import kotlinx.serialization.Serializable
 
-@Parcelize
+@Serializable
 data class LnUrlAuthRequestDataSerializable(
     var k1: String,
     var domain: String,
     var url: String,
     var action: String? = null
-) : Parcelable, JavaSerializable {
+) {
     fun deserialize() = LnUrlAuthRequestData(
         k1 = k1,
         domain = domain,

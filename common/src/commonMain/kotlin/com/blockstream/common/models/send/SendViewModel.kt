@@ -33,6 +33,7 @@ import com.blockstream.common.extensions.startsWith
 import com.blockstream.common.extensions.tryCatch
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalance
+import com.blockstream.common.gdk.data.AccountAssetBalanceList
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.PendingTransaction
 import com.blockstream.common.gdk.params.AddressParams
@@ -248,6 +249,22 @@ class SendViewModel(
                 ))
         }.launchIn(this)
 
+        combine(isNoteEditable, onProgressSending) { isNoteEditable, onProgressSending ->
+            _navData.value = NavData(title = getString(Res.string.id_send),
+                subtitle = greenWallet.name,
+                actions = listOfNotNull(
+                    (NavAction(
+                        title = getString(Res.string.id_add_note),
+                        icon = Res.drawable.note_pencil,
+                        isMenuEntry = false
+                    ) {
+                        postEvent(LocalEvents.Note)
+                    }).takeIf { isNoteEditable }
+                ),
+                isVisible = !onProgressSending
+            )
+        }.launchIn(this)
+
         session.ifConnected {
 
             _isWatchOnly.value = session.isWatchOnly
@@ -344,7 +361,8 @@ class SendViewModel(
                 postSideEffect(
                     SideEffects.NavigateTo(
                         NavigateDestinations.AssetsAccounts(
-                            assetsAccounts = assetsAndAccounts.value ?: listOf()
+                            greenWallet = greenWallet,
+                            assetsAccounts = AccountAssetBalanceList(assetsAndAccounts.value ?: listOf())
                         )
                     )
                 )
@@ -373,6 +391,7 @@ class SendViewModel(
                 postSideEffect(
                     SideEffects.NavigateTo(
                         NavigateDestinations.Note(
+                            greenWallet = greenWallet,
                             note = note.value,
                             noteType = if (isNoteEditable.value) NoteType.Comment else NoteType.Description // LNURL allows to add a comment, Bolt11 includes a description
                         )
@@ -575,6 +594,7 @@ class SendViewModel(
                     )
                 )
                 postSideEffect(SideEffects.NavigateTo(NavigateDestinations.SendConfirm(
+                    greenWallet = greenWallet,
                     accountAsset = accountAsset.value!!,
                     denomination = denomination.value
                 )))
@@ -617,19 +637,11 @@ class SendViewModel(
         }, preAction = {
             onProgress.value = true
             _onProgressSending.value = true
-            _navData.value = _navData.value.copy(
-                isVisible = false,
-                onBackPressed = { false }
-            )
         }, postAction = {
             (it == null).also {
                 _onProgressSending.value = it
                 onProgress.value = it
             }
-            _navData.value = _navData.value.copy(
-                isVisible = true,
-                onBackPressed = { true }
-            )
         }, onSuccess = {
             countly.endSendTransaction(
                 session = session,

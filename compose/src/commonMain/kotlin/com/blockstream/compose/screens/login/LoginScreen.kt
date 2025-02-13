@@ -59,31 +59,22 @@ import blockstream_green.common.generated.resources.qr_code
 import blockstream_green.common.generated.resources.shield_warning
 import blockstream_green.common.generated.resources.tor
 import blockstream_green.common.generated.resources.x
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.core.screen.uniqueScreenKey
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.arkivanov.essenty.parcelable.IgnoredOnParcel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.common.managers.LifecycleManager
 import com.blockstream.common.models.login.LoginViewModel
 import com.blockstream.common.models.login.LoginViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.LocalBiometricState
-import com.blockstream.compose.LocalRootNavigator
 import com.blockstream.compose.components.AppSettingsButton
 import com.blockstream.compose.components.Banner
 import com.blockstream.compose.components.BiometricsButton
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
-import com.blockstream.ui.components.GreenSpacer
+import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.components.RichWatchOnlyButton
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.extensions.onValueChange
-import com.blockstream.compose.sheets.Bip39PassphraseBottomSheet
+import com.blockstream.compose.navigation.LocalNavigator
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.headlineMedium
 import com.blockstream.compose.theme.labelLarge
@@ -95,59 +86,43 @@ import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AlphaPulse
 import com.blockstream.compose.utils.AnimatedNullableVisibility
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.TextInputPassword
 import com.blockstream.compose.views.PinView
-import kotlinx.serialization.Serializable
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.components.GreenSpacer
+import com.blockstream.ui.navigation.getResult
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-
-@Parcelize
-@Serializable
-data class LoginScreen(
-    val greenWallet: GreenWallet,
-    val isLightningShortcut: Boolean,
-    val autoLoginWallet: Boolean,
-    val deviceId: String? = null
-) : Screen, Parcelable {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<LoginViewModel>() {
-            parametersOf(greenWallet, isLightningShortcut, autoLoginWallet, deviceId)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-        AppBar(navData)
-
-        LoginScreen(viewModel = viewModel)
-    }
-
-    @IgnoredOnParcel
-    override val key = uniqueScreenKey
-}
+import org.koin.compose.koinInject
 
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModelAbstract,
 ) {
-    val navigator = LocalRootNavigator.current
+    val navigator = LocalNavigator.current
     val biometricsState = LocalBiometricState.current
 
     val pinCredentials by viewModel.pinCredentials.collectAsStateWithLifecycle()
     val passwordCredentials by viewModel.passwordCredentials.collectAsStateWithLifecycle()
 
-    Bip39PassphraseBottomSheet.getResult {
+    NavigateDestinations.Bip39Passphrase.getResult<String> {
         viewModel.postEvent(
             LoginViewModel.LocalEvents.Bip39Passphrase(it, null)
         )
     }
 
-    HandleSideEffect(viewModel) {
+    val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
+
+    val lifecycleManager: LifecycleManager = koinInject()
+
+    SetupScreen(viewModel = viewModel, sideEffectsHandler = {
         when (it) {
             is LoginViewModel.LocalSideEffects.LaunchBiometrics -> {
+                lifecycleManager.lifecycleState.filter { it.isForeground() }.first()
                 biometricsState?.launchBiometricPrompt(it.loginCredentials, viewModel = viewModel)
             }
 
@@ -156,12 +131,10 @@ fun LoginScreen(
             }
 
             is SideEffects.WalletDelete -> {
-                navigator?.popUntilRoot()
+                navigator.navigate(NavigateDestinations.Home)
             }
         }
-    }
-
-    val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
+    }, withPadding = false, onProgressStyle = OnProgressStyle.Disabled) {
 
     Box(
         modifier = Modifier
@@ -199,7 +172,7 @@ fun LoginScreen(
                         )
                     }
 
-                    viewModel.device?.also {
+                    viewModel.deviceOrNull?.also {
                         Image(
                             painter = painterResource(it.icon()),
                             contentDescription = it.deviceBrand.toString(),
@@ -320,7 +293,7 @@ fun LoginScreen(
                                     .align(Alignment.CenterHorizontally)
                             ) {
                                 Image(
-                                    painter = painterResource(if(viewModel.greenWallet.isWatchOnlyQr) Res.drawable.qr_code else Res.drawable.eye),
+                                    painter = painterResource(if (viewModel.greenWallet.isWatchOnlyQr) Res.drawable.qr_code else Res.drawable.eye),
                                     contentDescription = "Watch Only",
                                     // colorFilter = ColorFilter.tint(green),
                                     alpha = 0.25f,
@@ -466,7 +439,8 @@ fun LoginScreen(
                                     TextButton(onClick = {
                                         viewModel.postEvent(
                                             NavigateDestinations.Bip39Passphrase(
-                                                viewModel.bip39Passphrase.value
+                                                greenWallet = viewModel.greenWallet,
+                                                passphrase = viewModel.bip39Passphrase.value
                                             )
                                         )
                                     }) {
@@ -501,7 +475,7 @@ fun LoginScreen(
                 ) {
 
                     val error by viewModel.error.collectAsStateWithLifecycle()
-                    if(!viewModel.isLightningShortcut && !onProgress){
+                    if (!viewModel.isLightningShortcut && !onProgress) {
                         if (pinCredentials.isNotEmpty()) {
                             PinView(
                                 modifier = Modifier
@@ -559,7 +533,10 @@ fun LoginScreen(
                                     )
                                 }
 
-                                GreenButton(text = stringResource(Res.string.id_log_in), modifier = Modifier.fillMaxWidth()) {
+                                GreenButton(
+                                    text = stringResource(Res.string.id_log_in),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
                                     viewModel.postEvent(
                                         LoginViewModel.LocalEvents.LoginWithPin(password)
                                     )
@@ -584,7 +561,7 @@ fun LoginScreen(
 
                 val richWatchOnlyCredentials by viewModel.richWatchOnlyCredentials.collectAsStateWithLifecycle()
 
-                if(!onProgress && richWatchOnlyCredentials.isNotEmpty()){
+                if (!onProgress && richWatchOnlyCredentials.isNotEmpty()) {
                     RichWatchOnlyButton(modifier = Modifier.align(Alignment.Center)) {
                         viewModel.postEvent(LoginViewModel.LocalEvents.LoginWatchOnly)
                     }
@@ -597,5 +574,6 @@ fun LoginScreen(
                 }
             }
         }
+    }
     }
 }

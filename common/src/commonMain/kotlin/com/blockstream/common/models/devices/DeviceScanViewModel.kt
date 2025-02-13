@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.combine
 import org.jetbrains.compose.resources.getString
 
 abstract class DeviceScanViewModelAbstract(greenWallet: GreenWallet) :
-    AbstractDeviceViewModel(greenWallet = greenWallet) {
+    AbstractDeviceViewModel(greenWalletOrNull = greenWallet) {
     override fun screenName(): String = "DeviceScan"
 
 
@@ -51,6 +51,7 @@ class DeviceScanViewModel(greenWallet: GreenWallet) :
                 SideEffects.NavigateTo(
                     NavigateDestinations.Login(
                         greenWallet = greenWallet,
+                        autoLoginWallet = true,
                         deviceId = device.connectionIdentifier
                     )
                 )
@@ -187,6 +188,7 @@ class DeviceScanViewModel(greenWallet: GreenWallet) :
                     SideEffects.NavigateTo(
                         NavigateDestinations.Login(
                             greenWallet = it.first,
+                            autoLoginWallet = true,
                             deviceId = it.second.connectionIdentifier
                         )
                     )

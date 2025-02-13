@@ -234,7 +234,7 @@ fun PinView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .ifTrue(showDigits) {
-                        padding(vertical = 16.dp)
+                        it.padding(vertical = 16.dp)
                     }
                 ,
                 horizontalArrangement = Arrangement.spacedBy(

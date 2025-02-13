@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -15,7 +14,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
@@ -40,37 +38,29 @@ import blockstream_green.common.generated.resources.id_next
 import blockstream_green.common.generated.resources.id_recipient_address
 import blockstream_green.common.generated.resources.id_set_custom_fee_rate
 import blockstream_green.common.generated.resources.pencil_simple_line
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
 import com.blockstream.common.AddressInputType
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.DenominatedValue
+import com.blockstream.common.data.FeePriority
+import com.blockstream.common.data.ScanResult
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.common.models.send.SendViewModel
 import com.blockstream.common.models.send.SendViewModelAbstract
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.utils.DecimalFormat
 import com.blockstream.compose.components.Banner
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAmountField
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.components.GreenNetworkFee
 import com.blockstream.compose.components.GreenTextField
-import com.blockstream.compose.components.RiveAnimation
-import com.blockstream.compose.components.ScreenContainer
+import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.components.SlideToUnlock
 import com.blockstream.compose.dialogs.TextDialog
-import com.blockstream.compose.sheets.AssetsAccountsBottomSheet
-import com.blockstream.compose.sheets.CameraBottomSheet
-import com.blockstream.compose.sheets.DenominationBottomSheet
-import com.blockstream.compose.sheets.FeeRateBottomSheet
-import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
-import com.blockstream.compose.sheets.NoteBottomSheet
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.md_theme_onError
@@ -78,67 +68,40 @@ import com.blockstream.compose.theme.md_theme_onErrorContainer
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.AnimatedNullableVisibility
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.toPainter
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.navigation.getResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-data class SendScreen(
-    val greenWallet: GreenWallet,
-    val address: String? = null,
-    val addressInputType: AddressInputType? = null
-) : Parcelable, Screen {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<SendViewModel> {
-            parametersOf(greenWallet, address, addressInputType)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        SendScreen(viewModel = viewModel)
-    }
-}
 
 @Composable
 fun SendScreen(
     viewModel: SendViewModelAbstract
 ) {
 
-    CameraBottomSheet.getResult {
+    NavigateDestinations.Camera.getResult<ScanResult> {
         viewModel.address.value = it.result
         viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SetAddressInputType(AddressInputType.SCAN))
     }
 
-    AssetsAccountsBottomSheet.getResult {
+    NavigateDestinations.AssetsAccounts.getResult<AccountAssetBalance> {
         viewModel.postEvent(Events.SetAccountAsset(it.accountAsset))
     }
 
-    FeeRateBottomSheet.getResult {
+    NavigateDestinations.FeeRate.getResult<FeePriority> {
         viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SetFeeRate(it))
     }
 
-    DenominationBottomSheet.getResult {
+    NavigateDestinations.Denomination.getResult<DenominatedValue> {
         viewModel.postEvent(Events.SetDenominatedValue(it))
     }
 
-    NoteBottomSheet.getResult {
+    NavigateDestinations.Note.getResult<String> {
         viewModel.note.value = it
     }
 
     var customFeeDialog by remember { mutableStateOf<String?>(null) }
-
-    val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
-    HandleSideEffect(viewModel) {
-        if (it is CreateTransactionViewModelAbstract.LocalSideEffects.ShowCustomFeeRate) {
-            customFeeDialog = it.feeRate.toString()
-        }
-    }
 
     val decimalSymbol = remember { DecimalFormat.DecimalSeparator }
 
@@ -168,22 +131,18 @@ fun SendScreen(
 
     val errorAddress by viewModel.errorAddress.collectAsStateWithLifecycle()
     val accountAssetBalance by viewModel.accountAssetBalance.collectAsStateWithLifecycle()
-    val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
     val onProgressSending by viewModel.onProgressSending.collectAsStateWithLifecycle()
 
-    ScreenContainer(
-        onProgress = onProgressSending,
-        blurBackground = true,
-        riveAnimation = RiveAnimation.LIGHTNING_TRANSACTION
-    ) {
-        AnimatedVisibility(visible = onProgress && !onProgressSending, modifier = Modifier.align(Alignment.TopCenter)) {
-            LinearProgressIndicator(
-                modifier = Modifier
-                    .height(1.dp)
-                    .fillMaxWidth()
-            )
+    SetupScreen(
+        viewModel = viewModel,
+        withPadding = false,
+        onProgressStyle = if(onProgressSending) OnProgressStyle.Full(bluBackground = true) else OnProgressStyle.Top,
+        sideEffectsHandler = {
+            if (it is CreateTransactionViewModelAbstract.LocalSideEffects.ShowCustomFeeRate) {
+                customFeeDialog = it.feeRate.toString()
+            }
         }
-
+    ) {
         GreenColumn(
             padding = 0,
             modifier = Modifier
@@ -210,12 +169,7 @@ fun SendScreen(
                     maxLines = 4,
                     error = errorAddress,
                     onQrClick = {
-                        bottomSheetNavigator?.show(
-                            CameraBottomSheet(
-                                isDecodeContinuous = true,
-                                parentScreenName = viewModel.screenName(),
-                            )
-                        )
+                        viewModel.postEvent(NavigateDestinations.Camera(isDecodeContinuous = true, parentScreenName = viewModel.screenName()))
                     }
                 )
 

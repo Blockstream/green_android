@@ -9,13 +9,14 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.compose.rememberNavController
 import com.blockstream.common.data.AppInfo
 import com.blockstream.common.managers.BluetoothManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.utils.AndroidKeystore
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.managers.rememberPlatformManager
-import com.blockstream.compose.sheets.BottomSheetNavigatorM3
+import com.blockstream.compose.navigation.LocalNavigator
 import com.blockstream.compose.sideeffects.DialogHost
 import com.blockstream.compose.sideeffects.DialogState
 import com.blockstream.compose.theme.GreenTheme
@@ -69,23 +70,23 @@ fun GreenAndroidPreview(content: @Composable () -> Unit) {
 
     val dialogState = remember { DialogState() }
     val platformManager = rememberPlatformManager()
+    val navController = rememberNavController()
 
     GreenTheme {
         CompositionLocalProvider(
             LocalDialog provides dialogState,
             LocalPlatformManager provides platformManager,
+            LocalNavigator provides navController,
             LocalPreview provides true
         ) {
+            DialogHost(state = dialogState)
 
-            BottomSheetNavigatorM3 {
-                DialogHost(state = dialogState)
+            Scaffold(content = { innerPadding ->
+                Box(modifier = Modifier.padding(innerPadding)) {
+                    content()
+                }
+            })
 
-                Scaffold(content = { innerPadding ->
-                    Box(modifier = Modifier.padding(innerPadding)) {
-                        content()
-                    }
-                })
-            }
         }
     }
 }

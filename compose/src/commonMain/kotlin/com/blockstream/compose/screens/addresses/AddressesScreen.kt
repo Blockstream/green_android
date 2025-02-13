@@ -1,10 +1,8 @@
 package com.blockstream.compose.screens.addresses
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,21 +38,13 @@ import blockstream_green.common.generated.resources.id_address
 import blockstream_green.common.generated.resources.id_no_addresses
 import blockstream_green.common.generated.resources.id_view_in_explorer
 import blockstream_green.common.generated.resources.signature
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Copy
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.looks.account.AddressLook
 import com.blockstream.common.models.addresses.AddressesViewModel
 import com.blockstream.common.models.addresses.AddressesViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.components.GreenSearchField
 import com.blockstream.compose.components.MenuEntry
 import com.blockstream.compose.components.PopupMenu
@@ -67,41 +57,18 @@ import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.reachedBottom
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
 
 
-@Parcelize
-data class AddressesScreen(
-    val greenWallet: GreenWallet,
-    val accountAsset: AccountAsset
-) : Parcelable, Screen {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<AddressesViewModel>() {
-            parametersOf(greenWallet, accountAsset)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        AddressesScreen(viewModel = viewModel)
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AddressesScreen(
     viewModel: AddressesViewModelAbstract
 ) {
-
-    HandleSideEffect(viewModel = viewModel)
-
     val platformManager = LocalPlatformManager.current
     val addresses by viewModel.addresses.collectAsStateWithLifecycle()
     val hasMore by viewModel.hasMore.collectAsStateWithLifecycle()
@@ -116,7 +83,7 @@ fun AddressesScreen(
         }
     }
 
-    Column {
+    SetupScreen(viewModel = viewModel, withPadding = false){
         GreenColumn {
             GreenSearchField(
                 value = query,
@@ -186,6 +153,7 @@ fun AddressesScreen(
                             {
                                 viewModel.postEvent(
                                     NavigateDestinations.SignMessage(
+                                        greenWallet = viewModel.greenWallet,
                                         accountAsset = viewModel.accountAsset.value!!,
                                         address = address.address
                                     )

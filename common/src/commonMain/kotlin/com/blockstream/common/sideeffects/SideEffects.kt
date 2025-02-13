@@ -1,10 +1,9 @@
 package com.blockstream.common.sideeffects
 
-import com.blockstream.common.data.DenominatedValue
-import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.Redact
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.TwoFactorResolverData
 import com.blockstream.common.events.Event
 import com.blockstream.common.gdk.data.Account
@@ -14,6 +13,7 @@ import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.navigation.NavigateDestination
 import com.blockstream.common.navigation.PopTo
 import com.blockstream.common.utils.StringHolder
+import com.blockstream.jade.firmware.FirmwareUpgradeRequest
 import kotlinx.coroutines.CompletableDeferred
 import okio.Path
 import org.jetbrains.compose.resources.DrawableResource
@@ -29,7 +29,6 @@ class SideEffects : SideEffect {
         SideEffect
     data class Dialog(val title: StringHolder? = null, val message: StringHolder, val icon: DrawableResource? = null) : SideEffect
     data class ErrorDialog(val error: Throwable, val supportData: SupportData? = null) : SideEffect
-    data class OpenDenomination(val denominatedValue: DenominatedValue): SideEffect
     data class OpenFeeBottomSheet(
         val greenWallet: GreenWallet,
         val accountAsset: AccountAsset?,
@@ -55,12 +54,8 @@ class SideEffects : SideEffect {
     data class AccountArchived(val account: Account) : SideEffect
     data class AccountUnarchived(val account: Account) : SideEffect
     data class AccountCreated(val accountAsset: AccountAsset): SideEffect
-    data class UrlWarning(val urls: List<String>): SideEffect
-    data object TorWarning: SideEffect
     data object AppReview: SideEffect
-    data object DeviceRequestPassphrase: SideEffect
-    data object DeviceRequestPin: SideEffect
-    data class DeviceInteraction(
+    data class RequestDeviceInteraction(
         val deviceId: String?,
         val message: String?,
         val isMasterBlindingKeyRequest: Boolean,
@@ -77,7 +72,9 @@ class SideEffects : SideEffect {
     data object EnableLocationService: SideEffect
     data object AskForBluetoothPermissions: SideEffect
 
-    data object SelectEnvironment: SideEffect
     data object BleRequireRebonding: SideEffect
     data object RequestCipher : SideEffect
+
+    // Devices
+    data class AskForFirmwareUpgrade(val request: FirmwareUpgradeRequest) : SideEffect
 }

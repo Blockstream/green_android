@@ -26,46 +26,18 @@ import blockstream_green.common.generated.resources.id_the_waiting_period_is_nec
 import blockstream_green.common.generated.resources.id_undo_2fa_dispute
 import blockstream_green.common.generated.resources.id_your_wallet_is_locked_for_a
 import blockstream_green.common.generated.resources.id_your_wallet_is_locked_under_2fa
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorSetupAction
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.TwoFactorReset
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelLarge
+import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-data class TwoFactorResetBottomSheet(
-    val greenWallet: GreenWallet,
-    val network: Network
-) : BottomScreen(), Parcelable {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<SimpleGreenViewModel> {
-            parametersOf(greenWallet, null, "TwoFactorReset")
-        }
-
-        val twoFactorReset = viewModel.session.twoFactorReset(network).value
-
-        TwoFactorResetBottomSheet(
-            viewModel = viewModel,
-            network = network,
-            twoFactorReset = twoFactorReset,
-            onDismissRequest = onDismissRequest()
-        )
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,7 +66,6 @@ fun TwoFactorResetBottomSheet(
         ) {
 
             if (twoFactorReset?.isDisputed == true) {
-
                 GreenColumn(padding = 0, space = 8) {
                     Text(
                         stringResource(
@@ -119,6 +90,7 @@ fun TwoFactorResetBottomSheet(
                     ) {
                         viewModel.postEvent(
                             NavigateDestinations.TwoFactorSetup(
+                                greenWallet = viewModel.greenWallet,
                                 method = TwoFactorMethod.EMAIL,
                                 action = TwoFactorSetupAction.CANCEL,
                                 network = network
@@ -141,6 +113,7 @@ fun TwoFactorResetBottomSheet(
                     ) {
                         viewModel.postEvent(
                             NavigateDestinations.TwoFactorSetup(
+                                greenWallet = viewModel.greenWallet,
                                 method = TwoFactorMethod.EMAIL,
                                 action = TwoFactorSetupAction.UNDO_DISPUTE,
                                 network = network
@@ -181,6 +154,7 @@ fun TwoFactorResetBottomSheet(
                     ) {
                         viewModel.postEvent(
                             NavigateDestinations.TwoFactorSetup(
+                                greenWallet = viewModel.greenWallet,
                                 method = TwoFactorMethod.EMAIL,
                                 action = TwoFactorSetupAction.CANCEL,
                                 network = network
@@ -207,6 +181,7 @@ fun TwoFactorResetBottomSheet(
                     ) {
                         viewModel.postEvent(
                             NavigateDestinations.TwoFactorSetup(
+                                greenWallet = viewModel.greenWallet,
                                 method = TwoFactorMethod.EMAIL,
                                 action = TwoFactorSetupAction.DISPUTE,
                                 network = network

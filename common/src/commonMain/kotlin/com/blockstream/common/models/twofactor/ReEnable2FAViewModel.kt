@@ -62,6 +62,7 @@ class ReEnable2FAViewModel(greenWallet: GreenWallet) :
                 postSideEffect(
                     SideEffects.NavigateTo(
                         NavigateDestinations.Redeposit(
+                            greenWallet = greenWallet,
                             accountAsset = event.account.accountAsset,
                             isRedeposit2FA = true
                         )

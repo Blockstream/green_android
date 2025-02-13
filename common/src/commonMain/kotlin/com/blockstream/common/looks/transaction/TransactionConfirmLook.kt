@@ -1,8 +1,6 @@
 package com.blockstream.common.looks.transaction
 
 import com.blockstream.common.BTC_POLICY_ASSET
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.GreenJson
@@ -19,7 +17,6 @@ import kotlin.math.absoluteValue
 
 
 @Serializable
-@Parcelize
 data class TransactionConfirmLook(
     val from: AccountAsset? = null,
     val to: AccountAsset? = null,
@@ -38,7 +35,7 @@ data class TransactionConfirmLook(
 
     val total: String? = null,
     val totalFiat: String? = null
-) : GreenJson<TransactionConfirmLook>(), Parcelable {
+) : GreenJson<TransactionConfirmLook>() {
     override fun kSerializer() = serializer()
 
     companion object {

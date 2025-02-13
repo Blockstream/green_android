@@ -84,8 +84,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.getString
 
+@Serializable
 enum class WalletSettingsSection {
     General, TwoFactor, RecoveryTransactions, ChangePin;
 }
@@ -266,7 +268,11 @@ class WalletSettingsViewModel(
                             ),
                             WalletSetting.ButtonEvent(
                                 title = getString(Res.string.id_learn_more),
-                                event = NavigateDestinations.TwoFactorReset(network = network)
+                                event = NavigateDestinations.TwoFactorReset(
+                                    greenWallet = greenWallet,
+                                    network = network,
+                                    twoFactorReset = sessionOrNull?.twoFactorReset(network)?.value
+                                )
                             )
                         )
                     }
@@ -375,7 +381,7 @@ class WalletSettingsViewModel(
         when (event) {
 
             is LocalEvents.WatchOnly -> {
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WatchOnly))
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WatchOnly(greenWallet = greenWallet)))
             }
 
             is LocalEvents.SetupEmailRecovery -> {
@@ -383,6 +389,7 @@ class WalletSettingsViewModel(
                     postSideEffect(
                         SideEffects.NavigateTo(
                             NavigateDestinations.TwoFactorSetup(
+                                greenWallet = greenWallet,
                                 method = TwoFactorMethod.EMAIL,
                                 action = TwoFactorSetupAction.SETUP_EMAIL,
                                 network = it
@@ -401,7 +408,7 @@ class WalletSettingsViewModel(
             }
 
             is LocalEvents.ChangePin -> {
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.ChangePin))
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.ChangePin(greenWallet = greenWallet)))
             }
 
             is Events.ProvideCipher -> {
@@ -428,7 +435,7 @@ class WalletSettingsViewModel(
             is LocalEvents.TwoFactorAuthentication -> {
                 postSideEffect(
                     SideEffects.NavigateTo(
-                        NavigateDestinations.TwoFactorAuthentication()
+                        NavigateDestinations.TwoFactorAuthentication(greenWallet = greenWallet)
                     )
                 )
             }
@@ -538,6 +545,7 @@ class WalletSettingsViewModel(
                         postSideEffect(
                             SideEffects.NavigateTo(
                                 NavigateDestinations.TwoFactorSetup(
+                                    greenWallet = greenWallet,
                                     method = event.method,
                                     action = TwoFactorSetupAction.SETUP,
                                     network = network,
@@ -752,6 +760,10 @@ class WalletSettingsViewModelPreview(
                 WalletSetting.RequestRecoveryTransactions,
                 WalletSetting.SetupEmailRecovery
             )
+        }else if (section == WalletSettingsSection.TwoFactor) {
+            listOf(
+                WalletSetting.Text(getString(Res.string.id_2fa_methods)),
+            )
         } else {
             listOf(
                 WalletSetting.Logout,
@@ -780,6 +792,10 @@ class WalletSettingsViewModelPreview(
 
     companion object {
         fun preview() = WalletSettingsViewModelPreview(previewWallet(isHardware = false))
+        fun previewTwoFactor() = WalletSettingsViewModelPreview(
+            previewWallet(isHardware = false),
+            section = WalletSettingsSection.TwoFactor
+        )
         fun previewRecovery() = WalletSettingsViewModelPreview(
             previewWallet(isHardware = false),
             section = WalletSettingsSection.RecoveryTransactions

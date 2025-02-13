@@ -16,21 +16,25 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.get
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.ui.components.GreenColumn
+import com.blockstream.compose.navigation.LocalNavigator
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.ifTrue
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.navigation.bottomsheet.BottomSheetNavigator
 import kotlinx.coroutines.CoroutineScope
 
 
@@ -48,6 +52,10 @@ fun GreenBottomSheet(
     onDismissRequest: () -> Unit,
     content: @Composable ColumnScope.() -> Unit
 ) {
+    val bottomSheetNavigator = LocalNavigator.current.navigatorProvider[BottomSheetNavigator::class]
+    LaunchedEffect(sheetState) {
+        bottomSheetNavigator.setSheetState(sheetState)
+    }
 
     if(viewModel != null) {
         HandleSideEffect(viewModel) {
@@ -69,10 +77,10 @@ fun GreenBottomSheet(
             modifier = Modifier
                 .fillMaxWidth()
                 .ifTrue(withBottomPadding){
-                    padding(bottom = 48.dp)
+                    it.padding(bottom = 48.dp)
                 }
                 .ifTrue(withHorizontalPadding){
-                    padding(horizontal = 16.dp)
+                    it.padding(horizontal = 16.dp)
                 }
 
         ) {

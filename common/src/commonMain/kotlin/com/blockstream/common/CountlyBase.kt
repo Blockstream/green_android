@@ -1,6 +1,5 @@
 package com.blockstream.common
 
-import cafe.adriel.voyager.core.lifecycle.JavaSerializable
 import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.ApplicationSettings
 import com.blockstream.common.data.Banner
@@ -30,6 +29,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.Clock
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -1034,8 +1034,8 @@ enum class TransactionType(val string: String) {
     override fun toString(): String = string
 }
 
-@Parcelize
-enum class AddressInputType constructor(val string: String) : Parcelable, JavaSerializable {
+@Serializable
+enum class AddressInputType(val string: String) {
     PASTE("paste"),
     SCAN("scan"),
     BIP21("bip21");
@@ -1043,12 +1043,12 @@ enum class AddressInputType constructor(val string: String) : Parcelable, JavaSe
     override fun toString(): String = string
 }
 
-@Parcelize
+@Serializable
 data class TransactionSegmentation constructor(
     val transactionType: TransactionType,
     val addressInputType: AddressInputType? = null,
     val sendAll: Boolean = false
-) : Parcelable, JavaSerializable
+)
 
 interface ScreenView {
     var screenIsRecorded: Boolean // no need in ViewModel implementation

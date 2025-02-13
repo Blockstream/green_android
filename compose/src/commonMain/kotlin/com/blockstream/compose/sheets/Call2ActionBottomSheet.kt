@@ -10,40 +10,14 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_2fa_isnt_set_up_yetnnyou_can
 import blockstream_green.common.generated.resources.id_enable_2fa
 import blockstream_green.common.generated.resources.id_setup_2fa_now
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.utils.HandleSideEffect
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
 
-
-@Parcelize
-data class Call2ActionBottomSheet(
-    val greenWallet: GreenWallet,
-    val network: Network,
-) : BottomScreen(), Parcelable {
-
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<SimpleGreenViewModel> {
-            parametersOf(greenWallet)
-        }
-
-        Call2ActionBottomSheet(
-            viewModel = viewModel,
-            network = network,
-            onDismissRequest = onDismissRequest()
-        )
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,7 +43,7 @@ fun Call2ActionBottomSheet(
             text = stringResource(Res.string.id_setup_2fa_now),
             modifier = Modifier.fillMaxWidth()
         ) {
-            viewModel.postEvent(NavigateDestinations.TwoFactorAuthentication(network = network))
+            viewModel.postEvent(NavigateDestinations.TwoFactorAuthentication(greenWallet = viewModel.greenWallet, network = network))
             onDismissRequest()
         }
     }

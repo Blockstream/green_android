@@ -29,59 +29,24 @@ import blockstream_green.common.generated.resources.id_give_bluetooth_permission
 import blockstream_green.common.generated.resources.id_looking_for_device
 import blockstream_green.common.generated.resources.id_more_info
 import blockstream_green.common.generated.resources.id_unlock_your_device_to_continue
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.managers.BluetoothState
 import com.blockstream.common.models.devices.AbstractDeviceViewModel
-import com.blockstream.common.models.devices.DeviceScanViewModel
 import com.blockstream.common.models.devices.DeviceScanViewModelAbstract
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.extensions.deviceBrandIcon
 import com.blockstream.compose.extensions.icon
-import com.blockstream.compose.navigation.getNavigationResult
-import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.DeviceHandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-data class DeviceScanScreen(val greenWallet: GreenWallet) : Screen, Parcelable {
-
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<DeviceScanViewModel> {
-            parametersOf(greenWallet)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        DeviceScanScreen(viewModel = viewModel)
-    }
-
-    companion object {
-        @Composable
-        fun getResult(fn: (String) -> Unit) = getNavigationResult(this::class, fn)
-
-        internal fun setResult(result: String) =
-            setNavigationResult(this::class, result)
-    }
-}
 
 
 @Composable
@@ -92,9 +57,7 @@ fun DeviceScanScreen(
     val device by viewModel.deviceFlow.collectAsStateWithLifecycle()
     val bluetoothState by viewModel.bluetoothState.collectAsStateWithLifecycle()
 
-    DeviceHandleSideEffect(viewModel = viewModel)
-
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    SetupScreen(viewModel = viewModel, withPadding = false, horizontalAlignment = Alignment.CenterHorizontally) {
 
         Box(modifier = Modifier.weight(1f)) {
 

@@ -3,14 +3,12 @@ package com.blockstream.common.gdk.data
 import breez_sdk.AesSuccessActionDataResult
 import breez_sdk.LnUrlPaySuccessData
 import breez_sdk.SuccessActionProcessed
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Parcelize
+
 @Serializable
 data class ProcessedTransactionDetails constructor(
     @SerialName("txhash") val txHash: String? = null,
@@ -21,7 +19,7 @@ data class ProcessedTransactionDetails constructor(
     @SerialName("payment_id") val paymentId: String? = null,
     @SerialName("message") val message: String? = null,
     @SerialName("url") val url: String? = null,
-) : GreenJson<ProcessedTransactionDetails>(), Parcelable {
+) : GreenJson<ProcessedTransactionDetails>() {
 
     val hasMessageOrUrl
         get() = message.isNotBlank() || url.isNotBlank()

@@ -77,7 +77,7 @@ class RecoveryCheckViewModel(setupArgs: SetupArgs) : RecoveryCheckViewModelAbstr
         checkWordIndex = offset + wordIndex + 1
 
         viewModelScope.launch {
-            _navData.value = NavData(title = setupArgs.accountType?.toString(), subtitle = greenWalletOrNull?.name)
+            _navData.value = NavData(title = setupArgs.accountType?.toString(), subtitle = setupArgs.accountType?.let { greenWalletOrNull?.name })
         }
 
         bootstrap()
@@ -87,19 +87,27 @@ class RecoveryCheckViewModel(setupArgs: SetupArgs) : RecoveryCheckViewModelAbstr
         super.handleEvent(event)
         if(event is LocalEvents.SelectWord){
             if (correctWord == event.word) {
-
-                (if(isLastPage){
-                    if(setupArgs.greenWallet == null){
-                        NavigateDestinations.SetPin(setupArgs = setupArgs.pageOne())
-                    }else{
-                        NavigateDestinations.ReviewAddAccount(setupArgs = setupArgs.pageOne())
+                if (isLastPage) {
+                    if (setupArgs.greenWallet == null) {
+                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.SetPin(setupArgs = setupArgs.pageOne())))
+                    } else {
+                        postSideEffect(
+                            SideEffects.NavigateTo(
+                                NavigateDestinations.ReviewAddAccount(
+                                    setupArgs = setupArgs.pageOne()
+                                )
+                            )
+                        )
                     }
-                }else{
-                    NavigateDestinations.RecoveryCheck(setupArgs = setupArgs.nextPage())
-                }).also {
-                    postSideEffect(SideEffects.NavigateTo(it))
+                } else {
+                    postSideEffect(
+                        SideEffects.NavigateTo(
+                            NavigateDestinations.RecoveryCheck(
+                                setupArgs = setupArgs.nextPage()
+                            )
+                        )
+                    )
                 }
-
             } else {
                 countly.recoveryPhraseCheckFailed(page = setupArgs.page)
                 postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_wrong_choice_check_your)))

@@ -19,22 +19,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_custom
 import blockstream_green.common.generated.resources.id_network_fee
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.data.FeePriority
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.models.send.FeeViewModel
 import com.blockstream.common.models.send.FeeViewModelAbstract
-import com.blockstream.ui.components.GreenArrow
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
-import com.blockstream.ui.components.GreenRow
-import com.blockstream.compose.navigation.getNavigationResult
-import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelMedium
@@ -43,37 +34,10 @@ import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.roundBackground
+import com.blockstream.ui.components.GreenArrow
+import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.navigation.setResult
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-data class FeeRateBottomSheet(
-    val greenWallet: GreenWallet,
-    val accountAsset: AccountAsset?,
-    val useBreezFees: Boolean
-) : BottomScreen(), Parcelable {
-    @Composable
-    override fun Content() {
-
-        val viewModel = koinScreenModel<FeeViewModel> {
-            parametersOf(greenWallet, accountAsset, useBreezFees)
-        }
-
-        FeeRateBottomSheet(
-            viewModel = viewModel,
-            onDismissRequest = onDismissRequest()
-        )
-    }
-
-    companion object {
-        @Composable
-        fun getResult(fn: (FeePriority) -> Unit) =
-            getNavigationResult(this::class, fn)
-
-        internal fun setResult(result: FeePriority) =
-            setNavigationResult(this::class, result)
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,7 +59,7 @@ fun FeeRateBottomSheet(
 
         feePriorities.forEach { feePriority ->
             FeeItem(feePriority = feePriority, onProgress = onProgress, onClick = {
-                FeeRateBottomSheet.setResult(feePriority)
+                NavigateDestinations.FeeRate.setResult(feePriority)
                 onDismissRequest()
             })
         }
@@ -105,7 +69,7 @@ fun FeeRateBottomSheet(
             text = stringResource(Res.string.id_custom),
             type = GreenButtonType.TEXT
         ) {
-            FeeRateBottomSheet.setResult(FeePriority.Custom())
+            NavigateDestinations.FeeRate.setResult(FeePriority.Custom())
             onDismissRequest()
         }
     }

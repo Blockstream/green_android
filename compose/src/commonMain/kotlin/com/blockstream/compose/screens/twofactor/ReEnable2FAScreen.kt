@@ -20,54 +20,25 @@ import blockstream_green.common.generated.resources.id_2fa_protected_accounts_ar
 import blockstream_green.common.generated.resources.id_learn_more
 import blockstream_green.common.generated.resources.id_redeposit_expired_2fa_coins
 import blockstream_green.common.generated.resources.re_enable_two_factor
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.models.twofactor.ReEnable2FAViewModel
 import com.blockstream.common.models.twofactor.ReEnable2FAViewModelAbstract
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.theme.bodyLarge
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
 
-
-@Parcelize
-data class ReEnable2FAScreen(
-    val greenWallet: GreenWallet,
-) : Parcelable, Screen {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<ReEnable2FAViewModel>{
-            parametersOf(greenWallet)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        ReEnable2FAScreen(viewModel = viewModel)
-    }
-}
 
 @Composable
 fun ReEnable2FAScreen(
     viewModel: ReEnable2FAViewModelAbstract
 ) {
-
-    HandleSideEffect(viewModel = viewModel)
-
     val accounts by viewModel.accounts.collectAsStateWithLifecycle()
 
-    GreenColumn(padding = 0, space = 0) {
-
+    SetupScreen(viewModel = viewModel) {
         GreenColumn(
             modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally

@@ -10,7 +10,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.media.RingtoneManager
 import android.os.Build
-import android.os.Parcelable
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -172,7 +171,7 @@ class NotificationManagerAndroid constructor(
     ): Notification {
         val intent = Intent(context, GreenActivity::class.java).also {
             it.action = GreenActivity.OPEN_WALLET
-            it.putExtra(GreenActivity.WALLET, wallet as Parcelable)
+            it.putExtra(GreenActivity.WALLET, wallet.toJson())
             session.device?.let { device ->
                 it.putExtra(GreenActivity.DEVICE_ID, device.connectionIdentifier)
             }
@@ -232,7 +231,7 @@ class NotificationManagerAndroid constructor(
     ): Notification {
         val intent = Intent(context, GreenActivity::class.java).also {
             it.action = GreenActivity.OPEN_WALLET
-            it.putExtra(GreenActivity.WALLET, wallet as Parcelable)
+            it.putExtra(GreenActivity.WALLET, wallet.toJson())
             it.putExtra(GreenActivity.IS_LIGHTNING, database.getLoginCredential(wallet.id, CredentialType.LIGHTNING_MNEMONIC) != null)
         }
         val pendingIntent = PendingIntent.getActivity(
@@ -266,7 +265,7 @@ class NotificationManagerAndroid constructor(
     ): Notification {
         val intent = Intent(context, GreenActivity::class.java).also {
             it.action = GreenActivity.OPEN_WALLET
-            it.putExtra(GreenActivity.WALLET, wallet as Parcelable)
+            it.putExtra(GreenActivity.WALLET, wallet.toJson())
             it.putExtra(GreenActivity.IS_LIGHTNING, database.getLoginCredential(wallet.id, CredentialType.LIGHTNING_MNEMONIC) != null)
         }
         val pendingIntent = PendingIntent.getActivity(

@@ -32,7 +32,8 @@ suspend fun SnackbarHostState.showErrorSnackbar(
         viewModel.postEvent(
             NavigateDestinations.Support(
                 type = SupportType.INCIDENT,
-                supportData = supportData
+                supportData = supportData,
+                greenWalletOrNull = viewModel.greenWalletOrNull
             )
         )
     }

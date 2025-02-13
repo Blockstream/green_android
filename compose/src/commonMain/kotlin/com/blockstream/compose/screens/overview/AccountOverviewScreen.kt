@@ -37,16 +37,9 @@ import blockstream_green.common.generated.resources.id_latest_transactions
 import blockstream_green.common.generated.resources.id_learn_more_about_amp_the_assets
 import blockstream_green.common.generated.resources.id_your_transactions_will_be_shown
 import blockstream_green.common.generated.resources.shield_warning
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.core.screen.uniqueScreenKey
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.arkivanov.essenty.parcelable.IgnoredOnParcel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.Urls
-import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.ScanResult
 import com.blockstream.common.events.Events
-import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.models.overview.AccountOverviewViewModel
@@ -58,54 +51,31 @@ import com.blockstream.compose.components.GreenAccountCard
 import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.components.GreenContentCard
-import com.blockstream.ui.components.GreenGradient
-import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.components.GreenTransaction
 import com.blockstream.compose.dialogs.LightningShortcutDialog
-import com.blockstream.compose.sheets.CameraBottomSheet
-import com.blockstream.compose.sheets.MainMenuBottomSheet
+import com.blockstream.compose.navigation.LocalInnerPadding
 import com.blockstream.compose.sheets.MainMenuEntry
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.green20
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.titleSmall
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.reachedBottom
 import com.blockstream.compose.views.LightningInfo
+import com.blockstream.ui.components.GreenGradient
+import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.navigation.getResult
+import com.blockstream.ui.utils.bottom
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-
-@Parcelize
-data class AccountOverviewScreen(
-    val greenWallet: GreenWallet,
-    val accountAsset: AccountAsset
-) : Screen, Parcelable {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<AccountOverviewViewModel>() {
-            parametersOf(greenWallet, accountAsset)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-        AppBar(navData)
-
-        AccountOverviewScreen(viewModel = viewModel)
-    }
-
-    @IgnoredOnParcel
-    override val key = uniqueScreenKey
-}
 
 @Composable
 fun AccountOverviewScreen(
     viewModel: AccountOverviewViewModelAbstract
 ) {
-    MainMenuBottomSheet.getResult {
+    NavigateDestinations.MainMenu.getResult<MainMenuEntry> {
         when (it) {
             MainMenuEntry.SCAN -> {
                 viewModel.postEvent(
@@ -117,21 +87,21 @@ fun AccountOverviewScreen(
             }
 
             MainMenuEntry.ACCOUNT_TRANSFER -> {
-                viewModel.postEvent(NavigateDestinations.AccountExchange)
+                viewModel.postEvent(NavigateDestinations.AccountExchange(greenWallet = viewModel.greenWallet))
             }
 
             MainMenuEntry.REDEPOSIT -> {
-                viewModel.postEvent(NavigateDestinations.Redeposit(accountAsset = viewModel.accountAsset.value!!, isRedeposit2FA = false))
+                viewModel.postEvent(NavigateDestinations.Redeposit(greenWallet = viewModel.greenWallet, accountAsset = viewModel.accountAsset.value!!, isRedeposit2FA = false))
             }
 
             MainMenuEntry.BUY_SELL -> {
-                viewModel.postEvent(NavigateDestinations.OnOffRamps)
+                viewModel.postEvent(NavigateDestinations.OnOffRamps(greenWallet = viewModel.greenWallet))
             }
 
         }
     }
 
-    CameraBottomSheet.getResult {
+    NavigateDestinations.Camera.getResult<ScanResult> {
         viewModel.postEvent(Events.HandleUserInput(it.result, isQr = true))
     }
 
@@ -142,12 +112,6 @@ fun AccountOverviewScreen(
     lightningShortcutViewModel?.also {
         LightningShortcutDialog(viewModel = it) {
             lightningShortcutViewModel = null
-        }
-    }
-
-    HandleSideEffect(viewModel = viewModel) {
-        if (it is SideEffects.LightningShortcut) {
-            lightningShortcutViewModel = SimpleGreenViewModel(viewModel.greenWallet)
         }
     }
 
@@ -164,235 +128,253 @@ fun AccountOverviewScreen(
         }
     }
 
-    Box(
-        Modifier
-            .fillMaxSize()
-            .pullToRefresh(isRefreshing = isRefreshing, state = state) {
-                isRefreshing = true
-            }
-    ) {
-
-        val accountBalance by viewModel.accountBalance.collectAsStateWithLifecycle()
-        val showAmpInfo by viewModel.showAmpInfo.collectAsStateWithLifecycle()
-        val alerts by viewModel.alerts.collectAsStateWithLifecycle()
-        val assets by viewModel.assets.collectAsStateWithLifecycle()
-        val lightningInfo by viewModel.lightningInfo.collectAsStateWithLifecycle()
-        val transactions by viewModel.transactions.collectAsStateWithLifecycle()
-        val hasMoreTransactions by viewModel.hasMoreTransactions.collectAsStateWithLifecycle()
-
-        val listState: LazyListState = rememberLazyListState()
-        val reachedBottom: Boolean by remember { derivedStateOf { listState.reachedBottom() } }
-
-        LaunchedEffect(reachedBottom) {
-            if (reachedBottom && hasMoreTransactions && transactions.isSuccess()) {
-                viewModel.postEvent(AccountOverviewViewModel.LocalEvents.LoadMoreTransactions)
-            }
+    SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false, sideEffectsHandler = {
+        if (it is SideEffects.LightningShortcut) {
+            lightningShortcutViewModel = SimpleGreenViewModel(viewModel.greenWallet)
         }
-
-        LazyColumn(contentPadding = PaddingValues(bottom = 96.dp), state = listState) {
-
-            items(alerts) {
-                GreenAlert(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .padding(bottom = 6.dp), alertType = it, viewModel = viewModel
-                )
-            }
-
-            item {
-                GreenAccountCard(
-                    modifier = Modifier
-                        .padding(bottom = 1.dp),
-                    account = accountBalance,
-                    isExpanded = true,
-                    session = viewModel.sessionOrNull,
-                    onCopyClick = if (accountBalance.account.isAmp) {
-                        {
-                            viewModel.postEvent(AccountOverviewViewModel.LocalEvents.CopyAccountId)
-                        }
-                    } else null,
-                    onWarningClick = if (accountBalance.hasNoTwoFactor || accountBalance.hasExpiredUtxos) {
-                        {
-                            if(accountBalance.hasExpiredUtxos){
-                                viewModel.postEvent(NavigateDestinations.ReEnable2FA)
-                            }else{
-                                viewModel.postEvent(NavigateDestinations.EnableTwoFactor(accountBalance.account.network))
-                            }
-                        }
-                    } else null,
-                    onClick = {
-                        viewModel.postEvent(
-                            Events.SetAccountAsset(
-                                accountAsset = accountBalance.accountAsset,
-                                setAsActive = true
-                            )
-                        )
-                    }
-                )
-            }
-
-            if (accountBalance.hasNoTwoFactor) {
-                item {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        colors = CardDefaults.elevatedCardColors(
-                            containerColor = green20,
-                            contentColor = green
-                        ),
-                        onClick = {
-                            viewModel.postEvent(
-                                NavigateDestinations.TwoFactorAuthentication(
-                                    network = accountBalance.account.network
-                                )
-                            )
-                        },
-                    ) {
-                        GreenRow(padding = 8, space = 8) {
-                            Icon(
-                                painter = painterResource(Res.drawable.shield_warning),
-                                contentDescription = null
-                            )
-                            Text(
-                                text = stringResource(Res.string.id_increase_the_security_of_your),
-                                style = labelMedium
-                            )
-                        }
-                    }
-                }
-            }
-
-            if (showAmpInfo) {
-                item {
-                    GreenContentCard(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .padding(top = 8.dp, bottom = 8.dp),
-                        title = stringResource(Res.string.id_learn_more_about_amp_the_assets),
-                        message = stringResource(
-                            Res.string.id_check_our_6_easy_steps_to_be
-                        ),
-                        onClick = {
-                            viewModel.postEvent(Events.OpenBrowser(Urls.HELP_AMP_ASSETS))
-                        }
-                    )
-                }
-            }
-
-            lightningInfo?.also { lightningInfo ->
-                item {
-                    LightningInfo(lightningInfoLook = lightningInfo, onSweepClick = {
-                        viewModel.postEvent(AccountOverviewViewModel.LocalEvents.ClickLightningSweep)
-                    }, onLearnMore = {
-                        viewModel.postEvent(AccountOverviewViewModel.LocalEvents.ClickLightningLearnMore)
-                    })
-                }
-            }
-
-            item {
-                if (assets.isLoading()) {
-                    LinearProgressIndicator(
-                        modifier = Modifier
-                            .padding(all = 16.dp)
-                            .height(1.dp)
-                            .fillMaxWidth()
-                    )
-                }
-            }
-
-            assets.data()?.also {
-                items(items = it, key = {
-                    it.assetId
-                }) {
-                    GreenAsset(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .padding(bottom = 2.dp),
-                        assetBalance = it,
-                        session = viewModel.sessionOrNull
-                    ) {
-                        viewModel.postEvent(
-                            NavigateDestinations.AssetDetails(
-                                assetId = it.assetId,
-                                accountAsset = viewModel.accountAsset.value
-                            )
-                        )
-                    }
-                }
-            }
-
-            item {
-                Text(
-                    text = stringResource(Res.string.id_latest_transactions),
-                    style = titleSmall,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .padding(top = 16.dp)
-                        .padding(bottom = 8.dp)
-                )
-
-                if (transactions.isLoading()) {
-                    LinearProgressIndicator(
-                        modifier = Modifier
-                            .padding(all = 16.dp)
-                            .height(1.dp)
-                            .fillMaxWidth()
-                    )
-                } else if (transactions.isEmpty()) {
-                    Text(
-                        text = stringResource(Res.string.id_your_transactions_will_be_shown),
-                        style = bodyMedium,
-                        textAlign = TextAlign.Center,
-                        fontStyle = FontStyle.Italic,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 24.dp)
-                            .padding(horizontal = 16.dp)
-                    )
-                }
-            }
-
-            transactions.data()?.let {
-                items(items = it, key = { it.transaction.txHash.hashCode() + it.transaction.txType.gdkType.hashCode() }) {
-                    GreenTransaction(transactionLook = it) {
-                        viewModel.postEvent(Events.Transaction(transaction = it.transaction))
-                    }
-                }
-            }
-        }
+    }) {
 
         Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
+            Modifier
+                .fillMaxSize()
+                .pullToRefresh(isRefreshing = isRefreshing, state = state) {
+                    isRefreshing = true
+                }
         ) {
-            GreenGradient(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter),
-                size = 76
-            )
 
-            BottomNav(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 16.dp),
-                canSend = viewModel.sessionOrNull?.canSendTransaction ?: false,
-                isSweepEnabled = viewModel.sessionOrNull?.defaultNetworkOrNull?.isBitcoin == true,
-                onSendClick = {
-                    viewModel.postEvent(AccountOverviewViewModel.LocalEvents.Send)
-                }, onReceiveClick = {
-                    viewModel.postEvent(AccountOverviewViewModel.LocalEvents.Receive)
-                }, onCircleClick = {
-                    viewModel.postEvent(
-                        NavigateDestinations.Camera(
-                            isDecodeContinuous = true,
-                            parentScreenName = viewModel.screenName()
-                        )
+            val accountBalance by viewModel.accountBalance.collectAsStateWithLifecycle()
+            val showAmpInfo by viewModel.showAmpInfo.collectAsStateWithLifecycle()
+            val alerts by viewModel.alerts.collectAsStateWithLifecycle()
+            val assets by viewModel.assets.collectAsStateWithLifecycle()
+            val lightningInfo by viewModel.lightningInfo.collectAsStateWithLifecycle()
+            val transactions by viewModel.transactions.collectAsStateWithLifecycle()
+            val hasMoreTransactions by viewModel.hasMoreTransactions.collectAsStateWithLifecycle()
+
+            val innerPadding = LocalInnerPadding.current
+            val listState: LazyListState = rememberLazyListState()
+            val reachedBottom: Boolean by remember { derivedStateOf { listState.reachedBottom() } }
+
+            LaunchedEffect(reachedBottom) {
+                if (reachedBottom && hasMoreTransactions && transactions.isSuccess()) {
+                    viewModel.postEvent(AccountOverviewViewModel.LocalEvents.LoadMoreTransactions)
+                }
+            }
+
+            LazyColumn(contentPadding = PaddingValues(bottom = 96.dp), state = listState) {
+
+                items(alerts) {
+                    GreenAlert(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 6.dp), alertType = it, viewModel = viewModel
                     )
                 }
-            )
+
+                item {
+                    GreenAccountCard(
+                        modifier = Modifier
+                            .padding(bottom = 1.dp),
+                        account = accountBalance,
+                        isExpanded = true,
+                        session = viewModel.sessionOrNull,
+                        onCopyClick = if (accountBalance.account.isAmp) {
+                            {
+                                viewModel.postEvent(AccountOverviewViewModel.LocalEvents.CopyAccountId)
+                            }
+                        } else null,
+                        onWarningClick = if (accountBalance.hasNoTwoFactor || accountBalance.hasExpiredUtxos) {
+                            {
+                                if (accountBalance.hasExpiredUtxos) {
+                                    viewModel.postEvent(NavigateDestinations.ReEnable2FA(greenWallet = viewModel.greenWallet))
+                                } else {
+                                    viewModel.postEvent(
+                                        NavigateDestinations.EnableTwoFactor(
+                                            greenWallet = viewModel.greenWallet,
+                                            network = accountBalance.account.network
+                                        )
+                                    )
+                                }
+                            }
+                        } else null,
+                        onClick = {
+                            viewModel.postEvent(
+                                Events.SetAccountAsset(
+                                    accountAsset = accountBalance.accountAsset,
+                                    setAsActive = true
+                                )
+                            )
+                        }
+                    )
+                }
+
+                if (accountBalance.hasNoTwoFactor) {
+                    item {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            colors = CardDefaults.elevatedCardColors(
+                                containerColor = green20,
+                                contentColor = green
+                            ),
+                            onClick = {
+                                viewModel.postEvent(
+                                    NavigateDestinations.TwoFactorAuthentication(
+                                        greenWallet = viewModel.greenWallet,
+                                        network = accountBalance.account.network
+                                    )
+                                )
+                            },
+                        ) {
+                            GreenRow(padding = 8, space = 8) {
+                                Icon(
+                                    painter = painterResource(Res.drawable.shield_warning),
+                                    contentDescription = null
+                                )
+                                Text(
+                                    text = stringResource(Res.string.id_increase_the_security_of_your),
+                                    style = labelMedium
+                                )
+                            }
+                        }
+                    }
+                }
+
+                if (showAmpInfo) {
+                    item {
+                        GreenContentCard(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .padding(top = 8.dp, bottom = 8.dp),
+                            title = stringResource(Res.string.id_learn_more_about_amp_the_assets),
+                            message = stringResource(
+                                Res.string.id_check_our_6_easy_steps_to_be
+                            ),
+                            onClick = {
+                                viewModel.postEvent(Events.OpenBrowser(Urls.HELP_AMP_ASSETS))
+                            }
+                        )
+                    }
+                }
+
+                lightningInfo?.also { lightningInfo ->
+                    item {
+                        LightningInfo(lightningInfoLook = lightningInfo, onSweepClick = {
+                            viewModel.postEvent(AccountOverviewViewModel.LocalEvents.ClickLightningSweep)
+                        }, onLearnMore = {
+                            viewModel.postEvent(AccountOverviewViewModel.LocalEvents.ClickLightningLearnMore)
+                        })
+                    }
+                }
+
+                item {
+                    if (assets.isLoading()) {
+                        LinearProgressIndicator(
+                            modifier = Modifier
+                                .padding(all = 16.dp)
+                                .height(1.dp)
+                                .fillMaxWidth()
+                        )
+                    }
+                }
+
+                assets.data()?.also {
+                    items(items = it, key = {
+                        it.assetId
+                    }) {
+                        GreenAsset(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .padding(bottom = 2.dp),
+                            assetBalance = it,
+                            session = viewModel.sessionOrNull
+                        ) {
+                            viewModel.postEvent(
+                                NavigateDestinations.AssetDetails(
+                                    greenWallet = viewModel.greenWallet,
+                                    assetId = it.assetId,
+                                    accountAsset = viewModel.accountAsset.value
+                                )
+                            )
+                        }
+                    }
+                }
+
+                item {
+                    Text(
+                        text = stringResource(Res.string.id_latest_transactions),
+                        style = titleSmall,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 16.dp)
+                            .padding(bottom = 8.dp)
+                    )
+
+                    if (transactions.isLoading()) {
+                        LinearProgressIndicator(
+                            modifier = Modifier
+                                .padding(all = 16.dp)
+                                .height(1.dp)
+                                .fillMaxWidth()
+                        )
+                    } else if (transactions.isEmpty()) {
+                        Text(
+                            text = stringResource(Res.string.id_your_transactions_will_be_shown),
+                            style = bodyMedium,
+                            textAlign = TextAlign.Center,
+                            fontStyle = FontStyle.Italic,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 24.dp)
+                                .padding(horizontal = 16.dp)
+                        )
+                    }
+                }
+
+                transactions.data()?.let {
+                    items(
+                        items = it,
+                        key = { it.transaction.txHash.hashCode() + it.transaction.txType.gdkType.hashCode() }) {
+                        GreenTransaction(transactionLook = it) {
+                            viewModel.postEvent(Events.Transaction(transaction = it.transaction))
+                        }
+                    }
+                }
+            }
+
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+            ) {
+                GreenGradient(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter),
+                    size = 32
+                )
+
+                BottomNav(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(horizontal = 16.dp)
+                        .padding(innerPadding.bottom())
+                        .padding(bottom = 8.dp),
+                    canSend = viewModel.sessionOrNull?.canSendTransaction ?: false,
+                    isSweepEnabled = viewModel.sessionOrNull?.defaultNetworkOrNull?.isBitcoin == true,
+                    onSendClick = {
+                        viewModel.postEvent(AccountOverviewViewModel.LocalEvents.Send)
+                    }, onReceiveClick = {
+                        viewModel.postEvent(AccountOverviewViewModel.LocalEvents.Receive)
+                    }, onCircleClick = {
+                        viewModel.postEvent(
+                            NavigateDestinations.Camera(
+                                isDecodeContinuous = true,
+                                parentScreenName = viewModel.screenName()
+                            )
+                        )
+                    }
+                )
+            }
         }
     }
 }

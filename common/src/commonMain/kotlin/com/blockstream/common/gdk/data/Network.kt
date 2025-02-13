@@ -1,15 +1,11 @@
 package com.blockstream.common.gdk.data
 
-import com.arkivanov.essenty.parcelable.IgnoredOnParcel
 import com.blockstream.common.BTC_POLICY_ASSET
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@Parcelize
 data class Network(
     @SerialName("network") val network: String,
     @SerialName("name") val name: String,
@@ -23,7 +19,7 @@ data class Network(
     @SerialName("server_type") val serverType: String? = null,
     @SerialName("csv_buckets") val csvBuckets: List<Int> = listOf(),
     @SerialName("lightning") val isLightning: Boolean = false, // synthetic
-) : GreenJson<Network>(), Parcelable {
+) : GreenJson<Network>() {
     val id
         get() = network
 
@@ -89,16 +85,13 @@ data class Network(
     val canSignMessage
         get() = isSinglesig && !isLiquid
 
-    @IgnoredOnParcel
     val defaultFee by lazy {
         if (isLiquid) 100L else 1000L
     }
 
-    @IgnoredOnParcel
     val blocksPerHour
         get() = if (isLiquid) 60 else 6
 
-    @IgnoredOnParcel
     val confirmationsRequired: Long
         get() = when{
             isLightning -> 1L
@@ -106,7 +99,6 @@ data class Network(
             else -> 6L
         }
 
-    @IgnoredOnParcel
     val zendeskValue: String
         get() = when  {
             isSinglesig -> "singlesig__green_"

@@ -1,8 +1,5 @@
-@file:OptIn(ExperimentalFoundationApi::class)
-
 package com.blockstream.compose.screens
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -34,12 +31,12 @@ import com.blockstream.common.looks.wallet.WalletListLook
 import com.blockstream.common.models.wallets.WalletsViewModel
 import com.blockstream.common.models.wallets.WalletsViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.Promo
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.views.WalletListItem
 import com.blockstream.compose.views.WalletListItemCallbacks
+import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource

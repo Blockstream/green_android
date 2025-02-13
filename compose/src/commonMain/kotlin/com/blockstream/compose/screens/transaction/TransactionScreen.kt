@@ -63,11 +63,8 @@ import blockstream_green.common.generated.resources.id_your_transaction_failed_s
 import blockstream_green.common.generated.resources.id_your_transaction_was
 import blockstream_green.common.generated.resources.magnifying_glass
 import blockstream_green.common.generated.resources.pencil_simple_line
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.MenuEntry
+import com.blockstream.common.data.MenuEntryList
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.looks.transaction.Failed
 import com.blockstream.common.looks.transaction.Unconfirmed
@@ -77,18 +74,12 @@ import com.blockstream.common.models.transaction.TransactionViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenAddress
 import com.blockstream.compose.components.GreenAmounts
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
-import com.blockstream.ui.components.GreenSpacer
 import com.blockstream.compose.components.TransactionStatusIcon
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.extensions.color
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.extensions.title
-import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
-import com.blockstream.compose.sheets.MenuBottomSheet
-import com.blockstream.compose.sheets.MenuEntry
-import com.blockstream.compose.sheets.NoteBottomSheet
+import com.blockstream.compose.navigation.LocalInnerPadding
 import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
@@ -99,44 +90,25 @@ import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
-import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.CopyContainer
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.components.GreenSpacer
+import com.blockstream.ui.navigation.getResult
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-
-@Parcelize
-data class TransactionScreen(val transaction: Transaction, val greenWallet: GreenWallet) : Screen, Parcelable {
-
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<TransactionViewModel> {
-            parametersOf(transaction, greenWallet)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        TransactionScreen(viewModel = viewModel)
-    }
-}
 
 @Composable
 fun TransactionScreen(
     viewModel: TransactionViewModelAbstract
 ) {
-    val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
-
-    NoteBottomSheet.getResult {
+    NavigateDestinations.Note.getResult<String> {
         viewModel.postEvent(TransactionViewModel.LocalEvents.SetNote(it))
     }
-
-    MenuBottomSheet.getResult {
+    NavigateDestinations.Menu.getResult<Int> {
         viewModel.postEvent(
             TransactionViewModel.LocalEvents.ShareTransaction(
                 liquidShareType = when (it) {
@@ -148,12 +120,11 @@ fun TransactionScreen(
         )
     }
 
-    HandleSideEffect(viewModel) { sideEffect ->
-        Res.drawable.pencil_simple_line
-        if (sideEffect is TransactionViewModel.LocalSideEffects.SelectLiquidShareTransaction) {
-            bottomSheetNavigator?.show(
-                MenuBottomSheet(
-                    title = getString(Res.string.id_share), entries = listOf(
+    SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false, sideEffectsHandler = {
+        if (it is TransactionViewModel.LocalSideEffects.SelectLiquidShareTransaction) {
+            viewModel.postEvent(
+                NavigateDestinations.Menu(
+                    title = getString(Res.string.id_share), entries = MenuEntryList(listOf(
                         MenuEntry(
                             title = getString(Res.string.id_confidential_transaction),
                             iconRes = "eye_slash"
@@ -166,256 +137,289 @@ fun TransactionScreen(
                             title = getString(Res.string.id_unblinding_data),
                             iconRes = "code_block"
                         )
-                    )
+                    ))
                 )
             )
         }
-    }
+    }) {
 
-    Column(
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+        val innerPadding = LocalInnerPadding.current
 
-        val status by viewModel.status.collectAsStateWithLifecycle()
-        val amounts by viewModel.amounts.collectAsStateWithLifecycle()
-
-        Box(modifier = Modifier.fillMaxWidth()) {
-
-            val spv by viewModel.spv.collectAsStateWithLifecycle()
-            if (!spv.disabled()) {
-                Row(
-                    modifier = Modifier.align(Alignment.TopEnd),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(painter = painterResource(spv.icon()), contentDescription = "SPV")
-                    Text(
-                        text = stringResource(spv.title()),
-                        style = bodyMedium,
-                        color = whiteMedium
-                    )
-                }
-            }
-
-            val icons = amounts.map {
-                it.assetId.assetIcon(
-                    session = viewModel.sessionOrNull,
-                    isLightning = viewModel.account.isLightning
-                )
-            }
-
-            TransactionStatusIcon(
-                modifier = Modifier.align(Alignment.Center),
-                transactionStatus = status,
-                icons = icons,
-                isSwap = viewModel.type.value == Transaction.Type.MIXED
-            )
-        }
-
-        val type by viewModel.type.collectAsStateWithLifecycle()
-        val isCloseChannel by viewModel.isCloseChannel.collectAsStateWithLifecycle()
-        val message: String = when {
-            status is Failed -> stringResource(Res.string.id_your_transaction_failed_s, (status as Failed).error)
-            type == Transaction.Type.IN -> stringResource(Res.string.id_the_transaction_was)
-            type == Transaction.Type.OUT || type == Transaction.Type.REDEPOSIT -> stringResource(Res.string.id_your_transaction_was)
-            type == Transaction.Type.MIXED -> stringResource(Res.string.id_swap_was_successfully_executed)
-            else -> {
-                ""
-            }
-        }
-
-
-        val createdAt by viewModel.createdAt.collectAsStateWithLifecycle()
-
-        GreenColumn(
-            space = 8,
-            padding = 0,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState())
+                .padding(bottom = innerPadding.calculateBottomPadding()),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = status.title(), style = headlineSmall)
-            Text(text = message, style = bodyMedium)
 
+            val status by viewModel.status.collectAsStateWithLifecycle()
+            val amounts by viewModel.amounts.collectAsStateWithLifecycle()
 
-            createdAt?.also {
-                Text(text = it, style = bodyMedium, color = whiteMedium)
-            }
+            Box(modifier = Modifier.fillMaxWidth()) {
 
-            val typeRes = when  {
-                status is Unconfirmed && type == Transaction.Type.OUT -> Res.string.id_outgoing
-                status is Unconfirmed && type == Transaction.Type.IN -> Res.string.id_incoming
-                status is Unconfirmed && type == Transaction.Type.REDEPOSIT -> Res.string.id_redeposit
-                isCloseChannel -> Res.string.id_closed_channel
-                type == Transaction.Type.OUT -> Res.string.id_sent
-                type == Transaction.Type.REDEPOSIT -> Res.string.id_redeposited
-                type == Transaction.Type.MIXED -> Res.string.id_swap
-                else -> Res.string.id_received
-            }
-
-            Text(
-                text = stringResource(typeRes), style = labelMedium, modifier = Modifier
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(status.color())
-                    .padding(horizontal = 8.dp, vertical = 6.dp)
-            )
-        }
-
-
-        if (amounts.isNotEmpty()) {
-            GreenAmounts(
-                amounts = amounts,
-                session = viewModel.sessionOrNull,
-                modifier = Modifier.padding(vertical = 32.dp),
-                onAssetClick = {
-                    viewModel.postEvent(
-                        NavigateDestinations.AssetDetails(
-                            assetId = it,
-                            accountAsset = viewModel.accountAsset.value
+                val spv by viewModel.spv.collectAsStateWithLifecycle()
+                if (!spv.disabled()) {
+                    Row(
+                        modifier = Modifier.align(Alignment.TopEnd),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(painter = painterResource(spv.icon()), contentDescription = "SPV")
+                        Text(
+                            text = stringResource(spv.title()),
+                            style = bodyMedium,
+                            color = whiteMedium
                         )
+                    }
+                }
+
+                val icons = amounts.map {
+                    it.assetId.assetIcon(
+                        session = viewModel.sessionOrNull,
+                        isLightning = viewModel.account.isLightning
                     )
                 }
-            )
-        } else {
-            GreenSpacer(32)
-        }
 
-        val fee by viewModel.fee.collectAsStateWithLifecycle()
-        val feeRate by viewModel.feeRate.collectAsStateWithLifecycle()
-        val total by viewModel.total.collectAsStateWithLifecycle()
-        val totalFiat by viewModel.totalFiat.collectAsStateWithLifecycle()
-        val address by viewModel.address.collectAsStateWithLifecycle()
-        val transactionId by viewModel.transactionId.collectAsStateWithLifecycle()
-        val note by viewModel.note.collectAsStateWithLifecycle()
-        val canEditNote by viewModel.canEditNote.collectAsStateWithLifecycle()
+                TransactionStatusIcon(
+                    modifier = Modifier.align(Alignment.Center),
+                    transactionStatus = status,
+                    icons = icons,
+                    isSwap = viewModel.type.value == Transaction.Type.MIXED
+                )
+            }
 
-        if(listOfNotNull(fee, feeRate, address, transactionId, note).isNotEmpty()) {
-            HorizontalDivider()
+            val type by viewModel.type.collectAsStateWithLifecycle()
+            val isCloseChannel by viewModel.isCloseChannel.collectAsStateWithLifecycle()
+            val message: String = when {
+                status is Failed -> stringResource(
+                    Res.string.id_your_transaction_failed_s,
+                    (status as Failed).error
+                )
 
-            GreenColumn(space = 8, padding = 0, modifier = Modifier.padding(vertical = 32.dp)) {
-                fee?.also {
-                    Detail(label = Res.string.id_network_fees) {
-                        Text(text = it)
-                    }
-                }
+                type == Transaction.Type.IN -> stringResource(Res.string.id_the_transaction_was)
+                type == Transaction.Type.OUT || type == Transaction.Type.REDEPOSIT -> stringResource(
+                    Res.string.id_your_transaction_was
+                )
 
-                feeRate?.also {
-                    Detail(label = Res.string.id_fee_rate) {
-                        Text(text = it)
-                    }
-                }
-
-                address?.also {
-                    Detail(label = if (type == Transaction.Type.IN) Res.string.id_received_on else Res.string.id_send_to) {
-                        GreenAddress(address = it)
-                    }
-                }
-
-                transactionId?.also {
-                    Detail(label = Res.string.id_transaction_id) {
-                        CopyContainer(value = it) { Text(text = it, fontFamily = MonospaceFont()) }
-                    }
-                }
-
-                AnimatedNullableVisibility(value = note) {
-                    Detail(label = Res.string.id_note) {
-                        CopyContainer(value = it) {
-                            Text(it)
-                        }
-                    }
+                type == Transaction.Type.MIXED -> stringResource(Res.string.id_swap_was_successfully_executed)
+                else -> {
+                    ""
                 }
             }
 
-            total?.also {
-                HorizontalDivider()
 
-                Detail(label = Res.string.id_total_spent, labelColor = whiteHigh, labelStyle = labelLarge, modifier = Modifier.padding(top = 8.dp)) {
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(text = it, style = labelLarge, color = whiteHigh, textAlign = TextAlign.End, modifier = Modifier.fillMaxWidth())
-                        totalFiat?.also {
-                            Text(text = it, textAlign = TextAlign.End, modifier = Modifier.fillMaxWidth())
-                        }
-                    }
+            val createdAt by viewModel.createdAt.collectAsStateWithLifecycle()
+
+            GreenColumn(
+                space = 8,
+                padding = 0,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = status.title(), style = headlineSmall)
+                Text(text = message, style = bodyMedium)
+
+
+                createdAt?.also {
+                    Text(text = it, style = bodyMedium, color = whiteMedium)
                 }
 
+                val typeRes = when {
+                    status is Unconfirmed && type == Transaction.Type.OUT -> Res.string.id_outgoing
+                    status is Unconfirmed && type == Transaction.Type.IN -> Res.string.id_incoming
+                    status is Unconfirmed && type == Transaction.Type.REDEPOSIT -> Res.string.id_redeposit
+                    isCloseChannel -> Res.string.id_closed_channel
+                    type == Transaction.Type.OUT -> Res.string.id_sent
+                    type == Transaction.Type.REDEPOSIT -> Res.string.id_redeposited
+                    type == Transaction.Type.MIXED -> Res.string.id_swap
+                    else -> Res.string.id_received
+                }
+
+                Text(
+                    text = stringResource(typeRes), style = labelMedium, modifier = Modifier
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(status.color())
+                        .padding(horizontal = 8.dp, vertical = 6.dp)
+                )
+            }
+
+
+            if (amounts.isNotEmpty()) {
+                GreenAmounts(
+                    amounts = amounts,
+                    session = viewModel.sessionOrNull,
+                    modifier = Modifier.padding(vertical = 32.dp),
+                    onAssetClick = {
+                        viewModel.postEvent(
+                            NavigateDestinations.AssetDetails(
+                                greenWallet = viewModel.greenWallet,
+                                assetId = it,
+                                accountAsset = viewModel.accountAsset.value
+                            )
+                        )
+                    }
+                )
+            } else {
                 GreenSpacer(32)
             }
-        }
 
-        val canReplaceByFee by viewModel.canReplaceByFee.collectAsStateWithLifecycle()
-        Column {
-            if (canReplaceByFee) {
+            val fee by viewModel.fee.collectAsStateWithLifecycle()
+            val feeRate by viewModel.feeRate.collectAsStateWithLifecycle()
+            val total by viewModel.total.collectAsStateWithLifecycle()
+            val totalFiat by viewModel.totalFiat.collectAsStateWithLifecycle()
+            val address by viewModel.address.collectAsStateWithLifecycle()
+            val transactionId by viewModel.transactionId.collectAsStateWithLifecycle()
+            val note by viewModel.note.collectAsStateWithLifecycle()
+            val canEditNote by viewModel.canEditNote.collectAsStateWithLifecycle()
+
+            if (listOfNotNull(fee, feeRate, address, transactionId, note).isNotEmpty()) {
                 HorizontalDivider()
-                MenuListItem(
-                    stringResource(Res.string.id_speed_up_transaction),
-                    painterResource(Res.drawable.gauge)
-                ) {
-                    viewModel.postEvent(TransactionViewModel.LocalEvents.BumpFee)
+
+                GreenColumn(space = 8, padding = 0, modifier = Modifier.padding(vertical = 32.dp)) {
+                    fee?.also {
+                        Detail(label = Res.string.id_network_fees) {
+                            Text(text = it)
+                        }
+                    }
+
+                    feeRate?.also {
+                        Detail(label = Res.string.id_fee_rate) {
+                            Text(text = it)
+                        }
+                    }
+
+                    address?.also {
+                        Detail(label = if (type == Transaction.Type.IN) Res.string.id_received_on else Res.string.id_send_to) {
+                            GreenAddress(address = it)
+                        }
+                    }
+
+                    transactionId?.also {
+                        Detail(label = Res.string.id_transaction_id) {
+                            CopyContainer(value = it) {
+                                Text(
+                                    text = it,
+                                    fontFamily = MonospaceFont()
+                                )
+                            }
+                        }
+                    }
+
+                    AnimatedNullableVisibility(value = note) {
+                        Detail(label = Res.string.id_note) {
+                            CopyContainer(value = it) {
+                                Text(it)
+                            }
+                        }
+                    }
+                }
+
+                total?.also {
+                    HorizontalDivider()
+
+                    Detail(
+                        label = Res.string.id_total_spent,
+                        labelColor = whiteHigh,
+                        labelStyle = labelLarge,
+                        modifier = Modifier.padding(top = 8.dp)
+                    ) {
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = it,
+                                style = labelLarge,
+                                color = whiteHigh,
+                                textAlign = TextAlign.End,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            totalFiat?.also {
+                                Text(
+                                    text = it,
+                                    textAlign = TextAlign.End,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        }
+                    }
+
+                    GreenSpacer(32)
                 }
             }
 
-            if (!viewModel.account.isLightning) {
-                if(canEditNote) {
+            val canReplaceByFee by viewModel.canReplaceByFee.collectAsStateWithLifecycle()
+            Column {
+                if (canReplaceByFee) {
                     HorizontalDivider()
                     MenuListItem(
-                        stringResource(if (note.isNullOrBlank()) Res.string.id_add_note else Res.string.id_edit_note),
-                        painterResource(Res.drawable.pencil_simple_line)
+                        stringResource(Res.string.id_speed_up_transaction),
+                        painterResource(Res.drawable.gauge)
+                    ) {
+                        viewModel.postEvent(TransactionViewModel.LocalEvents.BumpFee)
+                    }
+                }
+
+                if (!viewModel.account.isLightning) {
+                    if (canEditNote) {
+                        HorizontalDivider()
+                        MenuListItem(
+                            stringResource(if (note.isNullOrBlank()) Res.string.id_add_note else Res.string.id_edit_note),
+                            painterResource(Res.drawable.pencil_simple_line)
+                        ) {
+                            viewModel.postEvent(
+                                NavigateDestinations.Note(
+                                    greenWallet = viewModel.greenWallet,
+                                    note = viewModel.note.value ?: "",
+                                    noteType = NoteType.Note
+                                )
+                            )
+                        }
+                    }
+
+                    HorizontalDivider()
+                    MenuListItem(
+                        stringResource(Res.string.id_view_in_explorer),
+                        painterResource(Res.drawable.binoculars)
+                    ) {
+                        viewModel.postEvent(TransactionViewModel.LocalEvents.ViewInBlockExplorer)
+                    }
+
+                    HorizontalDivider()
+                    MenuListItem(
+                        stringResource(Res.string.id_share_transaction),
+                        painterResource(Res.drawable.export)
+                    ) {
+                        viewModel.postEvent(TransactionViewModel.LocalEvents.ShareTransaction())
+                    }
+                }
+                val transaction by viewModel.transaction.collectAsStateWithLifecycle()
+
+                if (transaction.isRefundableSwap) {
+                    HorizontalDivider()
+                    MenuListItem(
+                        stringResource(Res.string.id_initiate_refund),
+                        painterResource(Res.drawable.arrow_u_left_down)
+                    ) {
+                        viewModel.postEvent(TransactionViewModel.LocalEvents.RecoverFunds)
+                    }
+                }
+
+                val hasMoreDetails by viewModel.hasMoreDetails.collectAsStateWithLifecycle()
+
+                if (hasMoreDetails) {
+                    HorizontalDivider()
+                    MenuListItem(
+                        stringResource(Res.string.id_more_details),
+                        painterResource(Res.drawable.magnifying_glass)
                     ) {
                         viewModel.postEvent(
-                            NavigateDestinations.Note(
-                                note = viewModel.note.value ?: "",
-                                noteType = NoteType.Note
+                            NavigateDestinations.TransactionDetails(
+                                greenWallet = viewModel.greenWallet,
+                                transaction = transaction
                             )
                         )
                     }
                 }
-
-                HorizontalDivider()
-                MenuListItem(
-                    stringResource(Res.string.id_view_in_explorer),
-                    painterResource(Res.drawable.binoculars)
-                ) {
-                    viewModel.postEvent(TransactionViewModel.LocalEvents.ViewInBlockExplorer)
-                }
-
-                HorizontalDivider()
-                MenuListItem(
-                    stringResource(Res.string.id_share_transaction),
-                    painterResource(Res.drawable.export)
-                ) {
-                    viewModel.postEvent(TransactionViewModel.LocalEvents.ShareTransaction())
-                }
-            }
-            val transaction by viewModel.transaction.collectAsStateWithLifecycle()
-
-            if (transaction.isRefundableSwap) {
-                HorizontalDivider()
-                MenuListItem(
-                    stringResource(Res.string.id_initiate_refund),
-                    painterResource(Res.drawable.arrow_u_left_down)
-                ) {
-                     viewModel.postEvent(TransactionViewModel.LocalEvents.RecoverFunds)
-                }
-            }
-
-            val hasMoreDetails by viewModel.hasMoreDetails.collectAsStateWithLifecycle()
-
-            if(hasMoreDetails) {
-                HorizontalDivider()
-                MenuListItem(
-                    stringResource(Res.string.id_more_details),
-                    painterResource(Res.drawable.magnifying_glass)
-                ) {
-                    viewModel.postEvent(
-                        NavigateDestinations.TransactionDetails(
-                            transaction = transaction
-                        )
-                    )
-                }
             }
         }
-
     }
 }
 
@@ -430,7 +434,12 @@ private fun Detail(
     GreenRow(
         padding = 0, space = 8, verticalAlignment = Alignment.Top, modifier = modifier
     ) {
-        Text(stringResource(label), color = labelColor, style = labelStyle, modifier = Modifier.weight(1f))
+        Text(
+            stringResource(label),
+            color = labelColor,
+            style = labelStyle,
+            modifier = Modifier.weight(1f)
+        )
         Box(modifier = Modifier.weight(2f)) {
             content()
         }

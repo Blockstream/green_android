@@ -13,4 +13,7 @@ class AppInfo(
 
     val versionFlavorDebug
         get() = "$version ${if(isDevelopment) "(Development)" else ""}${if(isDebug) "[Debug]" else ""}"
+
+    val enableNewFeatures
+        get() = false // isDebug
 }

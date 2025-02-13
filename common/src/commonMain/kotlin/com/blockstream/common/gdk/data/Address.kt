@@ -1,13 +1,10 @@
 package com.blockstream.common.gdk.data
 
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@Parcelize
 data class Address constructor(
     @SerialName("address") val address: String,
     @SerialName("pointer") val pointer: Long = 0,
@@ -22,7 +19,7 @@ data class Address constructor(
     // Used only as AddressParams Sweep
     @SerialName("satoshi") var satoshi: Long = 0,
     @SerialName("is_greedy") var isGreedy: Boolean = true,
-) : GreenJson<Address>(), Parcelable {
+) : GreenJson<Address>() {
     override fun encodeDefaultsValues() = true
 
     override fun kSerializer() = serializer()

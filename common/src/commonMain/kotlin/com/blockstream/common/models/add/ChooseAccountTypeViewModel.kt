@@ -37,7 +37,7 @@ import org.jetbrains.compose.resources.getString
 
 
 abstract class ChooseAccountTypeViewModelAbstract(
-    greenWallet: GreenWallet, assetId: String?, popTo: PopTo?
+    greenWallet: GreenWallet, assetId: String?, popTo: PopTo?, val allowAssetSelection: Boolean = true,
 ) : AddAccountViewModelAbstract(greenWallet = greenWallet, assetId = assetId, popTo = popTo) {
     override fun screenName(): String = "AddAccountChooseType"
 
@@ -57,8 +57,8 @@ abstract class ChooseAccountTypeViewModelAbstract(
     abstract val hasAdvancedOptions: MutableStateFlow<Boolean>
 }
 
-class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalance?, popTo: PopTo?) :
-    ChooseAccountTypeViewModelAbstract(greenWallet = greenWallet, assetId = initAsset?.assetId, popTo = popTo) {
+class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalance?, popTo: PopTo?, allowAssetSelection: Boolean) :
+    ChooseAccountTypeViewModelAbstract(greenWallet = greenWallet, assetId = initAsset?.assetId, popTo = popTo, allowAssetSelection = allowAssetSelection) {
     override val asset: MutableStateFlow<AssetBalance> =
         MutableStateFlow(initAsset ?:EnrichedAsset.Empty.let { AssetBalance.create(it) })
 
@@ -219,7 +219,11 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
                 sideEffect = if (session.isHardwareWallet) {
                     LocalSideEffects.ExperimentalFeaturesDialog(
                         SideEffects.NavigateTo(
-                            NavigateDestinations.JadeQR(operation = JadeQrOperation.LightningMnemonicExport, deviceModel = DeviceModel.BlockstreamGeneric)
+                            NavigateDestinations.JadeQR(
+                                greenWalletOrNull = greenWalletOrNull,
+                                operation = JadeQrOperation.LightningMnemonicExport,
+                                deviceModel = DeviceModel.BlockstreamGeneric
+                            )
                         )
                     )
                 } else {

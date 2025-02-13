@@ -29,10 +29,8 @@ import blockstream_green.common.generated.resources.id_continue
 import blockstream_green.common.generated.resources.id_create_a_pin
 import blockstream_green.common.generated.resources.id_enter_and_confirm_a_unique_pin
 import blockstream_green.common.generated.resources.id_setup_your_jade
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
+import com.blockstream.common.data.MenuEntry
+import com.blockstream.common.data.MenuEntryList
 import com.blockstream.common.models.devices.DeviceInfoViewModel
 import com.blockstream.common.models.devices.DeviceInfoViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
@@ -40,15 +38,8 @@ import com.blockstream.compose.components.AppSettingsButton
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenCard
-import com.blockstream.ui.components.GreenColumn
+import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.extensions.icon
-import com.blockstream.compose.navigation.getNavigationResult
-import com.blockstream.compose.navigation.setNavigationResult
-import com.blockstream.compose.sheets.EnvironmentBottomSheet
-import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
-import com.blockstream.compose.sheets.MenuBottomSheet
-import com.blockstream.compose.sheets.MenuEntry
-import com.blockstream.compose.sheets.NewJadeConnectedBottomSheet
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.green
@@ -57,36 +48,11 @@ import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.DeviceHandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.navigation.getResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-data class DeviceInfoScreen(val deviceId: String) : Screen, Parcelable {
-
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<DeviceInfoViewModel> {
-            parametersOf(deviceId)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        DeviceInfoScreen(viewModel = viewModel)
-    }
-
-    companion object {
-        @Composable
-        fun getResult(fn: (String) -> Unit) = getNavigationResult(this::class, fn)
-
-        internal fun setResult(result: String) =
-            setNavigationResult(this::class, result)
-    }
-}
 
 
 @Composable
@@ -94,7 +60,7 @@ fun DeviceInfoScreen(
     viewModel: DeviceInfoViewModelAbstract,
 ) {
 
-    EnvironmentBottomSheet.getResult { result ->
+    NavigateDestinations.Environment.getResult<Int> { result: Int ->
         viewModel.postEvent(
             DeviceInfoViewModel.LocalEvents.SelectEnviroment(when(result) {
                 -1 -> null
@@ -104,11 +70,16 @@ fun DeviceInfoScreen(
         )
     }
 
-    NewJadeConnectedBottomSheet.getResult {
-        viewModel.postEvent(NavigateDestinations.JadeGenuineCheck(deviceId = viewModel.deviceId))
+    NavigateDestinations.NewJadeConnected.getResult<Boolean> {
+        viewModel.postEvent(
+            NavigateDestinations.JadeGenuineCheck(
+                greenWalletOrNull = viewModel.greenWalletOrNull,
+                deviceId = viewModel.deviceId
+            )
+        )
     }
 
-    JadeGenuineCheckScreen.getResult {
+    NavigateDestinations.JadeGenuineCheck.getResult<Boolean> {
         if(it){
             viewModel.postEvent(DeviceInfoViewModel.LocalEvents.GenuineCheckSuccess)
         }
@@ -116,23 +87,7 @@ fun DeviceInfoScreen(
 
     var channels by remember { mutableStateOf<List<String>?>(null) }
 
-    val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
-    DeviceHandleSideEffect(viewModel = viewModel) {
-        if(it is DeviceInfoViewModel.LocalSideEffects.SelectFirmwareChannel) {
-            channels = it.channels
-            bottomSheetNavigator?.show(
-                MenuBottomSheet(
-                    title = "Select Firmware Channel", entries = it.channels.map {
-                        MenuEntry(
-                            title = it,
-                        )
-                    }
-                )
-            )
-        }
-    }
-
-    MenuBottomSheet.getResult {
+    NavigateDestinations.Menu.getResult<Int> {
         channels?.getOrNull(it)?.also { channel ->
             viewModel.postEvent(
                 DeviceInfoViewModel.LocalEvents.AuthenticateAndContinue(
@@ -146,8 +101,20 @@ fun DeviceInfoScreen(
     val jadeIsUninitialized by viewModel.jadeIsUninitialized.collectAsStateWithLifecycle()
     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
 
-
-    Column {
+    SetupScreen(viewModel = viewModel, withPadding = false, onProgressStyle = OnProgressStyle.Disabled, sideEffectsHandler = {
+        if(it is DeviceInfoViewModel.LocalSideEffects.SelectFirmwareChannel) {
+            channels = it.channels
+            viewModel.postEvent(
+                NavigateDestinations.Menu(
+                    title = "Select Firmware Channel",
+                    entries = MenuEntryList(it.channels.map {
+                        MenuEntry(
+                            title = it,
+                        )
+                    }))
+            )
+        }
+    }) {
 
         Column(
             modifier = Modifier.weight(4f),

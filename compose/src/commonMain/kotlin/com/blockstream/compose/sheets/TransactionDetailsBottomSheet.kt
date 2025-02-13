@@ -11,36 +11,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_more_details
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.gdk.data.Transaction
-import com.blockstream.common.models.sheets.TransactionDetailsViewModel
 import com.blockstream.common.models.sheets.TransactionDetailsViewModelAbstract
 import com.blockstream.compose.components.GreenBottomSheet
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.views.DataListItem
+import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
 
-@Parcelize
-data class TransactionDetailsBottomSheet(
-    val greenWallet: GreenWallet,
-    val transaction: Transaction
-) : BottomScreen(), Parcelable {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<TransactionDetailsViewModel> {
-            parametersOf(transaction, greenWallet)
-        }
-
-        TransactionDetailsBottomSheet(
-            viewModel = viewModel,
-            onDismissRequest = onDismissRequest()
-        )
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

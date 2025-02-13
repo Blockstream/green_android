@@ -8,7 +8,6 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
-    alias(libs.plugins.kotlinParcelize)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.compose.compiler)

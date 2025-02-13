@@ -150,6 +150,7 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
                 postSideEffect(
                     SideEffects.NavigateTo(
                         NavigateDestinations.RecoverFunds(
+                            greenWallet = greenWallet,
                             isSendAll = true,
                         )
                     )

@@ -17,52 +17,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.blockstream_jade_device
 import blockstream_green.common.generated.resources.id_firmware_upgrade
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.models.sheets.JadeFirmwareUpdateViewModel
 import com.blockstream.common.models.sheets.JadeFirmwareUpdateViewModelAbstract
 import com.blockstream.compose.components.GreenBottomSheet
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.compose.navigation.getNavigationResult
-import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
+import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-data class JadeFirmwareUpdateBottomSheet(
-    val deviceId: String
-) : BottomScreen(), Parcelable {
-
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<JadeFirmwareUpdateViewModel> {
-            parametersOf(deviceId)
-        }
-
-        JadeFirmwareUpdateBottomSheet(
-            viewModel = viewModel,
-            onDismissRequest = onDismissRequest()
-        )
-    }
-
-    companion object {
-        @Composable
-        fun getResult(fn: (AccountAsset) -> Unit) =
-            getNavigationResult(this::class, fn)
-
-        internal fun setResult(result: AccountAsset) =
-            setNavigationResult(this::class, result)
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -118,7 +83,6 @@ fun JadeFirmwareUpdateBottomSheet(
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
-
             }
         }
     }

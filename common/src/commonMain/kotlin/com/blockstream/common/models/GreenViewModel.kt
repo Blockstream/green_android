@@ -11,7 +11,6 @@ import blockstream_green.common.generated.resources.id_unstable_internet_connect
 import blockstream_green.common.generated.resources.id_you_dont_have_a_lightning
 import blockstream_green.common.generated.resources.id_your_device_was_disconnected
 import breez_sdk.InputType
-import cafe.adriel.voyager.core.model.ScreenModel
 import com.blockstream.common.AddressInputType
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.ViewModelView
@@ -25,12 +24,12 @@ import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.DeviceIdentifier
 import com.blockstream.common.data.EncryptedData
-import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.NavData
 import com.blockstream.common.data.Promo
 import com.blockstream.common.data.Redact
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.TwoFactorResolverData
 import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.data.toSerializable
@@ -73,15 +72,19 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.generateWalletName
+import com.blockstream.jade.firmware.FirmwareInteraction
+import com.blockstream.jade.firmware.FirmwareUpdateState
+import com.blockstream.jade.firmware.FirmwareUpgradeRequest
+import com.blockstream.jade.firmware.HardwareQATester
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.InternalKMPObservableViewModelApi
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.ViewModel
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
@@ -113,12 +116,13 @@ open class SimpleGreenViewModel(
     greenWalletOrNull: GreenWallet? = null,
     accountAssetOrNull: AccountAsset? = null,
     val screenName: String? = null,
-    val device: GreenDevice? = null
+    device: GreenDevice? = null
 ) : GreenViewModel(greenWalletOrNull = greenWalletOrNull, accountAssetOrNull = accountAssetOrNull) {
 
     override fun screenName(): String? = screenName
 
     init {
+        deviceOrNull = device
         if(!isPreview) {
             bootstrap()
         }
@@ -130,10 +134,22 @@ class SimpleGreenViewModelPreview(
     accountAssetOrNull: AccountAsset? = null
 ) : SimpleGreenViewModel(greenWalletOrNull, accountAssetOrNull)
 
+interface IOnProgress {
+    @NativeCoroutinesState
+    val onProgress: StateFlow<Boolean>
+    @NativeCoroutinesState
+    val onProgressDescription: StateFlow<String?>
+}
+
+interface IGreenViewModel {
+    fun postEvent(event: Event)
+}
+
 open class GreenViewModel constructor(
     val greenWalletOrNull: GreenWallet? = null,
     accountAssetOrNull: AccountAsset? = null,
-) : ScreenModel, ViewModel(), KoinComponent, ViewModelView, HardwareWalletInteraction, TwoFactorResolver {
+) : IGreenViewModel, IOnProgress, ViewModel(), KoinComponent, ViewModelView, HardwareWalletInteraction, TwoFactorResolver,
+    FirmwareInteraction {
     val appInfo: AppInfo by inject()
     protected val database: Database by inject()
     protected val countly: CountlyBase by inject()
@@ -145,6 +161,7 @@ open class GreenViewModel constructor(
     val zendeskSdk: ZendeskSdk by inject()
     private val notificationManager: NotificationManager by inject()
     private val bluetoothManager: BluetoothManager by inject()
+    val qaTester: HardwareQATester by inject()
 
     internal val isPreview by lazy { this::class.simpleName?.contains("Preview") == true }
 
@@ -160,10 +177,10 @@ open class GreenViewModel constructor(
     val sideEffect = _sideEffect.receiveAsFlow()
 
     @NativeCoroutinesState
-    val onProgress = MutableStateFlow(viewModelScope, false)
+    override val onProgress = MutableStateFlow(viewModelScope, false)
 
     @NativeCoroutinesState
-    val onProgressDescription = MutableStateFlow<String?>(null)
+    override val onProgressDescription = MutableStateFlow<String?>(null)
 
     protected val _navData = MutableStateFlow(NavData())
     @NativeCoroutinesState
@@ -196,6 +213,11 @@ open class GreenViewModel constructor(
             }
         } ?: flowOf(null)
     }
+
+    open var deviceOrNull: GreenDevice? = null
+
+    val device: GreenDevice
+        get() = deviceOrNull!!
 
     @NativeCoroutinesState
     val accountAsset: MutableStateFlow<AccountAsset?> = MutableStateFlow(accountAssetOrNull)
@@ -240,6 +262,8 @@ open class GreenViewModel constructor(
     private var _bootstrapped: Boolean = false
 
     open val isLoginRequired: Boolean = greenWalletOrNull != null
+
+    private var askForFirmwareUpgradeEmitter: CompletableDeferred<Int?>? = null
 
     init {
         // It's better to initiate the ViewModel with a bootstrap() call
@@ -304,7 +328,7 @@ open class GreenViewModel constructor(
     }
 
     @ObjCName(name = "post", swiftName = "postEvent")
-    fun postEvent(@ObjCName(swiftName = "_") event: Event) {
+    override fun postEvent(@ObjCName(swiftName = "_") event: Event) {
         if(!_bootstrapped){
             if(isPreview){
                 logger.i { "postEvent() Preview ViewModel detected"}
@@ -451,7 +475,7 @@ open class GreenViewModel constructor(
             is Events.PromoOpen -> {
                 promo.value?.also {
                     countly.promoOpen(sessionOrNull, screenName(), it)
-                    postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Promo(promo = it)))
+                    postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Promo(promo = it, greenWalletOrNull = greenWalletOrNull)))
                 }
             }
             is Events.PromoDismiss -> {
@@ -471,8 +495,8 @@ open class GreenViewModel constructor(
                 promo.value?.also { promo ->
                     promo.link?.also { link ->
                         countly.promoAction(session = sessionOrNull, screenName = screenName(), promo = promo)
-                        if (link == "green://onofframps" && greenWalletOrNull != null ) {
-                            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.OnOffRamps))
+                        if (link == "green://onofframps" && greenWalletOrNull != null) {
+                            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.OnOffRamps(greenWallet = greenWallet)))
                         } else {
                             postSideEffect(SideEffects.OpenBrowser(url = link))
                         }
@@ -515,7 +539,14 @@ open class GreenViewModel constructor(
                 viewModelScope.coroutineScope.launch {
                     denominatedValue()?.also {
                         if(it.assetId.isPolicyAsset(session)){
-                            postSideEffect(SideEffects.OpenDenomination(it))
+                            postSideEffect(
+                                SideEffects.NavigateTo(
+                                    NavigateDestinations.Denomination(
+                                        greenWallet = greenWallet,
+                                        denominatedValue = it
+                                    )
+                                )
+                            )
                         }
                     }
                 }
@@ -566,6 +597,7 @@ open class GreenViewModel constructor(
                     postSideEffect(
                         SideEffects.NavigateTo(
                             NavigateDestinations.Transaction(
+                                greenWallet = greenWallet,
                                 transaction = event.transaction
                             )
                         )
@@ -575,13 +607,17 @@ open class GreenViewModel constructor(
             is Events.ChooseAccountType -> {
                 postSideEffect(
                     SideEffects.NavigateTo(
-                        NavigateDestinations.ChooseAccountType(popTo = event.popTo)
+                        NavigateDestinations.ChooseAccountType(greenWallet = greenWallet, popTo = event.popTo)
                     )
                 )
 
                 if(event.isFirstAccount){
                     countly.firstAccount(session)
                 }
+            }
+
+            is Events.RespondToFirmwareUpgrade -> {
+                askForFirmwareUpgradeEmitter?.complete(event.index)
             }
         }
     }
@@ -762,6 +798,7 @@ open class GreenViewModel constructor(
                             postSideEffect(
                                 SideEffects.NavigateTo(
                                     NavigateDestinations.LnUrlAuth(
+                                        greenWallet = greenWallet,
                                         lnUrlAuthRequest = inputType.data.toSerializable()
                                     )
                                 )
@@ -776,6 +813,7 @@ open class GreenViewModel constructor(
                             postSideEffect(
                                 SideEffects.NavigateTo(
                                     NavigateDestinations.LnUrlWithdraw(
+                                        greenWallet = greenWallet,
                                         lnUrlWithdrawRequest = inputType.data.toSerializable()
                                     )
                                 )
@@ -803,6 +841,7 @@ open class GreenViewModel constructor(
                             postSideEffect(
                                 SideEffects.NavigateTo(
                                     NavigateDestinations.Send(
+                                        greenWallet = greenWallet,
                                         address = data,
                                         addressType = if (isQr) AddressInputType.SCAN else AddressInputType.BIP21
                                     )
@@ -846,8 +885,8 @@ open class GreenViewModel constructor(
         completable: CompletableDeferred<Boolean>?
     ) {
         postSideEffect(
-            SideEffects.DeviceInteraction(
-                deviceId = sessionOrNull?.device?.uniqueIdentifier,
+            SideEffects.RequestDeviceInteraction(
+                deviceId = sessionOrNull?.device?.connectionIdentifier,
                 message = message,
                 isMasterBlindingKeyRequest = isMasterBlindingKeyRequest,
                 completable = completable
@@ -858,7 +897,7 @@ open class GreenViewModel constructor(
     final override fun requestPassphrase(deviceBrand: DeviceBrand?): String {
         return CompletableDeferred<String>().let {
             _deviceRequest = it
-            postSideEffect(SideEffects.DeviceRequestPassphrase)
+            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.DevicePassphrase))
             runBlocking { it.await() }
         }
     }
@@ -866,7 +905,7 @@ open class GreenViewModel constructor(
     final override fun requestPinMatrix(deviceBrand: DeviceBrand?): String? {
         return CompletableDeferred<String>().let {
             _deviceRequest = it
-            postSideEffect(SideEffects.DeviceRequestPin)
+            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.DevicePin))
             runBlocking { it.await() }
         }
     }
@@ -905,6 +944,84 @@ open class GreenViewModel constructor(
                     )
                 )
             )
+        }
+    }
+
+    override fun getAntiExfilCorruptionForMessageSign() = qaTester.getAntiExfilCorruptionForMessageSign()
+    override fun getAntiExfilCorruptionForTxSign() = qaTester.getAntiExfilCorruptionForTxSign()
+    override fun getFirmwareCorruption() = qaTester.getFirmwareCorruption()
+
+    override fun askForFirmwareUpgrade(
+        firmwareUpgradeRequest: FirmwareUpgradeRequest
+    ): Deferred<Int?> {
+        return CompletableDeferred<Int?>().also {
+            askForFirmwareUpgradeEmitter = it
+            postSideEffect(SideEffects.AskForFirmwareUpgrade(firmwareUpgradeRequest))
+        }
+    }
+
+    override fun firmwareUpdateState(state: FirmwareUpdateState) {
+        if(deviceOrNull == null) return
+
+        device.updateFirmwareState(state)
+
+        when(state) {
+            is FirmwareUpdateState.Initiate -> {
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.JadeFirmwareUpdate(deviceId = device.connectionIdentifier)))
+                countly.jadeOtaStart(
+                    device = device,
+                    config = state.firmwareFileData.image.config,
+                    isDelta = state.firmwareFileData.image.patchSize != null,
+                    version = state.firmwareFileData.image.version
+                )
+            }
+            is FirmwareUpdateState.Uploading -> {
+
+            }
+            is FirmwareUpdateState.Uploaded -> {
+                logger.i { "firmwareComplete: ${state.success}" }
+
+                if(state.success) {
+                    deviceOrNull?.also {
+                        countly.jadeOtaComplete(
+                            device = it,
+                            config = state.firmwareFileData.image.config,
+                            isDelta = state.firmwareFileData.image.patchSize != null,
+                            version = state.firmwareFileData.image.version
+                        )
+                    }
+                }
+            }
+            is FirmwareUpdateState.Failed -> {
+                logger.i { "firmwareFailed: userCancelled ${state.userCancelled}" }
+
+                deviceOrNull?.also {
+                    if(state.userCancelled) {
+                        countly.jadeOtaRefuse(
+                            device = it,
+                            state.firmwareFileData.image.config,
+                            state.firmwareFileData.image.patchSize != null,
+                            state.firmwareFileData.image.version
+                        )
+                    }else{
+                        countly.jadeOtaFailed(
+                            device = it,
+                            error = state.error,
+                            state.firmwareFileData.image.config,
+                            state.firmwareFileData.image.patchSize != null,
+                            state.firmwareFileData.image.version
+                        )
+                    }
+                }
+            }
+            is FirmwareUpdateState.Completed -> {
+                if (state.requireBleRebonding) {
+                    postSideEffect(SideEffects.BleRequireRebonding)
+                } else if (state.requireReconnection) {
+                    // on firmware update, navigate to device list
+                    postSideEffect(SideEffects.NavigateBack())
+                }
+            }
         }
     }
 
@@ -1007,14 +1124,6 @@ open class GreenViewModel constructor(
         }, onSuccess = {
             postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))
         })
-    }
-
-    // This is called from Voyager
-    @OptIn(InternalKMPObservableViewModelApi::class)
-    override fun onDispose() {
-        super.onDispose()
-        // Call the internal InternalKMPObservableViewModelApi
-        clear()
     }
 
     companion object: Loggable(){

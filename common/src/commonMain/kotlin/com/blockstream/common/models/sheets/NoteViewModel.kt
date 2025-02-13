@@ -8,8 +8,10 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.serialization.Serializable
 
-enum class NoteType{
+@Serializable
+enum class NoteType {
     Note, Description, Comment
 }
 

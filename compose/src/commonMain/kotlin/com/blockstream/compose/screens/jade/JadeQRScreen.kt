@@ -26,14 +26,6 @@ import blockstream_green.common.generated.resources.id_step_1s
 import blockstream_green.common.generated.resources.id_troubleshoot
 import blockstream_green.common.generated.resources.qr_code
 import blockstream_green.common.generated.resources.scan
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.core.screen.uniqueScreenKey
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.arkivanov.essenty.parcelable.IgnoredOnParcel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.devices.DeviceModel
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.jade.JadeQRViewModel
 import com.blockstream.common.models.jade.JadeQRViewModelAbstract
@@ -44,74 +36,43 @@ import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenQR
 import com.blockstream.compose.components.GreenScanner
-import com.blockstream.compose.navigation.getNavigationResult
-import com.blockstream.compose.navigation.getNavigationResultForKey
-import com.blockstream.compose.navigation.resultKey
-import com.blockstream.compose.navigation.setNavigationResult
-import com.blockstream.compose.navigation.setNavigationResultForKey
-import com.blockstream.compose.sheets.AskJadeUnlockBottomSheet
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.headlineSmall
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.textHigh
 import com.blockstream.compose.theme.textMedium
-import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.navigation.getResult
+import com.blockstream.ui.navigation.setResult
+import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
 
-@Parcelize
-data class JadeQRScreen(
-    val greenWallet: GreenWallet? = null,
-    val operation: JadeQrOperation,
-    val deviceModel: DeviceModel
-) : Screen, Parcelable {
-
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<JadeQRViewModel> {
-            parametersOf(greenWallet, operation, deviceModel)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        JadeQRScreen(viewModel = viewModel)
-    }
-
-    @IgnoredOnParcel
-    override val key = uniqueScreenKey
-
-    companion object {
-        @Composable
-        fun getResult(fn: (String) -> Unit) = getNavigationResult(this::class, fn)
-
-        @Composable
-        fun getResultPinUnlock(fn: (Boolean) -> Unit) = getNavigationResultForKey("${this::class.resultKey}-pinUnlock", fn)
-
-        internal fun setResult(result: String) =
-            setNavigationResult(this::class, result)
-
-        internal fun setResultPinUnlock(result: Boolean) = setNavigationResultForKey("${this::class.resultKey}-pinUnlock", result)
-    }
-}
+@Serializable
+data class JadeQRResult(
+    val pinUnlock: Boolean? = null,
+    val result: String = ""
+)
 
 @Composable
 fun JadeQRScreen(
     viewModel: JadeQRViewModelAbstract,
 ) {
-
     val isLightTheme by viewModel.isLightTheme.collectAsStateWithLifecycle()
 
-    AskJadeUnlockBottomSheet.getResult { isUnlocked ->
+    NavigateDestinations.AskJadeUnlock.getResult<Boolean> { isUnlocked ->
         if (!isUnlocked) {
-            viewModel.postEvent(NavigateDestinations.JadeQR(operation = JadeQrOperation.PinUnlock))
+            viewModel.postEvent(
+                NavigateDestinations.JadeQR(
+                    greenWalletOrNull = viewModel.greenWalletOrNull,
+                    operation = JadeQrOperation.PinUnlock,
+                    deviceModel = viewModel.deviceModel
+                )
+            )
         }
     }
 
@@ -119,14 +80,14 @@ fun JadeQRScreen(
         when (it) {
             is SideEffects.Success -> {
                 if (viewModel.operation is JadeQrOperation.PinUnlock) {
-                    JadeQRScreen.setResultPinUnlock(true)
+                    NavigateDestinations.JadeQR.setResult(JadeQRResult(pinUnlock = true))
                 } else {
-                    JadeQRScreen.setResult(it.data as String)
+                    NavigateDestinations.JadeQR.setResult(JadeQRResult(result = it.data as String))
                 }
             }
 
             is SideEffects.Mnemonic -> {
-                JadeQRScreen.setResult(it.mnemonic)
+                NavigateDestinations.JadeQR.setResult(JadeQRResult(result = it.mnemonic))
             }
         }
     }

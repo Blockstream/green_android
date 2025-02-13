@@ -20,53 +20,20 @@ import blockstream_green.common.generated.resources.id_qr_airgapped_mode
 import blockstream_green.common.generated.resources.id_qr_pin_unlock
 import blockstream_green.common.generated.resources.id_unlock_jade_to_continue
 import blockstream_green.common.generated.resources.id_unlock_your_jade_to_continue
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.Urls
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.models.SimpleGreenViewModel
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.compose.navigation.getNavigationResult
-import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.theme.textMedium
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.navigation.setResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-data class AskJadeUnlockBottomSheet(
-    val isOnboarding: Boolean
-) : BottomScreen(), Parcelable {
-    @Composable
-    override fun Content() {
-
-        val viewModel = koinScreenModel<SimpleGreenViewModel> {
-            parametersOf(null, null, "AskJadeUnlock")
-        }
-
-        AskJadeUnlockBottomSheet(
-            viewModel = viewModel,
-            isOnboarding = isOnboarding,
-            onDismissRequest = onDismissRequest()
-        )
-    }
-
-    companion object {
-        @Composable
-        fun getResult(fn: (Boolean) -> Unit) =
-            getNavigationResult(this::class, fn)
-
-        internal fun setResult(result: Boolean) =
-            setNavigationResult(this::class, result)
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -132,7 +99,7 @@ fun AskJadeUnlockBottomSheet(
                     size = GreenButtonSize.BIG,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    AskJadeUnlockBottomSheet.setResult(true)
+                    NavigateDestinations.AskJadeUnlock.setResult(true)
                     onDismissRequest()
                 }
 
@@ -141,7 +108,7 @@ fun AskJadeUnlockBottomSheet(
                     size = GreenButtonSize.BIG,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    AskJadeUnlockBottomSheet.setResult(false)
+                    NavigateDestinations.AskJadeUnlock.setResult(false)
                     onDismissRequest()
                 }
             }

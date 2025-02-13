@@ -22,7 +22,6 @@ data class CountlyWidget(
 
     override fun kSerializer() = serializer()
 
-    @kotlin.jvm.Transient
     @Transient
     lateinit var widget : Any
 

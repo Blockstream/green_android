@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.get
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_amount
 import blockstream_green.common.generated.resources.id_from
@@ -29,17 +30,11 @@ import blockstream_green.common.generated.resources.id_total_spent
 import blockstream_green.common.generated.resources.id_verify_address_on_device
 import blockstream_green.common.generated.resources.id_your_redeposit_address
 import blockstream_green.common.generated.resources.pencil_simple_line
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.Denomination
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.common.models.send.SendConfirmViewModel
 import com.blockstream.common.models.send.SendConfirmViewModelAbstract
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.Banner
 import com.blockstream.compose.components.GreenAccountAsset
@@ -47,44 +42,23 @@ import com.blockstream.compose.components.GreenAmount
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenConfirmButton
 import com.blockstream.compose.components.GreenDataLayout
-import com.blockstream.compose.components.ScreenContainer
-import com.blockstream.compose.screens.jade.JadeQRScreen
-import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
-import com.blockstream.compose.sheets.NoteBottomSheet
+import com.blockstream.compose.components.OnProgressStyle
+import com.blockstream.compose.navigation.LocalNavigator
+import com.blockstream.compose.screens.jade.JadeQRResult
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.navigation.bottomsheet.BottomSheetNavigator
+import com.blockstream.ui.navigation.getResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-data class SendConfirmScreen(
-    val greenWallet: GreenWallet,
-    val accountAsset: AccountAsset?,
-    val denomination: Denomination?
-) : Parcelable, Screen {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<SendConfirmViewModel> {
-            parametersOf(greenWallet, accountAsset, denomination)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        SendConfirmScreen(viewModel = viewModel)
-    }
-}
 
 @Composable
 fun SendConfirmScreen(
@@ -92,35 +66,30 @@ fun SendConfirmScreen(
 ) {
     val look by viewModel.transactionConfirmLook.collectAsStateWithLifecycle()
     val onProgressSending by viewModel.onProgressSending.collectAsStateWithLifecycle()
-    val onProgressDescription by viewModel.onProgressDescription.collectAsStateWithLifecycle()
+    val bottomSheetNavigator = LocalNavigator.current.navigatorProvider[BottomSheetNavigator::class]
 
-    NoteBottomSheet.getResult {
+    NavigateDestinations.Note.getResult<String> {
         viewModel.note.value = it
     }
 
-    JadeQRScreen.getResult {
+    NavigateDestinations.JadeQR.getResult<JadeQRResult> {
         viewModel.postEvent(
             CreateTransactionViewModelAbstract.LocalEvents.BroadcastTransaction(
-                psbt = it
+                psbt = it.result
             )
         )
     }
 
-    val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
-
-    HandleSideEffect(viewModel) {
-        when (it) {
-            is SideEffects.Dismiss -> {
-                bottomSheetNavigator?.hide()
+    SetupScreen(
+        viewModel = viewModel,
+        onProgressStyle = if (onProgressSending) OnProgressStyle.Full(bluBackground = true) else OnProgressStyle.Disabled,
+        sideEffectsHandler = {
+            when (it) {
+                is SideEffects.Dismiss -> {
+                    bottomSheetNavigator.popBackStack()
+                }
             }
-        }
-    }
-
-    ScreenContainer(
-        onProgress = onProgressSending,
-        onProgressDescription = onProgressDescription,
-        blurBackground = true
-    ) {
+        }) {
         val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
 
         GreenColumn(

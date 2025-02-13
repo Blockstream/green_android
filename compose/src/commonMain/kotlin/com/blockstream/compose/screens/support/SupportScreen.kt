@@ -32,53 +32,20 @@ import blockstream_green.common.generated.resources.id_message
 import blockstream_green.common.generated.resources.id_please_be_as_detailed_as_possible
 import blockstream_green.common.generated.resources.id_share_logs
 import blockstream_green.common.generated.resources.id_submit
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.SupportType
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.SupportData
 import com.blockstream.common.events.Events
-import com.blockstream.common.models.support.SupportViewModel
 import com.blockstream.common.models.support.SupportViewModelAbstract
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.extensions.onValueChange
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-
-@Parcelize
-data class SupportScreen(
-    val type: SupportType,
-    val supportData: SupportData,
-    val greenWalletOrNull: GreenWallet?
-) : Screen, Parcelable {
-
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<SupportViewModel> {
-            parametersOf(type, supportData, greenWalletOrNull)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        SupportScreen(viewModel = viewModel)
-    }
-}
 
 @Composable
 fun SupportScreen(
     viewModel: SupportViewModelAbstract
 ) {
-
-    HandleSideEffect(viewModel)
 
     val type = viewModel.type
     val email by viewModel.email.collectAsStateWithLifecycle()
@@ -89,107 +56,111 @@ fun SupportScreen(
     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
     val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
 
-    Box(modifier = Modifier
-        .fillMaxSize()
-    ) {
-        GreenColumn(
+    SetupScreen(viewModel = viewModel, withPadding = false) {
+
+        Box(
             modifier = Modifier
                 .fillMaxSize()
         ) {
             GreenColumn(
-                padding = 0,
-                space = 8,
                 modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState())
-                    .imePadding()
+                    .fillMaxSize()
             ) {
+                GreenColumn(
+                    padding = 0,
+                    space = 8,
+                    modifier = Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                        .imePadding()
+                ) {
 
-                if (viewModel.type == SupportType.INCIDENT) {
-                    Text(
-                        stringResource(Res.string.id_please_be_as_detailed_as_possible),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                    if (viewModel.type == SupportType.INCIDENT) {
+                        Text(
+                            stringResource(Res.string.id_please_be_as_detailed_as_possible),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                        )
+                    }
+
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = viewModel.email.onValueChange(),
+                        label = { Text(stringResource(Res.string.id_email)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        singleLine = true,
+                    )
+
+                    OutlinedTextField(
+                        value = message,
+                        onValueChange = viewModel.message.onValueChange(maxChars = 1000),
+                        label = { Text(stringResource(if (viewModel.type == SupportType.INCIDENT) Res.string.id_issue_description else Res.string.id_message)) },
+                        supportingText = {
+                            Text(
+                                text = "${message.length} / 1000",
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.End,
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 350.dp)
                     )
                 }
 
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = viewModel.email.onValueChange(),
-                    label = { Text(stringResource(Res.string.id_email)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    singleLine = true,
-                )
+                GreenColumn(padding = 0, space = 8) {
 
-                OutlinedTextField(
-                    value = message,
-                    onValueChange = viewModel.message.onValueChange(maxChars = 1000),
-                    label = { Text(stringResource(if (viewModel.type == SupportType.INCIDENT) Res.string.id_issue_description else Res.string.id_message)) },
-                    supportingText = {
-                        Text(
-                            text = "${message.length} / 1000",
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.End,
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 350.dp)
-                )
-            }
+                    Column {
 
-            GreenColumn(padding = 0, space = 8) {
+                        if (type == SupportType.INCIDENT) {
+                            Row(
+                                modifier = Modifier.toggleable(
+                                    value = attachLogs,
+                                    onValueChange = viewModel.attachLogs.onValueChange(),
+                                    role = Role.Checkbox
+                                ).fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Checkbox(
+                                    checked = attachLogs,
+                                    onCheckedChange = viewModel.attachLogs.onValueChange(),
+                                )
 
-                Column {
+                                Text(stringResource(Res.string.id_share_logs))
+                            }
+                        }
 
-                    if (type == SupportType.INCIDENT) {
-                        Row(
-                            modifier = Modifier.toggleable(
-                                value = attachLogs,
-                                onValueChange = viewModel.attachLogs.onValueChange(),
-                                role = Role.Checkbox
-                            ).fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Checkbox(
-                                checked = attachLogs,
-                                onCheckedChange = viewModel.attachLogs.onValueChange(),
-                            )
 
-                            Text(stringResource(Res.string.id_share_logs))
+                        if (isTorEnabled) {
+                            Row(
+                                modifier = Modifier.toggleable(
+                                    value = torAcknowledged,
+                                    onValueChange = viewModel.torAcknowledged.onValueChange(),
+                                    role = Role.Checkbox
+                                ).fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Checkbox(
+                                    checked = torAcknowledged,
+                                    onCheckedChange = viewModel.torAcknowledged.onValueChange()
+                                )
+
+                                Text(stringResource(Res.string.id_i_understand_that_asking_for_support))
+                            }
                         }
                     }
 
-
-                    if (isTorEnabled) {
-                        Row(
-                            modifier = Modifier.toggleable(
-                                value = torAcknowledged,
-                                onValueChange = viewModel.torAcknowledged.onValueChange(),
-                                role = Role.Checkbox
-                            ).fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Checkbox(
-                                checked = torAcknowledged,
-                                onCheckedChange = viewModel.torAcknowledged.onValueChange()
-                            )
-
-                            Text(stringResource(Res.string.id_i_understand_that_asking_for_support))
-                        }
+                    GreenButton(
+                        text = stringResource(Res.string.id_submit),
+                        size = GreenButtonSize.BIG,
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = buttonEnabled,
+                        onProgress = onProgress
+                    ) {
+                        viewModel.postEvent(Events.Continue)
                     }
-                }
-
-                GreenButton(
-                    text = stringResource(Res.string.id_submit),
-                    size = GreenButtonSize.BIG,
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = buttonEnabled,
-                    onProgress = onProgress
-                ) {
-                    viewModel.postEvent(Events.Continue)
                 }
             }
         }

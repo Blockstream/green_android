@@ -33,7 +33,6 @@ dependencies {
     api(libs.androidx.appcompat)
     api(libs.androidx.browser)
     api(libs.androidx.startup.runtime)
-    api(libs.compose.material3)
     api(libs.androidx.work.runtime.ktx)
     api(libs.androidx.activity.compose)
     api(libs.androidx.core.splashscreen)

@@ -27,10 +27,7 @@ fun MainMenuBottomSheetPreview() {
             Text("MenuBottomSheetPreview env: $environment")
 
             if (showBottomSheet) {
-                MainMenuBottomSheetView(
-                    onSelect = { menuEntry ->
-
-                    },
+                MainMenuBottomSheet(
                     isTestnet = false,
                     onDismissRequest = {
                         showBottomSheet = false

@@ -7,84 +7,155 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import com.blockstream.compose.theme.labelLarge
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.blockstream.common.models.IOnProgress
+import com.blockstream.compose.navigation.LocalInnerPadding
+import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.utils.ifTrue
+import com.blockstream.ui.utils.excludeBottom
+
+sealed class OnProgressStyle {
+    data object Disabled : OnProgressStyle()
+    data object Top : OnProgressStyle()
+    data class Full(
+        val bluBackground: Boolean = true,
+        val riveAnimation: RiveAnimation? = null
+    ) : OnProgressStyle()
+}
 
 @Composable
 fun ScreenContainer(
-    onProgress: Boolean,
-    onProgressDescription: String? = null,
-    riveAnimation: RiveAnimation? = null,
-    blurBackground: Boolean = true,
-    content: @Composable BoxScope.() -> Unit
+    viewModel: IOnProgress,
+    scrollable: Boolean = false,
+    withPadding: Boolean = true,
+    withInsets: Boolean = true,
+    withBottomInsets: Boolean = true,
+    withBottomNavBarPadding: Boolean = false,
+    onProgressStyle: OnProgressStyle = OnProgressStyle.Top,
+    verticalArrangement: Arrangement.Vertical = Arrangement.Top,
+    horizontalAlignment: Alignment.Horizontal = Alignment.Start,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.(innerPadding: PaddingValues) -> Unit
 ) {
-    Box(modifier = Modifier
-            .fillMaxSize()
-            .ifTrue(onProgress) {
-                background(MaterialTheme.colorScheme.background.copy(alpha = 0.75f))
-                    .blur(6.dp)
-            }
-    ) {
-        content(this)
-    }
+    val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
+    val onProgressDescription by viewModel.onProgressDescription.collectAsStateWithLifecycle()
 
-    AnimatedVisibility(
-        onProgress,
-        enter = fadeIn(),
-        exit = fadeOut()
-    ) {
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .pointerInput(Unit) {
-                    detectTapGestures {
-                        // Catch all click events
+    val innerPadding = LocalInnerPadding.current
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .ifTrue(scrollable) {
+                it.verticalScroll(rememberScrollState())
+            }.ifTrue(withPadding) {
+                it.padding(16.dp)
+            }.ifTrue(withInsets) {
+                if (withBottomInsets) {
+                    it.consumeWindowInsets(innerPadding)
+                        .padding(innerPadding)
+                } else {
+                    innerPadding.excludeBottom().let { excluded ->
+                        it.consumeWindowInsets(excluded)
+                            .padding(excluded)
                     }
                 }
-                .background(MaterialTheme.colorScheme.background.let {
-                    if (blurBackground) it.copy(
-                        alpha = 0.75f
-                    ) else it
-                })
-        ) {
-            Column(
-                modifier = Modifier
-                    .align(Alignment.Center),
-                verticalArrangement = Arrangement.spacedBy(space = 24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+            }.ifTrue(withBottomNavBarPadding) {
+                it.padding(bottom = 80.dp)
+            }.then(modifier),
+        verticalArrangement = verticalArrangement,
+        horizontalAlignment = horizontalAlignment,
+        content = {
+            content(innerPadding)
+        }
+    )
 
+    when (onProgressStyle) {
+        is OnProgressStyle.Full -> {
+            AnimatedVisibility(
+                onProgress,
+                enter = fadeIn(),
+                exit = fadeOut()
             ) {
-                if (riveAnimation != null) {
-                    Rive(riveAnimation = riveAnimation)
-                } else {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .size(120.dp),
-                        color = MaterialTheme.colorScheme.secondary,
-                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                    )
-                }
 
-                onProgressDescription?.also {
-                    Text(text = it, style = labelLarge)
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .pointerInput(Unit) {
+                            detectTapGestures {
+                                // Catch all click events
+                            }
+                        }
+                        .background(MaterialTheme.colorScheme.background.let {
+                            if (onProgressStyle.bluBackground) it.copy(
+                                alpha = 0.75f
+                            ) else it
+                        })
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.Center),
+                        verticalArrangement = Arrangement.spacedBy(space = 24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+
+                    ) {
+
+                        if (onProgressStyle.riveAnimation != null) {
+                            Rive(riveAnimation = onProgressStyle.riveAnimation)
+                        } else {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .size(120.dp),
+                                color = MaterialTheme.colorScheme.secondary,
+                                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                            )
+                        }
+
+                        onProgressDescription?.also {
+                            Text(text = it, style = titleMedium)
+                        }
+                    }
                 }
             }
+        }
+
+        OnProgressStyle.Top -> {
+            AnimatedVisibility(
+                visible = onProgress,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .padding(top = innerPadding.calculateTopPadding())
+                        .fillMaxWidth()
+                )
+            }
+        }
+
+        OnProgressStyle.Disabled -> {
+
         }
     }
 }

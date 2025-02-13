@@ -1,7 +1,5 @@
 package com.blockstream.common.data
 
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.GreenJson
@@ -10,7 +8,6 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-@Parcelize
 data class CountlyAsset constructor(
     @SerialName("id") val assetId: String,
     @SerialName("amp") val isAmp: Boolean = false,
@@ -18,7 +15,7 @@ data class CountlyAsset constructor(
 //    @SerialName("isSendable") val isSendable: Boolean = true, // Display "Any Liquid Asset" UI element/**/
     @SerialName("isAnyLiquid") val isAnyLiquidAsset: Boolean = false, // Display "Any Liquid Asset" UI element
     @SerialName("isAnyAmp") val isAnyAmpAsset: Boolean = false // Display "Any AMP Asset" UI element
-) : GreenJson<CountlyAsset>(), Parcelable {
+) : GreenJson<CountlyAsset>() {
     override fun kSerializer() = serializer()
 
     val isAnyAsset

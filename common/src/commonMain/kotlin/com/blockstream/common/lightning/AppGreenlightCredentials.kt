@@ -7,7 +7,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 @Serializable
-data class AppGreenlightCredentials(
+data class AppGreenlightCredentials constructor(
     @Serializable(with = ListUByteSerializer::class)
     @SerialName("deviceKey")
     val deviceKey: List<UByte>,

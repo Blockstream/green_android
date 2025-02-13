@@ -23,46 +23,19 @@ import blockstream_green.common.generated.resources.id_message
 import blockstream_green.common.generated.resources.id_paste_here_the_message_to_be
 import blockstream_green.common.generated.resources.id_sign_message
 import blockstream_green.common.generated.resources.id_signature
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
-import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.models.addresses.SignMessageViewModel
 import com.blockstream.common.models.addresses.SignMessageViewModelAbstract
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenTextField
 import com.blockstream.compose.components.Rive
 import com.blockstream.compose.components.RiveAnimation
 import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.views.DataListItem
+import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-data class SignMessageBottomSheet(
-    val greenWallet: GreenWallet,
-    val accountAsset: AccountAsset,
-    val address: String
-) :
-    BottomScreen(), Parcelable {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<SignMessageViewModel> {
-            parametersOf(greenWallet, accountAsset, address)
-        }
-
-        SignMessageBottomSheet(
-            viewModel = viewModel,
-            onDismissRequest = onDismissRequest()
-        )
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,7 +53,6 @@ fun SignMessageBottomSheet(
 
         val message by viewModel.message.collectAsStateWithLifecycle()
         val signature by viewModel.signature.collectAsStateWithLifecycle()
-        val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
         val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
 
         Column(modifier = Modifier.offset(y = -32.dp)) {

@@ -1,7 +1,5 @@
 package com.blockstream.common.gdk.data
 
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.extensions.hasExpiredUtxos
 import com.blockstream.common.extensions.hasHistory
@@ -13,7 +11,6 @@ import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.utils.toAmountLook
 import kotlinx.serialization.Serializable
 
-@Parcelize
 @Serializable
 data class AccountBalance constructor(
     val account: Account,
@@ -24,7 +21,7 @@ data class AccountBalance constructor(
     val hasNoTwoFactor: Boolean = false,
     val hasExpiredUtxos: Boolean = false,
     val hasTwoFactorReset: Boolean = false,
-) : GreenJson<AccountBalance>(), Parcelable {
+) : GreenJson<AccountBalance>() {
     override fun kSerializer() = serializer()
 
     fun balance(session: GdkSession) = session.accountAssets(account).value.policyAsset

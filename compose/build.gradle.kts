@@ -1,6 +1,5 @@
 
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
@@ -8,24 +7,22 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.kotlinParcelize)
     alias(libs.plugins.kotlinxSerialization)
+//    alias(libs.plugins.composeHotReload)
 }
 
-kotlin {
-    androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions {
-            freeCompilerArgs.addAll("-P", "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.blockstream.common.Parcelize")
-        }
-    }
+//composeCompiler {
+//    featureFlags.add(ComposeFeatureFlag.OptimizeNonSkippingGroups)
+//}
 
-    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
     jvmToolchain(libs.versions.jvm.get().toInt())
+
+    androidTarget()
 
     jvm("desktop")
 
@@ -70,12 +67,6 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtime.compose)
             /** ----------------------------------------------------------------------------------------- */
 
-            /**  --- Voyager ---------------------------------------------------------------------------- */
-            api(libs.voyager.navigator)
-            api(libs.voyager.transitions)
-            api(libs.voyager.koin)
-            /** ----------------------------------------------------------------------------------------- */
-
             /**  --- Koin   ----------------------------------------------------------------------------- */
             implementation(libs.koin.compose)
             /** ----------------------------------------------------------------------------------------- */
@@ -88,11 +79,13 @@ kotlin {
             implementation(libs.coil.svg)
             implementation(libs.coil.test)
             implementation(libs.coil.network.ktor3)
+            implementation(libs.compose.action.menu)
             /** ----------------------------------------------------------------------------------------- */
         }
 
         val desktopMain by getting
         desktopMain.dependencies {
+            implementation(libs.kotlinx.coroutines.swing)
             implementation(compose.desktop.currentOs)
         }
 
@@ -166,3 +159,7 @@ compose.desktop {
         }
     }
 }
+
+//tasks.register<ComposeHotRun>("runHot") {
+//    mainClass.set("com.blockstream.compose.DevMainKt")
+//}

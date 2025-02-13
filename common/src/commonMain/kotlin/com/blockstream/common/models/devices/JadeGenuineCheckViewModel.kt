@@ -3,8 +3,8 @@ package com.blockstream.common.models.devices
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_your_device_was_disconnected
 import com.blockstream.common.SupportType
-import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.devices.DeviceState
 import com.blockstream.common.devices.JadeDevice
 import com.blockstream.common.events.Event
@@ -28,14 +28,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
 
-abstract class JadeGenuineCheckViewModelAbstract(greenWallet: GreenWallet?) : AbstractDeviceViewModel(greenWallet = greenWallet) {
+abstract class JadeGenuineCheckViewModelAbstract(greenWalletOrNull: GreenWallet?) : AbstractDeviceViewModel(greenWalletOrNull = greenWalletOrNull) {
     override fun screenName(): String = "JadeGenuineCheck"
 
     @NativeCoroutinesState
     abstract val genuineState: StateFlow<GenuineState>
 }
 
-class JadeGenuineCheckViewModel constructor(greenWallet: GreenWallet?, deviceId: String?) : JadeGenuineCheckViewModelAbstract(greenWallet) {
+class JadeGenuineCheckViewModel constructor(greenWalletOrNull: GreenWallet?, deviceId: String?) : JadeGenuineCheckViewModelAbstract(greenWalletOrNull) {
 
     private val _isGenuine = MutableStateFlow<GenuineState>(GenuineState.CHECKING)
     override val genuineState: StateFlow<GenuineState> = _isGenuine
@@ -104,7 +104,8 @@ class JadeGenuineCheckViewModel constructor(greenWallet: GreenWallet?, deviceId:
                         supportData = SupportData(
                             subject = "Jade Genuine check failed",
                             zendeskHardwareWallet = deviceOrNull?.deviceModel?.zendeskValue
-                        )
+                        ),
+                        greenWalletOrNull = greenWalletOrNull
                     ))
                 )
             }

@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -29,83 +28,46 @@ import blockstream_green.common.generated.resources.id_login_with_bip39_passphra
 import blockstream_green.common.generated.resources.id_ok
 import blockstream_green.common.generated.resources.id_passphrase
 import blockstream_green.common.generated.resources.id_you_will_be_asked_to_enter_your
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.login.Bip39PassphraseViewModel
 import com.blockstream.common.models.login.Bip39PassphraseViewModelAbstract
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.components.LearnMoreButton
 import com.blockstream.compose.extensions.onValueChange
-import com.blockstream.compose.navigation.getNavigationResult
-import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.TextInputPassword
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.navigation.setResult
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Parcelize
-data class Bip39PassphraseBottomSheet(
-    val greenWallet: GreenWallet,
-    val passphrase: String
-) : BottomScreen(), Parcelable {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<Bip39PassphraseViewModel> {
-            parametersOf(greenWallet, passphrase)
-        }
-
-        Bip39PassphraseBottomSheet(
-            viewModel = viewModel,
-            sheetState = sheetState(skipPartiallyExpanded = true),
-            setBip39Passphrase = { setResult(it) },
-            onDismissRequest = onDismissRequest()
-        )
-    }
-
-    companion object {
-        @Composable
-        fun getResult(fn: (String) -> Unit) =
-            getNavigationResult(this::class, fn)
-
-        private fun setResult(result: String) =
-            setNavigationResult(this::class, result)
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Bip39PassphraseBottomSheet(
     viewModel: Bip39PassphraseViewModelAbstract,
-    sheetState: SheetState = rememberModalBottomSheetState(),
-    setBip39Passphrase: (passphrase: String) -> Unit = { },
     onDismissRequest: () -> Unit,
 ) {
 
     HandleSideEffect(viewModel = viewModel) {
         if (it is Bip39PassphraseViewModel.LocalSideEffects.SetBip39Passphrase) {
-            setBip39Passphrase(it.passphrase)
+            NavigateDestinations.Bip39Passphrase.setResult(it.passphrase)
         }
     }
 
     GreenBottomSheet(
         title = stringResource(Res.string.id_login_with_bip39_passphrase),
         viewModel = viewModel,
-        sheetState = sheetState,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         onDismissRequest = onDismissRequest
     ) {
-
         val passphrase by viewModel.passphrase.collectAsStateWithLifecycle()
         val passwordVisibility = remember { mutableStateOf(false) }
         val focusManager = LocalFocusManager.current
+
         TextField(
             value = passphrase,
             visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation(),

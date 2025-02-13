@@ -4,10 +4,7 @@ package com.blockstream.common.gdk.data
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_address
 import blockstream_green.common.generated.resources.id_amount
-import com.arkivanov.essenty.parcelable.IgnoredOnParcel
 import com.blockstream.common.BTC_POLICY_ASSET
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.utils.StringHolder
@@ -18,7 +15,6 @@ import kotlinx.serialization.Serializable
 import kotlin.math.absoluteValue
 
 @Serializable
-@Parcelize
 data class Transaction constructor(
     var accountInjected: Account? = null,
     var confirmationsMaxInjected: Long = 0, // Used to invalidate the UI
@@ -63,7 +59,7 @@ data class Transaction constructor(
     val isRefundableSwap: Boolean = false,
     @SerialName("extras")
     val extras: List<Pair<String,String>>? = null
-) : GreenJson<Transaction>(), Parcelable {
+) : GreenJson<Transaction>() {
     val account
         get() = accountInjected!!
 
@@ -99,7 +95,6 @@ data class Transaction constructor(
         }
     }
 
-    @IgnoredOnParcel
     val createdAtInstant: Instant? by lazy {
         if (createdAtTs > 0) Instant.fromEpochMilliseconds(
             createdAtTs / 1000
@@ -122,7 +117,6 @@ data class Transaction constructor(
     val onChainAddress
         get() = inputs.first().address ?: ""
 
-    @IgnoredOnParcel
     val spv: SPVResult by lazy {
         when (spvVerified) {
             "in_progress" -> SPVResult.InProgress
@@ -134,7 +128,6 @@ data class Transaction constructor(
         }
     }
 
-    @IgnoredOnParcel
     val utxoViews: List<UtxoView> by lazy {
         if (account.isLightning) {
             listOf(
@@ -223,7 +216,6 @@ data class Transaction constructor(
         }
     }
 
-    @IgnoredOnParcel
     val assets by lazy {
         satoshi
             .toList()

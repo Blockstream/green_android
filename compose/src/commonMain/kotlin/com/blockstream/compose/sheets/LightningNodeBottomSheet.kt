@@ -20,38 +20,16 @@ import blockstream_green.common.generated.resources.id_node_info
 import blockstream_green.common.generated.resources.id_rescan_swaps
 import blockstream_green.common.generated.resources.id_share_logs
 import blockstream_green.common.generated.resources.id_show_recovery_phrase
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.models.sheets.LightningNodeViewModel
 import com.blockstream.common.models.sheets.LightningNodeViewModelAbstract
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
+import com.blockstream.compose.views.DataListItem
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
-import com.blockstream.compose.views.DataListItem
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
 
-@Parcelize
-data class LightningNodeBottomSheet(
-    val greenWallet: GreenWallet,
-) : BottomScreen(), Parcelable {
-
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<LightningNodeViewModel> {
-            parametersOf(greenWallet)
-        }
-
-        LightningNodeBottomSheet(
-            viewModel = viewModel,
-            onDismissRequest = onDismissRequest()
-        )
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

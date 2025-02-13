@@ -1,6 +1,5 @@
 package com.blockstream.compose.screens.archived
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,7 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -27,57 +25,25 @@ import blockstream_green.common.generated.resources.id_no_archived_accounts
 import blockstream_green.common.generated.resources.id_rename_account
 import blockstream_green.common.generated.resources.id_unarchive_account
 import blockstream_green.common.generated.resources.text_aa
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
-import com.blockstream.common.models.archived.ArchivedAccountsViewModel
 import com.blockstream.common.models.archived.ArchivedAccountsViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.MenuEntry
 import com.blockstream.compose.components.PopupMenu
 import com.blockstream.compose.components.PopupState
-import com.blockstream.compose.components.ScreenContainer
 import com.blockstream.compose.theme.bodyMedium
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
 
 
-@Parcelize
-data class ArchivedAccountsScreen(
-    val greenWallet: GreenWallet,
-    val navigateToRoot: Boolean
-) : Parcelable, Screen {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<ArchivedAccountsViewModel>() {
-            parametersOf(greenWallet, navigateToRoot)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        ArchivedAccountsScreen(viewModel = viewModel)
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ArchivedAccountsScreen(
     viewModel: ArchivedAccountsViewModelAbstract
 ) {
-
-    HandleSideEffect(viewModel = viewModel)
-
     val archivedAccounts by viewModel.archivedAccounts.collectAsStateWithLifecycle()
 
-    ScreenContainer(onProgress = archivedAccounts.isLoading(), blurBackground = false) {
+    SetupScreen(viewModel = viewModel, withPadding = false) {
         if (archivedAccounts.isEmpty()) {
             Text(
                 text = stringResource(Res.string.id_no_archived_accounts),
@@ -88,7 +54,6 @@ fun ArchivedAccountsScreen(
                     .fillMaxWidth()
                     .padding(top = 32.dp)
                     .padding(horizontal = 16.dp)
-                    .align(Alignment.Center)
             )
         } else if (archivedAccounts.isSuccess()) {
 
@@ -97,7 +62,9 @@ fun ArchivedAccountsScreen(
                 contentPadding = PaddingValues(all = 16.dp),
             ) {
                 items(archivedAccounts.data() ?: listOf()) { account ->
-                    Box(modifier = Modifier.animateItemPlacement()) {
+                    Box(
+//                        modifier = Modifier.animateItemPlacement()
+                    ) {
 
                         val popupState = remember {
                             PopupState()
@@ -130,6 +97,7 @@ fun ArchivedAccountsScreen(
                                     onClick = {
                                         viewModel.postEvent(
                                             NavigateDestinations.RenameAccount(
+                                                greenWallet = viewModel.greenWallet,
                                                 account = account.account
                                             )
                                         )

@@ -1,11 +1,8 @@
 package com.blockstream.common.data
 
-import cafe.adriel.voyager.core.lifecycle.JavaSerializable
 import com.blockstream.common.BITS_UNIT
 import com.blockstream.common.BTC_UNIT
 import com.blockstream.common.MBTC_UNIT
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.SATOSHI_UNIT
 import com.blockstream.common.UBTC_UNIT
 import com.blockstream.common.extensions.assetTicker
@@ -19,14 +16,13 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-@Parcelize
 data class DenominatedValue constructor(
     val denomination: Denomination,
     val balance: Balance? = null,
     val assetId: String? = null,
     val asInput: String? = null,
     val asLook: String? = null
-): GreenJson<DenominatedValue>(), Parcelable, JavaSerializable {
+): GreenJson<DenominatedValue>() {
     override fun kSerializer() = serializer()
 
     fun asNetworkUnit(session: GdkSession): String {
@@ -107,8 +103,7 @@ data class DenominatedValue constructor(
 }
 
 @Serializable
-@Parcelize
-sealed class Denomination : Parcelable, JavaSerializable {
+sealed class Denomination{
     abstract val denomination: String
     @Serializable
     object BTC: Denomination() {

@@ -47,23 +47,22 @@ import java.security.UnrecoverableKeyException
 actual fun rememberBiometricsState(): BiometricsState {
     val activity = LocalActivity.current as FragmentActivity
     val snackbar = LocalSnackbar.current
-    val scope = rememberCoroutineScope()
     val dialog = LocalDialog.current
     val browserManager = LocalPlatformManager.current
     // LocalInspectionMode is true in preview
     val androidKeystore: AndroidKeystore =
         if (LocalInspectionMode.current) AndroidKeystore(activity) else koinInject()
-    val coroutineScope = rememberCoroutineScope()
+
+    val scope = rememberCoroutineScope()
 
     return remember {
         BiometricsState(
             activity = activity,
             platformManager = browserManager,
-            coroutineScope = scope,
+            scope = scope,
             snackbarHostState = snackbar,
             dialogState = dialog,
             androidKeystore = androidKeystore,
-            scope = coroutineScope
         )
     }
 }
@@ -72,11 +71,10 @@ actual fun rememberBiometricsState(): BiometricsState {
 actual class BiometricsState(
     val activity: FragmentActivity,
     val platformManager: PlatformManager,
-    val coroutineScope: CoroutineScope,
+    val scope: CoroutineScope,
     val snackbarHostState: SnackbarHostState,
     val dialogState: DialogState,
     val androidKeystore: AndroidKeystore,
-    val scope: CoroutineScope
 ) {
     var activeBiometricPrompt: BiometricPrompt? = null
 
@@ -112,11 +110,11 @@ actual class BiometricsState(
             activeBiometricPrompt?.authenticate(promptInfo.build())
         } catch (e: InvalidAlgorithmParameterException) {
             // At least one biometric must be enrolled
-            coroutineScope.launch {
+            scope.launch {
                 dialogState.openDialog(OpenDialogData(message = StringHolder.create(Res.string.id_please_activate_at_least_one)))
             }
         } catch (e: Exception) {
-            coroutineScope.launch {
+            scope.launch {
                 dialogState.openErrorDialog(e)
             }
         }
@@ -199,7 +197,7 @@ actual class BiometricsState(
                                 }
 
                             } catch (e: Exception) {
-                                coroutineScope.launch {
+                                scope.launch {
                                     dialogState.openErrorDialog(e)
                                 }
                             }
@@ -233,7 +231,7 @@ actual class BiometricsState(
                 }
 
             } catch (e: KeyPermanentlyInvalidatedException) {
-                coroutineScope.launch {
+                scope.launch {
                     snackbarHostState.showErrorSnackbar(
                         platformManager = platformManager,
                         dialogState = dialogState,
@@ -248,7 +246,7 @@ actual class BiometricsState(
                     )
                 )
             } catch (e: UnrecoverableKeyException) {
-                coroutineScope.launch {
+                scope.launch {
                     snackbarHostState.showErrorSnackbar(
                         platformManager = platformManager,
                         dialogState = dialogState,
@@ -263,7 +261,7 @@ actual class BiometricsState(
                     )
                 )
             } catch (e: Exception) {
-                coroutineScope.launch {
+                scope.launch {
                     dialogState.openErrorDialog(e)
                 }
             }
@@ -333,11 +331,11 @@ actual class BiometricsState(
             )
         } catch (e: InvalidAlgorithmParameterException) {
             // At least one biometric must be enrolled
-            coroutineScope.launch {
+            scope.launch {
                 dialogState.openDialog(OpenDialogData(message = StringHolder.create(Res.string.id_please_activate_at_least_one)))
             }
         } catch (e: Exception) {
-            coroutineScope.launch {
+            scope.launch {
                 dialogState.openErrorDialog(e)
             }
         }
@@ -382,7 +380,7 @@ actual class BiometricsState(
             // Ask for user presence
             activeBiometricPrompt?.authenticate(promptInfo.build())
         } catch (e: Exception) {
-            coroutineScope.launch {
+            scope.launch {
                 dialogState.openErrorDialog(e) {
                     // If an unsupported method is initiated, it's better to show the words rather than
                     // block the user from retrieving his words
@@ -434,7 +432,7 @@ actual class BiometricsState(
             // Ask for user presence
             activeBiometricPrompt?.authenticate(promptInfo.build())
         } catch (e: Exception) {
-            coroutineScope.launch {
+            scope.launch {
                 dialogState.openErrorDialog(e) {
                     // If an unsupported method is initiated, it's better to show the words rather than
                     // block the user from retrieving his words
@@ -454,7 +452,7 @@ open class AuthenticationCallback constructor(val state: BiometricsState) :
             // This is errorCode OK, no need to handle it
         } else {
             // TODO INVALIDATE ALL BIOMETRIC LOGIN CREDENTIALS
-            state.coroutineScope.launch {
+            state.scope.launch {
                 state.snackbarHostState.showSnackbar(
                     message = getString(
                         Res.string.id_authentication_error_s,
@@ -468,7 +466,7 @@ open class AuthenticationCallback constructor(val state: BiometricsState) :
 
     override fun onAuthenticationFailed() {
         logger.d { "onAuthenticationFailed" }
-        state.coroutineScope.launch {
+        state.scope.launch {
             state.snackbarHostState.showSnackbar(message = getString(Res.string.id_authentication_failed))
         }
         state.activeBiometricPrompt = null

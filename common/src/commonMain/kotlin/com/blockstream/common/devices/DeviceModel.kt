@@ -1,7 +1,9 @@
 package com.blockstream.common.devices
 
 import com.blockstream.common.devices.DeviceBrand.Blockstream
+import kotlinx.serialization.Serializable
 
+@Serializable
 enum class DeviceModel(val deviceModel: String) {
     BlockstreamGeneric("Blockstream"),
     BlockstreamJade("Jade"),

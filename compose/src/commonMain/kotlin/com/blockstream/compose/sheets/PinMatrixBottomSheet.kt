@@ -20,47 +20,18 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.backspace
 import blockstream_green.common.generated.resources.id_continue
 import blockstream_green.common.generated.resources.id_enter_the_pin_for_your_hardware
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.models.SimpleGreenViewModel
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
-import com.blockstream.compose.navigation.getNavigationResult
-import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.headlineSmall
 import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.navigation.setResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-object PinMatrixBottomSheet : BottomScreen(), Parcelable {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<SimpleGreenViewModel> {
-            parametersOf(null, null, "PinMatrix")
-        }
-
-        PinMatrixBottomSheet(
-            viewModel = viewModel,
-            onDismissRequest = onDismissRequest()
-        )
-    }
-
-    @Composable
-    fun getResult(fn: (String) -> Unit) =
-        getNavigationResult(this::class, fn)
-
-    fun setResult(result: String) =
-        setNavigationResult(this::class, result)
-
-}
-
 
 @Composable
 fun PinMatrixButton(digit: String, onClick: (digit: String) -> Unit) {
@@ -141,7 +112,7 @@ fun PinMatrixBottomSheet(
                 text = stringResource(Res.string.id_continue),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                PinMatrixBottomSheet.setResult(pin)
+                NavigateDestinations.DevicePin.setResult(pin)
                 onDismissRequest()
             }
         }

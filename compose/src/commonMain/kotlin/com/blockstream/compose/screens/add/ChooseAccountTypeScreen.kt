@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,14 +40,8 @@ import blockstream_green.common.generated.resources.id_hide_advanced_options
 import blockstream_green.common.generated.resources.id_show_advanced_options
 import blockstream_green.common.generated.resources.id_there_is_already_an_archived
 import blockstream_green.common.generated.resources.id_you_cannot_add_more_than_one
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.toggle
-import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.looks.AccountTypeLook
 import com.blockstream.common.models.GreenViewModel
@@ -54,22 +49,17 @@ import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.models.add.ChooseAccountTypeViewModel
 import com.blockstream.common.models.add.ChooseAccountTypeViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.navigation.PopTo
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.LocalDialog
-import com.blockstream.ui.components.GreenArrow
 import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
-import com.blockstream.compose.components.ScreenContainer
+import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.dialogs.LightningShortcutDialog
 import com.blockstream.compose.extensions.drawDiagonalLabel
-import com.blockstream.compose.screens.jade.JadeQRScreen
-import com.blockstream.compose.sheets.AssetsBottomSheet
+import com.blockstream.compose.screens.jade.JadeQRResult
 import com.blockstream.compose.sideeffects.OpenDialogData
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelLarge
@@ -79,48 +69,25 @@ import com.blockstream.compose.theme.md_theme_surfaceCircle
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.ifTrue
 import com.blockstream.compose.utils.roundBackground
+import com.blockstream.ui.components.GreenArrow
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.navigation.getResult
+import com.blockstream.ui.navigation.setResult
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-data class ChooseAccountTypeScreen(
-    val greenWallet: GreenWallet,
-    val assetBalance: AssetBalance?,
-    val allowAssetSelection: Boolean = true,
-    val popTo: PopTo?,
-) : Parcelable, Screen {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<ChooseAccountTypeViewModel> {
-            parametersOf(greenWallet, assetBalance, popTo)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        ChooseAccountTypeScreen(viewModel = viewModel, allowAssetSelection = allowAssetSelection)
-    }
-
-    companion object {
-        // Use ReviewAddAccountScreen as a result handler
-        internal fun setResult(result: AccountAsset) = ReviewAddAccountScreen.setResult(result)
-    }
-}
 
 @Composable
 fun ChooseAccountTypeScreen(
-    viewModel: ChooseAccountTypeViewModelAbstract,
-    allowAssetSelection: Boolean = true,
+    viewModel: ChooseAccountTypeViewModelAbstract
 ) {
     val dialog = LocalDialog.current
+    val scope = rememberCoroutineScope()
 
     var lightningShortcutViewModel by remember {
         mutableStateOf<GreenViewModel?>(null)
@@ -133,14 +100,24 @@ fun ChooseAccountTypeScreen(
         }
     }
 
-    HandleSideEffect(viewModel) {
-        when(it) {
+    NavigateDestinations.Assets.getResult<AssetBalance> {
+        viewModel.asset.value = it
+    }
+
+    NavigateDestinations.JadeQR.getResult<JadeQRResult> {
+        viewModel.postEvent(ChooseAccountTypeViewModel.LocalEvents.CreateLightningAccount(it.result))
+    }
+
+    SetupScreen(viewModel = viewModel, sideEffectsHandler = {
+        when (it) {
             is SideEffects.AccountCreated -> {
-                ChooseAccountTypeScreen.setResult(it.accountAsset)
+                NavigateDestinations.ReviewAddAccount.setResult(it.accountAsset)
             }
+
             is SideEffects.LightningShortcut -> {
                 lightningShortcutViewModel = SimpleGreenViewModel(viewModel.greenWallet)
             }
+
             is ChooseAccountTypeViewModel.LocalSideEffects.ExperimentalFeaturesDialog -> {
                 launch {
                     dialog.openDialog(
@@ -169,73 +146,74 @@ fun ChooseAccountTypeScreen(
                             },
                             secondaryText = getString(Res.string.id_archived_accounts),
                             onSecondary = {
-                                viewModel.postEvent(NavigateDestinations.ArchivedAccounts(navigateToRoot = true))
+                                viewModel.postEvent(
+                                    NavigateDestinations.ArchivedAccounts(
+                                        greenWallet = viewModel.greenWallet,
+                                        navigateToRoot = true
+                                    )
+                                )
                             }
                         )
                     )
                 }
             }
         }
-    }
+    }, onProgressStyle = OnProgressStyle.Full(bluBackground = true)) {
 
-    AssetsBottomSheet.getResult {
-        viewModel.asset.value = it
-    }
-
-    JadeQRScreen.getResult {
-        viewModel.postEvent(ChooseAccountTypeViewModel.LocalEvents.CreateLightningAccount(it))
-    }
-
-    val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
-    val onProgressDescription by viewModel.onProgressDescription.collectAsStateWithLifecycle()
-
-    ScreenContainer(onProgress = onProgress, onProgressDescription = onProgressDescription) {
-
-        GreenColumn(space = 0) {
-
-            val asset by viewModel.asset.collectAsStateWithLifecycle()
-            GreenAsset(
-                modifier = Modifier.padding(bottom = 16.dp),
-                assetBalance = asset, session = viewModel.sessionOrNull, title = stringResource(
-                    resource = Res.string.id_asset
-                ), withEditIcon = allowAssetSelection
-            ) {
-                if (allowAssetSelection) {
-                    viewModel.postEvent(NavigateDestinations.Assets())
+        val asset by viewModel.asset.collectAsStateWithLifecycle()
+        GreenAsset(
+            modifier = Modifier.padding(bottom = 16.dp),
+            assetBalance = asset, session = viewModel.sessionOrNull, title = stringResource(
+                resource = Res.string.id_asset
+            ), withEditIcon = viewModel.allowAssetSelection
+        ) {
+            if (viewModel.allowAssetSelection) {
+                scope.launch {
+                    viewModel.postEvent(
+                        NavigateDestinations.Assets.create(
+                            greenWallet = viewModel.greenWallet,
+                            session = viewModel.session
+                        )
+                    )
                 }
-            }
-
-            val accountTypes by viewModel.accountTypes.collectAsStateWithLifecycle()
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(Res.string.id_choose_security_policy),
-                    style = labelMedium,
-                    modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
-                )
-
-                GreenColumn(
-                    padding = 0, space = 8,
-                    modifier = Modifier
-                        .weight(1f)
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    accountTypes.forEach {
-                        AccountType(accountType = it, onClick = {
-                            viewModel.postEvent(ChooseAccountTypeViewModel.LocalEvents.ChooseAccountType(it.accountType))
-                        })
-                    }
-                }
-            }
-
-            val isShowingAdvancedOptions by viewModel.isShowingAdvancedOptions.collectAsStateWithLifecycle()
-            GreenButton(
-                text = stringResource(if (isShowingAdvancedOptions) Res.string.id_hide_advanced_options else Res.string.id_show_advanced_options),
-                type = GreenButtonType.TEXT,
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-            ) {
-                viewModel.isShowingAdvancedOptions.toggle()
             }
         }
+
+        val accountTypes by viewModel.accountTypes.collectAsStateWithLifecycle()
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = stringResource(Res.string.id_choose_security_policy),
+                style = labelMedium,
+                modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
+            )
+
+            GreenColumn(
+                padding = 0, space = 8,
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                accountTypes.forEach {
+                    AccountType(accountType = it, onClick = {
+                        viewModel.postEvent(
+                            ChooseAccountTypeViewModel.LocalEvents.ChooseAccountType(
+                                it.accountType
+                            )
+                        )
+                    })
+                }
+            }
+        }
+
+        val isShowingAdvancedOptions by viewModel.isShowingAdvancedOptions.collectAsStateWithLifecycle()
+        GreenButton(
+            text = stringResource(if (isShowingAdvancedOptions) Res.string.id_hide_advanced_options else Res.string.id_show_advanced_options),
+            type = GreenButtonType.TEXT,
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+        ) {
+            viewModel.isShowingAdvancedOptions.toggle()
+        }
+
     }
 }
 
@@ -250,10 +228,10 @@ fun AccountType(accountType: AccountTypeLook, onClick: () -> Unit = {}) {
 
         Box(modifier = Modifier
             .ifTrue(!accountType.canBeAdded) {
-                alpha(0.2f).blur(4.dp)
+                it.alpha(0.2f).blur(4.dp)
             }
             .ifTrue(accountType.isLightning) {
-                drawDiagonalLabel(
+                it.drawDiagonalLabel(
                     text = "BETA", color = whiteHigh, style = TextStyle(
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,

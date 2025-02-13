@@ -76,7 +76,7 @@ fun GreenQR(
                         .fillMaxSize()
                         .clickable { isFullscreen = false }
                         .ifTrue(isJadeQR) {
-                            background(Color.White)
+                            it.background(Color.White)
                         }
                     ) {
                         Card(

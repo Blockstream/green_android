@@ -25,6 +25,7 @@ import com.blockstream.common.extensions.tryCatch
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalance
+import com.blockstream.common.gdk.data.AccountAssetBalanceList
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.PendingTransaction
 import com.blockstream.common.gdk.params.AddressParams
@@ -335,8 +336,9 @@ class AccountExchangeViewModel(
                 postSideEffect(
                     SideEffects.NavigateTo(
                         NavigateDestinations.Accounts(
-                            accounts = (if (event.isFrom) fromAccounts.value else toAccounts.value)
-                                ?: listOf(),
+                            greenWallet = greenWallet,
+                            accounts = AccountAssetBalanceList((if (event.isFrom) fromAccounts.value else toAccounts.value)
+                                ?: listOf()),
                             withAsset = event.isFrom
                         )
                     )
@@ -555,6 +557,7 @@ class AccountExchangeViewModel(
                 postSideEffect(
                     SideEffects.NavigateTo(
                         NavigateDestinations.SendConfirm(
+                            greenWallet = greenWallet,
                             accountAsset = accountAsset.value!!,
                             denomination = denomination.value
                         )

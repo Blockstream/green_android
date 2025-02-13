@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,7 +21,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
@@ -53,29 +51,21 @@ import blockstream_green.common.generated.resources.id_invalid_mnemonic
 import blockstream_green.common.generated.resources.id_passphrase
 import blockstream_green.common.generated.resources.id_type_the_next_word
 import blockstream_green.common.generated.resources.info
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.SetupArgs
+import com.blockstream.common.data.ScanResult
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.models.onboarding.phone.EnterRecoveryPhraseViewModel
 import com.blockstream.common.models.onboarding.phone.EnterRecoveryPhraseViewModelAbstract
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.LocalSnackbar
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.components.PasteButton
 import com.blockstream.compose.components.ScanQrButton
 import com.blockstream.compose.dialogs.TextDialog
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.managers.getClipboard
-import com.blockstream.compose.managers.rememberStateKeeperFactory
-import com.blockstream.compose.sheets.CameraBottomSheet
-import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
-import com.blockstream.compose.sheets.RecoveryHelpBottomSheet
+import com.blockstream.compose.navigation.LocalInnerPadding
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
@@ -85,48 +75,30 @@ import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.md_theme_brandSurface
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.navigation.getResult
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
 
-@Parcelize
-data class EnterRecoveryPhraseScreen(val setupArgs: SetupArgs) : Screen, Parcelable {
-    @Composable
-    override fun Content() {
-        val stateKeeperFactory = rememberStateKeeperFactory()
-
-        val viewModel = koinScreenModel<EnterRecoveryPhraseViewModel>() {
-            parametersOf(setupArgs, stateKeeperFactory.stateKeeper())
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        EnterRecoveryPhraseScreen(viewModel = viewModel)
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EnterRecoveryPhraseScreen(
     viewModel: EnterRecoveryPhraseViewModelAbstract
 ) {
     val platformManager = LocalPlatformManager.current
-    CameraBottomSheet.getResult {
+    val innerPadding = LocalInnerPadding.current
+
+    NavigateDestinations.Camera.getResult<ScanResult> {
         viewModel.postEvent(EnterRecoveryPhraseViewModel.LocalEvents.SetRecoveryPhrase(it.result))
     }
 
     var showPassphraseEncryptionDialog by remember { mutableStateOf(false) }
 
-    val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
     HandleSideEffect(viewModel = viewModel) {
-        if (it is EnterRecoveryPhraseViewModel.LocalSideEffects.LaunchHelp) {
-            bottomSheetNavigator?.show(RecoveryHelpBottomSheet)
-        } else if (it is EnterRecoveryPhraseViewModel.LocalSideEffects.RequestMnemonicPassword){
+        if (it is EnterRecoveryPhraseViewModel.LocalSideEffects.RequestMnemonicPassword){
             showPassphraseEncryptionDialog = true
         }
     }
@@ -149,13 +121,7 @@ fun EnterRecoveryPhraseScreen(
         }
     }
 
-    GreenColumn(
-        padding = 0,
-        verticalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-    ) {
+    SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false, verticalArrangement = Arrangement.SpaceBetween) {
         Text(
             stringResource(Res.string.id_enter_your_recovery_phrase),
             style = displayMedium,
@@ -218,6 +184,7 @@ fun EnterRecoveryPhraseScreen(
         Box(
             modifier = Modifier
                 .background(md_theme_brandSurface)
+                .padding(bottom = innerPadding.calculateBottomPadding())
         ) {
 
             val snackbar = LocalSnackbar.current
@@ -359,7 +326,6 @@ fun EnterRecoveryPhraseScreen(
             Box(
                 Modifier
                     .padding(horizontal = 4.dp)
-                    .padding(bottom = 4.dp)
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
             ) {
@@ -439,9 +405,9 @@ fun EnterRecoveryPhraseScreen(
                             )
                         }
 
-                        ScanQrButton() {
-                            bottomSheetNavigator?.show(
-                                CameraBottomSheet(
+                        ScanQrButton {
+                            viewModel.postEvent(
+                                NavigateDestinations.Camera(
                                     isDecodeContinuous = false,
                                     parentScreenName = viewModel.screenName(),
                                     setupArgs = viewModel.setupArgs

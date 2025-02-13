@@ -1,17 +1,14 @@
 package com.blockstream.common.gdk.params
 
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.Serializable
 
-@Parcelize
 @Serializable
 data class RsaVerifyParams(
     val pem: String,
     val challenge: String,
     val signature: String
-) : GreenJson<RsaVerifyParams>(), Parcelable {
+) : GreenJson<RsaVerifyParams>() {
     override fun encodeDefaultsValues(): Boolean = true
     override fun kSerializer() = serializer()
 

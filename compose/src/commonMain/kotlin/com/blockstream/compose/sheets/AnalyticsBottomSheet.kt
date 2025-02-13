@@ -44,7 +44,6 @@ import blockstream_green.common.generated.resources.id_show_details
 import blockstream_green.common.generated.resources.id_user_contact_info_ip_address
 import blockstream_green.common.generated.resources.id_whats_collected
 import blockstream_green.common.generated.resources.id_whats_not_collected
-import cafe.adriel.voyager.koin.koinScreenModel
 import com.blockstream.common.models.sheets.AnalyticsViewModel
 import com.blockstream.common.models.sheets.AnalyticsViewModelAbstract
 import com.blockstream.common.sideeffects.SideEffects
@@ -52,37 +51,14 @@ import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
+import com.blockstream.compose.theme.whiteHigh
+import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.ui.components.GreenCircle
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.components.GreenSpacer
-import com.blockstream.compose.navigation.getNavigationResult
-import com.blockstream.compose.navigation.setNavigationResult
-import com.blockstream.compose.theme.whiteHigh
-import com.blockstream.compose.utils.HandleSideEffect
 import org.jetbrains.compose.resources.stringResource
 
-
-object AnalyticsBottomSheet : BottomScreen() {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<AnalyticsViewModel>()
-
-        AnalyticsBottomSheet(
-            viewModel = viewModel,
-            onDismissRequest = onDismissRequest {
-                setResult(true)
-            }
-        )
-    }
-
-    @Composable
-    fun getResult(fn: (Boolean) -> Unit) =
-        getNavigationResult(this::class, fn)
-
-    private fun setResult(result: Boolean) =
-        setNavigationResult(this::class, result)
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

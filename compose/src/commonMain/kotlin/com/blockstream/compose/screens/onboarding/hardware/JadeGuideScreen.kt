@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_backup_recovery_phrase
 import blockstream_green.common.generated.resources.id_exit_guide
@@ -31,18 +30,13 @@ import blockstream_green.common.generated.resources.id_select_initialize_and_cho
 import blockstream_green.common.generated.resources.id_step_1s
 import blockstream_green.common.generated.resources.id_use_the_jogwheel_to_select_the
 import blockstream_green.common.generated.resources.id_verify_recovery_phrase
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
 import com.blockstream.common.events.Events
-import com.blockstream.common.models.devices.JadeGuideViewModel
 import com.blockstream.common.models.devices.JadeGuideViewModelAbstract
-import com.blockstream.compose.LocalRootNavigator
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.Rive
 import com.blockstream.compose.components.RiveAnimation
 import com.blockstream.compose.theme.bodyMedium
@@ -51,34 +45,18 @@ import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.ui.components.GreenColumn
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 
-object JadeGuideScreen : Screen {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<JadeGuideViewModel>()
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        JadeGuideScreen(viewModel = viewModel)
-    }
-}
-
 @Composable
 fun JadeGuideScreen(
     viewModel: JadeGuideViewModelAbstract
 ) {
-
-    val navigator = LocalRootNavigator.current
-
     HandleSideEffect(viewModel = viewModel)
 
     var step by remember {

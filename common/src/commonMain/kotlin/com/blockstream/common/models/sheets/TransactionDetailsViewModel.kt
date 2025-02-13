@@ -7,8 +7,8 @@ import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.utils.StringHolder
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,7 +28,7 @@ abstract class TransactionDetailsViewModelAbstract(
     abstract val data: StateFlow<List<Pair<StringHolder, StringHolder>>>
 }
 
-class TransactionDetailsViewModel(initialTransaction: Transaction, greenWallet: GreenWallet) :
+class TransactionDetailsViewModel(greenWallet: GreenWallet, initialTransaction: Transaction) :
     TransactionDetailsViewModelAbstract(
         greenWallet = greenWallet,
         accountAsset = initialTransaction.account.accountAsset

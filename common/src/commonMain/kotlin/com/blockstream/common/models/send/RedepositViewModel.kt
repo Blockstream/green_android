@@ -207,6 +207,7 @@ class RedepositViewModel(
                 )
 
                 postSideEffect(SideEffects.NavigateTo(NavigateDestinations.SendConfirm(
+                    greenWallet = greenWallet,
                     accountAsset = accountAsset.value!!,
                     denomination = denomination.value
                 )))

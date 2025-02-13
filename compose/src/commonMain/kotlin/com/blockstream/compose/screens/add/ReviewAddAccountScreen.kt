@@ -21,59 +21,22 @@ import blockstream_green.common.generated.resources.id_recovery_key_type
 import blockstream_green.common.generated.resources.id_recovery_phrase
 import blockstream_green.common.generated.resources.id_review_account_information
 import blockstream_green.common.generated.resources.id_xpub
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.models.add.ReviewAddAccountViewModel
 import com.blockstream.common.models.add.ReviewAddAccountViewModelAbstract
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.ScreenContainer
-import com.blockstream.compose.navigation.getNavigationResult
-import com.blockstream.compose.navigation.setNavigationResult
-import com.blockstream.compose.screens.add.ReviewAddAccountScreen.Companion.setResult
 import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.navigation.setResult
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-data class ReviewAddAccountScreen(
-    val greenWallet: GreenWallet,
-    val setupArgs: SetupArgs
-) : Parcelable, Screen {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<ReviewAddAccountViewModel> {
-            parametersOf(greenWallet, setupArgs)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        ReviewAddAccountScreen(viewModel = viewModel)
-    }
-
-    companion object {
-        @Composable
-        fun getResult(fn: (AccountAsset) -> Unit) = getNavigationResult(this::class, fn)
-
-        internal fun setResult(result: AccountAsset) = setNavigationResult(this::class, result)
-    }
-}
 
 @Composable
 fun ReviewAddAccountScreen(
@@ -83,15 +46,12 @@ fun ReviewAddAccountScreen(
     HandleSideEffect(viewModel) {
         when (it) {
             is SideEffects.AccountCreated -> {
-                setResult(it.accountAsset)
+                NavigateDestinations.ReviewAddAccount.setResult(it.accountAsset)
             }
         }
     }
 
-    val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
-    val onProgressDescription by viewModel.onProgressDescription.collectAsStateWithLifecycle()
-
-    ScreenContainer(onProgress = onProgress, onProgressDescription = onProgressDescription) {
+    ScreenContainer(viewModel = viewModel, withPadding = false) {
         Column(
             modifier = Modifier
                 .padding(horizontal = 16.dp)

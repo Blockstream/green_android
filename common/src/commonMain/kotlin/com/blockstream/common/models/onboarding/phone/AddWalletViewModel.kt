@@ -15,9 +15,9 @@ class AddWalletViewModel : AddWalletViewModelAbstract() {
     override fun screenName(): String = "AddWallet"
 
     class LocalEvents {
-        object NewWallet : Event
-        object RestoreWallet : Event
-        class SelectEnviroment(val isTestnet: Boolean, val customNetwork: Network?): Event
+        data object NewWallet : Event
+        data object RestoreWallet : Event
+        data class SelectEnviroment(val isTestnet: Boolean, val customNetwork: Network?): Event
     }
 
     private val isTestnetEnabled
@@ -34,10 +34,16 @@ class AddWalletViewModel : AddWalletViewModelAbstract() {
 
         when (event) {
             is LocalEvents.NewWallet -> {
-                SideEffects.NavigateTo(NavigateDestinations.RecoveryIntro(setupArgs = SetupArgs(isRestoreFlow = false))).also {
+                (if (appInfo.enableNewFeatures) {
+                    NavigateDestinations.SetPin(setupArgs = SetupArgs(isRestoreFlow = false))
+                } else {
+                    NavigateDestinations.RecoveryIntro(setupArgs = SetupArgs(isRestoreFlow = false))
+                }).let {
+                    SideEffects.NavigateTo(it)
+                }.also {
                     if (isTestnetEnabled) {
                         pendingDestination = it.destination
-                        postSideEffect(SideEffects.SelectEnvironment)
+                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Environment))
                     } else {
                         postSideEffect(it)
                     }
@@ -49,7 +55,7 @@ class AddWalletViewModel : AddWalletViewModelAbstract() {
                 SideEffects.NavigateTo(NavigateDestinations.EnterRecoveryPhrase(setupArgs = SetupArgs(isRestoreFlow = true))).also {
                     if(isTestnetEnabled){
                         pendingDestination = it.destination
-                        postSideEffect(SideEffects.SelectEnvironment)
+                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Environment))
                     }else{
                         postSideEffect(it)
                     }
@@ -58,8 +64,15 @@ class AddWalletViewModel : AddWalletViewModelAbstract() {
             }
 
             is LocalEvents.SelectEnviroment -> {
-                pendingDestination.let {
+                pendingDestination?.let {
                     when (it) {
+                        is NavigateDestinations.SetPin -> {
+                            it.copy(
+                                setupArgs = it.setupArgs.copy(
+                                    isTestnet = event.isTestnet, network = event.customNetwork
+                                )
+                            )
+                        }
                         is NavigateDestinations.RecoveryIntro -> {
                             it.copy(
                                 setupArgs = it.setupArgs.copy(

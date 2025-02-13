@@ -28,45 +28,17 @@ import blockstream_green.common.generated.resources.id_a_new_device_has_been_det
 import blockstream_green.common.generated.resources.id_genuine_check
 import blockstream_green.common.generated.resources.id_genuine_check_is_mandatory_for
 import blockstream_green.common.generated.resources.id_new_jade_plus_connected
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.models.SimpleGreenViewModel
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.compose.navigation.getNavigationResult
-import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.textMedium
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.navigation.setResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-object NewJadeConnectedBottomSheet : BottomScreen(), Parcelable {
-    @Composable
-    override fun Content() {
-
-        val viewModel = koinScreenModel<SimpleGreenViewModel> {
-            parametersOf(null, null, "NewJadeConnected")
-        }
-
-        NewJadeConnectedBottomSheet(
-            viewModel = viewModel,
-            onDismissRequest = onDismissRequest()
-        )
-    }
-
-    @Composable
-    fun getResult(fn: (Boolean) -> Unit) =
-        getNavigationResult(this::class, fn)
-
-    internal fun setResult(result: Boolean) =
-        setNavigationResult(this::class, result)
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -123,7 +95,7 @@ fun NewJadeConnectedBottomSheet(
                     size = GreenButtonSize.BIG,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    NewJadeConnectedBottomSheet.setResult(true)
+                    NavigateDestinations.NewJadeConnected.setResult(true)
                     dismiss = true
                     onDismissRequest()
                 }

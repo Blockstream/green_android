@@ -1,7 +1,5 @@
 package com.blockstream.common.data
 
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.devices.ConnectionType
 import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.common.devices.DeviceModel
@@ -11,7 +9,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-@Parcelize
 @Serializable
 data class DeviceIdentifier constructor(
     @SerialName("name") val name: String,
@@ -19,7 +16,7 @@ data class DeviceIdentifier constructor(
     @SerialName("brand") val brand: DeviceBrand? = null, // Deprecated in favor of DeviceModel
     @SerialName("model") val model: DeviceModel? = null,
     @SerialName("connection") val connectionType: ConnectionType,
-) : GreenJson<DeviceIdentifier>(), Parcelable {
+) : GreenJson<DeviceIdentifier>() {
 
     override fun kSerializer() = serializer()
 

@@ -23,41 +23,15 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_accept
 import blockstream_green.common.generated.resources.id_i_confirm_i_have_read_and
 import blockstream_green.common.generated.resources.id_system_message
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.theme.bodyMedium
+import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
 
-@Parcelize
-data class SystemMessageBottomSheet(
-    val greenWallet: GreenWallet,
-    val network: Network,
-    val message: String
-) : BottomScreen(), Parcelable {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<SimpleGreenViewModel> {
-            parametersOf(greenWallet, null, "SystemMessage")
-        }
-
-        SystemMessageBottomSheet(
-            viewModel = viewModel,
-            network = network,
-            message = message,
-            onDismissRequest = onDismissRequest()
-        )
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

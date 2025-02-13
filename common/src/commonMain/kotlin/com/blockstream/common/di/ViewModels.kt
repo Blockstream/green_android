@@ -156,7 +156,7 @@ val factoryViewModels = module {
         SendViewModel(get(), getOrNull(), getOrNull())
     }
     factory {
-        SimpleGreenViewModel(getOrNull(), getOrNull(), getOrNull(), getOrNull())
+        SimpleGreenViewModel(getOrNull(), getOrNull(), getOrNull(), )
     }
     factory {
         SweepViewModel(get(), getOrNull(), getOrNull())
@@ -176,7 +176,7 @@ val factoryViewModels = module {
     }
     factory {
         // https://github.com/InsertKoinIO/koin/issues/1352
-        ChooseAccountTypeViewModel(get(), getOrNull(), getOrNull())
+        ChooseAccountTypeViewModel(get(), getOrNull(), getOrNull(), get())
     }
     factory {
         // https://github.com/InsertKoinIO/koin/issues/1352

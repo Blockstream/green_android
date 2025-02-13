@@ -47,13 +47,12 @@ import com.adamglin.phosphoricons.regular.Plus
 import com.adamglin.phosphoricons.regular.SignOut
 import com.adamglin.phosphoricons.regular.TextAa
 import com.blockstream.common.SupportType
-import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.LogoutReason
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.overview.WalletOverviewViewModel
 import com.blockstream.common.models.overview.WalletOverviewViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.md_theme_outline
@@ -62,6 +61,7 @@ import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.noRippleClickable
+import com.blockstream.ui.components.GreenRow
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -117,7 +117,7 @@ fun WalletOverviewMenuDialog(viewModel: WalletOverviewViewModelAbstract, onDismi
                         text = stringResource(Res.string.id_settings),
                         icon = PhosphorIcons.Regular.GearSix
                     ) {
-                        viewModel.postEvent(NavigateDestinations.WalletSettings())
+                        viewModel.postEvent(NavigateDestinations.WalletSettings(greenWallet = viewModel.greenWallet))
                         onDismissRequest()
                     }
 
@@ -141,7 +141,7 @@ fun WalletOverviewMenuDialog(viewModel: WalletOverviewViewModelAbstract, onDismi
                             icon = PhosphorIcons.Regular.BoxArrowDown,
                             count = archivedAccounts.takeIf { it > 0 }?.let { "$it" }
                         ) {
-                            viewModel.postEvent(NavigateDestinations.ArchivedAccounts())
+                            viewModel.postEvent(NavigateDestinations.ArchivedAccounts(greenWallet = viewModel.greenWallet))
                             onDismissRequest()
                         }
                     }
@@ -163,7 +163,8 @@ fun WalletOverviewMenuDialog(viewModel: WalletOverviewViewModelAbstract, onDismi
                         viewModel.postEvent(
                             NavigateDestinations.Support(
                                 type = SupportType.INCIDENT,
-                                supportData = SupportData.create(session = viewModel.sessionOrNull)
+                                supportData = SupportData.create(session = viewModel.sessionOrNull),
+                                greenWalletOrNull = viewModel.greenWalletOrNull
                             )
                         )
                         onDismissRequest()

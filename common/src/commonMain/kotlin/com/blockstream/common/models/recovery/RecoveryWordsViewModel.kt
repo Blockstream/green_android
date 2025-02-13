@@ -41,7 +41,7 @@ class RecoveryWordsViewModel(setupArgs: SetupArgs) : RecoveryWordsViewModelAbstr
         words = mnemonicWords.subList(from, from + WORDS_PER_PAGE)
 
         viewModelScope.launch {
-            _navData.value = NavData(title = setupArgs.accountType?.toString(), subtitle = greenWalletOrNull?.name)
+            _navData.value = NavData(title = setupArgs.accountType?.toString(), subtitle = setupArgs.accountType?.let { greenWalletOrNull?.name })
         }
 
         bootstrap()

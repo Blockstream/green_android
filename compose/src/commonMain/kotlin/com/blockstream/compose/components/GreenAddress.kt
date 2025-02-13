@@ -47,7 +47,7 @@ fun GreenAddress(
         Row {
             Text(
                 modifier = Modifier.ifTrue(showCopyIcon) {
-                    weight(1f) // Make it fill the available space, else copy icon will be out of visible area
+                    it.weight(1f) // Make it fill the available space, else copy icon will be out of visible area
                 },
                 text = text,
                 fontFamily = MonospaceFont(),

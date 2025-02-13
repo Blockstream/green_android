@@ -1,6 +1,5 @@
 package com.blockstream.common.data
 
-import cafe.adriel.voyager.core.lifecycle.JavaSerializable
 import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.serializers.HtmlEntitiesSerializer
 import kotlinx.serialization.KSerializer
@@ -9,7 +8,7 @@ import kotlinx.serialization.Serializable
 import org.kotlincrypto.hash.md.MD5
 
 @Serializable
-data class PromoFile(val url: String, val file: String, val filePath: String) : GreenJson<PromoFile>(), JavaSerializable {
+data class PromoFile(val url: String, val file: String, val filePath: String) : GreenJson<PromoFile>() {
 
     companion object{
         @OptIn(ExperimentalStdlibApi::class)
@@ -79,7 +78,7 @@ data class Promo(
 
     val link: String? = null,
     val screens: List<String>? = null,
-) : GreenJson<Promo>(), JavaSerializable {
+) : GreenJson<Promo>() {
     override fun kSerializer() = serializer()
 
     val imageSmallFile by lazy {

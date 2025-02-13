@@ -35,26 +35,19 @@ import blockstream_green.common.generated.resources.id_new_fee
 import blockstream_green.common.generated.resources.id_old_fee
 import blockstream_green.common.generated.resources.id_set_custom_fee_rate
 import blockstream_green.common.generated.resources.id_total
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.models.send.BumpViewModel
+import com.blockstream.common.data.FeePriority
 import com.blockstream.common.models.send.BumpViewModelAbstract
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.utils.DecimalFormat
 import com.blockstream.common.utils.stringResourceFromId
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAddress
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenConfirmButton
 import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.components.GreenNetworkFee
 import com.blockstream.compose.dialogs.TextDialog
-import com.blockstream.compose.screens.jade.JadeQRScreen
-import com.blockstream.compose.sheets.FeeRateBottomSheet
+import com.blockstream.compose.screens.jade.JadeQRResult
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
@@ -67,54 +60,29 @@ import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.navigation.getResult
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
 
-@Parcelize
-data class BumpScreen(
-    val greenWallet: GreenWallet,
-    val accountAsset: AccountAsset,
-    val transaction: String
-) : Parcelable, Screen {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<BumpViewModel> {
-            parametersOf(greenWallet, accountAsset, transaction)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        BumpScreen(viewModel = viewModel)
-    }
-}
 
 @Composable
 fun BumpScreen(
     viewModel: BumpViewModelAbstract
 ) {
-    FeeRateBottomSheet.getResult {
+    NavigateDestinations.FeeRate.getResult<FeePriority> {
         viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SetFeeRate(it))
     }
 
-    JadeQRScreen.getResult {
+    NavigateDestinations.JadeQR.getResult<JadeQRResult> {
         viewModel.postEvent(
             CreateTransactionViewModelAbstract.LocalEvents.BroadcastTransaction(
-                psbt = it
+                psbt = it.result
             )
         )
     }
 
     var customFeeDialog by remember { mutableStateOf<String?>(null) }
-
-    HandleSideEffect(viewModel) {
-        if (it is CreateTransactionViewModelAbstract.LocalSideEffects.ShowCustomFeeRate) {
-            customFeeDialog = it.feeRate.toString()
-        }
-    }
 
     val decimalSymbol = remember { DecimalFormat.DecimalSeparator }
 
@@ -122,7 +90,7 @@ fun BumpScreen(
         TextDialog(
             title = stringResource(Res.string.id_set_custom_fee_rate),
             label = stringResource(Res.string.id_fee_rate),
-            placeholder = "0${decimalSymbol}00" ,
+            placeholder = "0${decimalSymbol}00",
             initialText = viewModel.customFeeRate.value?.toString() ?: "",
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Decimal,
@@ -146,169 +114,199 @@ fun BumpScreen(
 
     val feePriority by viewModel.feePriority.collectAsStateWithLifecycle()
 
-    GreenColumn {
-        GreenColumn(
-            padding = 0,
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-        ) {
+    SetupScreen(viewModel = viewModel, sideEffectsHandler = {
+        if (it is CreateTransactionViewModelAbstract.LocalSideEffects.ShowCustomFeeRate) {
+            customFeeDialog = it.feeRate.toString()
+        }
+    }) {
 
-            val accountAssetBalance by viewModel.accountAssetBalance.collectAsStateWithLifecycle()
+        GreenColumn {
+            GreenColumn(
+                padding = 0,
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+            ) {
 
-            accountAssetBalance?.also {
-                GreenAccountAsset(
-                    title = stringResource(Res.string.id_account),
-                    accountAssetBalance = it,
-                    session = viewModel.sessionOrNull,
-                    withAsset = false,
-                    withEditIcon = false
+                val accountAssetBalance by viewModel.accountAssetBalance.collectAsStateWithLifecycle()
+
+                accountAssetBalance?.also {
+                    GreenAccountAsset(
+                        title = stringResource(Res.string.id_account),
+                        accountAssetBalance = it,
+                        session = viewModel.sessionOrNull,
+                        withAsset = false,
+                        withEditIcon = false
+                    )
+                }
+
+                val address by viewModel.address.collectAsStateWithLifecycle()
+                AnimatedNullableVisibility(value = address) {
+                    GreenDataLayout(title = stringResource(Res.string.id_address)) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .fillMaxWidth()
+
+                        ) {
+                            GreenAddress(address = it)
+                        }
+                    }
+                }
+
+                val amount by viewModel.amount.collectAsStateWithLifecycle()
+                val amountFiat by viewModel.amountFiat.collectAsStateWithLifecycle()
+
+                AnimatedNullableVisibility(value = amount) {
+                    GreenDataLayout(title = stringResource(Res.string.id_amount)) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .fillMaxWidth()
+
+                        ) {
+
+                            SelectionContainer {
+                                Text(text = it, style = titleLarge)
+                            }
+
+                            amountFiat?.also { fiat ->
+                                SelectionContainer {
+                                    Text(text = fiat, style = bodyLarge)
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                GreenNetworkFee(
+                    feePriority = feePriority, onClick = { onIconClicked ->
+                        viewModel.postEvent(
+                            CreateTransactionViewModelAbstract.LocalEvents.ClickFeePriority(
+                                showCustomFeeRateDialog = onIconClicked
+                            )
+                        )
+                    }
                 )
             }
 
-            val address by viewModel.address.collectAsStateWithLifecycle()
-            AnimatedNullableVisibility(value = address) {
-                GreenDataLayout(title = stringResource(Res.string.id_address)) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .fillMaxWidth()
-
+            val total by viewModel.total.collectAsStateWithLifecycle()
+            val totalFiat by viewModel.totalFiat.collectAsStateWithLifecycle()
+            val oldFee by viewModel.oldFee.collectAsStateWithLifecycle()
+            val oldFeeFiat by viewModel.oldFeeFiat.collectAsStateWithLifecycle()
+            val oldFeeRate by viewModel.oldFeeRate.collectAsStateWithLifecycle()
+            GreenColumn(
+                padding = 0,
+                space = 4,
+                modifier = Modifier
+                    .padding(horizontal = 4.dp)
+            ) {
+                // Old Fee
+                AnimatedNullableVisibility(value = oldFee) {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        GreenAddress(address = it)
+                        Column {
+                            Text(
+                                stringResource(Res.string.id_old_fee),
+                                style = bodyMedium,
+                                color = whiteMedium
+                            )
+                            Text(
+                                oldFeeRate ?: "", style = bodyMedium.copy(
+                                    textDecoration = TextDecoration.LineThrough
+                                ), color = red
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.End) {
+                            Text(
+                                oldFee ?: "", style = bodyMedium.copy(
+                                    textDecoration = TextDecoration.LineThrough
+                                ), color = red
+                            )
+                            Text(
+                                oldFeeFiat ?: "", style = bodyMedium.copy(
+                                    textDecoration = TextDecoration.LineThrough
+                                ), color = red
+                            )
+                        }
                     }
                 }
-            }
 
-            val amount by viewModel.amount.collectAsStateWithLifecycle()
-            val amountFiat by viewModel.amountFiat.collectAsStateWithLifecycle()
 
-            AnimatedNullableVisibility(value = amount) {
-                GreenDataLayout(title = stringResource(Res.string.id_amount)) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .fillMaxWidth()
-
+                // New Fee
+                AnimatedNullableVisibility(value = feePriority.fee) {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-
-                        SelectionContainer {
-                            Text(text = it, style = titleLarge)
+                        Column {
+                            Text(
+                                stringResource(Res.string.id_new_fee),
+                                style = bodyMedium,
+                                color = whiteMedium
+                            )
+                            Text(feePriority.feeRate ?: "", style = bodyMedium, color = green)
                         }
+                        Column(horizontalAlignment = Alignment.End) {
+                            Text(feePriority.fee ?: "", style = bodyMedium, color = green)
+                            Text(feePriority.feeFiat ?: "", style = bodySmall, color = green)
+                        }
+                    }
+                }
 
-                        amountFiat?.also { fiat ->
-                            SelectionContainer {
-                                Text(text = fiat, style = bodyLarge)
+                AnimatedNullableVisibility(value = total) {
+                    GreenColumn(padding = 0, space = 4) {
+                        HorizontalDivider()
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .fillMaxWidth()
+
+                        ) {
+                            Text(
+                                stringResource(Res.string.id_total),
+                                style = labelLarge,
+                                color = whiteHigh
+                            )
+                            Column(horizontalAlignment = Alignment.End) {
+                                Text(total ?: "", style = labelLarge)
+                                Text(totalFiat ?: "", style = bodyMedium, color = whiteMedium)
                             }
                         }
                     }
                 }
             }
 
-
-            GreenNetworkFee(
-                feePriority = feePriority, onClick = { onIconClicked ->
-                    viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.ClickFeePriority(showCustomFeeRateDialog = onIconClicked))
-                }
-            )
-        }
-
-        val total by viewModel.total.collectAsStateWithLifecycle()
-        val totalFiat by viewModel.totalFiat.collectAsStateWithLifecycle()
-        val oldFee by viewModel.oldFee.collectAsStateWithLifecycle()
-        val oldFeeFiat by viewModel.oldFeeFiat.collectAsStateWithLifecycle()
-        val oldFeeRate by viewModel.oldFeeRate.collectAsStateWithLifecycle()
-        GreenColumn(
-            padding = 0,
-            space = 4,
-            modifier = Modifier
-                .padding(horizontal = 4.dp)
-        ) {
-            // Old Fee
-            AnimatedNullableVisibility(value = oldFee) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
+            AnimatedNullableVisibility(value = error.takeIf {
+                !listOf(
+                    "id_invalid_replacement_fee_rate",
+                    "id_fee_rate_is_below_minimum"
+                ).contains(it)
+            }?.let { stringResourceFromId(it) }) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = md_theme_onErrorContainer,
+                        contentColor = md_theme_onError
+                    )
                 ) {
-                    Column {
-                        Text(stringResource(Res.string.id_old_fee), style = bodyMedium, color = whiteMedium)
-                        Text(oldFeeRate ?: "", style = bodyMedium.copy(
-                            textDecoration = TextDecoration.LineThrough
-                        ), color = red)
-                    }
-                    Column(horizontalAlignment = Alignment.End) {
-                        Text(oldFee ?: "", style = bodyMedium.copy(
-                            textDecoration = TextDecoration.LineThrough
-                        ), color = red)
-                        Text(oldFeeFiat ?: "", style = bodyMedium.copy(
-                            textDecoration = TextDecoration.LineThrough
-                        ), color = red)
-                    }
-                }
-            }
-
-
-            // New Fee
-            AnimatedNullableVisibility(value = feePriority.fee) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column {
-                        Text(stringResource(Res.string.id_new_fee), style = bodyMedium, color = whiteMedium)
-                        Text(feePriority.feeRate ?: "", style = bodyMedium, color = green)
-                    }
-                    Column(horizontalAlignment = Alignment.End) {
-                        Text(feePriority.fee ?: "", style = bodyMedium, color = green)
-                        Text(feePriority.feeFiat ?: "", style = bodySmall, color = green)
-                    }
-                }
-            }
-
-            AnimatedNullableVisibility(value = total) {
-                GreenColumn(padding = 0, space = 4) {
-                    HorizontalDivider()
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-
+                            .padding(horizontal = 16.dp)
+                            .padding(vertical = 8.dp),
                     ) {
-                        Text(
-                            stringResource(Res.string.id_total),
-                            style = labelLarge,
-                            color = whiteHigh
-                        )
-                        Column(horizontalAlignment = Alignment.End) {
-                            Text(total ?: "", style = labelLarge)
-                            Text(totalFiat ?: "", style = bodyMedium, color = whiteMedium)
-                        }
+                        Text(text = stringResourceFromId(it))
                     }
                 }
             }
-        }
 
-        AnimatedNullableVisibility(value = error.takeIf { !listOf("id_invalid_replacement_fee_rate", "id_fee_rate_is_below_minimum").contains(it) }?.let { stringResourceFromId(it) }) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = md_theme_onErrorContainer,
-                    contentColor = md_theme_onError
-                )
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .padding(vertical = 8.dp),
-                ) {
-                    Text(text = stringResourceFromId(it))
-                }
+            GreenConfirmButton(viewModel = viewModel) { isWatchOnly ->
+                viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SignTransaction())
             }
-        }
-
-        GreenConfirmButton(viewModel = viewModel) { isWatchOnly ->
-            viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SignTransaction())
         }
     }
 }

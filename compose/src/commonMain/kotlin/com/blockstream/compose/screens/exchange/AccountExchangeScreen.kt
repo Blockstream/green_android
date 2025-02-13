@@ -38,29 +38,23 @@ import blockstream_green.common.generated.resources.id_receive
 import blockstream_green.common.generated.resources.id_send
 import blockstream_green.common.generated.resources.id_set_custom_fee_rate
 import blockstream_green.common.generated.resources.id_to
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.DenominatedValue
+import com.blockstream.common.data.FeePriority
 import com.blockstream.common.events.Events
-import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.models.exchange.AccountExchangeViewModel
 import com.blockstream.common.models.exchange.AccountExchangeViewModelAbstract
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.utils.DecimalFormat
 import com.blockstream.common.utils.stringResourceFromId
 import com.blockstream.common.utils.stringResourceFromIdOrNull
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAmountField
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.components.GreenNetworkFee
 import com.blockstream.compose.dialogs.TextDialog
-import com.blockstream.compose.sheets.AccountsBottomSheet
-import com.blockstream.compose.sheets.DenominationBottomSheet
-import com.blockstream.compose.sheets.FeeRateBottomSheet
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.green
@@ -69,45 +63,26 @@ import com.blockstream.compose.theme.md_theme_onErrorContainer
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.AnimatedNullableVisibility
-import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.navigation.getResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-data class AccountExchangeScreen(
-    val greenWallet: GreenWallet,
-    val accountAsset: AccountAsset? = null,
-) : Parcelable, Screen {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<AccountExchangeViewModel> {
-            parametersOf(greenWallet, accountAsset)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        AccountExchangeScreen(viewModel = viewModel)
-    }
-}
 
 @Composable
 fun AccountExchangeScreen(
     viewModel: AccountExchangeViewModelAbstract
 ) {
 
-    AccountsBottomSheet.getResult {
+    NavigateDestinations.Accounts.getResult<AccountAssetBalance> {
         viewModel.postEvent(AccountExchangeViewModel.LocalEvents.SetToAccount(it.accountAsset))
     }
 
-    FeeRateBottomSheet.getResult {
+    NavigateDestinations.FeeRate.getResult<FeePriority> {
         viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SetFeeRate(it))
     }
 
-    DenominationBottomSheet.getResult {
+    NavigateDestinations.Denomination.getResult<DenominatedValue> {
         viewModel.postEvent(Events.SetDenominatedValue(it))
     }
 

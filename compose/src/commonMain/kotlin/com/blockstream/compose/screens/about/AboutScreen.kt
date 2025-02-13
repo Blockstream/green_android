@@ -5,20 +5,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.brand
 import blockstream_green.common.generated.resources.eye
@@ -38,8 +35,6 @@ import blockstream_green.common.generated.resources.trash
 import blockstream_green.common.generated.resources.x
 import blockstream_green.common.generated.resources.x_logo
 import blockstream_green.common.generated.resources.youtube_logo
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Bug
@@ -54,8 +49,6 @@ import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.components.MenuEntry
 import com.blockstream.compose.components.PopupMenu
 import com.blockstream.compose.components.PopupState
@@ -63,24 +56,12 @@ import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.whiteLow
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.noRippleClickable
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-
-
-object AboutScreen : Screen {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<AboutViewModel>()
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-        AppBar(navData)
-
-        AboutScreen(viewModel = viewModel)
-    }
-}
 
 @Composable
 fun AboutScreen(
@@ -88,36 +69,33 @@ fun AboutScreen(
 ) {
     val popupState = remember { PopupState() }
 
-    HandleSideEffect(viewModel) {
+    SetupScreen(viewModel = viewModel, sideEffectsHandler = {
         when (it) {
             is SideEffects.OpenMenu -> {
                 popupState.isContextMenuVisible.value = true
             }
         }
-    }
+    }, verticalArrangement = Arrangement.SpaceBetween) {
 
-    GreenColumn(
-        space = 0,
-        modifier = Modifier.fillMaxHeight(),
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
         ConstraintLayout(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
         ) {
             val (box, logo) = createRefs()
 
-            Text(viewModel.version, style = bodyMedium, modifier = Modifier
-                .constrainAs(logo) {
-                    end.linkTo(box.end)
-                    top.linkTo(box.bottom)
-                })
+            Text(
+                viewModel.version, style = bodyMedium, modifier = Modifier
+                    .constrainAs(logo) {
+                        end.linkTo(box.end)
+                        top.linkTo(box.bottom)
+                    })
 
-            Box(modifier = Modifier
-                .constrainAs(box) {
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }) {
+            Box(
+                modifier = Modifier
+                    .constrainAs(box) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }) {
                 Image(
                     painter = painterResource(Res.drawable.brand),
                     contentDescription = null,

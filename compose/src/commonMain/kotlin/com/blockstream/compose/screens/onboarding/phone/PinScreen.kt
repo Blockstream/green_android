@@ -20,11 +20,6 @@ import blockstream_green.common.generated.resources.id_pins_do_not_match_please_
 import blockstream_green.common.generated.resources.id_set_a_pin
 import blockstream_green.common.generated.resources.id_verify_your_pin
 import blockstream_green.common.generated.resources.id_youll_need_your_pin_to_log_in
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.models.GreenViewModel
@@ -35,35 +30,17 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.LocalSnackbar
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
-import com.blockstream.ui.components.GreenColumn
+import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.components.RiveAnimation
-import com.blockstream.compose.components.ScreenContainer
 import com.blockstream.compose.dialogs.LightningShortcutDialog
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.displayMedium
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.views.PinView
+import com.blockstream.ui.components.GreenColumn
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-data class PinScreen(val setupArgs: SetupArgs) : Screen, Parcelable {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<PinViewModel> {
-            parametersOf(setupArgs)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        PinScreen(viewModel = viewModel)
-    }
-}
 
 @Composable
 fun PinScreen(
@@ -76,8 +53,6 @@ fun PinScreen(
     val snackbar = LocalSnackbar.current
 
     val rocketAnimation by viewModel.rocketAnimation.collectAsStateWithLifecycle()
-    val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
-    val onProgressDescription by viewModel.onProgressDescription.collectAsStateWithLifecycle()
 
     var lightningShortcutViewModel by remember {
         mutableStateOf<GreenViewModel?>(null)
@@ -90,17 +65,14 @@ fun PinScreen(
         }
     }
 
-    HandleSideEffect(viewModel = viewModel) {
-        if(it is SideEffects.LightningShortcut) {
-            lightningShortcutViewModel = SimpleGreenViewModel(viewModel.greenWallet)
+    SetupScreen(
+        viewModel = viewModel,
+        onProgressStyle = OnProgressStyle.Full(bluBackground = false, riveAnimation = if(rocketAnimation) RiveAnimation.ROCKET else null),
+        sideEffectsHandler = {
+            if(it is SideEffects.LightningShortcut) {
+                lightningShortcutViewModel = SimpleGreenViewModel(viewModel.greenWallet)
+            }
         }
-    }
-
-    ScreenContainer(
-        onProgress = onProgress,
-        onProgressDescription = onProgressDescription,
-        blurBackground = !rocketAnimation,
-        riveAnimation = if(rocketAnimation) RiveAnimation.ROCKET else null
     ) {
         Column(
             modifier = Modifier

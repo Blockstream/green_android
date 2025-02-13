@@ -1,8 +1,6 @@
 package com.blockstream.common.gdk.data
 
 
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.utils.hexToByteArray
 import com.blockstream.common.utils.hexToByteArrayReversed
@@ -15,7 +13,6 @@ import kotlinx.serialization.Serializable
  */
 
 @Serializable
-@Parcelize
 data class InputOutput constructor(
     // Bitcoin & Liquid
     @SerialName("address") val address: String? = null,
@@ -62,7 +59,7 @@ data class InputOutput constructor(
     @SerialName("ae_host_commitment") val aeHostCommitment: String? = null,
     @SerialName("ae_host_entropy") val aeHostEntropy: String? = null,
     @SerialName("eph_public_key") val ephPublicKey: String? = null, // our ephemeral public key for [un]blinding
-) : GreenJson<InputOutput>(), Parcelable {
+) : GreenJson<InputOutput>() {
     override fun kSerializer() = serializer()
 
     // Called from Java to use the UInt.toInt() inline fun

@@ -57,11 +57,12 @@ class ImportPubKeyViewModel constructor(deviceModel: DeviceModel) :
             is LocalEvents.ScanXpub -> {
 
                 if (isTestnetEnabled) {
-                    postSideEffect(SideEffects.SelectEnvironment)
+                    postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Environment))
                 } else {
                     postSideEffect(
                         SideEffects.NavigateTo(
                             NavigateDestinations.JadeQR(
+                                greenWalletOrNull = greenWalletOrNull,
                                 operation = JadeQrOperation.ExportXpub,
                                 deviceModel = deviceModel
                             )
@@ -77,6 +78,7 @@ class ImportPubKeyViewModel constructor(deviceModel: DeviceModel) :
                 postSideEffect(
                     SideEffects.NavigateTo(
                         NavigateDestinations.JadeQR(
+                            greenWalletOrNull = greenWalletOrNull,
                             operation = JadeQrOperation.ExportXpub,
                             deviceModel = deviceModel
                         )

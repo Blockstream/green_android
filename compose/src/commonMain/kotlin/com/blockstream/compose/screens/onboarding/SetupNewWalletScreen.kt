@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,13 +12,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_for_ease_of_use
 import blockstream_green.common.generated.resources.id_for_higher_security
@@ -31,13 +28,9 @@ import blockstream_green.common.generated.resources.id_your_keys_will_be_secured
 import blockstream_green.common.generated.resources.id_your_phone_will_store_the_keys
 import blockstream_green.common.generated.resources.keys_device
 import blockstream_green.common.generated.resources.keys_hardware
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
 import com.blockstream.common.models.onboarding.SetupNewWalletViewModel
 import com.blockstream.common.models.onboarding.SetupNewWalletViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.ui.components.GreenArrow
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.AppSettingsButton
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
@@ -47,25 +40,12 @@ import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.roundBackground
+import com.blockstream.ui.components.GreenArrow
+import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-
-
-object SetupNewWalletScreen : Screen {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<SetupNewWalletViewModel>()
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        SetupNewWalletScreen(viewModel = viewModel)
-    }
-}
 
 @Composable
 fun KeysPolicyListItem(
@@ -125,15 +105,7 @@ fun KeysPolicyListItem(
 fun SetupNewWalletScreen(
     viewModel: SetupNewWalletViewModelAbstract
 ) {
-
-    HandleSideEffect(viewModel = viewModel)
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-    ) {
-
+    SetupScreen(viewModel = viewModel, withPadding = false) {
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -165,7 +137,6 @@ fun SetupNewWalletScreen(
                 viewModel.postEvent(SetupNewWalletViewModel.LocalEvents.ClickOnHardwareWallet)
             }
         }
-
 
         GreenButton(
             stringResource(Res.string.id_watchonly),

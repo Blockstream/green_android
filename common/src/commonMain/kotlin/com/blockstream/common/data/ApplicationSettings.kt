@@ -3,11 +3,9 @@ package com.blockstream.common.data
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_lock_after_1_minute
 import blockstream_green.common.generated.resources.id_lock_immediately
-import cafe.adriel.voyager.core.lifecycle.JavaSerializable
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.gdk.data.Network
 import com.russhwolf.settings.Settings
+import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.StringResource
 
 fun Settings.putStringOrRemove(key: String, value: String?) {
@@ -26,7 +24,7 @@ fun Settings.putIntOrRemove(key: String, value: Int?) {
     }
 }
 
-@Parcelize
+@Serializable
 data class ApplicationSettings constructor(
     val enhancedPrivacy: Boolean = false,
     val screenLockInSeconds: Int = ScreenLockSetting.LOCK_IMMEDIATELY.seconds,
@@ -56,7 +54,7 @@ data class ApplicationSettings constructor(
     val spvLiquidElectrumServer: String? = null,
     val spvTestnetElectrumServer: String? = null,
     val spvTestnetLiquidElectrumServer: String? = null,
-) : Parcelable, JavaSerializable {
+) {
 
     fun getPersonalElectrumServer(network: Network) = when {
             Network.isBitcoinMainnet(network.id) -> {

@@ -31,26 +31,19 @@ import blockstream_green.common.generated.resources.id_next
 import blockstream_green.common.generated.resources.id_redeposit
 import blockstream_green.common.generated.resources.id_set_custom_fee_rate
 import blockstream_green.common.generated.resources.id_total_spent
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.DenominatedValue
+import com.blockstream.common.data.FeePriority
 import com.blockstream.common.events.Events
-import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
-import com.blockstream.common.models.send.RedepositViewModel
 import com.blockstream.common.models.send.RedepositViewModelAbstract
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.utils.DecimalFormat
 import com.blockstream.common.utils.stringResourceFromId
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenNetworkFee
-import com.blockstream.compose.components.ScreenContainer
+import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.dialogs.TextDialog
-import com.blockstream.compose.sheets.DenominationBottomSheet
-import com.blockstream.compose.sheets.FeeRateBottomSheet
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.md_theme_onError
 import com.blockstream.compose.theme.md_theme_onErrorContainer
@@ -58,50 +51,25 @@ import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.navigation.getResult
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
 
-@Parcelize
-data class RedepositScreen(
-    val greenWallet: GreenWallet,
-    val accountAsset: AccountAsset,
-    val isRedeposit2FA: Boolean
-) : Parcelable, Screen {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<RedepositViewModel> {
-            parametersOf(greenWallet, accountAsset, isRedeposit2FA)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        RedepositScreen(viewModel = viewModel)
-    }
-}
 
 @Composable
 fun RedepositScreen(
     viewModel: RedepositViewModelAbstract
 ) {
-    FeeRateBottomSheet.getResult {
+    NavigateDestinations.FeeRate.getResult<FeePriority> {
         viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SetFeeRate(it))
     }
 
-    DenominationBottomSheet.getResult {
+    NavigateDestinations.Denomination.getResult<DenominatedValue> {
         viewModel.postEvent(Events.SetDenominatedValue(it))
     }
 
     var customFeeDialog by remember { mutableStateOf<String?>(null) }
-
-    HandleSideEffect(viewModel) {
-        if (it is CreateTransactionViewModelAbstract.LocalSideEffects.ShowCustomFeeRate) {
-            customFeeDialog = it.feeRate.toString()
-        }
-    }
 
     val decimalSymbol = remember { DecimalFormat.DecimalSeparator }
 
@@ -130,13 +98,14 @@ fun RedepositScreen(
     }
 
     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
-    val onProgressSending by viewModel.onProgressSending.collectAsStateWithLifecycle()
-    val onProgressDescription by viewModel.onProgressDescription.collectAsStateWithLifecycle()
 
-    ScreenContainer(
-        onProgress = onProgressSending,
-        onProgressDescription = onProgressDescription,
-        blurBackground = true
+    SetupScreen(
+        viewModel = viewModel,
+        onProgressStyle = OnProgressStyle.Full(bluBackground = true), sideEffectsHandler = {
+            if (it is CreateTransactionViewModelAbstract.LocalSideEffects.ShowCustomFeeRate) {
+                customFeeDialog = it.feeRate.toString()
+            }
+        }
     ) {
         AnimatedVisibility(visible = onProgress) {
             LinearProgressIndicator(

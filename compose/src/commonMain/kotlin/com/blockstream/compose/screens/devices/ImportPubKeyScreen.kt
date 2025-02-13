@@ -31,59 +31,40 @@ import blockstream_green.common.generated.resources.id_learn_more
 import blockstream_green.common.generated.resources.id_login_with_biometrics
 import blockstream_green.common.generated.resources.id_navigate_on_your_hardware_device
 import blockstream_green.common.generated.resources.id_navigate_on_your_jade_to_options
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.devices.DeviceModel
 import com.blockstream.common.models.devices.ImportPubKeyViewModel
 import com.blockstream.common.models.devices.ImportPubKeyViewModelAbstract
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.extensions.onValueChange
-import com.blockstream.compose.screens.jade.JadeQRScreen
-import com.blockstream.compose.sheets.EnvironmentBottomSheet
+import com.blockstream.compose.screens.jade.JadeQRResult
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteLow
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.noRippleToggleable
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.navigation.getResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
 
-
-data class ImportPubKeyScreen(val deviceModel: DeviceModel) : Screen {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<ImportPubKeyViewModel> {
-            parametersOf(deviceModel)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        ImportPubKeyScreen(viewModel = viewModel)
-    }
-}
 
 @Composable
 fun ImportPubKeyScreen(
     viewModel: ImportPubKeyViewModelAbstract
 ) {
-    JadeQRScreen.getResult {
+    NavigateDestinations.JadeQR.getResult<JadeQRResult> {
         viewModel.postEvent(
             ImportPubKeyViewModel.LocalEvents.ImportPubKey(
-                pubKey = it
+                pubKey = it.result
             )
         )
     }
 
-    EnvironmentBottomSheet.getResult {
+    NavigateDestinations.Environment.getResult<Int> {
         if(it >= 0) {
             viewModel.postEvent(
                 ImportPubKeyViewModel.LocalEvents.SelectEnviroment(
@@ -94,12 +75,10 @@ fun ImportPubKeyScreen(
         }
     }
 
-    HandleSideEffect(viewModel = viewModel)
-
     val deviceModel = viewModel.deviceModel
     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    SetupScreen(viewModel = viewModel) {
 
         Column(
             modifier = Modifier.weight(1f),

@@ -8,53 +8,20 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.gdk.data.AccountAssetBalance
+import com.blockstream.common.gdk.data.AccountAssetBalanceList
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.models.SimpleGreenViewModel
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.ui.components.GreenColumn
-import com.blockstream.compose.navigation.getNavigationResult
-import com.blockstream.compose.navigation.setNavigationResult
-import org.koin.core.parameter.parametersOf
+import com.blockstream.ui.navigation.setResult
 
-@Parcelize
-data class AssetsAccountsBottomSheet(
-    val greenWallet: GreenWallet,
-    val assetsAccounts: List<AccountAssetBalance>
-) : BottomScreen(), Parcelable {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<SimpleGreenViewModel> {
-            parametersOf(greenWallet)
-        }
-
-        AssetsAccountsBottomSheet(
-            viewModel = viewModel,
-            assetsAccounts = assetsAccounts,
-            onDismissRequest = onDismissRequest()
-        )
-    }
-
-    companion object {
-        @Composable
-        fun getResult(fn: (AccountAssetBalance) -> Unit) =
-            getNavigationResult(this::class, fn)
-
-        internal fun setResult(result: AccountAssetBalance) =
-            setNavigationResult(this::class, result)
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AssetsAccountsBottomSheet(
     viewModel: GreenViewModel,
-    assetsAccounts: List<AccountAssetBalance>,
+    assetsAccounts: AccountAssetBalanceList,
     onDismissRequest: () -> Unit,
 ) {
     GreenBottomSheet(
@@ -71,9 +38,9 @@ fun AssetsAccountsBottomSheet(
                     rememberScrollState()
                 )
         ) {
-            assetsAccounts.forEach { account ->
+            assetsAccounts.list.forEach { account ->
                 GreenAccountAsset(accountAssetBalance = account, session = viewModel.sessionOrNull) {
-                    AssetsAccountsBottomSheet.setResult(account)
+                    NavigateDestinations.AssetsAccounts.setResult(account)
                     onDismissRequest()
                 }
             }

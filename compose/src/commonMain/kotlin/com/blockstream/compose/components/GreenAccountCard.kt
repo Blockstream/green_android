@@ -42,8 +42,6 @@ import blockstream_green.common.generated.resources.id_experimental
 import blockstream_green.common.generated.resources.shield_warning
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.AccountBalance
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.extensions.getAccountColor
 import com.blockstream.compose.extensions.policyAndType
@@ -56,6 +54,8 @@ import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.ifTrue
 import com.blockstream.compose.utils.noRippleClickable
 import com.blockstream.compose.utils.roundBackground
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -175,7 +175,7 @@ fun GreenAccountCard(
                             .ifTrue(
                                 account.balance == null
                             ) {
-                                align(Alignment.Bottom)
+                                it.align(Alignment.Bottom)
                             }) {
                             if (account.balance == null) {
                                 CircularProgressIndicator(

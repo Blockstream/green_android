@@ -13,7 +13,7 @@ abstract class AnalyticsViewModelAbstract : GreenViewModel() {
 class AnalyticsViewModel : AnalyticsViewModelAbstract() {
     override fun screenName(): String = "Consent"
 
-    override val showActionButtons: Boolean = settingsManager.analyticsFeatureEnabled
+    override val showActionButtons: Boolean =  settingsManager.analyticsFeatureEnabled
             && (!settingsManager.isAskedAboutAnalyticsConsent()
             && !settingsManager.getApplicationSettings().analytics)
 

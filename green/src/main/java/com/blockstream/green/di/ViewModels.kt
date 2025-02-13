@@ -178,7 +178,7 @@ val viewModels = module {
     }
     viewModel {
         // https://github.com/InsertKoinIO/koin/issues/1352
-        ChooseAccountTypeViewModel(get(), getOrNull(), getOrNull())
+        ChooseAccountTypeViewModel(get(), getOrNull(), getOrNull(), get())
     }
     viewModel {
         // https://github.com/InsertKoinIO/koin/issues/1352

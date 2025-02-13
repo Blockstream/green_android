@@ -58,12 +58,12 @@ class MainViewModel : GreenViewModel(), JadeHttpRequestUrlValidator {
         CompletableDeferred<Boolean>().also {
             unsafeUrlWarningEmitter = it
             unsafeUrls = urls
-            postSideEffect(SideEffects.UrlWarning(urls))
+            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.UrlWarning(urls)))
         }.await()
 
     override suspend fun torWarning(): Boolean = CompletableDeferred<Boolean>().also {
         torWarningEmitter = it
-        postSideEffect(SideEffects.TorWarning)
+        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.TorWarning))
     }.await()
 
     fun navigate(wallet: GreenWallet, deviceId: String?, isLightningShortcut: Boolean) {
@@ -72,7 +72,8 @@ class MainViewModel : GreenViewModel(), JadeHttpRequestUrlValidator {
                 NavigateDestinations.Login(
                     greenWallet = wallet,
                     deviceId = deviceId,
-                    isLightningShortcut = isLightningShortcut
+                    isLightningShortcut = isLightningShortcut,
+                    autoLoginWallet = !isLightningShortcut
                 )
             )
         )

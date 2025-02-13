@@ -1,18 +1,16 @@
 package com.blockstream.common.data
 
 import breez_sdk.LnUrlWithdrawRequestData
-import cafe.adriel.voyager.core.lifecycle.JavaSerializable
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
+import kotlinx.serialization.Serializable
 
-@Parcelize
+@Serializable
 data class LnUrlWithdrawRequestSerializable(
     var callback: String,
     var k1: String,
     var defaultDescription: String,
     var minWithdrawable: ULong,
     var maxWithdrawable: ULong
-) : Parcelable, JavaSerializable {
+) {
     fun deserialize() = LnUrlWithdrawRequestData(
         callback = callback,
         k1 = k1,

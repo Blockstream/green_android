@@ -1,20 +1,5 @@
 package com.blockstream.common.data
 
-import cafe.adriel.voyager.core.lifecycle.JavaSerializable
-import com.arkivanov.essenty.parcelable.CommonParceler
-import com.arkivanov.essenty.parcelable.ParcelReader
-import com.arkivanov.essenty.parcelable.ParcelWriter
-import com.arkivanov.essenty.parcelable.TypeParceler
-import com.arkivanov.essenty.parcelable.readBoolean
-import com.arkivanov.essenty.parcelable.readLong
-import com.arkivanov.essenty.parcelable.readString
-import com.arkivanov.essenty.parcelable.readStringOrNull
-import com.arkivanov.essenty.parcelable.writeBoolean
-import com.arkivanov.essenty.parcelable.writeLong
-import com.arkivanov.essenty.parcelable.writeString
-import com.arkivanov.essenty.parcelable.writeStringOrNull
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.database.wallet.GetWalletsWithCredentialType
 import com.blockstream.common.database.wallet.Wallet
 import com.blockstream.common.devices.ConnectionType
@@ -23,7 +8,6 @@ import com.blockstream.common.extensions.objectId
 import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.Serializable
 
-@Parcelize
 @Serializable
 public data class WalletSerializable(
     public val id: String,
@@ -39,7 +23,7 @@ public data class WalletSerializable(
     public val device_identifiers: List<DeviceIdentifier>?,
     public val extras: WalletExtras?,
     public val order: Long
-): Parcelable, JavaSerializable
+)
 
 fun Wallet.toWalletSerializable(): WalletSerializable {
     return WalletSerializable(
@@ -47,7 +31,7 @@ fun Wallet.toWalletSerializable(): WalletSerializable {
         name = name,
         xpub_hash_id = xpub_hash_id,
         active_network = active_network,
-        active_account,
+        active_account = active_account,
         is_testnet = is_testnet,
         is_hardware = is_hardware,
         is_lightning = is_lightning,
@@ -85,13 +69,11 @@ fun GetWalletsWithCredentialType.toGreenWallet(): GreenWallet {
 enum class WalletIcon { REGULAR, WATCH_ONLY, TESTNET, BIP39, HARDWARE, LIGHTNING, QR }
 
 @Serializable
-@Parcelize
-@TypeParceler<Wallet, WalletParceler>()
 data class GreenWallet constructor(
     var wallet: WalletSerializable,
     val ephemeralIdOrNull: Long? = null,
     val hasLightningShortcut: Boolean = false
-) : GreenJson<GreenWallet>(), Parcelable {
+) : GreenJson<GreenWallet>() {
     override fun kSerializer() = serializer()
 
     var id
@@ -252,40 +234,5 @@ data class GreenWallet constructor(
                 ephemeralIdOrNull = ephemeralId
             )
         }
-    }
-}
-
-@Suppress("OPT_IN_USAGE", "OPT_IN_OVERRIDE")
-internal object WalletParceler : CommonParceler<Wallet> {
-    override fun create(reader: ParcelReader): Wallet = Wallet(
-        reader.readString(), // id
-        reader.readString(), // name
-        reader.readString(), // xpub_hash_id
-        reader.readString(), // active_network
-        reader.readLong(), // active_account
-        reader.readBoolean(), // is_testnet
-        reader.readBoolean(), // is_hardware
-        reader.readBoolean(), // is_lightning
-        reader.readBoolean(), // ask_bip39_passphrase
-        reader.readStringOrNull(), // watch_only_username
-        reader.readStringOrNull()?.toDeviceIdentifierList(), // device_identifiers
-        reader.readStringOrNull()?.toWalletExtras(), // extras
-        reader.readLong() // order
-    )
-
-    override fun Wallet.write(writer: ParcelWriter) {
-        writer.writeString(id)
-        writer.writeString(name)
-        writer.writeString(xpub_hash_id)
-        writer.writeString(active_network)
-        writer.writeLong(active_account)
-        writer.writeBoolean(is_testnet)
-        writer.writeBoolean(is_hardware)
-        writer.writeBoolean(is_lightning)
-        writer.writeBoolean(ask_bip39_passphrase)
-        writer.writeStringOrNull(watch_only_username)
-        writer.writeStringOrNull(device_identifiers?.toJson())
-        writer.writeStringOrNull(extras?.toJson())
-        writer.writeLong(order)
     }
 }

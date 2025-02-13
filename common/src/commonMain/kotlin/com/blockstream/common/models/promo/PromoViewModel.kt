@@ -11,8 +11,8 @@ import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.models.GreenViewModel
 import com.rickclephas.kmp.observableviewmodel.launch
 
-abstract class PromoViewModelAbstract(promo: Promo, greenWallet: GreenWallet?) : GreenViewModel(
-    greenWalletOrNull = greenWallet
+abstract class PromoViewModelAbstract(promo: Promo, greenWalletOrNull: GreenWallet?) : GreenViewModel(
+    greenWalletOrNull = greenWalletOrNull
 ) {
     override fun screenName(): String = "Promo"
 
@@ -23,8 +23,8 @@ abstract class PromoViewModelAbstract(promo: Promo, greenWallet: GreenWallet?) :
     override fun initPromo() {}
 }
 
-class PromoViewModel(promo: Promo, greenWallet: GreenWallet?) :
-    PromoViewModelAbstract(greenWallet = greenWallet, promo = promo) {
+class PromoViewModel(promo: Promo, greenWalletOrNull: GreenWallet?) :
+    PromoViewModelAbstract(greenWalletOrNull = greenWalletOrNull, promo = promo) {
 
     init {
         viewModelScope.launch {
@@ -46,7 +46,7 @@ class PromoViewModel(promo: Promo, greenWallet: GreenWallet?) :
 }
 
 class PromoViewModelPreview() :
-    PromoViewModelAbstract(promo = Promo.preview1, greenWallet = previewWallet()) {
+    PromoViewModelAbstract(promo = Promo.preview1, greenWalletOrNull = previewWallet()) {
 
     companion object {
         fun preview() = PromoViewModelPreview()

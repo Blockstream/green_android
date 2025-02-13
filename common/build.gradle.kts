@@ -7,7 +7,6 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinxSerialization)
-    alias(libs.plugins.kotlinParcelize)
     alias(libs.plugins.kmp.nativecoroutines)
     alias(libs.plugins.app.cash.sqldelight)
     alias(libs.plugins.nativeCocoapods)
@@ -32,17 +31,13 @@ sqldelight {
 }
 
 kotlin {
-    androidTarget {
-        compilerOptions {
-            freeCompilerArgs.addAll("-P", "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.blockstream.common.Parcelize")
-        }
-    }
-
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
     jvmToolchain(libs.versions.jvm.get().toInt())
+
+    androidTarget()
 
     jvm()
 
@@ -103,7 +98,8 @@ kotlin {
         }
 
         commonMain.dependencies {
-            /**  --- Jade ------------------------------------------------------------------------------- */
+            /**  --- Modules ---------------------------------------------------------------------------- */
+            implementation(project(":ui-common"))
             api(project(":jade"))
             /** ----------------------------------------------------------------------------------------- */
 
@@ -129,7 +125,6 @@ kotlin {
             /** ----------------------------------------------------------------------------------------- */
 
             /**  --- Voyager ---------------------------------------------------------------------------- */
-            api(libs.voyager.screenmodel)
             // Required for iOS target compilation
             compileOnly(compose.runtime)
             compileOnly(compose.runtimeSaveable)
@@ -149,12 +144,12 @@ kotlin {
             api(libs.okio) // Filesystem
             api(libs.kermit)
             api(libs.state.keeper)
-            api(libs.parcelable)
             api(libs.kase64) // base64
             api(libs.ksoup.entites) // html entities
             api(libs.kable.core)
             api(libs.kotlincrypto.hash.md)
             api(libs.kotlincrypto.hash.sha2)
+            implementation(libs.compose.action.menu)
             implementation(libs.phosphor.icon)
 
             implementation(libs.tuulbox.coroutines)
@@ -166,7 +161,6 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.koin.test)
 
-            // Required by Voyager
             compileOnly(compose.runtime)
             compileOnly(compose.runtimeSaveable)
         }

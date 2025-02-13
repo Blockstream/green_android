@@ -37,10 +37,10 @@ import com.blockstream.common.data.AlertType
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelLarge
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -66,6 +66,7 @@ fun GreenAlert(modifier: Modifier = Modifier, alertType: AlertType, viewModel: G
                 onPrimaryClick = {
                     viewModel.postEvent(
                         NavigateDestinations.SystemMessage(
+                            greenWallet = viewModel.greenWallet,
                             network = alertType.network,
                             message = alertType.message
                         )
@@ -85,7 +86,9 @@ fun GreenAlert(modifier: Modifier = Modifier, alertType: AlertType, viewModel: G
                 onPrimaryClick = {
                     viewModel.postEvent(
                         NavigateDestinations.TwoFactorReset(
-                            network = alertType.network
+                            greenWallet = viewModel.greenWallet,
+                            network = alertType.network,
+                            twoFactorReset = viewModel.sessionOrNull?.twoFactorReset(alertType.network)?.value
                         )
                     )
                 }
@@ -100,7 +103,9 @@ fun GreenAlert(modifier: Modifier = Modifier, alertType: AlertType, viewModel: G
                 onPrimaryClick = {
                     viewModel.postEvent(
                         NavigateDestinations.TwoFactorReset(
-                            network = alertType.network
+                            greenWallet = viewModel.greenWallet,
+                            network = alertType.network,
+                            twoFactorReset = viewModel.sessionOrNull?.twoFactorReset(alertType.network)?.value
                         )
                     )
                 }

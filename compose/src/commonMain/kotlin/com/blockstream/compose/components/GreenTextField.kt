@@ -85,7 +85,7 @@ fun GreenTextField(
                     },
                     modifier = Modifier
                         .ifTrue(minLines > 1) {
-                            padding(vertical = 8.dp)
+                            it.padding(vertical = 8.dp)
                         }
                         .weight(1f)
                 )

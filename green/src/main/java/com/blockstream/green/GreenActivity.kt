@@ -9,7 +9,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import androidx.core.content.IntentCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.blockstream.common.data.AppInfo
@@ -19,6 +18,7 @@ import com.blockstream.common.database.Database
 import com.blockstream.common.database.wallet.LoginCredentials
 import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.Gdk
+import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.PinData
 import com.blockstream.common.managers.SessionManager
@@ -200,7 +200,9 @@ class GreenActivity : AppCompatActivity() {
         ) {
             mainViewModel.postEvent(Events.NavigateTo(NavigateDestinations.DeviceList(isJade = true)))
         } else if (intent?.action == OPEN_WALLET) {
-            IntentCompat.getParcelableExtra(intent, WALLET, GreenWallet::class.java)
+
+            intent.getStringExtra(WALLET)
+                ?.let { GreenJson.json.decodeFromString<GreenWallet>(it) }
                 ?.let { wallet ->
                     mainViewModel.navigate(
                         wallet = wallet,

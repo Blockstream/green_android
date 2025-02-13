@@ -1140,7 +1140,7 @@ class IOSGdkBinding constructor(config: InitConfig) : GdkBinding {
     }
 }
 
-actual fun getGdkBinding(log: Boolean, config: InitConfig): GdkBinding = IOSGdkBinding(config)
+actual fun getGdkBinding(printGdkMessages: Boolean, config: InitConfig): GdkBinding = IOSGdkBinding(config)
 
 actual val GA_ERROR: Int = gdk.GA_ERROR
 actual val GA_RECONNECT: Int = gdk.GA_RECONNECT

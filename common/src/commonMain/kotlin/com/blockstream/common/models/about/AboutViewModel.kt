@@ -77,7 +77,6 @@ class AboutViewModel : AboutViewModelAbstract() {
     private var _clickCounter = 0
 
     init {
-
         combine(rate, feedback) { rate, feedback ->
             rate > 0 && feedback.isNotBlank()
         }.onEach {

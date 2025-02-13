@@ -26,8 +26,6 @@ import blockstream_green.common.generated.resources.id_unknown
 import blockstream_green.common.generated.resources.key_multisig
 import blockstream_green.common.generated.resources.key_singlesig
 import blockstream_green.common.generated.resources.lightning_fill
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.gdk.data.AccountType
 import kotlinx.serialization.Serializable
@@ -35,11 +33,10 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 
 @Serializable
-@Parcelize
 data class AccountTypeLook(
     val accountType: AccountType,
     val canBeAdded: Boolean = true
-) : GreenJson<AccountTypeLook>(), Parcelable {
+) : GreenJson<AccountTypeLook>() {
     override fun kSerializer() = serializer()
 
     val isMultisig

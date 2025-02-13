@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.get
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.arrows_counter_clockwise
 import blockstream_green.common.generated.resources.id_account__asset
@@ -53,11 +54,9 @@ import blockstream_green.common.generated.resources.info
 import blockstream_green.common.generated.resources.seal_check
 import blockstream_green.common.generated.resources.share_network
 import blockstream_green.common.generated.resources.warning
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.DenominatedValue
+import com.blockstream.common.data.MenuEntry
+import com.blockstream.common.data.MenuEntryList
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.AccountAsset
@@ -73,20 +72,12 @@ import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenGradient
 import com.blockstream.compose.components.GreenQR
-import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.components.LearnMoreButton
+import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.managers.rememberPlatformManager
-import com.blockstream.compose.screens.add.ReviewAddAccountScreen
-import com.blockstream.compose.sheets.ChooseAssetAccountBottomSheet
-import com.blockstream.compose.sheets.DenominationBottomSheet
-import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
-import com.blockstream.compose.sheets.MenuBottomSheet
-import com.blockstream.compose.sheets.MenuEntry
-import com.blockstream.compose.sheets.NoteBottomSheet
+import com.blockstream.compose.navigation.LocalNavigator
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.green20
@@ -98,54 +89,37 @@ import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AlphaPulse
 import com.blockstream.compose.utils.AnimatedNullableVisibility
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenGradient
+import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.navigation.bottomsheet.BottomSheetNavigator
+import com.blockstream.ui.navigation.getResult
 import io.github.alexzhirkevich.qrose.QrCodePainter
 import io.github.alexzhirkevich.qrose.toByteArray
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-
-@Parcelize
-data class ReceiveScreen(
-    val accountAsset: AccountAsset,
-    val greenWallet: GreenWallet,
-) : Screen, Parcelable {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<ReceiveViewModel> {
-            parametersOf(accountAsset, greenWallet)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        ReceiveScreen(viewModel = viewModel)
-    }
-}
 
 @Composable
 fun ReceiveScreen(
     viewModel: ReceiveViewModelAbstract
 ) {
 
-    ReviewAddAccountScreen.getResult {
+    NavigateDestinations.ReviewAddAccount.getResult<AccountAsset> {
         viewModel.postEvent(Events.SetAccountAsset(it))
     }
 
-    ChooseAssetAccountBottomSheet.getResult {
+    NavigateDestinations.ChooseAssetAccounts.getResult<AccountAsset> {
         viewModel.accountAsset.value = it
     }
 
-    DenominationBottomSheet.getResult {
+    NavigateDestinations.Denomination.getResult<DenominatedValue> {
         viewModel.postEvent(Events.SetDenominatedValue(it))
     }
 
-    NoteBottomSheet.getResult {
+    NavigateDestinations.Note.getResult<String> {
         viewModel.postEvent(ReceiveViewModel.LocalEvents.SetNote(it))
     }
 
@@ -161,13 +135,12 @@ fun ReceiveScreen(
     val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
+    val bottomSheetNavigator = LocalNavigator.current.navigatorProvider[BottomSheetNavigator::class]
 
-    val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
     val platformManager = rememberPlatformManager()
 
-    MenuBottomSheet.getResult {
+    NavigateDestinations.Menu.getResult<Int> {
         scope.launch {
-
             val qrCode : Painter = QrCodePainter(
                 data = receiveAddressUri ?: "",
             )
@@ -182,13 +155,6 @@ fun ReceiveScreen(
         }
     }
 
-    HandleSideEffect(viewModel) {
-        when (it) {
-            is SideEffects.Dismiss -> {
-                bottomSheetNavigator?.hide()
-            }
-        }
-    }
     val focusRequester = remember { FocusRequester() }
 
     val amount by viewModel.amount.collectAsStateWithLifecycle()
@@ -203,7 +169,13 @@ fun ReceiveScreen(
         }
     }
 
-    Column {
+    SetupScreen(viewModel = viewModel, withPadding = false, onProgressStyle = OnProgressStyle.Disabled, sideEffectsHandler = {
+        when (it) {
+            is SideEffects.Dismiss -> {
+                bottomSheetNavigator.popBackStack()
+            }
+        }
+    }) {
 
         Box(modifier = Modifier.weight(1f)) {
             GreenColumn(
@@ -250,7 +222,7 @@ fun ReceiveScreen(
                             title = stringResource(Res.string.id_account__asset),
                             withEditIcon = true
                         ) {
-                            viewModel.postEvent(NavigateDestinations.ChooseAssetAccounts)
+                            viewModel.postEvent(NavigateDestinations.ChooseAssetAccounts(greenWallet = viewModel.greenWallet))
                         }
                     }
                 }
@@ -517,9 +489,10 @@ fun ReceiveScreen(
                         enabled = !onProgress
                     ) {
                         scope.launch {
-                            bottomSheetNavigator?.show(
-                                MenuBottomSheet(
-                                    title = getString(Res.string.id_share), entries = listOf(
+                            viewModel.postEvent(
+                                NavigateDestinations.Menu(
+                                    title = getString(Res.string.id_share),
+                                    entries = MenuEntryList(listOf(
                                         MenuEntry(
                                             title = getString(Res.string.id_address),
                                             iconRes = "text_aa"
@@ -528,7 +501,7 @@ fun ReceiveScreen(
                                             title = getString(Res.string.id_qr_code),
                                             iconRes = "qr_code"
                                         ),
-                                    )
+                                    ))
                                 )
                             )
                         }

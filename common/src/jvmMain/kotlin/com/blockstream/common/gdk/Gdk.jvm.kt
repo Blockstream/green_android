@@ -39,12 +39,19 @@ import com.blockstream.common.gdk.params.ValidateAddresseesParams
 import kotlinx.serialization.json.JsonElement
 
 actual fun getGdkBinding(
-    log: Boolean,
+    printGdkMessages: Boolean,
     config: InitConfig
 ): GdkBinding {
     return object : GdkBinding{
+        override val logs: StringBuilder = StringBuilder()
+
+        private val _dataDir: String = config.datadir
         override val dataDir: String
-            get() = TODO("Not yet implemented")
+            get() = _dataDir
+
+        override fun appendGdkLogs(json: String) {
+            TODO("Not yet implemented")
+        }
 
         override fun setNotificationHandler(notificationHandler: (session: GASession, jsonObject: Any) -> Unit) {
 

@@ -26,36 +26,14 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_choose_a_name_for_your_wallet
 import blockstream_green.common.generated.resources.id_save
 import blockstream_green.common.generated.resources.id_wallet_name
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
-import com.blockstream.common.models.wallet.WalletNameViewModel
 import com.blockstream.common.models.wallet.WalletNameViewModelAbstract
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.extensions.onTextFieldValueChange
 import com.blockstream.compose.utils.OpenKeyboard
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Parcelize
-data class WalletRenameBottomSheet(val greenWallet: GreenWallet) : BottomScreen(), Parcelable {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<WalletNameViewModel>{
-            parametersOf(greenWallet)
-        }
-
-        WalletRenameBottomSheet(
-            viewModel = viewModel,
-            sheetState = sheetState(),
-            onDismissRequest = onDismissRequest()
-        )
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

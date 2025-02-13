@@ -1,14 +1,11 @@
 package com.blockstream.common.gdk.data
 
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.jade.JadeResponse
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 
-@Parcelize
 @Serializable
 data class BcurDecodedData(
     @SerialName("ur_type") val urType: String,
@@ -20,7 +17,7 @@ data class BcurDecodedData(
     @SerialName("encrypted") val encrypted: String? = null,
     @SerialName("public_key") val publicΚey: String? = null,
     @SerialName("result") val result: JadeResponse? = null,
-): GreenJson<BcurDecodedData>(), Parcelable {
+): GreenJson<BcurDecodedData>() {
     override fun kSerializer() = serializer()
 
     val simplePayload : String

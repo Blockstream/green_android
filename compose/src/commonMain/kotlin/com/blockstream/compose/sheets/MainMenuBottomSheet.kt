@@ -25,48 +25,21 @@ import com.adamglin.phosphoricons.regular.ArrowsDownUp
 import com.adamglin.phosphoricons.regular.Coins
 import com.adamglin.phosphoricons.regular.QrCode
 import com.blockstream.common.CountlyBase
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.LocalAppInfo
-import com.blockstream.ui.components.GreenArrow
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenCard
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
-import com.blockstream.compose.navigation.getNavigationResult
-import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteLow
+import com.blockstream.ui.components.GreenArrow
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.navigation.setResult
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 enum class MainMenuEntry {
     BUY_SELL, ACCOUNT_TRANSFER, SCAN, REDEPOSIT;
-}
-
-@Parcelize
-data class MainMenuBottomSheet(val isTestnet: Boolean) : BottomScreen(), Parcelable {
-    @Composable
-    override fun Content() {
-        val onDismissRequest = onDismissRequest()
-        MainMenuBottomSheetView(
-            onSelect = { menuEntry ->
-                setResult(menuEntry)
-                onDismissRequest.invoke()
-            },
-            isTestnet = isTestnet,
-            onDismissRequest = onDismissRequest
-        )
-    }
-
-    companion object{
-        @Composable
-        fun getResult(fn: (MainMenuEntry) -> Unit) =
-            getNavigationResult(this::class, fn)
-
-        private fun setResult(result: MainMenuEntry) =
-            setNavigationResult(this::class, result)
-    }
 }
 
 @Composable
@@ -89,8 +62,7 @@ fun MainMenuItem(title: String, subtitle: String, icon: ImageVector, onClick: ((
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainMenuBottomSheetView(
-    onSelect: (item: MainMenuEntry) -> Unit,
+fun MainMenuBottomSheet(
     isTestnet: Boolean,
     onDismissRequest: () -> Unit,
 ) {
@@ -108,7 +80,6 @@ fun MainMenuBottomSheetView(
         val appInfo = LocalAppInfo.current
         val countly = koinInject<CountlyBase>()
 
-
         GreenColumn {
             if(countly.getRemoteConfigForOnOffRamps() != false && !isTestnet) {
                 MainMenuItem(
@@ -117,7 +88,8 @@ fun MainMenuBottomSheetView(
                     icon = PhosphorIcons.Regular.Coins,
                     onClick = {
                         countly.buyInitiate()
-                        onSelect(MainMenuEntry.BUY_SELL)
+                        NavigateDestinations.MainMenu.setResult(MainMenuEntry.BUY_SELL)
+                        onDismissRequest()
                     }
                 )
             }
@@ -130,14 +102,16 @@ fun MainMenuBottomSheetView(
                      ),
                      icon = PhosphorIcons.Regular.ArrowsDownUp,
                      onClick = {
-                         onSelect(MainMenuEntry.ACCOUNT_TRANSFER)
+                         NavigateDestinations.MainMenu.setResult(MainMenuEntry.ACCOUNT_TRANSFER)
+                         onDismissRequest()
                      }
                  )
                  MainMenuItem(
                      title = stringResource(Res.string.id_redeposit),
                      subtitle = stringResource(Res.string.id_redeposit_expired_2fa_coins),
                      icon = PhosphorIcons.Regular.ArrowULeftDown, onClick = {
-                         onSelect(MainMenuEntry.REDEPOSIT)
+                         NavigateDestinations.MainMenu.setResult(MainMenuEntry.REDEPOSIT)
+                         onDismissRequest()
                      }
                  )
              }
@@ -146,7 +120,8 @@ fun MainMenuBottomSheetView(
                 title = stringResource(Res.string.id_qr_scanner),
                 subtitle = stringResource(Res.string.id_scan_qr_code),
                 icon = PhosphorIcons.Regular.QrCode, onClick = {
-                    onSelect(MainMenuEntry.SCAN)
+                    NavigateDestinations.MainMenu.setResult(MainMenuEntry.SCAN)
+                    onDismissRequest()
                 }
             )
         }

@@ -7,36 +7,29 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_select_network
-import com.blockstream.compose.navigation.getNavigationResult
-import com.blockstream.compose.navigation.setNavigationResult
+import com.blockstream.common.data.MenuEntry
+import com.blockstream.common.data.MenuEntryList
+import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.ui.navigation.setResult
 import org.jetbrains.compose.resources.stringResource
 
+@Composable
+fun EnvironmentBottomSheet(onDismissRequest: () -> Unit) {
+    var resultFromUserSelection by remember { mutableStateOf(false) }
 
-object EnvironmentBottomSheet : BottomScreen() {
+    MenuBottomSheetView(
+        title = stringResource(Res.string.id_select_network), entries = MenuEntryList(listOf(
+            MenuEntry(title = "Mainnet", iconRes = "currency_btc"),
+            MenuEntry(title = "Testnet", iconRes = "flask")
+        )), onSelect = { position, _ ->
+            NavigateDestinations.Environment.setResult(position)
 
-    @Composable
-    override fun Content() {
-        var resultFromUserSelection by remember { mutableStateOf(false) }
-
-        MenuBottomSheetView(
-            title = stringResource(Res.string.id_select_network), entries = listOf(
-                MenuEntry(title = "Mainnet", iconRes = "currency_btc"),
-                MenuEntry(title = "Testnet", iconRes = "flask")
-            ), onSelect = { position, _ ->
-                setResult(position)
-                resultFromUserSelection = true
-            }, onDismissRequest = onDismissRequest {
-                if(!resultFromUserSelection){
-                    setResult(-1)
-                }
+            resultFromUserSelection = true
+        }, onDismissRequest = {
+            if (!resultFromUserSelection) {
+                NavigateDestinations.Environment.setResult(-1)
             }
-        )
-    }
-
-    @Composable
-    fun getResult(fn: (Int) -> Unit) =
-        getNavigationResult(this::class, fn)
-
-    private fun setResult(result: Int) =
-        setNavigationResult(this::class, result)
+            onDismissRequest()
+        }
+    )
 }

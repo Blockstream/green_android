@@ -5,8 +5,6 @@ import blockstream_green.common.generated.resources.id_receive_any_amp_asset
 import blockstream_green.common.generated.resources.id_receive_any_liquid_asset
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.LBTC_POLICY_ASSET
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.extensions.isBitcoinPolicyAsset
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.networkForAsset
@@ -21,7 +19,6 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-@Parcelize
 data class EnrichedAsset constructor(
     @SerialName("asset_id") val assetId: String,
     @SerialName("name") val name: String? = null,
@@ -32,7 +29,7 @@ data class EnrichedAsset constructor(
     @SerialName("weight") val weight: Int = 0,
     // @SerialName("isSendable") val isSendable: Boolean = true, // Display "Any Liquid Asset" UI element
     @SerialName("isAnyAsset") val isAnyAsset: Boolean = false, // Display "Any Liquid/Amp Asset" UI element
-) : GreenJson<EnrichedAsset>(), Parcelable {
+) : GreenJson<EnrichedAsset>() {
 
     fun nameOrNull(session: GdkSession?): StringHolder? {
         return if (isAnyAsset) {

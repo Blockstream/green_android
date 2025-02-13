@@ -1,7 +1,9 @@
 package com.blockstream.common
 
 import com.blockstream.common.data.SupportData
+import kotlinx.serialization.Serializable
 
+@Serializable
 enum class SupportType(val zendeskValue: String){
     INCIDENT("incident"), FEEDBACK("feedback"),
 }

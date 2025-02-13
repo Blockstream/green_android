@@ -26,8 +26,8 @@ import com.blockstream.compose.utils.AnimatedNullableVisibility
 @Composable
 fun GreenCard(
     modifier: Modifier = Modifier,
-    colors: CardColors = CardDefaults.elevatedCardColors(),
-    elevation: CardElevation = CardDefaults.elevatedCardElevation(),
+    colors: CardColors = CardDefaults.outlinedCardColors(),
+    elevation: CardElevation = CardDefaults.cardElevation(),
     enabled: Boolean = true,
     padding: Int = 16,
     border: BorderStroke? = null,
@@ -38,17 +38,20 @@ fun GreenCard(
     content: @Composable BoxScope.() -> Unit
 ) {
 
+    val borderStroke = border // ?: CardDefaults.outlinedCardBorder()
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .then(modifier)
     ) {
         if (onClick == null) {
+            // OutlinedCard
             Card(
                 shape = if (helperText == null) CardDefaults.shape else GreenSmallBottom,
                 elevation = elevation,
                 colors = colors,
-                border = if (helperText == null) border else BorderStroke(1.dp, helperContainerColor ?: md_theme_errorContainer)
+                border = if (helperText == null) borderStroke else BorderStroke(1.dp, helperContainerColor ?: md_theme_errorContainer)
             ) {
                 Box(
                     modifier = Modifier
@@ -58,13 +61,14 @@ fun GreenCard(
                 )
             }
         } else {
+            // OutlinedCard
             Card(
                 onClick = onClick,
                 enabled = enabled,
                 shape = if (helperText == null) CardDefaults.shape else GreenSmallBottom,
                 elevation = elevation,
                 colors = colors,
-                border = if (helperText == null) border else BorderStroke(1.dp, helperContainerColor ?: md_theme_errorContainer)
+                border = if (helperText == null) borderStroke else BorderStroke(1.dp, helperContainerColor ?: md_theme_errorContainer)
             ) {
                 Box(
                     modifier = Modifier

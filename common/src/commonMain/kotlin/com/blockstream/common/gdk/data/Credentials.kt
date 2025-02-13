@@ -1,20 +1,17 @@
 package com.blockstream.common.gdk.data
 
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.gdk.params.LoginCredentialsParams
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Parcelize
 @Serializable
 data class Credentials constructor(
     @SerialName("mnemonic") val mnemonic: String? = null,
     @SerialName("bip39_passphrase") val bip39Passphrase: String? = null,
     @SerialName("seed") val seed: String? = null,
     @SerialName("username") val username: String? = null,
-) : GreenJson<Credentials>(), Parcelable {
+) : GreenJson<Credentials>() {
 
     override fun encodeDefaultsValues() = false
 

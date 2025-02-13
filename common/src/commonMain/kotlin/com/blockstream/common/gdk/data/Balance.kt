@@ -1,7 +1,5 @@
 package com.blockstream.common.gdk.data
 
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.BITS_UNIT
 import com.blockstream.common.BTC_UNIT
 import com.blockstream.common.MBTC_UNIT
@@ -19,7 +17,6 @@ import kotlinx.serialization.json.jsonPrimitive
     GDK 0.0.58.post1 changed the limits structure to return only fiat values if is_fiat = true, so
     btc amounts had to have default values if they don't exists
  */
-@Parcelize
 @Serializable
 data class Balance constructor(
     @SerialName("bits") val bits: String = "0.00",
@@ -35,7 +32,7 @@ data class Balance constructor(
     @SerialName("is_current") val isCurrent: Boolean? = null,
     var assetAmount: String? = null,
     var asset: Asset? = null,
-): GreenJson<Balance>(), Parcelable {
+): GreenJson<Balance>() {
     override fun kSerializer() = serializer()
 
     val valueInMainUnit: String get() = assetAmount ?: btc

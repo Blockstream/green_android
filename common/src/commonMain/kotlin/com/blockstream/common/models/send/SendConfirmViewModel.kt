@@ -16,6 +16,7 @@ import com.blockstream.common.data.NavData
 import com.blockstream.common.events.Event
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAsset
@@ -28,10 +29,10 @@ import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.StringHolder
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
@@ -77,12 +78,10 @@ class SendConfirmViewModel constructor(
     }
 
     init {
-        viewModelScope.launch {
+        onProgressSending.onEach { onProgressSending ->
             _navData.value = NavData(
                 title = getString(Res.string.id_review), subtitle = greenWallet.name,
-                onBackPressed = {
-                    !(onProgress.value)
-                },
+                isVisible = !onProgressSending,
                 actions = listOfNotNull(
                     NavAction(
                         title = getString(Res.string.id_add_note),
@@ -104,7 +103,7 @@ class SendConfirmViewModel constructor(
                     }).takeIf { appInfo.isDevelopmentOrDebug },
                 )
             )
-        }
+        }.launchIn(this)
 
         session.ifConnected {
             if (denomination != null && !denomination.isFiat) {
@@ -173,7 +172,7 @@ class SendConfirmViewModel constructor(
             }
 
             is LocalEvents.Note -> {
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Note(note = note.value, noteType = NoteType.Note)))
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Note(greenWallet = greenWallet, note = note.value, noteType = NoteType.Note)))
             }
 
             is LocalEvents.VerifyOnDevice -> {
@@ -194,6 +193,7 @@ class SendConfirmViewModel constructor(
                     postSideEffect(
                         SideEffects.NavigateTo(
                             NavigateDestinations.DeviceInteraction(
+                                greenWalletOrNull = greenWalletOrNull,
                                 deviceId = session.device?.connectionIdentifier,
                                 verifyAddress = output.address
                             )

@@ -1,9 +1,6 @@
 package com.blockstream.common.gdk.data
 
 
-import cafe.adriel.voyager.core.lifecycle.JavaSerializable
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.GreenJson
@@ -12,14 +9,13 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-@Parcelize
 data class Asset constructor(
     @SerialName("name") val name: String,
     @SerialName("asset_id") val assetId: String,
     @SerialName("precision") val precision: Int = 0,
     @SerialName("ticker") val ticker: String? = null,
     @SerialName("entity") val entity: Entity? = null,
-) : GreenJson<Asset>(), Parcelable {
+) : GreenJson<Asset>() {
 
     val isBitcoin
         get() = assetId == BTC_POLICY_ASSET
@@ -36,6 +32,5 @@ data class Asset constructor(
 }
 
 @Serializable
-@Parcelize
-data class Entity(@SerialName("domain") val domain: String) : Parcelable, JavaSerializable
+data class Entity(@SerialName("domain") val domain: String)
 

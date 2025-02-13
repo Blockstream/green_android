@@ -2,17 +2,18 @@
 jvm = "17"
 accompanistPermissions = "0.34.0"
 constraintlayoutComposeMultiplatform = "0.4.0"
-kotlin = "2.1.0"
-kotlinx-coroutines = "1.9.0"
+kotlin = "2.1.20-RC"
+kotlinx-coroutines = "1.10.1"
 kotlinx-datetime = "0.6.1"
 kotlinx-serialization = "1.7.3"
-kotlin-ksp = "2.1.0-1.0.29"
+kotlin-ksp = "2.1.20-RC-1.0.30"
 kable = "0.34.0"
 coil = "3.0.4"
 ktor = "3.0.2"
 phosphorIcon = "1.0.0"
+compose-rebugger = "1.0.0-rc03"
 tuulbox-coroutines = "8.0.0"
-android-gradle-plugin = "8.8.1"
+android-gradle-plugin = "8.9.0-rc02"
 androidCompileSdk = "35"
 androidTargetSdk = "35"
 androidMinSdk = "24"
@@ -22,7 +23,7 @@ androidx-junit = "1.2.1"
 biometric = "1.2.0-alpha05"
 browser = "1.8.0"
 appcompat = "1.7.0"
-core-ktx = "1.13.1"
+core-ktx = "1.15.0"
 core-testing = "2.2.0"
 countly-sdk-android = "1e4eb2bb781bc34f614dcecb5182ac23761a8278"
 espresso-core = "3.6.1"
@@ -33,9 +34,10 @@ kase64 = "1.0.6"
 kermit = "2.0.4"
 kmp-observableviewmodel = "1.0.0-BETA-8"
 splash-screen = "1.1.0-rc01"
-koin-bom = "4.0.1-Beta1"
+koin-bom = "4.0.2"
 ksoupEntites = "0.1.2"
-lifecycle = "2.8.4"
+androidx-lifecycle = "2.9.0-alpha03"
+compose-lifecycle = "2.9.0-alpha03"
 middleEllipsisText3 = "1.2.0"
 mpfilepicker = "3.1.0"
 multiplatformSettings = "1.3.0"
@@ -49,36 +51,36 @@ mockk = "1.13.10"
 preference-ktx = "1.2.1"
 guava = "31.1-android"
 review-ktx = "2.0.2"
-rive-android = "9.11.0"
+rive-android = "9.13.0"
 startup-runtime = "1.2.0"
 uriKmp = "0.0.18"
-workRuntimeKtx = "2.9.1"
+workRuntimeKtx = "2.10.0"
 zendesk = "5.2.0"
-parcelable = "1.3.0"
-state-keeper = "2.1.0"
+state-keeper = "2.2.1"
 turbine = "1.0.0"
 usb-serial = "0f16336a4e"
 uuid = "0.8.4"
 desugar = "2.1.4"
+composeActionMenu = "3.0.1"
 zxing-android-embedded = "4.3.0"
 kmp-nativecoroutines = "1.0.0-ALPHA-38"
-compose-material3 = "1.3.1"
-compose-tooling-preview = "1.7.6"
-jetbrains-compose = "1.7.3"
-voyager = "1.1.0-beta03"
+compose-tooling-preview = "1.7.8"
+navigation = "2.8.0-alpha13"
+jetbrains-compose = "1.8.0-alpha03"
 google-services = "4.4.2"
-firebase-bom = "33.6.0"
+compose-hot-reload = "1.0.0-dev-50"
+firebase-bom = "33.9.0"
 jna = "5.14.0"
 room = "2.5.2"
 protobuf-java = "3.4.0"
-media3 = "1.4.0"
+media3 = "1.5.1"
 
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splash-screen" }
-androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "lifecycle" }
-androidx-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
+androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "compose-lifecycle" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-test = { module = "io.coil-kt.coil3:coil-test", version.ref = "coil" }
@@ -90,6 +92,7 @@ ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "k
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-java = { module = "io.ktor:ktor-client-java", version.ref = "ktor" }
 phosphor-icon = { module = "com.adamglin:phosphor-icon", version.ref = "phosphorIcon" }
+compose-rebugger = { module = "io.github.theapache64:rebugger", version.ref = "compose-rebugger" }
 tuulbox-coroutines = { module = "com.juul.tuulbox:coroutines", version.ref = "tuulbox-coroutines" }
 desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar" }
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
@@ -151,7 +154,6 @@ mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatformSettings" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
-parcelable = { module = "com.arkivanov.essenty:parcelable", version.ref = "parcelable" }
 state-keeper = { module = "com.arkivanov.essenty:state-keeper", version.ref = "state-keeper" }
 protobuf-java = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf-java" }
 review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "review-ktx" }
@@ -162,16 +164,13 @@ turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 usb-serial = { module = "com.github.angelix:UsbSerial", version.ref = "usb-serial" }
 uuid = { module = "com.benasher44:uuid", version.ref = "uuid" }
 zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxing-android-embedded" }
-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
-compose-material3-android = { module = "androidx.compose.material3:material3-android", version.ref = "compose-material3" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose-tooling-preview"}
 androidx-activity-compose = { module = "androidx.activity:activity-compose" }
-voyager-screenmodel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyager" }
-voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
-voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyager" }
-voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyager" }
 androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3" }
 androidx-media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3" }
+navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigation" }
+compose-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "jetbrains-compose" }
+compose-action-menu = { module = "nl.jacobras:compose-action-menu", version.ref = "composeActionMenu" }
 
 [plugins]
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -185,5 +184,5 @@ androidApplication = { id = "com.android.application", version.ref = "android-gr
 google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
 app-cash-sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 kmp-nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version.ref = "kmp-nativecoroutines" }
-kotlinParcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 googleServices = { id = "com.google.gms.google-services", version.ref = "google-services" }
+composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "compose-hot-reload" }

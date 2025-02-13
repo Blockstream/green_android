@@ -22,6 +22,7 @@ class Events : Event {
         override val sideEffect
             get() = SideEffects.NavigateTo(destination)
     }
+    object NavigateBackUserAction: Event
     object NavigateBack: EventSideEffect(SideEffects.NavigateBack())
     class AckSystemMessage(val network: Network, val message: String) : Event
     object DismissSystemMessage : Event
@@ -59,4 +60,7 @@ class Events : Event {
     data class ResolveTwoFactorCode(val code: String?): Event
     object NotificationPermissionGiven: Event
     object BluetoothPermissionGiven: Event
+
+    // Devices
+    data class RespondToFirmwareUpgrade(val index: Int? = null): Event
 }

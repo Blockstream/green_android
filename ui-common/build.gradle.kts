@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.kotlinParcelize)
     alias(libs.plugins.kotlinxSerialization)
 }
 
@@ -23,6 +22,12 @@ kotlin {
     )
 
     sourceSets {
+        all {
+            languageSettings.apply {
+                optIn("androidx.compose.material3.ExperimentalMaterial3Api")
+            }
+        }
+
         commonMain.dependencies {
             /**  --- Compose -------------------------------------------------------------------- */
             api(compose.runtime)
@@ -31,9 +36,19 @@ kotlin {
             api(compose.ui)
             api(compose.components.uiToolingPreview)
             api(libs.constraintlayout.compose.multiplatform)
+            api(libs.navigation.compose)
+            api(libs.compose.backhandler)
+
+            /**  --- Kotlin & KotlinX ----------------------------------------------------------- */
+            api(libs.kotlinx.serialization.core)
+            api(libs.kotlinx.serialization.json)
 
             /**  --- Phosphor ------------------------------------------------------------------- */
             api(libs.phosphor.icon)
+
+            implementation(libs.compose.rebugger)
+
+            implementation(libs.kermit)
         }
 
         val desktopMain by getting
@@ -46,7 +61,7 @@ kotlin {
             api(compose.preview)
             api(libs.androidx.activity.compose)
             api(libs.compose.ui.tooling.preview)
-            api(libs.compose.material3.android)
+//            api(libs.compose.material3.android)
         }
     }
 }

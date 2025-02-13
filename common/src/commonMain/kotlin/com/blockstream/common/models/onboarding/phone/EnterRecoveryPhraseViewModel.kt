@@ -119,11 +119,9 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
         data class SetActiveWord(val index: Int) : Event
         data class MnemonicEncryptionPassword(val password: String) : Event, Redact
         data class KeyAction(val key: String) : Event
-        object LaunchHelp: Events.EventSideEffect(sideEffect = LocalSideEffects.LaunchHelp)
     }
 
     class LocalSideEffects {
-        object LaunchHelp : SideEffect
         class RequestMnemonicPassword : SideEffect
     }
 
@@ -146,7 +144,7 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
                     title = getString(Res.string.id_help),
                     icon = Res.drawable.question,
                     onClick = {
-                        postSideEffect(LocalSideEffects.LaunchHelp)
+                        SideEffects.NavigateTo(NavigateDestinations.RecoveryHelp)
                     }
                 ))
             )

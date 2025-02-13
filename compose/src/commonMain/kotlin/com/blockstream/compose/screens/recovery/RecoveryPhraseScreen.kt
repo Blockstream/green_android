@@ -32,18 +32,10 @@ import blockstream_green.common.generated.resources.id_bip39_passphrase
 import blockstream_green.common.generated.resources.id_the_qr_code_does_not_include
 import blockstream_green.common.generated.resources.id_the_recovery_phrase_can_be_used
 import blockstream_green.common.generated.resources.id_use_this_recovery_phrase_to
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.gdk.data.Credentials
 import com.blockstream.common.models.recovery.RecoveryPhraseViewModel
 import com.blockstream.common.models.recovery.RecoveryPhraseViewModelAbstract
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenQR
-import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.components.LearnMoreButton
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.green20
@@ -53,40 +45,19 @@ import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AlphaPulse
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
 import kotlin.math.ceil
 
-
-@Parcelize
-data class RecoveryPhraseScreen(
-    val isLightning: Boolean,
-    val providedCredentials: Credentials?,
-    val greenWallet: GreenWallet?
-) : Screen, Parcelable {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<RecoveryPhraseViewModel>() {
-            parametersOf(isLightning, providedCredentials, greenWallet)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-        AppBar(navData)
-
-        RecoveryPhraseScreen(viewModel = viewModel)
-    }
-}
 
 @Composable
 fun RecoveryPhraseScreen(
     viewModel: RecoveryPhraseViewModelAbstract
 ) {
-    HandleSideEffect(viewModel)
-
-    Column {
+    SetupScreen(viewModel = viewModel, withPadding = false) {
 
         Column {
             Text(

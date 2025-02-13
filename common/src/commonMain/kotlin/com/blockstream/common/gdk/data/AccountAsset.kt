@@ -1,18 +1,15 @@
 package com.blockstream.common.gdk.data
 
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.Serializable
 
-@Parcelize
 @Serializable
 data class AccountAsset constructor(
     val account: Account,
     val asset: EnrichedAsset
-) : GreenJson<AccountAsset>(), Parcelable {
+) : GreenJson<AccountAsset>() {
     override fun kSerializer() = serializer()
 
     val assetId

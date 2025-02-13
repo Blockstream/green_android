@@ -38,8 +38,6 @@ import blockstream_green.common.generated.resources.trash
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.WalletIcon
 import com.blockstream.common.looks.wallet.WalletListLook
-import com.blockstream.ui.components.GreenCircle
-import com.blockstream.ui.components.GreenSpacer
 import com.blockstream.compose.components.MenuEntry
 import com.blockstream.compose.components.PopupMenu
 import com.blockstream.compose.components.PopupState
@@ -48,6 +46,8 @@ import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.ifTrue
+import com.blockstream.ui.components.GreenCircle
+import com.blockstream.ui.components.GreenSpacer
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -70,7 +70,7 @@ private fun WalletListRow(
             })
             .padding(horizontal = 16.dp)
             .ifTrue(isLightning) {
-                padding(start = 32.dp)
+                it.padding(start = 32.dp)
             }
             .height(52.dp)
             .fillMaxWidth()

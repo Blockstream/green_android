@@ -26,7 +26,6 @@ import blockstream_green.common.generated.resources.pencil_simple_line
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.utils.StringHolder
-import com.blockstream.ui.components.GreenArrow
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.extensions.policyIcon
 import com.blockstream.compose.theme.bodyMedium
@@ -36,6 +35,7 @@ import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.ifTrue
+import com.blockstream.ui.components.GreenArrow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -106,7 +106,7 @@ fun GreenAccountAsset(
                         Column(modifier = Modifier
                             .weight(1f)
                             .ifTrue(message != null) {
-                                padding(vertical = 16.dp)
+                                it.padding(vertical = 16.dp)
                             }) {
                             val primary = if(withAsset) accountAssetBalance.asset.name(session) else StringHolder.create(accountAssetBalance.account.name)
                             val secondary = if(withAsset) accountAssetBalance.account.name else null

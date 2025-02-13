@@ -29,11 +29,10 @@ abstract class WalletAssetsViewModelAbstract(
     abstract val assets: StateFlow<DataState<List<AssetBalance>>>
 }
 
-
 class WalletAssetsViewModel(
-    greenWalletOrNull: GreenWallet,
+    greenWallet: GreenWallet,
 ) : WalletAssetsViewModelAbstract(
-    greenWallet = greenWalletOrNull
+    greenWallet = greenWallet
 ) {
 
     override val assets: StateFlow<DataState<List<AssetBalance>>> =

@@ -6,9 +6,11 @@ import blockstream_green.common.generated.resources.id_call
 import blockstream_green.common.generated.resources.id_email
 import blockstream_green.common.generated.resources.id_sms
 import blockstream_green.common.generated.resources.id_telegram
+import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.StringResource
 
 
+@Serializable
 enum class TwoFactorMethod(val gdkType: String) {
     EMAIL("email"),
     SMS("sms"),

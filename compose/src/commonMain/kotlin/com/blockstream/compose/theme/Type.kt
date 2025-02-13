@@ -112,7 +112,6 @@ val bodyMedium
     @Composable
     get() = MaterialTheme.typography.bodyMedium
 
-@Deprecated("Use bodyMedium instead")
 val bodySmall
     @Composable
     get() = MaterialTheme.typography.bodySmall

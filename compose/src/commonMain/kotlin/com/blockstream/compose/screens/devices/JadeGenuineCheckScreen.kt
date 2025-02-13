@@ -2,7 +2,6 @@ package com.blockstream.compose.screens.devices
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -33,57 +32,24 @@ import blockstream_green.common.generated.resources.id_this_jade_is_not_genuine
 import blockstream_green.common.generated.resources.id_we_could_successfully_verify_your
 import blockstream_green.common.generated.resources.id_we_were_unable_to_complete_the_genuine
 import blockstream_green.common.generated.resources.id_your_jade_is_genuine
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.devices.JadeGenuineCheckViewModel
 import com.blockstream.common.models.devices.JadeGenuineCheckViewModelAbstract
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.extensions.icon
-import com.blockstream.compose.navigation.getNavigationResult
-import com.blockstream.compose.navigation.setNavigationResult
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.navigation.setResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-data class JadeGenuineCheckScreen(val greenWallet: GreenWallet?, val deviceId: String?) : Screen,
-    Parcelable {
-
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<JadeGenuineCheckViewModel> {
-            parametersOf(greenWallet, deviceId)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        JadeGenuineCheckScreen(viewModel = viewModel)
-    }
-
-    companion object {
-        @Composable
-        fun getResult(fn: (Boolean) -> Unit) = getNavigationResult(this::class, fn)
-
-        internal fun setResult(result: Boolean) =
-            setNavigationResult(this::class, result)
-    }
-}
 
 
 @Composable
@@ -95,16 +61,14 @@ fun JadeGenuineCheckScreen(
     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
     val genuineState by viewModel.genuineState.collectAsStateWithLifecycle()
 
-    HandleSideEffect(viewModel = viewModel) {
+    SetupScreen(viewModel = viewModel, withPadding = false, sideEffectsHandler = {
         when (it) {
             is SideEffects.Success -> {
-                JadeGenuineCheckScreen.setResult(true)
+                NavigateDestinations.JadeGenuineCheck.setResult(true)
                 viewModel.postEvent(Events.NavigateBack)
             }
         }
-    }
-
-    Column {
+    }) {
 
         Box(modifier = Modifier.weight(4f).fillMaxWidth()) {
             Image(

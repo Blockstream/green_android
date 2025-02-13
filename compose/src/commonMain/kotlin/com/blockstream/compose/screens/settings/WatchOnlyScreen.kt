@@ -36,14 +36,9 @@ import blockstream_green.common.generated.resources.id_singlesig
 import blockstream_green.common.generated.resources.id_tip_you_can_use_the
 import blockstream_green.common.generated.resources.key_multisig
 import blockstream_green.common.generated.resources.qr_code
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.koinScreenModel
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Copy
-import com.blockstream.common.Parcelable
-import com.blockstream.common.Parcelize
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.models.settings.WatchOnlyViewModel
 import com.blockstream.common.models.settings.WatchOnlyViewModelAbstract
@@ -53,41 +48,24 @@ import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.managers.LocalPlatformManager
+import com.blockstream.compose.navigation.LocalInnerPadding
 import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.utils.AppBar
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.utils.bottom
+import com.blockstream.ui.utils.plus
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.koin.core.parameter.parametersOf
-
-@Parcelize
-data class WatchOnlyScreen(
-    val greenWallet: GreenWallet
-) : Screen, Parcelable {
-    @Composable
-    override fun Content() {
-        val viewModel = koinScreenModel<WatchOnlyViewModel> {
-            parametersOf(greenWallet)
-        }
-
-        val navData by viewModel.navData.collectAsStateWithLifecycle()
-
-        AppBar(navData)
-
-        WatchOnlyScreen(viewModel = viewModel)
-    }
-}
 
 @Composable
 fun WatchOnlyScreen(
@@ -100,183 +78,196 @@ fun WatchOnlyScreen(
     val multisigWatchOnly by viewModel.multisigWatchOnly.collectAsStateWithLifecycle()
     val extendedPublicKeysAccounts by viewModel.extendedPublicKeysAccounts.collectAsStateWithLifecycle()
     val outputDescriptorsAccounts by viewModel.outputDescriptorsAccounts.collectAsStateWithLifecycle()
+    val innerPadding = LocalInnerPadding.current
 
-    HandleSideEffect(viewModel)
+    SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false) {
 
-    LazyColumn(
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp),
-    ) {
+        LazyColumn(
+            contentPadding = PaddingValues(16.dp) + innerPadding.bottom(),
+            verticalArrangement = Arrangement.spacedBy(14.dp),
+        ) {
 
-        richWatchOnly?.also {
-            item {
-                GreenRow(
-                    padding = 0,
-                    space = 4,
-                    modifier = Modifier.padding(top = 8.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.eye),
-                        contentDescription = null
-                    )
-
-                    Text(
-                        text = "Rich Watch Only",
-                        style = titleMedium,
-                    )
-                }
-            }
-
-            if (it.isEmpty()) {
+            richWatchOnly?.also {
                 item {
-                    GreenButton("Create RWO" , modifier = Modifier.fillMaxWidth()) {
-                        viewModel.postEvent(WatchOnlyViewModel.LocalEvents.CreateRichWatchOnly)
+                    GreenRow(
+                        padding = 0,
+                        space = 4,
+                        modifier = Modifier.padding(top = 8.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.eye),
+                            contentDescription = null
+                        )
+
+                        Text(
+                            text = "Rich Watch Only",
+                            style = titleMedium,
+                        )
                     }
                 }
-            } else {
-                item {
-                    Column {
-                        GreenButton("Create RWO for new networks" , modifier = Modifier.fillMaxWidth(), type = GreenButtonType.OUTLINE) {
+
+                if (it.isEmpty()) {
+                    item {
+                        GreenButton("Create RWO", modifier = Modifier.fillMaxWidth()) {
                             viewModel.postEvent(WatchOnlyViewModel.LocalEvents.CreateRichWatchOnly)
                         }
+                    }
+                } else {
+                    item {
+                        Column {
+                            GreenButton(
+                                "Create RWO for new networks",
+                                modifier = Modifier.fillMaxWidth(),
+                                type = GreenButtonType.OUTLINE
+                            ) {
+                                viewModel.postEvent(WatchOnlyViewModel.LocalEvents.CreateRichWatchOnly)
+                            }
 
-                        GreenButton("Delete RWO (${it.size})", color = GreenButtonColor.RED, modifier = Modifier.fillMaxWidth()) {
-                            viewModel.postEvent(WatchOnlyViewModel.LocalEvents.DeleteRichWatchOnly)
+                            GreenButton(
+                                "Delete RWO (${it.size})",
+                                color = GreenButtonColor.RED,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                viewModel.postEvent(WatchOnlyViewModel.LocalEvents.DeleteRichWatchOnly)
+                            }
                         }
                     }
                 }
             }
-        }
 
-        if (multisigWatchOnly.isNotEmpty()) {
-            item {
-                GreenRow(
-                    padding = 0,
-                    space = 4,
-                    modifier = Modifier.padding(top = 8.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.key_multisig),
-                        contentDescription = null
-                    )
+            if (multisigWatchOnly.isNotEmpty()) {
+                item {
+                    GreenRow(
+                        padding = 0,
+                        space = 4,
+                        modifier = Modifier.padding(top = 8.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.key_multisig),
+                            contentDescription = null
+                        )
 
-                    Text(
-                        text = stringResource(Res.string.id_multisig),
-                        style = titleMedium,
-                    )
+                        Text(
+                            text = stringResource(Res.string.id_multisig),
+                            style = titleMedium,
+                        )
+                    }
+
                 }
 
-            }
-
-            items(multisigWatchOnly) { look ->
-                Setting(
-                    title = look.network?.canonicalName ?: "Network",
-                    subtitle = look.username?.takeIf { it.isNotBlank() }
-                        ?.let { stringResource(Res.string.id_enabled_1s, it) }
-                        ?: stringResource(Res.string.id_set_up_watchonly_credentials),
-                    modifier = Modifier.clickable {
-                        look.network?.also { network ->
-                            viewModel.postEvent(
-                                NavigateDestinations.WatchOnlyCredentialsSettings(
-                                    network
+                items(multisigWatchOnly) { look ->
+                    Setting(
+                        title = look.network?.canonicalName ?: "Network",
+                        subtitle = look.username?.takeIf { it.isNotBlank() }
+                            ?.let { stringResource(Res.string.id_enabled_1s, it) }
+                            ?: stringResource(Res.string.id_set_up_watchonly_credentials),
+                        modifier = Modifier.clickable {
+                            look.network?.also { network ->
+                                viewModel.postEvent(
+                                    NavigateDestinations.WatchOnlyCredentialsSettings(
+                                        greenWallet = viewModel.greenWallet,
+                                        network = network
+                                    )
                                 )
-                            )
+                            }
                         }
-                    }
-                )
-            }
-        }
-
-
-        if (extendedPublicKeysAccounts.isNotEmpty() || outputDescriptorsAccounts.isNotEmpty()) {
-            item {
-                GreenRow(
-                    padding = 0,
-                    space = 4,
-                    modifier = Modifier.padding(top = 8.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.key_multisig),
-                        contentDescription = null
-                    )
-
-                    Text(
-                        text = stringResource(Res.string.id_singlesig),
-                        style = titleMedium
                     )
                 }
             }
-        }
 
-        if (extendedPublicKeysAccounts.isNotEmpty()) {
-            item {
-                Column {
+
+            if (extendedPublicKeysAccounts.isNotEmpty() || outputDescriptorsAccounts.isNotEmpty()) {
+                item {
+                    GreenRow(
+                        padding = 0,
+                        space = 4,
+                        modifier = Modifier.padding(top = 8.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.key_multisig),
+                            contentDescription = null
+                        )
+
+                        Text(
+                            text = stringResource(Res.string.id_singlesig),
+                            style = titleMedium
+                        )
+                    }
+                }
+            }
+
+            if (extendedPublicKeysAccounts.isNotEmpty()) {
+                item {
+                    Column {
+                        Text(
+                            text = stringResource(Res.string.id_extended_public_keys),
+                            style = titleSmall,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+
+                        Text(
+                            text = stringResource(Res.string.id_tip_you_can_use_the),
+                            style = bodyMedium,
+                            color = whiteMedium
+                        )
+                    }
+                }
+
+                items(extendedPublicKeysAccounts) {
+                    Descriptor(
+                        title = it.account?.name ?: "-",
+                        icon = painterResource(it.account!!.network.icon()),
+                        descriptor = it.extendedPubkey ?: "-",
+                        onCopy = {
+                            platformManager.copyToClipboard(content = it.extendedPubkey ?: "-")
+                        },
+                        onQr = {
+                            scope.launch {
+                                viewModel.postEvent(
+                                    NavigateDestinations.Qr(
+                                        greenWallet = viewModel.greenWallet,
+                                        title = getString(Res.string.id_extended_public_key),
+                                        subtitle = it.account?.name,
+                                        data = it.extendedPubkey ?: ""
+                                    )
+                                )
+                            }
+                        }
+                    )
+                }
+            }
+
+            if (outputDescriptorsAccounts.isNotEmpty()) {
+                item {
                     Text(
-                        text = stringResource(Res.string.id_extended_public_keys),
+                        text = stringResource(Res.string.id_output_descriptors),
                         style = titleSmall,
                         modifier = Modifier.padding(top = 8.dp)
                     )
+                }
 
-                    Text(
-                        text = stringResource(Res.string.id_tip_you_can_use_the),
-                        style = bodyMedium,
-                        color = whiteMedium
+                items(outputDescriptorsAccounts) {
+                    Descriptor(
+                        title = it.account?.name ?: "-",
+                        icon = painterResource(it.account!!.network.icon()),
+                        descriptor = it.outputDescriptors ?: "-",
+                        onCopy = {
+                            platformManager.copyToClipboard(content = it.outputDescriptors ?: "-")
+                        },
+                        onQr = {
+                            scope.launch {
+                                viewModel.postEvent(
+                                    NavigateDestinations.Qr(
+                                        greenWallet = viewModel.greenWallet,
+                                        title = getString(Res.string.id_output_descriptors),
+                                        subtitle = it.account?.name,
+                                        data = it.outputDescriptors ?: ""
+                                    )
+                                )
+                            }
+                        }
                     )
                 }
-            }
-
-            items(extendedPublicKeysAccounts) {
-                Descriptor(
-                    title = it.account?.name ?: "-",
-                    icon = painterResource(it.account!!.network.icon()),
-                    descriptor = it.extendedPubkey ?: "-",
-                    onCopy = {
-                        platformManager.copyToClipboard(content = it.extendedPubkey ?: "-")
-                    },
-                    onQr = {
-                        scope.launch {
-                            viewModel.postEvent(
-                                NavigateDestinations.Qr(
-                                    title = getString(Res.string.id_extended_public_key),
-                                    subtitle = it.account?.name,
-                                    data = it.extendedPubkey ?: ""
-                                )
-                            )
-                        }
-                    }
-                )
-            }
-        }
-
-        if (outputDescriptorsAccounts.isNotEmpty()) {
-            item {
-                Text(
-                    text = stringResource(Res.string.id_output_descriptors),
-                    style = titleSmall,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-            }
-
-            items(outputDescriptorsAccounts) {
-                Descriptor(
-                    title = it.account?.name ?: "-",
-                    icon = painterResource(it.account!!.network.icon()),
-                    descriptor = it.outputDescriptors ?: "-",
-                    onCopy = {
-                        platformManager.copyToClipboard(content = it.outputDescriptors ?: "-")
-                    },
-                    onQr = {
-                        scope.launch {
-                            viewModel.postEvent(
-                                NavigateDestinations.Qr(
-                                    title = getString(Res.string.id_output_descriptors),
-                                    subtitle = it.account?.name,
-                                    data = it.outputDescriptors ?: ""
-                                )
-                            )
-                        }
-                    }
-                )
             }
         }
     }
