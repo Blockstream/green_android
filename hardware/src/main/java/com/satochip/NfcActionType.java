@@ -4,5 +4,5 @@ public enum NfcActionType {
     none,
     getXpubs,
     signMessage,
-    derivePubkey,
+    signTransaction,
 }

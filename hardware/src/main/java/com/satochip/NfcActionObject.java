@@ -27,4 +27,10 @@ public class NfcActionObject {
     public String messageParam = "";
     public String signatureResult = "";
 
+    // signTransaction
+    //public List<? extends List<Integer>> pathsParam = new ArrayList<>();
+    public List<byte[]> hashesParam = new ArrayList<>();
+    public List<String> signaturesResult = new ArrayList<>();
+
+
 }
