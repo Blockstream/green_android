@@ -646,8 +646,8 @@
     <string name="id_install_version_s">Установить версию:%1$s?</string>
     <string name="id_instant">Instant</string>
     <string name="id_insufficient_funds">Недостаточно средств</string>
-    <string name="id_insufficient_lbtc_for_fees">Недостаточно L-BTC для комиссий</string>
-    <string name="id_insufficient_lbtc_to_send_a">Недостаточно L-BTC для отправки транзакции. В Liquid для оплаты комиссии за транзакцию необходимы L-BTC. Сгенерируйте адрес для получения L-BTC</string>
+    <string name="id_insufficient_lbtc_for_fees">Недостаточно LBTC для комиссий</string>
+    <string name="id_insufficient_lbtc_to_send_a">Недостаточно LBTC для отправки транзакции. В Liquid для оплаты комиссии за транзакцию необходимы LBTC. Сгенерируйте адрес для получения LBTC</string>
     <string name="id_invalid_address">Недействительный адрес</string>
     <string name="id_invalid_amount">Недопустимая сумма</string>
     <string name="id_invalid_asset_id">Недопустимый ID актива</string>
@@ -695,7 +695,7 @@
     <string name="id_last_ping_1d_ms">Последний сигнал: %1$d мс</string>
     <string name="id_later">ПОЗЖЕ</string>
     <string name="id_latest_transactions">Последние транзакции</string>
-    <string name="id_lbtc_has_no_issuer_and_is">L-BTC не имеет эмитента и вместо этого создается в сети посредством привязки.</string>
+    <string name="id_lbtc_has_no_issuer_and_is">LBTC не имеет эмитента и вместо этого создается в сети посредством привязки.</string>
     <string name="id_learn_more">Узнать больше</string>
     <string name="id_learn_more_about_amp_the_assets">Узнайте больше об AMP, активах и соответствии требованиям</string>
     <string name="id_learn_more_about_s">Узнать больше о %1$s.</string>
@@ -1439,7 +1439,7 @@
     <string name="id_warning_there_is_already_a">ВНИМАНИЕ: Поступил запрос на двухфакторную аутентификацию вашего кошелька. Если вы повторите запрос с нового адреса электронной почты, ваш кошелек станет оспариваемым и, вероятно, недоступным для вас навсегда.</string>
     <string name="id_warning_wallet_locked_by">ВНИМАНИЕ: Кошелек заблокирован. Обратитесь в службу поддержки за дополнительной информацией.</string>
     <string name="id_warning_watchonly_credentials">Внимание! Учетные данные для работы в режиме watch-only будут сохранены на вашем устройстве.</string>
-    <string name="id_warning_you_need_a_positive">Внимание! Вам нужен положительный баланс L-BTC, чтобы иметь возможность отправлять транзакции.</string>
+    <string name="id_warning_you_need_a_positive">Внимание! Вам нужен положительный баланс LBTC, чтобы иметь возможность отправлять транзакции.</string>
     <string name="id_watchonly">Только для просмотра</string>
     <string name="id_watchonly_credentials">Учетные данные только для просмотра</string>
     <string name="id_watchonly_details">Детали только для просмотра</string>

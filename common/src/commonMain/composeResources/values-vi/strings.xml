@@ -646,8 +646,8 @@
     <string name="id_install_version_s">Install version: %1$s?</string>
     <string name="id_instant">Instant</string>
     <string name="id_insufficient_funds">Không đủ tiền</string>
-    <string name="id_insufficient_lbtc_for_fees">Không đủ số lượng L-BTC để trả phí giao dịch</string>
-    <string name="id_insufficient_lbtc_to_send_a">L-BTC không đủ để gửi một giao dịch. Trong Liquid, L-BTC là cần thiết để trả phí giao dịch. Tạo địa chỉ để nhận L-BTC</string>
+    <string name="id_insufficient_lbtc_for_fees">Không đủ số lượng LBTC để trả phí giao dịch</string>
+    <string name="id_insufficient_lbtc_to_send_a">LBTC không đủ để gửi một giao dịch. Trong Liquid, LBTC là cần thiết để trả phí giao dịch. Tạo địa chỉ để nhận LBTC</string>
     <string name="id_invalid_address">Địa chỉ không hợp lệ</string>
     <string name="id_invalid_amount">Số tiền không hợp lệ</string>
     <string name="id_invalid_asset_id">Invalid Asset ID</string>
@@ -695,7 +695,7 @@
     <string name="id_last_ping_1d_ms">Lần ping cuối: %1$d phần nghìn của một giây</string>
     <string name="id_later"> SAU ĐÓ</string>
     <string name="id_latest_transactions">Latest transactions</string>
-    <string name="id_lbtc_has_no_issuer_and_is">L-BTC has no issuer and is instead created on the network via a peg-in.</string>
+    <string name="id_lbtc_has_no_issuer_and_is">LBTC has no issuer and is instead created on the network via a peg-in.</string>
     <string name="id_learn_more">Learn more</string>
     <string name="id_learn_more_about_amp_the_assets">Learn more about AMP, the assets and your eligibility</string>
     <string name="id_learn_more_about_s">Learn more about %1$s.</string>
@@ -1439,7 +1439,7 @@
     <string name="id_warning_there_is_already_a">CẢNH BẢO: đã có yêu cầu đặt lại xác thực 2 lớp cho ví của bạn. Nếu bạn bây giờ yêu cầu một email mới, ví của bạn sẽ trở thành tranh chấp và bạn sẽ mất vĩnh viễn ví tiền của bạn.</string>
     <string name="id_warning_wallet_locked_by">CẢNH BÁO: Ví đã bị khóa bới việc tranh chấp xác thực 2 lớp. Liên lạc với bộ phận hổ trợ để có thêm thông tin.</string>
     <string name="id_warning_watchonly_credentials">Cảnh báo: Thông tin chỉ xem sẽ được lưu trên thiết bị của bạn</string>
-    <string name="id_warning_you_need_a_positive">Cảnh báo!Bạn cần số dư L-BTC dương để có thể gửi giao dịch.</string>
+    <string name="id_warning_you_need_a_positive">Cảnh báo!Bạn cần số dư LBTC dương để có thể gửi giao dịch.</string>
     <string name="id_watchonly">Ví chỉ xem</string>
     <string name="id_watchonly_credentials">Watch-only credentials</string>
     <string name="id_watchonly_details">Watch-only details</string>

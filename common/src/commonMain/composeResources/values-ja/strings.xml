@@ -646,8 +646,8 @@
     <string name="id_install_version_s">バージョン%1$sをインストールしますか？</string>
     <string name="id_instant">瞬速</string>
     <string name="id_insufficient_funds">資金が足りません</string>
-    <string name="id_insufficient_lbtc_for_fees">手数料のためのL-BTCが足りません</string>
-    <string name="id_insufficient_lbtc_to_send_a">トランザクションを送るためのL-BTCが足りません。Liquidではトランザクション手数料の支払いにL-BTCが必要です。L-BTCを受け取るためのアドレスを生成しましょう</string>
+    <string name="id_insufficient_lbtc_for_fees">手数料のためのLBTCが足りません</string>
+    <string name="id_insufficient_lbtc_to_send_a">トランザクションを送るためのLBTCが足りません。Liquidではトランザクション手数料の支払いにLBTCが必要です。LBTCを受け取るためのアドレスを生成しましょう</string>
     <string name="id_invalid_address">アドレスが間違っています</string>
     <string name="id_invalid_amount">無効な数量</string>
     <string name="id_invalid_asset_id">アセットIDが無効です</string>
@@ -695,7 +695,7 @@
     <string name="id_last_ping_1d_ms">最終Ping: %1$d ms</string>
     <string name="id_later">後で</string>
     <string name="id_latest_transactions">最新のトランザクション</string>
-    <string name="id_lbtc_has_no_issuer_and_is">L-BTCに発行者はおらず、ペグインという機能を使ってネットワーク側で生成されます。</string>
+    <string name="id_lbtc_has_no_issuer_and_is">LBTCに発行者はおらず、ペグインという機能を使ってネットワーク側で生成されます。</string>
     <string name="id_learn_more">詳しく知る</string>
     <string name="id_learn_more_about_amp_the_assets">AMP、アセット、利用資格について詳しく知る</string>
     <string name="id_learn_more_about_s">%1$sについてより詳しく知る。</string>
@@ -1439,7 +1439,7 @@
     <string name="id_warning_there_is_already_a">警告: 2段階認証を再設定する要請が既にありました。新しいEメールアドレスで再要請する場合、紛争プロセスに進むことになり、ウォレットが永久的に使えない状態になる可能性があります。</string>
     <string name="id_warning_wallet_locked_by">注意: ウォレットが2段階認証の紛争中です。サポートにお問い合わせして下さい。</string>
     <string name="id_warning_watchonly_credentials">注意: 読み取りモードの情報はデバイスに保存されます</string>
-    <string name="id_warning_you_need_a_positive">注意: トランザクションの送信にはL-BTC残高が必要です。</string>
+    <string name="id_warning_you_need_a_positive">注意: トランザクションの送信にはLBTC残高が必要です。</string>
     <string name="id_watchonly">読み取りモード</string>
     <string name="id_watchonly_credentials">読み取りモードの認証情報</string>
     <string name="id_watchonly_details">読み取りモードの詳細</string>

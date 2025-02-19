@@ -224,7 +224,7 @@ data class Transaction constructor(
             }.toMap()
             .mapNotNull {
                 if (network.isLiquid && it.key == network.policyAsset && txType == Type.OUT && satoshi.size > 1) {
-                    // Check if the L-BTC amount is actually the fee
+                    // Check if the LBTC amount is actually the fee
                     val valueWithoutFee = it.value.absoluteValue - fee.absoluteValue
                     if (valueWithoutFee != 0L || txType == Type.REDEPOSIT) {
                         it.key to it.value

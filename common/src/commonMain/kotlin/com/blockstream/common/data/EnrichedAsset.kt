@@ -53,7 +53,7 @@ data class EnrichedAsset constructor(
         return if (assetId.isPolicyAsset(session)) {
             when{
                 assetId.isBitcoinPolicyAsset() -> "BTC"
-                assetId.isPolicyAsset(session.liquid) -> "L-BTC"
+                assetId.isPolicyAsset(session.liquid) -> "LBTC"
                 else -> throw Exception("No supported network")
             }.let {
                 if (session.isTestnet) "TEST-$it" else it
@@ -94,7 +94,7 @@ data class EnrichedAsset constructor(
 
         // Untested, only used in Preview
         val PreviewBTC by lazy { EnrichedAsset(assetId = BTC_POLICY_ASSET, name = "Bitcoin", ticker = "BTC") }
-        val PreviewLBTC by lazy { EnrichedAsset(assetId = LBTC_POLICY_ASSET, name = "Liquid Bitcoin", ticker = "L-BTC") }
+        val PreviewLBTC by lazy { EnrichedAsset(assetId = LBTC_POLICY_ASSET, name = "Liquid Bitcoin", ticker = "LBTC") }
 
         fun createOrNull(session: GdkSession, assetId: String?): EnrichedAsset? {
             return create(session, assetId ?: return null)

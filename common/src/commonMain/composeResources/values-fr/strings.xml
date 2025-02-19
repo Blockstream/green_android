@@ -646,8 +646,8 @@
     <string name="id_install_version_s">Installaltion de la version: %1$s?</string>
     <string name="id_instant">Instantané</string>
     <string name="id_insufficient_funds">Fonds insuffisants</string>
-    <string name="id_insufficient_lbtc_for_fees">Nombre de L-BTC insuffisant pour les frais</string>
-    <string name="id_insufficient_lbtc_to_send_a">Il manque des L-BTC pour procéder à la transaction. Dans Liquid, les L-BTC sont nécessaires pour payer les frais de transaction. Générer une adresse pour recevoir des L-BTC</string>
+    <string name="id_insufficient_lbtc_for_fees">Nombre de LBTC insuffisant pour les frais</string>
+    <string name="id_insufficient_lbtc_to_send_a">Il manque des LBTC pour procéder à la transaction. Dans Liquid, les LBTC sont nécessaires pour payer les frais de transaction. Générer une adresse pour recevoir des LBTC</string>
     <string name="id_invalid_address">Adresse invalide</string>
     <string name="id_invalid_amount">Montant invalide</string>
     <string name="id_invalid_asset_id">Invalide actif ID</string>
@@ -695,7 +695,7 @@
     <string name="id_last_ping_1d_ms">Dernier ping : %1$d ms</string>
     <string name="id_later">PLUS TARD</string>
     <string name="id_latest_transactions">Dernières transactions</string>
-    <string name="id_lbtc_has_no_issuer_and_is">Le L-BTC n&apos;a pas d&apos;émetteur et est créé sur le réseau via un peg-in.</string>
+    <string name="id_lbtc_has_no_issuer_and_is">Le LBTC n&apos;a pas d&apos;émetteur et est créé sur le réseau via un peg-in.</string>
     <string name="id_learn_more">En savoir plus</string>
     <string name="id_learn_more_about_amp_the_assets">En savoir plus sur la AMP, les actifs et votre éligibilité</string>
     <string name="id_learn_more_about_s">En savoir plus sur %1$s.</string>
@@ -1439,7 +1439,7 @@
     <string name="id_warning_there_is_already_a">AVERTISSEMENT: il existe déjà une demande de réinitialisation du deuxième facteur d&apos;authentification pour votre portefeuille. Si vous faites une demande avec une nouvelle adresse email, votre portefeuille sera considéré comme contesté et probablement bloqué de manière permanente.</string>
     <string name="id_warning_wallet_locked_by">ATTENTION : portefeuille verrouillé suite à une contestation sur le deuxième facteur. Contactez le support pour plus d&apos;informations.</string>
     <string name="id_warning_watchonly_credentials">Avertissement : Les identifiants de surveillance seulement seront enregistrés sur votre appareil.</string>
-    <string name="id_warning_you_need_a_positive">Attention! Vous devez avoir un solde positif de L-BTC pour pouvoir envoyer des transactions.</string>
+    <string name="id_warning_you_need_a_positive">Attention! Vous devez avoir un solde positif de LBTC pour pouvoir envoyer des transactions.</string>
     <string name="id_watchonly">Watch-only</string>
     <string name="id_watchonly_credentials">Informations d&apos;identification du mode lecture seule</string>
     <string name="id_watchonly_details">Détails du mode lecture seule</string>

@@ -7,6 +7,7 @@ import breez_sdk.HealthCheckStatus
 import com.blockstream.common.Urls
 import com.blockstream.common.data.AlertType
 import com.blockstream.common.data.DataState
+import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavAction
@@ -128,9 +129,10 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
         merge(flowOf(Unit), session.accountsAndBalanceUpdated), // set initial value
         merge(flowOf(Unit), session.networkAssetManager.assetsUpdateFlow), // set initial value
         denomination
-    ) { accounts, _, _, _, _ ->
+    ) { accounts, setting, _, _, _ ->
+        // Set denomination directly from settings as sometimes the settings/network is not changed yet
         accounts.map {
-            AccountBalance.create(account = it, session = session)
+            AccountBalance.create(account = it, session = session, denomination = setting?.unit?.let { Denomination.byUnit(it) })
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), listOf())
 

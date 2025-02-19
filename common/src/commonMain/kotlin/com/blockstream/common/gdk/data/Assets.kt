@@ -17,7 +17,7 @@ data class Assets constructor(val assetsOrNull: Map<String, Long>? = null) {
     val policyAsset
         get() = policyAssetOrNull ?: 0
 
-    // Expect the first asset to be the policy BTC or L-BTC
+    // Expect the first asset to be the policy BTC or LBTC
     val policyId
         get() = assets.keys.firstOrNull()
 

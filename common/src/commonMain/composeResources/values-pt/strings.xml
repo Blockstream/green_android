@@ -646,8 +646,8 @@
     <string name="id_install_version_s">Instalar a versão: %1$s?</string>
     <string name="id_instant">Instantâneo</string>
     <string name="id_insufficient_funds">Fundos insuficientes</string>
-    <string name="id_insufficient_lbtc_for_fees">L-BTC insuficiente para pagar taxas</string>
-    <string name="id_insufficient_lbtc_to_send_a">Você não possui L-BTC suficiente para enviar a transação. Na rede Liquid, L-BTC são necessários para pagar as taxas da rede. </string>
+    <string name="id_insufficient_lbtc_for_fees">LBTC insuficiente para pagar taxas</string>
+    <string name="id_insufficient_lbtc_to_send_a">Você não possui LBTC suficiente para enviar a transação. Na rede Liquid, LBTC são necessários para pagar as taxas da rede. </string>
     <string name="id_invalid_address">Endereço inválido</string>
     <string name="id_invalid_amount">Quantia inválida</string>
     <string name="id_invalid_asset_id">ID de ativo inválido</string>
@@ -695,7 +695,7 @@
     <string name="id_last_ping_1d_ms">Último ping: %1$d ms</string>
     <string name="id_later">MAIS TARDE</string>
     <string name="id_latest_transactions">Todas transações</string>
-    <string name="id_lbtc_has_no_issuer_and_is">L-BTC não possui emissor, é criado na rede por meio de um procedimento chamado peg-in.</string>
+    <string name="id_lbtc_has_no_issuer_and_is">LBTC não possui emissor, é criado na rede por meio de um procedimento chamado peg-in.</string>
     <string name="id_learn_more">Saiba mais</string>
     <string name="id_learn_more_about_amp_the_assets">Saiba mais sobre os ativos AMP e como recebê-los</string>
     <string name="id_learn_more_about_s">Saiba mais sobre %1$s.</string>
@@ -1439,7 +1439,7 @@
     <string name="id_warning_there_is_already_a">AVISO: Já há um pedido para redefinir o 2FA para essa carteira. Se você fizer um novo pedido usando um outro endereço de email, sua carteira entrará em modo &quot;disputada&quot; e provavelmente ficará permanentemente indisponível para você.</string>
     <string name="id_warning_wallet_locked_by">AVISO: Conta bloqueada por disputa de 2FA. Contate o suporte para mais informações.</string>
     <string name="id_warning_watchonly_credentials">Aviso: As credenciais de acesso ao modo somente leitura serão salvas neste aparelho</string>
-    <string name="id_warning_you_need_a_positive">Aviso! Você precisa ter saldo positivo de L-BTC para enviar transações.</string>
+    <string name="id_warning_you_need_a_positive">Aviso! Você precisa ter saldo positivo de LBTC para enviar transações.</string>
     <string name="id_watchonly">Modo somente leitura</string>
     <string name="id_watchonly_credentials">Credenciais carteira somente leitura</string>
     <string name="id_watchonly_details">Detalhes modo somente leitura</string>

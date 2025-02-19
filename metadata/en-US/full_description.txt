@@ -1,4 +1,4 @@
-Blockstream Green is a simple and secure Bitcoin wallet that makes it easy to get started sending and receiving Bitcoin and Liquid-based assets such as Liquid Bitcoin (L-BTC) and Tether’s USDt.
+Blockstream Green is a simple and secure Bitcoin wallet that makes it easy to get started sending and receiving Bitcoin and Liquid-based assets such as Liquid Bitcoin (LBTC) and Tether’s USDt.
 
 Built by Blockstream, one of the most  security-focused teams in the Bitcoin industry, Blockstream Green is supported across multiple platforms and is designed for Bitcoin beginners and power users alike.
 
@@ -12,7 +12,7 @@ MULTILINGUAL
 We speak your language. Green includes support for Brazilian Portuguese, Chinese (Simplified), Dutch, English, French, German, Hebrew, Italian, Japanese, Korean, Russian, Spanish, Ukrainian, Vietnamese. And more to come!
 
 BITCOIN LAYER-2 SUPPORT
-Send and receive Liquid Bitcoin L-BTC, Tether’s USDt, and any other Liquid-based assets with a Liquid account.
+Send and receive Liquid Bitcoin LBTC, Tether’s USDt, and any other Liquid-based assets with a Liquid account.
 
 TWO-FACTOR MULTISIG SECURITY
 Unique dual-key security with one key protected by two-factor authentication. Multiple authentication options are available including, Google Authenticator, SMS, and email.

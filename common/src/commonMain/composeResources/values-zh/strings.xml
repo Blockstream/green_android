@@ -646,8 +646,8 @@
     <string name="id_install_version_s">安装版本：%1$s？</string>
     <string name="id_instant">立即</string>
     <string name="id_insufficient_funds">资金余额不足</string>
-    <string name="id_insufficient_lbtc_for_fees">剩余L-BTC不足以支付转账手续费</string>
-    <string name="id_insufficient_lbtc_to_send_a">L-BTC不足，无法发起转账。在液态网络中，需要L-BTC来支付转账手续费。生成地址以接收L-BTC</string>
+    <string name="id_insufficient_lbtc_for_fees">剩余LBTC不足以支付转账手续费</string>
+    <string name="id_insufficient_lbtc_to_send_a">LBTC不足，无法发起转账。在液态网络中，需要LBTC来支付转账手续费。生成地址以接收LBTC</string>
     <string name="id_invalid_address">地址无效</string>
     <string name="id_invalid_amount">金额无效</string>
     <string name="id_invalid_asset_id">无效的资产ID</string>
@@ -695,7 +695,7 @@
     <string name="id_last_ping_1d_ms">延迟：%1$d ms</string>
     <string name="id_later">稍后</string>
     <string name="id_latest_transactions">最新的转账</string>
-    <string name="id_lbtc_has_no_issuer_and_is">L-BTC并没有对应的发行方，是由锁入操作生成的。</string>
+    <string name="id_lbtc_has_no_issuer_and_is">LBTC并没有对应的发行方，是由锁入操作生成的。</string>
     <string name="id_learn_more">了解更多</string>
     <string name="id_learn_more_about_amp_the_assets">详细了解 AMP、资产和您的准入资格</string>
     <string name="id_learn_more_about_s">了解更多%1$s。</string>
@@ -1439,7 +1439,7 @@
     <string name="id_warning_there_is_already_a">警告：该钱包已发送重置双重验证请求。如果现在再次使用新的邮件地址发送请求，你的钱包将进入争议状态，你可能将永远无法获得访问权限。</string>
     <string name="id_warning_wallet_locked_by">警告：钱包已被双重验证争议锁定。请联系客服以获取更多信息。</string>
     <string name="id_warning_watchonly_credentials">警告：Watch-only登录信息将被保存在你的设备上</string>
-    <string name="id_warning_you_need_a_positive">警告！您的L-BTC余额需要大于0，才能发起转账。</string>
+    <string name="id_warning_you_need_a_positive">警告！您的LBTC余额需要大于0，才能发起转账。</string>
     <string name="id_watchonly">Watch-only</string>
     <string name="id_watchonly_credentials">仅查看证书</string>
     <string name="id_watchonly_details">仅可查看的详情</string>

@@ -385,7 +385,7 @@ class AccountOverviewViewModelPreview() : AccountOverviewViewModelAbstract(
 
     override val assets: StateFlow<DataState<List<AssetBalance>>> = MutableStateFlow(DataState.Success(listOf(
         AssetBalance(EnrichedAsset.PreviewBTC, "1 BTC", "1000USD"),
-        AssetBalance(EnrichedAsset.PreviewLBTC, "1 L-BTC", "1000USD")
+        AssetBalance(EnrichedAsset.PreviewLBTC, "1 LBTC", "1000USD")
     )))
 
     override val showAmpInfo: StateFlow<Boolean> = MutableStateFlow(true)

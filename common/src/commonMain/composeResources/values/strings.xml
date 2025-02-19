@@ -646,8 +646,8 @@
     <string name="id_install_version_s">Install version: %1$s?</string>
     <string name="id_instant">Instant</string>
     <string name="id_insufficient_funds">Insufficient funds</string>
-    <string name="id_insufficient_lbtc_for_fees">Insufficient L-BTC for fees</string>
-    <string name="id_insufficient_lbtc_to_send_a">Insufficient L-BTC to send a transaction. In Liquid, L-BTC are needed to pay transaction fees. Generate an address to receive L-BTC</string>
+    <string name="id_insufficient_lbtc_for_fees">Insufficient LBTC for fees</string>
+    <string name="id_insufficient_lbtc_to_send_a">Insufficient LBTC to send a transaction. In Liquid, LBTC are needed to pay transaction fees. Generate an address to receive LBTC</string>
     <string name="id_invalid_address">Invalid address</string>
     <string name="id_invalid_amount">Invalid amount</string>
     <string name="id_invalid_asset_id">Invalid Asset ID</string>
@@ -695,7 +695,7 @@
     <string name="id_last_ping_1d_ms">Last ping: %1$d ms</string>
     <string name="id_later">LATER</string>
     <string name="id_latest_transactions">Latest transactions</string>
-    <string name="id_lbtc_has_no_issuer_and_is">L-BTC has no issuer and is instead created on the network via a peg-in.</string>
+    <string name="id_lbtc_has_no_issuer_and_is">LBTC has no issuer and is instead created on the network via a peg-in.</string>
     <string name="id_learn_more">Learn more</string>
     <string name="id_learn_more_about_amp_the_assets">Learn more about AMP, the assets and your eligibility</string>
     <string name="id_learn_more_about_s">Learn more about %1$s.</string>
@@ -1439,7 +1439,7 @@
     <string name="id_warning_there_is_already_a">WARNING: There is already a request to reset Two-Factor authentication for your wallet. If you now request with a new email address, your wallet will become disputed and likely permanently unavailable to you.</string>
     <string name="id_warning_wallet_locked_by">WARNING: Wallet locked by Two-Factor dispute. Contact support for more information.</string>
     <string name="id_warning_watchonly_credentials">Warning: Watch-only credentials will be saved on your device</string>
-    <string name="id_warning_you_need_a_positive">Warning! You need a positive L-BTC balance to be able to send transactions.</string>
+    <string name="id_warning_you_need_a_positive">Warning! You need a positive LBTC balance to be able to send transactions.</string>
     <string name="id_watchonly">Watch-only</string>
     <string name="id_watchonly_credentials">Watch-only credentials</string>
     <string name="id_watchonly_details">Watch-only details</string>

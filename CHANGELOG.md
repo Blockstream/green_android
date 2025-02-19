@@ -586,7 +586,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Automatic wallet restore, Green will find any wallet associated with your recovery phrase
 - Enhanced privacy option enabling secure display throughout the app & screen lock
 - PIN keyboard shuffle, to augment your privacy when entering PIN on login
-- L-BTC and BTC asset details
+- LBTC and BTC asset details
 
 ### Changed
 - Improved swifter Send flow, easier to use, easier to read

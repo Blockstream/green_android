@@ -76,7 +76,7 @@ fun GreenAmountsPreview() {
                         "BTC",
                         "5,1231.23 EUR"
                     ),
-                    AmountAssetLook("-2.1234", assetId = BTC_POLICY_ASSET, "L-BTC", "5,1231.23 EUR")
+                    AmountAssetLook("-2.1234", assetId = BTC_POLICY_ASSET, "LBTC", "5,1231.23 EUR")
                 )
             )
 
@@ -92,7 +92,7 @@ fun GreenAmountsPreview() {
                     AmountAssetLook(
                         "-2,123,363,543,322,420.1234567",
                         assetId = BTC_POLICY_ASSET,
-                        "L-BTC"
+                        "LBTC"
                     )
                 )
             )

@@ -11,6 +11,7 @@ help_message() {
   Options:
     -h, --help        Display this help message and exit
     -b, --branch      Checkout remote branch
+    -c, --commit      Checkout commit
     -g, --gdk         Download GDK [app (app version), master (latest master), commitHash (specific commit hash)]
     -d, --development Development flavor
     -a, --add-wallet  Add wallet and login credentials
@@ -26,6 +27,7 @@ FLAVOR="production"
 GDK=false
 ADD_WALLET=false
 BRANCH=false
+COMMIT=false
 UNINSTALL=false
 PACKAGE="com.greenaddress.greenbits_android_wallet"
 LAUNCH_ACTIVITY="MainActivity"
@@ -43,6 +45,10 @@ case $key in
     -b | --branch)
       shift
       BRANCH=$1
+      shift ;;
+    -c | --commit)
+      shift
+      COMMIT=$1
       shift ;;
     -g | --gdk)
       shift
@@ -91,7 +97,7 @@ uninstall(){
 
 install(){
   if [[ $FLAVOR == "production" ]]; then
-    ./gradlew installProductionDebug
+    ./gradlew installProductionGoogleDebug
   elif [[ $FLAVOR == "fdroid" ]]; then
     ./gradlew installProductionFDroidDebug
   else
@@ -114,7 +120,12 @@ launch(){
 checkout(){
   echo "Checking out $1"
   git checkout $1
-  git reset --hard origin/$1
+  if [[ $BRANCH != false ]]; then
+    git reset --hard origin/$1
+  else
+    git reset --hard $1
+  fi
+
   git status
 }
 
@@ -137,8 +148,6 @@ info(){
   echo -e "--------------------------------------------------------\n"
 }
 
-info
-
 # --- Execution
 if [[ $FLAVOR == "development" ]]; then
     PACKAGE="$PACKAGE.dev"
@@ -147,6 +156,12 @@ fi
 if [[ $BRANCH != false ]]; then
   checkout $BRANCH
 fi
+
+if [[ $COMMIT != false ]]; then
+  checkout $COMMIT
+fi
+
+info
 
 if [[ $UNINSTALL = true ]]; then
   uninstall

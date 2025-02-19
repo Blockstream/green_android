@@ -646,8 +646,8 @@
     <string name="id_install_version_s">Встановити версію: %1$s?</string>
     <string name="id_instant">Instant</string>
     <string name="id_insufficient_funds">Недостатньо коштів</string>
-    <string name="id_insufficient_lbtc_for_fees">Недостатньо L-BTC для комісій</string>
-    <string name="id_insufficient_lbtc_to_send_a">Недостатньо L-BTC для відправки транзакції. У Liquid L-BTC необхідні для оплати комісії за транзакцію. Згенеруйте адресу для отримання L-BTC</string>
+    <string name="id_insufficient_lbtc_for_fees">Недостатньо LBTC для комісій</string>
+    <string name="id_insufficient_lbtc_to_send_a">Недостатньо LBTC для відправки транзакції. У Liquid LBTC необхідні для оплати комісії за транзакцію. Згенеруйте адресу для отримання LBTC</string>
     <string name="id_invalid_address">Неправильна адреса</string>
     <string name="id_invalid_amount">Неправильна сума</string>
     <string name="id_invalid_asset_id">Недійсний ID активу</string>
@@ -695,7 +695,7 @@
     <string name="id_last_ping_1d_ms">Останній пінг: %1$d мс</string>
     <string name="id_later">ПІЗНІШЕ</string>
     <string name="id_latest_transactions">Останні транзакції</string>
-    <string name="id_lbtc_has_no_issuer_and_is">L-BTC не має емітента і замість цього створюється в мережі за допомогою прив&apos;язки.</string>
+    <string name="id_lbtc_has_no_issuer_and_is">LBTC не має емітента і замість цього створюється в мережі за допомогою прив&apos;язки.</string>
     <string name="id_learn_more">Дізнатися більше</string>
     <string name="id_learn_more_about_amp_the_assets">Дізнайтеся більше про AMP, активи та відповідність вимогам</string>
     <string name="id_learn_more_about_s">Дізнатися більше про %1$s.</string>
@@ -1439,7 +1439,7 @@
     <string name="id_warning_there_is_already_a">УВАГА: Надійшов запит на двофакторну аутентифікацію вашого гаманця. Якщо повторити запит з нової адреси електронної пошти, ваш гаманець стане оспорюваним і, ймовірно, недоступним для вас назавжди.</string>
     <string name="id_warning_wallet_locked_by">УВАГА: Гаманець заблоковано через двофакторне оскарження. Зверніться до служби підтримки за додатковою інформацією.</string>
     <string name="id_warning_watchonly_credentials">Увага! Облікові дані watch-only будуть збережені на вашому пристрої</string>
-    <string name="id_warning_you_need_a_positive">Увага! Вам потрібен позитивний баланс L-BTC, щоб мати можливість відправляти транзакції.</string>
+    <string name="id_warning_you_need_a_positive">Увага! Вам потрібен позитивний баланс LBTC, щоб мати можливість відправляти транзакції.</string>
     <string name="id_watchonly">Лише для перегляду</string>
     <string name="id_watchonly_credentials">Облікові дані лише для перегляду</string>
     <string name="id_watchonly_details">Деталі лише для перегляду</string>

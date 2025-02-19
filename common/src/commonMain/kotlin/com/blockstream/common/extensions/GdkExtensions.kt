@@ -144,7 +144,7 @@ fun String.getAssetTicker(session: GdkSession): String? {
         if(this == BTC_POLICY_ASSET){
             "BTC"
         }else{
-            "L-BTC"
+            "LBTC"
         }.let {
             if(session.isTestnet) "TEST-$it" else it
         }

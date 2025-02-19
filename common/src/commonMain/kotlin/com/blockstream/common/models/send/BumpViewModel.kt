@@ -282,7 +282,7 @@ class BumpViewModelPreview(greenWallet: GreenWallet) :
     override val amountFiat: StateFlow<String?> = MutableStateFlow("~ 150.000 USD")
     override val total: StateFlow<String?> = MutableStateFlow("150 BTC")
     override val totalFiat: StateFlow<String?> = MutableStateFlow("~ 150.000 USD")
-    override val oldFee: StateFlow<String?> = MutableStateFlow("1,000 L-BTC")
+    override val oldFee: StateFlow<String?> = MutableStateFlow("1,000 LBTC")
     override val oldFeeFiat: StateFlow<String?> = MutableStateFlow("~ 5.00 USD")
     override val oldFeeRate: StateFlow<String?> = MutableStateFlow("1 sats/vbyte")
     override val isWatchOnly: StateFlow<Boolean> = MutableStateFlow(false)

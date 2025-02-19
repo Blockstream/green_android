@@ -54,7 +54,7 @@ data class Settings(
         }
     }.let {
         if (session.defaultNetworkOrNull?.isLiquid == true) {
-            "L-$it"
+            "L$it"
         } else {
             it
         }
@@ -63,7 +63,7 @@ data class Settings(
 
     companion object {
         fun fromNetworkUnit(unit: String, session: GdkSession): String = if (session.isTestnet) {
-            BitcoinUnits.getOrNull(TestnetUnits.indexOf(unit.replace("L-", ""))) ?: BTC_UNIT
+            BitcoinUnits.getOrNull(TestnetUnits.indexOf(if(unit.startsWith("L")) unit.replaceFirst("L", "") else unit)) ?: BTC_UNIT
         } else {
             unit
         }

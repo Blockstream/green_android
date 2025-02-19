@@ -109,8 +109,8 @@ class RedepositViewModel(
         // The following only works for re-depositing expired utxos not as a way to consolidate your utxos into one.
 
         // The UTXOs that should be re-deposited, Unspent outputs JSON as returned by GA_get_unspent_outputs.
-        // Non-expired UTXOs will be ignored, except for L-BTC UTXOs that may be required for fees when re-depositing assets.
-        // For Liquid, all assets except L-BTC must come from the same subaccount.
+        // Non-expired UTXOs will be ignored, except for LBTC UTXOs that may be required for fees when re-depositing assets.
+        // For Liquid, all assets except LBTC must come from the same subaccount.
         val unspentOutputs = session.getUnspentOutputs(account = account, isExpired = false)
 
         return (if (isRedeposit2FA) {

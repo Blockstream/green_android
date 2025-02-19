@@ -646,8 +646,8 @@
     <string name="id_install_version_s">Installiere Version: %1$s?</string>
     <string name="id_instant">Sofort</string>
     <string name="id_insufficient_funds">Unzureichende Mittel</string>
-    <string name="id_insufficient_lbtc_for_fees">Unzureichende L-BTC für Netzwerkgebühren.</string>
-    <string name="id_insufficient_lbtc_to_send_a">L-BTC reichen nicht aus um eine Transaktion durchzuführen. Liquid erfordert L-BTC um Netzwerkgebühren zu bezahlen. Erstellen Sie eine Adresse um L-BTC zu empfangen.</string>
+    <string name="id_insufficient_lbtc_for_fees">Unzureichende LBTC für Netzwerkgebühren.</string>
+    <string name="id_insufficient_lbtc_to_send_a">LBTC reichen nicht aus um eine Transaktion durchzuführen. Liquid erfordert LBTC um Netzwerkgebühren zu bezahlen. Erstellen Sie eine Adresse um LBTC zu empfangen.</string>
     <string name="id_invalid_address">Ungültige Adresse</string>
     <string name="id_invalid_amount">Ungültiger Betrag</string>
     <string name="id_invalid_asset_id">Ungültige Asset-ID</string>
@@ -695,7 +695,7 @@
     <string name="id_last_ping_1d_ms">Letzter Ping: %1$d ms</string>
     <string name="id_later">SPÄTER</string>
     <string name="id_latest_transactions">Letzte Transaktionen</string>
-    <string name="id_lbtc_has_no_issuer_and_is">L-BTC hat keinen Emittenten und wird stattdessen über einen Peg-In im Netzwerk erstellt.</string>
+    <string name="id_lbtc_has_no_issuer_and_is">LBTC hat keinen Emittenten und wird stattdessen über einen Peg-In im Netzwerk erstellt.</string>
     <string name="id_learn_more">Erfahre mehr</string>
     <string name="id_learn_more_about_amp_the_assets">Erfahre mehr über AMP, die Vermögenswerte und deine Teilnahmeberechtigung</string>
     <string name="id_learn_more_about_s">Erfahre mehr über %1$s.</string>
@@ -1439,7 +1439,7 @@
     <string name="id_warning_there_is_already_a">ACHTUNG: Es gibt bereits eine Anfrage, die Zwei-Faktor Authentifizierung für die Wallet wiederherzustellen. Bei einer Anfrage mit einer neuen Email-Adresse wird deine Wallet beanstandet und könnte dauerhaft unzugänglich werden.</string>
     <string name="id_warning_wallet_locked_by">ACHTUNG: Wallet wegen Zwei-Faktor Disput gesperrt. Kontaktiere den Support für mehr Informationen.</string>
     <string name="id_warning_watchonly_credentials">Achtung: Watch-Only Anmeldedaten werden auf deinem Gerät gespeichert.</string>
-    <string name="id_warning_you_need_a_positive">Achtung! Sie brauchen ein positives L-BTC Guthaben um Transaktionen zu tätigen</string>
+    <string name="id_warning_you_need_a_positive">Achtung! Sie brauchen ein positives LBTC Guthaben um Transaktionen zu tätigen</string>
     <string name="id_watchonly">Watch-Only</string>
     <string name="id_watchonly_credentials">Watch-only Anmeldeinformationen</string>
     <string name="id_watchonly_details">Watch-only Details</string>

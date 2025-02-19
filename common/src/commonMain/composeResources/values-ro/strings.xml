@@ -646,8 +646,8 @@
     <string name="id_install_version_s">Instalați versiunea: %1$s? </string>
     <string name="id_instant">Instant</string>
     <string name="id_insufficient_funds">Fonduri insuficiente</string>
-    <string name="id_insufficient_lbtc_for_fees">L-BTC insuficient pentru plata comisioanelor de tranzacție</string>
-    <string name="id_insufficient_lbtc_to_send_a">Nu aveți suficient L-BTC pentru a efectua o tranzacție. În rețeaua Liquid, L-BTC sunt necesari pentru a plăti comisioanele de tranzacție. Generați o adresă la care să primiți L-BTC.</string>
+    <string name="id_insufficient_lbtc_for_fees">LBTC insuficient pentru plata comisioanelor de tranzacție</string>
+    <string name="id_insufficient_lbtc_to_send_a">Nu aveți suficient LBTC pentru a efectua o tranzacție. În rețeaua Liquid, LBTC sunt necesari pentru a plăti comisioanele de tranzacție. Generați o adresă la care să primiți LBTC.</string>
     <string name="id_invalid_address">Adresă invalidă</string>
     <string name="id_invalid_amount">Cantitate invalidă</string>
     <string name="id_invalid_asset_id">Invalid Asset ID</string>
@@ -695,7 +695,7 @@
     <string name="id_last_ping_1d_ms">Ultimul ping: %1$d ms</string>
     <string name="id_later">MAI TÂRZIU</string>
     <string name="id_latest_transactions">Latest transactions</string>
-    <string name="id_lbtc_has_no_issuer_and_is">L-BTC nu are o entitate emitentă și este creat de către rețea atunci când bitcoini de pe lanțul principal sunt transferați în rețea.</string>
+    <string name="id_lbtc_has_no_issuer_and_is">LBTC nu are o entitate emitentă și este creat de către rețea atunci când bitcoini de pe lanțul principal sunt transferați în rețea.</string>
     <string name="id_learn_more">Află mai mult</string>
     <string name="id_learn_more_about_amp_the_assets">Learn more about AMP, the assets and your eligibility</string>
     <string name="id_learn_more_about_s">Învățați mai mult despre %1$s.</string>
@@ -1439,7 +1439,7 @@
     <string name="id_warning_there_is_already_a">AVERTISMENT: Există deja o cerere de resetare a autentificării cu doi factori pentru portofelul dvs. Dacă realizați o solicitare cu o adresă de e-mail nouă, portofelul dvs. va rămâne disputat și este probabil să devină permanent indisponibil pentru dvs.</string>
     <string name="id_warning_wallet_locked_by">AVERTISMENT: Portofelul a fost blocat în urma unei dispute ce vizează antentificarea cu doi factori. Contactați echipa de suport tehnic pentru mai multe informații.</string>
     <string name="id_warning_watchonly_credentials">Avertisment: Datele pentru logare în modul watch-only vor fi salvate în dispozitivul dvs.</string>
-    <string name="id_warning_you_need_a_positive">Atenție! Aveți nevoie de o cantitate mai mare de 0 L-BTC pentru a trimite tranzacții.</string>
+    <string name="id_warning_you_need_a_positive">Atenție! Aveți nevoie de o cantitate mai mare de 0 LBTC pentru a trimite tranzacții.</string>
     <string name="id_watchonly">Watch-only (doar verificare și primire)</string>
     <string name="id_watchonly_credentials">Watch-only credentials</string>
     <string name="id_watchonly_details">Watch-only details</string>

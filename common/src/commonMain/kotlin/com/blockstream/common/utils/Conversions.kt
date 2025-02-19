@@ -45,7 +45,7 @@ fun getBitcoinOrLiquidUnit(
     }
 
     return if (network?.isLiquid == true) {
-        "L-$unit"
+        "L$unit"
     } else {
         unit
     }
