@@ -218,12 +218,17 @@ abstract class AbstractDeviceViewModel constructor(
     }
 
     override fun requestPinBlocking(deviceBrand: DeviceBrand): String {
+        logger.i { "AbstractDeviceViewModel requestPinBlocking deviceBrand: ${deviceBrand}" }
         postSideEffect(LocalSideEffects.RequestPin(deviceBrand))
 
         return CompletableDeferred<String>().also {
+            logger.i { "AbstractDeviceViewModel requestPinBlocking requestPinEmitter before" }
             requestPinEmitter = it
+            logger.i { "AbstractDeviceViewModel requestPinBlocking requestPinEmitter after" }
         }.let {
+            logger.i { "AbstractDeviceViewModel requestPinBlocking runBlocking before" }
             runBlocking { it.await() }
+
         }
     }
 
@@ -234,6 +239,7 @@ abstract class AbstractDeviceViewModel constructor(
     override fun requestNetwork(): Network? = greenWalletOrNull?.let {
         if (it.isMainnet) gdk.networks().bitcoinElectrum else gdk.networks().testnetBitcoinElectrum
     } ?: if (settingsManager.appSettings.testnet) {
+        logger.i { "AbstractDeviceViewModel requestNetwork " }
         requestNetworkEmitter = CompletableDeferred()
         postSideEffect(SideEffects.SelectEnvironment)
         runBlocking { requestNetworkEmitter!!.await() }

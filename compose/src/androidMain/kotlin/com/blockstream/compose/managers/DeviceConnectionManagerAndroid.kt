@@ -8,8 +8,6 @@ import com.blockstream.common.devices.AndroidDevice
 import com.blockstream.common.devices.CardChannel
 import com.blockstream.common.devices.CardListener
 import com.blockstream.common.devices.DeviceBrand
-import com.blockstream.common.devices.DeviceManagerAndroid
-import com.blockstream.common.devices.DeviceManagerAndroid.Companion
 import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.devices.NfcCardManager
 import com.blockstream.common.devices.SatochipCommandSet
@@ -59,9 +57,11 @@ class DeviceConnectionManagerAndroid constructor(
     scope = scope
 ) {
 
+    // Satochip
     private var nfcAdapter: NfcAdapter? = null
     private var activity: Activity? = null
     private var satochipDevice: SatochipDevice? = null
+    private var satochipInteraction: HardwareConnectInteraction? = null
 
     override suspend fun connectDevice(
         device: GreenDevice,
@@ -169,6 +169,7 @@ class DeviceConnectionManagerAndroid constructor(
         logger.i {"SATODEBUG DeviceConnectionManagerAndroid connectSatochipDevice() start device: $device"}
 
         satochipDevice = device
+        satochipInteraction = interaction
 
         val cardManager = NfcCardManager()
         cardManager.setCardListener(this)
@@ -212,8 +213,13 @@ class DeviceConnectionManagerAndroid constructor(
 
     // SATODEBUG
     override fun onConnected(channel: CardChannel) {
-
         println("SATODEBUG DeviceConnectionManagerAndroid onConnected: Card is connected")
+
+        //val pin: String? = satochipInteraction?.requestPinBlocking(DeviceBrand.Satochip)
+        //val pin: String? = satochipInteraction?.requestPinMatrix(DeviceBrand.Satochip)
+        val pin: String? = satochipInteraction?.requestPassphrase(DeviceBrand.Satochip)
+        println("SATODEBUG DeviceConnectionManagerAndroid onConnected: PIN: " + pin)
+
         try {
             val cmdSet = SatochipCommandSet(channel)
             // start to interact with card
@@ -246,7 +252,7 @@ class DeviceConnectionManagerAndroid constructor(
 
             // provide channel for later request?
             // todo: provide activity and context instead??
-            satochipDevice?.gdkHardwareWallet = SatochipHWWallet(satoDevice, activity, satochipDevice?.context)
+            satochipDevice?.gdkHardwareWallet = SatochipHWWallet(satoDevice, pin, activity, satochipDevice?.context)
 
         } catch (e: Exception) {
             println("SATODEBUG DeviceConnectionManagerAndroid onConnected: an exception has been thrown during card init.")

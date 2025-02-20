@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
+import com.blockstream.common.devices.DeviceBrand;
 import com.blockstream.common.devices.DeviceModel;
 import com.blockstream.common.gdk.data.Account;
 import com.blockstream.common.gdk.data.Device;
@@ -33,6 +34,7 @@ import com.satochip.ApduException;
 import com.satochip.ApduResponse;
 import com.satochip.ApplicationStatus;
 import com.satochip.Bip32Path;
+import com.satochip.BlockedPINException;
 import com.satochip.CardChannel;
 import com.satochip.CardListener;
 import com.satochip.NfcActionObject;
@@ -40,7 +42,10 @@ import com.satochip.NfcActionStatus;
 import com.satochip.NfcActionType;
 import com.satochip.NfcCardManager;
 import com.satochip.SatochipCommandSet;
+import com.satochip.SatochipException;
 import com.satochip.SatochipParser;
+import com.satochip.WrongPINException;
+import com.satochip.WrongPINLegacyException;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -68,6 +73,7 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
     private final DeviceModel model;
     private final String firmwareVersion = "x.y-z.w"; //todo
 
+    private String pin;
     private final Activity activity;
     private final Context context;
     private final CardChannel channel = null;
@@ -79,17 +85,15 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
     private NfcActionObject actionObject = new NfcActionObject();
 
 
-    public SatochipHWWallet(Device device, Activity activity, Context context){
+    public SatochipHWWallet(Device device, String pin,  Activity activity, Context context){
         Log.i(TAG, "constructor start");
         //mTrezor = t;
         this.device = device;
         //String model = "Satochip";
         this.model = DeviceModel.SatochipGeneric;
-
+        this.pin = pin;
         this.activity = activity;
         this.context = context;
-
-        //this.cmdSet = new SatochipCommandSet(channel);
 
         NfcCardManager cardManager = new NfcCardManager();
         cardManager.setCardListener(this);
@@ -105,8 +109,6 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
         );
         Log.i(TAG, "SATODEBUG SatochipHWWallet getXpubs() after NfcAdapter.enableReaderMode");
 
-
-
     }
 
     @Override
@@ -120,6 +122,13 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
 
         Log.i(TAG, "SATODEBUG SatochipHWWallet onConnected() Card is connected");
         try {
+
+            if (this.actionObject.actionType == NfcActionType.none) {
+                Log.i(TAG, "SATODEBUG SatochipHWWallet onConnected() nothing to do => disconnection!");
+                onDisconnected();
+                return;
+            }
+
             SatochipCommandSet cmdSet = new SatochipCommandSet(channel);
             Log.i(TAG, "SATODEBUG SatochipHWWallet onConnected() cmdSet created");
             // start to interact with card
@@ -135,11 +144,16 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
 
 
             // verify PIN
-            String pinStr = "123456"; //todo
-            byte[] pinBytes = pinStr.getBytes(Charset.forName("UTF-8"));
-            ApduResponse rapduPin = cmdSet.cardVerifyPIN(pinBytes);
-            Log.i(TAG, "SATODEBUG SatochipHWWallet onConnected() pin verified: " + rapduPin.getSw());
-            Log.i(TAG, "SATODEBUG SatochipHWWallet onConnected() pin verified: " + rapduPin.toHexString());
+            if (this.pin != null) {
+                //String pinStr = "123456"; //todo
+                byte[] pinBytes = this.pin.getBytes(Charset.forName("UTF-8"));
+                ApduResponse rapduPin = cmdSet.cardVerifyPIN(pinBytes);
+                Log.i(TAG, "SATODEBUG SatochipHWWallet onConnected() pin verified: " + rapduPin.getSw());
+                Log.i(TAG, "SATODEBUG SatochipHWWallet onConnected() pin verified: " + rapduPin.toHexString());
+                // todo: wrong pin/blockecd pin...
+            } else {
+                throw new SatochipException(SatochipException.ExceptionReason.PIN_UNDEFINED);
+            }
 
             // execute commands depending on actionType
             if (this.actionObject.actionType == NfcActionType.getXpubs){
@@ -154,6 +168,26 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
             Log.i(TAG, "SATODEBUG SatochipHWWallet onConnected() trigger disconnection!");
             onDisconnected();
 
+        } catch (SatochipException e) {
+            this.pin = null;
+            Log.e(TAG, "SATODEBUG onConnected: ERROR: "+ e);
+            onDisconnected();
+            throw new RuntimeException(e); // todo: msg user instead!!
+        } catch (WrongPINException e) {
+            this.pin = null;
+            Log.e(TAG, "SATODEBUG onConnected: WRONG PIN! "+ e);
+            onDisconnected();
+            throw new RuntimeException(e); // todo: msg user instead!!
+        } catch (WrongPINLegacyException e) {
+            this.pin = null;
+            Log.e(TAG, "SATODEBUG onConnected: WRONG PIN LEGACY! "+ e);
+            onDisconnected();
+            throw new RuntimeException(e); // todo: msg user instead!!
+        } catch (BlockedPINException e) {
+            this.pin = null;
+            Log.e(TAG, "SATODEBUG onConnected: A an exception has been thrown during card init: "+ e);
+            onDisconnected();
+            throw new RuntimeException(e); // todo: msg user instead!!
         } catch (ApduException e) {
             //throw new RuntimeException(e);
             Log.e(TAG, "SATODEBUG onConnected: A an exception has been thrown during card init: "+ e);

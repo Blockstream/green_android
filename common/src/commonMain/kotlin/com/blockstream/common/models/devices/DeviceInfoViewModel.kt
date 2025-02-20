@@ -167,10 +167,12 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
     }
 
     private fun authenticateAndContinue(updateFirmwareFromChannel: String? = null) {
-        println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() start")
+        println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() start updateFirmwareFromChannel: "+ updateFirmwareFromChannel)
+        println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() device.gdkHardwareWallet: " + device.gdkHardwareWallet)
         val gdkHardwareWallet = device.gdkHardwareWallet ?: return
 
         doAsync({
+            println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() doAsync")
             // Authenticate device if needed
             deviceConnectionManager.authenticateDeviceIfNeeded(
                 gdkHardwareWallet = gdkHardwareWallet,
@@ -187,7 +189,10 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
             )
 
             val network = device.getOperatingNetwork(device, gdk, interaction = this)!!
+            println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() network: " + network)
+
             val isEphemeral = !settingsManager.appSettings.rememberHardwareDevices
+            println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() isEphemeral: " + isEphemeral)
 
             val previousSession = (if (device.isLedger) {
                 sessionManager.getDeviceSessionForNetworkAllPolicies(device, network, isEphemeral)
@@ -198,6 +203,7 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
                     isEphemeral
                 )
             })
+            println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() previousSession: " + previousSession)
 
             if (previousSession != null) {
                 // Session already setup
@@ -210,10 +216,14 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
                 // Disconnect any previous hww connection
                 it.disconnect()
             }
+            println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() session: " + session)
 
             val walletHashId = getWalletHashId(session, network, device)
+            println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() walletHashId: " + walletHashId)
+
             // Disable Jade wallet fingerprint, keep the device name // getWalletName(session, network, device)
             val walletName = device.name
+            println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() walletName: " + walletName)
 
             val wallet: GreenWallet
             if (isEphemeral) {
@@ -265,6 +275,7 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
                         ).toSet().toList() // Make it unique
 
                 wallet.deviceIdentifiers = combinedLoginCredentials
+                println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() wallet.deviceIdentifiers: " + wallet.deviceIdentifiers)
 
                 if (isNewWallet) {
                     database.insertWallet(wallet)
@@ -273,6 +284,7 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
                 }
 
                 session = sessionManager.getWalletSessionOrCreate(wallet)
+                println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() session: " + session)
 
                 countly.importWallet(session)
             }
@@ -281,6 +293,7 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
         }, postAction = {
             onProgress.value = it == null
         }, onSuccess = {
+            println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() onSuccess: ")
             disconnectDeviceOnCleared = false
 
             deviceManager.savedDevice = device

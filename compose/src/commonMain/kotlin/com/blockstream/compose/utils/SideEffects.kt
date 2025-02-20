@@ -197,8 +197,10 @@ fun HandleSideEffect(
     val drawer = LocalDrawer.current
     val scope = rememberCoroutineScope()
     val biometricsState = LocalBiometricState.current
-
     var twoFactorResolverData by remember { mutableStateOf<TwoFactorResolverData?>(null) }
+
+    println("SATODEBUG SideEffects HandleSideEffect() START")
+
     twoFactorResolverData?.also { resolverData ->
         resolverData.methods?.also { methods ->
             SingleChoiceDialog(
@@ -259,6 +261,7 @@ fun HandleSideEffect(
 
     // Device Passphrase
     PassphraseBottomSheet.getResult {
+        println("SATODEBUG SideEffects HandleSideEffect() PassphraseBottomSheet.getResult: " + it)
         viewModel.postEvent(Events.DeviceRequestResponse(it))
     }
 
@@ -272,9 +275,14 @@ fun HandleSideEffect(
 
     // Handle sideEffect only on resumed state
     LaunchedEffect(state) {
+
+        println("SATODEBUG SideEffects HandleSideEffect() LaunchedEffect(state) state: " + state)
+
         if(state != Lifecycle.State.RESUMED) return@LaunchedEffect
 
         viewModel.sideEffect.onEach {
+
+            println("SATODEBUG SideEffects HandleSideEffect() LaunchedEffect(state) onEach sideEffect: " + it)
             handler.invoke(this, it)
 
             when (it) {
@@ -546,7 +554,16 @@ fun HandleSideEffect(
                 }
 
                 is SideEffects.DeviceRequestPassphrase -> {
-                    bottomSheetNavigator?.show(PassphraseBottomSheet)
+
+                    println("SATODEBUG HandleSideEffect received DeviceRequestPassphrase")
+                    bottomSheetNavigator?.also {
+                        println("SATODEBUG bottomSheetNavigator is not null, showing sheet")
+                        it.show(PassphraseBottomSheet)
+                    } ?: run {
+                        println("SATODEBUG bottomSheetNavigator is null!")
+                    }
+
+                    //bottomSheetNavigator?.show(PassphraseBottomSheet)
                 }
 
                 is SideEffects.DeviceRequestPin -> {

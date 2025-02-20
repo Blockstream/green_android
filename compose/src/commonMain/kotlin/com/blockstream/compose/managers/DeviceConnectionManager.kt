@@ -105,6 +105,7 @@ open class DeviceConnectionManager(
         gdkHardwareWallet: GdkHardwareWallet,
         jadeFirmwareManager: JadeFirmwareManager?
     ) {
+        println("SATODEBUG DeviceConnectionManager authenticateDeviceIfNeeded() start")
         if (gdkHardwareWallet is JadeHWWallet && gdkHardwareWallet.getVersionInfo().jadeState != JadeState.READY) {
             try {
                 gdkHardwareWallet.authenticate(interaction, jadeFirmwareManager ?: JadeFirmwareManager(
@@ -139,5 +140,6 @@ open class DeviceConnectionManager(
             // force update if needed
             jadeFirmwareManager.checkFirmware(jade = gdkHardwareWallet.jade)
         }
+        println("SATODEBUG DeviceConnectionManager authenticateDeviceIfNeeded() end")
     }
 }

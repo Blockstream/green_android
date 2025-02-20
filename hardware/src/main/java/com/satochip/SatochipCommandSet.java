@@ -491,13 +491,7 @@ public class SatochipCommandSet {
             this.pin0 = mypin; // cache new pin
             return rapdu;
 
-        } catch (WrongPINException e) {
-            this.pin0 = null;
-            throw e;
-        } catch (WrongPINLegacyException e) {
-            this.pin0 = null;
-            throw e;
-        } catch (BlockedPINException e) {
+        } catch (WrongPINException | WrongPINLegacyException | BlockedPINException e) {
             this.pin0 = null;
             throw e;
         } catch (ApduException e){
