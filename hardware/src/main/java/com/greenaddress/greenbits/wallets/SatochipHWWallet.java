@@ -148,11 +148,17 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
                 //String pinStr = "123456"; //todo
                 byte[] pinBytes = this.pin.getBytes(Charset.forName("UTF-8"));
                 ApduResponse rapduPin = cmdSet.cardVerifyPIN(pinBytes);
-                Log.i(TAG, "SATODEBUG SatochipHWWallet onConnected() pin verified: " + rapduPin.getSw());
                 Log.i(TAG, "SATODEBUG SatochipHWWallet onConnected() pin verified: " + rapduPin.toHexString());
                 // todo: wrong pin/blockecd pin...
             } else {
-                throw new SatochipException(SatochipException.ExceptionReason.PIN_UNDEFINED);
+                if (actionObject.hwInteraction != null){
+                    this.pin = actionObject.hwInteraction.requestPassphrase(DeviceBrand.Satochip);
+                    byte[] pinBytes = this.pin.getBytes(Charset.forName("UTF-8"));
+                    ApduResponse rapduPin = cmdSet.cardVerifyPIN(pinBytes);
+                    Log.i(TAG, "SATODEBUG SatochipHWWallet onConnected() pin verified: " + rapduPin.toHexString());
+                } else {
+                    throw new SatochipException(SatochipException.ExceptionReason.PIN_UNDEFINED);
+                }
             }
 
             // execute commands depending on actionType
@@ -172,22 +178,37 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
             this.pin = null;
             Log.e(TAG, "SATODEBUG onConnected: ERROR: "+ e);
             onDisconnected();
-            throw new RuntimeException(e); // todo: msg user instead!!
+            if (actionObject.hwInteraction != null){
+                actionObject.hwInteraction.interactionRequest(this, "No PIN available", false, null);
+            }
+            //throw new RuntimeException(e); // todo: msg user instead!!
         } catch (WrongPINException e) {
             this.pin = null;
             Log.e(TAG, "SATODEBUG onConnected: WRONG PIN! "+ e);
             onDisconnected();
-            throw new RuntimeException(e); // todo: msg user instead!!
+            if (actionObject.hwInteraction != null){
+                String message = "WRONG PIN!\n"+e.getRetryAttempts() + " tries remaining";
+                actionObject.hwInteraction.interactionRequest(this, message, false, null);
+            }
+            //throw new RuntimeException(e); // todo: msg user instead!!
         } catch (WrongPINLegacyException e) {
             this.pin = null;
             Log.e(TAG, "SATODEBUG onConnected: WRONG PIN LEGACY! "+ e);
             onDisconnected();
-            throw new RuntimeException(e); // todo: msg user instead!!
+            if (actionObject.hwInteraction != null){
+                String message = "WRONG PIN!\n";
+                actionObject.hwInteraction.interactionRequest(this, message, false, null);
+            }
+            //throw new RuntimeException(e); // todo: msg user instead!!
         } catch (BlockedPINException e) {
             this.pin = null;
             Log.e(TAG, "SATODEBUG onConnected: A an exception has been thrown during card init: "+ e);
             onDisconnected();
-            throw new RuntimeException(e); // todo: msg user instead!!
+            if (actionObject.hwInteraction != null){
+                String message = "CARD BLOCKED!\nYou need to reset your card.";
+                actionObject.hwInteraction.interactionRequest(this, message, false, null);
+            }
+            //throw new RuntimeException(e); // todo: msg user instead!!
         } catch (ApduException e) {
             //throw new RuntimeException(e);
             Log.e(TAG, "SATODEBUG onConnected: A an exception has been thrown during card init: "+ e);
@@ -429,6 +450,7 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
             this.actionObject.actionType = NfcActionType.getXpubs;
             this.actionObject.networkParam = network;
             this.actionObject.pathsParam = paths;
+            this.actionObject.hwInteraction = hwInteraction;
 
             // poll for result from cardListener onConnected
             while (this.actionObject.actionStatus == NfcActionStatus.busy) {
@@ -436,6 +458,9 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
                 Log.i(TAG, "SATODEBUG SatochipHWWallet getXpubs() SLEEP");
             }
 
+            // get result and reset action
+            this.actionObject.actionStatus = NfcActionStatus.none;
+            this.actionObject.actionType = NfcActionType.none;
             final List<String> xpubs = this.actionObject.xpubsResult;
             return xpubs;
 
@@ -466,6 +491,8 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
             this.actionObject.actionType = NfcActionType.signMessage;
             this.actionObject.pathParam = path;
             this.actionObject.messageParam = message;
+            this.actionObject.hwInteraction = hwInteraction;
+
 
             // poll for result from cardListener onConnected
             while (this.actionObject.actionStatus == NfcActionStatus.busy) {
@@ -473,6 +500,9 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
                 Log.i(TAG, "SATODEBUG SatochipHWWallet signMessage() SLEEP");
             }
 
+            // get result and reset action
+            this.actionObject.actionStatus = NfcActionStatus.none;
+            this.actionObject.actionType = NfcActionType.none;
             final String signatureResult = this.actionObject.signatureResult;
             Log.i(TAG, "SATODEBUG SatochipHWWallet signMessage() signatureResult: " + signatureResult);
             return new SignMessageResult(signatureResult, null);
@@ -572,6 +602,7 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
             this.actionObject.actionType = NfcActionType.signTransaction;
             this.actionObject.pathsParam = pathsParam;
             this.actionObject.hashesParam = hashesParam;
+            this.actionObject.hwInteraction = hwInteraction;
 
             // poll for result from cardListener onConnected
             while (this.actionObject.actionStatus == NfcActionStatus.busy) {
@@ -579,6 +610,9 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
                 Log.i(TAG, "SATODEBUG SatochipHWWallet signTransaction() SLEEP");
             }
 
+            // get result and reset action
+            this.actionObject.actionStatus = NfcActionStatus.none;
+            this.actionObject.actionType = NfcActionType.none;
             List<String> sigs = this.actionObject.signaturesResult;
             Log.i(TAG, "SATODEBUG SatochipHWWallet signTransaction() signatureResult: " + sigs);
             return new SignTransactionResult(sigs, null);

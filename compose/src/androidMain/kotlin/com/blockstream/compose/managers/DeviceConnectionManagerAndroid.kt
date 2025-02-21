@@ -201,9 +201,8 @@ class DeviceConnectionManagerAndroid constructor(
     override fun onConnected(channel: CardChannel) {
         println("SATODEBUG DeviceConnectionManagerAndroid onConnected(): Card is connected")
 
-        //val pin: String? = satochipInteraction?.requestPinBlocking(DeviceBrand.Satochip)
-        //val pin: String? = satochipInteraction?.requestPinMatrix(DeviceBrand.Satochip)
-        val pin: String? = satochipInteraction?.requestPassphrase(DeviceBrand.Satochip)
+        //val pin: String? = satochipInteraction?.requestPassphrase(DeviceBrand.Satochip)
+        val pin: String? = null;
         println("SATODEBUG DeviceConnectionManagerAndroid onConnected(): PIN: " + pin)
 
         try {

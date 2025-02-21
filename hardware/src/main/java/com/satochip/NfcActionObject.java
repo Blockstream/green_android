@@ -15,6 +15,8 @@ public class NfcActionObject {
     public NfcActionType actionType = NfcActionType.none;
     public NfcActionStatus actionStatus = NfcActionStatus.none;
 
+    public HardwareWalletInteraction hwInteraction = null;
+
     // getXpubs
     // List<String> getXpubs(@NonNull Network network, @NonNull List<? extends List<Integer>> paths, @Nullable HardwareWalletInteraction hwInteraction)
     public Network networkParam = null;
