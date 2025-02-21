@@ -28,6 +28,7 @@ open class DeviceConnectionManager(
 
     @Throws(Exception::class)
     override suspend fun connectDevice(device: GreenDevice, httpRequestHandler: HttpRequestHandler, interaction: HardwareConnectInteraction): ConnectionResult {
+        println("SATODEBUG DeviceConnectionManager connectDevice() device: $device")
         device.frozeHeartbeat()
 
         try {

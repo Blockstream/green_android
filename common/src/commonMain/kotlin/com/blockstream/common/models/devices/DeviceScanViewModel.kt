@@ -43,9 +43,14 @@ class DeviceScanViewModel(greenWallet: GreenWallet) :
         }
 
     init {
+        println("SATODEBUG DeviceScanViewModel init")
+        println("SATODEBUG DeviceScanViewModel init session: $session")
+        println("SATODEBUG DeviceScanViewModel init session.device: ${session.device}")
+        println("SATODEBUG DeviceScanViewModel init session.isConnected: ${session.isConnected}")
         session.device.takeIf { session.isConnected }?.also { device ->
 
             deviceManager.savedDevice = device
+            println("SATODEBUG DeviceScanViewModel init deviceManager.savedDevice: ${deviceManager.savedDevice}")
 
             postSideEffect(
                 SideEffects.NavigateTo(
@@ -55,24 +60,29 @@ class DeviceScanViewModel(greenWallet: GreenWallet) :
                     )
                 )
             )
+            println("SATODEBUG DeviceScanViewModel init after postSideEffect")
 
         } ?: run {
 
             combine(deviceFlow, deviceManager.devices) { _, devices ->
-
+                println("SATODEBUG DeviceScanViewModel init run combine devices: $devices")
                 if(deviceFlow.value == null) {
                     var foundDevice = devices.firstOrNull { device ->
+                        println("SATODEBUG DeviceScanViewModel init run combine step1 device: $device")
                         greenWallet.deviceIdentifiers?.any { it.uniqueIdentifier == device.uniqueIdentifier } == true
                     }
+                    println("SATODEBUG DeviceScanViewModel init run combine step2 foundDevice: $foundDevice")
 
                     // Find a BLE device or request a usb authentication
                     foundDevice = foundDevice ?: devices.firstOrNull {
                         it.needsUsbPermissionsToIdentify()
                     }
+                    println("SATODEBUG DeviceScanViewModel init run combine step3 foundDevice: $foundDevice")
 
                     // TODO if device is disconnected, do not rescan it!!!!
 
                     foundDevice?.also {
+                        println("SATODEBUG DeviceScanViewModel init run combine step4 foundDevice: $foundDevice")
                         selectDevice(it)
                     }
                 }
@@ -93,13 +103,15 @@ class DeviceScanViewModel(greenWallet: GreenWallet) :
     }
 
     private fun selectDevice(device: GreenDevice) {
+        println("SATODEBUG DeviceScanViewModel selectDevice() device: $device")
         _deviceFlow.value = device
 
         if (device.hasPermissions()) {
 
             doAsync({
-
+                println("SATODEBUG DeviceScanViewModel selectDevice() doAsync START")
                 if (device.gdkHardwareWallet == null) {
+                    println("SATODEBUG DeviceScanViewModel selectDevice() doAsync device.gdkHardwareWallet is NULL")
                     session.disconnect()
                     deviceConnectionManager.connectDevice(
                         device,
@@ -109,12 +121,16 @@ class DeviceScanViewModel(greenWallet: GreenWallet) :
                     countly.hardwareConnect(device)
                 }
 
+                println("SATODEBUG DeviceScanViewModel selectDevice() doAsync device.gdkHardwareWallet: ${device.gdkHardwareWallet}")
                 val gdkHardwareWallet = device.gdkHardwareWallet ?: throw Exception("Not HWWallet initiated")
 
+                println("SATODEBUG DeviceScanViewModel selectDevice() doAsync BEFORE deviceConnectionManager.authenticateDeviceIfNeeded()")
                 deviceConnectionManager.authenticateDeviceIfNeeded(httpRequestHandler = sessionManager.httpRequestHandler, interaction = this, gdkHardwareWallet = gdkHardwareWallet)
+                println("SATODEBUG DeviceScanViewModel selectDevice() doAsync AFTER deviceConnectionManager.authenticateDeviceIfNeeded()")
 
                 val network = device.getOperatingNetworkForEnviroment(device, gdk, greenWallet.isTestnet)
                     ?: throw Exception("No network is available")
+                println("SATODEBUG DeviceScanViewModel selectDevice() doAsync network: $network")
 
                 if(greenWallet.isTestnet != network.isTestnet){
                     throw Exception("The device is operating on the wrong Environment")
@@ -126,6 +142,7 @@ class DeviceScanViewModel(greenWallet: GreenWallet) :
                 }
 
                 val walletHashId = getWalletHashId(session, network, device)
+                println("SATODEBUG DeviceScanViewModel selectDevice() doAsync walletHashId: $walletHashId")
 
                 if (greenWallet.xPubHashId.isNotBlank() && greenWallet.xPubHashId != walletHashId) {
                     // Disconnect only if there are no other connected sessions
@@ -174,15 +191,18 @@ class DeviceScanViewModel(greenWallet: GreenWallet) :
                 greenWallet to device
 
             }, onError = {
+                println("SATODEBUG DeviceScanViewModel selectDevice() onError : ${it}")
                 if (it !is ConnectionLostException) {
                     postSideEffect(SideEffects.ErrorSnackbar(it))
                 }
                 _deviceFlow.value = null
             }, onSuccess = {
+                println("SATODEBUG DeviceScanViewModel selectDevice() onSuccess : ${it}")
                 disconnectDeviceOnCleared = false
 
                 deviceManager.savedDevice = it.second
 
+                println("SATODEBUG DeviceScanViewModel selectDevice() onSuccess BEFORE postSideEffect NavigateTo(NavigateDestinations.Login)")
                 postSideEffect(
                     SideEffects.NavigateTo(
                         NavigateDestinations.Login(
@@ -192,6 +212,7 @@ class DeviceScanViewModel(greenWallet: GreenWallet) :
                     )
                 )
                 countly.hardwareConnected(device)
+                println("SATODEBUG DeviceScanViewModel selectDevice() onSuccess END")
             })
         } else {
             askForPermission(device)

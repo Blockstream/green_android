@@ -1760,6 +1760,7 @@ class GdkSession constructor(
         connectionParams = createConnectionParams(network),
         loginCredentialsParams = loginCredentialsParams?.takeIf { !it.mnemonic.isNullOrBlank() }
             ?: (gdkHwWallet ?: this.gdkHwWallet)?.let {
+                println("SATODEBUG GdkSession getWalletIdentifier ")
                 LoginCredentialsParams(
                     masterXpub = it.getXpubs(network, listOf(listOf()), hwInteraction).first()
                 )
@@ -2760,6 +2761,10 @@ class GdkSession constructor(
     suspend fun signTransaction(network: Network, createTransaction: CreateTransaction): CreateTransaction = if(network.isLightning){
         createTransaction // no need to sign on gdk side
     }else{
+        logger.d { "SATODEBUG GdkSession signTransaction() network: ${network}" }
+        logger.d { "SATODEBUG GdkSession signTransaction() createTransaction: ${createTransaction}" }
+        logger.d { "SATODEBUG GdkSession signTransaction() createTransaction.jsonElement: ${createTransaction.jsonElement}" }
+
         authHandler(
             network,
             gdk.signTransaction(gdkSession(network), createTransaction = createTransaction.jsonElement!!)

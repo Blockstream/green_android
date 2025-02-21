@@ -47,28 +47,28 @@ class SatochipDevice constructor(
         //const val VENDOR_TREZOR = 0x534c
         //const val VENDOR_TREZOR_V2 = 0x1209
 
-        private fun hasSuportedVendorId(usbDevice: UsbDevice): Boolean {
-            return false
-//            val vId = usbDevice.vendorId
-//            return (vId == VENDOR_TREZOR ||
-//                    vId == VENDOR_TREZOR_V2)
-        }
+//        private fun hasSuportedVendorId(usbDevice: UsbDevice): Boolean {
+//            return false
+////            val vId = usbDevice.vendorId
+////            return (vId == VENDOR_TREZOR ||
+////                    vId == VENDOR_TREZOR_V2)
+//        }
 
         // TODO remove
-        fun fromUsbDevice(
-            deviceManager: DeviceManagerAndroid,
-            usbDevice: UsbDevice
-        ): SatochipDevice? {
-//            if (hasSuportedVendorId(usbDevice)) {
-//                return TrezorDevice(
-//                    context = deviceManager.context,
-//                    deviceManager = deviceManager,
-//                    type = ConnectionType.USB,
-//                    usbDevice = usbDevice,
-//                )
-//            }
-            return null
-        }
+//        fun fromUsbDevice(
+//            deviceManager: DeviceManagerAndroid,
+//            usbDevice: UsbDevice
+//        ): SatochipDevice? {
+////            if (hasSuportedVendorId(usbDevice)) {
+////                return TrezorDevice(
+////                    context = deviceManager.context,
+////                    deviceManager = deviceManager,
+////                    type = ConnectionType.USB,
+////                    usbDevice = usbDevice,
+////                )
+////            }
+//            return null
+//        }
 
         fun fromNfcDevice(
             deviceManager: DeviceManagerAndroid,
@@ -76,6 +76,7 @@ class SatochipDevice constructor(
             // TODO add params?
             // add AID?
         ): SatochipDevice? {
+            println("SATODEBUG SatochipDevice fromNfcDevice()")
             // todo check AID
             return SatochipDevice(
                 context = deviceManager.context,

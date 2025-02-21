@@ -86,7 +86,7 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
 
 
     public SatochipHWWallet(Device device, String pin,  Activity activity, Context context){
-        Log.i(TAG, "constructor start");
+        Log.i(TAG, "SATODEBUG SatochipHWWallet constructor start");
         //mTrezor = t;
         this.device = device;
         //String model = "Satochip";
@@ -98,7 +98,7 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
         NfcCardManager cardManager = new NfcCardManager();
         cardManager.setCardListener(this);
         cardManager.start();
-        Log.i(TAG, "SATODEBUG SatochipHWWallet getXpubs() after cardManager start");
+        Log.i(TAG, "SATODEBUG SatochipHWWallet constructor after cardManager start");
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this.context);
         nfcAdapter.enableReaderMode(
@@ -107,13 +107,13 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
                 NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_NFC_B | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK,
                 null
         );
-        Log.i(TAG, "SATODEBUG SatochipHWWallet getXpubs() after NfcAdapter.enableReaderMode");
+        Log.i(TAG, "SATODEBUG SatochipHWWallet constructor after NfcAdapter.enableReaderMode");
 
     }
 
     @Override
     public synchronized void disconnect() {
-        Log.i(TAG, "disconnect start");
+        Log.i(TAG, "SATODEBUG SatochipHWWallet disconnect start");
         // No-op
     }
 
@@ -629,28 +629,28 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
     @Nullable
     @Override
     public MutableStateFlow getDisconnectEvent() {
-        Log.i("SatochipHWWallet", "getDisconnectEvent start");
+        Log.i("SatochipHWWallet", "SATODEBUG SatochipHWWallet getDisconnectEvent start");
         return null;
     }
 
     @Nullable
     @Override
     public String getFirmwareVersion() {
-        Log.i("SatochipHWWallet", "getFirmwareVersion start");
+        Log.i("SatochipHWWallet", "SATODEBUG SatochipHWWallet getFirmwareVersion start");
         return firmwareVersion;
     }
 
     @NonNull
     @Override
     public DeviceModel getModel() {
-        Log.i("SatochipHWWallet", "getModel start");
+        Log.i("SatochipHWWallet", "SATODEBUG SatochipHWWallet getModel start");
         return model;
     }
 
     @NonNull
     @Override
     public Device getDevice() {
-        Log.i("SatochipHWWallet", "getDevice start");
+        Log.i("SatochipHWWallet", "SATODEBUG SatochipHWWallet getDevice start");
         return device;
     }
 
