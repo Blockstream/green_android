@@ -23,6 +23,8 @@ import blockstream_green.common.generated.resources.id_fee
 import blockstream_green.common.generated.resources.id_green_needs_the_master_blinding
 import blockstream_green.common.generated.resources.id_sent_to
 import blockstream_green.common.generated.resources.id_to_show_balances_and
+import blockstream_green.common.generated.resources.nfc_scan
+import blockstream_green.common.generated.resources.phone_keys
 import cafe.adriel.voyager.koin.koinScreenModel
 import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
@@ -49,35 +51,20 @@ import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
 
 @Parcelize
-data class DeviceInteractionBottomSheet(
-    val greenWalletOrNull: GreenWallet? = null,
-    val deviceId: String?,
-    val transactionConfirmLook: TransactionConfirmLook? = null,
-    val verifyAddress: String? = null,
-    val isMasterBlindingKeyRequest: Boolean = false,
+data class NfcToastBottomSheet(
     val message: String? = null
 ) : BottomScreen(), Parcelable {
 
     @Composable
     override fun Content() {
 
-        val deviceManager = koinInject<DeviceManager>()
-
-        val screenName = when {
-            verifyAddress != null -> "VerifyAddress"
-            transactionConfirmLook != null -> "VerifyTransaction"
-            else -> null
-        }
 
         val viewModel = koinScreenModel<SimpleGreenViewModel> {
-            parametersOf(greenWalletOrNull, null, screenName, deviceManager.getDevice(deviceId))
+            parametersOf(null, null, "Scan card")
         }
 
-        DeviceInteractionBottomSheet(
+        NfcToastBottomSheet(
             viewModel = viewModel,
-            transactionConfirmLook = transactionConfirmLook,
-            verifyAddress = verifyAddress,
-            isMasterBlindingKeyRequest = isMasterBlindingKeyRequest,
             message = StringHolder.create(message),
             onDismissRequest = onDismissRequest()
         )
@@ -86,30 +73,15 @@ data class DeviceInteractionBottomSheet(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DeviceInteractionBottomSheet(
+fun NfcToastBottomSheet(
     viewModel: SimpleGreenViewModel,
-    transactionConfirmLook: TransactionConfirmLook? = null,
-    verifyAddress: String? = null,
-    isMasterBlindingKeyRequest: Boolean = false,
     message: StringHolder? = null,
     onDismissRequest: () -> Unit,
 ) {
 
-    val title = when {
-        isMasterBlindingKeyRequest -> null
-        transactionConfirmLook != null || verifyAddress != null -> if (viewModel.device?.isNfc == true) "Tap your card to sign" else stringResource(Res.string.id_confirm_on_your_device)
-        else -> {
-            message?.stringOrNull()
-        }
-    }
+    val title = "Please scan your card"
 
-    val deviceIcon = viewModel.device?.let {
-        if (transactionConfirmLook != null || verifyAddress != null) {
-            it.actionIcon()
-        } else {
-            it.icon()
-        }
-    }
+    val deviceIcon = viewModel.device?.icon()
 
     GreenBottomSheet(
         title = title,
@@ -121,7 +93,9 @@ fun DeviceInteractionBottomSheet(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
             Image(
-                painter = painterResource(deviceIcon ?: Res.drawable.blockstream_devices),
+                //painter = painterResource(deviceIcon ?: Res.drawable.blockstream_devices),
+                //painter = painterResource(Res.drawable.phone_keys),
+                painter = painterResource(Res.drawable.nfc_scan),
                 contentDescription = null,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
@@ -139,58 +113,14 @@ fun DeviceInteractionBottomSheet(
                         rememberScrollState()
                     )
             ) {
-
-                if(transactionConfirmLook != null) {
-                    transactionConfirmLook.utxos?.forEach {
-                        GreenAmount(
-                            title = stringResource(if (it.isChange) Res.string.id_change else Res.string.id_sent_to),
-                            amount = it.amount ?: "",
-                            assetId = it.assetId,
-                            address = it.address,
-                            session = viewModel.sessionOrNull,
-                            showIcon = true
-                        )
-                    }
-
-                    transactionConfirmLook.fee?.also {
-                        GreenAmount(
-                            title = stringResource(Res.string.id_fee),
-                            amount = it,
-                            assetId = transactionConfirmLook.feeAssetId,
-                            session = viewModel.sessionOrNull,
-                            showIcon = true
-                        )
-                    }
-                }
-
-                if(verifyAddress != null){
-                    GreenAddress(address = verifyAddress)
-                }
-
-                if (isMasterBlindingKeyRequest) {
-
-                    Column {
-
-                        Text(
-                            text = stringResource(Res.string.id_green_needs_the_master_blinding),
-                            color = whiteMedium,
-                            textAlign = TextAlign.Center,
-                            style = titleSmall,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        Text(
-                            text = stringResource(Res.string.id_to_show_balances_and),
-                            color = whiteMedium,
-                            textAlign = TextAlign.Center,
-                            style = bodyLarge,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-
-                    LearnMoreButton {
-                        viewModel.postEvent(Events.OpenBrowser(Urls.HELP_MASTER_BLINDING_KEY))
-                    }
+                if (message != null) {
+                    Text(
+                        text = message.string(),
+                        color = whiteMedium,
+                        textAlign = TextAlign.Center,
+                        style = titleSmall,
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             }
         }

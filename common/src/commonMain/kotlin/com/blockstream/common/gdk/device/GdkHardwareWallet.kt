@@ -25,6 +25,7 @@ interface HardwareWalletInteraction{
     fun interactionRequest(gdkHardwareWallet: GdkHardwareWallet, message: String?, isMasterBlindingKeyRequest: Boolean, completable: CompletableDeferred<Boolean>?)
     fun requestPinMatrix(deviceBrand: DeviceBrand?): String?
     fun requestPassphrase(deviceBrand: DeviceBrand?): String?
+    fun requestNfcToast(deviceBrand: DeviceBrand?, message: String?, completable: CompletableDeferred<Boolean>?)// satodebug
 }
 
 abstract class GdkHardwareWallet {

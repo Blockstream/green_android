@@ -60,6 +60,7 @@ class SideEffects : SideEffect {
     data object AppReview: SideEffect
     data object DeviceRequestPassphrase: SideEffect
     data object DeviceRequestPin: SideEffect
+    data class DeviceRequestNfcToast(val message: String?, val completable: CompletableDeferred<Boolean>?): SideEffect
     data class DeviceInteraction(
         val deviceId: String?,
         val message: String?,

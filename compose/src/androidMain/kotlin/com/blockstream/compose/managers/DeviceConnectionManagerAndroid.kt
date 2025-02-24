@@ -164,12 +164,51 @@ class DeviceConnectionManagerAndroid constructor(
     }
 
 
-    // SATODEBUG
     private suspend fun connectSatochipDevice(device: SatochipDevice, interaction: HardwareConnectInteraction): ConnectionResult {
+        logger.i {"SATODEBUG DeviceConnectionManagerAndroid connectSatochipDevice() start device: $device"}
+
+        val satoDevice = com.blockstream.common.gdk.data.Device(
+            name = "Satochip",
+            supportsArbitraryScripts = false,
+            supportsLowR = false,
+            supportsHostUnblinding = false,
+            supportsExternalBlinding = false,
+            supportsLiquid = DeviceSupportsLiquid.None,
+            supportsAntiExfilProtocol = DeviceSupportsAntiExfilProtocol.None
+        )
+
+        val pin: String? = null;
+        //val pin: String? = satochipInteraction?.requestPassphrase(DeviceBrand.Satochip)
+        println("SATODEBUG DeviceConnectionManagerAndroid onConnected(): PIN: " + pin)
+
+        // provide activity and context needed for NFC
+        activity = device.activityProvider?.getCurrentActivity()
+
+        println("SATODEBUG DeviceConnectionManagerAndroid onConnected() creating gdkHardwareWallet")
+        device.gdkHardwareWallet = SatochipHWWallet(satoDevice, pin, activity, device.context)
+        println("SATODEBUG DeviceConnectionManagerAndroid onConnected() created gdkHardwareWallet!")
+
+        logger.i { "SATODEBUG DeviceConnectionManagerAndroid connectSatochipDevice() end" }
+
+        return ConnectionResult()
+    }
+
+    // SATODEBUG
+    private suspend fun connectSatochipDeviceOld(device: SatochipDevice, interaction: HardwareConnectInteraction): ConnectionResult {
         logger.i {"SATODEBUG DeviceConnectionManagerAndroid connectSatochipDevice() start device: $device"}
 
         satochipDevice = device
         satochipInteraction = interaction
+
+        val satoDevice = com.blockstream.common.gdk.data.Device(
+            name = "Satochip",
+            supportsArbitraryScripts = false,
+            supportsLowR = false,
+            supportsHostUnblinding = false,
+            supportsExternalBlinding = false,
+            supportsLiquid = DeviceSupportsLiquid.None,
+            supportsAntiExfilProtocol = DeviceSupportsAntiExfilProtocol.None
+        )
 
         val cardManager = NfcCardManager()
         cardManager.setCardListener(this)
@@ -190,12 +229,6 @@ class DeviceConnectionManagerAndroid constructor(
         return ConnectionResult()
     }
 
-//    private fun onSatochipConnected(device: AndroidDevice): ConnectionResult {
-//        logger.d { "SATODEBUG DeviceConnectionManagerAndroid connectSatochipDevice() start" }
-//        logger.d { "Creating Satochip HW wallet" }
-//
-//        return ConnectionResult()
-//    }
 
     // SATODEBUG
     override fun onConnected(channel: CardChannel) {

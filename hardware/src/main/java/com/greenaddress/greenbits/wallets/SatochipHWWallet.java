@@ -54,6 +54,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import kotlinx.coroutines.CompletableDeferred;
+import kotlinx.coroutines.CompletableDeferredKt;
 import kotlinx.coroutines.flow.MutableStateFlow;
 
 
@@ -427,7 +429,7 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
         Log.i("SatochipHWWallet", "SATODEBUG SatochipHWWallet getXpubs HardwareWalletInteraction: " + hwInteraction);
 
 
-        // first step: check if xpubs are available in cache
+        // first step: check if xpubs are all available in cache
         boolean isCached = true;
         final List<String> cachedXpubs = new ArrayList<>(paths.size());
         for (List<Integer> path : paths) {
@@ -444,8 +446,14 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
             return cachedXpubs;
         }
 
+        CompletableDeferred completable = CompletableDeferredKt.CompletableDeferred(null);
+
         // request to card if not cached already
         try {
+            if(hwInteraction != null) {
+                hwInteraction.requestNfcToast(DeviceBrand.Satochip, "Scan card to get xpub...", completable);
+            }
+
             this.actionObject.actionStatus = NfcActionStatus.busy;
             this.actionObject.actionType = NfcActionType.getXpubs;
             this.actionObject.networkParam = network;
@@ -466,6 +474,8 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
 
         } catch (Exception e) {
             Log.i("SatochipHWWallet", "getXpubs exception: " + e);
+        } finally {
+            completable.complete(true);
         }
 
         return null;
@@ -486,7 +496,13 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
             throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
         }
 
+        CompletableDeferred completable = CompletableDeferredKt.CompletableDeferred(null);
+
         try {
+            if(hwInteraction != null) {
+                hwInteraction.requestNfcToast(DeviceBrand.Satochip, "Scan card to sign message...", completable);
+            }
+
             this.actionObject.actionStatus = NfcActionStatus.busy;
             this.actionObject.actionType = NfcActionType.signMessage;
             this.actionObject.pathParam = path;
@@ -508,6 +524,8 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
             return new SignMessageResult(signatureResult, null);
         } catch (Exception e) {
             Log.e("SatochipHWWallet", "signMessage exception: " + e);
+        } finally {
+            completable.complete(true);
         }
 
         //TODO
@@ -525,6 +543,8 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
         Log.i("SatochipHWWallet", "signTransaction start outputs: " + outputs);
         Log.i("SatochipHWWallet", "signTransaction start transactions: " + transactions);
 
+        CompletableDeferred completable = CompletableDeferredKt.CompletableDeferred(null);
+
         final byte[] txBytes = Wally.hex_to_bytes(transaction);
         Log.i("SatochipHWWallet", "signTransaction txBytes: " + Wally.hex_from_bytes(txBytes));
 
@@ -536,6 +556,10 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
 
             if (useAeProtocol) {
                 throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
+            }
+
+            if(hwInteraction != null) {
+                hwInteraction.requestNfcToast(DeviceBrand.Satochip, "Scan card to sign transaction...", completable);
             }
 
             final Object wallyTx = Wally.tx_from_bytes(txBytes, Wally.WALLY_TX_FLAG_USE_WITNESS);
@@ -620,7 +644,10 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
         } catch (final Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Signing Error: " + e.getMessage());
+        } finally {
+            completable.complete(true);
         }
+
     }
 
 

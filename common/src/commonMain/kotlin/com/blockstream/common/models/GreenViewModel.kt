@@ -901,6 +901,10 @@ open class GreenViewModel constructor(
         }
     }
 
+    final override fun requestNfcToast(deviceBrand: DeviceBrand?, message: String?, completable: CompletableDeferred<Boolean>?) {
+        postSideEffect(SideEffects.DeviceRequestNfcToast(message, completable = completable))
+    }
+
     protected open suspend fun denominatedValue(): DenominatedValue? = null
     protected open fun setDenominatedValue(denominatedValue: DenominatedValue) { }
     protected open fun errorReport(exception: Throwable): ErrorReport? { return null}

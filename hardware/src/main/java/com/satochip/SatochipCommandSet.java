@@ -703,7 +703,7 @@ public class SatochipCommandSet {
                     extendedKey = parser.parseBip85GetExtendedKey(respApdu)[0];
                     extendedKeyHex = parser.toHexString(extendedKey);
                 } else if ((optionFlags & 0x02) == 0x00) { // BIP32 pubkey
-                    logger.warning("SATOCHIPLIB: cardBip32GetExtendedKey: in BIP39");
+                    logger.warning("SATOCHIPLIB: cardBip32GetExtendedKey: in BIP32");
                     if ((response[32] & 0x80) == 0x80) {
                         logger.info("SATOCHIPLIB: cardBip32GetExtendedKey: Child Derivation optimization...");
                         throw new Exception("Unsupported legacy option during BIP32 derivation");

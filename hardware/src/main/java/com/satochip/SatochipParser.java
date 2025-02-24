@@ -493,7 +493,7 @@ public class SatochipParser{
             offset+=32;
         }
         else{
-            throw new RuntimeException("Wrong signature r length (should be 0x20 or 0x21) !");
+            throw new RuntimeException("Wrong signature r length: " + lr + " (should be 0x20 or 0x21) !");
         }
         
         check= sigIn[offset++];
@@ -511,7 +511,7 @@ public class SatochipParser{
             System.arraycopy(sigIn, offset, s, 0, 32);
             offset+=32;
         } else{
-            throw new RuntimeException("Wrong signature s length (should be 0x20 or 0x21) !");
+            throw new RuntimeException("Wrong signature s length: " + ls + " (should be 0x20 or 0x21) !");
         }
         
         int sigOutSize= 64;

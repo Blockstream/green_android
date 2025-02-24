@@ -141,6 +141,7 @@ import com.blockstream.compose.sheets.JadeFirmwareUpdateBottomSheet
 import com.blockstream.compose.sheets.LightningNodeBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
 import com.blockstream.compose.sheets.NewJadeConnectedBottomSheet
+import com.blockstream.compose.sheets.NfcToastBottomSheet
 import com.blockstream.compose.sheets.NoteBottomSheet
 import com.blockstream.compose.sheets.PassphraseBottomSheet
 import com.blockstream.compose.sheets.PinMatrixBottomSheet
@@ -568,6 +569,18 @@ fun HandleSideEffect(
 
                 is SideEffects.DeviceRequestPin -> {
                     bottomSheetNavigator?.show(PinMatrixBottomSheet)
+                }
+
+                is SideEffects.DeviceRequestNfcToast -> {
+                    val screen = bottomSheetNavigator?.show(NfcToastBottomSheet(message = it.message) )
+
+                    scope.launch (context = handleException()) {
+                        it.completable?.also { completable ->
+                            completable.await()
+                        } ?: run { delay(3000L) }
+
+                        bottomSheetNavigator?.hide(screen)
+                    }
                 }
 
                 is SideEffects.DeviceInteraction -> {
