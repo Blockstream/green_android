@@ -4,30 +4,16 @@ import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.interfaces.ECPublicKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.bouncycastle.jce.spec.ECPublicKeySpec;
 import org.bouncycastle.crypto.digests.SHA1Digest;
 import org.bouncycastle.crypto.macs.HMac;
-
-//import org.spongycastle.
-//import org.spongycastle.jce.provider.BouncyCastleProvider;
-//import org.spongycastle.crypto.params.KeyParameter;
-//import org.spongycastle.jce.ECNamedCurveTable;
-//import org.spongycastle.jce.interfaces.ECPublicKey;
-//import org.spongycastle.jce.provider.BouncyCastleProvider;
-//import org.spongycastle.jce.spec.ECNamedCurveParameterSpec;
-//import org.spongycastle.jce.spec.ECParameterSpec;
-//import org.spongycastle.jce.spec.ECPublicKeySpec;
-//import org.spongycastle.crypto.digests.SHA1Digest;
-//import org.spongycastle.crypto.macs.HMac;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyAgreement;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.*;
-import java.security.spec.ECGenParameterSpec;
 import java.util.logging.Logger;
 import java.nio.ByteBuffer;
 
@@ -81,19 +67,10 @@ public class SecureChannelSession {
     try {
       // generate keypair
       Security.removeProvider("BC");
-      //Security.insertProviderAt(BouncyCastleProvider(), 1);
       Security.insertProviderAt(new BouncyCastleProvider(), 1);
       ecSpec = ECNamedCurveTable.getParameterSpec("secp256k1");
-//      ECNamedCurveParameterSpec namedSpec = ECNamedCurveTable.getParameterSpec("secp256k1");
-//      ECParameterSpec ecSpec = new ECParameterSpec (
-//              namedSpec.getCurve(),
-//              namedSpec.getG(),
-//              namedSpec.getN(),
-//              namedSpec.getH()
-//      );
       KeyPairGenerator g = KeyPairGenerator.getInstance("EC");
       g.initialize(ecSpec, random);
-      //g.initialize(new ECGenParameterSpec("secp256k1"), random);
       keyPair = g.generateKeyPair();
       publicKey = ((ECPublicKey) keyPair.getPublic()).getQ().getEncoded(false);
     } catch (Exception e) {
@@ -278,7 +255,6 @@ public class SecureChannelSession {
   
   public void resetSecureChannel(){
     initialized_secure_channel= false;
-	  return;
   }
   
 }

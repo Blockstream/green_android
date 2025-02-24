@@ -248,8 +248,7 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
                 // get xpub from satochip
                 //pathStr = "m/44'/0'/0'/0";
                 int xtype = this.actionObject.networkParam.getVerPublic(); //0x0488B21E;
-                Integer sid = null;
-                String xpub = cmdSet.cardBip32GetXpub(bip32path, xtype, sid);
+                String xpub = cmdSet.cardBip32GetXpub(bip32path, xtype);
                 Log.i(TAG, "SATODEBUG SatochipHWWallet onConnectedGetXpubs() xpub: " + xpub);
 
                 // cache xpub
@@ -284,8 +283,7 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
         Bip32Path bip32path = pathToBip32Path(path);
         Log.i(TAG, "SATODEBUG SatochipHWWallet onConnectedSignMessage() depth: " + bip32path.getDepth()); //debug
         Log.i(TAG, "SATODEBUG SatochipHWWallet onConnectedSignMessage() bip32path: " + hex(bip32path.getBytes())); //debug
-        byte optionFlags = (byte) 0x40;
-        byte[][] extendedKey = cmdSet.cardBip32GetExtendedKey(bip32path, optionFlags, null);
+        byte[][] extendedKey = cmdSet.cardBip32GetExtendedKey(bip32path);
         Log.i(TAG, "SATODEBUG SatochipHWWallet onConnectedSignMessage() extendedKey_0: " + hex(extendedKey[0])); //debug
         Log.i(TAG, "SATODEBUG SatochipHWWallet onConnectedSignMessage() extendedKey_1: " + hex(extendedKey[1])); //debug
 
@@ -359,7 +357,7 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
             Log.i(TAG, "SATODEBUG SatochipHWWallet onConnectedSignTransaction() depth: " + bip32path.getDepth()); //debug
             Log.i(TAG, "SATODEBUG SatochipHWWallet onConnectedSignTransaction() bip32path: " + hex(bip32path.getBytes())); //debug
             byte optionFlags = (byte) 0x40;
-            byte[][] extendedKey = cmdSet.cardBip32GetExtendedKey(bip32path, optionFlags, null);
+            byte[][] extendedKey = cmdSet.cardBip32GetExtendedKey(bip32path);
             Log.i(TAG, "SATODEBUG SatochipHWWallet onConnectedSignTransaction() extendedKey_0: " + hex(extendedKey[0])); //debug
             Log.i(TAG, "SATODEBUG SatochipHWWallet onConnectedSignTransaction() extendedKey_1: " + hex(extendedKey[1])); //debug
 

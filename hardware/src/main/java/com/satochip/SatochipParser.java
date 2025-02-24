@@ -17,10 +17,8 @@ import java.security.MessageDigest;
 import java.math.BigInteger;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Base64;
 import java.util.logging.Logger;
 
 public class SatochipParser{
@@ -68,35 +66,6 @@ public class SatochipParser{
    /****************************************
    *                  PARSER                *
    ****************************************/
-
-//   public String getBip32PathParentPath(String bip32path) throws Exception {
-//       System.out.println("In getBip32PathParentPath");
-//       String[] splitPath = bip32path.split("/");
-//       if (splitPath.length <= 1) {
-//           throw new Exception("Invalid BIP32 path: " + bip32path);
-//       }
-//       String[] parentPathArray = Arrays.copyOf(splitPath, splitPath.length - 1);
-//       String parentPath = String.join("/", parentPathArray);
-//       return parentPath;
-//   }
-
-    public byte[][] parseBip85GetExtendedKey(ApduResponse rapdu){
-        logger.warning("SATOCHIPLIB: parseBip85GetExtendedKey: Start ");
-
-        try {
-            byte[] data = rapdu.getData();
-            logger.warning("SATOCHIPLIB: parseBip85GetExtendedKey data: " + toHexString(data));
-
-            int entropySize = 256 * (data[0] & 0xFF) + (data[1] & 0xFF);
-            byte[] entropyBytes = Arrays.copyOfRange(data, 2, 2 + entropySize);
-
-            return new byte[][] {entropyBytes, new byte[0]};
-        } catch(Exception e) {
-            System.out.println("SATOCHIPLIB parseBip85GetExtendedKey() exception: "+e);
-            e.printStackTrace();
-            throw new RuntimeException("Is BouncyCastle in the classpath?", e);
-        }
-    }
 
    public Bip32Path parseBip32PathToBytes(String bip32path) throws Exception {
        logger.info("SATOCHIPLIB: parseBip32PathToBytes: Start ");
@@ -266,19 +235,7 @@ public class SatochipParser{
             throw new RuntimeException("Exception during Authentikey recovery", e);
         }
     }
-  
-    public byte[] parseExportPkiPubkey(ApduResponse rapdu){
-        try{
-            byte[] data= rapdu.getData();
-            logger.info("SATOCHIPLIB: parseExportPkiPubkey data: " + toHexString(data));
-            // data: [autehntikey(65b) | sig_size(2b - option) | sig(option) ]
-            byte[] pubkey= new byte[65];
-            System.arraycopy(data, 0, pubkey, 0, pubkey.length);
-            return pubkey;
-        } catch(Exception e) {
-            throw new RuntimeException("Exception during Authentikey recovery", e);
-        }
-    }
+
     public byte[][] parseBip32GetExtendedKey(ApduResponse rapdu){//todo: return a wrapped
 
         try{
@@ -323,25 +280,6 @@ public class SatochipParser{
             e.printStackTrace();
             throw new RuntimeException("Is BouncyCastle in the classpath?", e);
         }
-    }
-  
-
-  
-    public BigInteger[] parse_rsi_from_dersig(byte[] hash, byte[] dersig, byte[] coordx){
-    
-        BigInteger[] sigBig = decodeFromDER(dersig);
-        
-        int recid= recoverRecId(hash, sigBig, coordx);
-        if (recid==-1){
-            throw new RuntimeException("Exception in parse_rsv_from_dersig: could not recover recid");
-        }
-        
-        BigInteger[] rsi= new BigInteger[3];
-        rsi[0]= sigBig[0];
-        rsi[1]= sigBig[1];
-        rsi[2]= BigInteger.valueOf(recid);
-        
-        return rsi;
     }
   
    /****************************************
@@ -559,20 +497,7 @@ public class SatochipParser{
         compEnc[0] = (byte)(yBit ? 0x03 : 0x02);
         return CURVE.getCurve().decodePoint(compEnc);
     }
-  
-  // public static String toHexString(byte[] raw) {
-		
-		// if ( raw == null )
-      // return "";
-    
-    // final StringBuilder hex = new StringBuilder( 2 * raw.length );
-    // for ( final byte b : raw ) {
-       // hex.append(HEXES.charAt((b & 0xF0) >> 4)).append(HEXES.charAt((b & 0x0F)));
-       //hex.append(HEXES.charAt((b & 0xF0) >> 4)).append(HEXES.charAt((b & 0x0F))).append(" ");
-    // }
-    // return hex.toString();
-  // }
-  
+
   
     //based on https://github.com/bitcoinj/bitcoinj/blob/master/core/src/main/java/org/bitcoinj/core/ECKey.java
     public BigInteger[] decodeFromDER(byte[] bytes) {
@@ -644,63 +569,7 @@ public class SatochipParser{
             return false;
         }
     }
-  
-    /**
-    * PKI PARSER
-    **/
-    public String convertBytesToStringPem(byte[] certBytes){
-        logger.info("SATOCHIPLIB: In convertBytesToStringPem");
-        String certBase64Raw= Base64.getEncoder().encodeToString(certBytes);
-        logger.info("SATOCHIPLIB: certBase64Raw"+ certBase64Raw);
-        
-        // divide in fixed size chunk
-        int chunkSize=64;
-        String certBase64= "-----BEGIN CERTIFICATE-----\r\n"; 
-        for (int offset=0; offset<certBase64Raw.length(); offset+=chunkSize){
-            certBase64+= certBase64Raw.substring(offset, Math.min(certBase64Raw.length(), offset + chunkSize));
-            certBase64+= "\r\n";
-        }
-        certBase64+= "-----END CERTIFICATE-----";
-        //certBase64= "-----BEGIN CERTIFICATE-----\r\n" + certBase64 + "\r\n-----END CERTIFICATE-----";
-        logger.info("SATOCHIPLIB: certBase64"+ certBase64);
-        return certBase64;
-    }
-    
-    public byte[][] parseVerifyChallengeResponsePerso(ApduResponse rapdu){
-        
-        try{
-            byte[] data= rapdu.getData();
-            logger.info("SATOCHIPLIB: parseVerifyChallengeResponsePki data: " + toHexString(data));
-            
-            int offset=0;
-            int dataRemain= data.length;
-        
-            // data= [challenge_from_device(32b) | sigSize | sig ]
-            byte[][] out= new byte[2][];
-            out[0]= new byte[32];
-            System.arraycopy(data, offset, out[0], 0, 32);
-            offset+=32;
-            
-            int sigSize= 256*data[offset++] + data[offset++];
-            out[1]= new byte[sigSize];
-            System.arraycopy(data, offset, out[1], 0, sigSize);
 
-            return out;
-        } catch(Exception e) {
-            throw new RuntimeException("Parsing error in parseVerifyChallengeResponsePki: ", e);
-        }   
-        
-    }
-    
-/*   ===
-          cert_bytes_b64 = base64.b64encode(bytes(cert_bytes))
-        cert_b64= cert_bytes_b64.decode('ascii')
-        cert_pem= "-----BEGIN CERTIFICATE-----\r\n" 
-        cert_pem+= '\r\n'.join([cert_b64[i:i+64] for i in range(0, len(cert_b64), 64)]) 
-        cert_pem+= "\r\n-----END CERTIFICATE-----"
-        return cert_pem
-   */
-  
   
     /**
     * Serializes the APDU to human readable hex string format

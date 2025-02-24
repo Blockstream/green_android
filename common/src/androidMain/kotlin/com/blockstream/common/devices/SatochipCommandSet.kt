@@ -52,5 +52,5 @@ class SatochipCommandSet(private val apduChannel: CardChannel) {
         }
         return respApdu
     }
-    
+
 }
