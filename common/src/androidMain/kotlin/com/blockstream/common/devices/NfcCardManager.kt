@@ -19,12 +19,6 @@ class NfcCardManager @JvmOverloads constructor(
     private var isRunning = false
     private var cardListener: CardListener? = null
 
-//    companion object {
-//        init {
-//            Crypto.addBouncyCastleProvider()
-//        }
-//    }
-
     /**
      * True if connected, false otherwise.
      * @return if connected, false otherwise

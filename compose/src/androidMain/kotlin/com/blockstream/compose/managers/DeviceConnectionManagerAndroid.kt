@@ -151,7 +151,7 @@ class DeviceConnectionManagerAndroid constructor(
 
         return ConnectionResult()
     }
-    
+
     private suspend fun connectSatochipDevice(device: SatochipDevice, interaction: HardwareConnectInteraction): ConnectionResult {
         logger.i {"SATODEBUG DeviceConnectionManagerAndroid connectSatochipDevice() start device: $device"}
 

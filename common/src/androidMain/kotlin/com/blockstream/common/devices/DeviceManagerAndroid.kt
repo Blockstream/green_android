@@ -1,7 +1,6 @@
 package com.blockstream.common.devices
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.bluetooth.BluetoothDevice
@@ -9,7 +8,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.nfc.NfcAdapter // SATODEBUG
+import android.nfc.NfcAdapter
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import androidx.core.content.ContextCompat
@@ -184,27 +183,17 @@ class DeviceManagerAndroid constructor(
         logger.i { "SATODEBUG scanUsbDevices() end" }
     }
 
-    // SATODEBUG
     fun scanNfcDevices() {
         logger.i { "SATODEBUG scanNfcDevices() start" }
         logger.i { "Scan for NFC devices" }
 
         val cardManager = NfcCardManager()
-        //cardManager.setCardListener(SatochipCardListenerForAction)
         cardManager.setCardListener(this)
         cardManager.start()
         logger.i { "SATODEBUG scanNfcDevices() after cardManager start" }
 
-        // ugly hack
-        //val countly = sessionManager.countly as Countly
-        //val activity = countly.activityCopy
         val activity = activityProvider.getCurrentActivity()
 
-        //val activity = activity //context as Activity?
-        //val activity = context as Activity?
-        //val activity = LocalActivity.current //activity
-        //val activity = LocalContext
-        //val nfcAdapter = NfcAdapter.getDefaultAdapter(context) //context)
         nfcAdapter?.enableReaderMode(
             activity,
             cardManager,
@@ -217,57 +206,37 @@ class DeviceManagerAndroid constructor(
         logger.i { "SATODEBUG scanNfcDevices() end" }
     }
 
-    // SATODEBUG
     override fun onConnected(channel: CardChannel) {
 
         println("SATODEBUG DeviceManagerAndroid onConnected: Card is connected")
         try {
             val cmdSet = SatochipCommandSet(channel)
-            // start to interact with card
-            //NfcCardService.initialize(cmdSet)
 
             val rapduSelect = cmdSet.cardSelect("satochip").checkOK()
-            // cardStatus
-            val rapduStatus = cmdSet.cardGetStatus()//To update status if it's not the first reading
-            val cardStatus = cmdSet.getApplicationStatus() //applicationStatus ?: return
-            println("SATODEBUG DeviceManagerAndroid readCard cardStatus: $cardStatus")
-            println("SATODEBUG DeviceManagerAndroid readCard cardStatus: ${cardStatus.toString()}")
 
             // add device
             val newDevices = mutableListOf<AndroidDevice>()
             deviceMapper.invoke(this, null, null, null, null, activityProvider)?.let {
                 newDevices += it
-                println("SATODEBUG DeviceManagerAndroid readCard newDevice: ${it}")
-                println("SATODEBUG DeviceManagerAndroid readCard newDevice manufacturer: ${it.manufacturer}")
-                println("SATODEBUG DeviceManagerAndroid readCard newDevice name: ${it.name}")
-                println("SATODEBUG DeviceManagerAndroid readCard newDevice deviceBrand: ${it.deviceBrand}")
-                println("SATODEBUG DeviceManagerAndroid readCard newDevice deviceModel: ${it.deviceModel}")
-                println("SATODEBUG DeviceManagerAndroid readCard newDevice deviceState: ${it.deviceState}")
-                println("SATODEBUG DeviceManagerAndroid readCard newDevice type: ${it.type}")
-                println("SATODEBUG DeviceManagerAndroid readCard newDevice connectionIdentifier: ${it.connectionIdentifier}")
-                println("SATODEBUG DeviceManagerAndroid readCard newDevice uniqueIdentifier: ${it.uniqueIdentifier}")
             }
             println("SATODEBUG DeviceManagerAndroid readCard newDevices: ${newDevices}")
             nfcDevices.value = newDevices
 
-            // TODO: disconnect?
+            // disconnect card
             println("SATODEBUG DeviceManagerAndroid onConnected: trigger disconnection!")
             onDisconnected()
 
-            // stop polling?
+            // stop polling
             val activity = activityProvider.getCurrentActivity()
             nfcAdapter?.disableReaderMode(activity)
 
         } catch (e: Exception) {
             println("SATODEBUG DeviceManagerAndroid onConnected: an exception has been thrown during card init.")
-            //Log.e(TAG, Log.getStackTraceString(e))
             onDisconnected()
         }
     }
 
-    // SATODEBUG
     override fun onDisconnected() {
-        //NfcCardService.isConnected.postValue(false)
         println("SATODEBUG DeviceManagerAndroid onDisconnected: Card disconnected!")
     }
 
