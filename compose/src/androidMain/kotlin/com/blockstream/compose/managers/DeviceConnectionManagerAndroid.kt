@@ -2,15 +2,10 @@ package com.blockstream.compose.managers
 
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
-import android.nfc.NfcAdapter
 import com.blockstream.common.data.AppInfo
 import com.blockstream.common.devices.AndroidDevice
-import com.blockstream.common.devices.CardChannel
-import com.blockstream.common.devices.CardListener
 import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.common.devices.GreenDevice
-import com.blockstream.common.devices.NfcCardManager
-import com.blockstream.common.devices.SatochipCommandSet
 import com.blockstream.common.devices.toAndroidDevice
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.Wally
@@ -51,17 +46,11 @@ class DeviceConnectionManagerAndroid constructor(
     private val appInfo: AppInfo,
     scope: CoroutineScope,
     private val bluetoothAdapter: BluetoothAdapter
-) : CardListener, DeviceConnectionManager(
+) : DeviceConnectionManager(
     gdk = gdk,
     wally = wally,
     scope = scope
 ) {
-
-    // Satochip
-    private var nfcAdapter: NfcAdapter? = null
-    private var activity: Activity? = null
-    private var satochipDevice: SatochipDevice? = null
-    private var satochipInteraction: HardwareConnectInteraction? = null
 
     override suspend fun connectDevice(
         device: GreenDevice,
@@ -162,8 +151,7 @@ class DeviceConnectionManagerAndroid constructor(
 
         return ConnectionResult()
     }
-
-
+    
     private suspend fun connectSatochipDevice(device: SatochipDevice, interaction: HardwareConnectInteraction): ConnectionResult {
         logger.i {"SATODEBUG DeviceConnectionManagerAndroid connectSatochipDevice() start device: $device"}
 
@@ -182,7 +170,7 @@ class DeviceConnectionManagerAndroid constructor(
         println("SATODEBUG DeviceConnectionManagerAndroid onConnected(): PIN: " + pin)
 
         // provide activity and context needed for NFC
-        activity = device.activityProvider?.getCurrentActivity()
+        val activity: Activity? = device.activityProvider?.getCurrentActivity()
 
         println("SATODEBUG DeviceConnectionManagerAndroid onConnected() creating gdkHardwareWallet")
         device.gdkHardwareWallet = SatochipHWWallet(satoDevice, pin, activity, device.context)
@@ -192,101 +180,6 @@ class DeviceConnectionManagerAndroid constructor(
 
         return ConnectionResult()
     }
-
-    // SATODEBUG
-    private suspend fun connectSatochipDeviceOld(device: SatochipDevice, interaction: HardwareConnectInteraction): ConnectionResult {
-        logger.i {"SATODEBUG DeviceConnectionManagerAndroid connectSatochipDevice() start device: $device"}
-
-        satochipDevice = device
-        satochipInteraction = interaction
-
-        val satoDevice = com.blockstream.common.gdk.data.Device(
-            name = "Satochip",
-            supportsArbitraryScripts = false,
-            supportsLowR = false,
-            supportsHostUnblinding = false,
-            supportsExternalBlinding = false,
-            supportsLiquid = DeviceSupportsLiquid.None,
-            supportsAntiExfilProtocol = DeviceSupportsAntiExfilProtocol.None
-        )
-
-        val cardManager = NfcCardManager()
-        cardManager.setCardListener(this)
-        cardManager.start()
-        logger.i { "SATODEBUG DeviceConnectionManagerAndroid connectSatochipDevice() after cardManager start" }
-
-        activity = device.activityProvider?.getCurrentActivity()
-        nfcAdapter = NfcAdapter.getDefaultAdapter(device.context)
-        nfcAdapter?.enableReaderMode(
-            activity,
-            cardManager,
-            NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_NFC_B or NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK,
-            null
-        )
-
-        logger.i { "SATODEBUG DeviceConnectionManagerAndroid connectSatochipDevice() end" }
-
-        return ConnectionResult()
-    }
-
-
-    // SATODEBUG
-    override fun onConnected(channel: CardChannel) {
-        println("SATODEBUG DeviceConnectionManagerAndroid onConnected(): Card is connected")
-
-        //val pin: String? = satochipInteraction?.requestPassphrase(DeviceBrand.Satochip)
-        val pin: String? = null;
-        println("SATODEBUG DeviceConnectionManagerAndroid onConnected(): PIN: " + pin)
-
-        try {
-            val cmdSet = SatochipCommandSet(channel)
-            // start to interact with card
-            //NfcCardService.initialize(cmdSet)
-
-            val rapduSelect = cmdSet.cardSelect("satochip").checkOK()
-            // cardStatus
-            val rapduStatus = cmdSet.cardGetStatus()//To update status if it's not the first reading
-            val cardStatus = cmdSet.getApplicationStatus() //applicationStatus ?: return
-            println("SATODEBUG DeviceConnectionManagerAndroid onConnected() cardStatus: $cardStatus")
-
-            // TODO: disconnect?
-            println("SATODEBUG DeviceConnectionManagerAndroid onConnected() trigger disconnection!")
-            onDisconnected()
-
-            // stop polling?
-            nfcAdapter?.disableReaderMode(activity)
-            println("SATODEBUG DeviceConnectionManagerAndroid onConnected() NFC DISABLED")
-
-            val satoDevice = com.blockstream.common.gdk.data.Device(
-                name = "Satochip",
-                supportsArbitraryScripts = false,
-                supportsLowR = false,
-                supportsHostUnblinding = false,
-                supportsExternalBlinding = false,
-                supportsLiquid = DeviceSupportsLiquid.None,
-                supportsAntiExfilProtocol = DeviceSupportsAntiExfilProtocol.None
-            )
-
-            println("SATODEBUG DeviceConnectionManagerAndroid onConnected() creating gdkHardwareWallet")
-            // provide activity and context needed for NFC
-            satochipDevice?.gdkHardwareWallet = SatochipHWWallet(satoDevice, pin, activity, satochipDevice?.context)
-            println("SATODEBUG DeviceConnectionManagerAndroid onConnected() created gdkHardwareWallet!")
-
-        } catch (e: Exception) {
-            println("SATODEBUG DeviceConnectionManagerAndroid onConnected() exception: $e")
-            //Log.e(TAG, Log.getStackTraceString(e))
-            onDisconnected()
-        }
-    }
-
-    // SATODEBUG
-    override fun onDisconnected() {
-        //NfcCardService.isConnected.postValue(false)
-        println("SATODEBUG DeviceConnectionManagerAndroid onDisconnected: Card disconnected!")
-    }
-
-    //==============================
-
 
     private suspend fun connectLedgerDevice(
         device: LedgerDevice,
