@@ -40,6 +40,7 @@ class DeviceManagerAndroid constructor(
         bleService: Uuid?,
         peripheral: Peripheral?,
         isBonded: Boolean?,
+        nfcDevice: NfcDevice?,
         activityProvider: ActivityProvider?,
     ) -> AndroidDevice?
 ): CardListener, DeviceManager(scope, sessionManager, bluetoothManager, supportedBleDevices) {
@@ -115,7 +116,7 @@ class DeviceManagerAndroid constructor(
             val peripheral = scope.peripheral(advertisement)
             val bleService = advertisement.uuids.firstOrNull()
 
-            deviceMapper.invoke(this, null, bleService, peripheral, advertisement.isBonded(), null)
+            deviceMapper.invoke(this, null, bleService, peripheral, advertisement.isBonded(), null,null)
                 ?.also {
                     addBluetoothDevice(it)
                 }
@@ -172,7 +173,7 @@ class DeviceManagerAndroid constructor(
 
                 // Jade or UsbDeviceMapper
                 (JadeUsbDevice.fromUsbDevice(deviceManager = this, usbDevice = usbDevice)
-                    ?: deviceMapper.invoke(this, usbDevice, null, null, null, null))?.let {
+                    ?: deviceMapper.invoke(this, usbDevice, null, null, null, null,null))?.let {
                     newDevices += it
                 }
             }
@@ -209,30 +210,36 @@ class DeviceManagerAndroid constructor(
     override fun onConnected(channel: CardChannel) {
 
         println("SATODEBUG DeviceManagerAndroid onConnected: Card is connected")
-        try {
-            val cmdSet = SatochipCommandSet(channel)
+        for (nfcDeviceType in NfcDeviceType.entries) {
+            try {
+                val cmdSet = SatochipCommandSet(channel)
 
-            val rapduSelect = cmdSet.cardSelect("satochip").checkOK()
+                // try to select applet according to device candidate
+                cmdSet.cardSelect(nfcDeviceType).checkOK()
 
-            // add device
-            val newDevices = mutableListOf<AndroidDevice>()
-            deviceMapper.invoke(this, null, null, null, null, activityProvider)?.let {
-                newDevices += it
+                // add device
+                val nfcDevice = NfcDevice(NfcDeviceType.SATOCHIP)
+                val newDevices = mutableListOf<AndroidDevice>()
+                deviceMapper.invoke(this, null, null, null, null, nfcDevice, activityProvider)
+                    ?.let {
+                        newDevices += it
+                    }
+                println("SATODEBUG DeviceManagerAndroid readCard newDevices: ${newDevices}")
+                nfcDevices.value = newDevices
+
+                // disconnect card
+                println("SATODEBUG DeviceManagerAndroid onConnected: trigger disconnection!")
+                onDisconnected()
+
+                // stop polling
+                val activity = activityProvider.getCurrentActivity()
+                nfcAdapter?.disableReaderMode(activity)
+
+                // should probably avoid to connect to multiple NFC devices at the same time?
+                return
+            } catch (e: Exception) {
+                println("SATODEBUG DeviceManagerAndroid onConnected: failed to connect to device: $nfcDeviceType")
             }
-            println("SATODEBUG DeviceManagerAndroid readCard newDevices: ${newDevices}")
-            nfcDevices.value = newDevices
-
-            // disconnect card
-            println("SATODEBUG DeviceManagerAndroid onConnected: trigger disconnection!")
-            onDisconnected()
-
-            // stop polling
-            val activity = activityProvider.getCurrentActivity()
-            nfcAdapter?.disableReaderMode(activity)
-
-        } catch (e: Exception) {
-            println("SATODEBUG DeviceManagerAndroid onConnected: an exception has been thrown during card init.")
-            onDisconnected()
         }
     }
 

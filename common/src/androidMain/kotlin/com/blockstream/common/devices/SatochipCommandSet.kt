@@ -29,17 +29,16 @@ class SatochipCommandSet(private val apduChannel: CardChannel) {
     }
 
     // Satochip or...
-    private var cardType: String? = null
+    private var cardType: NfcDeviceType = NfcDeviceType.SATOCHIP
 
     init {
         logger.level = Level.WARNING
     }
 
     @Throws(IOException::class)
-    fun cardSelect(cardType: String): ApduResponse {
-        val selectApplet = when (cardType) {
-            "satochip" -> ApduCommand(0x00, 0xA4, 0x04, 0x00, SATOCHIP_AID)
-            else -> ApduCommand(0x00, 0xA4, 0x04, 0x00, SATOCHIP_AID)
+    fun cardSelect(nfcDeviceType: NfcDeviceType): ApduResponse {
+        val selectApplet = when (nfcDeviceType) {
+             NfcDeviceType.SATOCHIP-> ApduCommand(0x00, 0xA4, 0x04, 0x00, SATOCHIP_AID)
         }
 
         logger.info("SATOCHIPLIB: C-APDU cardSelect:${selectApplet.toHexString()}")

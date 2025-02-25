@@ -8,6 +8,8 @@ import com.blockstream.common.devices.ConnectionType
 import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.common.devices.DeviceManagerAndroid
 import com.blockstream.common.devices.GreenDevice
+import com.blockstream.common.devices.NfcDevice
+import com.blockstream.common.devices.NfcDeviceType
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.HardwareConnectInteraction
@@ -47,20 +49,21 @@ class SatochipDevice constructor(
 
         fun fromNfcDevice(
             deviceManager: DeviceManagerAndroid,
+            nfcDevice: NfcDevice,
             activityProvider: ActivityProvider?,
-            // TODO add params?
-            // add AID?
         ): SatochipDevice? {
             println("SATODEBUG SatochipDevice fromNfcDevice()")
-            // todo check AID
-            return SatochipDevice(
-                context = deviceManager.context,
-                deviceManager = deviceManager,
-                type = ConnectionType.NFC,
-                usbDevice = null,
-                activityProvider = activityProvider,
-            )
-            //return null
+            if (nfcDevice.type == NfcDeviceType.SATOCHIP) {
+                return SatochipDevice(
+                    context = deviceManager.context,
+                    deviceManager = deviceManager,
+                    type = ConnectionType.NFC,
+                    usbDevice = null,
+                    activityProvider = activityProvider,
+                )
+            } else {
+                return null
+            }
         }
 
 
