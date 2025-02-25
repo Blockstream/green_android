@@ -344,7 +344,7 @@ sealed class NavigateDestinations : NavigateDestination() {
     @Serializable
     data class FeeRate(
         val greenWallet: GreenWallet,
-        val accountAsset: AccountAsset?,
+        val accountAsset: AccountAsset? = null,
         val useBreezFees: Boolean
     ) : NavigateDestination()
     @Serializable

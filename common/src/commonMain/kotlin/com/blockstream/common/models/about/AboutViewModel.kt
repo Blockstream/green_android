@@ -9,6 +9,8 @@ import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.launchIn
+import com.blockstream.common.fcm.FcmCommon
+import com.blockstream.common.fcm.Firebase
 import com.blockstream.common.gdk.events.GenericEvent
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
@@ -22,6 +24,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.koin.core.component.inject
 
 abstract class AboutViewModelAbstract : GreenViewModel() {
     abstract val year: String
@@ -40,6 +43,8 @@ abstract class AboutViewModelAbstract : GreenViewModel() {
 class AboutViewModel : AboutViewModelAbstract() {
 
     override fun screenName(): String = "About"
+
+    private val firebase: FcmCommon by inject()
 
     override val rate: MutableStateFlow<Int> = MutableStateFlow(0)
     override val email: MutableStateFlow<String> = MutableStateFlow("")
@@ -60,6 +65,7 @@ class AboutViewModel : AboutViewModelAbstract() {
         object ClickFeedback : Event
         object ClickGetSupport : Event
         object ClickLogo : Event
+        object CopyFirebaseId : Event
         object CountlyCopyDeviceId : Event
         object CountlyResetDeviceId : Event
         object CountlyZeroOffset : Event
@@ -135,6 +141,15 @@ class AboutViewModel : AboutViewModelAbstract() {
         } else if (event is LocalEvents.CrashReport) {
             Exception("About Crash Report").also {
                 postSideEffect(SideEffects.ErrorDialog(error = it, supportData = SupportData.create(throwable = it)))
+            }
+        } else if (event is LocalEvents.CopyFirebaseId) {
+            (firebase.token ?: "-").also { token ->
+                postSideEffect(
+                    SideEffects.CopyToClipboard(
+                        token,
+                        "Firebase Token copied to Clipboard $token"
+                    )
+                )
             }
         } else if (event is LocalEvents.CountlyCopyDeviceId) {
             countly.getDeviceId().let { deviceId ->

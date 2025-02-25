@@ -158,6 +158,10 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
                 }
             }.launchIn(viewModelScope.coroutineScope)
         }
+
+        onProgress.onEach {
+            _navData.value = _navData.value.copy(isVisible = !it)
+        }.launchIn(viewModelScope.coroutineScope)
     }
 
     override suspend fun handleEvent(event: Event) {
@@ -215,24 +219,23 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
                 )
             )
         } else {
-            if (accountType.isLightning()) {
-                sideEffect = if (session.isHardwareWallet) {
-                    LocalSideEffects.ExperimentalFeaturesDialog(
-                        SideEffects.NavigateTo(
-                            NavigateDestinations.JadeQR(
-                                greenWalletOrNull = greenWalletOrNull,
-                                operation = JadeQrOperation.LightningMnemonicExport,
-                                deviceModel = DeviceModel.BlockstreamGeneric
-                            )
-                        )
+            // For experimental features
+//            if (accountType.isLightning()) {
+//                sideEffect = LocalSideEffects.ExperimentalFeaturesDialog(
+//                    LocalEvents.CreateAccount(
+//                        accountType
+//                    )
+//                )
+//            }
+
+            if(accountType.isLightning() && session.isHardwareWallet) {
+                sideEffect = SideEffects.NavigateTo(
+                    NavigateDestinations.JadeQR(
+                        greenWalletOrNull = greenWalletOrNull,
+                        operation = JadeQrOperation.LightningMnemonicExport,
+                        deviceModel = DeviceModel.BlockstreamGeneric
                     )
-                } else {
-                    LocalSideEffects.ExperimentalFeaturesDialog(
-                        LocalEvents.CreateAccount(
-                            accountType
-                        )
-                    )
-                }
+                )
             } else {
                 event = LocalEvents.CreateAccount(accountType)
             }

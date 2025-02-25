@@ -15,9 +15,9 @@ import breez_sdk.LnUrlWithdrawResult
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
-import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavData
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.logException
@@ -36,6 +36,7 @@ import com.blockstream.common.utils.toAmountLook
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.launch
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -53,7 +54,7 @@ abstract class LnUrlWithdrawViewModelAbstract(greenWallet: GreenWallet) :
     override fun screenName(): String = "LNURLWithdraw"
 
     @NativeCoroutinesState
-    abstract val withdrawaLimits: StateFlow<String>
+    abstract val withdrawalLimits: StateFlow<String>
 
     @NativeCoroutinesState
     abstract val amount: MutableStateFlow<String>
@@ -74,7 +75,7 @@ abstract class LnUrlWithdrawViewModelAbstract(greenWallet: GreenWallet) :
 
 class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWithdrawRequestData) :
     LnUrlWithdrawViewModelAbstract(greenWallet = greenWallet) {
-    override val withdrawaLimits = MutableStateFlow("")
+    override val withdrawalLimits = MutableStateFlow("")
 
     override val amount: MutableStateFlow<String> = MutableStateFlow("")
 
@@ -145,7 +146,7 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
                 requestData.maxWithdrawableSatoshi()
             )
 
-            withdrawaLimits.value = getString(
+            withdrawalLimits.value = getString(
                 Res.string.id_withdraw_limits_s__s, minWithdraw.toAmountLook(
                     session = session,
                     withUnit = false,
@@ -285,13 +286,22 @@ class LnUrlWithdrawViewModelPreview(greenWallet: GreenWallet) :
     LnUrlWithdrawViewModelAbstract(greenWallet = greenWallet) {
 
 
-    override val withdrawaLimits: StateFlow<String> = MutableStateFlow("1 - 2 sats")
+    override val withdrawalLimits: StateFlow<String> = MutableStateFlow("1 - 2 sats")
     override val amount: MutableStateFlow<String> = MutableStateFlow("")
     override val isAmountLocked: Boolean = false
     override val exchange: MutableStateFlow<String> = MutableStateFlow("")
     override val description: MutableStateFlow<String> = MutableStateFlow("")
     override val error: MutableStateFlow<String?> = MutableStateFlow(null)
     override val redeemMessage: String = "id_you_are_redeeming_funds_from|blockstream.com"
+
+    init {
+        onProgress.value = true
+
+        viewModelScope.launch {
+            delay(3000)
+            onProgress.value = false
+        }
+    }
 
     companion object {
         fun preview(): LnUrlWithdrawViewModelPreview {

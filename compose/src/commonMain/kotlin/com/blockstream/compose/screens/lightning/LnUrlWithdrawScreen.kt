@@ -1,14 +1,11 @@
 package com.blockstream.compose.screens.lightning
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -24,6 +21,7 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenAmountField
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenTextField
+import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelLarge
@@ -42,88 +40,74 @@ fun LnUrlWithdrawScreen(
         viewModel.postEvent(Events.SetDenominatedValue(it))
     }
 
+    val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
+    val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
 
-    SetupScreen(viewModel = viewModel) {
+    SetupScreen(viewModel = viewModel, onProgressStyle = OnProgressStyle.Top) {
 
-        Box {
-
-            val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
-
-            androidx.compose.animation.AnimatedVisibility(
-                visible = onProgress, modifier = Modifier
+        GreenColumn(padding = 0) {
+            Text(
+                text = viewModel.redeemMessage,
+                textAlign = TextAlign.Center,
+                style = labelLarge,
+                modifier = Modifier
+                    .padding(top = 16.dp, bottom = 16.dp)
                     .fillMaxWidth()
-                    .align(Alignment.TopCenter)
-            ) {
-                LinearProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-            }
-            GreenColumn(space = 24) {
-                Text(
-                    text = viewModel.redeemMessage,
-                    textAlign = TextAlign.Center,
-                    style = labelLarge,
-                    modifier = Modifier
-                        .padding(bottom = 16.dp)
-                        .fillMaxWidth()
-                )
+            )
 
-                val amount by viewModel.amount.collectAsStateWithLifecycle()
-                val exchange by viewModel.exchange.collectAsStateWithLifecycle()
-                val withdrawaLimits by viewModel.withdrawaLimits.collectAsStateWithLifecycle()
-                val denomination by viewModel.denomination.collectAsStateWithLifecycle()
-                val error by viewModel.error.collectAsStateWithLifecycle()
+            val amount by viewModel.amount.collectAsStateWithLifecycle()
+            val exchange by viewModel.exchange.collectAsStateWithLifecycle()
+            val withdrawalLimits by viewModel.withdrawalLimits.collectAsStateWithLifecycle()
+            val denomination by viewModel.denomination.collectAsStateWithLifecycle()
+            val error by viewModel.error.collectAsStateWithLifecycle()
 
-                GreenAmountField(
-                    value = amount,
-                    onValueChange = viewModel.amount.onValueChange(),
-                    title = stringResource(Res.string.id_amount_to_receive),
-                    session = viewModel.sessionOrNull,
-                    denomination = denomination,
-                    enabled = !onProgress,
-                    isAmountLocked = viewModel.isAmountLocked,
-                    helperText = error,
-                    footerContent = {
-                        Row(modifier = Modifier.padding(horizontal = 4.dp)) {
-                            Text(
-                                text = withdrawaLimits,
-                                textAlign = TextAlign.Start,
-                                style = bodyMedium,
-                                color = whiteLow,
-                                modifier = Modifier.weight(1f)
-                            )
+            GreenAmountField(
+                value = amount,
+                onValueChange = viewModel.amount.onValueChange(),
+                title = stringResource(Res.string.id_amount_to_receive),
+                session = viewModel.sessionOrNull,
+                denomination = denomination,
+                enabled = !onProgress,
+                isAmountLocked = viewModel.isAmountLocked,
+                helperText = error,
+                footerContent = {
+                    Row(modifier = Modifier.padding(horizontal = 4.dp)) {
+                        Text(
+                            text = withdrawalLimits,
+                            textAlign = TextAlign.Start,
+                            style = bodyMedium,
+                            color = whiteLow,
+                            modifier = Modifier.weight(1f)
+                        )
 
-                            Text(
-                                text = exchange,
-                                textAlign = TextAlign.End,
-                                style = bodyMedium,
-                                color = whiteLow
-                            )
-                        }
-                    },
-                    onDenominationClick = {
-                        viewModel.postEvent(Events.SelectDenomination)
+                        Text(
+                            text = exchange,
+                            textAlign = TextAlign.End,
+                            style = bodyMedium,
+                            color = whiteLow
+                        )
                     }
-                )
-
-                val description by viewModel.description.collectAsStateWithLifecycle()
-                GreenTextField(
-                    title = stringResource(Res.string.id_description),
-                    value = description,
-                    onValueChange = viewModel.description.onValueChange(),
-                    enabled = !onProgress,
-                )
-
-                val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
-                GreenButton(
-                    text = stringResource(Res.string.id_redeem),
-                    enabled = buttonEnabled,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    viewModel.postEvent(Events.Continue)
+                },
+                onDenominationClick = {
+                    viewModel.postEvent(Events.SelectDenomination)
                 }
+            )
+
+            val description by viewModel.description.collectAsStateWithLifecycle()
+            GreenTextField(
+                title = stringResource(Res.string.id_description),
+                value = description,
+                onValueChange = viewModel.description.onValueChange(),
+                enabled = !onProgress,
+            )
+
+            GreenButton(
+                text = stringResource(Res.string.id_redeem),
+                enabled = buttonEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                viewModel.postEvent(Events.Continue)
             }
         }
     }

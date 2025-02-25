@@ -38,7 +38,6 @@ import androidx.compose.ui.zIndex
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.arrow_right
 import blockstream_green.common.generated.resources.id_copy_id
-import blockstream_green.common.generated.resources.id_experimental
 import blockstream_green.common.generated.resources.shield_warning
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.AccountBalance
@@ -114,7 +113,7 @@ fun GreenAccountCard(
 
                         if (account.account.isLightning) {
                             Text(
-                                stringResource(Res.string.id_experimental),
+                                "BETA",
                                 style = bodyMedium,
                                 color = whiteMedium,
                                 modifier = Modifier

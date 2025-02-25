@@ -39,6 +39,7 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Bug
 import com.adamglin.phosphoricons.regular.Copy
+import com.adamglin.phosphoricons.regular.Fire
 import com.blockstream.common.SupportType
 import com.blockstream.common.data.SupportData
 import com.blockstream.common.models.about.AboutViewModel
@@ -110,6 +111,13 @@ fun AboutScreen(
                 PopupMenu(
                     state = popupState,
                     entries = listOf(
+                        MenuEntry(
+                            title = "Copy Firebase ID",
+                            imageVector = PhosphorIcons.Regular.Fire,
+                            onClick = {
+                                viewModel.postEvent(AboutViewModel.LocalEvents.CopyFirebaseId)
+                            }
+                        ),
                         MenuEntry(
                             title = stringResource(Res.string.id_copy_device_id),
                             imageVector = PhosphorIcons.Regular.Copy,

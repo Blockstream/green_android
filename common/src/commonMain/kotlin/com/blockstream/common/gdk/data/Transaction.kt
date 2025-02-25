@@ -133,7 +133,7 @@ data class Transaction constructor(
             listOf(
                 UtxoView(
                     address = inputs.firstOrNull()?.address,
-                    satoshi = satoshi[BTC_POLICY_ASSET],
+                    satoshi = outputs.firstOrNull()?.satoshi ?: satoshi[BTC_POLICY_ASSET],
                     isChange = false
                 )
             )
@@ -235,9 +235,6 @@ data class Transaction constructor(
                 } else if (network.isLiquid && txType == Type.REDEPOSIT && it.key != network.policyAsset) {
                     // Remove irrelevant assets if is redeposit
                     null
-                } else if (network.isLightning && txType == Type.OUT) {
-                    // Add fee
-                    it.key to -(it.value.absoluteValue + fee)
                 } else {
                     it.toPair()
                 }

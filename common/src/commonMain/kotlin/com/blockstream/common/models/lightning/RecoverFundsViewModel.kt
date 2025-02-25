@@ -9,10 +9,10 @@ import blockstream_green.common.generated.resources.id_sweep_initiated
 import breez_sdk.RecommendedFees
 import breez_sdk.ReverseSwapFeesRequest
 import com.blockstream.common.data.Denomination
-import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavData
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnected
@@ -36,6 +36,7 @@ import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.launch
 import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -570,7 +571,7 @@ class RecoverFundsViewModelPreview(greenWallet: GreenWallet) : RecoverFundsViewM
     override val hasBitcoinAccount: StateFlow<Boolean> = MutableStateFlow(false)
     override val showManualAddress: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val recommendedFees: StateFlow<RecommendedFees?> = MutableStateFlow(null)
-    override val onProgressSending: StateFlow<Boolean> = MutableStateFlow(false)
+    override val onProgressSending: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val feePriority: StateFlow<FeePriority> = MutableStateFlow(FeePriority.Low())
     override val error: StateFlow<String?> = MutableStateFlow(null)
     override val amountToBeRefunded: MutableStateFlow<String?> = MutableStateFlow("1 BTC")
@@ -578,6 +579,16 @@ class RecoverFundsViewModelPreview(greenWallet: GreenWallet) : RecoverFundsViewM
 
     init {
         accountAsset.value = previewAccountAsset()
+
+        onProgress.value = true
+
+        viewModelScope.launch {
+            delay(3000)
+            onProgressSending.value = true
+            delay(3000)
+            onProgress.value = false
+            onProgressSending.value = false
+        }
     }
 
     companion object {

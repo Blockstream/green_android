@@ -305,7 +305,6 @@ class NotificationManagerAndroid constructor(
             .setSound(notificationSound)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setAutoCancel(true)
-            .setProgress(0, 100, true)
             .setOnlyAlertOnce(false)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .build().also {

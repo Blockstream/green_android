@@ -33,6 +33,9 @@ import com.blockstream.common.jade.QrData
 import com.blockstream.common.jade.QrDataResponse
 import com.blockstream.common.looks.transaction.TransactionConfirmLook
 import com.blockstream.common.models.abstract.AbstractScannerViewModel
+import com.blockstream.common.models.jade.JadeQRViewModel.Companion.ExportLightningScenario
+import com.blockstream.common.models.jade.JadeQRViewModel.Companion.ExportXpubScenarioGeneric
+import com.blockstream.common.models.jade.JadeQRViewModel.Companion.ExportXpubScenarioJade
 import com.blockstream.common.models.jade.JadeQRViewModel.Companion.PinUnlockScenarioDuo
 import com.blockstream.common.models.jade.JadeQRViewModel.Companion.PinUnlockScenarioQuatro
 import com.blockstream.common.models.jade.JadeQRViewModel.Companion.PsbtScenario
@@ -66,10 +69,13 @@ sealed class JadeQrOperation {
         val transactionConfirmLook: TransactionConfirmLook? = null,
         val askForJadeUnlock: Boolean
     ) : JadeQrOperation()
+
     @Serializable
     data object LightningMnemonicExport : JadeQrOperation()
+
     @Serializable
     data object ExportXpub : JadeQrOperation()
+
     @Serializable
     data object PinUnlock : JadeQrOperation()
 }
@@ -110,10 +116,18 @@ abstract class JadeQRViewModelAbstract(
     @NativeCoroutinesState
     abstract val urPart: StateFlow<String?>
 
-    abstract val scenario: StateFlow<Scenario>
-
     @NativeCoroutinesState
     abstract val isLightTheme: StateFlow<Boolean>
+
+    internal var _scenario = MutableStateFlow(scenarionForOperation())
+    val scenario: StateFlow<Scenario> = _scenario
+
+    internal fun scenarionForOperation() = when (operation) {
+        JadeQrOperation.ExportXpub -> if (deviceModel.isJade) ExportXpubScenarioJade else ExportXpubScenarioGeneric
+        JadeQrOperation.LightningMnemonicExport -> ExportLightningScenario
+        JadeQrOperation.PinUnlock -> PinUnlockScenarioQuatro
+        is JadeQrOperation.Psbt -> PsbtScenario
+    }
 }
 
 @OptIn(ExperimentalStdlibApi::class)
@@ -133,9 +147,6 @@ class JadeQRViewModel(
     override val urPart: StateFlow<String?> = _urPart.asStateFlow()
 
     private var _step = MutableStateFlow(0)
-
-    private var _scenario = MutableStateFlow(scenarionForOperation())
-    override val scenario = _scenario
 
     private val _stepInfo: MutableStateFlow<StepInfo> =
         MutableStateFlow(scenario.value.steps.first())
@@ -167,14 +178,15 @@ class JadeQRViewModel(
         combine(scenario, _step) { scenario, step ->
             _navData.value = NavData(
                 title = getString(if (deviceModel.isJade) (if (scenario.isPinUnlock) Res.string.id_qr_pin_unlock else Res.string.id_scan_qr_with_jade) else Res.string.id_scan_qr_with_device),
-                actions = listOfNotNull(NavAction(
+                actions = listOfNotNull(
+                    NavAction(
                     title = getString(Res.string.id_reset),
                     icon = Res.drawable.arrows_counter_clockwise,
                     isMenuEntry = false,
                     onClick = {
                         restart()
                     }
-                ).takeIf { scenario.allowReset && step > 0  })
+                ).takeIf { scenario.allowReset && step > 0 })
             )
         }.launchIn(this)
 
@@ -230,13 +242,6 @@ class JadeQRViewModel(
                 )
             }
         }
-    }
-
-    private fun scenarionForOperation() = when (operation) {
-        JadeQrOperation.ExportXpub -> if (deviceModel.isJade) ExportXpubScenarioJade else ExportXpubScenarioGeneric
-        JadeQrOperation.LightningMnemonicExport -> ExportLightningScenario
-        JadeQrOperation.PinUnlock -> PinUnlockScenarioQuatro
-        is JadeQrOperation.Psbt -> PsbtScenario
     }
 
     private fun restart() {
@@ -490,18 +495,18 @@ class JadeQRViewModel(
     }
 }
 
-class JadeQRViewModelPreview() : JadeQRViewModelAbstract(
-    operation = JadeQrOperation.Psbt(
+class JadeQRViewModelPreview(
+    operation: JadeQrOperation = JadeQrOperation.Psbt(
         psbt = "psbt",
         transactionConfirmLook = TransactionConfirmLook(),
         askForJadeUnlock = true
-    ), deviceModel = DeviceModel.BlockstreamGeneric
+    )
+) : JadeQRViewModelAbstract(
+    operation = operation, deviceModel = DeviceModel.BlockstreamGeneric
 ) {
     override val stepInfo = MutableStateFlow(PsbtScenario.steps.first())
     override val urPart =
         MutableStateFlow("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
-
-    override val scenario = MutableStateFlow(PsbtScenario)
 
     override fun setScanResult(scanResult: ScanResult) {
 
@@ -511,16 +516,16 @@ class JadeQRViewModelPreview() : JadeQRViewModelAbstract(
 
     init {
         var step = 0
-//        viewModelScope.launch {
-//            do{
-//                delay(2000L)
-//                if(step >= scenario.value.steps.size){
-//                    step = 0
-//                }
-//                stepInfo.value = scenario.value.steps[step]
-//                step++
-//            }while (true)
-//        }
+        viewModelScope.launch {
+            do {
+                delay(2000L)
+                if (step >= scenario.value.steps.size) {
+                    step = 0
+                }
+                stepInfo.value = scenario.value.steps[step]
+                step++
+            } while (true)
+        }
 
         stepInfo.onEach {
             isLightTheme.value = !it.isScan
@@ -529,6 +534,7 @@ class JadeQRViewModelPreview() : JadeQRViewModelAbstract(
 
     companion object {
         fun preview() = JadeQRViewModelPreview()
+        fun previewLightning() = JadeQRViewModelPreview(operation = JadeQrOperation.LightningMnemonicExport)
     }
 }
 

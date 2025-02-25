@@ -10,13 +10,6 @@ import com.blockstream.compose.GreenAndroidPreview
 @Preview
 fun QrPinUnlockScreenPreview() {
     GreenAndroidPreview {
-        JadeQRScreen(JadeQRViewModelPreview.preview().also {
-//            it.viewModelScope.coroutineScope.launch {
-//                delay(2000L)
-//                it.onProgress.value = true
-//                delay(2000L)
-//                it.onProgress.value = false
-//            }
-        })
+        JadeQRScreen(JadeQRViewModelPreview.previewLightning())
     }
 }

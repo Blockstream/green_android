@@ -100,9 +100,9 @@ fun RecoverFundsScreen(
 
     SetupScreen(
         viewModel = viewModel,
-        onProgressStyle = if (onProgressSending) OnProgressStyle.Top else OnProgressStyle.Full(
+        onProgressStyle = if (onProgressSending) OnProgressStyle.Full(
             riveAnimation = RiveAnimation.LIGHTNING_TRANSACTION
-        ),
+        ) else OnProgressStyle.Top,
         sideEffectsHandler = {
             if (it is RecoverFundsViewModel.LocalSideEffects.ShowCustomFeeRate) {
                 customFeeDialog = it.feeRate.toString()
@@ -111,6 +111,7 @@ fun RecoverFundsScreen(
     ) {
 
         GreenColumn(
+            padding = 0,
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
