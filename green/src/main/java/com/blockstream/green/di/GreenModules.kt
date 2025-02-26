@@ -5,8 +5,6 @@ package com.blockstream.green.di
 import android.content.Context
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
-import androidx.fragment.app.FragmentActivity
-//import androidx.fragment.app.FragmentActivity
 import com.benasher44.uuid.Uuid
 import com.blockstream.common.devices.ActivityProvider
 import com.blockstream.common.devices.AndroidActivityProvider
@@ -21,7 +19,6 @@ import com.blockstream.compose.devices.SatochipDevice
 import com.blockstream.compose.devices.TrezorDevice
 import com.blockstream.compose.managers.DeviceConnectionManager
 import com.blockstream.compose.managers.DeviceConnectionManagerAndroid
-import com.blockstream.green.GreenActivity
 import com.blockstream.green.managers.FcmAndroid
 import com.blockstream.green.managers.NotificationManagerAndroid
 import com.blockstream.jade.connection.JadeBleConnection

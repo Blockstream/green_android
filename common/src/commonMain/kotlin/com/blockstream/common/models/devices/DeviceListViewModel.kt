@@ -70,7 +70,6 @@ class DeviceListViewModel(isJade: Boolean = true) :
                 postSideEffect(SideEffects.NavigateTo(NavigateDestinations.ImportPubKey(deviceModel = DeviceModel.Generic)))
             }
         }else if (event is LocalEvents.SelectDevice) {
-
             val navigateTo =
                 SideEffects.NavigateTo(NavigateDestinations.DeviceInfo(deviceId = event.device.connectionIdentifier))
             if (event.device.hasPermissions()) {

@@ -198,8 +198,8 @@ fun HandleSideEffect(
     val drawer = LocalDrawer.current
     val scope = rememberCoroutineScope()
     val biometricsState = LocalBiometricState.current
-    var twoFactorResolverData by remember { mutableStateOf<TwoFactorResolverData?>(null) }
 
+    var twoFactorResolverData by remember { mutableStateOf<TwoFactorResolverData?>(null) }
     twoFactorResolverData?.also { resolverData ->
         resolverData.methods?.also { methods ->
             SingleChoiceDialog(
@@ -273,11 +273,9 @@ fun HandleSideEffect(
 
     // Handle sideEffect only on resumed state
     LaunchedEffect(state) {
-
         if(state != Lifecycle.State.RESUMED) return@LaunchedEffect
 
         viewModel.sideEffect.onEach {
-
             handler.invoke(this, it)
 
             when (it) {

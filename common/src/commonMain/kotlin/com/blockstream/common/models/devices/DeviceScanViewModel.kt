@@ -59,6 +59,7 @@ class DeviceScanViewModel(greenWallet: GreenWallet) :
         } ?: run {
 
             combine(deviceFlow, deviceManager.devices) { _, devices ->
+
                 if(deviceFlow.value == null) {
                     var foundDevice = devices.firstOrNull { device ->
                         greenWallet.deviceIdentifiers?.any { it.uniqueIdentifier == device.uniqueIdentifier } == true
@@ -97,6 +98,7 @@ class DeviceScanViewModel(greenWallet: GreenWallet) :
         if (device.hasPermissions()) {
 
             doAsync({
+
                 if (device.gdkHardwareWallet == null) {
                     session.disconnect()
                     deviceConnectionManager.connectDevice(

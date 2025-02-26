@@ -339,7 +339,6 @@ open class GreenViewModel constructor(
         }
 
         viewModelScope.coroutineScope.launch {
-            logger.d { "postSideEffect: launch/send $sideEffect" }
             _sideEffect.send(sideEffect)
         }
     }
@@ -506,7 +505,6 @@ open class GreenViewModel constructor(
                     countly.renameWallet()
                 })
             }
-
             is Events.DeviceRequestResponse -> {
                 if(event.data == null){
                     _deviceRequest?.completeExceptionally(Exception("id_action_canceled"))
@@ -514,7 +512,6 @@ open class GreenViewModel constructor(
                     _deviceRequest?.complete(event.data)
                 }
             }
-
             is Events.SelectDenomination -> {
                 viewModelScope.coroutineScope.launch {
                     denominatedValue()?.also {
@@ -878,9 +875,7 @@ open class GreenViewModel constructor(
         return CompletableDeferred<String>().let {
             _deviceRequest = it
             postSideEffect(SideEffects.DeviceRequestPassphrase)
-            runBlocking {
-                it.await()
-            }
+            runBlocking { it.await() }
         }
     }
 
@@ -1046,5 +1041,4 @@ open class GreenViewModel constructor(
         fun preview() = object : GreenViewModel() { }
         private var _deviceRequest: CompletableDeferred<String>? = null
     }
-
 }

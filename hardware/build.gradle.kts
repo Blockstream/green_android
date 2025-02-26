@@ -44,8 +44,6 @@ dependencies {
 
     /** For satochip */
     implementation(libs.org.bouncycastle)
-    //implementation(libs.com.spongycastle)
-    //implementation(libs.org.bitcoinj)
 
     testImplementation(libs.junit)
     testImplementation(libs.androidx.core.testing)

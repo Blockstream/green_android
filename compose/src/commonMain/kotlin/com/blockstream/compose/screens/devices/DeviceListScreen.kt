@@ -92,7 +92,6 @@ data class DeviceListScreen(val isJade: Boolean) : Screen, Parcelable {
 
     @Composable
     override fun Content() {
-
         val viewModel = koinScreenModel<DeviceListViewModel> {
             parametersOf(isJade)
         }
@@ -129,7 +128,7 @@ fun DeviceListItem(device: GreenDevice, modifier: Modifier, onClick: () -> Unit)
             modifier = Modifier.align(Alignment.CenterStart)
         ) {
             Image(
-                painter = painterResource(if (device.isUsb) Res.drawable.usb else Res.drawable.ble), // TODO add NFC icon
+                painter = painterResource(if (device.isUsb) Res.drawable.usb else Res.drawable.ble),
                 modifier = Modifier.size(24.dp),
                 contentDescription = null
             )

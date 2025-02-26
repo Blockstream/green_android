@@ -64,7 +64,6 @@ class DeviceConnectionManagerAndroid constructor(
         } ?: (device as? SatochipDevice)?.let {
             connectSatochipDevice(it, interaction)
         } ?: super.connectDevice(device, httpRequestHandler, interaction))
-
     }
 
     override suspend fun disconnectDevice(device: GreenDevice) {

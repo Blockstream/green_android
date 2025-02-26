@@ -92,7 +92,7 @@ abstract class GreenDeviceImpl constructor(
         get() = name
 
     override val deviceModel: DeviceModel?
-        get() = gdkHardwareWallet?.model // todo
+        get() = gdkHardwareWallet?.model
 
     final override var heartbeat: Long = Clock.System.now().toEpochMilliseconds()
         private set

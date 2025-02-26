@@ -48,7 +48,6 @@ class GreenActivity : FragmentActivity() {
     private val database: Database by inject()
     private val sessionManager: SessionManager by inject()
     private val settingsManager by inject<SettingsManager>()
-    //private val activityProvider: AndroidActivityProvider by inject()
     private val activityProvider: AndroidActivityProvider by inject<AndroidActivityProvider>()
 
     private val mainViewModel: MainViewModel by viewModel()

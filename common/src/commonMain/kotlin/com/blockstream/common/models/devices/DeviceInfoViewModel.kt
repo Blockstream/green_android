@@ -113,6 +113,7 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
         if (event is LocalEvents.AuthenticateAndContinue) {
             authenticateAndContinue(event.updateFirmwareFromChannel)
         } else if (event is LocalEvents.SelectEnviroment) {
+
             if (event.isTestnet == null) {
                 requestNetworkEmitter?.completeExceptionally(Exception("id_action_canceled"))
             } else {
@@ -175,7 +176,6 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
             )
 
             val network = device.getOperatingNetwork(device, gdk, interaction = this)!!
-
             val isEphemeral = !settingsManager.appSettings.rememberHardwareDevices
 
             val previousSession = (if (device.isLedger) {
@@ -201,7 +201,6 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
             }
 
             val walletHashId = getWalletHashId(session, network, device)
-
             // Disable Jade wallet fingerprint, keep the device name // getWalletName(session, network, device)
             val walletName = device.name
 
