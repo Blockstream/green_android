@@ -55,7 +55,6 @@ open class DeviceManager constructor(
 
     protected val usbDevices = MutableStateFlow<List<GreenDevice>>(listOf())
     private val bleDevices = MutableStateFlow<List<GreenDevice>>(listOf())
-    // TODO SATODEBUG
     protected val nfcDevices = MutableStateFlow<List<GreenDevice>>(listOf())
 
     private val _status = MutableStateFlow<ScanStatus>(ScanStatus.Stopped)
@@ -73,7 +72,6 @@ open class DeviceManager constructor(
         }
     }
 
-    // SATODEBUG
     val devices = combine(usbDevices, bleDevices, disconnectEvent, nfcDevices) { usb, ble, _, nfc->
         ble.filter { it.deviceState.value == DeviceState.CONNECTED } + usb + nfc
     }.stateIn(scope, SharingStarted.Eagerly, emptyList())
@@ -109,7 +107,6 @@ open class DeviceManager constructor(
     }
 
     fun getDevice(deviceId: String?): GreenDevice? {
-        logger.d { "SATODEBUG DeviceManager getDevice Start deviceId: $deviceId" }
         return devices.value.find { it.connectionIdentifier == deviceId }
             // Check if device is already in a session
             ?: sessionManager.getConnectedHardwareWalletSessions()

@@ -238,7 +238,6 @@ open class GreenViewModel constructor(
 
     //private var _deviceRequest: CompletableDeferred<String>? = null //satodebug use compagnon object
 
-
     private var _bootstrapped: Boolean = false
 
     open val isLoginRequired: Boolean = greenWalletOrNull != null
@@ -397,7 +396,6 @@ open class GreenViewModel constructor(
     }
 
     open suspend fun handleEvent(event: Event) {
-        println("SATODEBUG GreenViewModel handleEvent() event: $event")
         when(event){
             is Events.ProvideCipher -> {
                 event.platformCipher?.also {
@@ -510,13 +508,11 @@ open class GreenViewModel constructor(
             }
 
             is Events.DeviceRequestResponse -> {
-                println("SATODEBUG GreenViewModel handleEvent() DeviceRequestResponse event: $event, deviceRequest: $_deviceRequest")
                 if(event.data == null){
                     _deviceRequest?.completeExceptionally(Exception("id_action_canceled"))
                 }else{
                     _deviceRequest?.complete(event.data)
                 }
-                println("SATODEBUG After completing deviceRequest: $_deviceRequest, isCompleted: ${_deviceRequest?.isCompleted}")
             }
 
             is Events.SelectDenomination -> {
@@ -879,15 +875,10 @@ open class GreenViewModel constructor(
     }
 
     final override fun requestPassphrase(deviceBrand: DeviceBrand?): String {
-        println("SATODEBUG GreenViewModel requestPassphrase start")
         return CompletableDeferred<String>().let {
-            println("SATODEBUG GreenViewModel requestPassphrase continue")
             _deviceRequest = it
-            println("SATODEBUG _deviceRequest before posting side effect: $_deviceRequest")
             postSideEffect(SideEffects.DeviceRequestPassphrase)
-            println("SATODEBUG _deviceRequest after posting side effect: $_deviceRequest")
             runBlocking {
-                println("SATODEBUG GreenViewModel requestPassphrase runblocking")
                 it.await()
             }
         }
@@ -1053,7 +1044,7 @@ open class GreenViewModel constructor(
 
     companion object: Loggable(){
         fun preview() = object : GreenViewModel() { }
-        private var _deviceRequest: CompletableDeferred<String>? = null //satodebug
+        private var _deviceRequest: CompletableDeferred<String>? = null
     }
 
 }

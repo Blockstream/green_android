@@ -12,7 +12,6 @@ enum class DeviceBrand(val brand: String) {
     val isJade
         get() = this == Blockstream
 
-    // SATODEBUG
     val isSatochip
         get() = this == Satochip
 

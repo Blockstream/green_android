@@ -12,7 +12,7 @@ enum class DeviceModel(val deviceModel: String) {
     LedgerGeneric("Ledger"),
     LedgerNanoS("Ledger Nano S"),
     LedgerNanoX("Ledger Nano X"),
-    SatochipGeneric("Satochip"), // SATODEBUG
+    SatochipGeneric("Satochip"),
     Generic("Generic Hardware Wallet");
 
     val deviceBrand: DeviceBrand

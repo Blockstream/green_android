@@ -35,7 +35,6 @@ data class Device constructor(
     val isLedger
         get() = name.lowercase() == "ledger"
 
-    // SATODEBUG
     val isSatochip
         get() = name.lowercase() == "satochip"
 

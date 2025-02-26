@@ -1,5 +1,5 @@
 package com.blockstream.common.devices
 
 enum class ConnectionType {
-    USB, BLUETOOTH, QR, NFC // SATODEBUG
+    USB, BLUETOOTH, QR, NFC
 }

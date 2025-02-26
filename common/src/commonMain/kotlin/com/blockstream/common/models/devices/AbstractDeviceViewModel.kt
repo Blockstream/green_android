@@ -94,7 +94,6 @@ abstract class AbstractDeviceViewModel constructor(
 
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
-        println("SATODEBUG AbstractDeviceViewModel handleEvent() event: $event")
 
         if(event is LocalEvents.Refresh) {
             deviceManager.refreshDevices()

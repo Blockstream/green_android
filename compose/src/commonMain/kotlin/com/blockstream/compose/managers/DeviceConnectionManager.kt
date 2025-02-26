@@ -28,7 +28,6 @@ open class DeviceConnectionManager(
 
     @Throws(Exception::class)
     override suspend fun connectDevice(device: GreenDevice, httpRequestHandler: HttpRequestHandler, interaction: HardwareConnectInteraction): ConnectionResult {
-        println("SATODEBUG DeviceConnectionManager connectDevice() device: $device")
         device.frozeHeartbeat()
 
         try {
@@ -106,7 +105,6 @@ open class DeviceConnectionManager(
         gdkHardwareWallet: GdkHardwareWallet,
         jadeFirmwareManager: JadeFirmwareManager?
     ) {
-        println("SATODEBUG DeviceConnectionManager authenticateDeviceIfNeeded() start")
         if (gdkHardwareWallet is JadeHWWallet && gdkHardwareWallet.getVersionInfo().jadeState != JadeState.READY) {
             try {
                 gdkHardwareWallet.authenticate(interaction, jadeFirmwareManager ?: JadeFirmwareManager(

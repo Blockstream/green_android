@@ -60,21 +60,17 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
     }
 
     init {
-        println("SATODEBUG DeviceInfoViewModel init()")
         deviceOrNull = deviceManager.getDevice(deviceId)
 
         if(deviceOrNull == null){
-            println("SATODEBUG DeviceInfoViewModel init() device is null!")
             postSideEffect(SideEffects.NavigateBack())
         }else {
 
             if (device.gdkHardwareWallet == null) {
-                println("SATODEBUG DeviceInfoViewModel init() gdkHardwareWallet is null")
                 connectDevice()
             }
 
             device.deviceState.onEach {
-                println("SATODEBUG DeviceInfoViewModel init() deviceState loop: $it")
                 // Device went offline
                 if (it == DeviceState.DISCONNECTED) {
                     postSideEffect(SideEffects.Snackbar(StringHolder(stringResource = Res.string.id_your_device_was_disconnected)))
@@ -84,7 +80,6 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
         }
 
         viewModelScope.launch {
-            println("SATODEBUG DeviceInfoViewModel init() viewModelScope.launch")
             _navData.value = NavData(
                 title = deviceOrNull?.deviceBrand?.name,
                 onBackPressed = {
@@ -114,12 +109,10 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
 
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
-        println("SATODEBUG DeviceInfoViewModel handleEvent() event: $event")
 
         if (event is LocalEvents.AuthenticateAndContinue) {
             authenticateAndContinue(event.updateFirmwareFromChannel)
         } else if (event is LocalEvents.SelectEnviroment) {
-            println("SATODEBUG DeviceInfoViewModel handleEvent() LocalEvents.SelectEnviroment")
             if (event.isTestnet == null) {
                 requestNetworkEmitter?.completeExceptionally(Exception("id_action_canceled"))
             } else {
@@ -131,14 +124,11 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
     }
 
     private fun connectDevice() {
-        println("SATODEBUG DeviceInfoViewModel connectDevice()")
         doAsync({
-            println("SATODEBUG DeviceInfoViewModel connectDevice() doAsync start")
             deviceConnectionManager.connectDevice(device, sessionManager.httpRequestHandler, this).also {
                 countly.hardwareConnect(device)
             }
         }, onSuccess = {
-            println("SATODEBUG DeviceInfoViewModel connectDevice() doAsync onSuccess")
             deviceIsConnected.value = true
             countly.hardwareConnected(device)
             _jadeIsUninitialized.value = it.isJadeUninitialized == true
@@ -155,7 +145,6 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
             }
 
         }, onError = {
-            println("SATODEBUG DeviceInfoViewModel connectDevice() doAsync onError")
             it.printStackTrace()
 
             if (it is ConnectionLostException) {
@@ -167,12 +156,9 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
     }
 
     private fun authenticateAndContinue(updateFirmwareFromChannel: String? = null) {
-        println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() start updateFirmwareFromChannel: "+ updateFirmwareFromChannel)
-        println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() device.gdkHardwareWallet: " + device.gdkHardwareWallet)
         val gdkHardwareWallet = device.gdkHardwareWallet ?: return
 
         doAsync({
-            println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() doAsync")
             // Authenticate device if needed
             deviceConnectionManager.authenticateDeviceIfNeeded(
                 gdkHardwareWallet = gdkHardwareWallet,
@@ -189,10 +175,8 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
             )
 
             val network = device.getOperatingNetwork(device, gdk, interaction = this)!!
-            println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() network: " + network)
 
             val isEphemeral = !settingsManager.appSettings.rememberHardwareDevices
-            println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() isEphemeral: " + isEphemeral)
 
             val previousSession = (if (device.isLedger) {
                 sessionManager.getDeviceSessionForNetworkAllPolicies(device, network, isEphemeral)
@@ -203,7 +187,6 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
                     isEphemeral
                 )
             })
-            println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() previousSession: " + previousSession)
 
             if (previousSession != null) {
                 // Session already setup
@@ -216,14 +199,11 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
                 // Disconnect any previous hww connection
                 it.disconnect()
             }
-            println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() session: " + session)
 
             val walletHashId = getWalletHashId(session, network, device)
-            println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() walletHashId: " + walletHashId)
 
             // Disable Jade wallet fingerprint, keep the device name // getWalletName(session, network, device)
             val walletName = device.name
-            println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() walletName: " + walletName)
 
             val wallet: GreenWallet
             if (isEphemeral) {
@@ -275,7 +255,6 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
                         ).toSet().toList() // Make it unique
 
                 wallet.deviceIdentifiers = combinedLoginCredentials
-                println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() wallet.deviceIdentifiers: " + wallet.deviceIdentifiers)
 
                 if (isNewWallet) {
                     database.insertWallet(wallet)
@@ -284,7 +263,6 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
                 }
 
                 session = sessionManager.getWalletSessionOrCreate(wallet)
-                println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() session: " + session)
 
                 countly.importWallet(session)
             }
@@ -293,7 +271,6 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
         }, postAction = {
             onProgress.value = it == null
         }, onSuccess = {
-            println("SATODEBUG DeviceInfoViewModel authenticateAndContinue() onSuccess: ")
             disconnectDeviceOnCleared = false
 
             deviceManager.savedDevice = device
