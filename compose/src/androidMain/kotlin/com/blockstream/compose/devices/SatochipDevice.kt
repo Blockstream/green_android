@@ -52,7 +52,6 @@ class SatochipDevice constructor(
             nfcDevice: NfcDevice,
             activityProvider: ActivityProvider?,
         ): SatochipDevice? {
-            println("SATODEBUG SatochipDevice fromNfcDevice()")
             if (nfcDevice.type == NfcDeviceType.SATOCHIP) {
                 return SatochipDevice(
                     context = deviceManager.context,

@@ -62,7 +62,7 @@ class DeviceConnectionManagerAndroid constructor(
         } ?: (device as? LedgerDevice)?.let {
             connectLedgerDevice(it, interaction)
         } ?: (device as? SatochipDevice)?.let {
-            connectSatochipDevice(it, interaction) // SATODEBUG
+            connectSatochipDevice(it, interaction)
         } ?: super.connectDevice(device, httpRequestHandler, interaction))
 
     }
@@ -153,7 +153,6 @@ class DeviceConnectionManagerAndroid constructor(
     }
 
     private suspend fun connectSatochipDevice(device: SatochipDevice, interaction: HardwareConnectInteraction): ConnectionResult {
-        logger.i {"SATODEBUG DeviceConnectionManagerAndroid connectSatochipDevice() start device: $device"}
 
         val satoDevice = com.blockstream.common.gdk.data.Device(
             name = "Satochip",
@@ -167,16 +166,11 @@ class DeviceConnectionManagerAndroid constructor(
 
         val pin: String? = null;
         //val pin: String? = satochipInteraction?.requestPassphrase(DeviceBrand.Satochip)
-        println("SATODEBUG DeviceConnectionManagerAndroid onConnected(): PIN: " + pin)
 
         // provide activity and context needed for NFC
         val activity: Activity? = device.activityProvider?.getCurrentActivity()
 
-        println("SATODEBUG DeviceConnectionManagerAndroid onConnected() creating gdkHardwareWallet")
         device.gdkHardwareWallet = SatochipHWWallet(satoDevice, pin, activity, device.context)
-        println("SATODEBUG DeviceConnectionManagerAndroid onConnected() created gdkHardwareWallet!")
-
-        logger.i { "SATODEBUG DeviceConnectionManagerAndroid connectSatochipDevice() end" }
 
         return ConnectionResult()
     }

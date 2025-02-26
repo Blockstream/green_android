@@ -139,6 +139,5 @@ open class DeviceConnectionManager(
             // force update if needed
             jadeFirmwareManager.checkFirmware(jade = gdkHardwareWallet.jade)
         }
-        println("SATODEBUG DeviceConnectionManager authenticateDeviceIfNeeded() end")
     }
 }

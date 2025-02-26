@@ -92,7 +92,6 @@ data class DeviceListScreen(val isJade: Boolean) : Screen, Parcelable {
 
     @Composable
     override fun Content() {
-        println("SATODEBUG DeviceListScreen Content() Start isJade: $isJade")
 
         val viewModel = koinScreenModel<DeviceListViewModel> {
             parametersOf(isJade)
@@ -116,7 +115,6 @@ data class DeviceListScreen(val isJade: Boolean) : Screen, Parcelable {
 
 @Composable
 fun DeviceListItem(device: GreenDevice, modifier: Modifier, onClick: () -> Unit) {
-    println("SATODEBUG DeviceListScreen DeviceListItem() Start device: $device")
     GreenCard(onClick = onClick, padding = 0, modifier = modifier) {
         Image(
             painter = painterResource(device.icon()),
