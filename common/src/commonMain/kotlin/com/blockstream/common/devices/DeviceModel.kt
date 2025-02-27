@@ -40,6 +40,7 @@ enum class DeviceModel(val deviceModel: String) {
             LedgerNanoX -> "ledger_nano_x"
             TrezorGeneric -> "trezor"
             LedgerGeneric -> "ledger"
+            SatochipGeneric -> "satochip"
             Generic -> "generic"
         }
 }
