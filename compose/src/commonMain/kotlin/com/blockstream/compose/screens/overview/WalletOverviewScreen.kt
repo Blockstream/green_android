@@ -438,13 +438,11 @@ fun WalletOverviewScreen(
                     }
                 }
 
-                transactions.data()?.also { transactions ->
-                    items(items = transactions, key = { tx ->
-                        tx.transaction.account.id.hashCode() + tx.transaction.txHash.hashCode() + tx.transaction.txType.gdkType.hashCode()
-                    }) { item ->
-                        GreenTransaction(transactionLook = item) {
-                            viewModel.postEvent(Events.Transaction(transaction = it.transaction))
-                        }
+                items(items = transactions.data() ?: listOf(), key = { tx ->
+                    tx.transaction.account.id.hashCode() + tx.transaction.txHash.hashCode() + tx.transaction.txType.gdkType.hashCode()
+                }) { item ->
+                    GreenTransaction(transactionLook = item) {
+                        viewModel.postEvent(Events.Transaction(transaction = it.transaction))
                     }
                 }
             }

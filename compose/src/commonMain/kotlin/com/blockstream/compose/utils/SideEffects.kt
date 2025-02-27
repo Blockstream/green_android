@@ -37,8 +37,9 @@ import blockstream_green.common.generated.resources.id_try_again_using_another_2
 import blockstream_green.common.generated.resources.id_warning
 import blockstream_green.common.generated.resources.id_you_will_stop_receiving_push
 import blockstream_green.common.generated.resources.warning
+import com.blockstream.common.SupportType
 import com.blockstream.common.data.EnrichedAsset
-import com.blockstream.common.data.ErrorReport
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorResolverData
@@ -50,6 +51,7 @@ import com.blockstream.common.extensions.handleException
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.twoFactorMethodsLocalized
 import com.blockstream.common.gdk.data.AssetBalance
+import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.devices.AbstractDeviceViewModel
 import com.blockstream.common.navigation.NavigateDestinations
@@ -57,6 +59,7 @@ import com.blockstream.common.navigation.PopTo
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
+import com.blockstream.common.utils.createNewTicketUrl
 import com.blockstream.compose.LocalAppCoroutine
 import com.blockstream.compose.LocalBiometricState
 import com.blockstream.compose.LocalDialog
@@ -120,6 +123,7 @@ import com.blockstream.compose.screens.settings.TwoFactorAuthenticationScreen
 import com.blockstream.compose.screens.settings.TwoFactorSetupScreen
 import com.blockstream.compose.screens.settings.WalletSettingsScreen
 import com.blockstream.compose.screens.settings.WatchOnlyScreen
+import com.blockstream.compose.screens.support.SupportScreen
 import com.blockstream.compose.screens.transaction.TransactionScreen
 import com.blockstream.compose.screens.twofactor.ReEnable2FAScreen
 import com.blockstream.compose.sheets.AccountRenameBottomSheet
@@ -238,15 +242,11 @@ fun HandleSideEffect(
                                 }
                             },
                             onSecondary = {
-                                appCoroutine.launch {
-                                    dialog.openErrorReportDialog(
-                                        platformManager = platformManager,
-                                        viewModel = viewModel,
-                                        errorReport = ErrorReport.createForMultisig("Android: I am not receiving my 2FA code"),
-                                        onSubmitErrorReport = { submitErrorReport ->
-                                            viewModel.postEvent(submitErrorReport)
-                                        }
-                                    )
+                                resolverData.network?.also { network: Network ->
+                                    viewModel.postEvent(NavigateDestinations.Support(
+                                        type = SupportType.INCIDENT,
+                                        supportData = SupportData.create(subject = "I am not receiving my 2FA code", network = resolverData.network, session = viewModel.sessionOrNull)
+                                    ))
                                 }
                             }
                         ))
@@ -330,7 +330,7 @@ fun HandleSideEffect(
                             dialogState = dialog,
                             viewModel = viewModel,
                             error = it.error,
-                            errorReport = it.errorReport
+                            supportData = it.supportData
                         )
                     }
                 }
@@ -373,19 +373,16 @@ fun HandleSideEffect(
                     appCoroutine.launch {
                         dialog.openErrorDialog(
                             throwable = it.error,
-                            errorReport = it.errorReport,
+                            supportData = it.supportData,
                             onErrorReport = { errorReport ->
-                                appCoroutine.launch {
-                                    dialog.openErrorReportDialog(
-                                        platformManager = platformManager,
-                                        errorReport = errorReport,
-                                        viewModel = viewModel,
-                                        onSubmitErrorReport = { submitErrorReport ->
-                                            viewModel.postEvent(submitErrorReport)
-                                        }
+                                viewModel.postEvent(
+                                    NavigateDestinations.Support(
+                                        type = SupportType.INCIDENT,
+                                        supportData = errorReport
                                     )
-                                }
-                            })
+                                )
+                            }
+                        )
                     }
                 }
 
@@ -407,18 +404,13 @@ fun HandleSideEffect(
                             appCoroutine.launch {
                                 dialog.openErrorDialog(
                                     throwable = error,
-                                    errorReport = it.errorReport,
+                                    supportData = it.supportData,
                                     onErrorReport = { errorReport ->
-                                        appCoroutine.launch {
-                                            dialog.openErrorReportDialog(
-                                                platformManager = platformManager,
-                                                errorReport = errorReport,
-                                                viewModel = viewModel,
-                                                onSubmitErrorReport = { submitErrorReport ->
-                                                    viewModel.postEvent(submitErrorReport)
-                                                }
-                                            )
-                                        }
+                                        viewModel.postEvent(NavigateDestinations.Support(
+                                            type = SupportType.INCIDENT,
+                                            supportData = errorReport
+                                        ))
+                                        navigator.pop()
                                     }
                                 ) {
                                     navigator.pop()
@@ -760,6 +752,33 @@ fun HandleSideEffect(
                                     greenWallet = destination.greenWallet,
                                 )
                             )
+                        }
+
+                        is NavigateDestinations.Support -> {
+                            if (viewModel.zendeskSdk.isAvailable) {
+                                navigator?.push(
+                                    SupportScreen(
+                                        type = destination.type,
+                                        supportData = destination.supportData,
+                                        greenWalletOrNull = viewModel.greenWalletOrNull
+                                    )
+                                )
+                            } else {
+                                createNewTicketUrl(
+                                    appInfo = viewModel.appInfo,
+                                    subject = destination.supportData.subject ?: viewModel.screenName()?.let { "Android Issue in $it" } ?: "Android Error Report",
+                                    supportData = destination.supportData,
+                                ).also {
+                                    appCoroutine.launch {
+                                        openBrowser(
+                                            platformManager = platformManager,
+                                            dialogState = dialog,
+                                            isTor = viewModel.settingsManager.appSettings.tor,
+                                            url = it
+                                        )
+                                    }
+                                }
+                            }
                         }
 
                         is NavigateDestinations.AccountOverview -> {

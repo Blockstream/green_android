@@ -37,7 +37,7 @@ class AboutViewModelTest : TestViewModel<AboutViewModel>() {
 
         viewModel.sideEffect.test {
             assertTrue { awaitItem() is SideEffects.OpenBrowser }
-            assertTrue { awaitItem() is SideEffects.OpenDialog }
+            assertTrue { awaitItem() is SideEffects.NavigateTo }
         }
     }
 }

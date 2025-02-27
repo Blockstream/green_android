@@ -33,7 +33,7 @@ import com.blockstream.common.Urls
 import com.blockstream.common.data.AppConfig
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
-import com.blockstream.common.data.ErrorReport
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavAction
 import com.blockstream.common.data.NavData
@@ -489,8 +489,8 @@ class ReceiveViewModel(initialAccountAsset: AccountAsset, greenWallet: GreenWall
         )
     }
 
-    override fun errorReport(exception: Throwable): ErrorReport {
-        return ErrorReport.create(throwable = exception, network = account.network, session = session)
+    override fun errorReport(exception: Throwable): SupportData {
+        return SupportData.create(throwable = exception, network = account.network, session = session)
     }
 
     private fun verifyAddressOnDevice() {

@@ -135,6 +135,7 @@ kotlin {
             /** ----------------------------------------------------------------------------------------- */
 
             /**  --- Misc. ------------------------------------------------------------------------------ */
+            api(libs.stately.concurrent.collections)
             api(libs.sqldelight.coroutines.extensions)
             api(libs.kmp.observableviewmodel)
             api(libs.uri.kmp)
@@ -149,6 +150,7 @@ kotlin {
             api(libs.kable.core)
             api(libs.kotlincrypto.hash.md)
             api(libs.kotlincrypto.hash.sha2)
+            api(libs.phosphor.icon)
 
             implementation(libs.tuulbox.coroutines)
             /** ----------------------------------------------------------------------------------------- */

@@ -8,10 +8,10 @@ import blockstream_green.common.generated.resources.id_transaction_sent
 import com.blockstream.common.AddressInputType
 import com.blockstream.common.TransactionSegmentation
 import com.blockstream.common.data.Denomination
-import com.blockstream.common.data.ErrorReport
-import com.blockstream.common.data.ExceptionWithErrorReport
+import com.blockstream.common.data.ExceptionWithSupportData
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.events.Event
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isNotBlank
@@ -492,7 +492,7 @@ abstract class CreateTransactionViewModelAbstract(
                     postSideEffect(
                         SideEffects.ErrorDialog(
                             it,
-                            errorReport = ErrorReport.create(
+                            supportData = SupportData.create(
                                 throwable = it,
                                 network = account.network,
                                 session = session
@@ -509,8 +509,8 @@ abstract class CreateTransactionViewModelAbstract(
                 it.message != "id_action_canceled" -> {
                     postSideEffect(
                         SideEffects.ErrorDialog(
-                            it, errorReport = (it as? ExceptionWithErrorReport)?.errorReport
-                                ?: ErrorReport.create(
+                            error = it, supportData = (it as? ExceptionWithSupportData)?.supportData
+                                ?: SupportData.create(
                                     throwable = it,
                                     network = account.network,
                                     session = session

@@ -6,6 +6,7 @@ import breez_sdk.InvoicePaidDetails
 import breez_sdk.LnUrlPayResult
 import breez_sdk.ReceivePaymentResponse
 import breez_sdk.SwapInfo
+import co.touchlab.stately.collections.ConcurrentMutableMap
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.BTC_UNIT
 import com.blockstream.common.CountlyBase
@@ -13,11 +14,11 @@ import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.CountlyAsset
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.EnrichedAsset
-import com.blockstream.common.data.ErrorReport
-import com.blockstream.common.data.ExceptionWithErrorReport
+import com.blockstream.common.data.ExceptionWithSupportData
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.RichWatchOnly
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.database.LoginCredentials
 import com.blockstream.common.devices.DeviceBrand
@@ -188,6 +189,9 @@ class GdkSession constructor(
     private val parentJob = SupervisorJob()
 
     var jadeHttpRequestUrlValidator: JadeHttpRequestUrlValidator? = null
+
+    val logs: String
+        get() = gdk.logs.toString()
 
     val isTestnet: Boolean // = false
         get() = defaultNetworkOrNull?.isTestnet == true
@@ -373,7 +377,7 @@ class GdkSession constructor(
 
     val activeSinglesig get() = listOfNotNull(activeBitcoinSinglesig, activeLiquidSinglesig)
 
-    val gdkSessions = linkedMapOf<Network, GASession>()
+    val gdkSessions: ConcurrentMutableMap<Network, GASession> = ConcurrentMutableMap()
     val activeSessions = mutableSetOf<Network>()
 
     fun hasActiveNetwork(network: Network?) = activeSessions.contains(network)
@@ -672,6 +676,7 @@ class GdkSession constructor(
             proxy = applicationSettings.proxyUrl ?: "",
             spvEnabled = spvEnabled,
             spvMulti = spvMulti,
+            discountFees = true, // Liquid Discount fees CT
             gapLimit = if(electrumUrl.isNotBlank() && network.isSinglesig) applicationSettings.electrumServerGapLimit?.coerceAtLeast(20) else null,
             electrumTls = if(electrumUrl.isNotBlank()) applicationSettings.personalElectrumServerTls else true,
             electrumUrl = electrumUrl,
@@ -2774,15 +2779,15 @@ class GdkSession constructor(
 
                 try {
                     val response = lightningSdk.sendPayment(
-                        bolt11 = inputType.invoice.bolt11,
+                        invoice = inputType.invoice,
                         satoshi = satoshi.takeIf { inputType.invoice.amountMsat == null }
                     )
 
                     ProcessedTransactionDetails(paymentId = response.payment.id)
                 } catch (e: Exception){
-                    throw ExceptionWithErrorReport(
+                    throw ExceptionWithSupportData(
                         throwable = e,
-                        ErrorReport.create(
+                        supportData = SupportData.create(
                             throwable = e,
                             paymentHash = inputType.invoice.paymentHash,
                             network = lightningAccount.network,
@@ -2807,9 +2812,9 @@ class GdkSession constructor(
                         }
                         is LnUrlPayResult.PayError -> {
                             val exception = Exception(it.data.reason)
-                            throw ExceptionWithErrorReport(
+                            throw ExceptionWithSupportData(
                                 throwable = exception,
-                                ErrorReport.create(
+                                supportData = SupportData.create(
                                     throwable = exception,
                                     paymentHash = it.data.paymentHash,
                                     network = lightningAccount.network,

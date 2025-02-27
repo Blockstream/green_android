@@ -5,15 +5,19 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
-class JsonConverter constructor(val log: Boolean, val maskSensitiveFields: Boolean) {
+class JsonConverter(
+    val printGdkMessages: Boolean,
+    val maskSensitiveFields: Boolean,
+    val appendGdkLogs: (json: String) -> Unit
+) {
     private val maskFields = listOf("pin", "mnemonic", "password", "recovery_mnemonic", "seed")
 
-    private fun shouldLog(jsonString: String?): Boolean{
+    private fun shouldPrint(jsonString: String?): Boolean{
         if(jsonString == null || jsonString.length > 50_000){
             return false
         }
 
-        if (log) {
+        if (printGdkMessages) {
             if (
                 SkipLogAmountConversions
                 && (jsonString.contains("\"is_current\":true,\"mbtc\":\"")
@@ -24,19 +28,24 @@ class JsonConverter constructor(val log: Boolean, val maskSensitiveFields: Boole
             }
         }
 
-        return log
+        return printGdkMessages
     }
 
     fun toJSONObject(jsonString: String?): Any? {
-        if (shouldLog(jsonString)) {
-            "▲ ${mask(jsonString)}".let{
-                logger.i { it }
+        mask(jsonString)?.also { masked ->
+            if (shouldPrint(masked)) {
+                "▲ $masked".also {
+                    logger.i { it }
+                }
             }
+
+            appendGdkLogs(masked)
         }
 
         if (jsonString != null && jsonString != "null") {
             return JsonDeserializer.parseToJsonElement(jsonString)
         }
+
         return null
     }
 
@@ -46,9 +55,11 @@ class JsonConverter constructor(val log: Boolean, val maskSensitiveFields: Boole
         }else{
             any.toString()
         }.also {
-            if (shouldLog(it)) {
-                "▼ ${mask(it)}".let {
-                    logger.i { it }
+            mask(it)?.also { masked ->
+                if (shouldPrint(masked)) {
+                    "▼ $masked".also {
+                        logger.i { it }
+                    }
                 }
             }
         }

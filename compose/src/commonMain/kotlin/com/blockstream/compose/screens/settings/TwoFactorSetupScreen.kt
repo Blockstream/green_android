@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.caret_down
-import blockstream_green.common.generated.resources.copy
 import blockstream_green.common.generated.resources.id_by_continuing_you_agree_to
 import blockstream_green.common.generated.resources.id_country
 import blockstream_green.common.generated.resources.id_email
@@ -39,6 +38,9 @@ import blockstream_green.common.generated.resources.id_terms_of_service
 import blockstream_green.common.generated.resources.id_the_recovery_key_below_will_not
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Copy
 import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
 import com.blockstream.common.data.GreenWallet
@@ -219,7 +221,7 @@ fun TwoFactorSetupScreen(
                                 ) {
                                     Text(it)
                                     Icon(
-                                        painter = painterResource(Res.drawable.copy),
+                                        imageVector = PhosphorIcons.Regular.Copy,
                                         contentDescription = "Copy"
                                     )
                                 }

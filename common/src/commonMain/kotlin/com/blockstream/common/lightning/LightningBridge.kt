@@ -13,6 +13,7 @@ import breez_sdk.GreenlightNodeConfig
 import breez_sdk.HealthCheckStatus
 import breez_sdk.InputType
 import breez_sdk.ListPaymentsRequest
+import breez_sdk.LnInvoice
 import breez_sdk.LnUrlAuthRequestData
 import breez_sdk.LnUrlCallbackStatus
 import breez_sdk.LnUrlPayRequest
@@ -492,10 +493,10 @@ class LightningBridge constructor(
         }
     }
 
-    fun sendPayment(bolt11: String, satoshi: Long?): SendPaymentResponse {
+    fun sendPayment(invoice: LnInvoice, satoshi: Long?): SendPaymentResponse {
         return try {
             breezSdk.sendPayment(
-                SendPaymentRequest(bolt11 = bolt11, amountMsat = satoshi?.milliSatoshi(), useTrampoline = true)
+                SendPaymentRequest(bolt11 = invoice.bolt11, amountMsat = satoshi?.milliSatoshi(), useTrampoline = true)
             )
         } catch (e: Exception) {
             throw exceptionWithNodeId(e)
@@ -571,7 +572,14 @@ class LightningBridge constructor(
     }
 
     private fun exceptionWithNodeId(exception: Exception) =
-        Exception("${exception.message}\nNodeId: ${_nodeInfoStateFlow.value.id}\nTimestamp: ${Clock.System.now().epochSeconds}", exception.cause)
+        Exception(
+            listOfNotNull(
+                exception.message,
+                "NodeId: ${_nodeInfoStateFlow.value.id}",
+                "Timestamp: ${Clock.System.now().epochSeconds}",
+            ).joinToString("\n"),
+            exception.cause
+        )
 
     fun release(){
         lightningManager.release(this)

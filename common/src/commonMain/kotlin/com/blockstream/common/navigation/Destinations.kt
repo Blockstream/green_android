@@ -1,7 +1,9 @@
 package com.blockstream.common.navigation
 
 import com.blockstream.common.AddressInputType
+import com.blockstream.common.SupportType
 import com.blockstream.common.data.Denomination
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LnUrlAuthRequestDataSerializable
 import com.blockstream.common.data.LnUrlWithdrawRequestSerializable
@@ -61,6 +63,7 @@ sealed class NavigateDestinations : NavigateDestination {
 
     data class WalletOverview(val greenWallet: GreenWallet) : NavigateDestination
 
+    data class Support(val type: SupportType, val supportData: SupportData) : NavigateDestination
 
     data class RenameWallet(val greenWallet: GreenWallet) : NavigateDestination
     data class DeleteWallet(val greenWallet: GreenWallet) : NavigateDestination

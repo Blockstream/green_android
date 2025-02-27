@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.binoculars
-import blockstream_green.common.generated.resources.copy
 import blockstream_green.common.generated.resources.id_actions
 import blockstream_green.common.generated.resources.id_address
 import blockstream_green.common.generated.resources.id_no_addresses
@@ -43,6 +42,9 @@ import blockstream_green.common.generated.resources.id_view_in_explorer
 import blockstream_green.common.generated.resources.signature
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Copy
 import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
 import com.blockstream.common.data.GreenWallet
@@ -256,7 +258,7 @@ fun AddressListItem(
                     onClick = onCopyClick
                 ) {
                     Icon(
-                        painter = painterResource(Res.drawable.copy), contentDescription = "Copy"
+                        imageVector = PhosphorIcons.Regular.Copy, contentDescription = "Copy"
                     )
                 }
                 onSignatureClick?.also {

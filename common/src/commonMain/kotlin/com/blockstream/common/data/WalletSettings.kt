@@ -39,6 +39,5 @@ sealed class WalletSetting{
     data class TwoFactorThreshold(
         val subtitle: String
     ) : WalletSetting()
-
     data object Support : WalletSetting()
 }

@@ -22,7 +22,7 @@ import com.blockstream.common.data.ApplicationSettings
 import com.blockstream.common.data.Banner
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.DataState
-import com.blockstream.common.data.ErrorReport
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.NavAction
@@ -754,27 +754,27 @@ class LoginViewModel constructor(
                     // Jade users restoring can still login
                     postSideEffect(SideEffects.ErrorSnackbar(Exception("id_wallet_not_found")))
                 } else {
-                    val errorReport = ErrorReport.create(throwable = it, session = session)
+                    val supportData = SupportData.create(throwable = it, session = session)
 
                     if (it.isConnectionError()) {
                         postSideEffect(
                             SideEffects.ErrorSnackbar(
                                 error = it,
-                                errorReport = errorReport
+                                supportData = supportData
                             )
                         )
                     } else {
                         postSideEffect(
                             SideEffects.ErrorDialog(
                                 error = it,
-                                errorReport = errorReport
+                                supportData = supportData
                             )
                         )
                     }
                 }
             } else {
-                val errorReport = ErrorReport.create(throwable = it, session = session)
-                postSideEffect(SideEffects.NavigateBack(error = it, errorReport = errorReport))
+                val supportData = SupportData.create(throwable = it, session = session)
+                postSideEffect(SideEffects.NavigateBack(error = it, supportData = supportData))
             }
 
             countly.failedWalletLogin(session, it)

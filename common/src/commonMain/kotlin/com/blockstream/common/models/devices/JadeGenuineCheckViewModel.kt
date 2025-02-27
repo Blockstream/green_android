@@ -2,6 +2,8 @@ package com.blockstream.common.models.devices
 
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_your_device_was_disconnected
+import com.blockstream.common.SupportType
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.devices.DeviceState
 import com.blockstream.common.devices.JadeDevice
@@ -13,10 +15,10 @@ import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.events.JadeGenuineCheck
 import com.blockstream.common.gdk.params.RsaVerifyParams
 import com.blockstream.common.models.devices.JadeGenuineCheckViewModel.GenuineState
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.StringHolder
-import com.blockstream.common.utils.createNewTicketUrl
 import com.blockstream.common.utils.randomChars
 import com.blockstream.jade.data.JadeError
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
@@ -96,13 +98,15 @@ class JadeGenuineCheckViewModel constructor(greenWallet: GreenWallet?, deviceId:
                 postSideEffect(SideEffects.Success())
             }
             is LocalEvents.ContactSupport -> {
-                postSideEffect(SideEffects.OpenBrowser(
-                    createNewTicketUrl(
-                        appInfo = appInfo,
-                        subject = "Jade Genuine check failed",
-                        isJade = true
-                    )
-                ))
+                postSideEffect(
+                    SideEffects.NavigateTo(NavigateDestinations.Support(
+                        type = SupportType.INCIDENT,
+                        supportData = SupportData(
+                            subject = "Jade Genuine check failed",
+                            zendeskHardwareWallet = deviceOrNull?.deviceModel?.zendeskValue
+                        )
+                    ))
+                )
             }
         }
     }

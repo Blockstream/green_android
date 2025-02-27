@@ -14,14 +14,14 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.copy
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Copy
 import com.blockstream.compose.extensions.colorTextEdges
 import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.utils.CopyContainer
 import com.blockstream.compose.utils.ifTrue
-import org.jetbrains.compose.resources.painterResource
 
 
 @Composable
@@ -58,7 +58,7 @@ fun GreenAddress(
 
             if (showCopyIcon) {
                 Icon(
-                    painterResource(Res.drawable.copy),
+                    imageVector = PhosphorIcons.Regular.Copy,
                     contentDescription = "Copy",
                     tint = whiteHigh,
                     modifier = Modifier.align(Alignment.CenterVertically).padding(start = 8.dp)

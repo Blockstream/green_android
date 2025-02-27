@@ -15,13 +15,14 @@ import breez_sdk.LnUrlWithdrawResult
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
-import com.blockstream.common.data.ErrorReport
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.NavData
 import com.blockstream.common.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.extensions.previewWallet
+import com.blockstream.common.extensions.tryCatch
 import com.blockstream.common.lightning.domain
 import com.blockstream.common.lightning.maxReceivableSatoshi
 import com.blockstream.common.lightning.maxWithdrawableSatoshi
@@ -32,8 +33,8 @@ import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.UserInput
 import com.blockstream.common.utils.toAmountLook
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -125,8 +126,10 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
         }
 
         amount.onEach {
-            updateExchange()
-            check()
+            tryCatch {
+                updateExchange()
+                check()
+            }
         }.launchIn(viewModelScope.coroutineScope)
 
         combine(session.lightningSdk.nodeInfoStateFlow, denomination) { nodeState, denomination ->
@@ -267,8 +270,8 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
         _denomination.value = denominatedValue.denomination
     }
 
-    override fun errorReport(exception: Throwable): ErrorReport {
-        return ErrorReport.create(
+    override fun errorReport(exception: Throwable): SupportData {
+        return SupportData.create(
             throwable = exception,
             network = session.lightning,
             session = session

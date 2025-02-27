@@ -67,10 +67,12 @@ import com.blockstream.common.models.sheets.LightningNodeViewModel
 import com.blockstream.common.models.sheets.NoteViewModel
 import com.blockstream.common.models.sheets.RecoveryHelpViewModel
 import com.blockstream.common.models.sheets.TransactionDetailsViewModel
+import com.blockstream.common.models.support.SupportViewModel
 import com.blockstream.common.models.transaction.TransactionViewModel
 import com.blockstream.common.models.twofactor.ReEnable2FAViewModel
 import com.blockstream.common.models.wallet.WalletDeleteViewModel
 import com.blockstream.common.models.wallet.WalletNameViewModel
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -131,6 +133,9 @@ val viewModels = module {
     viewModelOf(::DeviceScanViewModel)
     viewModelOf(::JadeFirmwareUpdateViewModel)
     viewModelOf(::ImportPubKeyViewModel)
+    viewModel {
+        SupportViewModel(get(), get(), getOrNull())
+    }
     viewModel {
         JadeGenuineCheckViewModel(getOrNull(), getOrNull())
     }

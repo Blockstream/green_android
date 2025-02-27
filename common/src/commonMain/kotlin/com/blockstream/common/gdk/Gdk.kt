@@ -51,7 +51,10 @@ typealias GASession = Any
 typealias GAAuthHandler = Any
 
 interface GdkBinding {
+    val logs : StringBuilder
     val dataDir: String
+
+    fun appendGdkLogs(json: String)
 
     fun setNotificationHandler(notificationHandler: (session: GASession, jsonObject: Any) -> Unit)
 
@@ -280,6 +283,10 @@ interface GdkBinding {
 
     @Throws(Exception::class)
     fun getRandomBytes(size: Int): ByteArray
+
+    companion object {
+        const val LOGS_SIZE = 8_000
+    }
 }
 
 class Gdk constructor(
@@ -352,7 +359,7 @@ class Gdk constructor(
     }
 }
 
-expect fun getGdkBinding(log: Boolean, config: InitConfig): GdkBinding
+expect fun getGdkBinding(printGdkMessages: Boolean, config: InitConfig): GdkBinding
 
 val FeeMinRelay = 0
 val FeeBlockHigh = 1

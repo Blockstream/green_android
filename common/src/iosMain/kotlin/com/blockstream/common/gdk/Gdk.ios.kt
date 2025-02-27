@@ -1,6 +1,7 @@
 package com.blockstream.common.gdk
 
 import co.touchlab.kermit.Logger
+import com.blockstream.common.gdk.GdkBinding.Companion.LOGS_SIZE
 import com.blockstream.common.gdk.data.AuthHandlerStatus
 import com.blockstream.common.gdk.data.FeeEstimation
 import com.blockstream.common.gdk.data.LiquidAssets
@@ -267,6 +268,7 @@ private val _gdkNotificationHandler = staticCFunction { context: COpaquePointer?
 }
 
 class IOSGdkBinding constructor(config: InitConfig) : GdkBinding {
+    override val logs: StringBuilder = StringBuilder()
     private val _notifyContexts = mutableMapOf<CPointer<GA_session>, StableRef<NotifyContext>>()
     private var _notificationHandler: ((session: GASession, jsonObject: JsonElement) -> Unit)? = null
     private val _dataDir: String = config.datadir
@@ -279,6 +281,13 @@ class IOSGdkBinding constructor(config: InitConfig) : GdkBinding {
 
     override val dataDir: String
         get() = _dataDir
+
+    override fun appendGdkLogs(json: String) {
+        logs.append("$json\n")
+        if (logs.length > LOGS_SIZE) {
+            logs.deleteRange(0, 1_000_000)
+        }
+    }
 
     override fun setNotificationHandler(notificationHandler: (session: GASession, jsonObject: Any) -> Unit) {
         _notificationHandler = notificationHandler

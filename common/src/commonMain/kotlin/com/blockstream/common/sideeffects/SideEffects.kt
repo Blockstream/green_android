@@ -1,7 +1,7 @@
 package com.blockstream.common.sideeffects
 
 import com.blockstream.common.data.DenominatedValue
-import com.blockstream.common.data.ErrorReport
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.Redact
@@ -25,10 +25,10 @@ class SideEffects : SideEffect {
     data class OpenMenu(val id: Int = 0) : SideEffect
     data class OpenDialog(val id: Int = 0) : SideEffect
     data class Snackbar(val text: StringHolder) : SideEffect
-    data class ErrorSnackbar(val error: Throwable, val errorReport: ErrorReport? = null) :
+    data class ErrorSnackbar(val error: Throwable, val supportData: SupportData? = null) :
         SideEffect
     data class Dialog(val title: StringHolder? = null, val message: StringHolder, val icon: DrawableResource? = null) : SideEffect
-    data class ErrorDialog constructor(val error: Throwable, val errorReport: ErrorReport? = null) : SideEffect
+    data class ErrorDialog(val error: Throwable, val supportData: SupportData? = null) : SideEffect
     data class OpenDenomination(val denominatedValue: DenominatedValue): SideEffect
     data class OpenFeeBottomSheet(
         val greenWallet: GreenWallet,
@@ -44,7 +44,7 @@ class SideEffects : SideEffect {
         val title: StringHolder? = null,
         val message: StringHolder? = null,
         val error: Throwable? = null,
-        val errorReport: ErrorReport? = null,
+        val supportData: SupportData? = null,
     ) : SideEffect
     data class NavigateToRoot(val popTo: PopTo? = null) : SideEffect
     object CloseDrawer: SideEffect

@@ -7,8 +7,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.question
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Question
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.extensions.toggle
 
@@ -21,13 +22,21 @@ fun PopupMenuPreview() {
 
     GreenPreview {
         Box {
-            GreenColumn(modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()) {
+            GreenColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+            ) {
                 GreenButton(text = "isContextMenuVisible: ${popupState.isContextMenuVisible.value}") {
                     popupState.isContextMenuVisible.toggle()
                 }
-                PopupMenu(state = popupState, entries = listOf(MenuEntry(title = "Menu 1"), MenuEntry(title = "Menu 2", iconRes = Res.drawable.question )))
+                PopupMenu(
+                    state = popupState,
+                    entries = listOf(
+                        MenuEntry(title = "Menu 1"),
+                        MenuEntry(title = "Menu 2", imageVector = PhosphorIcons.Regular.Question)
+                    )
+                )
             }
         }
     }

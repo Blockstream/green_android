@@ -106,6 +106,15 @@ data class Network(
             else -> 6L
         }
 
+    @IgnoredOnParcel
+    val zendeskValue: String
+        get() = when  {
+            isSinglesig -> "singlesig__green_"
+            isMultisig -> "multisig_shield__green_"
+            isLightning -> "lightning__green_"
+            else -> ""
+        }
+
     fun getVerPublic(): Int {
         return if (isMainnet) BIP32_VER_MAIN_PUBLIC else BIP32_VER_TEST_PUBLIC
     }

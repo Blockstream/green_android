@@ -13,9 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -23,12 +21,12 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.brand
-import blockstream_green.common.generated.resources.copy
 import blockstream_green.common.generated.resources.eye
 import blockstream_green.common.generated.resources.facebook_logo
 import blockstream_green.common.generated.resources.github_logo
 import blockstream_green.common.generated.resources.globe
 import blockstream_green.common.generated.resources.id_copy_device_id
+import blockstream_green.common.generated.resources.id_get_support
 import blockstream_green.common.generated.resources.id_give_us_your_feedback
 import blockstream_green.common.generated.resources.id_privacy_policy
 import blockstream_green.common.generated.resources.id_terms_of_service
@@ -42,8 +40,15 @@ import blockstream_green.common.generated.resources.x_logo
 import blockstream_green.common.generated.resources.youtube_logo
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Bug
+import com.adamglin.phosphoricons.regular.Copy
+import com.blockstream.common.SupportType
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.models.about.AboutViewModel
 import com.blockstream.common.models.about.AboutViewModelAbstract
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
@@ -54,7 +59,6 @@ import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.MenuEntry
 import com.blockstream.compose.components.PopupMenu
 import com.blockstream.compose.components.PopupState
-import com.blockstream.compose.dialogs.FeedbackDialog
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelLarge
@@ -83,27 +87,12 @@ fun AboutScreen(
     viewModel: AboutViewModelAbstract,
 ) {
     val popupState = remember { PopupState() }
-    var showFeedbackDialog by remember { mutableStateOf(false) }
 
     HandleSideEffect(viewModel) {
         when (it) {
             is SideEffects.OpenMenu -> {
                 popupState.isContextMenuVisible.value = true
             }
-
-            is SideEffects.OpenDialog -> {
-                showFeedbackDialog = true
-            }
-
-            is SideEffects.Dismiss -> {
-                showFeedbackDialog = false
-            }
-        }
-    }
-
-    if (showFeedbackDialog) {
-        FeedbackDialog(viewModel = viewModel) {
-            showFeedbackDialog = false
         }
     }
 
@@ -145,7 +134,7 @@ fun AboutScreen(
                     entries = listOf(
                         MenuEntry(
                             title = stringResource(Res.string.id_copy_device_id),
-                            iconRes = Res.drawable.copy,
+                            imageVector = PhosphorIcons.Regular.Copy,
                             onClick = {
                                 viewModel.postEvent(AboutViewModel.LocalEvents.CountlyCopyDeviceId)
                             }
@@ -172,6 +161,12 @@ fun AboutScreen(
                             iconRes = Res.drawable.eye,
                             onClick = {
                                 viewModel.postEvent(AboutViewModel.LocalEvents.DeleteEvents)
+                            }
+                        ), MenuEntry(
+                            title = "Create Crash Report",
+                            imageVector = PhosphorIcons.Regular.Bug,
+                            onClick = {
+                                viewModel.postEvent(AboutViewModel.LocalEvents.CrashReport)
                             }
                         )
                     )
@@ -265,7 +260,12 @@ fun AboutScreen(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .clickable {
-                        viewModel.postEvent(AboutViewModel.LocalEvents.ClickFeedback)
+                        viewModel.postEvent(
+                            NavigateDestinations.Support(
+                                type = SupportType.FEEDBACK,
+                                supportData = SupportData.create()
+                            )
+                        )
                     },
             ) {
                 Text(
@@ -285,6 +285,26 @@ fun AboutScreen(
             ) {
                 Text(
                     stringResource(Res.string.id_visit_the_blockstream_help),
+                    modifier = Modifier.align(Alignment.Center),
+                    color = MaterialTheme.colorScheme.primary,
+                    style = labelLarge,
+                )
+            }
+
+            GreenCard(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .clickable {
+                        viewModel.postEvent(
+                            NavigateDestinations.Support(
+                                type = SupportType.INCIDENT,
+                                supportData = SupportData.create()
+                            )
+                        )
+                    },
+            ) {
+                Text(
+                    stringResource(Res.string.id_get_support),
                     modifier = Modifier.align(Alignment.Center),
                     color = MaterialTheme.colorScheme.primary,
                     style = labelLarge,

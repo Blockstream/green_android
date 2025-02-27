@@ -36,9 +36,9 @@ import blockstream_green.common.generated.resources.id_scan_qr_code
 import blockstream_green.common.generated.resources.magnifying_glass_plus
 import blockstream_green.common.generated.resources.qr_code
 import blockstream_green.common.generated.resources.question
-
-import blockstream_green.common.generated.resources.share_network
-import com.blockstream.compose.theme.GreenChromePreview
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Spinner
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium
@@ -159,13 +159,22 @@ fun GreenButton(
                             duration = 2000,
                             enabled = onProgress,
                         ) {
-                            Icon(
-                                painter = icon.takeIf { !onProgress }
-                                    ?: painterResource(Res.drawable.arrows_counter_clockwise),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(18.dp)
-                            )
+                            if(onProgress) {
+                                Icon(
+                                    imageVector = PhosphorIcons.Regular.Spinner,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(18.dp)
+                                )
+                            } else {
+                                Icon(
+                                    painter = icon.takeIf { !onProgress }
+                                        ?: painterResource(Res.drawable.arrows_counter_clockwise),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(18.dp)
+                                )
+                            }
                         }
                     }
                 }

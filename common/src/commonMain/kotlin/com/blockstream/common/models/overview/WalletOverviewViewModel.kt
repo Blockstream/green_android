@@ -125,7 +125,7 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
 
     override val isWalletOnboarding: StateFlow<Boolean> = combine(session.zeroAccounts, session.failedNetworks) { zeroAccounts, failedNetworks ->
         zeroAccounts && failedNetworks.isEmpty() && !session.isWatchOnly
-    }.filter { session.isConnected }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
+    }.filter { session.isConnected }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), false)
 
     override val assetIcons: StateFlow<List<String>> = session.walletAssets
         .filter { session.isConnected }.map {
@@ -136,11 +136,11 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
                     "unknown"
                 }
             }.distinct()
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), listOf())
 
     override val totalAssets: StateFlow<Int> = session.walletAssets.map {
         it.size
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), 0)
 
     private val _accountsBalance = combine(
         session.accounts,
@@ -152,7 +152,7 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
         accounts.map {
             AccountBalance.create(account = it, session = session)
         }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), listOf())
 
     override val accounts: StateFlow<List<AccountBalance>> =
         combine(hideAmounts, _accountsBalance, session.expired2FA) { hideAmounts, accountsBalance, _ ->
@@ -161,13 +161,13 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
             } else {
                 accountsBalance
             }
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), listOf())
 
     override val lightningInfo: StateFlow<LightningInfoLook?> = (session.lightningSdkOrNull?.nodeInfoStateFlow?.map {
         if(session.isConnected && isLightningShortcut){
             LightningInfoLook.create(session = session, nodeState = it)
         } else null
-    } ?: emptyFlow()).stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
+    } ?: emptyFlow()).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), null)
 
 
     private val _transactions: StateFlow<DataState<List<TransactionLook>>> = combine(
@@ -176,10 +176,10 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
     ) { transactions, _ ->
         transactions.mapSuccess {
             it.map {
-                TransactionLook.create(it, session)
+                TransactionLook.create(transaction = it, session = session, disableHideAmounts = true)
             }
         }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), DataState.Loading)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), DataState.Loading)
 
     // Re-calculate if needed (hideAmount or denomination & exchange rate change)
     override val transactions: StateFlow<DataState<List<TransactionLook>>> =
@@ -192,7 +192,7 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
             } else {
                 transactionsLooks
             }
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), DataState.Loading)
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), DataState.Loading)
 
     private val primaryBalanceInFiat: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
@@ -216,11 +216,11 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
             lspHeath?.takeIf { it != HealthCheckStatus.OPERATIONAL }
                 ?.let { AlertType.LspStatus(maintenance = it == HealthCheckStatus.MAINTENANCE) },
         )
-    }.filter { session.isConnected }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
+    }.filter { session.isConnected }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), listOf())
 
     override val archivedAccounts: StateFlow<Int> = session.allAccounts.map {
         it.filter { it.hidden }.size
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), 0)
 
     override val isLightningShortcut
         get() = session.isLightningShortcut

@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -30,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.caret_right
-import blockstream_green.common.generated.resources.copy
 import blockstream_green.common.generated.resources.id_1d_minutes
 import blockstream_green.common.generated.resources.id_2fa_threshold
 import blockstream_green.common.generated.resources.id_a_screen_lock_must_be_enabled
@@ -67,6 +67,9 @@ import blockstream_green.common.generated.resources.sign_out
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.koinScreenModel
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Copy
 import com.blockstream.common.Parcelable
 import com.blockstream.common.Parcelize
 import com.blockstream.common.data.GreenWallet
@@ -486,7 +489,7 @@ fun WalletSettingsScreen(
                     Setting(
                         title = stringResource(Res.string.id_support),
                         subtitle = stringResource(Res.string.id_copy_support_id),
-                        painter = painterResource(Res.drawable.copy),
+                        imageVector = PhosphorIcons.Regular.Copy,
                         modifier = Modifier.clickable {
                             viewModel.postEvent(WalletSettingsViewModel.LocalEvents.SupportId)
                         })
@@ -575,6 +578,7 @@ fun Setting(
     subtitleAnnotated: AnnotatedString? = null,
     subtitleColor: Color = whiteMedium,
     painter: Painter? = null,
+    imageVector: ImageVector? = null,
     checked: Boolean? = null,
     isRadio: Boolean = false,
     enabled: Boolean = true,
@@ -587,7 +591,7 @@ fun Setting(
                 modifier = Modifier
                     .padding(vertical = 16.dp)
                     .padding(start = 16.dp)
-                    .ifTrue(painter == null && checked == null){
+                    .ifTrue(imageVector == null && painter == null && checked == null){
                         padding(end = 16.dp)
                     }
                     .weight(1f)
@@ -643,6 +647,17 @@ fun Setting(
             if (painter != null) {
                 Icon(
                     painter = painter,
+                    contentDescription = null,
+                    tint = whiteLow,
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .padding(end = 16.dp)
+                )
+            }
+
+            imageVector?.also {
+                Icon(
+                    imageVector = it,
                     contentDescription = null,
                     tint = whiteLow,
                     modifier = Modifier

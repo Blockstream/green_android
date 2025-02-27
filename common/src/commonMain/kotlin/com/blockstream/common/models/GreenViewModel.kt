@@ -25,7 +25,7 @@ import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.DeviceIdentifier
 import com.blockstream.common.data.EncryptedData
-import com.blockstream.common.data.ErrorReport
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.NavData
@@ -530,21 +530,6 @@ open class GreenViewModel constructor(
                     logoutSideEffect(event.reason)
                 }
             }
-            is Events.SubmitErrorReport -> {
-                val subject = screenName()?.let { "Android Issue in $it" } ?: "Android Error Report"
-                zendeskSdk.submitNewTicket(
-                    subject = subject,
-                    email = event.email,
-                    message = event.message,
-                    errorReport = event.errorReport
-                )
-
-                if(event.errorReport.paymentHash.isNotBlank()) {
-                    sessionOrNull?.takeIf { it.isConnected }?.also {
-                        it.reportLightningError(event.errorReport.paymentHash ?: "")
-                    }
-                }
-            }
             is Events.SelectTwoFactorMethod -> {
                 _twoFactorDeferred?.takeIf { !it.isCompleted }?.also {
                     if(event.method == null){
@@ -633,7 +618,7 @@ open class GreenViewModel constructor(
             if (appInfo.isDebug) {
                 it.printStackTrace()
             }
-            postSideEffect(SideEffects.ErrorDialog(error = it, errorReport = errorReport(it)))
+            postSideEffect(SideEffects.ErrorDialog(error = it, supportData = errorReport(it)))
         }
     ): Job {
         return viewModelScope.coroutineScope.launch {
@@ -893,7 +878,7 @@ open class GreenViewModel constructor(
 
     protected open suspend fun denominatedValue(): DenominatedValue? = null
     protected open fun setDenominatedValue(denominatedValue: DenominatedValue) { }
-    protected open fun errorReport(exception: Throwable): ErrorReport? { return null}
+    protected open fun errorReport(exception: Throwable): SupportData? { return null}
 
     private var _twoFactorDeferred: CompletableDeferred<String>? = null
     override suspend fun selectTwoFactorMethod(availableMethods: List<String>): CompletableDeferred<String> {

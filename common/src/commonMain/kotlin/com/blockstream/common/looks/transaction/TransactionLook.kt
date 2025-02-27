@@ -40,13 +40,13 @@ data class TransactionLook constructor(
         }
 
     companion object : Loggable() {
-        suspend fun create(transaction: Transaction, session: GdkSession): TransactionLook {
+        suspend fun create(transaction: Transaction, session: GdkSession, disableHideAmounts: Boolean = false): TransactionLook {
 
             return TransactionLook(
                 transaction = transaction,
                 status = TransactionStatus.create(transaction, session),
                 assets = transaction.assets.map {
-                    session.starsOrNull ?: it.second.toAmountLookOrNa(
+                    session.starsOrNull.takeIf { !disableHideAmounts } ?: it.second.toAmountLookOrNa(
                         session = session,
                         assetId = it.first,
                         withUnit = true,

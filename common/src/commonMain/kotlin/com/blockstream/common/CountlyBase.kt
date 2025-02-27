@@ -6,6 +6,7 @@ import com.blockstream.common.data.ApplicationSettings
 import com.blockstream.common.data.Banner
 import com.blockstream.common.data.CountlyAsset
 import com.blockstream.common.data.CredentialType
+import com.blockstream.common.data.ExceptionWithSupportData
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.Promo
 import com.blockstream.common.data.SetupArgs
@@ -691,6 +692,7 @@ abstract class CountlyBase(
                     ?.also {
                         map[PARAM_NODE_ID] = it
                     }
+                (error as? ExceptionWithSupportData)?.supportData?.paymentHash?.also { map[PAYMENT_HASH] = it }
             }
         )
     }
@@ -945,7 +947,8 @@ abstract class CountlyBase(
         const val PARAM_FIRMWARE = "firmware"
         const val PARAM_CONNECTION = "connection"
         const val PARAM_ERROR = "error"
-        const val PARAM_NODE_ID = "NODE_ID"
+        const val PARAM_NODE_ID = "node_id"
+        const val PAYMENT_HASH = "payment_hash"
         const val PARAM_FLOW = "flow"
         const val PARAM_EPHEMERAL_BIP39 = "ephemeral_bip39"
         const val PARAM_MAINNET = "mainnet"

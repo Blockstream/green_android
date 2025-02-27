@@ -103,7 +103,7 @@ private fun commonModules(appConfig: AppConfig): List<Module> {
             )
             Gdk(
                 settings = get(),
-                gdkBinding = getGdkBinding(appConfig.isDebug, config)
+                gdkBinding = getGdkBinding(printGdkMessages = appConfig.isDebug, config = config)
             )
         }
         single {

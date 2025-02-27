@@ -1,19 +1,19 @@
 package com.blockstream.common.utils
 
 import com.blockstream.common.data.AppInfo
-import com.blockstream.common.data.ErrorReport
+import com.blockstream.common.data.SupportData
 import com.mohamedrejeb.ksoup.entities.KsoupEntities
 
 fun createNewTicketUrl(
     appInfo: AppInfo,
     subject: String? = null,
-    errorReport: ErrorReport? = null,
+    supportData: SupportData? = null,
     isJade: Boolean = false,
 ): String {
     val product = if (isJade) "blockstream_jade" else "green"
     val hw = if (isJade) "jade" else ""
 
-    val policy: String = errorReport?.zendeskSecurityPolicy ?: ""
+    val policy: String = supportData?.zendeskSecurityPolicy ?: ""
 
     // Temp solution
     val platform = if(appInfo.userAgent.contains("ios", ignoreCase = true)) "ios" else "android"

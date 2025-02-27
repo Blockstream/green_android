@@ -10,11 +10,13 @@ kotlin-ksp = "2.1.0-1.0.29"
 kable = "0.34.0"
 coil = "3.0.4"
 ktor = "3.0.2"
+phosphorIcon = "1.0.0"
 tuulbox-coroutines = "8.0.0"
 android-gradle-plugin = "8.7.3"
 androidCompileSdk = "34"
 androidTargetSdk = "34"
 androidMinSdk = "24"
+statelyConcurrentCollections = "2.1.0"
 buildTools = "34.0.0"
 breez = "0.6.6"
 androidx-junit = "1.2.1"
@@ -89,9 +91,11 @@ ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-java = { module = "io.ktor:ktor-client-java", version.ref = "ktor" }
+phosphor-icon = { module = "com.adamglin:phosphor-icon", version.ref = "phosphorIcon" }
 tuulbox-coroutines = { module = "com.juul.tuulbox:coroutines", version.ref = "tuulbox-coroutines" }
 desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar" }
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
+stately-concurrent-collections = { module = "co.touchlab:stately-concurrent-collections", version.ref = "statelyConcurrentCollections" }
 androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
