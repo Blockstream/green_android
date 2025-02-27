@@ -97,7 +97,7 @@ fun DeviceInteractionBottomSheet(
 
     val title = when {
         isMasterBlindingKeyRequest -> null
-        transactionConfirmLook != null || verifyAddress != null -> if (viewModel.device?.isNfc == true) "Tap your card to sign" else stringResource(Res.string.id_confirm_on_your_device)
+        transactionConfirmLook != null || verifyAddress != null -> if (viewModel.device?.isNfc == true) "Scan your card" else stringResource(Res.string.id_confirm_on_your_device)
         else -> {
             message?.stringOrNull()
         }

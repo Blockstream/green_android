@@ -1092,6 +1092,7 @@
     <string name="id_scan_qr_with_jade">Scan QR with Jade</string>
     <string name="id_scan_the_qr_code_with_an">Scanne den QR-Code mit einer Authenticator-App</string>
     <string name="id_scan_to_send_here">Hier scannen und senden</string>
+    <string name="id_scan_your_card">Scannen Sie Ihre Karte</string>
     <string name="id_screen_lock">Bildschirmsperre</string>
     <string name="id_search">Suche</string>
     <string name="id_search_address">Adresse suchen</string>

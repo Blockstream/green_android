@@ -400,7 +400,7 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
         // request to card if not cached already
         try {
             if(hwInteraction != null) {
-                hwInteraction.requestNfcToast(DeviceBrand.Satochip, "Scan card to get xpub...", completable);
+                hwInteraction.requestNfcToast(DeviceBrand.Satochip, "Exporting xpub...", completable);
             }
 
             this.actionObject.actionStatus = NfcActionStatus.busy;
@@ -445,7 +445,7 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
 
         try {
             if(hwInteraction != null) {
-                hwInteraction.requestNfcToast(DeviceBrand.Satochip, "Scan card to sign message...", completable);
+                hwInteraction.requestNfcToast(DeviceBrand.Satochip, "Signing login message...", completable);
             }
 
             this.actionObject.actionStatus = NfcActionStatus.busy;
@@ -504,7 +504,7 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
             }
 
             if(hwInteraction != null) {
-                hwInteraction.requestNfcToast(DeviceBrand.Satochip, "Scan card to sign transaction...", completable);
+                hwInteraction.requestNfcToast(DeviceBrand.Satochip, "Signing transaction...", completable);
             }
 
             final Object wallyTx = Wally.tx_from_bytes(txBytes, Wally.WALLY_TX_FLAG_USE_WITNESS);

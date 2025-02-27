@@ -79,7 +79,7 @@ fun NfcToastBottomSheet(
     onDismissRequest: () -> Unit,
 ) {
 
-    val title = "Please scan your card"
+    val title = "Scan your card" //stringResource(Res.string.id_scan_your_card)
 
     val deviceIcon = viewModel.device?.icon()
 
