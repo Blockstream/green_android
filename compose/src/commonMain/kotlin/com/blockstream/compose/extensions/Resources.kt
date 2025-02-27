@@ -45,6 +45,7 @@ import blockstream_green.common.generated.resources.ledger_device
 import blockstream_green.common.generated.resources.lightning_fill
 import blockstream_green.common.generated.resources.liquid
 import blockstream_green.common.generated.resources.liquid_testnet
+import blockstream_green.common.generated.resources.nfc_scan
 import blockstream_green.common.generated.resources.qr_code
 import blockstream_green.common.generated.resources.spv_error
 import blockstream_green.common.generated.resources.spv_in_progress
@@ -112,6 +113,7 @@ fun GreenDevice?.actionIcon(): DrawableResource = this?.deviceModel?.actionIcon(
 fun DeviceBrand.deviceBrandIcon(): DrawableResource = when (this) {
     DeviceBrand.Ledger -> Res.drawable.ledger_device
     DeviceBrand.Trezor -> Res.drawable.trezor_device
+    DeviceBrand.Satochip -> Res.drawable.nfc_scan
     DeviceBrand.Generic -> Res.drawable.generic_device
     else -> Res.drawable.blockstream_devices
 }
@@ -123,6 +125,7 @@ fun DeviceModel.icon(): DrawableResource = when (this) {
     DeviceModel.TrezorGeneric, DeviceModel.TrezorModelT, DeviceModel.TrezorModelOne ->  Res.drawable.trezor_device
     DeviceModel.LedgerGeneric, DeviceModel.LedgerNanoS, DeviceModel.LedgerNanoX -> Res.drawable.ledger_device
     DeviceModel.Generic -> Res.drawable.generic_device
+    DeviceModel.SatochipGeneric -> Res.drawable.nfc_scan
 }
 
 fun DeviceModel.actionIcon(): DrawableResource = when (this) {

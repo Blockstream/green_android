@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.nfc.NfcAdapter
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import androidx.core.content.ContextCompat
@@ -25,20 +26,26 @@ import com.juul.kable.PlatformAdvertisement
 import com.juul.kable.peripheral
 import java.lang.ref.WeakReference
 
-
 class DeviceManagerAndroid constructor(
     scope: ApplicationScope,
+    val activityProvider: ActivityProvider, // provide Activity reference needed by NfcAdapter
     val context: Context,
     sessionManager: SessionManager,
     bluetoothManager: BluetoothManager,
     val usbManager: UsbManager,
     supportedBleDevices: List<String>,
     val deviceMapper: (
-        deviceManager: DeviceManagerAndroid, usbDevice: UsbDevice?, bleService: Uuid?,
+        deviceManager: DeviceManagerAndroid,
+        usbDevice: UsbDevice?,
+        bleService: Uuid?,
         peripheral: Peripheral?,
-        isBonded: Boolean?
+        isBonded: Boolean?,
+        nfcDevice: NfcDevice?,
+        activityProvider: ActivityProvider?,
     ) -> AndroidDevice?
-): DeviceManager(scope, sessionManager, bluetoothManager, supportedBleDevices) {
+): CardListener, DeviceManager(scope, sessionManager, bluetoothManager, supportedBleDevices) {
+
+    private val nfcAdapter = NfcAdapter.getDefaultAdapter(context)
 
     private var onPermissionSuccess: WeakReference<(() -> Unit)>? = null
     private var onPermissionError: WeakReference<((throwable: Throwable?) -> Unit)>? = null
@@ -89,8 +96,9 @@ class DeviceManagerAndroid constructor(
             ContextCompat.RECEIVER_EXPORTED
         )
 
-        scanUsbDevices()
 
+        scanNfcDevices()
+        scanUsbDevices()
     }
 
     override fun advertisedDevice(advertisement: PlatformAdvertisement) {
@@ -103,7 +111,7 @@ class DeviceManagerAndroid constructor(
             val peripheral = scope.peripheral(advertisement)
             val bleService = advertisement.uuids.firstOrNull()
 
-            deviceMapper.invoke(this, null, bleService, peripheral, advertisement.isBonded())
+            deviceMapper.invoke(this, null, bleService, peripheral, advertisement.isBonded(), null,null)
                 ?.also {
                     addBluetoothDevice(it)
                 }
@@ -124,7 +132,7 @@ class DeviceManagerAndroid constructor(
 
     override fun refreshDevices(){
         super.refreshDevices()
-
+        scanNfcDevices()
         scanUsbDevices()
     }
 
@@ -149,7 +157,7 @@ class DeviceManagerAndroid constructor(
 
                 // Jade or UsbDeviceMapper
                 (JadeUsbDevice.fromUsbDevice(deviceManager = this, usbDevice = usbDevice)
-                    ?: deviceMapper.invoke(this, usbDevice, null, null, null))?.let {
+                    ?: deviceMapper.invoke(this, usbDevice, null, null, null, null,null))?.let {
                     newDevices += it
                 }
             }
@@ -157,6 +165,62 @@ class DeviceManagerAndroid constructor(
 
         usbDevices.value = oldDevices + newDevices
     }
+
+    fun scanNfcDevices() {
+        logger.i { "Scan for NFC devices" }
+
+        val cardManager = NfcCardManager()
+        cardManager.setCardListener(this)
+        cardManager.start()
+
+        val activity = activityProvider.getCurrentActivity()
+
+        nfcAdapter?.enableReaderMode(
+            activity,
+            cardManager,
+            NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_NFC_B or NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK,
+            null
+        )
+    }
+
+    override fun onConnected(channel: CardChannel) {
+        logger.i { "SATODEBUG DeviceManagerAndroid onConnected" }
+        for (nfcDeviceType in NfcDeviceType.entries) {
+            try {
+                val cmdSet = SatochipCommandSet(channel)
+
+                // try to select applet according to device candidate
+                cmdSet.cardSelect(nfcDeviceType).checkOK()
+
+                // add device
+                val nfcDevice = NfcDevice(NfcDeviceType.SATOCHIP)
+                val newDevices = mutableListOf<AndroidDevice>()
+                deviceMapper.invoke(this, null, null, null, null, nfcDevice, activityProvider)
+                    ?.let {
+                        newDevices += it
+                    }
+                logger.i { "SATODEBUG DeviceManagerAndroid onConnected newDevices: ${newDevices}" }
+                nfcDevices.value = newDevices
+
+                // disconnect card
+                onDisconnected()
+
+                // stop polling
+                val activity = activityProvider.getCurrentActivity()
+                nfcAdapter?.disableReaderMode(activity)
+
+                // should probably avoid to connect to multiple NFC devices at the same time?
+                return
+            } catch (e: Exception) {
+                logger.i { "SATODEBUG DeviceManagerAndroid onConnected: failed to connect to device: $nfcDeviceType" }
+            }
+        }
+    }
+
+    override fun onDisconnected() {
+        logger.i { "SATODEBUG DeviceManagerAndroid onDisconnected: Card disconnected!" }
+    }
+
 
     companion object : Loggable() {
         private const val ACTION_USB_PERMISSION = "com.blockstream.green.USB_PERMISSION"

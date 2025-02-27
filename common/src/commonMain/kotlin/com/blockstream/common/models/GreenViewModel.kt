@@ -236,7 +236,8 @@ open class GreenViewModel constructor(
     val promo: MutableStateFlow<Promo?> = MutableStateFlow(null)
     private var promoImpression: Boolean = false
 
-    private var _deviceRequest: CompletableDeferred<String>? = null
+    //private var _deviceRequest: CompletableDeferred<String>? = null //satodebug use compagnon object
+
     private var _bootstrapped: Boolean = false
 
     open val isLoginRequired: Boolean = greenWalletOrNull != null
@@ -871,6 +872,10 @@ open class GreenViewModel constructor(
         }
     }
 
+    final override fun requestNfcToast(deviceBrand: DeviceBrand?, message: String?, completable: CompletableDeferred<Boolean>?) {
+        postSideEffect(SideEffects.DeviceRequestNfcToast(message, completable = completable))
+    }
+
     protected open suspend fun denominatedValue(): DenominatedValue? = null
     protected open fun setDenominatedValue(denominatedValue: DenominatedValue) { }
     protected open fun errorReport(exception: Throwable): SupportData? { return null}
@@ -1019,5 +1024,6 @@ open class GreenViewModel constructor(
 
     companion object: Loggable(){
         fun preview() = object : GreenViewModel() { }
+        private var _deviceRequest: CompletableDeferred<String>? = null
     }
 }

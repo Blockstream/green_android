@@ -1,5 +1,6 @@
 package com.blockstream.compose.managers
 
+import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import com.blockstream.common.data.AppInfo
 import com.blockstream.common.devices.AndroidDevice
@@ -14,6 +15,7 @@ import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.HardwareConnectInteraction
 import com.blockstream.common.interfaces.ConnectionResult
 import com.blockstream.compose.devices.LedgerDevice
+import com.blockstream.compose.devices.SatochipDevice
 import com.blockstream.compose.devices.TrezorDevice
 import com.blockstream.jade.HttpRequestHandler
 import com.blockstream.jade.JadeAPI
@@ -26,6 +28,7 @@ import com.btchip.comm.BTChipTransport
 import com.btchip.comm.android.BTChipTransportAndroid
 import com.greenaddress.greenbits.wallets.BTChipHWWallet
 import com.greenaddress.greenbits.wallets.LedgerBLEAdapter
+import com.greenaddress.greenbits.wallets.SatochipHWWallet
 import com.greenaddress.greenbits.wallets.TrezorHWWallet
 import com.satoshilabs.trezor.Trezor
 import kotlinx.coroutines.CoroutineScope
@@ -58,6 +61,8 @@ class DeviceConnectionManagerAndroid constructor(
             connectTrezorDevice(it, interaction)
         } ?: (device as? LedgerDevice)?.let {
             connectLedgerDevice(it, interaction)
+        } ?: (device as? SatochipDevice)?.let {
+            connectSatochipDevice(it, interaction)
         } ?: super.connectDevice(device, httpRequestHandler, interaction))
     }
 
@@ -142,6 +147,29 @@ class DeviceConnectionManagerAndroid constructor(
         )
 
         device.gdkHardwareWallet = TrezorHWWallet(trezor, trezorDevice, firmwareVersion)
+
+        return ConnectionResult()
+    }
+
+    private suspend fun connectSatochipDevice(device: SatochipDevice, interaction: HardwareConnectInteraction): ConnectionResult {
+
+        val satoDevice = com.blockstream.common.gdk.data.Device(
+            name = "Satochip",
+            supportsArbitraryScripts = false,
+            supportsLowR = false,
+            supportsHostUnblinding = false,
+            supportsExternalBlinding = false,
+            supportsLiquid = DeviceSupportsLiquid.None,
+            supportsAntiExfilProtocol = DeviceSupportsAntiExfilProtocol.None
+        )
+
+        val pin: String? = null;
+        //val pin: String? = satochipInteraction?.requestPassphrase(DeviceBrand.Satochip)
+
+        // provide activity and context needed for NFC
+        val activity: Activity? = device.activityProvider?.getCurrentActivity()
+
+        device.gdkHardwareWallet = SatochipHWWallet(satoDevice, pin, activity, device.context)
 
         return ConnectionResult()
     }

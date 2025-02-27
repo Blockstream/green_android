@@ -35,6 +35,9 @@ data class Device constructor(
     val isLedger
         get() = name.lowercase() == "ledger"
 
+    val isSatochip
+        get() = name.lowercase() == "satochip"
+
     override fun kSerializer(): KSerializer<Device> {
         return serializer()
     }

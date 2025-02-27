@@ -55,6 +55,7 @@ open class DeviceManager constructor(
 
     protected val usbDevices = MutableStateFlow<List<GreenDevice>>(listOf())
     private val bleDevices = MutableStateFlow<List<GreenDevice>>(listOf())
+    protected val nfcDevices = MutableStateFlow<List<GreenDevice>>(listOf())
 
     private val _status = MutableStateFlow<ScanStatus>(ScanStatus.Stopped)
     val status = _status.asStateFlow()
@@ -71,8 +72,8 @@ open class DeviceManager constructor(
         }
     }
 
-    val devices = combine(usbDevices, bleDevices, disconnectEvent) { usb, ble, _ ->
-        ble.filter { it.deviceState.value == DeviceState.CONNECTED } + usb
+    val devices = combine(usbDevices, bleDevices, disconnectEvent, nfcDevices) { usb, ble, _, nfc->
+        ble.filter { it.deviceState.value == DeviceState.CONNECTED } + usb + nfc
     }.stateIn(scope, SharingStarted.Eagerly, emptyList())
 
     var savedDevice: GreenDevice? = null

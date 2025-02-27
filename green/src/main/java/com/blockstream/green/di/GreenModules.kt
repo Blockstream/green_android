@@ -6,12 +6,16 @@ import android.content.Context
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import com.benasher44.uuid.Uuid
+import com.blockstream.common.devices.ActivityProvider
+import com.blockstream.common.devices.AndroidActivityProvider
 import com.blockstream.common.devices.DeviceManagerAndroid
+import com.blockstream.common.devices.NfcDevice
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.interfaces.DeviceConnectionInterface
 import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.managers.NotificationManager
 import com.blockstream.compose.devices.LedgerDevice
+import com.blockstream.compose.devices.SatochipDevice
 import com.blockstream.compose.devices.TrezorDevice
 import com.blockstream.compose.managers.DeviceConnectionManager
 import com.blockstream.compose.managers.DeviceConnectionManagerAndroid
@@ -36,15 +40,19 @@ val greenModules = module {
             get()
         )
     } binds (arrayOf(NotificationManagerAndroid::class, NotificationManager::class))
+
+    single { AndroidActivityProvider() } binds arrayOf(ActivityProvider::class)
+
     single {
         DeviceManagerAndroid(
+            get(),
             get(),
             androidContext(),
             get(),
             get(),
             get(),
             listOf(LedgerDeviceBLE.SERVICE_UUID.toString(), JadeBleConnection.JADE_SERVICE)
-        ) { deviceManagerAndroid: DeviceManagerAndroid, usbDevice: UsbDevice?, bleService: Uuid?, peripheral: Peripheral?, isBonded: Boolean? ->
+        ) { deviceManagerAndroid: DeviceManagerAndroid, usbDevice: UsbDevice?, bleService: Uuid?, peripheral: Peripheral?, isBonded: Boolean?, nfcDevice: NfcDevice?, activityProvider: ActivityProvider? ->
             usbDevice?.let {
                 TrezorDevice.fromUsbDevice(deviceManager = deviceManagerAndroid, usbDevice = usbDevice)
                     ?: LedgerDevice.fromUsbDevice(
@@ -53,6 +61,8 @@ val greenModules = module {
                     )
             } ?: peripheral?.let {
                 LedgerDevice.fromScan(deviceManager = deviceManagerAndroid, bleService = bleService, peripheral = peripheral, isBonded = isBonded == true)
+            } ?: nfcDevice?.let {
+                SatochipDevice.fromNfcDevice(deviceManager = deviceManagerAndroid, nfcDevice= nfcDevice, activityProvider = activityProvider)
             }
         }
     } binds (arrayOf(DeviceManager::class, DeviceManagerAndroid::class))

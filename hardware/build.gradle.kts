@@ -42,6 +42,9 @@ dependencies {
     implementation(libs.jackson.datatype.json.org)
     /** ----------------------------------------------------------------------------------------- */
 
+    /** For satochip */
+    implementation(libs.org.bouncycastle)
+
     testImplementation(libs.junit)
     testImplementation(libs.androidx.core.testing)
     testImplementation(libs.mockito.kotlin)

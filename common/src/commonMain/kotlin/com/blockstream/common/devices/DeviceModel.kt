@@ -12,6 +12,7 @@ enum class DeviceModel(val deviceModel: String) {
     LedgerGeneric("Ledger"),
     LedgerNanoS("Ledger Nano S"),
     LedgerNanoX("Ledger Nano X"),
+    SatochipGeneric("Satochip"),
     Generic("Generic Hardware Wallet");
 
     val deviceBrand: DeviceBrand
@@ -20,6 +21,7 @@ enum class DeviceModel(val deviceModel: String) {
             TrezorGeneric, TrezorModelT, TrezorModelOne -> DeviceBrand.Trezor
             LedgerGeneric, LedgerNanoS, LedgerNanoX -> DeviceBrand.Ledger
             Generic -> DeviceBrand.Generic
+            SatochipGeneric -> DeviceBrand.Satochip
         }
 
     val isJade: Boolean
@@ -38,6 +40,7 @@ enum class DeviceModel(val deviceModel: String) {
             LedgerNanoX -> "ledger_nano_x"
             TrezorGeneric -> "trezor"
             LedgerGeneric -> "ledger"
+            SatochipGeneric -> "satochip"
             Generic -> "generic"
         }
 }

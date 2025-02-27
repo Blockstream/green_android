@@ -17,6 +17,7 @@ import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.database.Database
 import com.blockstream.common.database.LoginCredentials
+import com.blockstream.common.devices.AndroidActivityProvider
 import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.data.Network
@@ -47,6 +48,7 @@ class GreenActivity : FragmentActivity() {
     private val database: Database by inject()
     private val sessionManager: SessionManager by inject()
     private val settingsManager by inject<SettingsManager>()
+    private val activityProvider: AndroidActivityProvider by inject<AndroidActivityProvider>()
 
     private val mainViewModel: MainViewModel by viewModel()
 
@@ -54,6 +56,7 @@ class GreenActivity : FragmentActivity() {
         installSplashScreen()
 
         super.onCreate(savedInstanceState)
+        activityProvider.setActivity(this)
 
         enableEdgeToEdge()
         setContent {
@@ -181,6 +184,11 @@ class GreenActivity : FragmentActivity() {
     override fun onStop() {
         super.onStop()
         countly.onStop()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        activityProvider.clearActivity()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
