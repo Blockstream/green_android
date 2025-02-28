@@ -236,7 +236,7 @@ open class GreenViewModel constructor(
     val promo: MutableStateFlow<Promo?> = MutableStateFlow(null)
     private var promoImpression: Boolean = false
 
-    private var _deviceRequest: CompletableDeferred<String>? = null
+    //private var _deviceRequest: CompletableDeferred<String>? = null
     private var _bootstrapped: Boolean = false
 
     open val isLoginRequired: Boolean = greenWalletOrNull != null
@@ -1019,5 +1019,6 @@ open class GreenViewModel constructor(
 
     companion object: Loggable(){
         fun preview() = object : GreenViewModel() { }
+        private var _deviceRequest: CompletableDeferred<String>? = null
     }
 }
