@@ -117,6 +117,7 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
         try {
 
             if (this.actionObject.actionType == NfcActionType.none) {
+                this.actionObject.actionStatus = NfcActionStatus.none;
                 Log.i(TAG, "SATODEBUG SatochipHWWallet onConnected() nothing to do => disconnection!");
                 onDisconnected();
                 return;
