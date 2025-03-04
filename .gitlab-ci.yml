@@ -53,9 +53,10 @@ build_default_image:
     DOCKERFILE: contrib/Dockerfile
     ANDROID_IMAGE_SHA: ${ANDROID_IMAGE}:${CI_COMMIT_SHORT_SHA}
     ANDROID_IMAGE_LATEST: ${ANDROID_IMAGE}:latest
-  rules:
-    - changes:
-      - ${DOCKERFILE}
+  when: manual
+#  rules:
+#    - changes:
+#      - ${DOCKERFILE}
   script:
     - apk add jq curl
     - docker buildx build

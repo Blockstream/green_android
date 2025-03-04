@@ -84,6 +84,7 @@ import blockstream_green.common.generated.resources.tor
 import blockstream_green.common.generated.resources.users_three
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.ArrowsOutLineHorizontal
 import com.adamglin.phosphoricons.regular.Translate
 import com.blockstream.common.data.ScreenLockSetting
 import com.blockstream.common.models.settings.AppSettingsViewModel
@@ -97,6 +98,7 @@ import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.sideeffects.OpenDialogData
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.compose.utils.TextInputClear
 import com.blockstream.compose.utils.TextInputPaste
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenGradient
@@ -465,35 +467,8 @@ fun AppSettingsScreen(
                     }
                 }
 
-                val electrumServerGapLimit by viewModel.electrumServerGapLimit.collectAsStateWithLifecycle()
-
                 AnimatedVisibility(visible = electrumNodeEnabled) {
                     GreenColumn(space = 4, padding = 0) {
-
-                        OutlinedTextField(
-                            value = electrumServerGapLimit,
-                            onValueChange = viewModel.electrumServerGapLimit.onValueChange(),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 54.dp, end = 16.dp, bottom = 8.dp),
-                            singleLine = true,
-                            label = { Text(stringResource(Res.string.id_electrum_server_gap_limit)) },
-                            placeholder = {
-                                Text(
-                                    "20",
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            },
-                            supportingText = {
-                                Text(text = stringResource(Res.string.id_number_of_consecutive_empty))
-                            },
-                            keyboardOptions = KeyboardOptions.Default.copy(
-                                keyboardType = KeyboardType.Number
-                            ),
-                            trailingIcon = {
-                                TextInputPaste(state = viewModel.electrumServerGapLimit)
-                            }
-                        )
 
                         GreenSwitch(
                             title = stringResource(Res.string.id_enable_tls),
@@ -503,6 +478,48 @@ fun AppSettingsScreen(
                             modifier = Modifier.padding(start = 42.dp)
                         )
                     }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(start = 54.dp))
+
+                val electrumServerGapLimit by viewModel.electrumServerGapLimit.collectAsStateWithLifecycle()
+
+                GreenRow(
+                    space = 16,
+                    padding = 0,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Icon(
+                        imageVector = PhosphorIcons.Regular.ArrowsOutLineHorizontal,
+                        contentDescription = "Gap Limit",
+                    )
+
+                    OutlinedTextField(
+                        value = electrumServerGapLimit,
+                        onValueChange = viewModel.electrumServerGapLimit.onValueChange(),
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        singleLine = true,
+                        label = { Text(stringResource(Res.string.id_electrum_server_gap_limit)) },
+                        placeholder = {
+                            Text(
+                                "20",
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        },
+                        supportingText = {
+                            Text(text = stringResource(Res.string.id_number_of_consecutive_empty))
+                        },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Number
+                        ),
+                        trailingIcon = {
+                            TextInputClear(state = viewModel.electrumServerGapLimit)
+                        }
+                    )
                 }
 
                 HorizontalDivider(modifier = Modifier.padding(start = 54.dp))

@@ -677,7 +677,7 @@ class GdkSession constructor(
             spvEnabled = spvEnabled,
             spvMulti = spvMulti,
             discountFees = true, // Liquid Discount fees CT
-            gapLimit = if(electrumUrl.isNotBlank() && network.isSinglesig) applicationSettings.electrumServerGapLimit?.coerceAtLeast(20) else null,
+            gapLimit = if(network.isSinglesig) applicationSettings.electrumServerGapLimit?.coerceAtLeast(1) else null,
             electrumTls = if(electrumUrl.isNotBlank()) applicationSettings.personalElectrumServerTls else true,
             electrumUrl = electrumUrl,
             electrumOnionUrl = electrumUrl.takeIf { useTor },
