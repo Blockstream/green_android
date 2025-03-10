@@ -23,6 +23,7 @@ class SatochipDevice constructor(
     type: ConnectionType,
     peripheral: Peripheral? = null,
     isBonded: Boolean = false,
+    nfcDevice: NfcDevice? = null,
     activityProvider: ActivityProvider? = null
 ) : AndroidDevice(
     context = context,
@@ -34,6 +35,7 @@ class SatochipDevice constructor(
     isBonded = isBonded
 ) {
 
+    val nfcDevice: NfcDevice? = nfcDevice
     val activityProvider: ActivityProvider? = activityProvider
 
     override suspend fun getOperatingNetworkForEnviroment(greenDevice: GreenDevice, gdk: Gdk, isTestnet: Boolean): Network =
@@ -58,6 +60,7 @@ class SatochipDevice constructor(
                     deviceManager = deviceManager,
                     type = ConnectionType.NFC,
                     usbDevice = null,
+                    nfcDevice = nfcDevice,
                     activityProvider = activityProvider,
                 )
             } else {

@@ -414,6 +414,40 @@ public class SatochipCommandSet {
         return xpub;
     }
 
+    public byte[] cardBip32GetLiquidMasterBlindingKey() throws Exception {
+        logger.warning("SATOCHIPLIB: cardBip32GetLiquidMasterBlindingKey");
+
+        byte p1 = 0x00;
+        byte p2 = 0x00;
+        byte[] data = new byte[0];
+        ApduCommand plainApdu = new ApduCommand(
+                0xB0,
+                0x7D,
+                p1,
+                p2,
+                data
+        );
+        ApduResponse respApdu = this.cardTransmit(plainApdu);
+
+        if (respApdu.getSw() != 0x9000) {
+            throw new Exception("SATOCHIPLIB: cardBip32GetLiquidMasterBlindingKey error: " + respApdu.toHexString());
+        }
+
+        byte[] response = respApdu.getData();
+        int offset=0;
+        int keySize= 256*(response[offset++] & 0xff) + response[offset++];
+        byte[] blindingKey= new byte[keySize];
+        System.arraycopy(response, offset, blindingKey, 0, keySize);
+        offset+=keySize;
+
+        int sigSize= 256*response[offset++] + response[offset++];
+        byte[] sig= new byte[sigSize];
+        System.arraycopy(response, offset, sig, 0, sigSize);
+        offset+=sigSize;
+
+        return blindingKey;
+    }
+
     public static byte[] digestRipeMd160(byte[] input) {
         RIPEMD160Digest digest = new RIPEMD160Digest();
         digest.update(input, 0, input.length);

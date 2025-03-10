@@ -34,5 +34,7 @@ public class NfcActionObject {
     public List<byte[]> hashesParam = new ArrayList<>();
     public List<String> signaturesResult = new ArrayList<>();
 
+    // getMasterBlindingKey
+    public byte[] blindingKeyResult = new byte[32];
 
 }

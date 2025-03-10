@@ -30,7 +30,6 @@ import com.blockstream.libwally.Wally;
 import com.btchip.utils.BufferUtils;
 import com.btchip.utils.VarintUtils;
 import com.google.common.base.Joiner;
-import com.satochip.ApduException;
 import com.satochip.ApduResponse;
 import com.satochip.ApplicationStatus;
 import com.satochip.Bip32Path;
@@ -153,6 +152,8 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
                 onConnectedSignMessage(cmdSet);
             } else if (this.actionObject.actionType == NfcActionType.signTransaction){
                 onConnectedSignTransaction(cmdSet);
+            } else if (this.actionObject.actionType == NfcActionType.getMasterBlindingKey){
+                onConnectedGetMasterBlindingKey(cmdSet);
             }
 
             // disconnect
@@ -368,6 +369,16 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
         this.actionObject.actionStatus = NfcActionStatus.finished;
     }
 
+    public void onConnectedGetMasterBlindingKey(SatochipCommandSet cmdSet) throws Exception {
+
+        byte[] blindingKey = cmdSet.cardBip32GetLiquidMasterBlindingKey();
+
+        // action finished
+        this.actionObject.blindingKeyResult = blindingKey;
+        this.actionObject.actionStatus = NfcActionStatus.finished;
+    }
+
+
     public void onDisconnected() {
         Log.i(TAG, "SATODEBUG SatochipHWWallet onDisconnected: Card disconnected!");
     }
@@ -483,19 +494,81 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
     @Override
     public SignTransactionResult signTransaction(@NonNull Network network, @NonNull String transaction, @NonNull List<InputOutput> inputs, @NonNull List<InputOutput> outputs, @Nullable Map<String, String> transactions, boolean useAeProtocol, @Nullable HardwareWalletInteraction hwInteraction) {
         Log.i("SatochipHWWallet", "signTransaction start");
-        //Log.i("SatochipHWWallet", "signTransaction start network: " + network);
-        //Log.i("SatochipHWWallet", "signTransaction start transaction: " + transaction);
-        //Log.i("SatochipHWWallet", "signTransaction start inputs: " + inputs);
-        //Log.i("SatochipHWWallet", "signTransaction start outputs: " + outputs);
-        //Log.i("SatochipHWWallet", "signTransaction start transactions: " + transactions);
 
         CompletableDeferred completable = CompletableDeferredKt.CompletableDeferred(null);
 
         final byte[] txBytes = Wally.hex_to_bytes(transaction);
-        //Log.i("SatochipHWWallet", "signTransaction txBytes: " + Wally.hex_from_bytes(txBytes));
 
         if(network.isLiquid()){
-            throw new RuntimeException(network.getCanonicalName() + " is not supported");
+
+            try {
+                if (hwInteraction != null) {
+                    hwInteraction.requestNfcToast(DeviceBrand.Satochip, "Signing transaction...", completable);
+                }
+
+                final Object wallyTx = Wally.tx_from_bytes(txBytes, Wally.WALLY_TX_FLAG_USE_ELEMENTS);
+
+                // get tx hash signature for each inputs
+                final int inputSize = inputs.size();
+                final List<List<Integer>> pathsParam = new ArrayList<>(inputSize);
+                final List<byte[]> hashesParam = new ArrayList<>(inputSize);
+                for (int i = 0; i < inputSize; ++i) {
+                    Log.i("SatochipHWWallet", "signTransaction() input index: " + i);
+                    final InputOutput in = inputs.get(i);
+                    Log.i("SatochipHWWallet", "signTransaction() inputs[i]: " + in);
+                    final byte[] script = Wally.hex_to_bytes(in.getPrevoutScript());
+                    Log.i("SatochipHWWallet", "signTransaction() input script[i]: " + Wally.hex_from_bytes(script));
+                    final byte[] satoshi_bytes = Wally.hex_to_bytes(in.getCommitment()); // ok!
+                    Log.i("SatochipHWWallet", "signTransaction() input satoshi_bytes[i]: " + Wally.hex_from_bytes(satoshi_bytes));
+                    final long sighash = SIGHASH_ALL;
+                    final long flags = Wally.WALLY_TX_FLAG_USE_WITNESS;
+
+                    byte[] hash_out = new byte[32];
+                    Wally.tx_get_elements_signature_hash(
+                            wallyTx,
+                            i,
+                            script,
+                            satoshi_bytes,
+                            sighash,
+                            flags,
+                            hash_out
+                    );
+                    Log.i("SatochipHWWallet", "signTransaction() input hash_out[i]: " + Wally.hex_from_bytes(hash_out));
+                    hashesParam.add(hash_out);
+
+                    // get derivation path for each input
+                    List<Integer> path = in.getUserPathAsInts();
+                    Log.i("SatochipHWWallet", "signTransaction() input path[i]: " + path);
+                    pathsParam.add(in.getUserPathAsInts());
+                }
+
+                // create action
+                this.actionObject.actionStatus = NfcActionStatus.busy;
+                this.actionObject.actionType = NfcActionType.signTransaction;
+                this.actionObject.pathsParam = pathsParam;
+                this.actionObject.hashesParam = hashesParam;
+                this.actionObject.hwInteraction = hwInteraction;
+
+                // poll for result from cardListener onConnected
+                while (this.actionObject.actionStatus == NfcActionStatus.busy) {
+                    TimeUnit.MILLISECONDS.sleep(500);
+                    Log.i(TAG, "SATODEBUG SatochipHWWallet signTransaction() SLEEP");
+                }
+
+                // get result and reset action
+                this.actionObject.actionStatus = NfcActionStatus.none;
+                this.actionObject.actionType = NfcActionType.none;
+                List<String> sigs = this.actionObject.signaturesResult;
+                Log.i(TAG, "SATODEBUG SatochipHWWallet signTransaction() signatureResult: " + sigs);
+                return new SignTransactionResult(sigs, null);
+
+            } catch (final Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("Signing Error: " + e.getMessage());
+            } finally {
+                completable.complete(true);
+            }
+
         }
 
         try {
@@ -509,25 +582,6 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
             }
 
             final Object wallyTx = Wally.tx_from_bytes(txBytes, Wally.WALLY_TX_FLAG_USE_WITNESS);
-            //Log.i("SatochipHWWallet", "signTransaction wallyTx: " + wallyTx);
-
-//            boolean sw = false;
-//            boolean p2sh = false;
-//            for (final InputOutput in : inputs) {
-//                //Log.i("SatochipHWWallet", "signTransaction inputs[i]: " + in);
-//                if (in.isSegwit()) {
-//                    sw = true;
-//                } else {
-//                    p2sh = true;
-//                }
-//            }
-//            Log.i("SatochipHWWallet", "signTransaction sw: " + sw);
-//            Log.i("SatochipHWWallet", "signTransaction p2sh: " + p2sh);
-
-//            // debug
-//            for (final InputOutput out : outputs) {
-//                Log.i("SatochipHWWallet", "signTransaction outputs[i]: " + out);
-//            }
 
             // get tx hash signature for each inputs
             final int inputSize = inputs.size();
@@ -597,7 +651,37 @@ public class SatochipHWWallet extends GdkHardwareWallet implements CardListener 
     @NonNull
     @Override
     public synchronized String getMasterBlindingKey(@Nullable HardwareWalletInteraction hwInteraction) {
-        throw new RuntimeException("Master Blinding Key is not supported");
+
+        CompletableDeferred completable = CompletableDeferredKt.CompletableDeferred(null);
+
+        try {
+            if(hwInteraction != null) {
+                hwInteraction.requestNfcToast(DeviceBrand.Satochip, "Exporting Liquid Master Blinding Key...", completable);
+            }
+
+            this.actionObject.actionStatus = NfcActionStatus.busy;
+            this.actionObject.actionType = NfcActionType.getMasterBlindingKey;
+            this.actionObject.hwInteraction = hwInteraction;
+
+            // poll for result from cardListener onConnected
+            while (this.actionObject.actionStatus == NfcActionStatus.busy) {
+                TimeUnit.MILLISECONDS.sleep(500);
+                Log.i(TAG, "SATODEBUG SatochipHWWallet getMasterBlindingKey() SLEEP");
+            }
+
+            // get result and reset action
+            this.actionObject.actionStatus = NfcActionStatus.none;
+            this.actionObject.actionType = NfcActionType.none;
+            final byte[] blindingKey= this.actionObject.blindingKeyResult;
+            return Wally.hex_from_bytes(blindingKey);
+
+        } catch (Exception e) {
+            Log.e("SatochipHWWallet", "getMasterBlindingKey exception: " + e);
+        } finally {
+            completable.complete(true);
+        }
+
+        return null;
     }
 
     @Override

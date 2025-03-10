@@ -5,4 +5,5 @@ public enum NfcActionType {
     getXpubs,
     signMessage,
     signTransaction,
+    getMasterBlindingKey,
 }

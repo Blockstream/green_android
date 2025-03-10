@@ -8,15 +8,16 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.nfc.NfcAdapter
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
+import android.nfc.NfcAdapter
 import androidx.core.content.ContextCompat
 import androidx.core.content.IntentCompat
 import com.benasher44.uuid.Uuid
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.extensions.isBonded
 import com.blockstream.common.extensions.isJade
+import com.blockstream.common.gdk.Wally
 import com.blockstream.common.managers.BluetoothManager
 import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.managers.SessionManager
@@ -192,8 +193,35 @@ class DeviceManagerAndroid constructor(
                 // try to select applet according to device candidate
                 cmdSet.cardSelect(nfcDeviceType).checkOK()
 
+                // device found, create new device
+                val nfcDevice = NfcDevice(nfcDeviceType)
+
+                // for Satochip devices, get card status
+                if (nfcDeviceType == NfcDeviceType.SATOCHIP){
+                    val statusApdu = cmdSet.satochipGetStatus().checkOK()
+
+                    val statusBytes = statusApdu.getData()
+                    val statusSize = statusBytes.size
+                    logger.i { "SATODEBUG DeviceManagerAndroid onConnected: statusBytes: ${statusBytes}" }
+                    logger.i { "SATODEBUG DeviceManagerAndroid onConnected: statusSize: $statusSize" }
+
+                    // check if card is seeded
+                    val isSeeded = if ((statusBytes[9].toInt() == 0X00)) false else true
+                    logger.i { "SATODEBUG DeviceManagerAndroid onConnected: isSeeded: $isSeeded" }
+
+                    // check that 2FA is not enabled
+                    val needs2FA = if ((statusBytes[8].toInt() == 0X00)) false else true
+                    logger.i { "SATODEBUG DeviceManagerAndroid onConnected: needs2FA: $needs2FA" }
+
+                    // check if Liquid is supported
+                    val supportsLiquid = if ((statusSize>15) && (statusBytes[15].toInt() == 0X00)) true else false
+                    nfcDevice.supportsLiquid = supportsLiquid
+                    logger.i { "SATODEBUG DeviceManagerAndroid onConnected: supportsLiquid: $supportsLiquid" }
+
+                    // todo: error messsage if not seeded/setup
+                }
+
                 // add device
-                val nfcDevice = NfcDevice(NfcDeviceType.SATOCHIP)
                 val newDevices = mutableListOf<AndroidDevice>()
                 deviceMapper.invoke(this, null, null, null, null, nfcDevice, activityProvider)
                     ?.let {

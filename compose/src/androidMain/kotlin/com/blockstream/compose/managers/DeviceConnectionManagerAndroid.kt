@@ -155,11 +155,11 @@ class DeviceConnectionManagerAndroid constructor(
 
         val satoDevice = com.blockstream.common.gdk.data.Device(
             name = "Satochip",
-            supportsArbitraryScripts = false,
+            supportsArbitraryScripts = true,
             supportsLowR = false,
-            supportsHostUnblinding = false,
+            supportsHostUnblinding = true,
             supportsExternalBlinding = false,
-            supportsLiquid = DeviceSupportsLiquid.None,
+            supportsLiquid = if (device.nfcDevice?.supportsLiquid == true) DeviceSupportsLiquid.Lite else DeviceSupportsLiquid.None,
             supportsAntiExfilProtocol = DeviceSupportsAntiExfilProtocol.None
         )
 

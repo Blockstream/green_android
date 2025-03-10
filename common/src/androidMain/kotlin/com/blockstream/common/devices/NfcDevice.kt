@@ -7,4 +7,7 @@ enum class NfcDeviceType {
 
 class NfcDevice(val type: NfcDeviceType) {
 
+    var isSeeded = true
+    var supportsLiquid = true
+
 }

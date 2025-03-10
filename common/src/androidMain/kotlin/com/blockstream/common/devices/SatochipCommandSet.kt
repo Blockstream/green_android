@@ -1,8 +1,8 @@
 package com.blockstream.common.devices
 
-import java.util.logging.Logger
-import java.util.logging.Level
 import java.io.IOException
+import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * This class is used to send APDU to the applet. Each method corresponds to an APDU as defined in the APPLICATION.md
@@ -51,5 +51,23 @@ class SatochipCommandSet(private val apduChannel: CardChannel) {
         }
         return respApdu
     }
+
+    fun satochipGetStatus(): ApduResponse {
+
+        val plainApdu: ApduCommand = ApduCommand(
+            0xB0,
+            0x3C,
+            0x00,
+            0x00,
+            ByteArray(0)
+        )
+
+        logger.info("SATOCHIPLIB: C-APDU satochipGetStatus:" + plainApdu.toHexString())
+        val respApdu: ApduResponse = apduChannel.send(plainApdu)
+        logger.info("SATOCHIPLIB: R-APDU satochipGetStatus:" + respApdu.toHexString())
+
+        return respApdu
+    }
+
 
 }
