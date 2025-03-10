@@ -130,7 +130,8 @@ class DeviceScanViewModel(greenWallet: GreenWallet) :
 
                 if (greenWallet.xPubHashId.isNotBlank() && greenWallet.xPubHashId != walletHashId) {
                     // Disconnect only if there are no other connected sessions
-                    if(sessionManager.getConnectedHardwareWalletSessions().none { it.device?.connectionIdentifier == device.connectionIdentifier }){
+                    // If it's Trezor, disconect the device as BIP39 Passphrase can be requested
+                    if(sessionManager.getConnectedHardwareWalletSessions().none { it.device?.connectionIdentifier == device.connectionIdentifier } || device.isTrezor){
                         device.disconnect()
                     }
                     throw Exception("The wallet hash is different from the previous wallet.")

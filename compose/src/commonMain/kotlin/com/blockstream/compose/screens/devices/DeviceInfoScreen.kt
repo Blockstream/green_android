@@ -31,6 +31,7 @@ import blockstream_green.common.generated.resources.id_enter_and_confirm_a_uniqu
 import blockstream_green.common.generated.resources.id_setup_your_jade
 import com.blockstream.common.data.MenuEntry
 import com.blockstream.common.data.MenuEntryList
+import com.blockstream.common.events.Events
 import com.blockstream.common.models.devices.DeviceInfoViewModel
 import com.blockstream.common.models.devices.DeviceInfoViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
@@ -83,6 +84,16 @@ fun DeviceInfoScreen(
         if(it){
             viewModel.postEvent(DeviceInfoViewModel.LocalEvents.GenuineCheckSuccess)
         }
+    }
+
+    // Device Passphrase
+    NavigateDestinations.DevicePassphrase.getResult<String> {
+        viewModel.postEvent(Events.DeviceRequestResponse(it))
+    }
+
+    // Device PinMatrix
+    NavigateDestinations.DevicePin.getResult<String> {
+        viewModel.postEvent(Events.DeviceRequestResponse(it))
     }
 
     var channels by remember { mutableStateOf<List<String>?>(null) }

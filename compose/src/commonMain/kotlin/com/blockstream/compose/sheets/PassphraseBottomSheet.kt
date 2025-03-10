@@ -43,7 +43,10 @@ fun PassphraseBottomSheet(
     GreenBottomSheet(
         title = stringResource(Res.string.id_please_enter_the_passphrase_for),
         viewModel = viewModel,
-        onDismissRequest = onDismissRequest
+        onDismissRequest = {
+            NavigateDestinations.DevicePin.setResult("")
+            onDismissRequest()
+        }
     ) {
 
         GreenColumn(padding = 0) {

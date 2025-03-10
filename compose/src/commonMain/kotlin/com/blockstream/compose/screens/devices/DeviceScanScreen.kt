@@ -29,9 +29,11 @@ import blockstream_green.common.generated.resources.id_give_bluetooth_permission
 import blockstream_green.common.generated.resources.id_looking_for_device
 import blockstream_green.common.generated.resources.id_more_info
 import blockstream_green.common.generated.resources.id_unlock_your_device_to_continue
+import com.blockstream.common.events.Events
 import com.blockstream.common.managers.BluetoothState
 import com.blockstream.common.models.devices.AbstractDeviceViewModel
 import com.blockstream.common.models.devices.DeviceScanViewModelAbstract
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
@@ -45,6 +47,7 @@ import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.navigation.getResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -56,6 +59,16 @@ fun DeviceScanScreen(
 
     val device by viewModel.deviceFlow.collectAsStateWithLifecycle()
     val bluetoothState by viewModel.bluetoothState.collectAsStateWithLifecycle()
+
+    // Device Passphrase
+    NavigateDestinations.DevicePassphrase.getResult<String> {
+        viewModel.postEvent(Events.DeviceRequestResponse(it))
+    }
+
+    // Device PinMatrix
+    NavigateDestinations.DevicePin.getResult<String> {
+        viewModel.postEvent(Events.DeviceRequestResponse(it))
+    }
 
     SetupScreen(viewModel = viewModel, withPadding = false, horizontalAlignment = Alignment.CenterHorizontally) {
 

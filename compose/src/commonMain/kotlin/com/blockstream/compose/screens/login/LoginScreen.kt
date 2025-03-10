@@ -59,6 +59,7 @@ import blockstream_green.common.generated.resources.qr_code
 import blockstream_green.common.generated.resources.shield_warning
 import blockstream_green.common.generated.resources.tor
 import blockstream_green.common.generated.resources.x
+import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.managers.LifecycleManager
 import com.blockstream.common.models.login.LoginViewModel
@@ -113,6 +114,16 @@ fun LoginScreen(
         viewModel.postEvent(
             LoginViewModel.LocalEvents.Bip39Passphrase(it, null)
         )
+    }
+
+    // Device Passphrase
+    NavigateDestinations.DevicePassphrase.getResult<String> {
+        viewModel.postEvent(Events.DeviceRequestResponse(it))
+    }
+
+    // Device PinMatrix
+    NavigateDestinations.DevicePin.getResult<String> {
+        viewModel.postEvent(Events.DeviceRequestResponse(it))
     }
 
     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()

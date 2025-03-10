@@ -179,16 +179,6 @@ fun HandleSideEffect(
         }
     }
 
-    // Device Passphrase
-    NavigateDestinations.DevicePassphrase.getResult<String> {
-        viewModel.postEvent(Events.DeviceRequestResponse(it))
-    }
-
-    // Device PinMatrix
-    NavigateDestinations.DevicePin.getResult<String> {
-        viewModel.postEvent(Events.DeviceRequestResponse(it))
-    }
-
     LaunchedEffect(Unit) {
         viewModel.sideEffect.onEach {
             handler.invoke(this, it)
