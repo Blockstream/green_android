@@ -17,7 +17,6 @@ import com.benasher44.uuid.Uuid
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.extensions.isBonded
 import com.blockstream.common.extensions.isJade
-import com.blockstream.common.gdk.Wally
 import com.blockstream.common.managers.BluetoothManager
 import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.managers.SessionManager
@@ -202,11 +201,11 @@ class DeviceManagerAndroid constructor(
 
                     val statusBytes = statusApdu.getData()
                     val statusSize = statusBytes.size
-                    logger.i { "SATODEBUG DeviceManagerAndroid onConnected: statusBytes: ${statusBytes}" }
                     logger.i { "SATODEBUG DeviceManagerAndroid onConnected: statusSize: $statusSize" }
 
                     // check if card is seeded
                     val isSeeded = if ((statusBytes[9].toInt() == 0X00)) false else true
+                    nfcDevice.isSeeded = isSeeded
                     logger.i { "SATODEBUG DeviceManagerAndroid onConnected: isSeeded: $isSeeded" }
 
                     // check that 2FA is not enabled
@@ -217,8 +216,6 @@ class DeviceManagerAndroid constructor(
                     val supportsLiquid = if ((statusSize>15) && (statusBytes[15].toInt() == 0X00)) true else false
                     nfcDevice.supportsLiquid = supportsLiquid
                     logger.i { "SATODEBUG DeviceManagerAndroid onConnected: supportsLiquid: $supportsLiquid" }
-
-                    // todo: error messsage if not seeded/setup
                 }
 
                 // add device

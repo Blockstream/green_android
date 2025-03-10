@@ -153,6 +153,11 @@ class DeviceConnectionManagerAndroid constructor(
 
     private suspend fun connectSatochipDevice(device: SatochipDevice, interaction: HardwareConnectInteraction): ConnectionResult {
 
+        if (device.nfcDevice?.isSeeded == false) {
+            interaction.showError("Satochip card is not setup with a seed! Please import a seed first.")
+            throw Exception("Satochip card is not setup with a seed! Please import a seed first.")
+        }
+
         val satoDevice = com.blockstream.common.gdk.data.Device(
             name = "Satochip",
             supportsArbitraryScripts = true,
