@@ -3,6 +3,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [4.1.8] - 2025-03-13
+
+### Added
+- Add Language preference in App Settings
+- Enable Android data backup for disaster recovery
+
+### Changed
+- Bump GDK to version 0.75.1
+- Rename L-BTC to LBTC
+- Allow setting custom Electrum gap limit with default server
+- Remove Lightning shortcut
+
+### Fixed
+- Fix Jade entry Pin timeout
+- Fix Trezor passphrase input
+
 ## [4.1.5] - 2025-02-04
 
 ### Added

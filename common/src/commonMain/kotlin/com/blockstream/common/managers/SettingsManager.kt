@@ -107,7 +107,7 @@ class SettingsManager constructor(
     }
 
     fun isLightningEnabled(): Boolean {
-        return lightningFeatureEnabled
+        return lightningFeatureEnabled && appSettings.experimentalFeatures
     }
 
     fun walletCounter(): Int {
