@@ -12,8 +12,12 @@ import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.crypto.KeystoreInvalidatedException
 import com.blockstream.common.crypto.PlatformCipher
 import com.blockstream.common.data.EncryptedData
-import java.security.*
-import javax.crypto.*
+import java.security.KeyStore
+import java.security.KeyStoreException
+import javax.crypto.BadPaddingException
+import javax.crypto.Cipher
+import javax.crypto.KeyGenerator
+import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
 
 class AndroidKeystore(val context: Context) : GreenKeystore {
@@ -104,8 +108,8 @@ class AndroidKeystore(val context: Context) : GreenKeystore {
                 @Suppress("DEPRECATION")
                 builder.setUserAuthenticationValidityDurationSeconds(-1)
             }
-
-            builder.setInvalidatedByBiometricEnrollment(true)
+            
+            builder.setInvalidatedByBiometricEnrollment(false)
         }
 
         keyGenerator.init(builder.build())
