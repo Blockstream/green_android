@@ -40,19 +40,15 @@ import blockstream_green.common.generated.resources.shield_warning
 import com.blockstream.common.Urls
 import com.blockstream.common.data.ScanResult
 import com.blockstream.common.events.Events
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.models.overview.AccountOverviewViewModel
 import com.blockstream.common.models.overview.AccountOverviewViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.BottomNav
 import com.blockstream.compose.components.GreenAccountCard
 import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.components.GreenContentCard
 import com.blockstream.compose.components.GreenTransaction
-import com.blockstream.compose.dialogs.LightningShortcutDialog
 import com.blockstream.compose.navigation.LocalInnerPadding
 import com.blockstream.compose.sheets.MainMenuEntry
 import com.blockstream.compose.theme.bodyMedium
@@ -105,16 +101,6 @@ fun AccountOverviewScreen(
         viewModel.postEvent(Events.HandleUserInput(it.result, isQr = true))
     }
 
-    var lightningShortcutViewModel by remember {
-        mutableStateOf<GreenViewModel?>(null)
-    }
-
-    lightningShortcutViewModel?.also {
-        LightningShortcutDialog(viewModel = it) {
-            lightningShortcutViewModel = null
-        }
-    }
-
     var isRefreshing by remember {
         mutableStateOf(false)
     }
@@ -128,11 +114,7 @@ fun AccountOverviewScreen(
         }
     }
 
-    SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false, sideEffectsHandler = {
-        if (it is SideEffects.LightningShortcut) {
-            lightningShortcutViewModel = SimpleGreenViewModel(viewModel.greenWallet)
-        }
-    }) {
+    SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false) {
 
         Box(
             Modifier

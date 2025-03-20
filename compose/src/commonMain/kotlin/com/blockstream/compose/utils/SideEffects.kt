@@ -2,15 +2,11 @@ package com.blockstream.compose.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.toRoute
 import blockstream_green.common.generated.resources.Res
@@ -20,6 +16,7 @@ import blockstream_green.common.generated.resources.id_cancel
 import blockstream_green.common.generated.resources.id_choose_method_to_authorize_the
 import blockstream_green.common.generated.resources.id_contact_support
 import blockstream_green.common.generated.resources.id_continue
+import blockstream_green.common.generated.resources.id_disable_notifications
 import blockstream_green.common.generated.resources.id_enable
 import blockstream_green.common.generated.resources.id_enable_2fa_call_method
 import blockstream_green.common.generated.resources.id_install_version_s
@@ -52,7 +49,6 @@ import com.blockstream.common.extensions.handleException
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.twoFactorMethodsLocalized
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.managers.LifecycleManager
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.navigation.PopTo
@@ -73,7 +69,6 @@ import com.blockstream.compose.managers.askForBluetoothPermissions
 import com.blockstream.compose.navigation.LocalNavigator
 import com.blockstream.compose.sideeffects.OpenDialogData
 import com.blockstream.compose.sideeffects.openBrowser
-import com.blockstream.ui.navigation.getResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -81,7 +76,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 
 @Composable
 fun HandleSideEffectDialog(
@@ -238,24 +232,6 @@ fun HandleSideEffect(
                                 title = it.title,
                                 message = it.message,
                                 icon = it.icon
-                            )
-                        )
-                    }
-                }
-
-                is SideEffects.AskRemoveLightningShortcut -> {
-                    appCoroutine.launch {
-                        dialog.openDialog(
-                            OpenDialogData(
-                                title = StringHolder.create(Res.string.id_payments_will_fail),
-                                message = StringHolder.create(Res.string.id_you_will_stop_receiving_push),
-                                icon = Res.drawable.warning,
-                                primaryText = getString(Res.string.id_remove_lightning_shortcut),
-                                secondaryText = getString(Res.string.id_cancel),
-                                onPrimary = {
-                                    viewModel.postEvent(Events.RemoveLightningShortcut(wallet = it.wallet))
-                                },
-                                onSecondary = { }
                             )
                         )
                     }

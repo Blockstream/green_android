@@ -26,7 +26,6 @@ import blockstream_green.common.generated.resources.id_ephemeral_wallets
 import blockstream_green.common.generated.resources.id_hardware_devices
 import blockstream_green.common.generated.resources.id_setup_a_new_wallet
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.events.Events
 import com.blockstream.common.looks.wallet.WalletListLook
 import com.blockstream.common.models.wallets.WalletsViewModel
 import com.blockstream.common.models.wallets.WalletsViewModelAbstract
@@ -90,7 +89,7 @@ fun WalletsScreen(
             )
         )
     }, onLightningShortcutDelete = {
-        viewModel.postEvent(Events.AskRemoveLightningShortcut(wallet = it))
+        // viewModel.postEvent(Events.AskRemoveLightningShortcut(wallet = it))
     }, onWalletDelete = {
         viewModel.postEvent(NavigateDestinations.DeleteWallet(it))
     }, onWalletRename = {

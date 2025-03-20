@@ -2,18 +2,14 @@ package com.blockstream.common.models.overview
 
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.box_arrow_down
-import blockstream_green.common.generated.resources.id_add_lightning_shortcut
 import blockstream_green.common.generated.resources.id_archive_account
 import blockstream_green.common.generated.resources.id_copied_to_clipboard
 import blockstream_green.common.generated.resources.id_help
 import blockstream_green.common.generated.resources.id_node_info
 import blockstream_green.common.generated.resources.id_remove
-import blockstream_green.common.generated.resources.id_remove_lightning_shortcut
 import blockstream_green.common.generated.resources.id_rename_account
 import blockstream_green.common.generated.resources.id_rescan_swaps_initiated
 import blockstream_green.common.generated.resources.info
-import blockstream_green.common.generated.resources.lightning
-import blockstream_green.common.generated.resources.lightning_slash
 import blockstream_green.common.generated.resources.question
 import blockstream_green.common.generated.resources.text_aa
 import blockstream_green.common.generated.resources.trash
@@ -191,7 +187,6 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
         object Send : Event
         object Receive : Event
         object Refresh : Event
-        object EnableLightningShortcut : Event
         object LoadMoreTransactions : Event
         object RescanSwaps : Event
         object CopyAccountId : Event
@@ -239,22 +234,6 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                                 postEvent(NavigateDestinations.LightningNode(greenWallet = greenWallet))
                             }
                         ).takeIf { account.isLightning },
-                        NavAction(
-                            title = getString(Res.string.id_add_lightning_shortcut),
-                            icon = Res.drawable.lightning,
-                            isMenuEntry = true,
-                            onClick = {
-                                postEvent(LocalEvents.EnableLightningShortcut)
-                            }
-                        ).takeIf { account.isLightning && hasLightningShortcut == false },
-                        NavAction(
-                            title = getString(Res.string.id_remove_lightning_shortcut),
-                            icon = Res.drawable.lightning_slash,
-                            isMenuEntry = true,
-                            onClick = {
-                                postEvent(Events.AskRemoveLightningShortcut())
-                            }
-                        ).takeIf { account.isLightning &&  hasLightningShortcut == true },
                         NavAction(
                             title = getString(Res.string.id_remove),
                             icon = Res.drawable.trash,
@@ -319,10 +298,6 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                 session.refresh(account = account)
             }
 
-            is LocalEvents.EnableLightningShortcut -> {
-                enableLightningShortcut()
-            }
-
             is LocalEvents.LoadMoreTransactions -> {
                 loadMoreTransactions()
             }
@@ -351,16 +326,6 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
     private fun loadMoreTransactions() {
         logger.i { "Load more transactions" }
         session.getTransactions(account = account, isReset = false, isLoadMore = true)
-    }
-
-    private fun enableLightningShortcut() {
-        if (account.isLightning) {
-            doAsync({
-                _enableLightningShortcut()
-            }, onSuccess = {
-                postSideEffect(SideEffects.LightningShortcut)
-            })
-        }
     }
 
     private fun rescanSwaps() {

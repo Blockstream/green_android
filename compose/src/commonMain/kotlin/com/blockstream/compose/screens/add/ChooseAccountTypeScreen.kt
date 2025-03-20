@@ -57,7 +57,6 @@ import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.OnProgressStyle
-import com.blockstream.compose.dialogs.LightningShortcutDialog
 import com.blockstream.compose.extensions.drawDiagonalLabel
 import com.blockstream.compose.screens.jade.JadeQRResult
 import com.blockstream.compose.sideeffects.OpenDialogData
@@ -89,17 +88,6 @@ fun ChooseAccountTypeScreen(
     val dialog = LocalDialog.current
     val scope = rememberCoroutineScope()
 
-    var lightningShortcutViewModel by remember {
-        mutableStateOf<GreenViewModel?>(null)
-    }
-
-    lightningShortcutViewModel?.also {
-        LightningShortcutDialog(viewModel = it) {
-            viewModel.postEvent(Events.Continue)
-            lightningShortcutViewModel = null
-        }
-    }
-
     NavigateDestinations.Assets.getResult<AssetBalance> {
         viewModel.asset.value = it
     }
@@ -112,10 +100,6 @@ fun ChooseAccountTypeScreen(
         when (it) {
             is SideEffects.AccountCreated -> {
                 NavigateDestinations.ReviewAddAccount.setResult(it.accountAsset)
-            }
-
-            is SideEffects.LightningShortcut -> {
-                lightningShortcutViewModel = SimpleGreenViewModel(viewModel.greenWallet)
             }
 
             is ChooseAccountTypeViewModel.LocalSideEffects.ExperimentalFeaturesDialog -> {

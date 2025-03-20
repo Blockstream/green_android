@@ -190,14 +190,7 @@ abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet, val assetId
             postEvent(Events.SetAccountAsset(accountAsset, setAsActive = true))
             postSideEffect(SideEffects.AccountCreated(accountAsset))
 
-            val navigateToRoot = SideEffects.NavigateToRoot(popTo = popTo)
-
-            if (it.isLightning && !greenWallet.isEphemeral) {
-                postSideEffect(SideEffects.LightningShortcut)
-                _pendingSideEffect = navigateToRoot
-            } else {
-                postSideEffect(navigateToRoot)
-            }
+            postSideEffect(SideEffects.NavigateToRoot(popTo = popTo))
 
             countly.createAccount(session, it)
         })

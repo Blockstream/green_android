@@ -329,12 +329,7 @@ class PinViewModel constructor(
             onProgress.value = it == null
             rocketAnimation.value = it == null
         }, onSuccess = {
-            if (session.hasLightning && !setupArgs.isRecoveryFlow) {
-                _greenWallet = it
-                postSideEffect(SideEffects.LightningShortcut)
-            } else {
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))
-            }
+            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))
         })
     }
 

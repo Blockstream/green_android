@@ -162,7 +162,8 @@ fun WalletListItem(
             }
         )
 
-        if (look.hasLightningShortcut) {
+        // Disable Ln shortcut
+        if (false && look.hasLightningShortcut) {
             HorizontalDivider()
             WalletListRow(
                 title = "Lightning Account",

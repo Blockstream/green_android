@@ -20,19 +20,14 @@ import blockstream_green.common.generated.resources.id_pins_do_not_match_please_
 import blockstream_green.common.generated.resources.id_set_a_pin
 import blockstream_green.common.generated.resources.id_verify_your_pin
 import blockstream_green.common.generated.resources.id_youll_need_your_pin_to_log_in
-import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.models.onboarding.phone.PinViewModel
 import com.blockstream.common.models.onboarding.phone.PinViewModelAbstract
-import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.LocalSnackbar
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.components.RiveAnimation
-import com.blockstream.compose.dialogs.LightningShortcutDialog
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.utils.SetupScreen
@@ -54,25 +49,9 @@ fun PinScreen(
 
     val rocketAnimation by viewModel.rocketAnimation.collectAsStateWithLifecycle()
 
-    var lightningShortcutViewModel by remember {
-        mutableStateOf<GreenViewModel?>(null)
-    }
-
-    lightningShortcutViewModel?.also {
-        LightningShortcutDialog(viewModel = it) {
-            viewModel.postEvent(Events.Continue)
-            lightningShortcutViewModel = null
-        }
-    }
-
     SetupScreen(
         viewModel = viewModel,
-        onProgressStyle = OnProgressStyle.Full(bluBackground = false, riveAnimation = if(rocketAnimation) RiveAnimation.ROCKET else null),
-        sideEffectsHandler = {
-            if(it is SideEffects.LightningShortcut) {
-                lightningShortcutViewModel = SimpleGreenViewModel(viewModel.greenWallet)
-            }
-        }
+        onProgressStyle = OnProgressStyle.Full(bluBackground = false, riveAnimation = if(rocketAnimation) RiveAnimation.ROCKET else null)
     ) {
         Column(
             modifier = Modifier

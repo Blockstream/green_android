@@ -452,12 +452,6 @@ open class GreenViewModel constructor(
             is Events.RemoveAccount -> {
                  removeAccount(account = event.account)
             }
-            is Events.RemoveLightningShortcut -> {
-                removeLightningShortcut(greenWallet = event.wallet ?: greenWallet)
-            }
-            is Events.AskRemoveLightningShortcut -> {
-                postSideEffect(SideEffects.AskRemoveLightningShortcut(wallet = event.wallet ?: greenWallet))
-            }
             is EventWithSideEffect -> {
                 postSideEffect(event.sideEffect)
             }
@@ -748,14 +742,6 @@ open class GreenViewModel constructor(
         }
     }
 
-    private fun removeLightningShortcut(greenWallet: GreenWallet) {
-        doAsync({
-            database.deleteLoginCredentials(greenWallet.id, CredentialType.LIGHTNING_MNEMONIC)
-        }, onSuccess = {
-
-        })
-    }
-
     private fun setActiveAccount(account: Account) {
         session.setActiveAccount(account)
 
@@ -857,25 +843,6 @@ open class GreenViewModel constructor(
         }, onSuccess = {
 
         })
-    }
-
-    protected suspend fun _enableLightningShortcut() {
-        sessionOrNull?.also { session ->
-            val encryptedData = withContext(context = Dispatchers.IO) {
-                session.deriveLightningMnemonic().let {
-                    greenKeystore.encryptData(it.encodeToByteArray())
-                }
-            }
-
-            database.replaceLoginCredential(
-                createLoginCredentials(
-                    walletId = greenWallet.id,
-                    network = session.lightning!!.id,
-                    credentialType = CredentialType.LIGHTNING_MNEMONIC,
-                    encryptedData = encryptedData
-                )
-            )
-        }
     }
 
     override fun interactionRequest(

@@ -66,8 +66,6 @@ class SideEffects : SideEffect {
     data class ShareFile(val path: Path) : SideEffect
     data class TwoFactorResolver(val data: TwoFactorResolverData) : SideEffect
     data object OpenDenominationExchangeRate : SideEffect
-    data object LightningShortcut : SideEffect
-    data class AskRemoveLightningShortcut(val wallet: GreenWallet) : SideEffect
     data object EnableBluetooth: SideEffect
     data object EnableLocationService: SideEffect
     data object AskForBluetoothPermissions: SideEffect

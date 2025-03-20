@@ -17,14 +17,9 @@ import blockstream_green.common.generated.resources.id_change_pin
 import blockstream_green.common.generated.resources.id_pins_do_not_match_please_try
 import blockstream_green.common.generated.resources.id_verify_your_pin
 import blockstream_green.common.generated.resources.id_youll_need_your_pin_to_log_in
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.models.settings.WalletSettingsViewModel
 import com.blockstream.common.models.settings.WalletSettingsViewModelAbstract
-import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.LocalSnackbar
-import com.blockstream.compose.dialogs.LightningShortcutDialog
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.utils.SetupScreen
@@ -43,25 +38,9 @@ fun ChangePinScreen(
     val scope = rememberCoroutineScope()
     val snackbar = LocalSnackbar.current
 
-    var lightningShortcutViewModel by remember {
-        mutableStateOf<GreenViewModel?>(null)
-    }
-
-    lightningShortcutViewModel?.also {
-        LightningShortcutDialog(viewModel = it) {
-            viewModel.postEvent(Events.Continue)
-            lightningShortcutViewModel = null
-        }
-    }
-
     SetupScreen(
         viewModel = viewModel,
-        withPadding = false,
-        sideEffectsHandler = {
-            if(it is SideEffects.LightningShortcut) {
-                lightningShortcutViewModel = SimpleGreenViewModel(viewModel.greenWallet)
-            }
-        }
+        withPadding = false
     ) {
         Column(
             modifier = Modifier

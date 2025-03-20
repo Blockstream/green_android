@@ -1617,4 +1617,7 @@
     <string name="id_you_will_receive_an_email_from">You will receive an email from Blockstream support</string>
     <string name="id_system_default">System Default</string>
     <string name="id_transact">Transact</string>
+    <string name="id_enable_notifications">Enable Notifications</string>
+    <string name="id_disable_notifications">Disable Notifications</string>
+    <string name="id_enable_push_notifications_for_seamless">Enable push notifications for seamless lightning payments. No need to keep your app open to receive.</string>
 </resources>
