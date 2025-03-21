@@ -137,6 +137,7 @@ class DeviceConnectionManagerAndroid constructor(
             supportsLowR = false,
             supportsHostUnblinding = false,
             supportsExternalBlinding = false,
+            supportsP2tr = false,
             supportsLiquid = DeviceSupportsLiquid.None,
             supportsAntiExfilProtocol = DeviceSupportsAntiExfilProtocol.None
         )
@@ -309,6 +310,7 @@ class DeviceConnectionManagerAndroid constructor(
             supportsLowR = false,
             supportsHostUnblinding = false,
             supportsExternalBlinding = false,
+            supportsP2tr = false,
             supportsLiquid = DeviceSupportsLiquid.Lite,
             supportsAntiExfilProtocol = DeviceSupportsAntiExfilProtocol.None
         )

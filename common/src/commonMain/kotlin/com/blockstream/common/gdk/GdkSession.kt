@@ -676,7 +676,6 @@ class GdkSession constructor(
             proxy = applicationSettings.proxyUrl ?: "",
             spvEnabled = spvEnabled,
             spvMulti = spvMulti,
-            discountFees = true, // Liquid Discount fees CT
             gapLimit = if(network.isSinglesig) applicationSettings.electrumServerGapLimit?.coerceAtLeast(1) else null,
             electrumTls = if(electrumUrl.isNotBlank()) applicationSettings.personalElectrumServerTls else true,
             electrumUrl = electrumUrl,

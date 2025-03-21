@@ -89,6 +89,7 @@ open class DeviceConnectionManager(
             supportsHostUnblinding = true,
             supportsExternalBlinding = true,
             supportsLiquid = DeviceSupportsLiquid.Lite,
+            supportsP2tr = false,
             supportsAntiExfilProtocol = DeviceSupportsAntiExfilProtocol.Optional
         )
 

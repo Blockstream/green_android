@@ -14,6 +14,7 @@ data class Device constructor(
     @SerialName("supports_low_r") val supportsLowR: Boolean,
     @SerialName("supports_host_unblinding") val supportsHostUnblinding: Boolean,
     @SerialName("supports_external_blinding") val supportsExternalBlinding: Boolean,
+    @SerialName("supports_p2tr") val supportsP2tr: Boolean,
 
     @Serializable(with = DeviceSupportsLiquidSerializer::class)
     @SerialName("supports_liquid") val supportsLiquid: DeviceSupportsLiquid,
