@@ -269,7 +269,7 @@ sign_google_play:
 # Upload to GCS bucket
 .gcp_prep:
   stage: upload
-  image: blockstream/gcloud-docker:502.0.0-27.3
+  image: blockstream/gcloud-docker:27.3-504.0.1
   cache: []
   tags:
     - k8s # Simple, non-resource intensive jobs
