@@ -1491,26 +1491,27 @@ class GdkSession constructor(
                                              )
                                          }
                                      }
-                                 } else {
-                                     if (isProminent) {
-                                         // If prominent archive default account
+                                 } else if(!hasGdkCache){ // Newly discovered Wallet
 
-                                         /* Do not archive accounts anymore
-                                         networkAccounts.first().also { defaultAccount ->
-                                             updateAccount(
-                                                 account = defaultAccount,
-                                                 isHidden = true,
-                                                 resetAccountName = defaultAccount.type.title()
-                                             )
-                                         }
-                                         */
-                                     } else {
-                                         // Else disconnect and remove cache
-                                         resetNetwork(network)
-
-                                         // Remove GDK cache folder
-                                         gdk.removeGdkCache(loginData)
+                                     // Archive GDK default account
+                                     networkAccounts.first().also { defaultAccount ->
+                                         updateAccount(
+                                             account = defaultAccount,
+                                             isHidden = true,
+                                             resetAccountName = defaultAccount.type.title()
+                                         )
                                      }
+
+                                     // Create Singlesig account
+                                     val accountType = AccountType.BIP84_SEGWIT
+
+                                     createAccount(
+                                         network = network,
+                                         params = SubAccountParams(
+                                             name = accountType.toString(),
+                                             type = accountType,
+                                         )
+                                     )
                                  }
                             }
                         }
