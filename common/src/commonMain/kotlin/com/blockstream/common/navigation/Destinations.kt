@@ -272,7 +272,7 @@ sealed class NavigateDestinations : NavigateDestination() {
     @Serializable
     data class Buy(val greenWallet: GreenWallet) : NavigateDestination()
     @Serializable
-    data class BuyQuotes(val greenWallet: GreenWallet, val quotes: QuotesResponse) : NavigateDestination()
+    data class BuyQuotes(val greenWallet: GreenWallet, val quotes: QuotesResponse, val selectedServiceProvider: String?) : NavigateDestination()
     @Serializable
     data class LnUrlAuth(
         val greenWallet: GreenWallet,
@@ -321,6 +321,7 @@ sealed class NavigateDestinations : NavigateDestination() {
     data class Countries(
         val greenWallet: GreenWallet,
         val title: String? = null,
+        val subtitle: String? = null,
         val showDialCode: Boolean = true
     ) : NavigateDestination()
     @Serializable

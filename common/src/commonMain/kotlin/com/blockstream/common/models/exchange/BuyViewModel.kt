@@ -2,8 +2,10 @@ package com.blockstream.common.models.exchange
 
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_buy
+import blockstream_green.common.generated.resources.id_connecting_to_s
 import blockstream_green.common.generated.resources.id_error
-import blockstream_green.common.generated.resources.id_select_country_of_residence
+import blockstream_green.common.generated.resources.id_please_select_your_correct_billing
+import blockstream_green.common.generated.resources.id_select_your_region
 import blockstream_green.common.generated.resources.id_the_address_is_valid
 import blockstream_green.common.generated.resources.id_verify_address
 import com.blockstream.common.data.Country
@@ -21,6 +23,7 @@ import com.blockstream.common.gdk.data.Address
 import com.blockstream.common.managers.LocaleManager
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.sideeffects.OpenBrowserType
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.UserInput
@@ -28,6 +31,7 @@ import com.blockstream.domain.hardware.VerifyAddressUseCase
 import com.blockstream.domain.meld.MeldUseCase
 import com.blockstream.green.data.meld.data.QuoteResponse
 import com.blockstream.green.data.meld.data.QuotesResponse
+import com.blockstream.green.network.dataOrThrow
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavAction
@@ -63,7 +67,7 @@ abstract class BuyViewModelAbstract(
 
     abstract val suggestedAmounts: StateFlow<List<String>>
 
-    internal val country = MutableStateFlow(localeManager.getCountry()?.uppercase() ?: "US")
+    internal val country = MutableStateFlow((settingsManager.getCountry() ?: localeManager.getCountry() ?: "US").uppercase())
 
     internal val userPickedQuote = MutableStateFlow(false)
 
@@ -83,7 +87,9 @@ abstract class BuyViewModelAbstract(
     val onProgressBuy: StateFlow<Boolean> = _onProgressBuy
 
     fun changeCountry(country: Country) {
-        this.country.value = country.code.uppercase()
+        this.country.value = country.code.uppercase().also {
+            settingsManager.setCountry(it)
+        }
     }
 
     fun changeQuote(quote: QuoteResponse? = null) {
@@ -91,7 +97,7 @@ abstract class BuyViewModelAbstract(
             postSideEffect(
                 SideEffects.NavigateTo(
                     NavigateDestinations.BuyQuotes(
-                        greenWallet = greenWallet, quotes = QuotesResponse(quotes = quotes.value)
+                        greenWallet = greenWallet, quotes = QuotesResponse(quotes = quotes.value), selectedServiceProvider = this._quote.value?.serviceProvider
                     )
                 )
             )
@@ -107,15 +113,17 @@ abstract class BuyViewModelAbstract(
                 cryptoQuote = quote.value!!,
                 address = address.value!!.address,
                 greenWallet = greenWallet
-            ).widgetUrl
+            ).dataOrThrow().widgetUrl
         }, preAction = {
             onProgress.value = true
             _onProgressBuy.value = true
+            onProgressDescription.value = getString(Res.string.id_connecting_to_s, quote.value?.serviceProvider ?: "")
         }, postAction = {
             onProgress.value = false
             _onProgressBuy.value = false
+            onProgressDescription.value = null
         }, onSuccess = {
-            postSideEffect(SideEffects.OpenBrowser(url = it, openSystemBrowser = true))
+            postSideEffect(SideEffects.OpenBrowser(url = it, type = OpenBrowserType.MELD))
         })
     }
 
@@ -236,7 +244,8 @@ class BuyViewModel(greenWallet: GreenWallet) :
                             postEvent(
                                 NavigateDestinations.Countries(
                                     greenWallet = greenWallet,
-                                    title = getString(Res.string.id_select_country_of_residence),
+                                    title = getString(Res.string.id_select_your_region),
+                                    subtitle = getString(Res.string.id_please_select_your_correct_billing),
                                     showDialCode = false
                                 )
                             )
@@ -245,6 +254,7 @@ class BuyViewModel(greenWallet: GreenWallet) :
                 ),
                 NavAction(
                     title = getString(Res.string.id_verify_address),
+                    isMenuEntry = true,
                     onClick = {
                         verifyAddressOnDevice()
                     }
@@ -255,10 +265,23 @@ class BuyViewModel(greenWallet: GreenWallet) :
 
     private fun verifyAddressOnDevice() {
         doAsync({
+            val address = address.value!!
+
+            // Display DeviceInteraction
+            postSideEffect(
+                SideEffects.NavigateTo(
+                    NavigateDestinations.DeviceInteraction(
+                        greenWalletOrNull = greenWalletOrNull,
+                        deviceId = sessionOrNull?.device?.connectionIdentifier,
+                        verifyAddress = address.address
+                    )
+                )
+            )
+
             verifyAddressUseCase.invoke(
                 session = session,
                 account = account,
-                address = address.value!!
+                address = address
             )
         }, onSuccess = {
             postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_the_address_is_valid)))

@@ -8,6 +8,7 @@ import com.blockstream.common.gdk.GdkSession
 import com.blockstream.green.data.meld.MeldRepository
 import com.blockstream.green.data.meld.data.CryptoQuoteRequest
 import com.blockstream.green.data.meld.data.QuoteResponse
+import com.blockstream.green.network.dataOrNull
 
 
 class CreateCryptoQuoteUseCase constructor(
@@ -32,7 +33,7 @@ class CreateCryptoQuoteUseCase constructor(
         sourceAmount = amount.ifBlank {
             meldRepository.getCryptoLimits(
                 fiatCurrency = sourceCurrencyCode
-            ).defaultAmount?.toInt().toString()
+            ).dataOrNull()?.firstOrNull()?.defaultAmount?.toInt().toString()
         }
 
         val cryptoQuote = CryptoQuoteRequest(
@@ -43,6 +44,6 @@ class CreateCryptoQuoteUseCase constructor(
             // externalCustomerId = greenWallet?.xPubHashId // Disable it for now, to allow cache to work for all users
         )
 
-        return meldRepository.createCryptoQuote(cryptoQuote = cryptoQuote).quotes ?: emptyList()
+        return meldRepository.createCryptoQuote(cryptoQuote = cryptoQuote).dataOrNull()?.quotes?.sortedByDescending { it.destinationAmount } ?: emptyList()
     }
 }

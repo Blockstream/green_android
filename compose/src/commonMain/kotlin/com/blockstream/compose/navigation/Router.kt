@@ -747,6 +747,7 @@ fun Router(
                         )
                     },
                     title = args.title,
+                    subtitle = args.subtitle,
                     showDialCode = args.showDialCode,
                     onDismissRequest = navController.onDismissRequest()
                 )
@@ -1105,6 +1106,7 @@ fun Router(
                         )
                     },
                     quotes = args.quotes.quotes ?: emptyList(),
+                    selectedServiceProvider = args.selectedServiceProvider,
                     onDismissRequest = navController.onDismissRequest()
                 )
             }

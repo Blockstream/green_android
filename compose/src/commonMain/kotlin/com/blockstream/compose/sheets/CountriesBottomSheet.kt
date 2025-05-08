@@ -31,9 +31,11 @@ import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.GreenSearchField
 import com.blockstream.compose.theme.bodyMedium
+import com.blockstream.compose.theme.displaySmall
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.navigation.setResult
 import org.jetbrains.compose.resources.stringResource
 
@@ -42,11 +44,13 @@ import org.jetbrains.compose.resources.stringResource
 fun CountriesBottomSheet(
     viewModel: GreenViewModel,
     title: String? = null,
+    subtitle: String? = null,
     showDialCode: Boolean = true,
     onDismissRequest: () -> Unit,
 ) {
     GreenBottomSheet(
         title = title,
+        subtitle = subtitle,
         viewModel = viewModel,
         withHorizontalPadding = false,
         withBottomPadding = false,
@@ -91,17 +95,20 @@ fun CountriesBottomSheet(
                         NavigateDestinations.Countries.setResult(country)
                         onDismissRequest()
                     }) {
-                        Column {
-                            Text(text = country.name, style = labelLarge)
-                            Text(
-                                text = if (showDialCode) {
-                                    country.dialCodeString
-                                } else {
-                                    country.code.uppercase()
-                                },
-                                style = bodyMedium,
-                                color = whiteMedium
-                            )
+                        GreenRow(padding = 0) {
+                            Text(text = country.flag, style = displaySmall)
+                            Column {
+                                Text(text = country.name, style = labelLarge)
+                                Text(
+                                    text = if (showDialCode) {
+                                        country.dialCodeString
+                                    } else {
+                                        country.code.uppercase()
+                                    },
+                                    style = bodyMedium,
+                                    color = whiteMedium
+                                )
+                            }
                         }
                     }
                 }

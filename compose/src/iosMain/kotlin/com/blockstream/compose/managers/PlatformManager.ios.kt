@@ -6,6 +6,7 @@ import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.platformFileSystem
+import com.blockstream.common.sideeffects.OpenBrowserType
 import com.preat.peekaboo.image.picker.SelectionMode
 import com.preat.peekaboo.image.picker.rememberImagePickerLauncher
 import kotlinx.cinterop.BetaInteropApi
@@ -59,7 +60,7 @@ actual class PlatformManager(val application: UIApplication) {
         return false
     }
 
-    actual fun openBrowser(url: String, openSystemBrowser: Boolean) {
+    actual fun openBrowser(url: String, type: OpenBrowserType){
         NSURL(string = url).takeIf { application.canOpenURL(it) }?.also {
             application.openURL(url = it, options = emptyMap<Any?, Any>()) {
 

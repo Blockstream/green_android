@@ -33,5 +33,6 @@ include(
     ":gdk",
     ":desktopApp",
     ":data",
-    ":utils"
+    ":utils",
+    ":network"
 )

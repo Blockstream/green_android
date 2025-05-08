@@ -25,7 +25,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_all
 import blockstream_green.common.generated.resources.id_assets
-import blockstream_green.common.generated.resources.id_bitcoin
 import blockstream_green.common.generated.resources.id_bitcoin_price
 import blockstream_green.common.generated.resources.id_continue
 import blockstream_green.common.generated.resources.id_latest_transactions

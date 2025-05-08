@@ -118,6 +118,12 @@ class SettingsManager constructor(
         settings[KEY_WALLET_COUNTER] = force ?: (walletCounter() + 1)
     }
 
+    fun getCountry(): String? = settings[KEY_COUNTRY]
+
+    fun setCountry(country: String) {
+        settings[KEY_COUNTRY] = country
+    }
+
     fun clearAll() {
         settings.clear()
     }
@@ -133,5 +139,6 @@ class SettingsManager constructor(
         const val KEY_ALLOW_CUSTOM_PIN_SERVER = "allow_custom_pin_server"
         const val KEY_PROMO_DISMISSED = "promo_dismissed"
         const val KEY_WALLET_COUNTER = "wallet_counter"
+        const val KEY_COUNTRY = "country"
     }
 }

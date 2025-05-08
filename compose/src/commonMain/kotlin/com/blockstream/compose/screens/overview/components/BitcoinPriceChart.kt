@@ -36,7 +36,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.bitcoin
-import blockstream_green.common.generated.resources.id_bitcoin
 import blockstream_green.common.generated.resources.id_buy_now
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
@@ -130,7 +129,7 @@ private fun BitcoinPrice(startPrice: Float, currentPrice: Float, currency: Strin
                 painter = painterResource(Res.drawable.bitcoin),
                 contentDescription = "bitcoin-icon"
             )
-            Text(stringResource(Res.string.id_bitcoin), style = titleSmall)
+            Text(text = "Bitcoin", style = titleSmall)
         }
 
         composeIf(currentPrice >= 0f) { // only render if current price is available, setting -1f in case its null (loading state)

@@ -671,10 +671,10 @@ open class GreenViewModel constructor(
         action: suspend () -> T,
         mutex: Mutex? = null,
         timeout: Duration? = null, // The timeout is respected only on suspend functions, check documentation of withTimeout
-        preAction: (() -> Unit)? = {
+        preAction: (suspend () -> Unit)? = {
             onProgress.value = true
         },
-        postAction: ((Exception?) -> Unit)? = {
+        postAction: (suspend (Exception?) -> Unit)? = {
             onProgress.value = false
         },
         onSuccess: suspend (T) -> Unit = {},

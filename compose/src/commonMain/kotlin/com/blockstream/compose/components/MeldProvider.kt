@@ -1,5 +1,6 @@
 package com.blockstream.compose.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,7 @@ import blockstream_green.common.generated.resources.id_no_quotes_available_for_t
 import blockstream_green.common.generated.resources.id_you_receive
 import blockstream_green.common.generated.resources.pencil_simple_line
 import com.blockstream.compose.theme.bodySmall
+import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
@@ -35,14 +37,18 @@ fun MeldProvider(
     modifier: Modifier = Modifier,
     quote: QuoteResponse?,
     title: String? = null,
+    badge: String? = null,
     onProgress: Boolean,
+    isChecked: Boolean = false,
     withEditIcon: Boolean = false,
     onClick: (() -> Unit) = {},
 ) {
     GreenDataLayout(
-        title = title,
-        withPadding = false,
         modifier = modifier,
+        title = title,
+        badge = badge,
+        withPadding = false,
+        border = BorderStroke(1.dp, green).takeIf { isChecked },
         enabled = !onProgress,
         onClick = onClick
     ) {

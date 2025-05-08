@@ -1,6 +1,6 @@
 package com.blockstream.domain.base
 
-import com.blockstream.common.network.NetworkResponse
+import com.blockstream.green.network.NetworkResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 

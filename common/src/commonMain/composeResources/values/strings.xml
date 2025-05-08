@@ -1564,6 +1564,7 @@
     <string name="id_provided_by_">Provided by %1$s</string>
     <string name="id_type_an_amount_between_s_and_s">Type an amount between %1$s and %2$s. A minimum setup fee of %3$s will be applied to the received amount.</string>
     <string name="id_buy_with_s">Buy with %1$s</string>
+    <string name="id_buy_s">Buy %1$s</string>
     <string name="id_setup_pin_via_qr">Setup PIN via QR</string>
     <string name="id_jade_already_unlocked">Jade already unlocked</string>
     <string name="id_set_your_pin_via_qr">Set your PIN via QR on your Jade to get started</string>
@@ -1648,15 +1649,17 @@
     <string name="id_keys_stored_on_specialized">Keys stored on specialized device</string>
     <string name="id_account_selector">Account selector</string>
     <string name="id_selected">Selected</string>
-    <string name="id_provider">Provider</string>
+    <string name="id_exchange">Exchange</string>
     <string name="id_you_receive">You receive</string>
-    <string name="id_select_country_of_residence">Select Country of Residence</string>
     <string name="id_welcome_to_blockstream">Welcome to Blockstream!</string>
     <string name="id_your_wallet_has_been_created">Your wallet has been created.</string>
     <string name="id_verify_address">Verify address</string>
     <string name="id_no_quotes_available_for_this_amount">No quotes available for this amount</string>
-    <string name="id_bitcoin">Bitcoin</string>
     <string name="id_bitcoin_price">Bitcoin Price</string>
     <string name="id_buy_now">Buy Now</string>
-
+    <string name="id_select_your_region">Select your region</string>
+    <string name="id_please_select_your_correct_billing">Please select your correct billing location to complete the checkout successfully.</string>
+    <string name="id_connecting_to_s">Connecting to %1$d</string>
+    <string name="id_other">Other</string>
+    <string name="id_best_price">Best Price</string>
 </resources>

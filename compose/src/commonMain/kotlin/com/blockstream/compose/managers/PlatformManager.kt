@@ -5,6 +5,7 @@ import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.sideeffects.OpenBrowserType
 import kotlinx.coroutines.CoroutineScope
 import okio.Source
 
@@ -38,7 +39,7 @@ expect fun askForNotificationPermissions(viewModel: GreenViewModel)
 expect fun askForBluetoothPermissions(viewModel: GreenViewModel, fn: () -> Unit)
 
 expect class PlatformManager {
-    fun openBrowser(url: String, openSystemBrowser: Boolean)
+    fun openBrowser(url: String, type: OpenBrowserType)
 
     fun openToast(content: String): Boolean
 

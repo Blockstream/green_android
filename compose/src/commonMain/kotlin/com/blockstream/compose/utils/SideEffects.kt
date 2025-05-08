@@ -118,7 +118,11 @@ fun HandleSideEffect(
                     stringResource(it)
                 }
             ) { position ->
-                viewModel.postEvent(Events.SelectTwoFactorMethod(method = position?.let { methods.getOrNull(it) }))
+                viewModel.postEvent(Events.SelectTwoFactorMethod(method = position?.let {
+                    methods.getOrNull(
+                        it
+                    )
+                }))
                 twoFactorResolverData = null
             }
         }
@@ -130,7 +134,8 @@ fun HandleSideEffect(
 
                 if (isHelp == true) {
                     appCoroutine.launch {
-                        dialog.openDialog(OpenDialogData(
+                        dialog.openDialog(
+                            OpenDialogData(
                             title = StringHolder.create(Res.string.id_are_you_not_receiving_your_2fa),
                             message = StringHolder.create(Res.string.id_try_again_using_another_2fa),
                             primaryText = getString(if (resolverData.enable2faCallMethod) Res.string.id_enable_2fa_call_method else Res.string.id_try_again),
@@ -150,11 +155,17 @@ fun HandleSideEffect(
                             },
                             onSecondary = {
                                 resolverData.network?.also { network: Network ->
-                                    viewModel.postEvent(NavigateDestinations.Support(
-                                        type = SupportType.INCIDENT,
-                                        supportData = SupportData.create(subject = "I am not receiving my 2FA code", network = resolverData.network, session = viewModel.sessionOrNull),
-                                        greenWalletOrNull = viewModel.greenWalletOrNull
-                                    ))
+                                    viewModel.postEvent(
+                                        NavigateDestinations.Support(
+                                            type = SupportType.INCIDENT,
+                                            supportData = SupportData.create(
+                                                subject = "I am not receiving my 2FA code",
+                                                network = resolverData.network,
+                                                session = viewModel.sessionOrNull
+                                            ),
+                                            greenWalletOrNull = viewModel.greenWalletOrNull
+                                        )
+                                    )
                                 }
                             }
                         ))
@@ -178,7 +189,7 @@ fun HandleSideEffect(
                             dialogState = dialog,
                             isTor = viewModel.settingsManager.appSettings.tor,
                             url = it.url,
-                            openSystemBrowser = it.openSystemBrowser
+                            type = it.type
                         )
                     }
                 }
@@ -271,11 +282,13 @@ fun HandleSideEffect(
                                 throwable = error,
                                 supportData = it.supportData,
                                 onErrorReport = { errorReport ->
-                                    viewModel.postEvent(NavigateDestinations.Support(
-                                        type = SupportType.INCIDENT,
-                                        supportData = errorReport,
-                                        greenWalletOrNull = viewModel.greenWalletOrNull
-                                    ))
+                                    viewModel.postEvent(
+                                        NavigateDestinations.Support(
+                                            type = SupportType.INCIDENT,
+                                            supportData = errorReport,
+                                            greenWalletOrNull = viewModel.greenWalletOrNull
+                                        )
+                                    )
                                     navigator.navigateUp()
                                 }
                             ) {
@@ -300,9 +313,9 @@ fun HandleSideEffect(
                 }
 
                 is SideEffects.CopyToClipboard -> {
-                    if(!platformManager.copyToClipboard(content = it.value)){
+                    if (!platformManager.copyToClipboard(content = it.value)) {
                         it.message?.also {
-                            if(!platformManager.openToast(it)) {
+                            if (!platformManager.openToast(it)) {
                                 // In case openToast is not supported
                                 appCoroutine.launch {
                                     snackbar.showSnackbar(message = it)
@@ -346,6 +359,7 @@ fun HandleSideEffect(
                                 navigator.popBackStack(route, inclusive = false)
                             }
                         }
+
                         PopTo.OnOffRamps -> {
                             navigator.currentBackStack.value.firstOrNull { entry ->
                                 entry.destination.hasRoute<NavigateDestinations.OnOffRamps>()
@@ -353,6 +367,7 @@ fun HandleSideEffect(
                                 navigator.popBackStack(route, inclusive = false)
                             }
                         }
+
                         PopTo.Root, null -> {
                             while (navigator.currentBackStack.value.size > 2) {
                                 navigator.navigateUp()
@@ -368,7 +383,12 @@ fun HandleSideEffect(
                         dialog.openDialog(
                             OpenDialogData(
                                 title = StringHolder.create(Res.string.id_success),
-                                message = StringHolder(string = getString(Res.string.id_message_from_recipient_s,it.data.message ?: "")),
+                                message = StringHolder(
+                                    string = getString(
+                                        Res.string.id_message_from_recipient_s,
+                                        it.data.message ?: ""
+                                    )
+                                ),
                                 primaryText = getString(if (isUrl) Res.string.id_open else Res.string.id_ok),
                                 secondaryText = if (isUrl) getString(Res.string.id_cancel) else null,
                                 onPrimary = {
@@ -416,18 +436,23 @@ fun HandleSideEffect(
                 }
 
                 is SideEffects.RequestDeviceInteraction -> {
-                    navigator.navigate(NavigateDestinations.DeviceInteraction(
-                        deviceId = it.deviceId,
-                        isMasterBlindingKeyRequest = it.isMasterBlindingKeyRequest,
-                        message = it.message
-                    ))
+                    navigator.navigate(
+                        NavigateDestinations.DeviceInteraction(
+                            deviceId = it.deviceId,
+                            isMasterBlindingKeyRequest = it.isMasterBlindingKeyRequest,
+                            message = it.message
+                        )
+                    )
 
-                    scope.launch (context = handleException()) {
+                    scope.launch(context = handleException()) {
                         it.completable?.also { completable ->
                             completable.await()
                         } ?: run { delay(3000L) }
 
-                        if(navigator.currentBackStackEntry?.destination?.hasRoute(NavigateDestinations.DeviceInteraction::class) == true){
+                        if (navigator.currentBackStackEntry?.destination?.hasRoute(
+                                NavigateDestinations.DeviceInteraction::class
+                            ) == true
+                        ) {
                             navigator.navigateUp()
                         }
                     }
@@ -453,7 +478,7 @@ fun HandleSideEffect(
 
                 is SideEffects.AskForFirmwareUpgrade -> {
 
-                    if(viewModel.deviceOrNull?.deviceBrand == DeviceBrand.Blockstream) {
+                    if (viewModel.deviceOrNull?.deviceBrand == DeviceBrand.Blockstream) {
 
                         val title = when {
                             it.request.firmwareList != null -> "Select firmware"
@@ -467,19 +492,22 @@ fun HandleSideEffect(
                         ) else null
 
                         appCoroutine.launch {
-                            dialog.openDialog(OpenDialogData(
+                            dialog.openDialog(
+                                OpenDialogData(
                                 title = StringHolder.create(title),
                                 message = message?.let { StringHolder.create(it) },
                                 items = it.request.firmwareList,
-                                primaryText = getString(Res.string.id_continue) ,
-                                secondaryText = if (it.request.firmwareList == null) getString(if (it.request.isUpgradeRequired) Res.string.id_cancel else Res.string.id_skip) else null,
+                                primaryText = getString(Res.string.id_continue),
+                                secondaryText = if (it.request.firmwareList == null) getString(
+                                    if (it.request.isUpgradeRequired) Res.string.id_cancel else Res.string.id_skip
+                                ) else null,
                                 onPrimary = {
                                     viewModel.postEvent(Events.RespondToFirmwareUpgrade(index = 0))
                                 },
                                 onSecondary = {
                                     viewModel.postEvent(Events.RespondToFirmwareUpgrade(index = null))
                                 }, onItem = {
-                                    if(it != null) {
+                                    if (it != null) {
                                         viewModel.postEvent(
                                             Events.RespondToFirmwareUpgrade(
                                                 index = it
@@ -490,12 +518,13 @@ fun HandleSideEffect(
                             ))
                         }
 
-                    } else if(viewModel.deviceOrNull != null && it.request.isUpgradeRequired){
+                    } else if (viewModel.deviceOrNull != null && it.request.isUpgradeRequired) {
                         appCoroutine.launch {
-                            dialog.openDialog(OpenDialogData(
+                            dialog.openDialog(
+                                OpenDialogData(
                                 title = StringHolder.create(Res.string.id_warning),
                                 message = StringHolder.create(Res.string.id_outdated_hardware_wallet),
-                                primaryText = getString(Res.string.id_continue) ,
+                                primaryText = getString(Res.string.id_continue),
                                 secondaryText = getString(Res.string.id_cancel),
                                 onPrimary = {
                                     viewModel.postEvent(Events.RespondToFirmwareUpgrade(index = 0))
@@ -556,7 +585,7 @@ fun HandleSideEffect(
                                 }
                             }
 
-                            if(it.destination is NavigateDestinations.ImportPubKey) {
+                            if (it.destination is NavigateDestinations.ImportPubKey) {
                                 navigator.currentBackStack.value.firstOrNull { entry ->
                                     entry.destination.hasRoute<NavigateDestinations.JadePinUnlock>()
                                 }?.toRoute<NavigateDestinations.JadePinUnlock>()?.also { route ->
@@ -567,7 +596,7 @@ fun HandleSideEffect(
                             }
 
                             (it.destination as? NavigateDestinations.Login)?.also { destination ->
-                                if(destination.isWatchOnlyUpgrade){
+                                if (destination.isWatchOnlyUpgrade) {
                                     popUpTo(NavigateDestinations.DeviceScan::class) {
                                         inclusive = true
                                     }
@@ -584,7 +613,7 @@ fun HandleSideEffect(
 
                             if (it.destination.unique) {
                                 // Same route
-                                if(navigator.currentBackStackEntry?.destination?.hasRoute(it.destination::class) == true){
+                                if (navigator.currentBackStackEntry?.destination?.hasRoute(it.destination::class) == true) {
                                     navigator.currentBackStackEntry?.destination?.id?.also {
                                         popUpTo(it) {
                                             inclusive = true

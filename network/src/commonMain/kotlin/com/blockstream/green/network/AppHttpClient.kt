@@ -1,6 +1,7 @@
-package com.blockstream.common.network
+package com.blockstream.green.network
 
 import co.touchlab.kermit.Logger
+import com.blockstream.green.network.NetworkResponse.Success
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.body
@@ -10,6 +11,8 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.resources.Resources
+import io.ktor.client.plugins.resources.get
+import io.ktor.client.plugins.resources.post
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.post
@@ -30,6 +33,20 @@ sealed class NetworkResponse<out T> {
     data class Error(val code: Int, val message: String) : NetworkResponse<Nothing>()
 }
 
+inline fun <reified T> NetworkResponse<T>.dataOrNull(): T? {
+    if (this is Success) {
+        return this.data
+    }
+    return null
+}
+
+inline fun <reified T> NetworkResponse<T>.dataOrThrow(): T {
+    if (this is Success) {
+        return this.data
+    }
+    return throw Exception((this as? NetworkResponse.Error)?.message ?: "Something went wrong")
+}
+
 abstract class AppHttpClient(
     configBlock: HttpClientConfig<*>.() -> Unit = {}
 ) {
@@ -41,8 +58,20 @@ abstract class AppHttpClient(
         httpClient.get(path, block).body()
     }
 
+    suspend inline fun <reified R : Any, reified T> get(
+        resource: R, block: HttpRequestBuilder.() -> Unit = {}
+    ): NetworkResponse<T> = execute {
+        httpClient.get(resource = resource, block).body()
+    }
+
     suspend inline fun <reified T, reified B> post(path: String, body: B): NetworkResponse<T> = execute {
         httpClient.post(path) {
+            setBody(body)
+        }.body()
+    }
+
+    suspend inline fun <reified R: Any, reified T, reified B> post(resource: R, body: B): NetworkResponse<T> = execute {
+        httpClient.post(resource) {
             setBody(body)
         }.body()
     }

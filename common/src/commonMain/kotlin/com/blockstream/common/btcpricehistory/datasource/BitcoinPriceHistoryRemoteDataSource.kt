@@ -1,8 +1,8 @@
 package com.blockstream.common.btcpricehistory.datasource
 
-import com.blockstream.common.btcpricehistory.model.NetworkBitcoinPriceData
 import com.blockstream.common.btcpricehistory.BitcoinPriceHistoryHttpClient
-import com.blockstream.common.network.NetworkResponse
+import com.blockstream.common.btcpricehistory.model.NetworkBitcoinPriceData
+import com.blockstream.green.network.NetworkResponse
 
 
 class BitcoinPriceHistoryRemoteDataSource(

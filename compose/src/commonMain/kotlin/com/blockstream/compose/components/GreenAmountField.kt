@@ -48,7 +48,6 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Fill
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.fill.CaretDown
-import com.adamglin.phosphoricons.regular.Clipboard
 import com.adamglin.phosphoricons.regular.XCircle
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.extensions.isNotBlank
@@ -56,7 +55,6 @@ import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.utils.DecimalFormat
 import com.blockstream.compose.managers.LocalPlatformManager
-import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.green
@@ -65,6 +63,7 @@ import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.DecimalFormatter
 import com.blockstream.ui.components.GradientEdgeBox
 import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.components.GreenSpacer
 import com.blockstream.ui.utils.ifTrue
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -89,7 +88,7 @@ fun GreenAmountField(
     isReadyOnly: Boolean = false,
     onEditClick: () -> Unit = {},
     onSendAllClick: () -> Unit = {},
-    onDenominationClick: () -> Unit = {}
+    onDenominationClick: (() -> Unit)? = null
 ) {
     val platformManager = LocalPlatformManager.current
 
@@ -97,7 +96,6 @@ fun GreenAmountField(
 
     val textStyle = LocalTextStyle.current.merge(
         TextStyle(
-            fontFamily = MonospaceFont(),
             color = whiteHigh,
             textAlign = TextAlign.Center,
             fontSize = 26.sp
@@ -171,7 +169,6 @@ fun GreenAmountField(
                                 // hack to fix height adjustments
                                 text = secondaryValue?.takeIf { it.isNotBlank() } ?: " ",
                                 modifier = Modifier.fillMaxWidth(),
-                                fontFamily = MonospaceFont(),
                                 maxLines = 1,
                                 style = bodySmall,
                                 textAlign = TextAlign.Center,
@@ -241,17 +238,7 @@ fun GreenAmountField(
                 ) {
 
                     if (!isAmountLocked) {
-                        if (value.isEmpty()) {
-                            IconButton(
-                                onClick = { onValueChange(platformManager.getClipboard() ?: "") },
-                                enabled = isEditable
-                            ) {
-                                Icon(
-                                    imageVector = PhosphorIcons.Regular.Clipboard,
-                                    contentDescription = "Edit"
-                                )
-                            }
-                        } else {
+                        if (value.isNotEmpty()) {
                             IconButton(onClick = { onValueChange("") }, enabled = isEditable) {
                                 Icon(
                                     imageVector = PhosphorIcons.Regular.XCircle,
@@ -264,14 +251,14 @@ fun GreenAmountField(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .ifTrue(isEditable && !isReadyOnly) {
+                            .ifTrue(isEditable && !isReadyOnly && onDenominationClick != null) {
                                 it.clickable {
-                                    onDenominationClick()
+                                    onDenominationClick?.invoke()
                                 }
                             }
                     ) {
                         val canBeEdited =
-                            (isEditable && session?.let { assetId.isPolicyAsset(session = it) } != false)
+                            isEditable && session?.let { assetId.isPolicyAsset(session = it) } != false && onDenominationClick != null
                         Text(
                             text = session?.let {
                                 denomination.assetTicker(
@@ -279,7 +266,7 @@ fun GreenAmountField(
                                     assetId = assetId
                                 )
                             } ?: denomination.denomination,
-                            style = bodyMedium,
+                            style = bodyMedium
                         )
 
                         if (canBeEdited) {
@@ -289,10 +276,9 @@ fun GreenAmountField(
                                 modifier = Modifier
                                     .size(12.dp)
                                     .padding(start = 2.dp)
-//                                .ifTrue(!canBeEdited) {
-//                                    it.alpha(0f)
-//                                }
                             )
+                        } else {
+                            GreenSpacer(12)
                         }
                     }
 

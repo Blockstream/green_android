@@ -1,5 +1,5 @@
 package com.blockstream.common.btcpricehistory
 
-import com.blockstream.common.network.AppHttpClient
+import com.blockstream.green.network.AppHttpClient
 
 class BitcoinPriceHistoryHttpClient: AppHttpClient()

@@ -4,6 +4,7 @@ package com.blockstream.green.data.meld
 import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.data.dataModule
 import com.blockstream.green.data.meld.data.CryptoQuoteRequest
+import com.blockstream.green.network.dataOrThrow
 import com.blockstream.green.utils.Loggable
 import kotlinx.coroutines.test.runTest
 import org.koin.core.context.startKoin
@@ -46,18 +47,18 @@ class MeldRepositoryTest : KoinTest {
     fun `Request CryptoQuoteRequest`() = runTest {
         meldRepository.createCryptoQuote(CryptoQuoteRequest()).also {
             logger.d { "$it" }
-            assertNotNull(it.quotes)
+            assertNotNull(it.dataOrThrow().quotes)
         }
     }
 
     @Test
     fun `Request CryptoWidgetRequest`() = runTest {
-        meldRepository.createCryptoQuote(CryptoQuoteRequest()).quotes!!.first().let {
+        meldRepository.createCryptoQuote(CryptoQuoteRequest()).dataOrThrow().quotes!!.first().let {
             it.toCryptoWidgetRequest("bc1qcr8ktl3nzwh8xm88225ysynt5zsdydae26thrg")
         }.also {
             meldRepository.createCryptoWidget(it).also {
                 logger.d { "$it" }
-                assertNotNull(it.widgetUrl)
+                assertNotNull(it.dataOrThrow().widgetUrl)
             }
         }
     }
@@ -65,7 +66,7 @@ class MeldRepositoryTest : KoinTest {
     @Test
     fun `Request CryptoLimitsRequest`() = runTest {
         meldRepository.getCryptoLimits(fiatCurrency = "EUR").also {
-            assertNotEquals(0.0, it.maxAmount)
+            assertNotEquals(0.0, it.dataOrThrow().first().maxAmount)
         }
     }
 }

@@ -28,6 +28,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.browser.customtabs.CustomTabsIntent.SHARE_STATE_OFF
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -43,13 +44,14 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_share
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.stateKeeper
-import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.managers.BluetoothManager
 import com.blockstream.common.managers.BluetoothManager.Companion.BLE_PERMISSIONS
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.sideeffects.OpenBrowserType
 import com.blockstream.compose.LocalActivity
+import com.blockstream.green.data.config.AppInfo
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -167,16 +169,22 @@ actual class PlatformManager constructor(
         return true
     }
 
-    actual fun openBrowser(url: String, openSystemBrowser: Boolean) {
+    actual fun openBrowser(url: String, type: OpenBrowserType){
         try {
-            if (openSystemBrowser) {
+            if (type == OpenBrowserType.OPEN_SYSTEM) {
                 context.startActivity(Intent(Intent.ACTION_VIEW).also {
                     it.setData(Uri.parse(url))
                 })
             } else {
                 val builder = CustomTabsIntent.Builder()
-                builder.setShowTitle(true)
-                builder.setUrlBarHidingEnabled(false)
+                if(type == OpenBrowserType.MELD){
+                    builder.setShowTitle(false)
+
+                    builder.setShareState(SHARE_STATE_OFF)
+                }else{
+                    builder.setShowTitle(true)
+                }
+                builder.setUrlBarHidingEnabled(true)
                 builder.setDefaultColorSchemeParams(
                     CustomTabColorSchemeParams.Builder()
 //                    .setToolbarColor(ContextCompat.getColor(context, R.color.brand_surface))

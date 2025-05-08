@@ -21,6 +21,7 @@ import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.lightning.satoshi
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
+import com.blockstream.common.sideeffects.OpenBrowserType
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.UserInput
 import com.blockstream.common.utils.toAmountLook
@@ -319,7 +320,7 @@ class OnOffRampsViewModel(greenWallet: GreenWallet) :
 
         }, onSuccess = {
             countly.buyRedirect()
-            postSideEffect(SideEffects.OpenBrowser(it, openSystemBrowser = true))
+            postSideEffect(SideEffects.OpenBrowser(url = it, type = OpenBrowserType.OPEN_SYSTEM))
         })
     }
 

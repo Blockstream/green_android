@@ -30,17 +30,11 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                // implementation(libs.kotlin.stdlib)
                 api(project(":utils"))
+                api(project(":network"))
 
                 implementation(libs.kotlinx.serialization.core)
                 implementation(libs.kotlinx.serialization.json)
-
-                api(libs.ktor.client.core)
-                api(libs.ktor.client.content.negotiation)
-                api(libs.ktor.client.resources)
-                api(libs.ktor.client.logging)
-                api(libs.ktor.serialization.kotlinx.json)
 
                 api(project.dependencies.platform(libs.koin.bom))
                 api(libs.koin.core)
@@ -55,35 +49,12 @@ kotlin {
             }
         }
 
-        androidMain {
-            dependencies {
-                // Add Android-specific dependencies here. Note that this source set depends on
-                // commonMain by default and will correctly pull the Android artifacts of any KMP
-                // dependencies declared in commonMain.
-                implementation(libs.ktor.client.okhttp)
-            }
-        }
-
         getByName("androidDeviceTest") {
             dependencies {
                 implementation(libs.androidx.runner)
                 implementation(libs.androidx.core)
                 implementation(libs.androidx.junit)
             }
-        }
-
-        iosMain.dependencies {
-            // Add iOS-specific dependencies here. This a source set created by Kotlin Gradle
-            // Plugin (KGP) that each specific iOS target (e.g., iosX64) depends on as
-            // part of KMP’s default source set hierarchy. Note that this source set depends
-            // on common by default and will correctly pull the iOS artifacts of any
-            // KMP dependencies declared in commonMain.
-            implementation(libs.ktor.client.darwin)
-        }
-
-        jvmMain.dependencies {
-            implementation(libs.ktor.client.java)
-            implementation(libs.ktor.client.cio)
         }
     }
 }

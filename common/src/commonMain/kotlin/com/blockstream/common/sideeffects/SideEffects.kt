@@ -22,7 +22,7 @@ import org.jetbrains.compose.resources.DrawableResource
 
 object SideEffects {
     open class SideEffectEvent(override val event: Event) : SideEffectWithEvent
-    data class OpenBrowser(val url: String, val openSystemBrowser: Boolean = false) : SideEffect
+    data class OpenBrowser(val url: String, val type: OpenBrowserType = OpenBrowserType.IN_APP) : SideEffect
     data class OpenMenu(val id: Int = 0) : SideEffect
     data class OpenDialog(val id: Int = 0) : SideEffect
     data class Snackbar(val text: StringHolder) : SideEffect

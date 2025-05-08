@@ -10,6 +10,7 @@ import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.platformFileSystem
+import com.blockstream.common.sideeffects.OpenBrowserType
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,7 +42,7 @@ actual class PlatformManager {
         return false
     }
 
-    actual fun openBrowser(url: String, openSystemBrowser: Boolean) {
+    actual fun openBrowser(url: String, type: OpenBrowserType){
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
             Desktop.getDesktop().browse(URI(url))
         }

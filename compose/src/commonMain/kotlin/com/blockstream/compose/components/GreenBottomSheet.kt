@@ -2,6 +2,7 @@
 
 package com.blockstream.compose.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -91,7 +92,8 @@ fun GreenBottomSheet(
                         .ifTrue(!withHorizontalPadding) {
                             it.padding(horizontal = 16.dp)
                         }
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     if (title?.isNotBlank() == true) {
                         Text(
@@ -111,8 +113,6 @@ fun GreenBottomSheet(
                             color = whiteMedium,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
-                                .padding(top = 4.dp)
-                                .padding(horizontal = 16.dp)
                                 .align(Alignment.CenterHorizontally)
                         )
                     }
