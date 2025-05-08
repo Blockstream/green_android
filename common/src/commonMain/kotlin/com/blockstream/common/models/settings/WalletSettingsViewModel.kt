@@ -18,7 +18,6 @@ import blockstream_green.common.generated.resources.id_if_you_have_some_coins_on
 import blockstream_green.common.generated.resources.id_learn_more
 import blockstream_green.common.generated.resources.id_optimal_if_you_rarely_spend
 import blockstream_green.common.generated.resources.id_optimal_if_you_spend_coins
-import blockstream_green.common.generated.resources.id_recovery
 import blockstream_green.common.generated.resources.id_recovery_tool
 import blockstream_green.common.generated.resources.id_recovery_transactions
 import blockstream_green.common.generated.resources.id_security
@@ -42,7 +41,6 @@ import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorSetupAction
 import com.blockstream.common.data.WalletExtras
 import com.blockstream.common.data.WalletSetting
-import com.blockstream.common.devices.JadeDevice
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.biometricsMnemonic
 import com.blockstream.common.extensions.biometricsPinData
@@ -339,16 +337,6 @@ class WalletSettingsViewModel(
                             WalletSetting.Text(getString(Res.string.id_security)),
                         )
     
-                        if (!greenWallet.isEphemeral && !greenWallet.isHardware) {
-                            list += listOf(
-                                WalletSetting.ChangePin,
-                                WalletSetting.LoginWithBiometrics(
-                                    enabled = _hasBiometrics.value,
-                                    canEnable = greenKeystore.canUseBiometrics()
-                                )
-                            )
-                        }
-    
                         if (hasMultisig) {
                             list += listOf(WalletSetting.TwoFactorAuthentication)
     
@@ -358,26 +346,14 @@ class WalletSettingsViewModel(
                         }
     
                         list += listOf(WalletSetting.AutoLogoutTimeout(settings.altimeout))
-
-                        if((session.device as? JadeDevice)?.supportsGenuineCheck() == true){
-                            list += listOf(WalletSetting.JadeGenuineCheck)
-                        }
-    
-                        if (!session.isHardwareWallet) {
-                            list += listOf(
-                                WalletSetting.Text(getString(Res.string.id_recovery)),
-                                WalletSetting.RecoveryPhrase
-                            )
-                        }
                     }
-
                 }
             }
 
             list += listOf(
                 WalletSetting.Text(getString(Res.string.id_about)),
-                WalletSetting.Version(appInfo.versionFlavorDebug),
-                WalletSetting.Support
+                WalletSetting.Support,
+                WalletSetting.Version(appInfo.versionFlavorDebug)
             )
         }
 
@@ -761,16 +737,12 @@ class WalletSettingsViewModelPreview(
                 ),
                 WalletSetting.WatchOnly,
                 WalletSetting.Text(getString(Res.string.id_security)),
-                WalletSetting.ChangePin,
-                WalletSetting.LoginWithBiometrics(enabled = true, canEnable = true),
                 WalletSetting.TwoFactorAuthentication,
                 WalletSetting.PgpKey(enabled = false),
                 WalletSetting.AutoLogoutTimeout(5),
-                WalletSetting.Text(getString(Res.string.id_recovery)),
-                WalletSetting.RecoveryPhrase,
                 WalletSetting.Text(getString(Res.string.id_about)),
-                WalletSetting.Version("1.0.0"),
                 WalletSetting.Support,
+                WalletSetting.Version("1.0.0"),
             )
         }
     }

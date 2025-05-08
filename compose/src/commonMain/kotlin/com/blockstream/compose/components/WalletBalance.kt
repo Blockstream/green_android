@@ -25,7 +25,6 @@ import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.models.overview.IWalletBalance
 import com.blockstream.common.models.overview.WalletBalanceViewModel.LocalEvents
 import com.blockstream.common.models.overview.WalletOverviewViewModel
-import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.textHigh
 import com.blockstream.compose.theme.textMedium
 import com.blockstream.compose.utils.noRippleClickable
@@ -61,11 +60,11 @@ fun WalletBalance(modifier: Modifier = Modifier, viewModel: IWalletBalance) {
                     fontSize = 30.sp,
                     fontWeight = FontWeight.Bold
                 )
-                val balanceSecondary by viewModel.balanceSecondary.collectAsStateWithLifecycle()
-                Text(text = balanceSecondary.takeIf { it.isNotBlank() } ?: " ",
-                    color = textMedium,
-                    style = bodyLarge
-                )
+//                val balanceSecondary by viewModel.balanceSecondary.collectAsStateWithLifecycle()
+//                Text(text = balanceSecondary.takeIf { it.isNotBlank() } ?: " ",
+//                    color = textMedium,
+//                    style = bodyLarge
+//                )
             }
 
             androidx.compose.animation.AnimatedVisibility(

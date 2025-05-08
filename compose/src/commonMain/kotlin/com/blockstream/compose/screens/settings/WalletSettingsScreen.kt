@@ -89,7 +89,6 @@ import com.blockstream.compose.dialogs.TextDialog
 import com.blockstream.compose.extensions.colorText
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.red
-import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteLow
@@ -255,7 +254,7 @@ fun WalletSettingsScreen(
             contentPadding = innerPadding.bottom()
                 .plus(PaddingValues(horizontal = 16.dp))
                 .plus(PaddingValues(bottom = (if (viewModel.section == WalletSettingsSection.General) 80.dp else 0.dp) + 16.dp)),
-            verticalArrangement = Arrangement.spacedBy(14.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
 
             items(items) { item ->
@@ -264,8 +263,9 @@ fun WalletSettingsScreen(
                         item.title?.also {
                             Text(
                                 text = it,
-                                style = titleMedium,
-                                modifier = Modifier.padding(top = 8.dp).fillMaxWidth()
+                                style = titleSmall,
+                                color = whiteMedium,
+                                modifier = Modifier.padding(top = 16.dp).fillMaxWidth()
                             )
                         }
                         item.message?.also {
