@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk.data
 
-import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.LN_BTC_POLICY_ASSET
 import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
@@ -33,7 +33,7 @@ data class Networks(
             isDevelopment = false,
             explorerUrl = bitcoinElectrum.explorerUrl,
             bip21Prefix = "lightning",
-            policyAsset = BTC_POLICY_ASSET,
+            policyAsset = LN_BTC_POLICY_ASSET,
             isLightning = true
         )
     }

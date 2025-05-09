@@ -1,6 +1,7 @@
 package com.blockstream.common
 
 const val BTC_POLICY_ASSET = "btc"
+const val LN_BTC_POLICY_ASSET = "lnbtc"
 const val LBTC_POLICY_ASSET = "lbtc" // Used in preview mostly
 
 const val BTC_UNIT = "BTC"

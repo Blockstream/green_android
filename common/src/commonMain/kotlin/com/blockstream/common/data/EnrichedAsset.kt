@@ -5,7 +5,9 @@ import blockstream_green.common.generated.resources.id_receive_any_amp_asset
 import blockstream_green.common.generated.resources.id_receive_any_liquid_asset
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.LBTC_POLICY_ASSET
+import com.blockstream.common.LN_BTC_POLICY_ASSET
 import com.blockstream.common.extensions.isBitcoinPolicyAsset
+import com.blockstream.common.extensions.isLightningPolicyAsset
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.networkForAsset
 import com.blockstream.common.gdk.GdkSession
@@ -37,6 +39,7 @@ data class EnrichedAsset constructor(
         } else if (session != null && assetId.isPolicyAsset(session)) {
             when {
                 assetId.isBitcoinPolicyAsset() -> "Bitcoin"
+                assetId.isLightningPolicyAsset() -> "Bitcoin (Lightning)"
                 assetId.isPolicyAsset(session.liquid) -> "Liquid Bitcoin"
                 else -> throw Exception("No supported network")
             }.let {
@@ -65,7 +68,8 @@ data class EnrichedAsset constructor(
 
     fun sortWeight(session: GdkSession) = when {
         assetId == BTC_POLICY_ASSET -> Int.MAX_VALUE
-        isLiquidPolicyAsset(session) -> Int.MAX_VALUE - 1
+        assetId == LN_BTC_POLICY_ASSET -> Int.MAX_VALUE - 1
+        isLiquidPolicyAsset(session) -> Int.MAX_VALUE - 2
         isAnyAsset -> Int.MIN_VALUE + 1
         else -> {
             val hasAssetIcon = session.hasAssetIcon(assetId)
@@ -82,6 +86,9 @@ data class EnrichedAsset constructor(
 
     val isBitcoin
         get() = assetId == BTC_POLICY_ASSET
+
+    val isLightning
+        get() = assetId == LN_BTC_POLICY_ASSET
 
     fun isLiquidPolicyAsset(session: GdkSession) = !isAnyAsset && assetId.isPolicyAsset(session.liquid)
 
@@ -105,6 +112,13 @@ data class EnrichedAsset constructor(
         fun create(session: GdkSession, network: Network): EnrichedAsset = create(session = session, assetId = network.policyAsset)
 
         fun create(session: GdkSession, assetId: String): EnrichedAsset {
+            if(assetId == LN_BTC_POLICY_ASSET) {
+                return (create(
+                    session = session,
+                    assetId = BTC_POLICY_ASSET
+                ).copy(assetId = LN_BTC_POLICY_ASSET, name = "Bitcoin (Lightning)"))
+            }
+
             val asset = session.getAsset(assetId)
             val enrichedAsset = session.getEnrichedAssets(assetId)
 

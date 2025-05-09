@@ -223,7 +223,7 @@ fun GreenAssetAccounts(
                         HorizontalDivider()
                     }
 
-                    if(session?.isWatchOnlyValue != true) {
+                    if(session?.isWatchOnlyValue != true && !asset.isLightning) {
                         Row(
                             modifier = Modifier.clickable {
                                 onCreateNewAccount(asset)

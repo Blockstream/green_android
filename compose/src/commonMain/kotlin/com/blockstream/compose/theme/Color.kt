@@ -70,7 +70,7 @@ val whiteLow @Composable
 
 val bitcoin = Color(0xFFfe8e02)
 val liquid = Color(0xFF46BEAE)
-val lightning = Color(0xFFE8B810)
+val lightning = Color(0xFFDFB316)
 val bitcoin_testnet = Color(0xFF8C8C8C)
 val liquid_testnet = Color(0xFF9ab8b4)
 val amp = Color(0xFF51AAB0)

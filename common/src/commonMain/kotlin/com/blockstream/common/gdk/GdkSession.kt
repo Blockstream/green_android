@@ -10,6 +10,7 @@ import co.touchlab.stately.collections.ConcurrentMutableMap
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.BTC_UNIT
 import com.blockstream.common.CountlyBase
+import com.blockstream.common.LN_BTC_POLICY_ASSET
 import com.blockstream.common.data.CountlyAsset
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.EnrichedAsset
@@ -2134,12 +2135,6 @@ class GdkSession constructor(
                     // Wallet Assets
                     val walletAssets = linkedMapOf<String, Long>()
 
-                    // Fix for only LN + Liquid wallets when LN is not fully initialized.
-                    // The denomination Liquid based as we reside in the first key of _walletAssetsFlow to identify the main assetId
-                    if(hasLightning){
-                        walletAssets[BTC_POLICY_ASSET] = 0
-                    }
-
                     accounts.value.forEach { account ->
                         this@GdkSession.accountAssets(account).value.assets.forEach { (key, value) ->
                             walletAssets[key] = (walletAssets[key] ?: 0) + value
@@ -2315,11 +2310,14 @@ class GdkSession constructor(
 
     fun sortUtxos(a1: Utxo, a2: Utxo): Int = sortAssets(a1.assetId, a2.assetId)
 
-    private fun sortAssets(a1: String, a2: String): Int = when {
-            a1 == BTC_POLICY_ASSET && a2 == BTC_POLICY_ASSET -> 0
+    private fun sortAssets(a1: String, a2: String): Int {
+
+        return when {
+            a1 == a2 -> 0
             a1 == BTC_POLICY_ASSET -> -1
             a2 == BTC_POLICY_ASSET -> 1
-            a1.isPolicyAsset(this) && a2.isPolicyAsset(this) -> 0 // Liquid
+            a1 == LN_BTC_POLICY_ASSET -> -1
+            a2 == LN_BTC_POLICY_ASSET -> 1
             a1.isPolicyAsset(this) -> -1 // Liquid
             a2.isPolicyAsset(this) -> 1 // Liquid
             else -> {
@@ -2337,9 +2335,9 @@ class GdkSession constructor(
                     val weight1 = getEnrichedAssets(a1)?.weight ?: 0
                     val weight2 = getEnrichedAssets(a2)?.weight ?: 0
 
-                    if(weight1 == weight2){
+                    if (weight1 == weight2) {
                         asset1.name.compareTo(asset2.name)
-                    }else{
+                    } else {
                         weight2.compareTo(weight1)
                     }
                 } else {
@@ -2347,6 +2345,7 @@ class GdkSession constructor(
                 }
             }
         }
+    }
 
     fun sortEnrichedAssets(a1: EnrichedAsset, a2: EnrichedAsset): Int {
         val w1 = a1.sortWeight(this)
@@ -2370,7 +2369,7 @@ class GdkSession constructor(
 
     suspend fun getBalance(account: Account, confirmations: Int = 0, cacheAssets: Boolean = false): Assets {
         val assets: LinkedHashMap<String, Long>? = if(account.isLightning) {
-            lightningSdkOrNull?.balance()?.let { linkedMapOf(BTC_POLICY_ASSET to it) }
+            lightningSdkOrNull?.balance()?.let { linkedMapOf(LN_BTC_POLICY_ASSET to it) }
         } else {
             authHandler(
                 account.network, gdk.getBalance(
@@ -3096,7 +3095,7 @@ class GdkSession constructor(
     }
 
     private fun cacheAssets(assetIds: Collection<String>) {
-        assetIds.filter { it != BTC_POLICY_ASSET }.takeIf { it.isNotEmpty() }?.also {
+        assetIds.filter { it != BTC_POLICY_ASSET && it != LN_BTC_POLICY_ASSET }.takeIf { it.isNotEmpty() }?.also {
             logger.d { "Cache assets: $it" }
             networkAssetManager.cacheAssets(it, this)
         }

@@ -7,6 +7,7 @@ import blockstream_green.common.generated.resources.id_email
 import blockstream_green.common.generated.resources.id_sms
 import blockstream_green.common.generated.resources.id_telegram
 import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.LN_BTC_POLICY_ASSET
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.database.Database
@@ -86,8 +87,9 @@ fun Account.hasTwoFactorReset(session: GdkSession): Boolean {
 }
 
 fun String?.isBitcoinPolicyAsset(): Boolean = (this == null || this == BTC_POLICY_ASSET)
+fun String?.isLightningPolicyAsset(): Boolean = (this == LN_BTC_POLICY_ASSET)
 fun String?.isPolicyAsset(network: Network?): Boolean = (this == null || this == network?.policyAsset)
-fun String?.isPolicyAsset(session: GdkSession): Boolean = isBitcoinPolicyAsset() || session.gdkSessions.keys.any { isPolicyAsset(it) }
+fun String?.isPolicyAsset(session: GdkSession): Boolean = isBitcoinPolicyAsset() || isLightningPolicyAsset() || session.gdkSessions.keys.any { isPolicyAsset(it) }
 
 // If no Bitcoin network is available, fallback to Liquid
 fun String?.networkForAsset(session: GdkSession): Network? = when {
