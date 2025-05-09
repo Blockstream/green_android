@@ -56,6 +56,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.constraintlayout.compose.multiplatform)
+            implementation(libs.material3.adaptive)
             /** ----------------------------------------------------------------------------------------- */
 
             /**  --- Koin   ----------------------------------------------------------------------------- */
@@ -72,6 +73,7 @@ kotlin {
             implementation(libs.coil.network.ktor3)
             // implementation(libs.compose.action.menu)
             /** ----------------------------------------------------------------------------------------- */
+            implementation(libs.koalaplot.core)
         }
 
         val desktopMain by getting

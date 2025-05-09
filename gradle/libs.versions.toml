@@ -77,7 +77,8 @@ media3 = "1.6.1"
 kotlinTest = "2.1.20"
 runner = "1.6.2"
 core = "1.6.1"
-
+material3-adaptive = "1.1.0-beta02"
+koalaplot = "0.8.0"
 
 [libraries]
 lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "compose-lifecycle" }
@@ -184,6 +185,8 @@ compose-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", vers
 kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlinTest" }
 androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
 androidx-core = { group = "androidx.test", name = "core", version.ref = "core" }
+material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "material3-adaptive" }
+koalaplot-core = { module = "io.github.koalaplot:koalaplot-core", version.ref = "koalaplot" }
 
 [plugins]
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

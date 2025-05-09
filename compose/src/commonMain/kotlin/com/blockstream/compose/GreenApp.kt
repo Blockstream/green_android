@@ -58,6 +58,7 @@ import org.koin.compose.koinInject
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
+import kotlin.reflect.KClass
 
 
 val LocalAppInfo: ProvidableCompositionLocal<AppInfo> =

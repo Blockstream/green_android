@@ -46,12 +46,13 @@ fun createWalletDatabase(driverFactory: DriverFactory): WalletDB {
 fun createLocalDatabase(driverFactory: DriverFactory): LocalDB {
     val driver = driverFactory.createLocalDriver()
     val database = LocalDB(
-        driver = driver
+        driver = driver,
     )
 
     return database
 }
 
+//TODO: Refactor this into two separate database classes, local and remote.
 class Database(driverFactory: DriverFactory, val settingsManager: SettingsManager) {
 
     private var walletDB: WalletDB
@@ -280,6 +281,7 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
     suspend fun deleteEvents() = io {
         localDB.eventsQueries.deleteEvents()
     }
+
 
     companion object : Loggable()
 }

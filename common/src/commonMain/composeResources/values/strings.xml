@@ -1655,4 +1655,8 @@
     <string name="id_your_wallet_has_been_created">Your wallet has been created.</string>
     <string name="id_verify_address">Verify address</string>
     <string name="id_no_quotes_available_for_this_amount">No quotes available for this amount</string>
+    <string name="id_bitcoin">Bitcoin</string>
+    <string name="id_bitcoin_price">Bitcoin Price</string>
+    <string name="id_buy_now">Buy Now</string>
+
 </resources>

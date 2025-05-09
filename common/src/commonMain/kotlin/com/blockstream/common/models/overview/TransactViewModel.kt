@@ -5,6 +5,8 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewTransactionLook
 import com.blockstream.common.extensions.previewWallet
+import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.AccountAssetBalanceList
 import com.blockstream.common.looks.transaction.TransactionLook
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.green.utils.Loggable

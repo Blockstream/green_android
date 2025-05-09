@@ -1,6 +1,7 @@
 package com.blockstream.common.database
 
 import android.content.Context
+import android.util.Log
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
@@ -22,15 +23,16 @@ actual class DriverFactory(private val context: Context) {
     }
 
     actual fun createLocalDriver(): SqlDriver {
-        return AndroidSqliteDriver(
+        val driver =  AndroidSqliteDriver(
             schema = LocalDB.Schema,
             context = context,
             name = DATABASE_NAME_LOCAL,
-            callback = object : AndroidSqliteDriver.Callback(WalletDB.Schema) {
+            callback = object : AndroidSqliteDriver.Callback(LocalDB.Schema) {
                 override fun onOpen(db: SupportSQLiteDatabase) {
                     db.setForeignKeyConstraintsEnabled(true)
                 }
             }
         )
+        return driver
     }
 }

@@ -301,6 +301,8 @@ sign_google_play:
   cache: []
   tags:
     - k8s # Simple, non-resource intensive jobs
+  script:
+    - apk add libqrencode-tools
 
 gcp_auth:
   extends: .gcp_prep

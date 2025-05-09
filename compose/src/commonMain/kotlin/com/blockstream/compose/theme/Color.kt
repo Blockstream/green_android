@@ -76,3 +76,4 @@ val liquid_testnet = Color(0xFF9ab8b4)
 val amp = Color(0xFF51AAB0)
 val amp_testnet = Color(0xFF7fadb0)
 
+

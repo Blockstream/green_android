@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
 import co.touchlab.kermit.chunked
 import co.touchlab.kermit.platformLogWriter
+import com.blockstream.common.btcpricehistory.btcPriceHistoryModule
 import com.blockstream.common.data.AppConfig
 import com.blockstream.common.database.Database
 import com.blockstream.common.gdk.Gdk
@@ -48,6 +49,7 @@ fun initKoin(appInfo: AppInfo, appConfig: AppConfig, doOnStartup: () -> Unit = {
         modules(*appModules)
         modules(platformModule)
         modules(commonModules(appConfig))
+        modules(btcPriceHistoryModule)
     }
 
     // Dummy initialization logic, making use of appModule declarations for demonstration purposes.

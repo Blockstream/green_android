@@ -12,6 +12,7 @@ import com.blockstream.common.data.ExceptionWithSupportData
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SupportData
+import com.blockstream.ui.events.Event
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.launchIn
@@ -35,7 +36,6 @@ import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.ifNotNull
 import com.blockstream.common.utils.toAmountLook
 import com.blockstream.green.utils.Loggable
-import com.blockstream.ui.events.Event
 import com.blockstream.ui.sideeffects.SideEffect
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.stateIn

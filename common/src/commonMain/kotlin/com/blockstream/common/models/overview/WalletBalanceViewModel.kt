@@ -39,7 +39,6 @@ open class WalletBalanceViewModel(greenWallet: GreenWallet): GreenViewModel(gree
 
     private val primaryBalanceInFiat: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
-
     class LocalEvents {
         object ToggleBalance : Event
     }

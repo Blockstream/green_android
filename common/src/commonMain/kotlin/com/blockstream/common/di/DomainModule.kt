@@ -6,6 +6,7 @@ import com.blockstream.common.usecases.NewWalletUseCase
 import com.blockstream.common.usecases.RestoreWalletUseCase
 import com.blockstream.common.usecases.SetBiometricsUseCase
 import com.blockstream.common.usecases.SetPinUseCase
+import com.blockstream.domain.bitcoinpricehistory.ObserveBitcoinPriceHistory
 import com.blockstream.domain.hardware.VerifyAddressUseCase
 import com.blockstream.domain.meld.CreateCryptoQuoteUseCase
 import com.blockstream.domain.meld.CreateCryptoWidgetUseCase
@@ -48,5 +49,9 @@ val domainModule = module {
     }
     single {
         EnableHardwareWatchOnlyUseCase(get(), get())
+    }
+
+    factory {
+        ObserveBitcoinPriceHistory(get())
     }
 }

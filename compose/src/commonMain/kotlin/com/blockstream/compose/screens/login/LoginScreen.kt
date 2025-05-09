@@ -93,6 +93,7 @@ import com.blockstream.compose.views.PinView
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.components.GreenSpacer
+import com.blockstream.ui.navigation.LocalNavigator
 import com.blockstream.ui.navigation.getResult
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first

@@ -1,6 +1,7 @@
 package com.blockstream.ui.utils
 
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 inline fun Modifier.ifTrue(
@@ -37,4 +38,14 @@ inline fun <T> Modifier.nullConditional(
 fun LazyListState.reachedBottom(): Boolean {
     val lastVisibleItem = this.layoutInfo.visibleItemsInfo.lastOrNull()
     return lastVisibleItem?.index != 0 && lastVisibleItem?.index == this.layoutInfo.totalItemsCount - 1
+}
+
+@Composable
+fun composeIf(
+    condition: Boolean?,
+    content: @Composable () -> Unit,
+) {
+    if (condition != true) return
+
+    return content()
 }

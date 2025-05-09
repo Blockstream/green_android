@@ -183,6 +183,7 @@ import com.blockstream.compose.sheets.TwoFactorResetBottomSheet
 import com.blockstream.compose.sheets.WalletDeleteBottomSheet
 import com.blockstream.compose.sheets.WalletRenameBottomSheet
 import com.blockstream.compose.sheets.WatchOnlyCredentialsSettingsBottomSheet
+import com.blockstream.domain.bitcoinpricehistory.ObserveBitcoinPriceHistory
 import com.blockstream.ui.navigation.Dialog
 import com.blockstream.ui.navigation.LocalInnerPadding
 import com.blockstream.ui.navigation.bottomsheet.onDismissRequest

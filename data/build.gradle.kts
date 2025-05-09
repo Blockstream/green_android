@@ -35,11 +35,12 @@ kotlin {
 
                 implementation(libs.kotlinx.serialization.core)
                 implementation(libs.kotlinx.serialization.json)
-                implementation(libs.ktor.client.core)
-                implementation(libs.ktor.client.content.negotiation)
-                implementation(libs.ktor.client.resources)
-                implementation(libs.ktor.client.logging)
-                implementation(libs.ktor.serialization.kotlinx.json)
+
+                api(libs.ktor.client.core)
+                api(libs.ktor.client.content.negotiation)
+                api(libs.ktor.client.resources)
+                api(libs.ktor.client.logging)
+                api(libs.ktor.serialization.kotlinx.json)
 
                 api(project.dependencies.platform(libs.koin.bom))
                 api(libs.koin.core)

@@ -25,6 +25,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_all
 import blockstream_green.common.generated.resources.id_assets
+import blockstream_green.common.generated.resources.id_bitcoin
+import blockstream_green.common.generated.resources.id_bitcoin_price
 import blockstream_green.common.generated.resources.id_continue
 import blockstream_green.common.generated.resources.id_latest_transactions
 import blockstream_green.common.generated.resources.id_learn_more
@@ -60,6 +62,7 @@ import com.blockstream.compose.dialogs.DenominationExchangeDialog
 import com.blockstream.compose.dialogs.WalletOverviewMenuDialog
 import com.blockstream.compose.extensions.itemsSpaced
 import com.blockstream.compose.managers.askForNotificationPermissions
+import com.blockstream.compose.screens.overview.components.BitcoinPriceChart
 import com.blockstream.compose.sheets.MainMenuEntry
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.md_theme_background
@@ -67,6 +70,7 @@ import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.noRippleClickable
 import com.blockstream.compose.views.LightningInfo
+import com.blockstream.ui.common.OnScreenFocus
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenSpacer
 import com.blockstream.ui.navigation.LocalInnerPadding
@@ -97,13 +101,14 @@ fun WalletOverviewScreen(
 
     askForNotificationPermissions(viewModel)
 
+
+
     NavigateDestinations.MainMenu.getResult<MainMenuEntry> {
         when (it) {
             MainMenuEntry.SCAN -> {
                 viewModel.postEvent(
                     NavigateDestinations.Camera(
-                        isDecodeContinuous = true,
-                        parentScreenName = viewModel.screenName()
+                        isDecodeContinuous = true, parentScreenName = viewModel.screenName()
                     )
                 )
             }
@@ -177,11 +182,15 @@ fun WalletOverviewScreen(
         }
     }
 
+    OnScreenFocus(viewModel::refetchBitcoinPriceHistory)
+
+
+
+
     SetupScreen(viewModel = viewModel, sideEffectsHandler = {
         when (it) {
             is SideEffects.OpenDenominationExchangeRate -> {
-                denominationExchangeRateViewModel =
-                    DenominationExchangeRateViewModel(viewModel.greenWallet)
+                denominationExchangeRateViewModel = DenominationExchangeRateViewModel(viewModel.greenWallet)
             }
 
             is SideEffects.AppReview -> {
@@ -189,8 +198,7 @@ fun WalletOverviewScreen(
             }
 
             is WalletOverviewViewModel.LocalSideEffects.AccountArchivedDialog -> {
-                archivedAccountsViewModel =
-                    ArchivedAccountsViewModel(viewModel.greenWallet)
+                archivedAccountsViewModel = ArchivedAccountsViewModel(viewModel.greenWallet)
             }
 
             is SideEffects.OpenDialog -> {
@@ -278,6 +286,16 @@ fun WalletOverviewScreen(
                         }
                     }
 
+                    item(key = "BitcoinPrice") {
+                        ListHeader(title = stringResource(Res.string.id_bitcoin_price))
+                    }
+
+                    item {
+                        BitcoinPriceChart(viewModel.bitcoinChartData, {
+                            viewModel.navigateToBuy()
+                        })
+                    }
+
                     lightningInfo?.also { lightningInfo ->
                         item(key = "LightningHeader") {
                             ListHeader(title = stringResource(Res.string.id_lightning))
@@ -319,6 +337,127 @@ fun WalletOverviewScreen(
                             Text("Plot")
                         }
                     }
+
+//                    items(items = accounts, key = {
+//                        it.account.id
+//                    }) {
+//                        val popupState = remember {
+//                            PopupState()
+//                        }
+//                        val expandedAccount by viewModel.activeAccount.collectAsStateWithLifecycle()
+//                        var cardSize by remember {
+//                            mutableStateOf(IntSize.Zero)
+//                        }
+//
+//                        val menuEntries = when {
+//                            viewModel.greenWallet.isWatchOnly || viewModel.isLightningShortcut -> emptyList()
+//                            it.account.isLightning -> listOf(
+//                                MenuEntry(
+//                                    title = stringResource(Res.string.id_remove),
+//                                    iconRes = Res.drawable.trash,
+//                                    onClick = {
+//                                        viewModel.postEvent(Events.RemoveAccount(it.account))
+//                                    }
+//                                )
+//                            )
+//
+//                            else -> listOfNotNull(
+//                                MenuEntry(
+//                                    title = stringResource(Res.string.id_rename_account),
+//                                    iconRes = Res.drawable.text_aa,
+//                                    onClick = {
+//                                        viewModel.postEvent(
+//                                            NavigateDestinations.RenameAccount(
+//                                                greenWallet = viewModel.greenWallet,
+//                                                account = it.account
+//                                            )
+//                                        )
+//                                    }
+//                                ),
+//                                if (viewModel.accounts.value.size > 1) {
+//                                    MenuEntry(
+//                                        title = stringResource(Res.string.id_archive_account),
+//                                        iconRes = Res.drawable.box_arrow_down,
+//                                        onClick = {
+//                                            viewModel.postEvent(Events.ArchiveAccount(it.account))
+//                                        }
+//                                    )
+//                                } else null
+//                            )
+//                        }
+//
+//                        Box {
+//                            GreenAccountCard(
+//                                modifier = Modifier
+//                                    .padding(bottom = 1.dp)
+//                                    .onSizeChanged {
+//                                        cardSize = it
+//                                    },
+//                                account = it,
+//                                isExpanded = it.account.id == expandedAccount?.id,
+//                                session = viewModel.sessionOrNull,
+//                                onArrowClick = if (!viewModel.isLightningShortcut) {
+//                                    {
+//                                        viewModel.postEvent(
+//                                            NavigateDestinations.AccountOverview(
+//                                                greenWallet = viewModel.greenWallet,
+//                                                accountAsset = it.accountAsset
+//                                            )
+//                                        )
+//                                    }
+//                                } else null,
+//                                onWarningClick = if (it.hasNoTwoFactor || it.hasExpiredUtxos || it.hasTwoFactorReset) {
+//                                    {
+//                                        if (it.hasTwoFactorReset) {
+//                                            viewModel.postEvent(
+//                                                NavigateDestinations.TwoFactorReset(
+//                                                    greenWallet = viewModel.greenWallet,
+//                                                    network = it.account.network,
+//                                                    twoFactorReset = viewModel.sessionOrNull?.twoFactorReset(
+//                                                        it.account.network
+//                                                    )?.value
+//                                                )
+//                                            )
+//                                        } else if (it.hasExpiredUtxos) {
+//                                            viewModel.postEvent(
+//                                                NavigateDestinations.ReEnable2FA(
+//                                                    greenWallet = viewModel.greenWallet
+//                                                )
+//                                            )
+//                                        } else if (it.hasNoTwoFactor) {
+//                                            viewModel.postEvent(
+//                                                NavigateDestinations.EnableTwoFactor(
+//                                                    greenWallet = viewModel.greenWallet,
+//                                                    network = it.account.network
+//                                                )
+//                                            )
+//                                        }
+//                                    }
+//                                } else null,
+//                                onClick = {
+//                                    viewModel.postEvent(
+//                                        Events.SetAccountAsset(
+//                                            accountAsset = it.account.accountAsset,
+//                                            setAsActive = true
+//                                        )
+//                                    )
+//                                }, onLongClick = { _: AccountBalance, offset: Offset ->
+//                                    if (menuEntries.isNotEmpty()) {
+//                                        popupState.offset.value =
+//                                            offset.toMenuDpOffset(cardSize, density)
+//                                        popupState.isContextMenuVisible.value = true
+//                                    }
+//                                }
+//                            )
+//
+//                            if (menuEntries.isNotEmpty()) {
+//                                PopupMenu(
+//                                    state = popupState,
+//                                    entries = menuEntries
+//                                )
+//                            }
+//                        }
+//                    }
                 }
             }
 
