@@ -116,9 +116,7 @@ fun String?.assetTickerOrNull(
 }
 
 fun Account.hasHistory(session: GdkSession): Boolean {
-    return bip44Discovered == true || isFunded(session) || session.accountTransactions(this).let {
-        it.value.isNotEmpty()
-    }
+    return bip44Discovered == true || isFunded(session) || session.accountTransactions(this).value.isNotEmpty()
 }
 
 fun String.getAssetNameOrNull(session: GdkSession?): String? {

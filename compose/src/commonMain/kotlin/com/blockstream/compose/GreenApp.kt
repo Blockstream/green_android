@@ -37,6 +37,7 @@ import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.managers.rememberPlatformManager
 import com.blockstream.compose.navigation.AppScaffold
 import com.blockstream.compose.navigation.Router
+import com.blockstream.compose.navigation.navigate
 import com.blockstream.compose.screens.LockScreen
 import com.blockstream.compose.sideeffects.BiometricsState
 import com.blockstream.compose.sideeffects.DialogHost
@@ -58,7 +59,6 @@ import org.koin.compose.koinInject
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
-import kotlin.reflect.KClass
 
 
 val LocalAppInfo: ProvidableCompositionLocal<AppInfo> =
@@ -166,6 +166,9 @@ fun GreenApp(mainViewModel: MainViewModel, modifier: Modifier = Modifier) {
                 AppScaffold(
                     navData = navData,
                     snackbarHostState = snackbarHostState,
+                    navigate = {
+                        navigate(navController, it)
+                    },
                     goBack = {
                         navController.navigateUp()
                     }

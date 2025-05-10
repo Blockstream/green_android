@@ -23,6 +23,7 @@ interface Route {
     val uniqueId: String
     val unique: Boolean
     val makeItRoot: Boolean
+    val isBottomNavigation: Boolean
 }
 
 @Serializable
@@ -35,5 +36,6 @@ data class Dialog @OptIn(ExperimentalUuidApi::class) constructor(
 ) : Route {
     override val unique: Boolean = false
     override val makeItRoot: Boolean = false
+    override val isBottomNavigation: Boolean = false
 }
 

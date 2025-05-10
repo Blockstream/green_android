@@ -11,6 +11,7 @@ import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
+import com.blockstream.common.extensions.hasHistory
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.launchIn
@@ -250,7 +251,7 @@ class WalletOverviewViewModel(
     }.filter { session.isConnected }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), listOf())
 
     override val archivedAccounts: StateFlow<Int> = session.allAccounts.map {
-        it.filter { it.hidden }.size
+        it.filter { it.hidden && it.hasHistory(session) }.size
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), 0)
 
     override val showHardwareTransferFunds = transaction.map {

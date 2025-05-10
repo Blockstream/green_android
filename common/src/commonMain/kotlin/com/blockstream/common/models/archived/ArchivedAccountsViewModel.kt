@@ -4,12 +4,13 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_archived_accounts
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.navigation.NavData
+import com.blockstream.common.extensions.hasHistory
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccountAssetBalance
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
 import com.rickclephas.kmp.observableviewmodel.stateIn
@@ -37,7 +38,7 @@ class ArchivedAccountsViewModel(greenWallet: GreenWallet, navigateToRoot: Boolea
     override val archivedAccounts: StateFlow<DataState<List<AccountAssetBalance>>> =
         session.allAccounts.map {
             DataState.Success(
-                it.filter { it.hidden }.map {
+                it.filter { it.hidden && it.hasHistory(session) }.map {
                     AccountAssetBalance.create(accountAsset = it.accountAsset, session = session)
                 }
             )

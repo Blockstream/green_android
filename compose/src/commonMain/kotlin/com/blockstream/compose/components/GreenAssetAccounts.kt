@@ -214,7 +214,6 @@ fun GreenAssetAccounts(
                                         color = whiteMedium
                                     )
                                 }
-
                             }
 
                             GreenArrow()

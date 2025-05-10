@@ -30,7 +30,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.toRoute
 import blockstream_green.common.generated.resources.Res
@@ -44,6 +43,7 @@ import com.adamglin.phosphoricons.regular.ArrowsDownUp
 import com.adamglin.phosphoricons.regular.Gear
 import com.adamglin.phosphoricons.regular.House
 import com.adamglin.phosphoricons.regular.ShieldCheck
+import com.blockstream.common.navigation.NavigateDestination
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenTopAppBar
 import com.blockstream.compose.theme.bodyMedium
@@ -92,6 +92,7 @@ val TopLevelRoutes = listOf(
 fun AppScaffold(
     navData: NavData = NavData(),
     snackbarHostState: SnackbarHostState? = null,
+    navigate: (destination: NavigateDestination) -> Unit = {},
     goBack: () -> Unit = { },
     content: @Composable (PaddingValues) -> Unit
 ) {
@@ -190,38 +191,26 @@ fun AppScaffold(
                                     )
                                 } == true,
                                 onClick = {
-                                    navigator.navigate(
-                                        when (topLevelRoute) {
-                                            TopLevelRoute.Home -> NavigateDestinations.WalletOverview(
-                                                greenWallet = greenWallet
-                                            )
+                                    val destination = when (topLevelRoute) {
+                                        TopLevelRoute.Home -> NavigateDestinations.WalletOverview(
+                                            greenWallet = greenWallet,
+                                            isBottomNav = true
+                                        )
 
-                                            TopLevelRoute.Transact -> NavigateDestinations.Transact(
-                                                greenWallet = greenWallet
-                                            )
+                                        TopLevelRoute.Transact -> NavigateDestinations.Transact(
+                                            greenWallet = greenWallet
+                                        )
 
-                                            TopLevelRoute.Security -> NavigateDestinations.Security(
-                                                greenWallet = greenWallet
-                                            )
+                                        TopLevelRoute.Security -> NavigateDestinations.Security(
+                                            greenWallet = greenWallet
+                                        )
 
-                                            TopLevelRoute.Settings -> NavigateDestinations.WalletSettings(
-                                                greenWallet = greenWallet
-                                            )
-                                        }
-                                    ) {
-                                        // Pop up to the start destination of the graph to
-                                        // avoid building up a large stack of destinations
-                                        // on the back stack as users select items
-                                        popUpTo(navigator.graph.findStartDestination().id) {
-                                            inclusive = false
-                                            saveState = true
-                                        }
-                                        // Avoid multiple copies of the same destination when
-                                        // reselecting the same item
-                                        launchSingleTop = true
-                                        // Restore state when reselecting a previously selected item
-                                        restoreState = true
+                                        TopLevelRoute.Settings -> NavigateDestinations.WalletSettings(
+                                            greenWallet = greenWallet
+                                        )
                                     }
+
+                                    navigate(destination)
                                 }
                             )
                         }

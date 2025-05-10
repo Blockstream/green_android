@@ -13,6 +13,7 @@ import com.blockstream.common.gdk.params.SubAccountParams
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.utils.generateWalletName
+import com.blockstream.green.utils.Loggable
 
 class NewWalletUseCase(
     private val gdk: Gdk,
@@ -44,6 +45,7 @@ class NewWalletUseCase(
 
         // Archive all accounts on the newly created wallet
         session.accounts.value.forEach { account ->
+            logger.d { "Archive ${account.name}" }
             session.updateAccount(
                 account = account, isHidden = true, resetAccountName = account.type.title()
             )
@@ -54,6 +56,7 @@ class NewWalletUseCase(
 
         // Bitcoin
         session.bitcoinSinglesig?.also {
+            logger.d { "Creating ${it.name} account" }
             session.createAccount(
                 network = it,
                 params = SubAccountParams(
@@ -65,6 +68,7 @@ class NewWalletUseCase(
 
         // Liquid
         session.liquidSinglesig?.also {
+            logger.d { "Creating ${it.name} account" }
             session.createAccount(
                 network = it,
                 params = SubAccountParams(
@@ -104,4 +108,6 @@ class NewWalletUseCase(
 
         return wallet
     }
+
+    companion object: Loggable()
 }

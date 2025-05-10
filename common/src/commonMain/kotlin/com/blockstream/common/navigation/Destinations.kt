@@ -41,15 +41,20 @@ sealed class NavigateDestination(
     override val uniqueId: String = Uuid.random().toHexString(),
     override val unique: Boolean = false,
     override val makeItRoot: Boolean = false,
+    override val isBottomNavigation: Boolean = false,
 ) : Event, Route
 
 sealed class NavigateDestinations : NavigateDestination() {
     @Serializable
-    data class WalletOverview(val greenWallet: GreenWallet, val showWalletOnboarding: Boolean = false) : NavigateDestination(unique = true, makeItRoot = true)
+    data class WalletOverview constructor(
+        val greenWallet: GreenWallet,
+        val showWalletOnboarding: Boolean = false,
+        val isBottomNav: Boolean = false
+    ) : NavigateDestination(unique = true, makeItRoot = true, isBottomNavigation = isBottomNav)
     @Serializable
-    data class Transact(val greenWallet: GreenWallet) : NavigateDestination(unique = true)
+    data class Transact(val greenWallet: GreenWallet) : NavigateDestination(unique = true, isBottomNavigation = true)
     @Serializable
-    data class Security(val greenWallet: GreenWallet) : NavigateDestination(unique = true)
+    data class Security(val greenWallet: GreenWallet) : NavigateDestination(unique = true, isBottomNavigation = true)
     @Serializable
     data object Home : NavigateDestination(unique = true, makeItRoot = true)
     @Serializable
@@ -76,8 +81,8 @@ sealed class NavigateDestinations : NavigateDestination() {
     data class WalletSettings(
         val greenWallet: GreenWallet,
         val section: WalletSettingsSection = WalletSettingsSection.General,
-        val network: Network? = null
-    ) : NavigateDestination()
+        val network: Network? = null,
+    ) : NavigateDestination(isBottomNavigation = section == WalletSettingsSection.General)
     @Serializable
     data class EnterRecoveryPhrase(val setupArgs: SetupArgs) : NavigateDestination()
     @Serializable

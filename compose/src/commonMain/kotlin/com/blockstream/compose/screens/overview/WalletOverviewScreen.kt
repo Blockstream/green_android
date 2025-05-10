@@ -30,7 +30,6 @@ import blockstream_green.common.generated.resources.id_continue
 import blockstream_green.common.generated.resources.id_latest_transactions
 import blockstream_green.common.generated.resources.id_learn_more
 import blockstream_green.common.generated.resources.id_lightning
-import blockstream_green.common.generated.resources.id_market
 import blockstream_green.common.generated.resources.id_transfer_your_funds
 import blockstream_green.common.generated.resources.id_transfer_your_funds_from_your_old_wallet
 import blockstream_green.common.generated.resources.id_welcome_to_blockstream
@@ -48,7 +47,6 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.GreenTransaction
 import com.blockstream.compose.components.ListHeader
 import com.blockstream.compose.components.Promo
@@ -326,137 +324,6 @@ fun WalletOverviewScreen(
                             }
                         }
                     }
-
-                    item(key = "Market") {
-                        ListHeader(title = stringResource(Res.string.id_market))
-                    }
-
-                    item("Plot") {
-                        GreenCard {
-                            Text("Plot")
-                        }
-                    }
-
-//                    items(items = accounts, key = {
-//                        it.account.id
-//                    }) {
-//                        val popupState = remember {
-//                            PopupState()
-//                        }
-//                        val expandedAccount by viewModel.activeAccount.collectAsStateWithLifecycle()
-//                        var cardSize by remember {
-//                            mutableStateOf(IntSize.Zero)
-//                        }
-//
-//                        val menuEntries = when {
-//                            viewModel.greenWallet.isWatchOnly || viewModel.isLightningShortcut -> emptyList()
-//                            it.account.isLightning -> listOf(
-//                                MenuEntry(
-//                                    title = stringResource(Res.string.id_remove),
-//                                    iconRes = Res.drawable.trash,
-//                                    onClick = {
-//                                        viewModel.postEvent(Events.RemoveAccount(it.account))
-//                                    }
-//                                )
-//                            )
-//
-//                            else -> listOfNotNull(
-//                                MenuEntry(
-//                                    title = stringResource(Res.string.id_rename_account),
-//                                    iconRes = Res.drawable.text_aa,
-//                                    onClick = {
-//                                        viewModel.postEvent(
-//                                            NavigateDestinations.RenameAccount(
-//                                                greenWallet = viewModel.greenWallet,
-//                                                account = it.account
-//                                            )
-//                                        )
-//                                    }
-//                                ),
-//                                if (viewModel.accounts.value.size > 1) {
-//                                    MenuEntry(
-//                                        title = stringResource(Res.string.id_archive_account),
-//                                        iconRes = Res.drawable.box_arrow_down,
-//                                        onClick = {
-//                                            viewModel.postEvent(Events.ArchiveAccount(it.account))
-//                                        }
-//                                    )
-//                                } else null
-//                            )
-//                        }
-//
-//                        Box {
-//                            GreenAccountCard(
-//                                modifier = Modifier
-//                                    .padding(bottom = 1.dp)
-//                                    .onSizeChanged {
-//                                        cardSize = it
-//                                    },
-//                                account = it,
-//                                isExpanded = it.account.id == expandedAccount?.id,
-//                                session = viewModel.sessionOrNull,
-//                                onArrowClick = if (!viewModel.isLightningShortcut) {
-//                                    {
-//                                        viewModel.postEvent(
-//                                            NavigateDestinations.AccountOverview(
-//                                                greenWallet = viewModel.greenWallet,
-//                                                accountAsset = it.accountAsset
-//                                            )
-//                                        )
-//                                    }
-//                                } else null,
-//                                onWarningClick = if (it.hasNoTwoFactor || it.hasExpiredUtxos || it.hasTwoFactorReset) {
-//                                    {
-//                                        if (it.hasTwoFactorReset) {
-//                                            viewModel.postEvent(
-//                                                NavigateDestinations.TwoFactorReset(
-//                                                    greenWallet = viewModel.greenWallet,
-//                                                    network = it.account.network,
-//                                                    twoFactorReset = viewModel.sessionOrNull?.twoFactorReset(
-//                                                        it.account.network
-//                                                    )?.value
-//                                                )
-//                                            )
-//                                        } else if (it.hasExpiredUtxos) {
-//                                            viewModel.postEvent(
-//                                                NavigateDestinations.ReEnable2FA(
-//                                                    greenWallet = viewModel.greenWallet
-//                                                )
-//                                            )
-//                                        } else if (it.hasNoTwoFactor) {
-//                                            viewModel.postEvent(
-//                                                NavigateDestinations.EnableTwoFactor(
-//                                                    greenWallet = viewModel.greenWallet,
-//                                                    network = it.account.network
-//                                                )
-//                                            )
-//                                        }
-//                                    }
-//                                } else null,
-//                                onClick = {
-//                                    viewModel.postEvent(
-//                                        Events.SetAccountAsset(
-//                                            accountAsset = it.account.accountAsset,
-//                                            setAsActive = true
-//                                        )
-//                                    )
-//                                }, onLongClick = { _: AccountBalance, offset: Offset ->
-//                                    if (menuEntries.isNotEmpty()) {
-//                                        popupState.offset.value =
-//                                            offset.toMenuDpOffset(cardSize, density)
-//                                        popupState.isContextMenuVisible.value = true
-//                                    }
-//                                }
-//                            )
-//
-//                            if (menuEntries.isNotEmpty()) {
-//                                PopupMenu(
-//                                    state = popupState,
-//                                    entries = menuEntries
-//                                )
-//                            }
-//                        }
-//                    }
                 }
             }
 

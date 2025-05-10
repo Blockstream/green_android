@@ -59,6 +59,7 @@ import com.blockstream.compose.dialogs.TwoFactorCodeDialog
 import com.blockstream.compose.extensions.showErrorSnackbar
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.managers.askForBluetoothPermissions
+import com.blockstream.compose.navigation.navigate
 import com.blockstream.compose.sideeffects.OpenDialogData
 import com.blockstream.compose.sideeffects.openBrowser
 import com.blockstream.ui.navigation.LocalNavigator
@@ -136,39 +137,39 @@ fun HandleSideEffect(
                     appCoroutine.launch {
                         dialog.openDialog(
                             OpenDialogData(
-                            title = StringHolder.create(Res.string.id_are_you_not_receiving_your_2fa),
-                            message = StringHolder.create(Res.string.id_try_again_using_another_2fa),
-                            primaryText = getString(if (resolverData.enable2faCallMethod) Res.string.id_enable_2fa_call_method else Res.string.id_try_again),
-                            secondaryText = getString(Res.string.id_contact_support),
-                            onPrimary = {
-                                if (resolverData.enable2faCallMethod) {
-                                    viewModel.postEvent(
-                                        NavigateDestinations.TwoFactorSetup(
-                                            greenWallet = viewModel.greenWallet,
-                                            method = TwoFactorMethod.PHONE,
-                                            action = TwoFactorSetupAction.SETUP,
-                                            network = resolverData.network!!,
-                                            isSmsBackup = true
+                                title = StringHolder.create(Res.string.id_are_you_not_receiving_your_2fa),
+                                message = StringHolder.create(Res.string.id_try_again_using_another_2fa),
+                                primaryText = getString(if (resolverData.enable2faCallMethod) Res.string.id_enable_2fa_call_method else Res.string.id_try_again),
+                                secondaryText = getString(Res.string.id_contact_support),
+                                onPrimary = {
+                                    if (resolverData.enable2faCallMethod) {
+                                        viewModel.postEvent(
+                                            NavigateDestinations.TwoFactorSetup(
+                                                greenWallet = viewModel.greenWallet,
+                                                method = TwoFactorMethod.PHONE,
+                                                action = TwoFactorSetupAction.SETUP,
+                                                network = resolverData.network!!,
+                                                isSmsBackup = true
+                                            )
                                         )
-                                    )
-                                }
-                            },
-                            onSecondary = {
-                                resolverData.network?.also { network: Network ->
-                                    viewModel.postEvent(
-                                        NavigateDestinations.Support(
-                                            type = SupportType.INCIDENT,
-                                            supportData = SupportData.create(
-                                                subject = "I am not receiving my 2FA code",
-                                                network = resolverData.network,
-                                                session = viewModel.sessionOrNull
-                                            ),
-                                            greenWalletOrNull = viewModel.greenWalletOrNull
+                                    }
+                                },
+                                onSecondary = {
+                                    resolverData.network?.also { network: Network ->
+                                        viewModel.postEvent(
+                                            NavigateDestinations.Support(
+                                                type = SupportType.INCIDENT,
+                                                supportData = SupportData.create(
+                                                    subject = "I am not receiving my 2FA code",
+                                                    network = resolverData.network,
+                                                    session = viewModel.sessionOrNull
+                                                ),
+                                                greenWalletOrNull = viewModel.greenWalletOrNull
+                                            )
                                         )
-                                    )
+                                    }
                                 }
-                            }
-                        ))
+                            ))
                     }
                 }
 
@@ -494,45 +495,45 @@ fun HandleSideEffect(
                         appCoroutine.launch {
                             dialog.openDialog(
                                 OpenDialogData(
-                                title = StringHolder.create(title),
-                                message = message?.let { StringHolder.create(it) },
-                                items = it.request.firmwareList,
-                                primaryText = getString(Res.string.id_continue),
-                                secondaryText = if (it.request.firmwareList == null) getString(
-                                    if (it.request.isUpgradeRequired) Res.string.id_cancel else Res.string.id_skip
-                                ) else null,
-                                onPrimary = {
-                                    viewModel.postEvent(Events.RespondToFirmwareUpgrade(index = 0))
-                                },
-                                onSecondary = {
-                                    viewModel.postEvent(Events.RespondToFirmwareUpgrade(index = null))
-                                }, onItem = {
-                                    if (it != null) {
-                                        viewModel.postEvent(
-                                            Events.RespondToFirmwareUpgrade(
-                                                index = it
+                                    title = StringHolder.create(title),
+                                    message = message?.let { StringHolder.create(it) },
+                                    items = it.request.firmwareList,
+                                    primaryText = getString(Res.string.id_continue),
+                                    secondaryText = if (it.request.firmwareList == null) getString(
+                                        if (it.request.isUpgradeRequired) Res.string.id_cancel else Res.string.id_skip
+                                    ) else null,
+                                    onPrimary = {
+                                        viewModel.postEvent(Events.RespondToFirmwareUpgrade(index = 0))
+                                    },
+                                    onSecondary = {
+                                        viewModel.postEvent(Events.RespondToFirmwareUpgrade(index = null))
+                                    }, onItem = {
+                                        if (it != null) {
+                                            viewModel.postEvent(
+                                                Events.RespondToFirmwareUpgrade(
+                                                    index = it
+                                                )
                                             )
-                                        )
+                                        }
                                     }
-                                }
-                            ))
+                                ))
                         }
 
                     } else if (viewModel.deviceOrNull != null && it.request.isUpgradeRequired) {
                         appCoroutine.launch {
                             dialog.openDialog(
                                 OpenDialogData(
-                                title = StringHolder.create(Res.string.id_warning),
-                                message = StringHolder.create(Res.string.id_outdated_hardware_wallet),
-                                primaryText = getString(Res.string.id_continue),
-                                secondaryText = getString(Res.string.id_cancel),
-                                onPrimary = {
-                                    viewModel.postEvent(Events.RespondToFirmwareUpgrade(index = 0))
-                                },
-                                onSecondary = {
-                                    viewModel.postEvent(Events.RespondToFirmwareUpgrade(index = 0))
-                                }
-                            ))
+                                    title = StringHolder.create(Res.string.id_warning),
+                                    message = StringHolder.create(Res.string.id_outdated_hardware_wallet),
+                                    primaryText = getString(Res.string.id_continue),
+                                    secondaryText = getString(Res.string.id_cancel),
+                                    onPrimary = {
+                                        viewModel.postEvent(Events.RespondToFirmwareUpgrade(index = 0))
+                                    },
+                                    onSecondary = {
+                                        viewModel.postEvent(Events.RespondToFirmwareUpgrade(index = 0))
+                                    }
+                                ))
                         }
                     }
                 }
@@ -569,73 +570,7 @@ fun HandleSideEffect(
                     }
 
                     if (navigateTo) {
-                        navigator.navigate(it.destination) {
-                            // Clear all previous Recovery screens if needed (eg. WalletSettings > RecoveryIntroScreen)
-                            (when (it.destination) {
-                                is NavigateDestinations.RecoveryCheck, is NavigateDestinations.SetPin, is NavigateDestinations.ReviewAddAccount -> false
-                                is NavigateDestinations.RecoveryPhrase -> true
-                                else -> null
-                            })?.also { popUpToRecoveryIntroInclusive ->
-                                navigator.currentBackStack.value.firstOrNull { entry ->
-                                    entry.destination.hasRoute<NavigateDestinations.RecoveryIntro>()
-                                }?.toRoute<NavigateDestinations.RecoveryIntro>()?.also { route ->
-                                    popUpTo(route) {
-                                        inclusive = popUpToRecoveryIntroInclusive
-                                    }
-                                }
-                            }
-
-                            if (it.destination is NavigateDestinations.ImportPubKey) {
-                                navigator.currentBackStack.value.firstOrNull { entry ->
-                                    entry.destination.hasRoute<NavigateDestinations.JadePinUnlock>()
-                                }?.toRoute<NavigateDestinations.JadePinUnlock>()?.also { route ->
-                                    popUpTo(route) {
-                                        inclusive = true
-                                    }
-                                }
-                            }
-
-                            (it.destination as? NavigateDestinations.Login)?.also { destination ->
-                                if (destination.isWatchOnlyUpgrade) {
-                                    popUpTo(NavigateDestinations.DeviceScan::class) {
-                                        inclusive = true
-                                    }
-                                }
-
-                                navigator.currentBackStack.value.firstOrNull { entry ->
-                                    entry.destination.hasRoute<NavigateDestinations.DeviceList>()
-                                }?.toRoute<NavigateDestinations.DeviceList>()?.also { route ->
-                                    popUpTo(route) {
-                                        inclusive = false
-                                    }
-                                }
-                            }
-
-                            if (it.destination.unique) {
-                                // Same route
-                                if (navigator.currentBackStackEntry?.destination?.hasRoute(it.destination::class) == true) {
-                                    navigator.currentBackStackEntry?.destination?.id?.also {
-                                        popUpTo(it) {
-                                            inclusive = true
-                                        }
-                                    }
-                                }
-                            }
-
-                            if (it.destination.makeItRoot) {
-                                popUpTo(navigator.graph.id) {
-                                    inclusive = false
-                                }
-
-                                navigator.graph.setStartDestination(it.destination)
-
-                                // Clear the backstack for Bottom NavigationBar
-//                                navigator.clearBackStack<NavigateDestinations.WalletOverview>()
-//                                navigator.clearBackStack<NavigateDestinations.Transact>()
-//                                navigator.clearBackStack<NavigateDestinations.Security>()
-//                                navigator.clearBackStack<NavigateDestinations.WalletSettings>()
-                            }
-                        }
+                        navigate(navigator, it.destination)
                     }
                 }
             }
