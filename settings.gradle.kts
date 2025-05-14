@@ -1,4 +1,4 @@
-rootProject.name = "Blockstream_Green"
+rootProject.name = "Blockstream_App"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
@@ -20,7 +20,7 @@ dependencyResolutionManagement {
 }
 
 include(
-    ":green",
+    ":androidApp",
     ":gdk",
     ":compose",
     ":ui-common",

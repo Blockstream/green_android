@@ -14,6 +14,7 @@ plugins {
 }
 
 compose.resources {
+    packageOfResClass = "blockstream_green.common.generated.resources" // Keep the same package name
     publicResClass = true
     generateResClass = auto
 }

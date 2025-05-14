@@ -24,6 +24,7 @@
          <trust group="^org[.]jspecify($|([.].*))" regex="true" reason="Trust all jspecify artifacts"/>
          <trust group="^org[.]junit($|([.].*))" regex="true" reason="Trust all JUnit artifacts"/>
          <trust group="^tech[.]annexflow[.]compose($|([.].*))" regex="true" reason="Trust all JUnit artifacts"/>
+         <trust group="^io[.]github[.]koalaplot($|([.].*))" regex="true" reason="Trust all JUnit artifacts"/>
       </trusted-artifacts>
    </configuration>
    <components>
