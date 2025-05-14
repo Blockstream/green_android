@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -33,6 +35,7 @@ import blockstream_green.common.generated.resources.id_lightning
 import blockstream_green.common.generated.resources.id_transfer_your_funds
 import blockstream_green.common.generated.resources.id_transfer_your_funds_from_your_old_wallet
 import blockstream_green.common.generated.resources.id_welcome_to_blockstream
+import blockstream_green.common.generated.resources.id_you_dont_have_any_assets_yet
 import blockstream_green.common.generated.resources.id_your_wallet_has_been_created
 import com.blockstream.common.data.ScanResult
 import com.blockstream.common.events.Events
@@ -62,8 +65,10 @@ import com.blockstream.compose.managers.askForNotificationPermissions
 import com.blockstream.compose.screens.overview.components.BitcoinPriceChart
 import com.blockstream.compose.sheets.MainMenuEntry
 import com.blockstream.compose.theme.bodyLarge
+import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.md_theme_background
 import com.blockstream.compose.theme.titleLarge
+import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.noRippleClickable
 import com.blockstream.compose.views.LightningInfo
@@ -251,10 +256,9 @@ fun WalletOverviewScreen(
                         )
                     }
 
-                    if (assets.isNotEmpty()) {
-                        item(key = "AssetsHeader") {
-                            ListHeader(title = stringResource(Res.string.id_assets))
-                        }
+
+                    item(key = "AssetsHeader") {
+                        ListHeader(title = stringResource(Res.string.id_assets))
                     }
 
                     if (showHardwareTransferFunds) {
@@ -270,12 +274,28 @@ fun WalletOverviewScreen(
                             )
                         }
                     } else {
-                        itemsSpaced(assets.data() ?: emptyList()) { asset ->
-                            GreenAsset(
-                                assetBalance = asset,
-                                session = viewModel.sessionOrNull
-                            ) {
-                                viewModel.navigateToAccountOverview(asset.asset)
+                        if (assets.isNotEmpty()) {
+                            itemsSpaced(assets.data() ?: emptyList()) { asset ->
+                                GreenAsset(
+                                    assetBalance = asset,
+                                    session = viewModel.sessionOrNull
+                                ) {
+                                    viewModel.navigateToAccountOverview(asset.asset)
+                                }
+                            }
+                        } else {
+                            item(key = "AssetsEmpty"){
+                                Text(
+                                    text = stringResource(Res.string.id_you_dont_have_any_assets_yet),
+                                    style = bodyMedium,
+                                    textAlign = TextAlign.Center,
+                                    fontStyle = FontStyle.Italic,
+                                    color = whiteMedium,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 24.dp)
+                                        .padding(horizontal = 16.dp)
+                                )
                             }
                         }
                     }

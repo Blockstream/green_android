@@ -4,12 +4,9 @@ import com.blockstream.common.CountlyBase
 import com.blockstream.common.crypto.PlatformCipher
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.database.Database
-import com.blockstream.common.extensions.title
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.GdkSession
-import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.params.LoginCredentialsParams
-import com.blockstream.common.gdk.params.SubAccountParams
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.utils.generateWalletName
@@ -43,40 +40,7 @@ class NewWalletUseCase(
             isRestore = false
         )
 
-        // Archive all accounts on the newly created wallet
-        session.accounts.value.forEach { account ->
-            logger.d { "Archive ${account.name}" }
-            session.updateAccount(
-                account = account, isHidden = true, resetAccountName = account.type.title()
-            )
-        }
-
-        // Create Singlesig account
-        val accountType = AccountType.BIP84_SEGWIT
-
-        // Bitcoin
-        session.bitcoinSinglesig?.also {
-            logger.d { "Creating ${it.name} account" }
-            session.createAccount(
-                network = it,
-                params = SubAccountParams(
-                    name = accountType.toString(),
-                    type = accountType,
-                )
-            )
-        }
-
-        // Liquid
-        session.liquidSinglesig?.also {
-            logger.d { "Creating ${it.name} account" }
-            session.createAccount(
-                network = it,
-                params = SubAccountParams(
-                    name = accountType.toString(),
-                    type = accountType,
-                )
-            )
-        }
+        session.initiatedDefaultAccountsAsync()
 
         val wallet = GreenWallet.createWallet(
             name = generateWalletName(settingsManager),

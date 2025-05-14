@@ -1895,6 +1895,45 @@ class GdkSession constructor(
     }
     override fun getAssets(params: GetAssetsParams) = (activeLiquid ?: liquid)?.let { gdk.getAssets(gdkSession(it), params) }
 
+    fun initiatedDefaultAccountsAsync() {
+        scope.launch {
+            // Archive all accounts on the newly created wallet
+            accounts.value.forEach { account ->
+                logger.d { "Archive ${account.name}" }
+                updateAccount(
+                    account = account, isHidden = true, resetAccountName = account.type.title()
+                )
+            }
+
+            // Create Singlesig account
+            val accountType = AccountType.BIP84_SEGWIT
+
+            // Bitcoin
+            bitcoinSinglesig?.also {
+                logger.d { "Creating ${it.name} account" }
+                createAccount(
+                    network = it,
+                    params = SubAccountParams(
+                        name = accountType.toString(),
+                        type = accountType,
+                    )
+                )
+            }
+
+            // Liquid
+            liquidSinglesig?.also {
+                logger.d { "Creating ${it.name} account" }
+                createAccount(
+                    network = it,
+                    params = SubAccountParams(
+                        name = accountType.toString(),
+                        type = accountType,
+                    )
+                )
+            }
+        }
+    }
+
     suspend fun createAccount(
         network: Network,
         params: SubAccountParams,
@@ -2135,7 +2174,7 @@ class GdkSession constructor(
                     // Wallet Assets
                     val walletAssets = linkedMapOf<String, Long>()
 
-                    accounts.value.forEach { account ->
+                    accounts.value.filter { it.hasHistory(this@GdkSession) }.forEach { account ->
                         this@GdkSession.accountAssets(account).value.assets.forEach { (key, value) ->
                             walletAssets[key] = (walletAssets[key] ?: 0) + value
                         }
@@ -2155,13 +2194,6 @@ class GdkSession constructor(
                     if(!walletHasHistory){
                         if(walletAssets.size > 2 || walletAssets.values.sum() > 0L) {
                             _walletHasHistorySharedFlow.value = true
-                        }
-                    }
-
-                    // In case of empty wallet, add one policy asset to display correctly the unit on wallet balance
-                    if (walletAssets.isEmpty()) {
-                        accounts.value.firstOrNull()?.network?.policyAsset?.also {
-                            walletAssets[it] = 0
                         }
                     }
 
