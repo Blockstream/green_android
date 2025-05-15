@@ -1,13 +1,10 @@
 package com.blockstream.common.models.onboarding
 
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_connect_hardware_wallet
 import blockstream_green.common.generated.resources.id_creating_wallet
 import blockstream_green.common.generated.resources.id_set_up_watchonly
-import blockstream_green.common.generated.resources.id_setup_a_new_wallet
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
-import com.adamglin.phosphoricons.regular.Cpu
 import com.adamglin.phosphoricons.regular.Eye
 import com.blockstream.common.Urls
 import com.blockstream.common.crypto.BiometricsException
@@ -58,13 +55,6 @@ class SetupNewWalletViewModel(greenWalletOrNull: GreenWallet? = null) :
         viewModelScope.launch {
             _navData.value = NavData(
                 actions = listOfNotNull(
-                    NavAction(
-                        titleRes = Res.string.id_connect_hardware_wallet,
-                        imageVector = PhosphorIcons.Regular.Cpu,
-                        isMenuEntry = true,
-                    ) {
-                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.UseHardwareDevice))
-                    },
                     NavAction(
                         titleRes = Res.string.id_set_up_watchonly,
                         imageVector = PhosphorIcons.Regular.Eye,

@@ -58,6 +58,8 @@ sealed class NavigateDestinations : NavigateDestination() {
     @Serializable
     data object Home : NavigateDestination(unique = true, makeItRoot = true)
     @Serializable
+    data object GetStarted : NavigateDestination(unique = true)
+    @Serializable
     data object About : NavigateDestination(unique = true)
     @Serializable
     data object AppSettings : NavigateDestination(unique = true)

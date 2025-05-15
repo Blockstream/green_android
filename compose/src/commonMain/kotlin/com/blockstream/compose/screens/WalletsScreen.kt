@@ -145,7 +145,7 @@ fun WalletsScreen(
 
         if (isEmptyWallet == false) {
             GreenCard(onClick = {
-                viewModel.postEvent(NavigateDestinations.SetupNewWallet)
+                viewModel.postEvent(NavigateDestinations.GetStarted)
             }, modifier = Modifier.padding(bottom = 16.dp), padding = 0) {
                 Row(
                     modifier = Modifier

@@ -4,10 +4,8 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.green_shield
 import blockstream_green.common.generated.resources.id_about
 import blockstream_green.common.generated.resources.id_app_settings
-import blockstream_green.common.generated.resources.id_set_up_watchonly
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
-import com.adamglin.phosphoricons.regular.Eye
 import com.adamglin.phosphoricons.regular.Sliders
 import com.blockstream.common.Urls
 import com.blockstream.common.data.Banner
@@ -34,6 +32,7 @@ import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
@@ -45,18 +44,9 @@ abstract class HomeViewModelAbstract() : GreenViewModel() {
 
     @NativeCoroutinesState
     abstract val allWallets: StateFlow<List<WalletListLook>?>
-
-    @NativeCoroutinesState
-    abstract val softwareWallets: StateFlow<List<WalletListLook>?>
-
-    @NativeCoroutinesState
-    abstract val ephemeralWallets: StateFlow<List<WalletListLook>?>
-
-    @NativeCoroutinesState
-    abstract val hardwareWallets: StateFlow<List<WalletListLook>?>
 }
 
-class HomeViewModel() : HomeViewModelAbstract() {
+class HomeViewModel(val isGetStarted: Boolean = false) : HomeViewModelAbstract() {
 
     class LocalEvents {
         object GetStarted : Event
@@ -102,9 +92,10 @@ class HomeViewModel() : HomeViewModelAbstract() {
         bootstrap()
     }
 
-    override val isEmptyWallet: StateFlow<Boolean?> = database.walletsExistsFlow().map {
-        !it
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
+    override val isEmptyWallet: StateFlow<Boolean?> =
+        (if (isGetStarted) flowOf(true) else database.walletsExistsFlow().map {
+            !it
+        }).stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     @NativeCoroutinesState
     override val allWallets = combine(
@@ -115,48 +106,6 @@ class HomeViewModel() : HomeViewModelAbstract() {
         wallets + ephemeralWallets
     }.map {
         it.map { greenWallet ->
-            WalletListLook.create(greenWallet, sessionManager)
-        }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
-
-    @NativeCoroutinesState
-    override val softwareWallets = combine(
-        database.getWalletsFlow(
-            credentialType = CredentialType.LIGHTNING_MNEMONIC,
-            isHardware = false
-        ), sessionManager.connectionChangeEvent
-    ) { wallets, _ ->
-        wallets
-    }.map {
-        it.map { greenWallet ->
-            WalletListLook.create(greenWallet, sessionManager)
-        }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
-
-    @NativeCoroutinesState
-    override val ephemeralWallets = combine(
-        sessionManager.ephemeralWallets,
-        sessionManager.connectionChangeEvent
-    ) { wallets, _ ->
-        wallets
-    }.map {
-        it.map { greenWallet ->
-            WalletListLook.create(greenWallet, sessionManager)
-        }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
-
-    @NativeCoroutinesState
-    override val hardwareWallets = combine(
-        database.getWalletsFlow(
-            credentialType = CredentialType.LIGHTNING_MNEMONIC,
-            isHardware = true
-        ),
-        sessionManager.hardwareWallets.map { ephemeralWallets ->
-            ephemeralWallets
-        },
-        sessionManager.connectionChangeEvent
-    ) { w1, w2, _ ->
-        (w1 + w2).distinctBy { it.id }.map { greenWallet ->
             WalletListLook.create(greenWallet, sessionManager)
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
@@ -265,17 +214,17 @@ class HomeViewModelPreview(
     override val allWallets: StateFlow<List<WalletListLook>?> =
         MutableStateFlow(viewModelScope, softwareWallets)
 
-    @NativeCoroutinesState
-    override val softwareWallets: StateFlow<List<WalletListLook>?> =
-        MutableStateFlow(viewModelScope, softwareWallets)
-
-    @NativeCoroutinesState
-    override val ephemeralWallets: StateFlow<List<WalletListLook>> =
-        MutableStateFlow(viewModelScope, ephemeralWallets)
-
-    @NativeCoroutinesState
-    override val hardwareWallets: StateFlow<List<WalletListLook>> =
-        MutableStateFlow(viewModelScope, hardwareWallets)
+//    @NativeCoroutinesState
+//    override val softwareWallets: StateFlow<List<WalletListLook>?> =
+//        MutableStateFlow(viewModelScope, softwareWallets)
+//
+//    @NativeCoroutinesState
+//    override val ephemeralWallets: StateFlow<List<WalletListLook>> =
+//        MutableStateFlow(viewModelScope, ephemeralWallets)
+//
+//    @NativeCoroutinesState
+//    override val hardwareWallets: StateFlow<List<WalletListLook>> =
+//        MutableStateFlow(viewModelScope, hardwareWallets)
 
     init {
         banner.value = Banner.preview3
