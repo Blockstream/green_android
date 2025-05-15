@@ -181,9 +181,6 @@ fun WalletOverviewScreen(
 
     OnScreenFocus(viewModel::refetchBitcoinPriceHistory)
 
-
-
-
     SetupScreen(viewModel = viewModel, sideEffectsHandler = {
         when (it) {
             is SideEffects.OpenDenominationExchangeRate -> {

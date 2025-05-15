@@ -21,7 +21,7 @@ fun NetworkBitcoinPriceData.asChartData(): BitcoinChartData {
     prices[BitcoinChartPeriod.ONE_YEAR] = fullPrices.filter { it.first >= BitcoinChartPeriod.ONE_YEAR.timeAgoInMillis() }
     prices[BitcoinChartPeriod.FIVE_YEAR] = fullPrices.filter { it.first >= BitcoinChartPeriod.FIVE_YEAR.timeAgoInMillis() }
 
-    val currentPrice = dailyPrices.maxByOrNull { it.second }?.second ?: 0f
+    val currentPrice = dailyPrices.last().second
     val lastRefreshedAt = Clock.System.now().toEpochMilliseconds()
 
     return BitcoinChartData(
