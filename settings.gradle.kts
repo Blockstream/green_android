@@ -34,5 +34,6 @@ include(
     ":desktopApp",
     ":data",
     ":utils",
-    ":network"
+    ":network",
+    ":domain",
 )

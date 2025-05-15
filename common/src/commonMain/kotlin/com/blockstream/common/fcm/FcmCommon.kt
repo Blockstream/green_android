@@ -2,7 +2,6 @@ package com.blockstream.common.fcm
 
 import breez_sdk.BreezEvent
 import com.blockstream.common.crypto.GreenKeystore
-import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.database.Database
 import com.blockstream.common.di.ApplicationScope
@@ -11,8 +10,10 @@ import com.blockstream.common.extensions.logException
 import com.blockstream.common.lightning.BreezNotification
 import com.blockstream.common.lightning.satoshi
 import com.blockstream.common.managers.SessionManager
-import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.randomChars
+import com.blockstream.green.data.config.AppInfo
+import com.blockstream.green.data.notifications.models.NotificationData
+import com.blockstream.green.utils.Loggable
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.firstOrNull
@@ -60,6 +61,10 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
         message: String,
     )
 
+    abstract fun showBuyTransactionNotification(
+        notificationData: NotificationData
+    )
+
     @NativeCoroutinesIgnore
     protected suspend fun wallet(walletId: String) = database.getWallet(walletId)
 
@@ -67,7 +72,7 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
     suspend fun doLightningBackgroundWork(walletId: String, breezNotification: BreezNotification) {
         logger.d { "doLightningBackgroundWork for walletId:$walletId with data: $breezNotification" }
 
-        if(appInfo.isDevelopmentOrDebug) {
+        if (appInfo.isDevelopmentOrDebug) {
             showDebugNotification(
                 title = "Background Work",
                 message = breezNotification.toString()
@@ -84,7 +89,7 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
                     // Wait maximum 2 minutes to complete all operations
                     val success = withTimeoutOrNull(120_000) {
 
-                        if(appInfo.isDevelopmentOrDebug) {
+                        if (appInfo.isDevelopmentOrDebug) {
                             showDebugNotification(
                                 title = "Lightning connected and waiting",
                                 message = breezNotification.toString()
@@ -116,7 +121,7 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
                         }.firstOrNull()
                     }
 
-                    if(appInfo.isDevelopmentOrDebug) {
+                    if (appInfo.isDevelopmentOrDebug) {
                         showDebugNotification(
                             title = "Lightning disconnected: Success: $success",
                             message = breezNotification.toString()

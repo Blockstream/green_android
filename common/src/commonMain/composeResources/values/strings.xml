@@ -1662,4 +1662,5 @@
     <string name="id_connecting_to_s">Connecting to %1$d</string>
     <string name="id_other">Other</string>
     <string name="id_best_price">Best Price</string>
+    <string name="id_transactions_notifications">Transactions Notifications</string>
 </resources>

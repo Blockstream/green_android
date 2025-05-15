@@ -13,10 +13,13 @@ import com.blockstream.domain.meld.CreateCryptoWidgetUseCase
 import com.blockstream.domain.meld.DefaultValuesUseCase
 import com.blockstream.domain.meld.MeldUseCase
 import com.blockstream.green.data.dataModule
+import com.blockstream.green.domain.domainModule
 import org.koin.dsl.module
 
-val domainModule = module {
+//At some point we'll move this to domain module. 
+val commonModule = module {
     includes(dataModule)
+    includes(domainModule)
     single {
         VerifyAddressUseCase(get())
     }

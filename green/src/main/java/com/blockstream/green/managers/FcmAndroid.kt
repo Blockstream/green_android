@@ -5,6 +5,7 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.lightning.BreezNotification
+import com.blockstream.green.data.notifications.models.NotificationData
 import com.blockstream.green.utils.Loggable
 import com.blockstream.green.work.LightningWork
 import org.koin.core.component.inject
@@ -44,7 +45,17 @@ class FcmAndroid constructor(
         title: String,
         message: String,
     ) {
-        notificationManager.createDebugNotification(context = context, title = title, message = message)
+        notificationManager.createDebugNotification(
+            context = context,
+            title = title,
+            message = message
+        )
+    }
+
+    override fun showBuyTransactionNotification(
+        notificationData: NotificationData
+    ) {
+        notificationManager.createBuyTransactionNotification(context, notificationData)
     }
 
     companion object : Loggable()

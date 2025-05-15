@@ -27,6 +27,7 @@ data class QuoteResponse(
     fun toCryptoWidgetRequest(walletAddress: String, externalCustomerId: String? = null): CryptoWidgetRequest {
         return CryptoWidgetRequest(
             sessionType = "BUY",
+            externalCustomerId = externalCustomerId,
             sessionData = SessionData(
                 countryCode = countryCode,
                 sourceAmount = sourceAmount,
@@ -34,7 +35,6 @@ data class QuoteResponse(
                 destinationCurrencyCode = destinationCurrencyCode,
                 walletAddress = walletAddress,
                 serviceProvider = serviceProvider,
-                externalCustomerId = externalCustomerId
             )
         )
     }

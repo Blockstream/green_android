@@ -4,7 +4,6 @@ import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.crypto.NoKeystore
 import com.blockstream.common.data.AppConfig
-import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.di.initKoin
 import com.blockstream.common.fcm.FcmCommon
@@ -15,6 +14,8 @@ import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.managers.DeviceManager.Companion.JADE
 import com.blockstream.common.managers.NotificationManager
 import com.blockstream.compose.managers.DeviceConnectionManager
+import com.blockstream.green.data.config.AppInfo
+import com.blockstream.green.data.notifications.models.NotificationData
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.koin.dsl.binds
 import org.koin.dsl.module
@@ -43,7 +44,8 @@ fun startKoin(doOnStartup: () -> Unit = {}) {
         error = null,
     )
 
-    val version = NSBundle.mainBundle.infoDictionary?.get("CFBundleShortVersionString") as? String ?: "0.0.0"
+    val version =
+        NSBundle.mainBundle.infoDictionary?.get("CFBundleShortVersionString") as? String ?: "0.0.0"
 
     val appConfig = AppConfig.default(
         isDebug = true,
@@ -83,13 +85,17 @@ fun startKoin(doOnStartup: () -> Unit = {}) {
             }
             single {
                 DeviceConnectionManager(
-                    get(), get(),get()
+                    get(), get(), get()
                 )
             } binds (arrayOf(DeviceConnectionManager::class, DeviceConnectionInterface::class))
             single<FcmCommon> {
-                object : FcmCommon(get()){
+                object : FcmCommon(get()) {
                     override fun showDebugNotification(title: String, message: String) {
 
+                    }
+
+                    override fun showBuyTransactionNotification(notificationData: NotificationData) {
+                        //no-op
                     }
 
                     override fun scheduleLightningBackgroundJob(

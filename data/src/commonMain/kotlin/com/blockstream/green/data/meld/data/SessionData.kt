@@ -11,5 +11,4 @@ data class SessionData(
     val walletAddress: String,
     val serviceProvider: String,
     val redirectUrl: String = "https://blockstream.com/ramps/redirect",
-    val externalCustomerId: String? = null
 )

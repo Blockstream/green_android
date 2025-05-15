@@ -1,4 +1,4 @@
-package com.blockstream.domain.base
+package com.blockstream.green.domain.base
 
 sealed interface Result<out T> {
     data class Loading<T>(val data: T? = null) : Result<T>

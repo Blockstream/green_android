@@ -1,36 +1,21 @@
 package com.blockstream.green.data.meld
 
-import co.touchlab.kermit.Logger
 import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.network.AppHttpClient
 import com.blockstream.green.utils.Loggable
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
-class MeldHttpClient(appInfo: AppInfo) : AppHttpClient({
-    if (appInfo.isDevelopmentOrDebug) {
-        install(Logging) {
-            logger = object : io.ktor.client.plugins.logging.Logger {
-                override fun log(message: String) {
-                    Logger.d { message }
-                }
-            }
-            level = LogLevel.BODY
-        }
-    }
-
+class MeldHttpClient(appInfo: AppInfo) : AppHttpClient(appInfo.isDevelopmentOrDebug, {
     install(HttpTimeout) {
         this.requestTimeoutMillis = 60_000
         this.connectTimeoutMillis = 30_000
     }
 
     defaultRequest {
-        // url(MELD_PRODUCTION.takeIf { appInfo.isProduction } ?: MELD_SANDBOX)
-        url(MELD_PRODUCTION)
+        url(MELD_PRODUCTION.takeIf { appInfo.isProduction } ?: MELD_SANDBOX)
         contentType(ContentType.Application.Json)
     }
 }) {

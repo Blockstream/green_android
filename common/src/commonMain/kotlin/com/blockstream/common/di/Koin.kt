@@ -45,7 +45,7 @@ fun initKoin(appInfo: AppInfo, appConfig: AppConfig, doOnStartup: () -> Unit = {
                 }
             }
         )
-        modules(domainModule)
+        modules(commonModule)
         modules(*appModules)
         modules(platformModule)
         modules(commonModules(appConfig))

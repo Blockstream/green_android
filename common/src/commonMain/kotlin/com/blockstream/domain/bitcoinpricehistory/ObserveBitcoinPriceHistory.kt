@@ -3,7 +3,7 @@ package com.blockstream.domain.bitcoinpricehistory
 import com.blockstream.common.btcpricehistory.BitcoinPriceHistoryRepository
 import com.blockstream.common.btcpricehistory.mapper.asChartData
 import com.blockstream.common.btcpricehistory.model.BitcoinChartData
-import com.blockstream.domain.base.NetworkBoundInMemoryUseCase
+import com.blockstream.green.domain.base.NetworkBoundInMemoryUseCase
 import com.blockstream.green.network.NetworkResponse
 import kotlinx.coroutines.flow.Flow
 

@@ -7,7 +7,6 @@ import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.crypto.NoKeystore
 import com.blockstream.common.data.AppConfig
-import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.database.DriverFactory
 import com.blockstream.common.fcm.FcmCommon
@@ -19,6 +18,8 @@ import com.blockstream.common.managers.DeviceManager.Companion.JADE
 import com.blockstream.common.managers.LifecycleManager
 import com.blockstream.common.managers.LocaleManager
 import com.blockstream.common.managers.NotificationManager
+import com.blockstream.green.data.config.AppInfo
+import com.blockstream.green.data.notifications.models.NotificationData
 import com.russhwolf.settings.NSUserDefaultsSettings
 import com.russhwolf.settings.Settings
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -67,7 +68,8 @@ fun startKoin(doOnStartup: () -> Unit = {}) {
         error = null,
     )
 
-    val version = NSBundle.mainBundle.infoDictionary?.get("CFBundleShortVersionString") as? String ?: "0.0.0"
+    val version =
+        NSBundle.mainBundle.infoDictionary?.get("CFBundleShortVersionString") as? String ?: "0.0.0"
 
     val appConfig = AppConfig.default(
         isDebug = true,
@@ -81,10 +83,7 @@ fun startKoin(doOnStartup: () -> Unit = {}) {
     val appInfo = AppInfo(userAgent = "green_ios", version, isDebug = true, isDevelopment = true)
 
     initKoin(
-        appInfo = appInfo,
-        appConfig = appConfig,
-        doOnStartup = doOnStartup,
-        module {
+        appInfo = appInfo, appConfig = appConfig, doOnStartup = doOnStartup, module {
             single<GreenKeystore> {
                 NoKeystore()
             }
@@ -99,10 +98,7 @@ fun startKoin(doOnStartup: () -> Unit = {}) {
             }
             single {
                 DeviceManager(
-                    get(),
-                    get(),
-                    get(),
-                    listOf(JADE)
+                    get(), get(), get(), listOf(JADE)
                 )
             }
 //            single {
@@ -111,45 +107,43 @@ fun startKoin(doOnStartup: () -> Unit = {}) {
 //                )
 //            } binds (arrayOf(DeviceConnectionManager::class, DeviceConnectionInterface::class))
             single<FcmCommon> {
-                object : FcmCommon(get()){
-                    override fun showDebugNotification(title: String, message: String) {
+                object : FcmCommon(get()) {
+                    override fun showDebugNotification(notification: NotificationData) {
 
                     }
 
+                    override fun showBuyTransactionNotification(notificationData: NotificationData) {
+                        //no-op
+                    }
+
                     override fun scheduleLightningBackgroundJob(
-                        walletId: String,
-                        breezNotification: BreezNotification
+                        walletId: String, breezNotification: BreezNotification
                     ) {
 
                     }
 
                     override suspend fun showLightningPaymentNotification(
-                        wallet: GreenWallet,
-                        paymentHash: String,
-                        satoshi: Long
+                        wallet: GreenWallet, paymentHash: String, satoshi: Long
                     ) {
 
                     }
 
                     override suspend fun showOpenWalletNotification(
-                        wallet: GreenWallet,
-                        breezNotification: BreezNotification
+                        wallet: GreenWallet, breezNotification: BreezNotification
                     ) {
 
                     }
 
                 }
             }
-        }
-    )
+        })
 }
 
 // Access from Swift to create a logger
 @Suppress("unused")
-fun Koin.loggerWithTag(tag: String) =
-    get<Logger>(qualifier = null) { parametersOf(tag) }
+fun Koin.loggerWithTag(tag: String) = get<Logger>(qualifier = null) { parametersOf(tag) }
 
 @Suppress("unused") // Called from Swift
 object KotlinDependencies : KoinComponent {
-    fun getLifecycleManager()= getKoin().get<LifecycleManager>()
+    fun getLifecycleManager() = getKoin().get<LifecycleManager>()
 }

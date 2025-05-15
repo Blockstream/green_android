@@ -24,6 +24,7 @@ import blockstream_green.common.generated.resources.id_lightning_notifications
 import blockstream_green.common.generated.resources.id_logout
 import blockstream_green.common.generated.resources.id_open_wallet_to_receive_a_payment
 import blockstream_green.common.generated.resources.id_payment_received
+import blockstream_green.common.generated.resources.id_transactions_notifications
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.database.Database
@@ -33,13 +34,15 @@ import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
-import com.blockstream.green.utils.Loggable
 import com.blockstream.compose.extensions.getNetworkColor
+import com.blockstream.compose.theme.bitcoin
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.lightning
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.GreenActivity
 import com.blockstream.green.R
+import com.blockstream.green.data.notifications.models.NotificationData
+import com.blockstream.green.utils.Loggable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.launchIn
@@ -88,10 +91,7 @@ class NotificationManagerAndroid constructor(
         }.launchIn(scope)
 
         ContextCompat.registerReceiver(
-            context,
-            broadcastReceiver,
-            IntentFilter(ACTION_LOGOUT),
-            ContextCompat.RECEIVER_EXPORTED
+            context, broadcastReceiver, IntentFilter(ACTION_LOGOUT), ContextCompat.RECEIVER_EXPORTED
         )
     }
 
@@ -133,12 +133,24 @@ class NotificationManagerAndroid constructor(
                             wallet = wallet,
                             timeout = sessionTimeout
                         )
-                        androidNotificationManager.notify(notificationId(wallet, NotificationType.CONNECTED), notification)
+                        androidNotificationManager.notify(
+                            notificationId(
+                                wallet, NotificationType.CONNECTED
+                            ), notification
+                        )
 
                         // Notification no longer needed
-                        androidNotificationManager.cancel(notificationId(wallet, NotificationType.OPEN_WALLET))
+                        androidNotificationManager.cancel(
+                            notificationId(
+                                wallet, NotificationType.OPEN_WALLET
+                            )
+                        )
                     } else {
-                        androidNotificationManager.cancel(notificationId(wallet, NotificationType.CONNECTED))
+                        androidNotificationManager.cancel(
+                            notificationId(
+                                wallet, NotificationType.CONNECTED
+                            )
+                        )
                     }
                 }
             }
@@ -147,15 +159,21 @@ class NotificationManagerAndroid constructor(
 
     private suspend fun createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            listOf(NotificationChannel(
-                WALLETS_CHANNEL_ID,
-                getString(Res.string.id_connected_wallets),
-                NotificationManager.IMPORTANCE_LOW
-            ), NotificationChannel(
-                LIGHTNING_CHANNEL_ID,
-                getString(Res.string.id_lightning_notifications),
-                NotificationManager.IMPORTANCE_HIGH
-            )).also {
+            listOf(
+                NotificationChannel(
+                    WALLETS_CHANNEL_ID,
+                    getString(Res.string.id_connected_wallets),
+                    NotificationManager.IMPORTANCE_LOW
+                ), NotificationChannel(
+                    LIGHTNING_CHANNEL_ID,
+                    getString(Res.string.id_lightning_notifications),
+                    NotificationManager.IMPORTANCE_HIGH
+                ), NotificationChannel(
+                    TRANSACTION_CHANNEL_ID,
+                    getString(Res.string.id_transactions_notifications),
+                    NotificationManager.IMPORTANCE_HIGH
+                )
+            ).also {
                 // Create Notification Channels
                 notificationManagerCompat.createNotificationChannels(it)
             }
@@ -163,10 +181,7 @@ class NotificationManagerAndroid constructor(
     }
 
     private suspend fun createWalletConnectionNotification(
-        context: Context,
-        session: GdkSession,
-        wallet: GreenWallet,
-        timeout: Long
+        context: Context, session: GdkSession, wallet: GreenWallet, timeout: Long
     ): Notification {
         val intent = Intent(context, GreenActivity::class.java).also {
             it.action = GreenActivity.OPEN_WALLET
@@ -176,32 +191,22 @@ class NotificationManagerAndroid constructor(
             }
         }
         val pendingIntent = PendingIntent.getActivity(
-            context, requestCode(wallet), intent,
-            PendingIntent.FLAG_IMMUTABLE
+            context, requestCode(wallet), intent, PendingIntent.FLAG_IMMUTABLE
         )
 
         val logoutIntent = PendingIntent.getBroadcast(
-            context,
-            requestCode(wallet),
-            Intent(ACTION_LOGOUT).also {
+            context, requestCode(wallet), Intent(ACTION_LOGOUT).also {
                 it.putExtra(WALLET_ID, wallet.id)
-            },
-            PendingIntent.FLAG_IMMUTABLE
+            }, PendingIntent.FLAG_IMMUTABLE
         )
 
-        return NotificationCompat.Builder(context, WALLETS_CHANNEL_ID)
-            .setContentTitle(wallet.name)
-            .setColorized(true)
-            .setSmallIcon(R.drawable.ic_stat_green)
-            .setContentIntent(pendingIntent)
-            .setColor(
+        return NotificationCompat.Builder(context, WALLETS_CHANNEL_ID).setContentTitle(wallet.name)
+            .setColorized(true).setSmallIcon(R.drawable.ic_stat_green)
+            .setContentIntent(pendingIntent).setColor(
                 if (session.gdkSessions.size == 1) session.mainAssetNetwork.id.getNetworkColor()
                     .toArgb() else green.toArgb()
-            )
-            .setOngoing(true)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .addAction(R.drawable.ic_close, getString(Res.string.id_logout), logoutIntent)
-            .apply {
+            ).setOngoing(true).setPriority(NotificationCompat.PRIORITY_HIGH)
+            .addAction(R.drawable.ic_close, getString(Res.string.id_logout), logoutIntent).apply {
 
                 session.device?.let {
                     setContentText(it.name)
@@ -220,68 +225,73 @@ class NotificationManagerAndroid constructor(
                 }
 
                 setVisibility(if (settingsManager.appSettings.enhancedPrivacy) NotificationCompat.VISIBILITY_SECRET else NotificationCompat.VISIBILITY_PRIVATE)
-            }
-            .build()
+            }.build()
     }
 
     suspend fun createOpenWalletNotification(
-        context: Context,
-        wallet: GreenWallet
+        context: Context, wallet: GreenWallet
     ): Notification {
         val intent = Intent(context, GreenActivity::class.java).also {
             it.action = GreenActivity.OPEN_WALLET
             it.putExtra(GreenActivity.WALLET, wallet.toJson())
         }
         val pendingIntent = PendingIntent.getActivity(
-            context, requestCode(wallet), intent,
-            PendingIntent.FLAG_IMMUTABLE
+            context, requestCode(wallet), intent, PendingIntent.FLAG_IMMUTABLE
         )
 
         val notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
         return NotificationCompat.Builder(context, LIGHTNING_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_stat_green)
-            .setContentTitle(wallet.name)
+            .setSmallIcon(R.drawable.ic_stat_green).setContentTitle(wallet.name)
             .setContentText(getString(Res.string.id_open_wallet_to_receive_a_payment))
-            .setContentIntent(pendingIntent)
-            .setColorized(true)
-            .setColor(lightning.toArgb())
-            .setSound(notificationSound)
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setAutoCancel(true)
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .build().also {
-                androidNotificationManager.notify(notificationId(wallet, NotificationType.OPEN_WALLET), it)
+            .setContentIntent(pendingIntent).setColorized(true).setColor(lightning.toArgb())
+            .setSound(notificationSound).setPriority(NotificationCompat.PRIORITY_MAX)
+            .setAutoCancel(true).setVisibility(NotificationCompat.VISIBILITY_PUBLIC).build().also {
+                androidNotificationManager.notify(
+                    notificationId(
+                        wallet, NotificationType.OPEN_WALLET
+                    ), it
+                )
             }
     }
 
     suspend fun createPaymentNotification(
-        context: Context,
-        wallet: GreenWallet,
-        paymentHash: String,
-        satoshi: Long
+        context: Context, wallet: GreenWallet, paymentHash: String, satoshi: Long
     ): Notification {
         val intent = Intent(context, GreenActivity::class.java).also {
             it.action = GreenActivity.OPEN_WALLET
             it.putExtra(GreenActivity.WALLET, wallet.toJson())
         }
         val pendingIntent = PendingIntent.getActivity(
-            context, requestCode(wallet), intent,
-            PendingIntent.FLAG_IMMUTABLE
+            context, requestCode(wallet), intent, PendingIntent.FLAG_IMMUTABLE
         )
 
         return NotificationCompat.Builder(context, LIGHTNING_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_stat_green)
-            .setContentTitle(wallet.name)
+            .setSmallIcon(R.drawable.ic_stat_green).setContentTitle(wallet.name)
             .setContentText(getString(Res.string.id_payment_received))
-            .setContentIntent(pendingIntent)
-            .setColorized(true)
-            .setColor(lightning.toArgb())
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setAutoCancel(true)
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .build().also {
-                androidNotificationManager.notify(notificationId(wallet, NotificationType.PAYMENT_RECEIVED, paymentHash), it)
+            .setContentIntent(pendingIntent).setColorized(true).setColor(lightning.toArgb())
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT).setAutoCancel(true)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC).build().also {
+                androidNotificationManager.notify(
+                    notificationId(
+                        wallet, NotificationType.PAYMENT_RECEIVED, paymentHash
+                    ), it
+                )
+            }
+    }
+
+    fun createBuyTransactionNotification(
+        context: Context, notificationData: NotificationData
+    ): Notification {
+        val title = notificationData.title
+        val body = notificationData.body
+
+        return NotificationCompat.Builder(context, TRANSACTION_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_stat_green).setContentTitle(title).setContentText(body)
+            .setColorized(true).setColor(bitcoin.toArgb())
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT).setAutoCancel(true)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC).build().also {
+                androidNotificationManager.notify(notificationData.hashCode(), it)
             }
     }
 
@@ -294,17 +304,11 @@ class NotificationManagerAndroid constructor(
         val notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
         return NotificationCompat.Builder(context, LIGHTNING_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_stat_green)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setColorized(true)
-            .setColor(green.toArgb())
-            .setSound(notificationSound)
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setAutoCancel(true)
-            .setOnlyAlertOnce(false)
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .build().also {
+            .setSmallIcon(R.drawable.ic_stat_green).setContentTitle(title).setContentText(message)
+            .setColorized(true).setColor(green.toArgb()).setSound(notificationSound)
+            .setPriority(NotificationCompat.PRIORITY_MAX).setAutoCancel(true)
+            .setOnlyAlertOnce(false).setVisibility(NotificationCompat.VISIBILITY_PUBLIC).build()
+            .also {
                 androidNotificationManager.notify(237_237, it)
             }
     }
@@ -312,16 +316,16 @@ class NotificationManagerAndroid constructor(
     suspend fun createForegroundServiceNotification(context: Context): Notification {
         return NotificationCompat.Builder(context, LIGHTNING_CHANNEL_ID)
             .setContentTitle(getString(Res.string.id_lightning))
-            .setTicker(getString(Res.string.id_lightning))
-            .setOngoing(true)
-            .build()
+            .setTicker(getString(Res.string.id_lightning)).setOngoing(true).build()
     }
 
     enum class NotificationType {
         CONNECTED, OPEN_WALLET, PAYMENT_RECEIVED, ONCHAIN_TRANSACTION_CONFIRMED
     }
 
-    private fun notificationId(wallet: GreenWallet, notificationType: NotificationType, extra: Any? = null): Int {
+    private fun notificationId(
+        wallet: GreenWallet, notificationType: NotificationType, extra: Any? = null
+    ): Int {
         return wallet.id.hashCode() + notificationType.hashCode() + extra.hashCode()
     }
 
@@ -331,6 +335,7 @@ class NotificationManagerAndroid constructor(
     companion object : Loggable() {
         const val WALLETS_CHANNEL_ID = "${BuildConfig.APPLICATION_ID}.WALLETS_CHANNEL_ID"
         const val LIGHTNING_CHANNEL_ID = "${BuildConfig.APPLICATION_ID}.LIGHTNING_CHANNEL_ID"
+        const val TRANSACTION_CHANNEL_ID = "${BuildConfig.APPLICATION_ID}.TRANSACTION_CHANNEL_ID"
 
         const val ACTION_LOGOUT = "${BuildConfig.APPLICATION_ID}.ACTION_LOGOUT"
         const val WALLET_ID = "WALLET_ID"

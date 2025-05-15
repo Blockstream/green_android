@@ -111,7 +111,6 @@ fun AccountOverviewScreen(
     }
 
     SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false) {
-
         Box(
             Modifier
                 .fillMaxSize()

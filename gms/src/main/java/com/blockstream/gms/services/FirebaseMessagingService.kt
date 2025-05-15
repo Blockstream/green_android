@@ -1,8 +1,10 @@
 package com.blockstream.gms.services
 
-import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.lightning.BreezNotification
+import com.blockstream.green.data.config.AppInfo
+import com.blockstream.green.data.notifications.models.NotificationData
+import com.blockstream.green.data.notifications.models.NotificationType
 import com.blockstream.green.utils.Loggable
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -17,10 +19,9 @@ class FirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         logger.d { "Received message: ${remoteMessage.data}" }
-
         val data = remoteMessage.data
 
-        // Check if message contains a data payload.
+
         if (data.isNotEmpty()) {
 
             val notificationType = data["notification_type"]
@@ -31,13 +32,23 @@ class FirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
                 val breezNotification = BreezNotification.fromString(data["notification_payload"])
 
                 if (appInfo.isDevelopmentOrDebug) {
-                    fcm.showDebugNotification(title = "Notification Received", message = breezNotification.toString())
+                    fcm.showDebugNotification(
+                        title = "Notification Received", message = breezNotification.toString()
+                    )
                 }
 
                 if (breezNotification != null && !xpubHashId.isNullOrBlank()) {
                     fcm.handleLightningPushNotification(xpubHashId, breezNotification)
                 } else {
                     logger.d { "No notification_payload or app_data $data" }
+                }
+            } else {
+                //we don't have any other notification types
+                //so for now lets just show it as-is
+                //add notification types for other types
+                val notification = NotificationData.create(remoteMessage.data)
+                if (notification.type == NotificationType.MELD_TRANSACTION) {
+                    fcm.showBuyTransactionNotification(notification)
                 }
             }
         }
@@ -48,5 +59,6 @@ class FirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
         fcm.setToken(token)
     }
 
-    companion object: Loggable()
+    companion object : Loggable()
 }
+

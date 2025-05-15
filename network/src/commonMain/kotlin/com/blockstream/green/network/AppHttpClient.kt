@@ -1,13 +1,13 @@
 package com.blockstream.green.network
 
 import co.touchlab.kermit.Logger
-import com.blockstream.green.network.NetworkResponse.Success
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.resources.Resources
@@ -19,6 +19,8 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.io.IOException
@@ -34,23 +36,23 @@ sealed class NetworkResponse<out T> {
 }
 
 inline fun <reified T> NetworkResponse<T>.dataOrNull(): T? {
-    if (this is Success) {
+    if (this is NetworkResponse.Success) {
         return this.data
     }
     return null
 }
 
 inline fun <reified T> NetworkResponse<T>.dataOrThrow(): T {
-    if (this is Success) {
+    if (this is NetworkResponse.Success) {
         return this.data
     }
-    return throw Exception((this as? NetworkResponse.Error)?.message ?: "Something went wrong")
+    throw Exception((this as? NetworkResponse.Error)?.message ?: "Something went wrong")
 }
 
 abstract class AppHttpClient(
-    configBlock: HttpClientConfig<*>.() -> Unit = {}
+    enableLogging: Boolean = false, configBlock: HttpClientConfig<*>.() -> Unit = {}
 ) {
-    val httpClient: HttpClient = defaultHttpClient(configBlock)
+    val httpClient: HttpClient = defaultHttpClient(enableLogging, configBlock)
 
     suspend inline fun <reified T> get(
         path: String, block: HttpRequestBuilder.() -> Unit = {}
@@ -64,13 +66,16 @@ abstract class AppHttpClient(
         httpClient.get(resource = resource, block).body()
     }
 
-    suspend inline fun <reified T, reified B> post(path: String, body: B): NetworkResponse<T> = execute {
-        httpClient.post(path) {
-            setBody(body)
-        }.body()
-    }
+    suspend inline fun <reified T, reified B> post(path: String, body: B): NetworkResponse<T> =
+        execute {
+            httpClient.post(path) {
+                setBody(body)
+            }.body()
+        }
 
-    suspend inline fun <reified R: Any, reified T, reified B> post(resource: R, body: B): NetworkResponse<T> = execute {
+    suspend inline fun <reified R : Any, reified T, reified B> post(
+        resource: R, body: B
+    ): NetworkResponse<T> = execute {
         httpClient.post(resource) {
             setBody(body)
         }.body()
@@ -101,7 +106,8 @@ abstract class AppHttpClient(
         } else {
             try {
                 val json = Json.parseToJsonElement(raw).jsonObject
-                json.values.mapNotNull { it as? JsonPrimitive }.firstNotNullOfOrNull { it.contentOrNull } ?: "Something went wrong"
+                json.values.mapNotNull { it as? JsonPrimitive }
+                    .firstNotNullOfOrNull { it.contentOrNull } ?: "Something went wrong"
             } catch (_: Exception) {
                 "Something went wrong"
             }
@@ -114,7 +120,8 @@ abstract class AppHttpClient(
         t.printStackTrace()
         return when (t) {
             is ClientRequestException, is ServerResponseException -> {
-                val response = (t as? ClientRequestException)?.response ?: (t as? ServerResponseException)?.response
+                val response = (t as? ClientRequestException)?.response
+                    ?: (t as? ServerResponseException)?.response
                 val msg = response?.bodyAsTextOrNull() ?: "Something went wrong"
                 val code = response?.status?.value ?: -1
                 code to msg
@@ -126,20 +133,24 @@ abstract class AppHttpClient(
         }
     }
 
+
     companion object {
         private fun defaultHttpClient(
-            configBlock: HttpClientConfig<*>.() -> Unit = {}
+            enableLogging: Boolean = false, configBlock: HttpClientConfig<*>.() -> Unit = {}
         ): HttpClient {
             return HttpClient {
                 install(Resources)
-                install(Logging) {
-                    logger = object : io.ktor.client.plugins.logging.Logger {
-                        override fun log(message: String) {
-                            Logger.d { message }
+                if (enableLogging) {
+                    install(Logging) {
+                        logger = object : io.ktor.client.plugins.logging.Logger {
+                            override fun log(message: String) {
+                                Logger.d { message }
+                            }
                         }
+                        level = LogLevel.BODY
                     }
-                    level = LogLevel.BODY
                 }
+
                 install(ContentNegotiation) {
                     json(json = Json {
                         isLenient = true
@@ -147,6 +158,11 @@ abstract class AppHttpClient(
                         encodeDefaults = true
                         explicitNulls = false
                     })
+                }
+
+
+                defaultRequest {
+                    contentType(ContentType.Application.Json)
                 }
                 configBlock()
             }
