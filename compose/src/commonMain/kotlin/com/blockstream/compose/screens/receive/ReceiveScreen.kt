@@ -32,12 +32,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.get
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.arrows_counter_clockwise
-import blockstream_green.common.generated.resources.id_account__asset
 import blockstream_green.common.generated.resources.id_account_address
 import blockstream_green.common.generated.resources.id_address
 import blockstream_green.common.generated.resources.id_amount
 import blockstream_green.common.generated.resources.id_amount_to_receive
+import blockstream_green.common.generated.resources.id_asset
 import blockstream_green.common.generated.resources.id_confirm
+import blockstream_green.common.generated.resources.id_create_new_account
 import blockstream_green.common.generated.resources.id_description
 import blockstream_green.common.generated.resources.id_expiration
 import blockstream_green.common.generated.resources.id_ledger_supports_a_limited_set
@@ -61,14 +62,18 @@ import com.blockstream.common.data.MenuEntryList
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.AccountAssetBalance
+import com.blockstream.common.gdk.data.AccountAssetBalanceList
+import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.models.receive.ReceiveViewModel
 import com.blockstream.common.models.receive.ReceiveViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.compose.components.GreenAccountAsset
+import com.blockstream.compose.components.GreenAccountSelector
 import com.blockstream.compose.components.GreenAddress
 import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenAmountField
+import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
@@ -113,8 +118,12 @@ fun ReceiveScreen(
         viewModel.postEvent(Events.SetAccountAsset(it))
     }
 
-    NavigateDestinations.ChooseAssetAccounts.getResult<AccountAsset> {
-        viewModel.accountAsset.value = it
+    NavigateDestinations.Assets.getResult<AssetBalance> {
+        viewModel.asset.value = it.asset
+    }
+
+    NavigateDestinations.Accounts.getResult<AccountAssetBalance> {
+        viewModel.accountAsset.value = it.accountAsset
     }
 
     NavigateDestinations.Denomination.getResult<DenominatedValue> {
@@ -126,6 +135,7 @@ fun ReceiveScreen(
     }
 
     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
+    val asset by viewModel.asset.collectAsStateWithLifecycle()
     val accountAsset by viewModel.accountAsset.collectAsStateWithLifecycle()
     val showRequestAmount by viewModel.showAmount.collectAsStateWithLifecycle()
     val receiveAddress by viewModel.receiveAddress.collectAsStateWithLifecycle()
@@ -135,6 +145,7 @@ fun ReceiveScreen(
     val showLightningOnChainAddress by viewModel.showLightningOnChainAddress.collectAsStateWithLifecycle()
     val showLedgerAssetWarning by viewModel.showLedgerAssetWarning.collectAsStateWithLifecycle()
     val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
+    val assetAccounts by viewModel.assetAccounts.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val bottomSheetNavigator = LocalNavigator.current.navigatorProvider[BottomSheetNavigator::class]
@@ -197,42 +208,70 @@ fun ReceiveScreen(
                 }
 
                 Column {
-                    accountAsset?.also {
-                        AnimatedVisibility(visible = showLedgerAssetWarning) {
-                            GreenCard(padding = 8, colors = CardDefaults.elevatedCardColors(
-                                containerColor = orange
-                            ), onClick = {
-                                viewModel.postEvent(ReceiveViewModel.LocalEvents.ClickLedgerSupportedAssets)
-                            }
-                            ) {
-                                GreenRow(
-                                    padding = 0,
-                                    space = 6,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        painterResource(Res.drawable.warning),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(16.dp),
-                                        tint = whiteMedium
-                                    )
-                                    Text(
-                                        stringResource(Res.string.id_ledger_supports_a_limited_set),
-                                        style = bodyMedium,
-                                        color = whiteMedium,
-                                    )
-                                }
-                            }
-                        }
 
-                        GreenAccountAsset(
-                            accountAssetBalance = it.accountAssetBalance,
-                            session = viewModel.sessionOrNull,
-                            title = stringResource(Res.string.id_account__asset),
-                            withEditIcon = true
-                        ) {
-                            viewModel.postEvent(NavigateDestinations.ChooseAssetAccounts(greenWallet = viewModel.greenWallet))
+                    AnimatedVisibility(visible = showLedgerAssetWarning) {
+                        GreenCard(padding = 8, colors = CardDefaults.elevatedCardColors(
+                            containerColor = orange
+                        ), onClick = {
+                            viewModel.postEvent(ReceiveViewModel.LocalEvents.ClickLedgerSupportedAssets)
                         }
+                        ) {
+                            GreenRow(
+                                padding = 0,
+                                space = 6,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    painterResource(Res.drawable.warning),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp),
+                                    tint = whiteMedium
+                                )
+                                Text(
+                                    stringResource(Res.string.id_ledger_supports_a_limited_set),
+                                    style = bodyMedium,
+                                    color = whiteMedium,
+                                )
+                            }
+                        }
+                    }
+
+                    GreenAsset(
+                        assetBalance = AssetBalance.create(asset),
+                        session = viewModel.sessionOrNull,
+                        title = stringResource(Res.string.id_asset),
+                        withEditIcon = true,
+                        onClick = {
+                            scope.launch {
+                                viewModel.postEvent(
+                                    NavigateDestinations.Assets.create(
+                                        greenWallet = viewModel.greenWallet,
+                                        session = viewModel.session
+                                    )
+                                )
+                            }
+                        }
+                    )
+
+                    accountAsset?.account?.takeIf { assetAccounts.size > 1 }?.also {
+                        GreenAccountSelector(
+                            account = it,
+                            modifier = Modifier.padding(top = 8.dp, start = 4.dp),
+                            onClick = {
+                                viewModel.postEvent(
+                                    NavigateDestinations.Accounts(
+                                        greenWallet = viewModel.greenWallet,
+                                        accounts = AccountAssetBalanceList(assetAccounts),
+                                        withAsset = false
+                                    )
+                                )
+                            })
+                    }
+                }
+
+                if(accountAsset == null){
+                    GreenButton(text = stringResource(Res.string.id_create_new_account), modifier = Modifier.fillMaxWidth()) {
+                        viewModel.postEvent(ReceiveViewModel.LocalEvents.CreateAccount)
                     }
                 }
 

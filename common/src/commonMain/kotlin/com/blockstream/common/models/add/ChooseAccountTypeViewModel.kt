@@ -5,11 +5,9 @@ import blockstream_green.common.generated.resources.id_add_new_account
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.Redact
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.devices.DeviceModel
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.hasHistory
 import com.blockstream.common.extensions.ifConnected
@@ -22,8 +20,10 @@ import com.blockstream.common.looks.AccountTypeLook
 import com.blockstream.common.models.jade.JadeQrOperation
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.navigation.PopTo
-import com.blockstream.ui.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavData
+import com.blockstream.ui.sideeffects.SideEffect
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.launch
@@ -111,6 +111,13 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
 
                 if (asset.asset.isAmp) {
                     list += AccountTypeLook(AccountType.AMP_ACCOUNT)
+                } else if (asset.asset.isLightning) {
+                    if (session.supportsLightning() && settingsManager.isLightningEnabled() && !session.isTestnet) {
+                        list += AccountTypeLook(
+                            AccountType.LIGHTNING,
+                            canBeAdded = !session.hasLightning
+                        )
+                    }
                 } else {
                     // Check if singlesig networks are available in this session
                     if ((isBitcoin && session.bitcoinSinglesig != null) || (!isBitcoin && session.liquidSinglesig != null)) {
@@ -118,12 +125,6 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
                             AccountType.BIP84_SEGWIT,
                             AccountType.BIP49_SEGWIT_WRAPPED
                         ).map { AccountTypeLook(it) }
-                        if (isBitcoin && session.supportsLightning() && settingsManager.isLightningEnabled() && !session.isTestnet) {
-                            list += AccountTypeLook(
-                                AccountType.LIGHTNING,
-                                canBeAdded = !session.hasLightning
-                            )
-                        }
                     }
 
                     // Check if multisig networks are available in this session

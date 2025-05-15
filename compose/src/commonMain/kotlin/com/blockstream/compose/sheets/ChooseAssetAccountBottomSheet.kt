@@ -18,6 +18,7 @@ import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.AssetBalance
+import com.blockstream.common.gdk.data.Assets
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.navigation.PopTo
@@ -50,7 +51,7 @@ fun ChooseAssetAccountBottomSheet(
                 session = viewModel.session,
                 viewModel.session.liquid?.policyAsset
             ),
-        ) + viewModel.session.walletAssets.value.assets.keys.map {
+        ) + viewModel.session.walletAssets.value.let { it.data() ?: Assets() }.assets.keys.map {
             EnrichedAsset.create(session = viewModel.session, assetId = it)
         }
             .toSet() + (viewModel.session.enrichedAssets.value.takeIf { viewModel.session.liquid != null }

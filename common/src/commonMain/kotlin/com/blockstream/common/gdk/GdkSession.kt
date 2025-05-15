@@ -227,7 +227,7 @@ class GdkSession constructor(
 
     private var _walletTotalBalanceSharedFlow = MutableStateFlow(-1L)
     private var _activeAccountStateFlow: MutableStateFlow<Account?> = MutableStateFlow(null)
-    private var _walletAssetsFlow : MutableStateFlow<Assets> = MutableStateFlow(Assets())
+    private var _walletAssetsFlow : MutableStateFlow<DataState<Assets>> = MutableStateFlow(DataState.Loading)
     private var _enrichedAssetsFlow : MutableStateFlow<List<CountlyAsset>> = MutableStateFlow(listOf())
     private var _walletHasHistorySharedFlow = MutableStateFlow(false)
     private var _accountAssetsFlow = mutableMapOf<AccountId, MutableStateFlow<Assets>>()
@@ -289,7 +289,7 @@ class GdkSession constructor(
 
     val walletTotalBalance get() = _walletTotalBalanceSharedFlow.asStateFlow()
 
-    val walletAssets: StateFlow<Assets> get() = _walletAssetsFlow.asStateFlow()
+    val walletAssets: StateFlow<DataState<Assets>> get() = _walletAssetsFlow.asStateFlow()
 
     val enrichedAssets: StateFlow<List<CountlyAsset>> get() = _enrichedAssetsFlow.asStateFlow()
 
@@ -803,7 +803,7 @@ class GdkSession constructor(
         _walletTotalBalanceSharedFlow.value = -1L
 
         // Clear Assets
-        _walletAssetsFlow.value = Assets()
+        _walletAssetsFlow.value = DataState.Loading
 
         // Clear Enriched Assets
         _enrichedAssetsFlow.value = listOf()
@@ -2198,7 +2198,7 @@ class GdkSession constructor(
                     }
 
                     walletAssets.toSortedLinkedHashMap(::sortAssets).also {
-                        _walletAssetsFlow.value = Assets(it)
+                        _walletAssetsFlow.value = DataState.Success(Assets(it))
                     }
 
                     val accountAndAssets = accounts.value.flatMap {
@@ -2952,7 +2952,7 @@ class GdkSession constructor(
         _accountEmptiedEvent?.also { account ->
             countly.accountEmptied(
                 session = this@GdkSession,
-                walletHasFunds = walletAssets.value.hasFunds,
+                walletHasFunds = walletAssets.value.data()?.hasFunds == true,
                 accountsFunded = _accountAssetsFlow.values.map { it.value.hasFunds }
                     .count { it },
                 accounts = this@GdkSession.accounts.value,
@@ -2970,7 +2970,7 @@ class GdkSession constructor(
         if(_walletActiveEventInvalidated) {
             countly.activeWalletEnd(
                 session = this,
-                walletHasFunds = walletAssets.value.hasFunds,
+                walletHasFunds = walletAssets.value.data()?.hasFunds == true,
                 accountsFunded = _accountAssetsFlow.values.map { it.value.hasFunds }.count { it },
                 accounts = this.accounts.value
             )

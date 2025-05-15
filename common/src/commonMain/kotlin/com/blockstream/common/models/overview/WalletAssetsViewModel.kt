@@ -4,18 +4,19 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_my_assets
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.previewAssetBalance
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
 import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import org.jetbrains.compose.resources.getString
 
@@ -34,18 +35,17 @@ class WalletAssetsViewModel(
 ) : WalletAssetsViewModelAbstract(
     greenWallet = greenWallet
 ) {
-
     override val assets: StateFlow<DataState<List<AssetBalance>>> =
-        session.walletAssets.map { assets ->
-            session.ifConnected {
-                DataState.Success(assets.assets.map {
+        session.walletAssets.map {
+            it.mapSuccess { assets ->
+                assets.assets.map {
                     AssetBalance.create(
                         assetId = it.key,
                         balance = it.value,
                         session = session
                     )
-                })
-            } ?: DataState.Empty
+                }
+            }
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(),

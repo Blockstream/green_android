@@ -74,7 +74,7 @@ open class WalletBalanceViewModel(greenWallet: GreenWallet): GreenViewModel(gree
         } else {
             val balance = session.starsOrNull ?: session.walletTotalBalance.value.toAmountLook(
                 session = session,
-                assetId = session.walletAssets.value.policyId
+                assetId = session.walletAssets.value.data()?.policyId ?: session.defaultNetwork.policyAsset
             )
 
             val fiat = session.starsOrNull ?: session.walletTotalBalance.value.toAmountLook(

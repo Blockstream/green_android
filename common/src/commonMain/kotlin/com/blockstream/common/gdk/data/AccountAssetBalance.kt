@@ -9,7 +9,7 @@ import com.blockstream.common.utils.toAmountLook
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AccountAssetBalanceList(val list: List<AccountAssetBalance>)
+data class AccountAssetBalanceList constructor(val list: List<AccountAssetBalance>)
 
 @Serializable
 data class AccountAssetBalance constructor(

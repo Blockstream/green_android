@@ -33,6 +33,7 @@ import com.blockstream.common.Urls
 import com.blockstream.common.data.AppConfig
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
+import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SupportData
 import com.blockstream.common.events.Events
@@ -42,9 +43,13 @@ import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccountAsset
+import com.blockstream.common.extensions.previewEnrichedAsset
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.gdk.data.AccountAssetBalance
+import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Address
+import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.lightning.amountSatoshi
 import com.blockstream.common.lightning.expireIn
 import com.blockstream.common.lightning.feeSatoshi
@@ -55,6 +60,7 @@ import com.blockstream.common.lightning.totalInboundLiquiditySatoshi
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.sheets.NoteType
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.navigation.PopTo
 import com.blockstream.common.platformFileSystem
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
@@ -154,6 +160,11 @@ abstract class ReceiveViewModelAbstract(greenWallet: GreenWallet, accountAssetOr
     @NativeCoroutinesState
     abstract val showLedgerAssetWarning: StateFlow<Boolean>
 
+    @NativeCoroutinesState
+    abstract val asset: MutableStateFlow<EnrichedAsset>
+
+    @NativeCoroutinesState
+    abstract val assetAccounts: StateFlow<List<AccountAssetBalance>>
 }
 
 class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAsset) :
@@ -219,7 +230,24 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
             false
         )
 
+    override val asset: MutableStateFlow<EnrichedAsset> = MutableStateFlow(initialAccountAsset.asset)
+
+     override val assetAccounts: StateFlow<List<AccountAssetBalance>> = combine(asset, sessionOrNull?.accounts ?: emptyFlow()) { asset, accounts ->
+         accounts.filter { account ->
+             if (asset.isAnyAsset && asset.isAmp) {
+                 account.type == AccountType.AMP_ACCOUNT
+             } else if (asset.assetId.isPolicyAsset(session)) {
+                 account.network.policyAsset == asset.assetId
+             } else {
+                 account.isLiquid && (asset.isAmp == account.isAmp || asset.isAnyAsset)
+             }
+         }.map {
+             AccountAssetBalance(account = it, asset = asset)
+         }
+     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
+
     class LocalEvents {
+        object CreateAccount: Event
         object ToggleLightning: Event
         object GenerateNewAddress: Event
         object CreateInvoice: Event
@@ -301,7 +329,15 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
             )
         }.launchIn(this)
 
-        session.ifConnected {
+        sessionOrNull?.ifConnected {
+
+            accountAsset.filterNotNull().onEach {
+                asset.value = it.asset
+            }.launchIn(this)
+
+            assetAccounts.onEach {
+                accountAsset.value = it.find { it.account.id == accountAsset.value?.account?.id }?.accountAsset ?: it.firstOrNull()?.accountAsset
+            }.launchIn(this)
 
             combine(accountAsset, showLightningOnChainAddress) { accountAsset, showLightningOnChainAddress ->
                 // When toggling between showLightningOnChainAddress clear the receiveAddress
@@ -324,7 +360,18 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
             accountAsset.onEach {
                 _showLightningOnChainAddress.value = false
                 _liquidityFee.value = null
-                generateAddress()
+
+                if (it == null) {
+                    _showLedgerAssetWarning.value = false
+                    _showVerifyOnDevice.value = false
+
+                    _receiveAddress.value = null
+                    _receiveAddressUri.value = null
+                    _address.value = null
+                } else {
+                    generateAddress()
+                }
+
             }.launchIn(this)
 
             amount.onEach {
@@ -399,6 +446,18 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
         super.handleEvent(event)
 
         when (event) {
+            is LocalEvents.CreateAccount -> {
+                postSideEffect(
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.ChooseAccountType(
+                            greenWallet = greenWallet,
+                            assetBalance = asset.value.let { AssetBalance.create(it) },
+                            allowAssetSelection = false,
+                            popTo = PopTo.Receive
+                        )
+                    )
+                )
+            }
             is Events.DismissWalletBackupAlert -> {
                 viewModelScope.launch {
                     hideWalletBackupAlert.value = true
@@ -885,6 +944,8 @@ class ReceiveViewModelPreview() : ReceiveViewModelAbstract(greenWallet = preview
     override val showLightningOnChainAddress: StateFlow<Boolean> = MutableStateFlow(false)
     override val showAmount: StateFlow<Boolean> = MutableStateFlow(false)
     override val showLedgerAssetWarning: StateFlow<Boolean> = MutableStateFlow(false)
+    override val asset: MutableStateFlow<EnrichedAsset> = MutableStateFlow(previewEnrichedAsset())
+    override val assetAccounts: StateFlow<List<AccountAssetBalance>> = MutableStateFlow(emptyList())
 
     companion object {
         fun preview() = ReceiveViewModelPreview()

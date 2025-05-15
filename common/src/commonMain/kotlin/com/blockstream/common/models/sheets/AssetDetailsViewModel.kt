@@ -26,7 +26,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 
 abstract class AssetDetailsViewModelAbstract(
     greenWallet: GreenWallet,
@@ -55,7 +57,7 @@ class AssetDetailsViewModel(
             combine(
                 session.block(assetId.networkForAsset(session) ?: session.defaultNetwork),
                 (accountAsset?.let { session.accountAssets(it.account) }
-                    ?: session.walletAssets)
+                    ?: session.walletAssets.map { it.data() }.filterNotNull())
             ) { block, assets ->
 
                 _data.value = buildList {

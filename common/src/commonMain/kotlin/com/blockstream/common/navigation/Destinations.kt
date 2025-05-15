@@ -140,7 +140,7 @@ sealed class NavigateDestinations : NavigateDestination() {
     @Serializable
     data class SecurityLevel(val greenWallet: GreenWallet) : NavigateDestination()
     @Serializable
-    data class Assets(val greenWallet: GreenWallet, val assets: AssetBalanceList) : NavigateDestination() {
+    data class Assets constructor(val greenWallet: GreenWallet, val assets: AssetBalanceList) : NavigateDestination() {
         companion object {
             @NativeCoroutines
             suspend fun create(greenWallet: GreenWallet, session: GdkSession): Assets {
@@ -151,6 +151,10 @@ sealed class NavigateDestinations : NavigateDestination() {
                             EnrichedAsset.createOrNull(
                                 session = session,
                                 session.bitcoin?.policyAsset
+                            ),
+                            EnrichedAsset.createOrNull(
+                                session = session,
+                                session.lightning?.policyAsset
                             ),
                             EnrichedAsset.createOrNull(
                                 session = session,

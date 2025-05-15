@@ -5,10 +5,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.pullToRefresh
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -274,7 +276,16 @@ fun WalletOverviewScreen(
                             )
                         }
                     } else {
-                        if (assets.isNotEmpty()) {
+                        if (assets.isLoading()) {
+                            item(key = "AssetsLoading") {
+                                LinearProgressIndicator(
+                                    modifier = Modifier
+                                        .height(1.dp)
+                                        .padding(horizontal = 32.dp)
+                                        .fillMaxWidth()
+                                )
+                            }
+                        } else if (assets.isNotEmpty()) {
                             itemsSpaced(assets.data() ?: emptyList()) { asset ->
                                 GreenAsset(
                                     assetBalance = asset,
@@ -284,7 +295,7 @@ fun WalletOverviewScreen(
                                 }
                             }
                         } else {
-                            item(key = "AssetsEmpty"){
+                            item(key = "AssetsEmpty") {
                                 Text(
                                     text = stringResource(Res.string.id_you_dont_have_any_assets_yet),
                                     style = bodyMedium,

@@ -4,29 +4,20 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.get
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.arrow_square_out
-import blockstream_green.common.generated.resources.id_account
 import blockstream_green.common.generated.resources.id_buy_s
 import blockstream_green.common.generated.resources.id_exchange
-import com.adamglin.PhosphorIcons
-import com.adamglin.phosphoricons.Fill
-import com.adamglin.phosphoricons.fill.CaretDown
 import com.blockstream.common.data.AlertType
 import com.blockstream.common.data.Country
 import com.blockstream.common.data.DenominatedValue
@@ -35,6 +26,7 @@ import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.models.exchange.BuyViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.compose.components.GreenAccountSelector
 import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenAmountField
 import com.blockstream.compose.components.GreenButton
@@ -44,12 +36,9 @@ import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.MeldProvider
 import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.extensions.onValueChange
-import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.green20
-import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.OpenKeyboard
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.compose.utils.noRippleClickable
 import com.blockstream.green.data.meld.data.QuoteResponse
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
@@ -172,30 +161,9 @@ fun BuyScreen(
                 }
 
                 accountAsset.takeIf { showAccountSelector }?.also {
-
-                    GreenRow(padding = 0) {
-                        Text(
-                            text = stringResource(Res.string.id_account),
-                            style = bodyLarge,
-                            color = whiteMedium
-                        )
-
-                        GreenRow(space = 8, padding = 0, modifier = Modifier.noRippleClickable {
-                            viewModel.changeAccount()
-                        }.align(Alignment.CenterVertically)) {
-                            Text(
-                                text = it.account.name,
-                                textAlign = TextAlign.End,
-                                modifier = Modifier.weight(1f)
-                            )
-
-                            Icon(
-                                imageVector = PhosphorIcons.Fill.CaretDown,
-                                contentDescription = null,
-                                modifier = Modifier.size(12.dp)
-                            )
-                        }
-                    }
+                    GreenAccountSelector(account = it.account, onClick = {
+                        viewModel.changeAccount()
+                    })
                 }
             }
 

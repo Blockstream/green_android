@@ -53,7 +53,7 @@ sealed class DataState<out T> {
     }
 
     inline fun <R> mapSuccess(transform: (T) -> R): DataState<R> {
-        return when(this){
+        return when (this) {
             is Error -> this
             is Loading -> this
             is Empty -> this
@@ -63,21 +63,21 @@ sealed class DataState<out T> {
         }
     }
 
-    companion object{
+    companion object {
         fun <T> successOrEmpty(value: T?): DataState<T> {
-            return if(value == null){
+            return if (value == null) {
                 Empty
-            }else{
+            } else {
                 Success(value)
             }
         }
     }
 }
 
-fun <T> StateFlow<DataState<T>>.data() : T? {
+fun <T> StateFlow<DataState<T>>.data(): T? {
     return this.value.data()
 }
 
-fun <T> StateFlow<DataState<T>>.isEmpty() : Boolean {
+fun <T> StateFlow<DataState<T>>.isEmpty(): Boolean {
     return this.value.isEmpty()
 }

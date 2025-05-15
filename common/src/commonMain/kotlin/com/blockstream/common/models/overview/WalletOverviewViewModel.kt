@@ -188,16 +188,15 @@ class WalletOverviewViewModel(
 
     override val assets: StateFlow<DataState<List<AssetBalance>>> =
         combine(session.walletAssets, hideAmounts) { assets, hideAmounts ->
-            session.ifConnected {
-                DataState.Success(assets.assets.map {
+            assets.mapSuccess { assets ->
+                assets.assets.map {
                     AssetBalance.create(
                         assetId = it.key, balance = it.value, session = session
                     )
-                })
-            } ?: DataState.Empty
-
+                }
+            }
         }.stateIn(
-            viewModelScope, SharingStarted.WhileSubscribed(), DataState.Loading
+            viewModelScope, SharingStarted.WhileSubscribed(5000L), DataState.Loading
         )
 
     override val accounts = combine(
