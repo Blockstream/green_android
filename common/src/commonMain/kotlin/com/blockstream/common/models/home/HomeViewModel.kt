@@ -78,13 +78,6 @@ class HomeViewModel() : HomeViewModelAbstract() {
             _navData.value = NavData(
                 actions = listOfNotNull(
                     NavAction(
-                        titleRes = Res.string.id_set_up_watchonly,
-                        imageVector = PhosphorIcons.Regular.Eye,
-                        isMenuEntry = true,
-                    ) {
-                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WatchOnlyPolicy))
-                    },
-                    NavAction(
                         titleRes = Res.string.id_app_settings,
                         imageVector = PhosphorIcons.Regular.Sliders,
                         isMenuEntry = true,

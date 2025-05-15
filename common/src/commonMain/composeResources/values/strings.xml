@@ -1664,4 +1664,5 @@
     <string name="id_best_price">Best Price</string>
     <string name="id_transactions_notifications">Transactions Notifications</string>
     <string name="id_you_dont_have_any_assets_yet">You you don&apos;t have any assets yet.</string>
+    <string name="id_create_a_new_wallet_to_begin">Create a new wallet to begin your bitcoin journey.</string>
 </resources>
