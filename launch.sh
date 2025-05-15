@@ -30,7 +30,7 @@ BRANCH=false
 COMMIT=false
 UNINSTALL=false
 PACKAGE="com.greenaddress.greenbits_android_wallet"
-LAUNCH_ACTIVITY="MainActivity"
+LAUNCH_ACTIVITY="GreenActivity"
 
 # --- Argument handling
 # https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
@@ -110,9 +110,9 @@ launch(){
   adb shell am force-stop $PACKAGE
   # launch
   if [[ $1 != false ]]; then
-    adb shell am start -n "$PACKAGE/com.blockstream.green.ui.$LAUNCH_ACTIVITY" --es ADD_WALLET $1
+    adb shell am start -n "$PACKAGE/com.blockstream.green.$LAUNCH_ACTIVITY" --es ADD_WALLET $1
   else
-    adb shell am start -n "$PACKAGE/com.blockstream.green.ui.$LAUNCH_ACTIVITY"
+    adb shell am start -n "$PACKAGE/com.blockstream.green.$LAUNCH_ACTIVITY"
   fi
 
 }

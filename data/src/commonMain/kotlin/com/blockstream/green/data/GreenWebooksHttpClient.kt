@@ -10,7 +10,7 @@ class GreenWebooksHttpClient(appInfo: AppInfo) : AppHttpClient(appInfo.isDevelop
     }
 }) {
     companion object {
-        const val BASE_URL = "https://green-webhooks.dev.blockstream.com/"
+        const val BASE_URL = "https://green-webhooks.blockstream.com/"
         const val DEV_BASE_URL = "https://green-webhooks.dev.blockstream.com/"
     }
 }

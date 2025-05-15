@@ -1,9 +1,8 @@
-package com.blockstream.green.ui
+package com.blockstream.common.models.home
 
 import com.blockstream.common.database.Database
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
-import com.blockstream.common.models.home.HomeViewModel
 import com.blockstream.green.TestViewModel
 import io.mockk.coEvery
 import io.mockk.every
