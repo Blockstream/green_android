@@ -30,7 +30,6 @@ import blockstream_green.common.generated.resources.id_spend_your_bitcoin_withou
 import blockstream_green.common.generated.resources.id_twofactor_authentication
 import blockstream_green.common.generated.resources.id_wallet
 import blockstream_green.common.generated.resources.id_wallet_coins_will_require
-import blockstream_green.common.generated.resources.id_you_have_successfully_changed
 import blockstream_green.common.generated.resources.id_your_2fa_expires_so_that_if_you
 import blockstream_green.common.generated.resources.id_your_wallet_is_locked_for_a
 import com.blockstream.common.BTC_UNIT
@@ -853,7 +852,6 @@ class WalletSettingsViewModel(
                 wallet = greenWallet
             )
         }, onSuccess = {
-            postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_you_have_successfully_changed)))
             postSideEffect(SideEffects.NavigateBack())
         })
     }
