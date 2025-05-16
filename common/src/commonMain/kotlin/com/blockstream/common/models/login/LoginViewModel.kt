@@ -225,12 +225,12 @@ class LoginViewModel constructor(
 
     @NativeCoroutinesState
     override val showWatchOnlyUsername = combine(_initialAction, watchOnlyCredentials) { initialAction , watchOnlyCredentials ->
-        watchOnlyCredentials.isEmpty() || initialAction
+        watchOnlyCredentials.isEmpty() || (initialAction && greenWallet.isWatchOnlyMultisig)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     @NativeCoroutinesState
     override val showWatchOnlyPassword = combine(_initialAction, watchOnlyCredentials, showWatchOnlyUsername) { initialAction , watchOnlyCredentials, showWatchOnlyUsername ->
-        watchOnlyCredentials.isEmpty() || initialAction || showWatchOnlyUsername
+        watchOnlyCredentials.isEmpty() || (initialAction && greenWallet.isWatchOnlyMultisig) || showWatchOnlyUsername
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     class LocalEvents {
@@ -317,8 +317,10 @@ class LoginViewModel constructor(
                                 }
                             }
 
-                            (it.watchOnlyCredentials ?: it.biometricsWatchOnlyCredentials)?.also {
-                                postSideEffect(LocalSideEffects.LaunchUserPresence(it))
+                            it.watchOnlyCredentials?.also {
+                                if (it.credential_type == CredentialType.KEYSTORE_WATCHONLY_CREDENTIALS) {
+                                    postSideEffect(LocalSideEffects.LaunchUserPresence(it))
+                                }
                             }
                         }
                     }
@@ -691,7 +693,11 @@ class LoginViewModel constructor(
                 wallet = greenWallet,
                 watchOnlyCredentials = HwWatchOnlyCredentials.fromWatchOnlyCredentials(
                     network = loginCredentials.network,
-                    watchOnlyCredentials = watchOnlyCredentials
+                    watchOnlyCredentials = watchOnlyCredentials.let {
+                        greenWallet.watchOnlyUsername?.takeIf { it.isNotBlank() }?.let { username ->
+                            it.copy(username = username)
+                        } ?: it
+                    }
                 )
             )
         }
@@ -723,7 +729,6 @@ class LoginViewModel constructor(
                     loginWatchOnlyWithWatchOnlyCredentials(
                         loginCredentials,
                         WatchOnlyCredentials.fromByteArray(decryptedData)
-                            .copy(username = greenWallet.watchOnlyUsername ?: "")
                     )
                 }
             }

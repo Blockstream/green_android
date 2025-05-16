@@ -4,6 +4,7 @@ import com.blockstream.common.database.wallet.GetWalletsWithCredentialType
 import com.blockstream.common.database.wallet.Wallet
 import com.blockstream.common.devices.ConnectionType
 import com.blockstream.common.extensions.isBlank
+import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.objectId
 import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.Serializable
@@ -126,6 +127,9 @@ data class GreenWallet constructor(
 
     val isWatchOnlySingleSig
         get() = isWatchOnly && watchOnlyUsername.isBlank()
+
+    val isWatchOnlyMultisig
+        get() = isWatchOnly && watchOnlyUsername.isNotBlank()
 
     var isRecoveryConfirmed
         get() = wallet.is_recovery_confirmed
