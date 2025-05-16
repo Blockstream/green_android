@@ -24,7 +24,6 @@ import blockstream_green.common.generated.resources.id_total_balance
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.models.overview.IWalletBalance
 import com.blockstream.common.models.overview.WalletBalanceViewModel.LocalEvents
-import com.blockstream.common.models.overview.WalletOverviewViewModel
 import com.blockstream.compose.theme.textHigh
 import com.blockstream.compose.theme.textMedium
 import com.blockstream.compose.utils.noRippleClickable
@@ -42,7 +41,7 @@ fun WalletBalance(modifier: Modifier = Modifier, viewModel: IWalletBalance) {
                 contentDescription = null,
                 modifier = Modifier
                     .noRippleClickable {
-                        viewModel.postEvent(WalletOverviewViewModel.LocalEvents.ToggleHideAmounts)
+                        viewModel.postEvent(LocalEvents.ToggleHideAmounts)
                     }
                     .padding(horizontal = 8.dp)
                     .align(Alignment.CenterVertically)

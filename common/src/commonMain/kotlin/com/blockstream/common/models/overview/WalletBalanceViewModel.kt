@@ -41,6 +41,7 @@ open class WalletBalanceViewModel(greenWallet: GreenWallet): GreenViewModel(gree
 
     class LocalEvents {
         object ToggleBalance : Event
+        object ToggleHideAmounts: Event
     }
 
     override fun bootstrap() {
@@ -62,6 +63,16 @@ open class WalletBalanceViewModel(greenWallet: GreenWallet): GreenViewModel(gree
         when (event) {
             is LocalEvents.ToggleBalance -> {
                 primaryBalanceInFiat.toggle()
+            }
+            is LocalEvents.ToggleHideAmounts -> {
+                settingsManager.saveApplicationSettings(
+                    settingsManager.getApplicationSettings().let {
+                        it.copy(hideAmounts = !it.hideAmounts)
+                    })
+
+                if (settingsManager.appSettings.hideAmounts) {
+                    countly.hideAmount(session)
+                }
             }
         }
     }

@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
 data class AssetBalanceList(val list: List<AssetBalance>)
 
 @Serializable
-data class AssetBalance constructor(
+data class AssetBalance(
     val asset: EnrichedAsset,
     val balance: String? = null,
     val balanceExchange: String? = null
@@ -41,12 +41,12 @@ data class AssetBalance constructor(
                     withUnit = true,
                     denomination = denomination
                 ),
-                balanceExchange = session.starsOrNull ?: balance?.toAmountLook(
+                balanceExchange = balance?.toAmountLook(
                     session = session,
                     assetId = assetId,
                     withUnit = true,
                     denomination = Denomination.exchange(session, denomination)
-                )
+                )?.let { session.starsOrNull ?: it }
             )
         }
     }

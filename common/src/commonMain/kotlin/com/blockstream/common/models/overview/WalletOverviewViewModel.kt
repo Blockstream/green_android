@@ -294,7 +294,6 @@ class WalletOverviewViewModel(
 
 
     class LocalEvents {
-        object ToggleHideAmounts : Event
         object Refresh : Event
         object Send : Event
         object Receive : Event
@@ -443,17 +442,6 @@ class WalletOverviewViewModel(
             is LocalEvents.DenominationExchangeRate -> {
                 countly.preferredUnits(session)
                 postSideEffect(SideEffects.OpenDenominationExchangeRate)
-            }
-
-            is LocalEvents.ToggleHideAmounts -> {
-                settingsManager.saveApplicationSettings(
-                    settingsManager.getApplicationSettings().let {
-                        it.copy(hideAmounts = !it.hideAmounts)
-                    })
-
-                if (settingsManager.appSettings.hideAmounts) {
-                    countly.hideAmount(session)
-                }
             }
 
             is LocalEvents.ClickLightningSweep -> {
