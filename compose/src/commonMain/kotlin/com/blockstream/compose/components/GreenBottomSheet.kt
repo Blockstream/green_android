@@ -99,6 +99,7 @@ fun GreenBottomSheet(
                         Text(
                             text = title,
                             style = titleMedium,
+                            textAlign = TextAlign.Center,
                             color = whiteHigh,
                             modifier = Modifier
                                 .fillMaxWidth()
