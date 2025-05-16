@@ -21,14 +21,12 @@ fun GreenTransactionPreview() {
 
             GreenTransaction(
                 transactionLook = previewTransactionLook(status = Confirmed(1, 2)),
-                showAccount = false
             ) {
 
             }
 
             GreenTransaction(
                 transactionLook = previewTransactionLook(status = Unconfirmed()),
-                showAccount = false
             ) {
 
             }

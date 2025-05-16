@@ -135,7 +135,7 @@ fun previewTransaction() = Transaction(
     it.accountInjected = previewAccount()
 }
 
-fun previewTransactionLook(status: TransactionStatus = Completed()) = TransactionLook(status, previewTransaction(), listOf("12311.123 BTC"))
+fun previewTransactionLook(status: TransactionStatus = Completed()) = TransactionLook(status, previewTransaction(), listOf("12311.123 BTC"), "1311.123 USD")
 
 fun previewGreenDevice(isJade: Boolean = true) = object: GreenDeviceImpl(deviceBrand = if(isJade) DeviceBrand.Blockstream else DeviceBrand.Trezor, type = ConnectionType.USB, isBonded = true) {
     override val connectionIdentifier: String = ""

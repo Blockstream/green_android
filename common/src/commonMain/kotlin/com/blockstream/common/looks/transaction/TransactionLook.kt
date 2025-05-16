@@ -8,16 +8,19 @@ import blockstream_green.common.generated.resources.id_sending
 import blockstream_green.common.generated.resources.id_sent
 import blockstream_green.common.generated.resources.id_swap
 import blockstream_green.common.generated.resources.id_unknown
+import com.blockstream.common.data.Denomination
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Transaction
-import com.blockstream.green.utils.Loggable
+import com.blockstream.common.utils.toAmountLook
 import com.blockstream.common.utils.toAmountLookOrNa
+import com.blockstream.green.utils.Loggable
 import org.jetbrains.compose.resources.StringResource
 
 data class TransactionLook constructor(
     val status: TransactionStatus,
     val transaction: Transaction,
-    val assets: List<String>
+    val assets: List<String>,
+    val fiat: String? = null,
 ) {
 
     val asMasked: TransactionLook
@@ -40,20 +43,35 @@ data class TransactionLook constructor(
         }
 
     companion object : Loggable() {
-        suspend fun create(transaction: Transaction, session: GdkSession, disableHideAmounts: Boolean = false): TransactionLook {
+        suspend fun create(
+            transaction: Transaction, session: GdkSession, disableHideAmounts: Boolean = false
+        ): TransactionLook {
 
             return TransactionLook(
                 transaction = transaction,
                 status = TransactionStatus.create(transaction, session),
                 assets = transaction.assets.map {
-                    session.starsOrNull.takeIf { !disableHideAmounts } ?: it.second.toAmountLookOrNa(
-                        session = session,
-                        assetId = it.first,
-                        withUnit = true,
-                        withDirection = true,
-                        withGrouping = true,
-                        withMinimumDigits = false
-                    )
+                    session.starsOrNull.takeIf { !disableHideAmounts }
+                        ?: it.second.toAmountLookOrNa(
+                            session = session,
+                            assetId = it.first,
+                            withUnit = true,
+                            withDirection = true,
+                            withGrouping = true,
+                            withMinimumDigits = false
+                        )
+                },
+                fiat = if (transaction.assets.size == 1) {
+                    transaction.assets.first().let {
+                        it.second.toAmountLook(
+                            session = session,
+                            assetId = it.first,
+                            withUnit = true,
+                            denomination = Denomination.fiat(session)
+                        )
+                    }
+                } else {
+                    null
                 }
             )
         }

@@ -51,7 +51,6 @@ import org.jetbrains.compose.resources.stringResource
 fun GreenTransaction(
     modifier: Modifier = Modifier,
     transactionLook: TransactionLook,
-    showAccount: Boolean = true,
     onClick: (TransactionLook) -> Unit
 ) {
     GreenCard(
@@ -110,7 +109,7 @@ fun GreenTransaction(
                                 lineHeight = 1.sp
                             )
 
-                            if(!transactionLook.transaction.spv.disabledOrUnconfirmedOrVerified()){
+                            if (!transactionLook.transaction.spv.disabledOrUnconfirmedOrVerified()) {
                                 Image(
                                     painter = painterResource(transactionLook.transaction.spv.icon()),
                                     contentDescription = "SPV",
@@ -165,25 +164,27 @@ fun GreenTransaction(
                                 )
 
                             }
-
                         }
 
                         AnimatedVisibility(visible = !status.onProgress) {
                             // Date
                             Text(
-                                text = transactionLook.transaction.createdAtInstant?.formatAuto() ?: "",
+                                text = transactionLook.transaction.createdAtInstant?.formatAuto()
+                                    ?: "",
                                 style = bodySmall,
                                 color = whiteMedium
                             )
                         }
 
-                        // Account
-                        if (showAccount) {
-                            Text(
-                                text = transactionLook.transaction.account.name,
-                                style = bodySmall,
-                                color = whiteMedium
-                            )
+                        transactionLook.fiat?.also {
+                            Column(horizontalAlignment = Alignment.End) {
+                                Text(
+                                    text = it,
+                                    style = bodySmall,
+                                    textAlign = TextAlign.End,
+                                    color = whiteMedium
+                                )
+                            }
                         }
                     }
 

@@ -210,6 +210,7 @@ fun TransactionLook.directionColor(index: Int) = when {
     else -> if ((transaction.assets.getOrNull(index)?.second ?: 0) < 0) textHigh else green
 }
 
+
 @Composable
 fun String?.assetIcon(session: GdkSession? = null, isLightning: Boolean = false): Painter {
     return if (this == null || this == BTC_POLICY_ASSET || this == LN_BTC_POLICY_ASSET || this == LBTC_POLICY_ASSET || (session != null && this.isPolicyAsset(
