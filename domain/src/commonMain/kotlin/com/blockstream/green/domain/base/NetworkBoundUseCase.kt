@@ -1,5 +1,6 @@
 package com.blockstream.green.domain.base
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -15,14 +16,13 @@ abstract class NetworkBoundUseCase<in P, R> {
 
     open suspend operator fun invoke(params: P) {
         paramState.value = params
-        runCatching {
-            doWork(params)
-        }
+        doWork(params)
     }
 
     protected abstract suspend fun doWork(params: P)
     protected abstract fun createObservable(params: P): Flow<R>
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun observe() = paramState.filterNotNull().flatMapLatest { createObservable(it) }
 
 }

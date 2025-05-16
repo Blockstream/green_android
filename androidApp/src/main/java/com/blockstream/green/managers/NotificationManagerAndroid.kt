@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.BitmapFactory
 import android.media.RingtoneManager
 import android.os.Build
 import androidx.compose.ui.graphics.toArgb
@@ -289,7 +290,9 @@ class NotificationManagerAndroid constructor(
         val body = notificationData.body
 
         return NotificationCompat.Builder(context, TRANSACTION_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_stat_green).setContentTitle(title).setContentText(body)
+            .setSmallIcon(R.drawable.ic_stat_green)
+            .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher))
+            .setContentTitle(title).setContentText(body)
             .setColorized(true).setColor(bitcoin.toArgb())
             .setPriority(NotificationCompat.PRIORITY_DEFAULT).setAutoCancel(true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC).build().also {
