@@ -283,13 +283,10 @@ private fun Float.formatPercentage(): String {
 private fun Float.formatFiatPrice(currency: String): String {
 
     val formatter = DecimalFormat(locale = Locale.current.toLanguageTag()).apply {
-        minimumFractionDigits = 2
-        maximumFractionDigits = 2
         isGroupingUsed = true
-        isDecimalSeparatorAlwaysShown = true
     }
 
-    val formatted = formatter.format(this.absoluteValue.toDouble()) ?: "0.00"
+    val formatted = formatter.format(this.absoluteValue.toDouble()) ?: "0"
 
     return "$formatted ${currency.uppercase()}"
 }

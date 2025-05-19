@@ -105,14 +105,6 @@ fun UseHardwareDeviceScreen(
                             .weight(1f)
                             .padding(horizontal = 24.dp),
                     ) {
-                        Image(
-                            painter = painterResource(Res.drawable.hw_matrix_bg),
-                            contentDescription = null,
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .fillMaxWidth()
-                        )
 
                         Image(
                             painter = image,
