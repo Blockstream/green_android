@@ -138,7 +138,7 @@ sealed class NavigateDestinations : NavigateDestination() {
         val assetsAccounts: AccountAssetBalanceList
     ) : NavigateDestination()
     @Serializable
-    data class Accounts(val greenWallet: GreenWallet, val accounts: AccountAssetBalanceList, val withAsset: Boolean, val withArrow: Boolean = false) : NavigateDestination()
+    data class Accounts(val greenWallet: GreenWallet, val accounts: AccountAssetBalanceList, val title: String? = null, val withAsset: Boolean, val withArrow: Boolean = false) : NavigateDestination()
     @Serializable
     data class SecurityLevel(val greenWallet: GreenWallet) : NavigateDestination()
     @Serializable

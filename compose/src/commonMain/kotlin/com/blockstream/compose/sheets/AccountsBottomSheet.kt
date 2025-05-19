@@ -17,12 +17,10 @@ import blockstream_green.common.generated.resources.id_account_selector
 import blockstream_green.common.generated.resources.id_no_available_accounts
 import com.blockstream.common.gdk.data.AccountAssetBalanceList
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.navigation.setResult
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,12 +28,13 @@ import org.jetbrains.compose.resources.stringResource
 fun AccountsBottomSheet(
     viewModel: GreenViewModel,
     accountsBalance: AccountAssetBalanceList,
+    title: String? = null,
     withAsset: Boolean,
     withArrow: Boolean = false,
     onDismissRequest: () -> Unit,
 ) {
     GreenBottomSheet(
-        title = stringResource(Res.string.id_account_selector),
+        title = title ?: stringResource(Res.string.id_account_selector),
         sheetState = rememberModalBottomSheetState(
             skipPartiallyExpanded = false,
         ),
@@ -57,8 +56,8 @@ fun AccountsBottomSheet(
                     withAsset = withAsset,
                     withArrow = withArrow
                 ) {
-                    NavigateDestinations.Accounts.setResult(accountAssetBalance)
-                    onDismissRequest()
+//                    NavigateDestinations.Accounts.setResult(accountAssetBalance)
+//                    onDismissRequest()
                 }
             }
 

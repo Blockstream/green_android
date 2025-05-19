@@ -33,7 +33,6 @@ import blockstream_green.common.generated.resources.id_bitcoin_price
 import blockstream_green.common.generated.resources.id_continue
 import blockstream_green.common.generated.resources.id_latest_transactions
 import blockstream_green.common.generated.resources.id_learn_more
-import blockstream_green.common.generated.resources.id_lightning
 import blockstream_green.common.generated.resources.id_transfer_your_funds
 import blockstream_green.common.generated.resources.id_transfer_your_funds_from_your_old_wallet
 import blockstream_green.common.generated.resources.id_welcome_to_blockstream
@@ -41,7 +40,6 @@ import blockstream_green.common.generated.resources.id_you_dont_have_any_assets_
 import blockstream_green.common.generated.resources.id_your_wallet_has_been_created
 import com.blockstream.common.data.ScanResult
 import com.blockstream.common.events.Events
-import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.models.archived.ArchivedAccountsViewModel
 import com.blockstream.common.models.overview.WalletOverviewViewModel
@@ -73,7 +71,6 @@ import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.noRippleClickable
-import com.blockstream.compose.views.LightningInfo
 import com.blockstream.ui.common.OnScreenFocus
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenSpacer
@@ -141,14 +138,14 @@ fun WalletOverviewScreen(
         viewModel.postEvent(Events.HandleUserInput(it.result, isQr = true))
     }
 
-    NavigateDestinations.Accounts.getResult<AccountAssetBalance> {
-        viewModel.postEvent(
-            NavigateDestinations.AccountOverview(
-                greenWallet = viewModel.greenWallet,
-                accountAsset = it.accountAsset
-            )
-        )
-    }
+//    NavigateDestinations.Accounts.getResult<AccountAssetBalance> {
+//        viewModel.postEvent(
+//            NavigateDestinations.AccountOverview(
+//                greenWallet = viewModel.greenWallet,
+//                accountAsset = it.accountAsset
+//            )
+//        )
+//    }
 
     overviewMenuViewModel?.also {
         WalletOverviewMenuDialog(viewModel = viewModel) {
@@ -215,7 +212,6 @@ fun WalletOverviewScreen(
             val assets by viewModel.assets.collectAsStateWithLifecycle()
             val showHardwareTransferFunds by viewModel.showHardwareTransferFunds.collectAsStateWithLifecycle()
             val transaction by viewModel.transaction.collectAsStateWithLifecycle()
-            val lightningInfo by viewModel.lightningInfo.collectAsStateWithLifecycle()
             val innerPadding = LocalInnerPadding.current
 
             val listState = rememberLazyListState()
@@ -291,7 +287,7 @@ fun WalletOverviewScreen(
                                     assetBalance = asset,
                                     session = viewModel.sessionOrNull
                                 ) {
-                                    viewModel.navigateToAccountOverview(asset.asset)
+                                    viewModel.openAssetAccounts(asset.asset)
                                 }
                             }
                         } else {
@@ -319,20 +315,6 @@ fun WalletOverviewScreen(
                         BitcoinPriceChart(viewModel.bitcoinChartData, {
                             viewModel.navigateToBuy()
                         })
-                    }
-
-                    lightningInfo?.also { lightningInfo ->
-                        item(key = "LightningHeader") {
-                            ListHeader(title = stringResource(Res.string.id_lightning))
-                        }
-
-                        item(key = "LightningInfo") {
-                            LightningInfo(lightningInfoLook = lightningInfo, onSweepClick = {
-                                viewModel.postEvent(WalletOverviewViewModel.LocalEvents.ClickLightningSweep)
-                            }, onLearnMore = {
-                                viewModel.postEvent(WalletOverviewViewModel.LocalEvents.ClickLightningLearnMore)
-                            })
-                        }
                     }
 
                     transaction.data()?.also { transaction ->

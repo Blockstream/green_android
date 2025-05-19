@@ -54,7 +54,6 @@ import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.utils.DecimalFormat
-import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.green
@@ -90,8 +89,6 @@ fun GreenAmountField(
     onSendAllClick: () -> Unit = {},
     onDenominationClick: (() -> Unit)? = null
 ) {
-    val platformManager = LocalPlatformManager.current
-
     val colors = TextFieldDefaults.colors()
 
     val textStyle = LocalTextStyle.current.merge(

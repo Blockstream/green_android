@@ -29,7 +29,6 @@ import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.gdk.data.Settings
 import com.blockstream.common.gdk.data.WalletEvents
 import com.blockstream.common.lightning.onchainBalanceSatoshi
-import com.blockstream.common.looks.account.LightningInfoLook
 import com.blockstream.common.looks.transaction.TransactionLook
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
@@ -85,9 +84,6 @@ abstract class WalletOverviewViewModelAbstract(
     abstract val accounts: StateFlow<List<AccountAssetBalance>>
 
     @NativeCoroutinesState
-    abstract val lightningInfo: StateFlow<LightningInfoLook?>
-
-    @NativeCoroutinesState
     abstract val archivedAccounts: StateFlow<Int>
 
     @NativeCoroutinesState
@@ -98,7 +94,7 @@ abstract class WalletOverviewViewModelAbstract(
 
     abstract fun refetchBitcoinPriceHistory()
 
-    fun navigateToAccountOverview(asset: EnrichedAsset) {
+    fun openAssetAccounts(asset: EnrichedAsset) {
         viewModelScope.launch {
             session.accounts.value.filter {
                 if (asset.isAmp) {
@@ -119,6 +115,7 @@ abstract class WalletOverviewViewModelAbstract(
                                 ), session = session
                             )
                         }),
+                        title = asset.name(session).getStringOrNull(),
                         withAsset = false,
                         withArrow = true,
                     )
@@ -214,13 +211,6 @@ class WalletOverviewViewModel(
                 denomination = setting?.unit?.let { Denomination.byUnit(it) })
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, listOf())
-
-    override val lightningInfo: StateFlow<LightningInfoLook?> =
-        (session.lightningSdkOrNull?.nodeInfoStateFlow?.map {
-            if (session.isConnected) {
-                LightningInfoLook.create(session = session, nodeState = it)
-            } else null
-        } ?: emptyFlow()).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), null)
 
     private val _transaction: StateFlow<DataState<TransactionLook?>> = combine(
         session.walletTransactions.filter { session.isConnected }, session.settings()
@@ -495,8 +485,6 @@ class WalletOverviewViewModelPreview(val isEmpty: Boolean = false, val isHardwar
             AccountAssetBalance.create(previewAccountAsset())
         )
     )
-
-    override val lightningInfo: StateFlow<LightningInfoLook?> = MutableStateFlow(null)
 
     override val archivedAccounts: StateFlow<Int> = MutableStateFlow(1)
 

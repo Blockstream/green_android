@@ -94,6 +94,7 @@ fun String?.isPolicyAsset(session: GdkSession): Boolean = isBitcoinPolicyAsset()
 // If no Bitcoin network is available, fallback to Liquid
 fun String?.networkForAsset(session: GdkSession): Network? = when {
     isBitcoinPolicyAsset() -> session.activeBitcoin ?: session.bitcoin
+    isLightningPolicyAsset() -> session.lightning
     else -> {
         session.activeLiquid ?: session.liquid
     }

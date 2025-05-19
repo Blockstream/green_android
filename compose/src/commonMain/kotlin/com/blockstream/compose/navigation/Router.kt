@@ -972,6 +972,7 @@ fun Router(
                         )
                     },
                     accountsBalance = args.accounts,
+                    title = args.title,
                     withAsset = args.withAsset,
                     withArrow = args.withArrow,
                     onDismissRequest = navController.onDismissRequest()

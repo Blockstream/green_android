@@ -1,6 +1,8 @@
 package com.blockstream.compose.sheets
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
@@ -19,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.hardware_keys
 import blockstream_green.common.generated.resources.id_convenient_spending
 import blockstream_green.common.generated.resources.id_dont_have_one_buy_a_jade
 import blockstream_green.common.generated.resources.id_hardware
@@ -32,6 +35,7 @@ import blockstream_green.common.generated.resources.id_security_level
 import blockstream_green.common.generated.resources.id_security_level_
 import blockstream_green.common.generated.resources.id_selected
 import blockstream_green.common.generated.resources.id_setup_hardware_wallet
+import blockstream_green.common.generated.resources.phone_keys
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Coins
@@ -54,6 +58,7 @@ import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.components.GreenSpacer
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -132,6 +137,12 @@ fun SecurityLevelBottomSheet(
                             text = stringResource(
                                 Res.string.id_security_level_, if (isMobile) "I" else "II"
                             ), style = bodySmall, color = whiteMedium, textAlign = TextAlign.Center
+                        )
+
+                        Image(
+                            imageVector = vectorResource(if(isMobile) Res.drawable.phone_keys else Res.drawable.hardware_keys),
+                            contentDescription = null,
+                            modifier = Modifier.height(150.dp)
                         )
                     }
 
