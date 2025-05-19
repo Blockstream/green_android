@@ -1,5 +1,7 @@
 package com.blockstream.common.models.overview
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_security
 import com.blockstream.common.crypto.PlatformCipher
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
@@ -13,11 +15,13 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.usecases.SetBiometricsUseCase
 import com.blockstream.green.utils.Loggable
+import com.blockstream.jade.firmware.JadeFirmwareManager
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
+import com.rickclephas.kmp.observableviewmodel.launch
 import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
@@ -27,6 +31,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
 
@@ -36,8 +41,8 @@ abstract class SecurityViewModelAbstract(
 
     override fun screenName(): String = "Security"
 
-    abstract val isHardware : Boolean
-    abstract val isJade : Boolean
+    abstract val isHardware: Boolean
+    abstract val isJade: Boolean
 
     @NativeCoroutinesState
     abstract val credentials: StateFlow<List<Pair<CredentialType, LoginCredentials?>>>
@@ -51,12 +56,19 @@ abstract class SecurityViewModelAbstract(
     internal val credentialTypes =
         listOf(CredentialType.BIOMETRICS_MNEMONIC, CredentialType.PIN_PINDATA)
 
-    fun genuineCheck(){
+    fun genuineCheck() {
         postEvent(NavigateDestinations.JadeGenuineCheck(greenWalletOrNull = greenWallet))
     }
 
-    fun firmwareUpdate(){
-        // postEvent(NavigateDestinations.JadeGenuineCheck(greenWalletOrNull = greenWallet))
+    fun firmwareUpdate() {
+        doAsync({
+            val firmwareManager = JadeFirmwareManager(
+                firmwareInteraction = this,
+                httpRequestHandler = sessionManager.httpRequestHandler,
+            )
+
+            firmwareManager.checkFirmware(jade = session.device!!.jadeDevice()!!.jadeApi!!)
+        })
     }
 }
 
@@ -97,7 +109,9 @@ class SecurityViewModel(greenWallet: GreenWallet) :
         isHwWatchOnly.map {
             session.device?.jadeDevice()?.supportsGenuineCheck() ?: false
         }
-    }?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), false) ?: MutableStateFlow(false)
+    }?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), false) ?: MutableStateFlow(
+        false
+    )
 
     class LocalEvents {
         data object EnableBiometrics : Event
@@ -111,13 +125,16 @@ class SecurityViewModel(greenWallet: GreenWallet) :
             updateNavData(it)
         }.launchIn(this)
 
-        updateNavData(greenWallet)
+        viewModelScope.launch {
+            updateNavData(greenWallet)
+        }
 
         bootstrap()
     }
 
-    private fun updateNavData(greenWallet: GreenWallet){
+    private suspend fun updateNavData(greenWallet: GreenWallet) {
         _navData.value = NavData(
+            title = getString(Res.string.id_security),
             walletName = greenWallet.name,
             showBadge = !greenWallet.isRecoveryConfirmed,
             showBottomNavigation = true

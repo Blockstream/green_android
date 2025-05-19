@@ -20,9 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.caret_right
 import blockstream_green.common.generated.resources.id_my_wallets
 import blockstream_green.common.generated.resources.id_setup_a_new_wallet
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.CaretRight
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.looks.wallet.WalletListLook
 import com.blockstream.common.models.home.HomeViewModel
@@ -139,7 +141,7 @@ fun WalletsScreen(
                         )
 
                         Icon(
-                            painter = painterResource(Res.drawable.caret_right),
+                            imageVector = PhosphorIcons.Regular.CaretRight,
                             contentDescription = null,
                             tint = whiteLow,
                             modifier = Modifier.size(16.dp)

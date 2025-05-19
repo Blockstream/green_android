@@ -264,11 +264,12 @@ fun ReceiveScreen(
                                         withAsset = false
                                     )
                                 )
-                            })
+                            }
+                        )
                     }
                 }
 
-                if(accountAsset == null){
+                if(accountAsset == null && !viewModel.session.isWatchOnlyValue){
                     GreenButton(text = stringResource(Res.string.id_create_new_account), modifier = Modifier.fillMaxWidth()) {
                         viewModel.postEvent(ReceiveViewModel.LocalEvents.CreateAccount)
                     }

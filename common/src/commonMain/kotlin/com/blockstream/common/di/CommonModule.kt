@@ -1,6 +1,7 @@
 package com.blockstream.common.di
 
 import com.blockstream.common.usecases.CheckRecoveryPhraseUseCase
+import com.blockstream.common.usecases.CreateAccountUseCase
 import com.blockstream.common.usecases.EnableHardwareWatchOnlyUseCase
 import com.blockstream.common.usecases.NewWalletUseCase
 import com.blockstream.common.usecases.RestoreWalletUseCase
@@ -52,6 +53,9 @@ val commonModule = module {
     }
     single {
         EnableHardwareWatchOnlyUseCase(get(), get())
+    }
+    single {
+        CreateAccountUseCase(get(), get(), get())
     }
 
     factory {

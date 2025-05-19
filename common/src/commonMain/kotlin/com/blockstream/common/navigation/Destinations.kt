@@ -138,7 +138,16 @@ sealed class NavigateDestinations : NavigateDestination() {
         val assetsAccounts: AccountAssetBalanceList
     ) : NavigateDestination()
     @Serializable
-    data class Accounts(val greenWallet: GreenWallet, val accounts: AccountAssetBalanceList, val title: String? = null, val withAsset: Boolean, val withArrow: Boolean = false) : NavigateDestination()
+    data class Accounts(
+        val greenWallet: GreenWallet,
+        val accounts: AccountAssetBalanceList,
+        val title: String? = null,
+        val message: String? = null,
+        val withAsset: Boolean = true,
+        val withAssetIcon: Boolean = true,
+        val withArrow: Boolean = false,
+        val withAction: Boolean = true
+    ) : NavigateDestination()
     @Serializable
     data class SecurityLevel(val greenWallet: GreenWallet) : NavigateDestination()
     @Serializable
@@ -166,7 +175,7 @@ sealed class NavigateDestinations : NavigateDestination() {
                             EnrichedAsset.create(session = viewModel.session, assetId = it.assetId)
                         } ?: listOf()) + listOfNotNull(
                             EnrichedAsset.createAnyAsset(session = viewModel.session, isAmp = false),
-                            EnrichedAsset.createAnyAsset(session = viewModel.session, isAmp = true)
+                            EnrichedAsset.createAnyAsset(session = viewModel.session, isAmp = true).takeIf { !viewModel.session.isHwWatchOnly }
                         ).sortedWith(viewModel.session::sortEnrichedAssets)).let { list ->
                             list.map {
                                 AssetBalance.create(it)

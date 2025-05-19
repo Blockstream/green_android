@@ -95,7 +95,7 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
         bootstrap()
 
         viewModelScope.launch {
-            _navData.value = NavData(title = getString(Res.string.id_add_new_account), subtitle = greenWallet.name)
+            _navData.value = NavData(title = getString(Res.string.id_add_new_account))
         }
 
         session.ifConnected {
@@ -263,9 +263,7 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
 
     private fun isAccountAlreadyArchived(network: Network, accountType: AccountType): Boolean {
         return session.allAccounts.value.find {
-            it.hidden && it.network == network && it.type == accountType && (network.isMultisig || it.hasHistory(
-                session
-            ))
+            it.hidden && it.network == network && it.type == accountType && (network.isMultisig || it.hasHistory(session))
         } != null
     }
 }

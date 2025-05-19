@@ -17,10 +17,14 @@ import blockstream_green.common.generated.resources.id_account_selector
 import blockstream_green.common.generated.resources.id_no_available_accounts
 import com.blockstream.common.gdk.data.AccountAssetBalanceList
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.theme.bodyMedium
+import com.blockstream.compose.theme.bodySmall
+import com.blockstream.compose.theme.whiteLow
 import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.navigation.setResult
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,8 +33,11 @@ fun AccountsBottomSheet(
     viewModel: GreenViewModel,
     accountsBalance: AccountAssetBalanceList,
     title: String? = null,
-    withAsset: Boolean,
+    message: String? = null,
+    withAsset: Boolean = true,
+    withAssetIcon: Boolean = true,
     withArrow: Boolean = false,
+    withAction: Boolean = true,
     onDismissRequest: () -> Unit,
 ) {
     GreenBottomSheet(
@@ -54,11 +61,13 @@ fun AccountsBottomSheet(
                     accountAssetBalance = accountAssetBalance,
                     session = viewModel.sessionOrNull,
                     withAsset = withAsset,
-                    withArrow = withArrow
-                ) {
-//                    NavigateDestinations.Accounts.setResult(accountAssetBalance)
-//                    onDismissRequest()
-                }
+                    withAssetIcon = withAssetIcon,
+                    withArrow = withArrow,
+                    onClick = {
+                        NavigateDestinations.Accounts.setResult(accountAssetBalance)
+                        onDismissRequest()
+                    }.takeIf { withAction }
+                )
             }
 
             if (accountsBalance.list.isEmpty()) {
@@ -71,6 +80,16 @@ fun AccountsBottomSheet(
                         .fillMaxWidth()
                         .padding(vertical = 32.dp)
                         .padding(horizontal = 16.dp)
+                )
+            }
+
+            message?.also {
+                Text(
+                    text = it,
+                    color = whiteLow,
+                    style = bodySmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
                 )
             }
         }

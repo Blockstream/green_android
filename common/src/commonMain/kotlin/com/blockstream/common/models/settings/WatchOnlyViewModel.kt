@@ -96,7 +96,7 @@ class WatchOnlyViewModel(greenWallet: GreenWallet) :
     init {
         viewModelScope.launch {
             _navData.value =
-                NavData(title = getString(Res.string.id_watchonly), subtitle = greenWallet.name)
+                NavData(title = getString(Res.string.id_watchonly))
         }
 
         bootstrap()

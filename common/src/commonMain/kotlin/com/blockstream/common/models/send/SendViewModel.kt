@@ -234,7 +234,6 @@ class SendViewModel(
 
         isNoteEditable.onEach { isEditable ->
             _navData.value = NavData(title = getString(Res.string.id_send),
-                subtitle = greenWallet.name,
                 actions = listOfNotNull(
                     (NavAction(
                         title = getString(Res.string.id_add_note),

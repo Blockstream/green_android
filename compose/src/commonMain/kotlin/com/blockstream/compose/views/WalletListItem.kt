@@ -23,11 +23,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.caret_right
 import blockstream_green.common.generated.resources.id_remove_wallet
 import blockstream_green.common.generated.resources.id_rename_wallet
 import blockstream_green.common.generated.resources.text_aa
 import blockstream_green.common.generated.resources.trash
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.CaretRight
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.looks.wallet.WalletListLook
 import com.blockstream.compose.components.GreenCard
@@ -40,7 +42,6 @@ import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.ui.components.GreenCircle
 import com.blockstream.ui.components.GreenSpacer
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -84,7 +85,7 @@ private fun WalletListRow(
         GreenSpacer(space = 4)
 
         Icon(
-            painter = painterResource(Res.drawable.caret_right),
+            imageVector = PhosphorIcons.Regular.CaretRight,
             contentDescription = null,
             tint = whiteLow,
             modifier = Modifier.size(16.dp)

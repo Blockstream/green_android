@@ -1,17 +1,18 @@
 package com.blockstream.common.models.overview
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_transact
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewTransactionLook
 import com.blockstream.common.extensions.previewWallet
-import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.gdk.data.AccountAssetBalanceList
 import com.blockstream.common.looks.transaction.TransactionLook
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.launch
 import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onEach
+import org.jetbrains.compose.resources.getString
 
 
 abstract class TransactViewModelAbstract(
@@ -77,13 +79,16 @@ class TransactViewModel(greenWallet: GreenWallet) :
             updateNavData(it)
         }.launchIn(this)
 
-        updateNavData(greenWallet)
+        viewModelScope.launch {
+            updateNavData(greenWallet)
+        }
 
         bootstrap()
     }
 
-    private fun updateNavData(greenWallet: GreenWallet){
+    private suspend fun updateNavData(greenWallet: GreenWallet){
         _navData.value = NavData(
+            title = getString(Res.string.id_transact),
             walletName = greenWallet.name,
             showBadge = !greenWallet.isRecoveryConfirmed,
             showBottomNavigation = true

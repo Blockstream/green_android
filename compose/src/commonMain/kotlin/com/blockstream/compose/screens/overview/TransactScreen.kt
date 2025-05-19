@@ -68,7 +68,7 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
                 WalletBalance(viewModel = viewModel)
             }
 
-            item(key = "Row") {
+            item(key = "ButtonsRow") {
                 GreenRow(
                     space = 8,
                     padding = 0,
@@ -96,7 +96,7 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
                 }
             }
 
-            item(key = "Transactions Header") {
+            item(key = "TransactionsHeader") {
                 ListHeader(title = stringResource(Res.string.id_latest_transactions))
 
                 if (transactions.isLoading()) {

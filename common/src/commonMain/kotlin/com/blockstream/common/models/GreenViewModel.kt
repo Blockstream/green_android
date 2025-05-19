@@ -2,7 +2,6 @@ package com.blockstream.common.models
 
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_account_has_been_archived
-import blockstream_green.common.generated.resources.id_account_has_been_removed
 import blockstream_green.common.generated.resources.id_auto_logout_timeout_expired
 import blockstream_green.common.generated.resources.id_could_not_recognized_qr_code
 import blockstream_green.common.generated.resources.id_could_not_recognized_the_uri
@@ -82,11 +81,9 @@ import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -181,6 +178,7 @@ open class GreenViewModel constructor(
     }
 
     open var deviceOrNull: GreenDevice? = null
+        get() = field ?: sessionOrNull?.device
 
     val device: GreenDevice
         get() = deviceOrNull!!
@@ -765,7 +763,7 @@ open class GreenViewModel constructor(
         })
     }
 
-    private fun removeAccount(account: Account) {
+    internal fun removeAccount(account: Account) {
         if (account.isLightning) {
             doAsync({
                 database.deleteLoginCredentials(
@@ -776,11 +774,11 @@ open class GreenViewModel constructor(
                 session.removeAccount(account)
             }, onSuccess = {
                 // Update active account from Session if it was archived
-                setActiveAccount(session.activeAccount.value!!)
-                postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_account_has_been_removed)))
+                // setActiveAccount(session.activeAccount.value!!)
+                // postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_account_has_been_removed)))
 
                 // This only have effect on AccountOverview
-                postSideEffect(SideEffects.NavigateToRoot())
+                // postSideEffect(SideEffects.NavigateToRoot())
             })
         }
     }

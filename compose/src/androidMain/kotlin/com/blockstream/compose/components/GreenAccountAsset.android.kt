@@ -19,12 +19,14 @@ fun GreenAccountAssetPreview() {
         GreenColumn {
             GreenAccountAsset(
                 accountAssetBalance = previewAccountAsset().accountAssetBalance,
-                title = stringResource(Res.string.id_account__asset)
+                title = stringResource(Res.string.id_account__asset),
+                withAssetIcon = false,
             )
             GreenAccountAsset(
                 accountAssetBalance = previewAccountAsset().accountAssetBalance,
                 title = stringResource(Res.string.id_account),
-                withAsset = false
+                withAsset = false,
+                withAssetIcon = false,
             )
             GreenAccountAsset(accountAssetBalance = previewAccountAsset().let {
                 AccountAssetBalance(

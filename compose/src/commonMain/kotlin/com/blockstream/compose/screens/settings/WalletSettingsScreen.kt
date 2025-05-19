@@ -30,64 +30,90 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.caret_right
+import blockstream_green.common.generated.resources.box_arrow_down
+import blockstream_green.common.generated.resources.flask_fill
 import blockstream_green.common.generated.resources.id_1d_minutes
 import blockstream_green.common.generated.resources.id_2fa_threshold
 import blockstream_green.common.generated.resources.id_a_screen_lock_must_be_enabled
 import blockstream_green.common.generated.resources.id_add_a_pgp_public_key_to_receive
+import blockstream_green.common.generated.resources.id_archived_account
 import blockstream_green.common.generated.resources.id_archived_accounts
 import blockstream_green.common.generated.resources.id_auto_logout_timeout
 import blockstream_green.common.generated.resources.id_backup_recovery_phrase
 import blockstream_green.common.generated.resources.id_biometric_login_is_disabled
 import blockstream_green.common.generated.resources.id_biometric_login_is_enabled
 import blockstream_green.common.generated.resources.id_change_pin
+import blockstream_green.common.generated.resources.id_continue
 import blockstream_green.common.generated.resources.id_copy_support_id
 import blockstream_green.common.generated.resources.id_denomination__exchange_rate
 import blockstream_green.common.generated.resources.id_display_values_in_s_and
 import blockstream_green.common.generated.resources.id_enabled
+import blockstream_green.common.generated.resources.id_experimental_feature
+import blockstream_green.common.generated.resources.id_experimental_features_might
 import blockstream_green.common.generated.resources.id_genuine_check
+import blockstream_green.common.generated.resources.id_get_support
 import blockstream_green.common.generated.resources.id_i_lost_my_2fa
 import blockstream_green.common.generated.resources.id_legacy_script_coins
+import blockstream_green.common.generated.resources.id_lightning
 import blockstream_green.common.generated.resources.id_login_with_biometrics
 import blockstream_green.common.generated.resources.id_logout
 import blockstream_green.common.generated.resources.id_minute
 import blockstream_green.common.generated.resources.id_pgp_key
 import blockstream_green.common.generated.resources.id_recovery_transaction_emails
 import blockstream_green.common.generated.resources.id_recovery_transactions
+import blockstream_green.common.generated.resources.id_rename_wallet
 import blockstream_green.common.generated.resources.id_request_recovery_transactions
 import blockstream_green.common.generated.resources.id_set_an_email_for_recovery
 import blockstream_green.common.generated.resources.id_set_twofactor_threshold
 import blockstream_green.common.generated.resources.id_support
+import blockstream_green.common.generated.resources.id_there_is_already_an_archived
 import blockstream_green.common.generated.resources.id_touch_to_display
 import blockstream_green.common.generated.resources.id_twofactor_authentication
 import blockstream_green.common.generated.resources.id_verify_the_authenticity_of
 import blockstream_green.common.generated.resources.id_version
-import blockstream_green.common.generated.resources.id_watchonly
+import blockstream_green.common.generated.resources.id_wallet_details
 import blockstream_green.common.generated.resources.sign_out
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.CaretRight
 import com.adamglin.phosphoricons.regular.Copy
+import com.blockstream.common.SupportType
 import com.blockstream.common.data.LogoutReason
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorSetupAction
 import com.blockstream.common.data.WalletSetting
-import com.blockstream.common.events.Events
+import com.blockstream.common.events.Events.Logout
+import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.models.settings.DenominationExchangeRateViewModel
 import com.blockstream.common.models.settings.WalletSettingsSection
 import com.blockstream.common.models.settings.WalletSettingsViewModel
+import com.blockstream.common.models.settings.WalletSettingsViewModel.LocalEvents
+import com.blockstream.common.models.settings.WalletSettingsViewModel.LocalEvents.SetCsvTime
+import com.blockstream.common.models.settings.WalletSettingsViewModel.LocalEvents.Toggle2FA
+import com.blockstream.common.models.settings.WalletSettingsViewModel.LocalSideEffects
 import com.blockstream.common.models.settings.WalletSettingsViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.navigation.NavigateDestinations.ArchivedAccounts
+import com.blockstream.common.navigation.NavigateDestinations.JadeGenuineCheck
+import com.blockstream.common.navigation.NavigateDestinations.WalletSettings
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.getBitcoinOrLiquidUnit
 import com.blockstream.compose.LocalBiometricState
+import com.blockstream.compose.LocalDialog
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.LearnMoreButton
+import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.dialogs.DenominationExchangeDialog
 import com.blockstream.compose.dialogs.SingleChoiceDialog
 import com.blockstream.compose.dialogs.TextDialog
 import com.blockstream.compose.extensions.colorText
+import com.blockstream.compose.screens.jade.JadeQRResult
+import com.blockstream.compose.sideeffects.OpenDialogData
 import com.blockstream.compose.theme.bodyLarge
+import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.red
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteHigh
@@ -97,9 +123,12 @@ import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.navigation.LocalInnerPadding
+import com.blockstream.ui.navigation.getResult
 import com.blockstream.ui.utils.bottom
 import com.blockstream.ui.utils.ifTrue
 import com.blockstream.ui.utils.plus
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -212,33 +241,78 @@ fun WalletSettingsScreen(
         }
     }
 
+    NavigateDestinations.JadeQR.getResult<JadeQRResult> {
+        viewModel.postEvent(LocalEvents.CreateLightningAccount(it.result))
+    }
+
     val items by viewModel.items.collectAsStateWithLifecycle()
     val innerPadding = LocalInnerPadding.current
+    val dialog = LocalDialog.current
 
     SetupScreen(
         viewModel = viewModel,
         withPadding = false,
         withInsets = !isInnerTab,
         withBottomInsets = false,
+        onProgressStyle = OnProgressStyle.Full(bluBackground = true),
         sideEffectsHandler = {
         when (it) {
-            is WalletSettingsViewModel.LocalSideEffects.OpenAutoLogoutTimeout -> {
+            is LocalSideEffects.ArchivedAccountDialog -> {
+                launch {
+                    dialog.openDialog(
+                        OpenDialogData(
+                            title = StringHolder.create(Res.string.id_archived_account),
+                            message = StringHolder.create(Res.string.id_there_is_already_an_archived),
+                            icon = Res.drawable.box_arrow_down,
+                            primaryText = getString(Res.string.id_continue),
+                            onPrimary = {
+                                viewModel.postEvent(it.event)
+                            },
+                            secondaryText = getString(Res.string.id_archived_accounts),
+                            onSecondary = {
+                                viewModel.postEvent(
+                                    NavigateDestinations.ArchivedAccounts(
+                                        greenWallet = viewModel.greenWallet,
+                                        navigateToRoot = true
+                                    )
+                                )
+                            }
+                        )
+                    )
+                }
+            }
+            is LocalSideEffects.ExperimentalFeaturesDialog -> {
+                launch {
+                    dialog.openDialog(
+                        OpenDialogData(
+                            title = StringHolder.create(Res.string.id_experimental_feature),
+                            message = StringHolder.create(Res.string.id_experimental_features_might),
+                            icon = Res.drawable.flask_fill,
+                            onPrimary = {
+                                viewModel.postEvent(it.event)
+                            }
+                        )
+                    )
+                }
+            }
+
+            is LocalSideEffects.OpenAutoLogoutTimeout -> {
                 showAutologoutTimeoutDialog = it.minutes
             }
 
-            is WalletSettingsViewModel.LocalSideEffects.OpenPgpKey -> {
+            is LocalSideEffects.OpenPgpKey -> {
                 showPgpDialog = it.pgp
             }
 
-            is WalletSettingsViewModel.LocalSideEffects.OpenTwoFactorThershold ->{
+            is LocalSideEffects.OpenTwoFactorThershold ->{
                 showThresholdDialog = it.threshold
             }
 
-            is WalletSettingsViewModel.LocalSideEffects.LaunchBiometrics -> {
+            is LocalSideEffects.LaunchBiometrics -> {
                 biometricsState?.getBiometricsCipher(viewModel)
             }
 
-            is WalletSettingsViewModel.LocalSideEffects.Disable2FA -> {
+            is LocalSideEffects.Disable2FA -> {
                 showTwoFactorChangeDialog = it
             }
 
@@ -263,7 +337,7 @@ fun WalletSettingsScreen(
                         item.title?.also {
                             Text(
                                 text = it,
-                                style = titleSmall,
+                                style = bodyLarge,
                                 color = whiteMedium,
                                 modifier = Modifier.padding(top = 16.dp).fillMaxWidth()
                             )
@@ -271,7 +345,7 @@ fun WalletSettingsScreen(
                         item.message?.also {
                             Text(
                                 text = it,
-                                style = bodyLarge,
+                                style = bodyMedium,
                                 color = whiteMedium
                             )
                         }
@@ -286,11 +360,10 @@ fun WalletSettingsScreen(
                     WalletSetting.Logout -> {
                         Setting(
                             title = stringResource(Res.string.id_logout),
-                            subtitle = viewModel.greenWallet.name,
                             subtitleColor = red,
                             painter = painterResource(Res.drawable.sign_out),
                             modifier = Modifier.clickable {
-                                viewModel.postEvent(Events.Logout(LogoutReason.USER_ACTION))
+                                viewModel.postEvent(Logout(LogoutReason.USER_ACTION))
                             }
                         )
                     }
@@ -320,11 +393,10 @@ fun WalletSettingsScreen(
                     is WalletSetting.ArchivedAccounts -> {
                         Setting(
                             title = stringResource(Res.string.id_archived_accounts),
-                            subtitle = "(${item.size})".takeIf { item.size > 0 },
-                            painter = painterResource(Res.drawable.caret_right),
+                            imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(
-                                    NavigateDestinations.ArchivedAccounts(
+                                    ArchivedAccounts(
                                         greenWallet = viewModel.greenWallet
                                     )
                                 )
@@ -333,8 +405,8 @@ fun WalletSettingsScreen(
 
                     WalletSetting.WatchOnly -> {
                         Setting(
-                            title = stringResource(Res.string.id_watchonly),
-                            painter = painterResource(Res.drawable.caret_right),
+                            title = stringResource(Res.string.id_wallet_details),
+                            imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(WalletSettingsViewModel.LocalEvents.WatchOnly)
                             }
@@ -358,7 +430,7 @@ fun WalletSettingsScreen(
                             title = stringResource(Res.string.id_genuine_check),
                             subtitle = stringResource(Res.string.id_verify_the_authenticity_of),
                             modifier = Modifier.clickable {
-                                viewModel.postEvent(NavigateDestinations.JadeGenuineCheck(greenWalletOrNull = viewModel.greenWalletOrNull))
+                                viewModel.postEvent(JadeGenuineCheck(greenWalletOrNull = viewModel.greenWalletOrNull))
                             }
                         )
                     }
@@ -387,7 +459,7 @@ fun WalletSettingsScreen(
                     WalletSetting.SetupEmailRecovery -> {
                         Setting(
                             title = stringResource(Res.string.id_set_an_email_for_recovery),
-                            painter = painterResource(Res.drawable.caret_right),
+                            imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(WalletSettingsViewModel.LocalEvents.SetupEmailRecovery)
                             })
@@ -396,7 +468,7 @@ fun WalletSettingsScreen(
                     WalletSetting.ChangePin -> {
                         Setting(
                             title = stringResource(Res.string.id_change_pin),
-                            painter = painterResource(Res.drawable.caret_right),
+                            imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(WalletSettingsViewModel.LocalEvents.ChangePin)
                             })
@@ -442,7 +514,7 @@ fun WalletSettingsScreen(
                     WalletSetting.TwoFactorAuthentication -> {
                         Setting(
                             title = stringResource(Res.string.id_twofactor_authentication),
-                            painter = painterResource(Res.drawable.caret_right),
+                            imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(WalletSettingsViewModel.LocalEvents.TwoFactorAuthentication)
                             }
@@ -453,7 +525,7 @@ fun WalletSettingsScreen(
                         Setting(
                             title = stringResource(Res.string.id_backup_recovery_phrase),
                             subtitle = stringResource(Res.string.id_touch_to_display),
-                            painter = painterResource(Res.drawable.caret_right),
+                            imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(WalletSettingsViewModel.LocalEvents.RecoveryPhrase)
                             }
@@ -470,7 +542,7 @@ fun WalletSettingsScreen(
                         )
                     }
 
-                    WalletSetting.Support -> {
+                    WalletSetting.SupportId -> {
                         Setting(
                             title = stringResource(Res.string.id_support),
                             subtitle = stringResource(Res.string.id_copy_support_id),
@@ -489,14 +561,14 @@ fun WalletSettingsScreen(
                             checked = item.enabled,
                             onCheckedChange = {
                                 viewModel.postEvent(
-                                    WalletSettingsViewModel.LocalEvents.Toggle2FA(
+                                    Toggle2FA(
                                         item.method
                                     )
                                 )
                             },
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(
-                                    WalletSettingsViewModel.LocalEvents.Toggle2FA(
+                                    Toggle2FA(
                                         item.method
                                     )
                                 )
@@ -518,10 +590,10 @@ fun WalletSettingsScreen(
                         Setting(
                             title = stringResource(Res.string.id_recovery_transactions),
                             subtitle = stringResource(Res.string.id_legacy_script_coins),
-                            painter = painterResource(Res.drawable.caret_right),
+                            imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(
-                                    NavigateDestinations.WalletSettings(
+                                    WalletSettings(
                                         greenWallet = viewModel.greenWallet,
                                         section = WalletSettingsSection.RecoveryTransactions,
                                         network = item.network
@@ -549,17 +621,54 @@ fun WalletSettingsScreen(
                             checked = item.enabled,
                             onCheckedChange = {
                                 viewModel.postEvent(
-                                    WalletSettingsViewModel.LocalEvents.SetCsvTime(
+                                    SetCsvTime(
                                         item.bucket
                                     )
                                 )
                             },
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(
-                                    WalletSettingsViewModel.LocalEvents.SetCsvTime(
+                                    SetCsvTime(
                                         item.bucket
                                     )
                                 )
+                            }
+                        )
+                    }
+
+                    is WalletSetting.Lightning -> {
+                        Setting(
+                            title = stringResource(Res.string.id_lightning),
+                            checked = item.enabled,
+                            onCheckedChange = {
+                                if (it) {
+                                    viewModel.postEvent(LocalEvents.ChooseAccountType(AccountType.LIGHTNING))
+                                } else {
+                                    viewModel.postEvent(LocalEvents.DisableLightning)
+                                }
+                            },
+                        )
+                    }
+                    WalletSetting.GetSupport -> {
+                        Setting(
+                            title = stringResource(Res.string.id_get_support),
+                            imageVector = PhosphorIcons.Regular.CaretRight,
+                            modifier = Modifier.clickable {
+                                viewModel.postEvent(
+                                    NavigateDestinations.Support(
+                                        type = SupportType.INCIDENT,
+                                        supportData = SupportData.create(session = viewModel.sessionOrNull),
+                                        greenWalletOrNull = viewModel.greenWalletOrNull
+                                    )
+                                )
+                            }
+                        )
+                    }
+                    WalletSetting.RenameWallet -> {
+                        Setting(
+                            title = stringResource(Res.string.id_rename_wallet),
+                            modifier = Modifier.clickable {
+                                viewModel.postEvent(NavigateDestinations.RenameWallet(viewModel.greenWallet))
                             }
                         )
                     }
@@ -589,7 +698,7 @@ fun Setting(
             GreenColumn(
                 padding = 0, space = 4,
                 modifier = Modifier
-                    .padding(vertical = 16.dp)
+                    .padding(vertical = 24.dp)
                     .padding(start = 16.dp)
                     .ifTrue(imageVector == null && painter == null && checked == null){
                         it.padding(end = 16.dp)

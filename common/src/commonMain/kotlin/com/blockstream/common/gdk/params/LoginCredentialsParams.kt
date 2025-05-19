@@ -7,7 +7,6 @@ import com.blockstream.common.gdk.data.PinData
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 
 @Serializable
@@ -22,7 +21,6 @@ data class LoginCredentialsParams @OptIn(ExperimentalSerializationApi::class) co
     @SerialName("master_xpub") val masterXpub: String? = null,
     @SerialName("core_descriptors") val coreDescriptors: List<String>? = null,
     @SerialName("hwWatchOnlyCredentials")
-    @JsonNames("multipleWatchOnlyCredentials", "hwWatchOnlyCredentials") // TODO REMOVE multipleWatchOnlyCredentials
     val hwWatchOnlyCredentials: HwWatchOnlyCredentials? = null, // this value is not used by GDK, only from the app
     @SerialName("slip132_extended_pubkeys") val slip132ExtendedPubkeys: List<String>? = null,
 ) : GreenJson<LoginCredentialsParams>() {

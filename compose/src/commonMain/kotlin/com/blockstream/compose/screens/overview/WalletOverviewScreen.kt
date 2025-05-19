@@ -58,7 +58,6 @@ import com.blockstream.compose.components.WalletBalance
 import com.blockstream.compose.dialogs.AppRateDialog
 import com.blockstream.compose.dialogs.ArchivedAccountsDialog
 import com.blockstream.compose.dialogs.DenominationExchangeDialog
-import com.blockstream.compose.dialogs.WalletOverviewMenuDialog
 import com.blockstream.compose.extensions.itemsSpaced
 import com.blockstream.compose.managers.askForNotificationPermissions
 import com.blockstream.compose.screens.overview.components.BitcoinPriceChart
@@ -95,13 +94,8 @@ fun WalletOverviewScreen(
     var archivedAccountsViewModel by remember {
         mutableStateOf<ArchivedAccountsViewModel?>(null)
     }
-    var overviewMenuViewModel by remember {
-        mutableStateOf<WalletOverviewViewModelAbstract?>(null)
-    }
 
     askForNotificationPermissions(viewModel)
-
-
 
     NavigateDestinations.MainMenu.getResult<MainMenuEntry> {
         when (it) {
@@ -135,21 +129,6 @@ fun WalletOverviewScreen(
 
     NavigateDestinations.Camera.getResult<ScanResult> {
         viewModel.postEvent(Events.HandleUserInput(it.result, isQr = true))
-    }
-
-//    NavigateDestinations.Accounts.getResult<AccountAssetBalance> {
-//        viewModel.postEvent(
-//            NavigateDestinations.AccountOverview(
-//                greenWallet = viewModel.greenWallet,
-//                accountAsset = it.accountAsset
-//            )
-//        )
-//    }
-
-    overviewMenuViewModel?.also {
-        WalletOverviewMenuDialog(viewModel = viewModel) {
-            overviewMenuViewModel = null
-        }
     }
 
     denominationExchangeRateViewModel?.also {
@@ -196,10 +175,6 @@ fun WalletOverviewScreen(
 
             is WalletOverviewViewModel.LocalSideEffects.AccountArchivedDialog -> {
                 archivedAccountsViewModel = ArchivedAccountsViewModel(viewModel.greenWallet)
-            }
-
-            is SideEffects.OpenDialog -> {
-                overviewMenuViewModel = viewModel
             }
         }
     }, withPadding = false, withBottomInsets = false) {

@@ -35,6 +35,7 @@ import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.titleSmall
+import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.ui.utils.ifTrue
@@ -50,6 +51,7 @@ fun GreenAccountAsset(
     message: String? = null,
     selectText: String? = null,
     withAsset: Boolean = true,
+    withAssetIcon: Boolean = true,
     withEditIcon: Boolean = false,
     withArrow: Boolean = false,
     onClick: (() -> Unit)? = null,
@@ -60,29 +62,31 @@ fun GreenAccountAsset(
             modifier = Modifier.padding(start = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box {
-                Image(
-                    painter = (accountAssetBalance?.asset?.assetId).assetIcon(
-                        session = session,
-                        isLightning = accountAssetBalance?.account?.isLightning == true
-                    ),
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .padding(vertical = 16.dp)
-                        .padding(end = 8.dp)
-                        .size(24.dp)
-                )
-
-                if (accountAssetBalance != null) {
+            if (withAssetIcon) {
+                Box {
                     Image(
-                        painter = painterResource(accountAssetBalance.account.policyIcon()),
-                        contentDescription = "Policy",
+                        painter = (accountAssetBalance?.asset?.assetId).assetIcon(
+                            session = session,
+                            isLightning = accountAssetBalance?.account?.isLightning == true
+                        ),
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit,
                         modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(bottom = 7.dp)
-                            .size(18.dp)
+                            .padding(vertical = 16.dp)
+                            .padding(end = 8.dp)
+                            .size(24.dp)
                     )
+
+                    if (accountAssetBalance != null) {
+                        Image(
+                            painter = painterResource(accountAssetBalance.account.policyIcon()),
+                            contentDescription = "Policy",
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(bottom = 7.dp)
+                                .size(18.dp)
+                        )
+                    }
                 }
             }
 
@@ -119,7 +123,8 @@ fun GreenAccountAsset(
                                 text = primary.string(),
                                 style = titleSmall,
                                 maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                overflow = TextOverflow.Ellipsis,
+                                color = whiteHigh
                             )
 
                             if(secondary != null) {

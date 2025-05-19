@@ -1,7 +1,8 @@
 package com.blockstream.common.models.overview
 
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.dots_three_vertical_bold
+import blockstream_green.common.generated.resources.id_home
+import blockstream_green.common.generated.resources.id_your_s_total_balance_is_the_sum_of
 import breez_sdk.HealthCheckStatus
 import com.blockstream.common.Urls
 import com.blockstream.common.btcpricehistory.model.BitcoinChartData
@@ -37,7 +38,6 @@ import com.blockstream.domain.bitcoinpricehistory.ObserveBitcoinPriceHistory
 import com.blockstream.green.domain.notifications.RegisterFCMToken
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
-import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData
 import com.blockstream.ui.sideeffects.SideEffect
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
@@ -56,6 +56,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
+import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
 abstract class WalletOverviewViewModelAbstract(
@@ -115,8 +116,11 @@ abstract class WalletOverviewViewModelAbstract(
                             )
                         }),
                         title = asset.name(session).getStringOrNull(),
+                        message = getString(Res.string.id_your_s_total_balance_is_the_sum_of, asset.name(session).getString()),
                         withAsset = false,
-                        withArrow = true,
+                        withArrow = false,
+                        withAssetIcon = false,
+                        withAction = false,
                     )
                 )
             }
@@ -153,7 +157,6 @@ class WalletOverviewViewModel(
                 )
             }
         }
-
 
         // TODO move it to GDK session on the login procedure
         viewModelScope.launch {
@@ -357,21 +360,13 @@ class WalletOverviewViewModel(
         bootstrap()
     }
 
-    private fun updateNavData(greenWallet: GreenWallet) {
+    private suspend fun updateNavData(greenWallet: GreenWallet) {
         _navData.value = NavData(
+            title = getString(Res.string.id_home),
             walletName = greenWallet.name,
             isVisible = !showWalletOnboarding.value,
             showBadge = !greenWallet.isRecoveryConfirmed,
-            showBottomNavigation = !showWalletOnboarding.value,
-            actions = listOfNotNull(
-                NavAction(
-                    title = "Menu",
-                    icon = Res.drawable.dots_three_vertical_bold,
-                    isMenuEntry = false,
-                    onClick = {
-                        postSideEffect(SideEffects.OpenDialog())
-                    })
-            )
+            showBottomNavigation = !showWalletOnboarding.value
         )
     }
 

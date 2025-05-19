@@ -155,7 +155,7 @@ fun AppScaffold(
             // Bottom NavigationBar
             greenWallet?.also { greenWallet ->
                 AnimatedVisibility(
-                    visible = showNavigationBar && navData.showBottomNavigation,
+                    visible = showNavigationBar && navData.showBottomNavigation && navData.isVisible,
                     modifier = Modifier.align(Alignment.BottomCenter),
                     enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
                     exit = fadeOut() + slideOutVertically(targetOffsetY = { it })

@@ -40,8 +40,9 @@ import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Wallet
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodySmall
-import com.blockstream.compose.theme.titleSmall
+import com.blockstream.compose.theme.titleMedium
 import com.blockstream.ui.navigation.LocalNavigator
 import com.blockstream.ui.navigation.NavData
 import com.blockstream.ui.utils.ifTrue
@@ -76,7 +77,6 @@ fun GreenTopAppBar(
                 val targetState = when {
                     navData.showNavigationIcon == false -> null
                     hasBackStack && navData.walletName == null -> true
-                    navData.walletName != null -> false
                     else -> null
                 }
                 AnimatedContent(
@@ -103,47 +103,6 @@ fun GreenTopAppBar(
                             )
                         }
 
-                        false -> Row {
-                            IconButton(onClick = {
-                                navigator.navigate(route = NavigateDestinations.Home)
-                            }) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(28.dp)
-                                        .background(
-                                            color = MaterialTheme.colorScheme.primary,
-                                            shape = CircleShape
-                                        ),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = PhosphorIcons.Regular.Wallet,
-                                        contentDescription = "Drawer Menu",
-                                        tint = MaterialTheme.colorScheme.onPrimary,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                }
-                            }
-
-                            TextButton(
-                                onClick = {
-                                    navigator.navigate(route = NavigateDestinations.Home)
-                                },
-                                contentPadding = PaddingValues(),
-                                modifier = Modifier.padding(end = 8.dp),
-                            ) {
-                                Text(
-                                    text = navData.walletName ?: "",
-                                    style = titleSmall,
-                                    modifier = Modifier.ifTrue(navData.title.isNotBlank() || navData.titleRes != null) {
-                                        it.widthIn(max = 180.dp)
-                                    },
-                                    overflow = TextOverflow.Ellipsis,
-                                    maxLines = 1
-                                )
-                            }
-                        }
-
                         else -> {
 
                         }
@@ -157,39 +116,40 @@ fun GreenTopAppBar(
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
-                ConstraintLayout() {
+                ConstraintLayout {
                     val (title, subtitle) = createRefs()
 
-//                    Crossfade(
-//                        targetState = navData.title ?: "",
-//                        modifier = Modifier.constrainAs(title) {
-//                            start.linkTo(parent.start)
-//                            // end.linkTo(parent.end)
-//                            top.linkTo(parent.top)
-//                            bottom.linkTo(parent.bottom)
-//                        }) {
-//                        Text(
-//                            text = it,
-//                            maxLines = 1,
-//                            style = titleSmall,
-//                            overflow = TextOverflow.Ellipsis,
-//                            modifier = Modifier.fillMaxWidth()
-//                        )
-//                    }
-
-                    // Looking good
-                    Text(
-                        text = navData.title ?: navData.titleRes?.let { stringResource(it) } ?: "",
-                        maxLines = 1,
-                        style = titleSmall,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.fillMaxWidth().constrainAs(title) {
+                    Crossfade(
+                        targetState = navData.title ?: navData.titleRes?.let { stringResource(it) }
+                        ?: "",
+                        modifier = Modifier.constrainAs(title) {
                             start.linkTo(parent.start)
                             // end.linkTo(parent.end)
                             top.linkTo(parent.top)
                             bottom.linkTo(parent.bottom)
-                        }
-                    )
+                        }) {
+                        Text(
+                            text = it,
+                            maxLines = 1,
+                            style = titleMedium,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+
+                    // Looking good
+//                    Text(
+//                        text = navData.title ?: navData.titleRes?.let { stringResource(it) } ?: "",
+//                        maxLines = 1,
+//                        style = titleMedium,
+//                        overflow = TextOverflow.Ellipsis,
+//                        modifier = Modifier.fillMaxWidth().constrainAs(title) {
+//                            start.linkTo(parent.start)
+//                            // end.linkTo(parent.end)
+//                            top.linkTo(parent.top)
+//                            bottom.linkTo(parent.bottom)
+//                        }
+//                    )
 
                     Crossfade(
                         targetState = navData.subtitle ?: "",
@@ -209,8 +169,50 @@ fun GreenTopAppBar(
                 }
             }
         },
-
         actions = {
+            if (navData.isVisible && navData.showNavigationIcon && navData.walletName != null) {
+
+                Row(modifier = Modifier.padding(end = 8.dp)) {
+                    TextButton(
+                        onClick = {
+                            navigator.navigate(route = NavigateDestinations.Home)
+                        },
+                        contentPadding = PaddingValues(),
+                    ) {
+                        Text(
+                            text = navData.walletName ?: "",
+                            style = bodyLarge,
+                            modifier = Modifier.ifTrue(navData.title.isNotBlank() || navData.titleRes != null) {
+                                it.widthIn(max = 180.dp)
+                            },
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1
+                        )
+                    }
+
+                    IconButton(onClick = {
+                        navigator.navigate(route = NavigateDestinations.Home)
+                    }) {
+                        Box(
+                            modifier = Modifier
+                                .size(28.dp)
+                                .background(
+                                    color = MaterialTheme.colorScheme.primary,
+                                    shape = CircleShape
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = PhosphorIcons.Regular.Wallet,
+                                contentDescription = "Drawer Menu",
+                                tint = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+                }
+            }
+
             ActionMenu(navData = navData)
         }
     )

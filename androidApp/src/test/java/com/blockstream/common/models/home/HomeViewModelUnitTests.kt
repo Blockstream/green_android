@@ -22,6 +22,7 @@ class HomeViewModelUnitTests : TestViewModel<HomeViewModel>() {
 
         get<SettingsManager>().also {
             every { it.isDeviceTermsAccepted() } returns walletExists
+            every { it.isV5UpgradedFlow() } returns flowOf(true)
         }
 
         get<SessionManager>().also {

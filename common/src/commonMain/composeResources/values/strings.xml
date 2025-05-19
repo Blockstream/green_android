@@ -1668,4 +1668,7 @@
     <string name="id_green_is_now_the_blockstream_app">Green is now the\nBlockstream app</string>
     <string name="id_weve_redesigned_the_app_to_make_it_faster">We&apos;ve redesigned the app to make it faster, easier, and even more secure. All your settings and funds are right where you left them.</string>
     <string name="id_mobile_wallet">Mobile Wallet</string>
+    <string name="id_2fa_account">2FA Account</string>
+    <string name="id_wallet_details">Wallet Details</string>
+    <string name="id_your_s_total_balance_is_the_sum_of">Your %1$d total balance is the sum of the balances across these accounts.</string>
 </resources>

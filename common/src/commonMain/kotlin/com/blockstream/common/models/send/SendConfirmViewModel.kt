@@ -77,7 +77,7 @@ class SendConfirmViewModel constructor(
     init {
         onProgressSending.onEach { onProgressSending ->
             _navData.value = NavData(
-                title = getString(Res.string.id_review), subtitle = greenWallet.name,
+                title = getString(Res.string.id_review),
                 isVisible = !onProgressSending,
                 actions = listOfNotNull(
                     NavAction(

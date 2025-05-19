@@ -973,8 +973,11 @@ fun Router(
                     },
                     accountsBalance = args.accounts,
                     title = args.title,
+                    message = args.message,
                     withAsset = args.withAsset,
+                    withAssetIcon = args.withAssetIcon,
                     withArrow = args.withArrow,
+                    withAction = args.withAction,
                     onDismissRequest = navController.onDismissRequest()
                 )
             }

@@ -1,7 +1,7 @@
 package com.blockstream.common.data
 
-import com.blockstream.ui.events.Event
 import com.blockstream.common.gdk.data.Network
+import com.blockstream.ui.events.Event
 
 sealed class WalletSetting{
     data object Logout : WalletSetting()
@@ -9,13 +9,14 @@ sealed class WalletSetting{
     data class LearnMore(val event: Event): WalletSetting()
     data class ButtonEvent(val title: String, val event: Event): WalletSetting()
     data class DenominationExchangeRate(val unit: String, val currency: String, val exchange: String) : WalletSetting()
-    data class ArchivedAccounts(val size: Int) : WalletSetting()
+    data object ArchivedAccounts : WalletSetting()
     data object WatchOnly : WalletSetting()
     data object SetupEmailRecovery : WalletSetting()
     data class RequestRecovery(val network: Network) : WalletSetting()
     data object RequestRecoveryTransactions : WalletSetting()
     data class RecoveryTransactionEmails(val enabled: Boolean) : WalletSetting()
     data object ChangePin : WalletSetting()
+    data class Lightning(val enabled: Boolean) : WalletSetting()
     data class LoginWithBiometrics(val enabled: Boolean, val canEnable: Boolean) : WalletSetting()
     data object TwoFactorAuthentication : WalletSetting()
     data class PgpKey(val enabled: Boolean) : WalletSetting()
@@ -39,5 +40,8 @@ sealed class WalletSetting{
     data class TwoFactorThreshold(
         val subtitle: String
     ) : WalletSetting()
-    data object Support : WalletSetting()
+
+    data object RenameWallet : WalletSetting()
+    data object GetSupport : WalletSetting()
+    data object SupportId : WalletSetting()
 }

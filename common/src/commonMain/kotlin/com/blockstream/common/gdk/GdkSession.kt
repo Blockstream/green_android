@@ -501,7 +501,7 @@ class GdkSession constructor(
         )
 
     private fun updateEnrichedAssets() {
-        if (isNetworkInitialized && !isNoBlobWatchOnly) {
+        if (isNetworkInitialized && (!isNoBlobWatchOnly || isHwWatchOnly)) {
             countly.getRemoteConfigValueForAssets(if (isMainnet) LIQUID_ASSETS_KEY else LIQUID_ASSETS_TESTNET_KEY)?.also {
                 cacheAssets(it.map { it.assetId })
             }.also {
@@ -880,6 +880,8 @@ class GdkSession constructor(
                         device.disconnect()
                     }
                 }
+
+                device = null
             }
 
             return true
@@ -1253,8 +1255,8 @@ class GdkSession constructor(
     }
 
 
-    suspend fun loginWatchOnly(wallet: GreenWallet, watchOnlyCredentials: HwWatchOnlyCredentials) {
-        loginWatchOnly(network = prominentNetwork(wallet), wallet = wallet, watchOnlyCredentials = watchOnlyCredentials)
+    suspend fun loginWatchOnly(wallet: GreenWallet, loginCredentials: LoginCredentials? = null, watchOnlyCredentials: HwWatchOnlyCredentials) {
+        loginWatchOnly(network = prominentNetwork(wallet, loginCredentials), wallet = wallet, watchOnlyCredentials = watchOnlyCredentials)
     }
 
     suspend fun loginWatchOnly(network: Network, wallet: GreenWallet?, watchOnlyCredentials: HwWatchOnlyCredentials): LoginData {
@@ -1282,9 +1284,13 @@ class GdkSession constructor(
 
     // WO Login
     private suspend fun loginWatchOnly(network: Network, wallet: GreenWallet?, loginCredentialsParams: LoginCredentialsParams): LoginData {
+        val initNetworks = loginCredentialsParams.hwWatchOnlyCredentials?.credentials?.keys?.map {
+            networkBy(it)
+        } ?: listOf(network)
+
         return loginWithLoginCredentials(
             prominentNetwork = network,
-            initNetworks = listOf(network),
+            initNetworks = initNetworks,
             wallet = wallet,
             walletLoginCredentialsParams = loginCredentialsParams
         )
@@ -1420,8 +1426,6 @@ class GdkSession constructor(
         hasLightning = isLightningShortcut || appGreenlightCredentials != null || derivedLightningMnemonic != null
 
         return (enabledGdkSessions.mapNotNull { gdkSession ->
-
-
             scope.async(start = CoroutineStart.LAZY) {
                 val isProminent = gdkSession.key == prominentNetwork
                 val network = gdkSession.key
@@ -1449,7 +1453,7 @@ class GdkSession constructor(
                         false
                     }
 
-                    if (gdkSession.key.isSinglesig && !isProminent && !isRestore && !isSmartDiscovery && !hasGdkCache){
+                    if (gdkSession.key.isSinglesig && !isProminent && !isRestore && !isSmartDiscovery && !hasGdkCache && !isHwWatchOnly){
                         logger.i { "Skip login in ${network.id}" }
                         return@async null
                     }
@@ -1475,7 +1479,7 @@ class GdkSession constructor(
 
                         // Do a refresh
                         if (network.isElectrum && initializeSession && (isRestore || isSmartDiscovery)) {
-                             if(isRestore || !hasGdkCache){
+                            if (isRestore || !hasGdkCache || isHardwareWallet) {
                                 logger.i { "BIP44 Discovery for ${network.id}" }
 
                                 val networkAccounts = getAccounts(network = network, refresh = true)

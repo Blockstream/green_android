@@ -3,6 +3,7 @@ package com.blockstream.common.models.settings
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_12_months_51840_blocks
 import blockstream_green.common.generated.resources.id_15_months_65535_blocks
+import blockstream_green.common.generated.resources.id_2fa_account
 import blockstream_green.common.generated.resources.id_2fa_expiry
 import blockstream_green.common.generated.resources.id_2fa_methods
 import blockstream_green.common.generated.resources.id_2fa_reset_in_progress
@@ -12,6 +13,7 @@ import blockstream_green.common.generated.resources.id_about
 import blockstream_green.common.generated.resources.id_another_2fa_method_is_already
 import blockstream_green.common.generated.resources.id_confirm_via_2fa_that_you
 import blockstream_green.common.generated.resources.id_copied_to_clipboard
+import blockstream_green.common.generated.resources.id_creating_your_s_account
 import blockstream_green.common.generated.resources.id_customize_2fa_expiration_of
 import blockstream_green.common.generated.resources.id_general
 import blockstream_green.common.generated.resources.id_if_you_have_some_coins_on_the
@@ -26,6 +28,7 @@ import blockstream_green.common.generated.resources.id_set_twofactor_threshold
 import blockstream_green.common.generated.resources.id_settings
 import blockstream_green.common.generated.resources.id_spend_your_bitcoin_without_2fa
 import blockstream_green.common.generated.resources.id_twofactor_authentication
+import blockstream_green.common.generated.resources.id_wallet
 import blockstream_green.common.generated.resources.id_wallet_coins_will_require
 import blockstream_green.common.generated.resources.id_you_have_successfully_changed
 import blockstream_green.common.generated.resources.id_your_2fa_expires_so_that_if_you
@@ -34,6 +37,7 @@ import com.blockstream.common.BTC_UNIT
 import com.blockstream.common.Urls
 import com.blockstream.common.crypto.PlatformCipher
 import com.blockstream.common.data.CredentialType
+import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.Redact
 import com.blockstream.common.data.SetupArgs
@@ -41,15 +45,19 @@ import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorSetupAction
 import com.blockstream.common.data.WalletExtras
 import com.blockstream.common.data.WalletSetting
+import com.blockstream.common.devices.DeviceModel
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.biometricsMnemonic
 import com.blockstream.common.extensions.biometricsPinData
+import com.blockstream.common.extensions.hasHistory
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.indexOfOrNull
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.extensions.previewWallet
+import com.blockstream.common.extensions.tryCatchNull
+import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.Settings
 import com.blockstream.common.gdk.data.SettingsNotification
@@ -57,9 +65,12 @@ import com.blockstream.common.gdk.data.TwoFactorConfig
 import com.blockstream.common.gdk.data.TwoFactorMethodConfig
 import com.blockstream.common.gdk.params.CsvParams
 import com.blockstream.common.gdk.selectTwoFactorMethod
+import com.blockstream.common.looks.AccountTypeLook
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.jade.JadeQrOperation
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.usecases.CreateAccountUseCase
 import com.blockstream.common.usecases.SetBiometricsUseCase
 import com.blockstream.common.usecases.SetPinUseCase
 import com.blockstream.common.utils.StringHolder
@@ -73,9 +84,11 @@ import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -94,8 +107,8 @@ enum class WalletSettingsSection {
 abstract class WalletSettingsViewModelAbstract(
     greenWallet: GreenWallet,
     val section: WalletSettingsSection,
-) :
-    GreenViewModel(greenWalletOrNull = greenWallet) {
+) : GreenViewModel(greenWalletOrNull = greenWallet) {
+
     override fun screenName(): String = when(section) {
         WalletSettingsSection.ChangePin -> "WalletSettingsChangePIN"
         WalletSettingsSection.RecoveryTransactions -> "WalletSettingsRecoveryTransactions"
@@ -105,7 +118,6 @@ abstract class WalletSettingsViewModelAbstract(
 
     @NativeCoroutinesState
     abstract val items: StateFlow<List<WalletSetting>>
-
 }
 
 class WalletSettingsViewModel(
@@ -113,6 +125,7 @@ class WalletSettingsViewModel(
     section: WalletSettingsSection,
     private val network: Network? = null
 ) : WalletSettingsViewModelAbstract(greenWallet = greenWallet, section = section) {
+    private val createAccountUseCase: CreateAccountUseCase by inject()
     private val setBiometricsUseCase: SetBiometricsUseCase by inject()
     private val setPinUseCase: SetPinUseCase by inject()
 
@@ -120,6 +133,8 @@ class WalletSettingsViewModel(
     override val items = _items.asStateFlow()
 
     private val _hasBiometrics = MutableStateFlow(false)
+
+    internal val _accountTypeBeingCreated: MutableStateFlow<AccountTypeLook?> = MutableStateFlow(null)
 
     class LocalEvents {
         object DenominationExchangeRate : Events.EventSideEffect(sideEffect = SideEffects.OpenDenominationExchangeRate)
@@ -143,6 +158,11 @@ class WalletSettingsViewModel(
         data class Disable2FA(val method: TwoFactorMethod, val authenticateMethod: TwoFactorMethod): Event
         object RecoveryPhrase : Event
         object SupportId : Event
+
+        data class ChooseAccountType(val accountType: AccountType) : Event
+        data object DisableLightning: Event
+        data class CreateAccount(val accountType: AccountType, val asset: EnrichedAsset? = null) : Event
+        data class CreateLightningAccount(val lightningMnemonic: String) : Event, Redact
     }
 
     class LocalSideEffects {
@@ -151,26 +171,28 @@ class WalletSettingsViewModel(
         data class OpenTwoFactorThershold(val threshold: String) : SideEffect
         data class Disable2FA(val title: String, val message: String, val method: TwoFactorMethod, val availableMethods: List<TwoFactorMethod>, val network: Network): SideEffect
         object LaunchBiometrics : SideEffect
+
+        class ArchivedAccountDialog(event: Event) : SideEffects.SideEffectEvent(event) {
+            constructor(sideEffect: SideEffect) : this(Events.EventSideEffect(sideEffect))
+        }
+
+        class ExperimentalFeaturesDialog(event: Event) : SideEffects.SideEffectEvent(event) {
+            constructor(sideEffect: SideEffect) : this(Events.EventSideEffect(sideEffect))
+        }
     }
 
     init {
+        combine(greenWalletFlow.filterNotNull(), _accountTypeBeingCreated) { greenWallet, accountTypeBeingCreated ->
+            updateNavData(greenWallet, accountTypeBeingCreated == null)
+        }.launchIn(this)
 
         viewModelScope.launch {
-            when(section) {
-                WalletSettingsSection.RecoveryTransactions -> Res.string.id_recovery_transactions
-                WalletSettingsSection.TwoFactor -> Res.string.id_twofactor_authentication
-                else -> Res.string.id_settings
-            }.also {
-                _navData.value = NavData(
-                    title = getString(it).takeIf { section != WalletSettingsSection.General },
-                    subtitle = greenWallet.name.takeIf { section != WalletSettingsSection.General },
-
-                    walletName = greenWallet.name.takeIf { section == WalletSettingsSection.General },
-                    showBadge = !greenWallet.isRecoveryConfirmed && section == WalletSettingsSection.General,
-                    showBottomNavigation = section == WalletSettingsSection.General
-                )
-            }
+            updateNavData(greenWallet, true)
         }
+
+        _accountTypeBeingCreated.filterNotNull().onEach {
+            onProgressDescription.value = getString(Res.string.id_creating_your_s_account, it.accountType.toString())
+        }.launchIn(this)
 
         session.ifConnected {
             database.getLoginCredentialsFlow(greenWallet.id).onEach {
@@ -190,6 +212,23 @@ class WalletSettingsViewModel(
         }
 
         bootstrap()
+    }
+
+    private suspend fun updateNavData(greenWallet: GreenWallet, isVisible: Boolean){
+        when(section) {
+            WalletSettingsSection.RecoveryTransactions -> Res.string.id_recovery_transactions
+            WalletSettingsSection.TwoFactor -> Res.string.id_twofactor_authentication
+            else -> Res.string.id_settings
+        }.also {
+            _navData.value = NavData(
+                title = getString(it),
+                isVisible = isVisible,
+                // subtitle = greenWallet.name.takeIf { section != WalletSettingsSection.General },
+                walletName = greenWallet.name.takeIf { section == WalletSettingsSection.General },
+                showBadge = !greenWallet.isRecoveryConfirmed && section == WalletSettingsSection.General,
+                showBottomNavigation = section == WalletSettingsSection.General
+            )
+        }
     }
 
     private suspend fun build(settings: Settings?, twoFactorConfig: TwoFactorConfig?): List<WalletSetting> {
@@ -304,56 +343,47 @@ class WalletSettingsViewModel(
 
         } else if(section == WalletSettingsSection.General){
 
-            list += WalletSetting.Logout
-
             if (settings != null) {
-                if (session.isWatchOnlyValue) {
+
+                list += WalletSetting.Text(getString(Res.string.id_general))
+
+                list += listOf(
+                    WalletSetting.GetSupport,
+                    WalletSetting.DenominationExchangeRate(
+                        unit = settings.networkUnit(session),
+                        currency = settings.pricing.currency,
+                        exchange = settings.pricing.exchange
+                    ),
+                    WalletSetting.AutoLogoutTimeout(settings.altimeout),
+                    WalletSetting.Logout
+                )
+
+                if (!session.isWatchOnlyValue) {
+                    list += WalletSetting.Text(getString(Res.string.id_wallet))
                     list += listOfNotNull(
-                        WalletSetting.Text(getString(Res.string.id_general)),
-                        WalletSetting.DenominationExchangeRate(
-                            unit = settings.networkUnit(session),
-                            currency = settings.pricing.currency,
-                            exchange = settings.pricing.exchange
-                        ),
-                        WalletSetting.Text(getString(Res.string.id_security)),
-                        WalletSetting.AutoLogoutTimeout(settings.altimeout)
-                    )
-                } else {
-                    list += listOf(
-                        WalletSetting.Text(getString(Res.string.id_general)),
-                        WalletSetting.DenominationExchangeRate(
-                            unit = settings.networkUnit(session),
-                            currency = settings.pricing.currency,
-                            exchange = settings.pricing.exchange
-                        ),
+                        WalletSetting.Lightning(enabled = session.hasLightning).takeIf { session.lightning != null },
+                        // WalletSetting.AMP(enabled = false)
+                        WalletSetting.WatchOnly,
+                        WalletSetting.RenameWallet,
+                        WalletSetting.ArchivedAccounts
                     )
 
-                    if (!session.isLightningShortcut) {
-                        val hasMultisig =
-                            session.activeBitcoinMultisig != null || session.activeLiquidMultisig != null
-    
-                        list += listOfNotNull(
-                            WalletSetting.WatchOnly,
-                            WalletSetting.Text(getString(Res.string.id_security)),
-                        )
-    
-                        if (hasMultisig) {
-                            list += listOf(WalletSetting.TwoFactorAuthentication)
-    
-                            session.activeMultisig.firstOrNull()?.also {
-                                list += listOf(WalletSetting.PgpKey(enabled = session.getSettings(it)?.pgp.isNotBlank()))
-                            }
+                    val hasMultisig = session.activeBitcoinMultisig != null || session.activeLiquidMultisig != null
+
+                    if (hasMultisig) {
+                        list += WalletSetting.Text(getString(Res.string.id_2fa_account))
+                        list += listOf(WalletSetting.TwoFactorAuthentication)
+                        session.activeMultisig.firstOrNull()?.also {
+                            list += listOf(WalletSetting.PgpKey(enabled = session.getSettings(it)?.pgp.isNotBlank()))
                         }
-    
-                        list += listOf(WalletSetting.AutoLogoutTimeout(settings.altimeout))
                     }
                 }
             }
 
+            list += WalletSetting.Text(getString(Res.string.id_about))
             list += listOf(
-                WalletSetting.Text(getString(Res.string.id_about)),
-                WalletSetting.Support,
-                WalletSetting.Version(appInfo.versionFlavorDebug)
+                WalletSetting.Version(appInfo.versionFlavorDebug),
+                WalletSetting.SupportId
             )
         }
 
@@ -364,6 +394,35 @@ class WalletSettingsViewModel(
         super.handleEvent(event)
 
         when (event) {
+            is LocalEvents.ChooseAccountType -> {
+                chooseAccountType(event.accountType)
+            }
+            is LocalEvents.DisableLightning -> {
+                doAsync({
+                    if(session.hasLightning){
+                        session.lightningAccount.also {
+                            removeAccount(it)
+                        }
+                    }
+                })
+            }
+
+            is LocalEvents.CreateAccount -> {
+                createAccount(
+                    accountType = event.accountType,
+                    accountName = event.accountType.toString(),
+                    network = networkForAccountType(event.accountType, event.asset),
+                )
+            }
+
+            is LocalEvents.CreateLightningAccount -> {
+                createAccount(
+                    accountType = AccountType.LIGHTNING,
+                    accountName = AccountType.LIGHTNING.toString(),
+                    network = networkForAccountType(AccountType.LIGHTNING, EnrichedAsset.Empty),
+                    mnemonic = event.lightningMnemonic,
+                )
+            }
 
             is LocalEvents.WatchOnly -> {
                 postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WatchOnly(greenWallet = greenWallet)))
@@ -546,6 +605,125 @@ class WalletSettingsViewModel(
                 }
             }
         }
+    }
+
+    private fun createAccount(
+        accountType: AccountType,
+        accountName: String,
+        network: Network,
+        mnemonic: String? = null,
+        xpub: String? = null
+    ) {
+        doAsync({
+            createAccountUseCase(
+                session = session,
+                greenWallet = greenWallet,
+                accountType = accountType,
+                accountName = accountName,
+                network = network,
+                mnemonic = mnemonic,
+                xpub = xpub,
+                hwInteraction = this
+            )
+        }, preAction = {
+            onProgress.value = true
+            _accountTypeBeingCreated.value = AccountTypeLook(accountType)
+        }, postAction = {
+            onProgress.value = false
+            _accountTypeBeingCreated.value = null
+        }, onSuccess = {
+
+        })
+    }
+
+    private fun chooseAccountType(accountType: AccountType, asset: EnrichedAsset? = null) = tryCatchNull {
+        val network = networkForAccountType(accountType, asset)
+
+        var sideEffect: SideEffect? = null
+        var event: Event? = null
+
+        if (accountType == AccountType.TWO_OF_THREE) {
+            sideEffect = SideEffects.NavigateTo(
+                NavigateDestinations.AddAccount2of3(
+                    SetupArgs(
+                        greenWallet = greenWallet,
+                        assetId = asset?.assetId,
+                        network = network,
+                        accountType = AccountType.TWO_OF_THREE,
+                        popTo = null
+                    )
+                )
+            )
+        } else {
+            if (accountType.isLightning()) {
+                sideEffect = if (session.isHardwareWallet) {
+                    LocalSideEffects.ExperimentalFeaturesDialog(
+                        SideEffects.NavigateTo(
+                            NavigateDestinations.JadeQR(
+                                greenWalletOrNull = greenWalletOrNull,
+                                operation = JadeQrOperation.LightningMnemonicExport,
+                                deviceModel = DeviceModel.BlockstreamGeneric
+                            )
+                        )
+                    )
+                } else {
+                    LocalSideEffects.ExperimentalFeaturesDialog(
+                        LocalEvents.CreateAccount(
+                            accountType
+                        )
+                    )
+                }
+            } else {
+                event = LocalEvents.CreateAccount(accountType)
+            }
+        }
+
+        // Check if account is already archived
+        if (isAccountAlreadyArchived(network, accountType)) {
+            if (event != null) {
+                postSideEffect(LocalSideEffects.ArchivedAccountDialog(event))
+            }
+
+            if (sideEffect != null) {
+                postSideEffect(LocalSideEffects.ArchivedAccountDialog(sideEffect))
+            }
+        } else {
+            if (event != null) {
+                postEvent(event)
+            } else if (sideEffect != null) {
+                postSideEffect(sideEffect)
+            }
+        }
+    }
+
+    private fun networkForAccountType(accountType: AccountType, asset: EnrichedAsset?): Network {
+        return when (accountType) {
+            AccountType.BIP44_LEGACY,
+            AccountType.BIP49_SEGWIT_WRAPPED,
+            AccountType.BIP84_SEGWIT,
+            AccountType.BIP86_TAPROOT -> {
+                when {
+                    asset == null || asset.isBitcoin -> session.bitcoinSinglesig!!
+                    asset.isLiquidNetwork(session) -> session.liquidSinglesig!!
+                    else -> throw Exception("Network not found")
+                }
+            }
+            AccountType.STANDARD -> when {
+                asset == null || asset.isBitcoin -> session.bitcoinMultisig!!
+                asset.isLiquidNetwork(session) -> session.liquidMultisig!!
+                else -> throw Exception("Network not found")
+            }
+            AccountType.AMP_ACCOUNT -> session.liquidMultisig!!
+            AccountType.TWO_OF_THREE -> session.bitcoinMultisig!!
+            AccountType.LIGHTNING -> session.lightning!!
+            AccountType.UNKNOWN -> throw Exception("Network not found")
+        }
+    }
+
+    private fun isAccountAlreadyArchived(network: Network, accountType: AccountType): Boolean {
+        return session.allAccounts.value.find {
+            it.hidden && it.network == network && it.type == accountType && (network.isMultisig || it.hasHistory(session))
+        } != null
     }
 
     private fun saveGlobalSettings(newSettings: Settings) {
@@ -741,7 +919,7 @@ class WalletSettingsViewModelPreview(
                 WalletSetting.PgpKey(enabled = false),
                 WalletSetting.AutoLogoutTimeout(5),
                 WalletSetting.Text(getString(Res.string.id_about)),
-                WalletSetting.Support,
+                WalletSetting.SupportId,
                 WalletSetting.Version("1.0.0"),
             )
         }

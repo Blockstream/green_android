@@ -351,7 +351,7 @@ class LoginViewModel constructor(
 
         combine(greenWalletFlow.filterNotNull(), pinCredentials) { it , _ ->
             _navData.value = NavData(
-                walletName = it.name,
+                title = it.name,
                 actions = listOfNotNull(
                     NavAction(
                         title = getString(Res.string.id_help),
@@ -680,6 +680,7 @@ class LoginViewModel constructor(
 
                     session.loginWatchOnly(
                         wallet = greenWallet,
+                        loginCredentials = loginCredentials,
                         watchOnlyCredentials = watchOnlyCredentials
                     )
                 }
@@ -691,6 +692,7 @@ class LoginViewModel constructor(
         login(loginCredentials = loginCredentials, isWatchOnly = true, updateWatchOnlyPassword = false) {
             session.loginWatchOnly(
                 wallet = greenWallet,
+                loginCredentials = loginCredentials,
                 watchOnlyCredentials = HwWatchOnlyCredentials.fromWatchOnlyCredentials(
                     network = loginCredentials.network,
                     watchOnlyCredentials = watchOnlyCredentials.let {
