@@ -1665,4 +1665,7 @@
     <string name="id_transactions_notifications">Transactions Notifications</string>
     <string name="id_you_dont_have_any_assets_yet">You you don&apos;t have any assets yet.</string>
     <string name="id_create_a_new_wallet_to_begin">Create a new wallet to begin your bitcoin journey.</string>
+    <string name="id_green_is_now_the_blockstream_app">Green is now the\nBlockstream app</string>
+    <string name="id_weve_redesigned_the_app_to_make_it_faster">We&apos;ve redesigned the app to make it faster, easier, and even more secure. All your settings and funds are right where you left them.</string>
+    <string name="id_mobile_wallet">Mobile Wallet</string>
 </resources>

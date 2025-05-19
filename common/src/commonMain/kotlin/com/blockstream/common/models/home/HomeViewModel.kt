@@ -32,6 +32,7 @@ import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -44,6 +45,9 @@ abstract class HomeViewModelAbstract() : GreenViewModel() {
 
     @NativeCoroutinesState
     abstract val allWallets: StateFlow<List<WalletListLook>?>
+
+    @NativeCoroutinesState
+    abstract val showV5Upgrade: StateFlow<Boolean>
 }
 
 class HomeViewModel(val isGetStarted: Boolean = false) : HomeViewModelAbstract() {
@@ -51,6 +55,7 @@ class HomeViewModel(val isGetStarted: Boolean = false) : HomeViewModelAbstract()
     class LocalEvents {
         object GetStarted : Event
         object ConnectJade : Event
+        object UpgradeV5 : Event
         class SelectWallet(val greenWallet: GreenWallet) : Event
         class ClickTermsOfService : Events.OpenBrowser(Urls.TERMS_OF_SERVICE)
         class ClickPrivacyPolicy : Events.OpenBrowser(Urls.PRIVACY_POLICY)
@@ -58,14 +63,44 @@ class HomeViewModel(val isGetStarted: Boolean = false) : HomeViewModelAbstract()
 
     private var _activeEvent: Event? = null
 
+    override val isEmptyWallet: StateFlow<Boolean?> =
+        (if (isGetStarted) flowOf(true) else database.walletsExistsFlow().map {
+            !it
+        }).stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
+
+    override val showV5Upgrade: StateFlow<Boolean> = combine(settingsManager.isV5UpgradedFlow(), isEmptyWallet.filterNotNull()) { isV5Upgraded, isEmptyWallet ->
+        if(!isV5Upgraded) {
+            if(isEmptyWallet){
+                // Mark it as upgraded
+                settingsManager.setV5Upgraded()
+            }
+
+            !isEmptyWallet
+        } else false
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), false)
+
+    @NativeCoroutinesState
+    override val allWallets = combine(
+        database.getAllWalletsFlow(),
+        sessionManager.ephemeralWallets,
+        sessionManager.connectionChangeEvent
+    ) { wallets, ephemeralWallets, _ ->
+        wallets + ephemeralWallets
+    }.map {
+        it.map { greenWallet ->
+            WalletListLook.create(greenWallet, sessionManager)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
+
     init {
         viewModelScope.launch(context = logException()) {
             // Update Remote Config when app is initiated, that's the easiest way
             countly.updateRemoteConfig(force = false)
         }
 
-        viewModelScope.launch {
+        showV5Upgrade.onEach {
             _navData.value = NavData(
+                isVisible = !it,
                 actions = listOfNotNull(
                     NavAction(
                         titleRes = Res.string.id_app_settings,
@@ -83,32 +118,10 @@ class HomeViewModel(val isGetStarted: Boolean = false) : HomeViewModelAbstract()
                     }
                 )
             )
-        }
-
-        onProgress.onEach {
-            _navData.value = _navData.value.copy(isVisible = !it)
         }.launchIn(this)
 
         bootstrap()
     }
-
-    override val isEmptyWallet: StateFlow<Boolean?> =
-        (if (isGetStarted) flowOf(true) else database.walletsExistsFlow().map {
-            !it
-        }).stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
-
-    @NativeCoroutinesState
-    override val allWallets = combine(
-        database.getAllWalletsFlow(),
-        sessionManager.ephemeralWallets,
-        sessionManager.connectionChangeEvent
-    ) { wallets, ephemeralWallets, _ ->
-        wallets + ephemeralWallets
-    }.map {
-        it.map { greenWallet ->
-            WalletListLook.create(greenWallet, sessionManager)
-        }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
@@ -124,6 +137,10 @@ class HomeViewModel(val isGetStarted: Boolean = false) : HomeViewModelAbstract()
                 _activeEvent?.also {
                     handleActions(it)
                 }
+            }
+
+            is LocalEvents.UpgradeV5 -> {
+                settingsManager.setV5Upgraded()
             }
 
             is LocalEvents.GetStarted -> {
@@ -214,17 +231,7 @@ class HomeViewModelPreview(
     override val allWallets: StateFlow<List<WalletListLook>?> =
         MutableStateFlow(viewModelScope, softwareWallets)
 
-//    @NativeCoroutinesState
-//    override val softwareWallets: StateFlow<List<WalletListLook>?> =
-//        MutableStateFlow(viewModelScope, softwareWallets)
-//
-//    @NativeCoroutinesState
-//    override val ephemeralWallets: StateFlow<List<WalletListLook>> =
-//        MutableStateFlow(viewModelScope, ephemeralWallets)
-//
-//    @NativeCoroutinesState
-//    override val hardwareWallets: StateFlow<List<WalletListLook>> =
-//        MutableStateFlow(viewModelScope, hardwareWallets)
+    override val showV5Upgrade: StateFlow<Boolean> = MutableStateFlow(true)
 
     init {
         banner.value = Banner.preview3

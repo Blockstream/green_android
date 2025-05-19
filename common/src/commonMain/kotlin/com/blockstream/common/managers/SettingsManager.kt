@@ -4,7 +4,9 @@ import com.benasher44.uuid.uuid4
 import com.blockstream.common.data.ApplicationSettings
 import com.blockstream.common.utils.server
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
-import com.russhwolf.settings.Settings
+import com.russhwolf.settings.ExperimentalSettingsApi
+import com.russhwolf.settings.ObservableSettings
+import com.russhwolf.settings.coroutines.getBooleanFlow
 import com.russhwolf.settings.get
 import com.russhwolf.settings.set
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +19,7 @@ import kotlin.random.nextLong
 
 
 class SettingsManager constructor(
-    private val settings: Settings,
+    private val settings: ObservableSettings,
     val analyticsFeatureEnabled: Boolean,
     val lightningFeatureEnabled: Boolean,
     val storeRateEnabled: Boolean
@@ -77,6 +79,15 @@ class SettingsManager constructor(
     fun setAskedAboutAppReview() {
         // Set now in milliseconds
         settings[KEY_ASKED_APP_REVIEW] = Clock.System.now().toEpochMilliseconds()
+    }
+
+    fun isV5Upgraded(): Boolean = settings.getBoolean(KEY_V5_UPGRADE, false)
+
+    @OptIn(ExperimentalSettingsApi::class)
+    fun isV5UpgradedFlow() = settings.getBooleanFlow(KEY_V5_UPGRADE, false)
+
+    fun setV5Upgraded() {
+        settings[KEY_V5_UPGRADE] = true
     }
 
     fun getCountlyDeviceId(): String {
@@ -140,5 +151,6 @@ class SettingsManager constructor(
         const val KEY_PROMO_DISMISSED = "promo_dismissed"
         const val KEY_WALLET_COUNTER = "wallet_counter"
         const val KEY_COUNTRY = "country"
+        const val KEY_V5_UPGRADE = "v5_upgrade"
     }
 }

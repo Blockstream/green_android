@@ -1,8 +1,8 @@
 package com.blockstream.common.looks.wallet
 
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_digital_wallets
 import blockstream_green.common.generated.resources.id_hardware_wallet
+import blockstream_green.common.generated.resources.id_mobile_wallet
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.WalletIcon
 import com.blockstream.common.extensions.previewWalletListView
@@ -31,7 +31,7 @@ data class WalletListLook constructor(
                 subtitle = when {
                     wallet.isEphemeral -> session.device?.name ?: wallet.ephemeralBip39Name
                     wallet.isHardware -> getString(Res.string.id_hardware_wallet)
-                    else -> getString(Res.string.id_digital_wallets)
+                    else -> getString(Res.string.id_mobile_wallet)
                 },
                 isConnected = session.isConnected,
                 isLightningShortcutConnected = lightningShortcutSession?.isConnected == true,

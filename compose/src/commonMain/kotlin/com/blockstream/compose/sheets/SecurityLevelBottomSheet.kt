@@ -38,8 +38,8 @@ import blockstream_green.common.generated.resources.id_setup_hardware_wallet
 import blockstream_green.common.generated.resources.phone_keys
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
-import com.adamglin.phosphoricons.regular.Coins
-import com.adamglin.phosphoricons.regular.Key
+import com.adamglin.phosphoricons.regular.FastForwardCircle
+import com.adamglin.phosphoricons.regular.Plugs
 import com.adamglin.phosphoricons.regular.ShieldCheck
 import com.adamglin.phosphoricons.regular.ShieldChevron
 import com.blockstream.common.models.onboarding.SetupNewWalletViewModel
@@ -151,15 +151,15 @@ fun SecurityLevelBottomSheet(
                     ) {
                         when (isMobile) {
                             true -> listOf(
-                                PhosphorIcons.Regular.Coins to Res.string.id_ideal_for_small_amounts,
+                                PhosphorIcons.Regular.Plugs to Res.string.id_ideal_for_small_amounts,
                                 PhosphorIcons.Regular.ShieldCheck to Res.string.id_convenient_spending,
-                                PhosphorIcons.Regular.Key to Res.string.id_keys_stored_on_mobile_device
+                                PhosphorIcons.Regular.FastForwardCircle to Res.string.id_keys_stored_on_mobile_device
                             )
 
                             false -> listOf(
-                                PhosphorIcons.Regular.Coins to Res.string.id_ideal_for_long_term_bitcoin,
+                                PhosphorIcons.Regular.Plugs to Res.string.id_ideal_for_long_term_bitcoin,
                                 PhosphorIcons.Regular.ShieldCheck to Res.string.id_mitigates_common_attacks,
-                                PhosphorIcons.Regular.Key to Res.string.id_keys_stored_on_specialized
+                                PhosphorIcons.Regular.FastForwardCircle to Res.string.id_keys_stored_on_specialized
                             )
                         }.also {
                             it.forEach { (icon, stringRes) ->

@@ -9,7 +9,7 @@ import com.blockstream.common.managers.BluetoothManager
 import com.blockstream.common.managers.LocaleManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.utils.AndroidKeystore
-import com.russhwolf.settings.Settings
+import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.SharedPreferencesSettings
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
@@ -26,7 +26,7 @@ actual val platformModule: Module = module {
     single {
         LocaleManager(get())
     }
-    single<Settings> {
+    single<ObservableSettings> {
         val sharedPreferences = androidContext().getSharedPreferences(
             SettingsManager.APPLICATION_SETTINGS_NAME,
             Context.MODE_PRIVATE

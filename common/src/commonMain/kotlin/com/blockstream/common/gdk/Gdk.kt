@@ -39,6 +39,7 @@ import com.blockstream.common.gdk.params.UpdateSubAccountParams
 import com.blockstream.common.gdk.params.ValidateAddresseesParams
 import com.blockstream.common.platformFileSystem
 import com.blockstream.green.utils.Loggable
+import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.set
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.buildJsonObject
@@ -290,7 +291,7 @@ interface GdkBinding {
 }
 
 class Gdk constructor(
-    private val settings: com.russhwolf.settings.Settings,
+    private val settings: ObservableSettings,
     private val gdkBinding: GdkBinding
 ) : GdkBinding by gdkBinding {
 

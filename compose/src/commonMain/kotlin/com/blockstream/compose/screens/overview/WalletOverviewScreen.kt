@@ -50,11 +50,10 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.components.GreenButton
+import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenTransaction
 import com.blockstream.compose.components.ListHeader
 import com.blockstream.compose.components.Promo
-import com.blockstream.compose.components.Rive
-import com.blockstream.compose.components.RiveAnimation
 import com.blockstream.compose.components.WalletBalance
 import com.blockstream.compose.dialogs.AppRateDialog
 import com.blockstream.compose.dialogs.ArchivedAccountsDialog
@@ -356,8 +355,6 @@ fun WalletOverviewScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
 
-                        Rive(RiveAnimation.WALLET)
-
                         GreenColumn(
                             padding = 0,
                             horizontalAlignment = Alignment.CenterHorizontally
@@ -377,7 +374,7 @@ fun WalletOverviewScreen(
                                 modifier = Modifier.align(Alignment.CenterHorizontally)
                             )
 
-                            GreenButton(text = stringResource(Res.string.id_continue)) {
+                            GreenButton(text = stringResource(Res.string.id_continue), size = GreenButtonSize.BIG) {
                                 viewModel.showWalletOnboarding.value = false
                             }
                         }

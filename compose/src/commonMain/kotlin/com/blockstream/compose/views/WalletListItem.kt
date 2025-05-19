@@ -29,7 +29,6 @@ import blockstream_green.common.generated.resources.id_rename_wallet
 import blockstream_green.common.generated.resources.text_aa
 import blockstream_green.common.generated.resources.trash
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.WalletIcon
 import com.blockstream.common.looks.wallet.WalletListLook
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.MenuEntry
@@ -48,7 +47,6 @@ import org.jetbrains.compose.resources.stringResource
 private fun WalletListRow(
     title: String,
     subtitle: String,
-    walletIcon: WalletIcon,
     isConnected: Boolean,
     onClick: () -> Unit = {},
     onLongClick: () -> Unit = {}
@@ -133,7 +131,6 @@ fun WalletListItem(
         WalletListRow(
             title = look.title,
             subtitle = look.subtitle,
-            walletIcon = look.icon,
             isConnected = look.isConnected,
             onClick = {
                 callbacks.onWalletClick.invoke(look.greenWallet)

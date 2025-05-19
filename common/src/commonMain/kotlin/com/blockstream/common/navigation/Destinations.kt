@@ -13,7 +13,6 @@ import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorSetupAction
 import com.blockstream.common.devices.DeviceModel
-import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalanceList
@@ -21,6 +20,7 @@ import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.gdk.data.AssetBalanceList
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.looks.transaction.TransactionConfirmLook
+import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.jade.JadeQrOperation
 import com.blockstream.common.models.settings.WalletSettingsSection
 import com.blockstream.common.models.sheets.NoteType
@@ -145,29 +145,29 @@ sealed class NavigateDestinations : NavigateDestination() {
     data class Assets constructor(val greenWallet: GreenWallet, val assets: AssetBalanceList) : NavigateDestination() {
         companion object {
             @NativeCoroutines
-            suspend fun create(greenWallet: GreenWallet, session: GdkSession): Assets {
+            suspend fun create(viewModel: GreenViewModel): Assets {
                 return Assets(
-                    greenWallet = greenWallet,
+                    greenWallet = viewModel.greenWallet,
                     assets = withContext(context = Dispatchers.IO) {
                         (listOfNotNull(
                             EnrichedAsset.createOrNull(
-                                session = session,
-                                session.bitcoin?.policyAsset
+                                session = viewModel.session,
+                                viewModel.session.bitcoin?.policyAsset
                             ),
                             EnrichedAsset.createOrNull(
-                                session = session,
-                                session.lightning?.policyAsset
-                            ),
+                                session = viewModel.session,
+                                viewModel.session.lightning?.policyAsset
+                            ).takeIf { viewModel.settingsManager.appSettings.experimentalFeatures },
                             EnrichedAsset.createOrNull(
-                                session = session,
-                                session.liquid?.policyAsset
+                                session = viewModel.session,
+                                viewModel.session.liquid?.policyAsset
                             ),
-                        ) + (session.enrichedAssets.value.takeIf { session.liquid != null }?.map {
-                            EnrichedAsset.create(session = session, assetId = it.assetId)
+                        ) + (viewModel.session.enrichedAssets.value.takeIf { viewModel.session.liquid != null }?.map {
+                            EnrichedAsset.create(session = viewModel.session, assetId = it.assetId)
                         } ?: listOf()) + listOfNotNull(
-                            EnrichedAsset.createAnyAsset(session = session, isAmp = false),
-                            EnrichedAsset.createAnyAsset(session = session, isAmp = true)
-                        ).sortedWith(session::sortEnrichedAssets)).let { list ->
+                            EnrichedAsset.createAnyAsset(session = viewModel.session, isAmp = false),
+                            EnrichedAsset.createAnyAsset(session = viewModel.session, isAmp = true)
+                        ).sortedWith(viewModel.session::sortEnrichedAssets)).let { list ->
                             list.map {
                                 AssetBalance.create(it)
                             }

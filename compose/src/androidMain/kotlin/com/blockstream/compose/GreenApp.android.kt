@@ -22,7 +22,7 @@ import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.green.data.config.AppInfo
 import com.blockstream.ui.navigation.LocalNavigator
 import com.blockstream.ui.navigation.bottomsheet.rememberBottomSheetNavigator
-import com.russhwolf.settings.Settings
+import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.SharedPreferencesSettings
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -46,7 +46,7 @@ fun GreenAndroidPreview(content: @Composable () -> Unit) {
             single {
                 AndroidKeystore(androidContext())
             }
-            single<Settings> {
+            single<ObservableSettings> {
                 val sharedPreferences = androidContext().getSharedPreferences(
                     SettingsManager.APPLICATION_SETTINGS_NAME,
                     Context.MODE_PRIVATE

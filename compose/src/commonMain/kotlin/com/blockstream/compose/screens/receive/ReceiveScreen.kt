@@ -245,8 +245,7 @@ fun ReceiveScreen(
                             scope.launch {
                                 viewModel.postEvent(
                                     NavigateDestinations.Assets.create(
-                                        greenWallet = viewModel.greenWallet,
-                                        session = viewModel.session
+                                        viewModel = viewModel
                                     )
                                 )
                             }

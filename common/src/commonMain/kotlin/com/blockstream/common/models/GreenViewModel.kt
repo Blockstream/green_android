@@ -785,7 +785,7 @@ open class GreenViewModel constructor(
         }
     }
 
-    private fun setActiveAccount(account: Account) {
+    internal fun setActiveAccount(account: Account) {
         session.setActiveAccount(account)
 
         greenWallet.also {

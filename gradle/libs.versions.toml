@@ -165,6 +165,7 @@ ksoup-entites = { module = "com.mohamedrejeb.ksoup:ksoup-entites", version.ref =
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito-kotlin" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatformSettings" }
+multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatformSettings" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 state-keeper = { module = "com.arkivanov.essenty:state-keeper", version.ref = "state-keeper" }
 protobuf-java = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf-java" }

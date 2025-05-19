@@ -162,6 +162,7 @@ kotlin {
             api(libs.uri.kmp)
             api(libs.uuid)
             api(libs.multiplatform.settings)
+            api(libs.multiplatform.settings.coroutines)
             api(libs.okio) // Filesystem
             api(libs.state.keeper)
             api(libs.kase64) // base64

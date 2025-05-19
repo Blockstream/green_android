@@ -31,7 +31,7 @@ class MainViewModel : GreenViewModel(), JadeHttpRequestUrlValidator {
         sessionManager.httpRequestHandler.jadeHttpRequestUrlValidator = this
 
         viewModelScope.launch {
-            appInitWallet.value = DataState.Success(database.getAllWallets().takeIf { it.size == 1 }?.firstOrNull())
+            appInitWallet.value = DataState.Success(database.getAllWallets().takeIf { it.size == 1 && settingsManager.isV5Upgraded()}?.firstOrNull())
         }
 
         bootstrap()

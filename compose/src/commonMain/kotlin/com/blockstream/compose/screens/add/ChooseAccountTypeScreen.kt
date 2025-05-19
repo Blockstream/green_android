@@ -11,10 +11,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -40,12 +37,9 @@ import blockstream_green.common.generated.resources.id_hide_advanced_options
 import blockstream_green.common.generated.resources.id_show_advanced_options
 import blockstream_green.common.generated.resources.id_there_is_already_an_archived
 import blockstream_green.common.generated.resources.id_you_cannot_add_more_than_one
-import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.toggle
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.looks.AccountTypeLook
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.models.add.ChooseAccountTypeViewModel
 import com.blockstream.common.models.add.ChooseAccountTypeViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
@@ -69,13 +63,13 @@ import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.ui.utils.ifTrue
 import com.blockstream.compose.utils.roundBackground
 import com.blockstream.ui.components.GreenArrow
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.navigation.getResult
 import com.blockstream.ui.navigation.setResult
+import com.blockstream.ui.utils.ifTrue
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
@@ -155,8 +149,7 @@ fun ChooseAccountTypeScreen(
                 scope.launch {
                     viewModel.postEvent(
                         NavigateDestinations.Assets.create(
-                            greenWallet = viewModel.greenWallet,
-                            session = viewModel.session
+                            viewModel = viewModel
                         )
                     )
                 }

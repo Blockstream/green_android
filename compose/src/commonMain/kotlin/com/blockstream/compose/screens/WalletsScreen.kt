@@ -1,6 +1,7 @@
 package com.blockstream.compose.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -89,82 +90,61 @@ fun WalletsScreen(
         viewModel.postEvent(NavigateDestinations.RenameWallet(it))
     }, hasContextMenu = true)
 
-    GreenColumn(
-        space = 8,
-        padding = 0,
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(modifier)
-    ) {
+    Box {
 
-        val lazyListState = rememberLazyListState()
-
-        LazyColumn(
-            state = lazyListState,
+        GreenColumn(
+            space = 8,
+            padding = 0,
             modifier = Modifier
-                .fadingEdges(lazyListState)
-                .weight(1f),
-            verticalArrangement = Arrangement.spacedBy(6.dp),
+                .fillMaxWidth()
+                .then(modifier)
         ) {
-            item {
-                Promo(viewModel = viewModel, modifier = Modifier.padding(top = 16.dp))
+
+            val lazyListState = rememberLazyListState()
+
+            LazyColumn(
+                state = lazyListState,
+                modifier = Modifier
+                    .fadingEdges(lazyListState)
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                item {
+                    Promo(viewModel = viewModel, modifier = Modifier.padding(top = 16.dp))
+                }
+
+                allWallets?.takeIf { it.isNotEmpty() }?.also {
+                    walletSection(
+                        title = Res.string.id_my_wallets,
+                        wallets = it,
+                        callbacks = callbacks
+                    )
+                }
             }
 
-            allWallets?.takeIf { it.isNotEmpty() }?.also {
-                walletSection(
-                    title = Res.string.id_my_wallets,
-                    wallets = it,
-                    callbacks = callbacks
-                )
-            }
+            if (isEmptyWallet == false) {
+                GreenCard(onClick = {
+                    viewModel.postEvent(NavigateDestinations.GetStarted)
+                }, modifier = Modifier.padding(bottom = 16.dp), padding = 0) {
+                    Row(
+                        modifier = Modifier
+                            .height(60.dp)
+                            .padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.id_setup_a_new_wallet),
+                            modifier = Modifier.weight(1f),
+                            style = labelMedium
+                        )
 
-//            softwareWallets?.takeIf { it.isNotEmpty() }?.also {
-//                walletSection(
-//                    title = Res.string.id_my_wallets,
-//                    wallets = it,
-//                    callbacks = callbacks
-//                )
-//            }
-//
-//            ephemeralWallets?.takeIf { it.isNotEmpty() }?.also {
-//                walletSection(
-//                    title = Res.string.id_ephemeral_wallets,
-//                    wallets = it,
-//                    callbacks = callbacks
-//                )
-//            }
-//
-//            hardwareWallets?.takeIf { it.isNotEmpty() }?.also {
-//                walletSection(
-//                    title = Res.string.id_hardware_devices,
-//                    wallets = it,
-//                    callbacks = callbacks
-//                )
-//            }
-        }
-
-        if (isEmptyWallet == false) {
-            GreenCard(onClick = {
-                viewModel.postEvent(NavigateDestinations.GetStarted)
-            }, modifier = Modifier.padding(bottom = 16.dp), padding = 0) {
-                Row(
-                    modifier = Modifier
-                        .height(60.dp)
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(Res.string.id_setup_a_new_wallet),
-                        modifier = Modifier.weight(1f),
-                        style = labelMedium
-                    )
-
-                    Icon(
-                        painter = painterResource(Res.drawable.caret_right),
-                        contentDescription = null,
-                        tint = whiteLow,
-                        modifier = Modifier.size(16.dp)
-                    )
+                        Icon(
+                            painter = painterResource(Res.drawable.caret_right),
+                            contentDescription = null,
+                            tint = whiteLow,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
                 }
             }
         }

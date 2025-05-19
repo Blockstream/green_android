@@ -269,7 +269,6 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
         combine(accountAsset, showLightningOnChainAddress, receiveAddress, onProgress) { accountAsset, showLightningOnChainAddress, receiveAddress, onProgress ->
             _navData.value = NavData(
                 title = getString(Res.string.id_receive),
-                subtitle = greenWallet.name,
                 actions = listOfNotNull(
                     NavAction(
                         title = getString(Res.string.id_note),
@@ -336,7 +335,9 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
             }.launchIn(this)
 
             assetAccounts.onEach {
-                accountAsset.value = it.find { it.account.id == accountAsset.value?.account?.id }?.accountAsset ?: it.firstOrNull()?.accountAsset
+                accountAsset.value = (it.find { it.account.id == accountAsset.value?.account?.id }?.accountAsset ?: it.firstOrNull()?.accountAsset)?.also {
+                    setActiveAccount(it.account)
+                }
             }.launchIn(this)
 
             combine(accountAsset, showLightningOnChainAddress) { accountAsset, showLightningOnChainAddress ->
