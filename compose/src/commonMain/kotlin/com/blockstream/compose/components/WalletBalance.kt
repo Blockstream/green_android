@@ -20,7 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.eye
 import blockstream_green.common.generated.resources.eye_slash
-import blockstream_green.common.generated.resources.id_total_balance
+import blockstream_green.common.generated.resources.id_total_bitcoin_balance
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.models.overview.IWalletBalance
 import com.blockstream.common.models.overview.WalletBalanceViewModel.LocalEvents
@@ -34,7 +34,7 @@ import org.jetbrains.compose.resources.stringResource
 fun WalletBalance(modifier: Modifier = Modifier, viewModel: IWalletBalance) {
     Column(modifier = Modifier.fillMaxWidth().then(modifier)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = stringResource(Res.string.id_total_balance), color = textMedium)
+            Text(text = stringResource(Res.string.id_total_bitcoin_balance), color = textMedium)
             val hideAmounts by viewModel.hideAmounts.collectAsStateWithLifecycle()
             Icon(
                 painter = painterResource(if (hideAmounts) Res.drawable.eye_slash else Res.drawable.eye),
