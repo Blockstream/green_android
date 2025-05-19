@@ -13,7 +13,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.hw_matrix_bg
 import blockstream_green.common.generated.resources.id_new_wallet
 import blockstream_green.common.generated.resources.id_restore_wallet
 import blockstream_green.common.generated.resources.id_take_control_your_keys_your
@@ -56,13 +55,6 @@ fun AddWalletScreen(
                 .weight(2f)
                 .padding(horizontal = 24.dp),
         ) {
-            Image(
-                painter = painterResource(Res.drawable.hw_matrix_bg),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.align(Alignment.Center)
-            )
-
             Image(
                 painter = painterResource(Res.drawable.phone_keys),
                 contentDescription = null,

@@ -17,7 +17,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.hw_matrix_bg
 import blockstream_green.common.generated.resources.id_authenticate_your_jade
 import blockstream_green.common.generated.resources.id_cancel
 import blockstream_green.common.generated.resources.id_confirm_on_your_device
@@ -71,13 +70,6 @@ fun JadeGenuineCheckScreen(
     }) {
 
         Box(modifier = Modifier.weight(4f).fillMaxWidth()) {
-            Image(
-                painter = painterResource(Res.drawable.hw_matrix_bg),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.align(Alignment.Center)
-            )
-
             Image(
                 painter = painterResource(device.icon()),
                 contentDescription = null,

@@ -24,7 +24,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.hw_matrix_bg
 import blockstream_green.common.generated.resources.id_continue
 import blockstream_green.common.generated.resources.id_create_a_pin
 import blockstream_green.common.generated.resources.id_enter_and_confirm_a_unique_pin
@@ -133,13 +132,6 @@ fun DeviceInfoScreen(
         ) {
 
             Box(modifier = Modifier.weight(1f)) {
-                Image(
-                    painter = painterResource(Res.drawable.hw_matrix_bg),
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-
                 Image(
                     painter = painterResource(device.icon()),
                     contentDescription = null,

@@ -23,7 +23,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.blockstream_jade_plus_device
-import blockstream_green.common.generated.resources.hw_matrix_bg
 import blockstream_green.common.generated.resources.id_a_new_device_has_been_detected
 import blockstream_green.common.generated.resources.id_genuine_check
 import blockstream_green.common.generated.resources.id_genuine_check_is_mandatory_for
@@ -64,12 +63,6 @@ fun NewJadeConnectedBottomSheet(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
             Box(modifier = Modifier.heightIn(max = 200.dp).fillMaxWidth()) {
-                Image(
-                    painter = painterResource(Res.drawable.hw_matrix_bg),
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.align(Alignment.Center)
-                )
 
                 Image(
                     painter = painterResource(Res.drawable.blockstream_jade_plus_device),

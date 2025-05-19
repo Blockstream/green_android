@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.arrow_square_out
 import blockstream_green.common.generated.resources.hardware_security
-import blockstream_green.common.generated.resources.hw_matrix_bg
 import blockstream_green.common.generated.resources.id_check_our_store
 import blockstream_green.common.generated.resources.id_connect_a_different_hardware
 import blockstream_green.common.generated.resources.id_connect_jade

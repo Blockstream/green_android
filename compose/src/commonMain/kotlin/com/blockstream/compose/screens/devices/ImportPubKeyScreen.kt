@@ -21,7 +21,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.hw_matrix_bg
 import blockstream_green.common.generated.resources.id_continue
 import blockstream_green.common.generated.resources.id_import_pubkey
 import blockstream_green.common.generated.resources.id_learn_more
@@ -78,13 +77,6 @@ fun ImportPubKeyScreen(
         ) {
 
             Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                Image(
-                    painter = painterResource(Res.drawable.hw_matrix_bg),
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-
                 Image(
                     painter = painterResource(deviceModel.icon()),
                     contentDescription = null,

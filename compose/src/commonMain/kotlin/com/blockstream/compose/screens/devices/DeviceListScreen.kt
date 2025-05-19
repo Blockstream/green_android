@@ -33,7 +33,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.ble
 import blockstream_green.common.generated.resources.blockstream_devices
-import blockstream_green.common.generated.resources.hw_matrix_bg
 import blockstream_green.common.generated.resources.id_blockstream_green_needs_access
 import blockstream_green.common.generated.resources.id_choose_a_usb_or_bluetooth
 import blockstream_green.common.generated.resources.id_connect_using_usb_or_bluetooth
@@ -263,11 +262,6 @@ fun DeviceListScreen(
                             } else {
 
                                 Box(modifier = Modifier.weight(1f)) {
-                                    Image(
-                                        painter = painterResource(Res.drawable.hw_matrix_bg),
-                                        contentDescription = null
-                                    )
-
                                     Image(
                                         painter = painterResource(Res.drawable.ledger_trezor),
                                         contentDescription = null

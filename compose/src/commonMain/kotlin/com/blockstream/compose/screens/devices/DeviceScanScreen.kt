@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.generic_device
-import blockstream_green.common.generated.resources.hw_matrix_bg
 import blockstream_green.common.generated.resources.id_blockstream_green_needs_access
 import blockstream_green.common.generated.resources.id_connect_usb_cable_or_enable
 import blockstream_green.common.generated.resources.id_enable_bluetooth
@@ -73,14 +72,6 @@ fun DeviceScanScreen(
     SetupScreen(viewModel = viewModel, withPadding = false, horizontalAlignment = Alignment.CenterHorizontally) {
 
         Box(modifier = Modifier.weight(1f)) {
-
-            Image(
-                painter = painterResource(Res.drawable.hw_matrix_bg),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.align(Alignment.Center)
-            )
-
             Image(
                 painter = painterResource(
                     viewModel.greenWallet.deviceIdentifiers?.firstOrNull()?.let {
