@@ -440,7 +440,10 @@ fun ReceiveScreen(
 
                                                 Text(
                                                     text = stringResource(Res.string.id_please_verify_that_the_address),
-                                                    style = bodyMedium
+                                                    textAlign = TextAlign.Center,
+                                                    color = whiteMedium,
+                                                    style = bodyMedium,
+                                                    modifier = Modifier.fillMaxWidth()
                                                 )
                                             }
                                         }

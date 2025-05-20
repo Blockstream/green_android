@@ -40,7 +40,7 @@ class NewWalletUseCase(
             isRestore = false
         )
 
-        session.initiatedDefaultAccountsAsync()
+        session.setupDefaultAccounts()
 
         val wallet = GreenWallet.createWallet(
             name = generateWalletName(settingsManager),

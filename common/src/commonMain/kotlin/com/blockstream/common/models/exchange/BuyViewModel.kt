@@ -183,7 +183,8 @@ class BuyViewModel(greenWallet: GreenWallet) :
                     )
                 )
             } else {
-                accountAsset.value = accounts.first().accountAsset
+                val activeAccountId = (accountAsset.value?.account?.id ?: session.activeAccount.value?.id)
+                accountAsset.value = accounts.find { it.id == activeAccountId }?.accountAsset ?: accounts.first().accountAsset
             }
         }
 

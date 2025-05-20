@@ -47,9 +47,8 @@ object Urls {
     const val HELP_HW_EXPORT_XPUB = "https://help.blockstream.com/hc/en-us/articles/33140904892057"
     const val HELP_CENTER = "https://help.blockstream.com/hc/en-us/categories/900000056183-Blockstream-Green/"
     const val RECOVERY_TOOL = "https://github.com/greenaddress/garecovery"
-    const val JADE_STORE = "https://store.blockstream.com/product/blockstream-jade/"
+    const val JADE_STORE = "https://store.blockstream.com/products/jade-plus"
     const val JADE_TROUBLESHOOT = "https://help.blockstream.com/hc/en-us/articles/4406185830041-Why-is-my-Blockstream-Jade-not-connecting-over-Bluetooth-"
-    const val HARDWARE_STORE = "https://store.blockstream.com/product-category/physical_storage/"
     const val LEDGER_SUPPORTED_ASSETS = "https://docs.blockstream.com/green/hww/hww-index.html#ledger-supported-assets"
     const val BLUETOOTH_PERMISSIONS = "https://developer.android.com/guide/topics/connectivity/bluetooth/permissions"
 }

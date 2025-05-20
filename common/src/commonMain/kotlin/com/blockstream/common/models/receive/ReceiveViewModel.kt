@@ -332,11 +332,12 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
 
             accountAsset.filterNotNull().onEach {
                 asset.value = it.asset
+                setActiveAccount(it.account)
             }.launchIn(this)
 
-            assetAccounts.onEach {
-                accountAsset.value = (it.find { it.account.id == accountAsset.value?.account?.id }?.accountAsset ?: it.firstOrNull()?.accountAsset)?.also {
-                    setActiveAccount(it.account)
+            assetAccounts.onEach { assetAccounts ->
+                if (assetAccounts.isNotEmpty()) {
+                    accountAsset.value = (assetAccounts.find { it.account.id == accountAsset.value?.account?.id }?.accountAsset ?: assetAccounts.firstOrNull()?.accountAsset)
                 }
             }.launchIn(this)
 

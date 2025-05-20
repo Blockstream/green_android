@@ -136,6 +136,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -1631,19 +1632,8 @@ class GdkSession constructor(
 
         setupDeviceToSession(device)
 
-        // Login into Multisig
-        val newNetworks = networks(isTestnet = isTestnet, isWatchOnly = false, device = device).subtract(gdkSessions.keys.toList())
-
-        scope.launch {
-            newNetworks.forEach {
-                initNetworkIfNeeded(network = it) {
-
-                }
-            }
-
-            updateAccountsAndBalances()
-            updateWalletTransactions()
-        }
+        updateAccountsAndBalances()
+        updateWalletTransactions()
     }
 
     private fun setupDeviceToSession(device: GreenDevice?) {
@@ -1910,41 +1900,40 @@ class GdkSession constructor(
     }
     override fun getAssets(params: GetAssetsParams) = (activeLiquid ?: liquid)?.let { gdk.getAssets(gdkSession(it), params) }
 
-    fun initiatedDefaultAccountsAsync() {
-        scope.launch {
-            // Archive all accounts on the newly created wallet
-            accounts.value.forEach { account ->
+    fun setupDefaultAccounts(): Job {
+        return scope.launch {
+            // Archive default gdk accounts with no history
+            accounts.value.filter { (it.type == AccountType.BIP44_LEGACY || it.type == AccountType.BIP49_SEGWIT_WRAPPED) && !it.hasHistory(this@GdkSession)}.forEach { account ->
                 logger.d { "Archive ${account.name}" }
                 updateAccount(
                     account = account, isHidden = true, resetAccountName = account.type.title()
                 )
             }
 
-            // Create Singlesig account
+            // Create Singlesig Segwit accounts
             val accountType = AccountType.BIP84_SEGWIT
 
-            // Bitcoin
-            bitcoinSinglesig?.also {
-                logger.d { "Creating ${it.name} account" }
-                createAccount(
-                    network = it,
-                    params = SubAccountParams(
-                        name = accountType.toString(),
-                        type = accountType,
+            // Create Bitcoin & Liquid accounts if do not exists
+            listOfNotNull(bitcoinSinglesig, liquidSinglesig).forEach { network ->
+                if(accounts.value.find { it.type == accountType && it.network.id == network.id} == null) {
+                    logger.d { "Creating ${network.name} account" }
+                    createAccount(
+                        network = network,
+                        params = SubAccountParams(
+                            name = accountType.toString(),
+                            type = accountType,
+                        )
                     )
-                )
+                }
             }
 
-            // Liquid
-            liquidSinglesig?.also {
-                logger.d { "Creating ${it.name} account" }
-                createAccount(
-                    network = it,
-                    params = SubAccountParams(
-                        name = accountType.toString(),
-                        type = accountType,
-                    )
-                )
+            // Be sure to update all accounts so that we properly calculate balances
+            updateAccountsAndBalances().join()
+
+            // Set active account as the first funded account or the first with history
+            (accounts.value.find { !it.isLightning && it.isFunded(this@GdkSession) } ?:
+            accounts.value.find { it.hasHistory(this@GdkSession) })?.also {
+                setActiveAccount(it)
             }
         }
     }
@@ -2168,9 +2157,9 @@ class GdkSession constructor(
         refresh: Boolean = false,
         updateBalancesForNetwork: Network? = null,
         updateBalancesForAccounts: Collection<Account>? = null
-    ) {
+    ): Job {
 
-        scope.launch(context = logException(countly)) {
+        return scope.launch(context = logException(countly)) {
 
             try{
                 accountsAndBalancesMutex.withLock {
@@ -2610,7 +2599,7 @@ class GdkSession constructor(
     // onlyInAcceptableRange return MIN, MAX values so that the error pop in different gdk call
     suspend fun convert(assetId: String? = null, asString: String? = null, asLong: Long? = null, denomination: String? = null, onlyInAcceptableRange: Boolean = true): Balance? = withContext(context = Dispatchers.Default) {
         
-        val network = assetId.networkForAsset(this@GdkSession) ?: defaultNetwork
+        val network = assetId.networkForAsset(this@GdkSession)?.takeIf { !it.isLightning } ?: defaultNetwork
         val isPolicyAsset = assetId.isPolicyAsset(this@GdkSession)
         val asset = assetId?.let { getAsset(it) }
 

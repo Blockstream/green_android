@@ -74,7 +74,7 @@ import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.md_theme_brandSurface
 import com.blockstream.compose.theme.titleLarge
-import com.blockstream.compose.theme.titleMedium
+import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.HandleSideEffect
@@ -490,6 +490,7 @@ fun Key(
 //            .padding(vertical = 4.dp)
             .then(modifier),
         colors = ButtonDefaults.buttonColors(
+            contentColor = whiteHigh,
             containerColor = MaterialTheme.colorScheme.inverseSurface,
             disabledContainerColor = MaterialTheme.colorScheme.inverseSurface
         ),

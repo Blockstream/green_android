@@ -166,7 +166,7 @@ sealed class NavigateDestinations : NavigateDestination() {
                             EnrichedAsset.createOrNull(
                                 session = viewModel.session,
                                 viewModel.session.lightning?.policyAsset
-                            ).takeIf { viewModel.settingsManager.appSettings.experimentalFeatures },
+                            ).takeIf { viewModel.session.hasLightning },
                             EnrichedAsset.createOrNull(
                                 session = viewModel.session,
                                 viewModel.session.liquid?.policyAsset

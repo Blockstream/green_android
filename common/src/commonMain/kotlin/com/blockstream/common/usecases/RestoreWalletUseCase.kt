@@ -46,6 +46,9 @@ class RestoreWalletUseCase(
             isRestore = true
         )
 
+        // Wait for setup to gets completed so that the active account is set
+        session.setupDefaultAccounts().join()
+
         val wallet: GreenWallet
 
         if (greenWallet == null) {
@@ -75,8 +78,6 @@ class RestoreWalletUseCase(
                     database.replaceLoginCredential(loginCredentials)
                 }
 
-
-                // Create Lightning Shortcut
                 val encryptedData = withContext(context = Dispatchers.IO) {
                     greenKeystore.encryptData(session.deriveLightningMnemonic().encodeToByteArray())
                 }

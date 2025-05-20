@@ -30,6 +30,7 @@ class EnableHardwareWatchOnlyUseCase(
 
         val accounts = session.allAccounts.value
 
+        // Only if all accounts are singlesig you can enable
         if (accounts.all { it.isSinglesig }) {
             val hwWatchOnlyCredentials =
                 accounts.filter { it.isSinglesig }.groupBy { it.network }.mapValues {

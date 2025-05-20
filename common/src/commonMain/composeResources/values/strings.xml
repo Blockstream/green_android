@@ -150,7 +150,7 @@
     <string name="id_authenticator_app">Authenticator app</string>
     <string name="id_authenticator_qr_code">Authenticator QR Code</string>
     <string name="id_authenticator_secret_key">Authenticator secret key</string>
-    <string name="id_auto_logout_timeout">Auto logout timeout</string>
+    <string name="id_auto_logout_timeout">Auto Logout Timeout</string>
     <string name="id_auto_logout_timeout_expired">Auto logout timeout expired</string>
     <string name="id_autolock_after">Autolock After</string>
     <string name="id_available">Available</string>
