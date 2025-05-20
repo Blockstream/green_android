@@ -41,6 +41,7 @@ import blockstream_green.common.generated.resources.eye
 import blockstream_green.common.generated.resources.eye_slash
 import blockstream_green.common.generated.resources.id_authenticate
 import blockstream_green.common.generated.resources.id_bip39_passphrase_login
+import blockstream_green.common.generated.resources.id_connect_hardware_wallet
 import blockstream_green.common.generated.resources.id_connecting_through_tor
 import blockstream_green.common.generated.resources.id_emergency_recovery_phrase
 import blockstream_green.common.generated.resources.id_enter_your_pin
@@ -72,6 +73,7 @@ import com.blockstream.compose.components.AppSettingsButton
 import com.blockstream.compose.components.Banner
 import com.blockstream.compose.components.BiometricsButton
 import com.blockstream.compose.components.GreenButton
+import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.components.RichWatchOnlyButton
 import com.blockstream.compose.extensions.icon
@@ -93,7 +95,6 @@ import com.blockstream.compose.views.PinView
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.components.GreenSpacer
-import com.blockstream.ui.navigation.LocalNavigator
 import com.blockstream.ui.navigation.getResult
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
@@ -111,8 +112,8 @@ fun LoginScreen(
     val pinCredentials by viewModel.pinCredentials.collectAsStateWithLifecycle()
     val passwordCredentials by viewModel.passwordCredentials.collectAsStateWithLifecycle()
     val biometricsCredentials by viewModel.biometricsCredentials.collectAsStateWithLifecycle()
-    val biometricsMnemonicCredentials by viewModel.biometricsMnemonicCredentials.collectAsStateWithLifecycle()
     val mnemonicCredentials by viewModel.mnemonicCredentials.collectAsStateWithLifecycle()
+    val hwWatchOnlyCredentials by viewModel.hwWatchOnlyCredentials.collectAsStateWithLifecycle()
 
     NavigateDestinations.Bip39Passphrase.getResult<String> {
         viewModel.postEvent(
@@ -268,7 +269,7 @@ fun LoginScreen(
                 Banner(viewModel)
             }
 
-            if (viewModel.greenWallet.isWatchOnly) {
+            if (viewModel.greenWallet.isWatchOnly || hwWatchOnlyCredentials.isSuccess()) {
                 if (!onProgress) {
                     Box(
                         contentAlignment = Alignment.BottomCenter,
@@ -360,6 +361,20 @@ fun LoginScreen(
                                 enabled = isWatchOnlyLoginEnabled
                             ) {
                                 viewModel.postEvent(LoginViewModel.LocalEvents.LoginWatchOnly)
+                            }
+
+                            if(hwWatchOnlyCredentials.isSuccess()){
+                                GreenButton(
+                                    text = stringResource(Res.string.id_connect_hardware_wallet),
+                                    type = GreenButtonType.TEXT,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    viewModel.postEvent(
+                                        NavigateDestinations.DeviceScan(
+                                            greenWallet = viewModel.greenWallet
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
@@ -559,7 +574,7 @@ fun LoginScreen(
                                     )
                                 }
                             }
-                        } else if (biometricsCredentials.isNotEmpty() || biometricsMnemonicCredentials.isNotEmpty()) {
+                        } else if (biometricsCredentials.isNotEmpty()) {
 
                             Box(modifier = Modifier.fillMaxSize()) {
                                 Icon(
@@ -583,7 +598,7 @@ fun LoginScreen(
                     .fillMaxWidth()
             ) {
 
-                if ((biometricsCredentials.isNotEmpty() || biometricsMnemonicCredentials.isNotEmpty()) && !onProgress) {
+                if (biometricsCredentials.isNotEmpty() && !onProgress) {
                     BiometricsButton(modifier = Modifier.align(Alignment.CenterStart)) {
                         viewModel.postEvent(LoginViewModel.LocalEvents.ClickBiometrics)
                     }

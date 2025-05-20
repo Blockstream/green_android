@@ -30,7 +30,7 @@ class EnableHardwareWatchOnlyUseCase(
 
         val accounts = session.allAccounts.value
 
-        if (accounts.all { it.isSinglesig && !it.hidden }) {
+        if (accounts.all { it.isSinglesig }) {
             val hwWatchOnlyCredentials =
                 accounts.filter { it.isSinglesig }.groupBy { it.network }.mapValues {
                     it.value.map {
@@ -50,6 +50,8 @@ class EnableHardwareWatchOnlyUseCase(
             val encryptedData = greenKeystore.encryptData(
                 hwWatchOnlyCredentials.toJson().encodeToByteArray()
             )
+
+            logger.d { "Creating HW Watch-only credentials" }
 
             val loginCredentials = createLoginCredentials(
                 walletId = greenWallet.id,

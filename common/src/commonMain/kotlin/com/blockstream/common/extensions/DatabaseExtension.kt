@@ -34,6 +34,8 @@ val List<LoginCredentials>.pinPinData
     get() = find { it.credential_type == CredentialType.PIN_PINDATA && it.counter < 3 }
 val List<LoginCredentials>.mnemonic
     get() = find { it.credential_type == CredentialType.KEYSTORE_MNEMONIC }
+val List<LoginCredentials>.biometrics
+    get() = find { it.credential_type == CredentialType.BIOMETRICS_PINDATA || it.credential_type == CredentialType.BIOMETRICS_MNEMONIC || it.credential_type == CredentialType.BIOMETRICS_WATCHONLY_CREDENTIALS }
 val List<LoginCredentials>.biometricsPinData
     get() = find { it.credential_type == CredentialType.BIOMETRICS_PINDATA }
 val List<LoginCredentials>.biometricsMnemonic

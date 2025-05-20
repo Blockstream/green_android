@@ -62,6 +62,7 @@ class NotificationManagerAndroid constructor(
     private var scope: CoroutineScope = CoroutineScope(SupervisorJob())
 
     private var isOnForeground: Boolean = false
+    private var lastForegroundTime: Long = System.currentTimeMillis()
 
     private var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -102,6 +103,7 @@ class NotificationManagerAndroid constructor(
 
     override fun onPause(owner: LifecycleOwner) {
         isOnForeground = false
+        lastForegroundTime = System.currentTimeMillis()
         updateNotifications()
     }
 
@@ -213,7 +215,7 @@ class NotificationManagerAndroid constructor(
                 }
 
                 if (timeout > 0) {
-                    setWhen(System.currentTimeMillis() + timeout)
+                    setWhen(lastForegroundTime + timeout)
                     setShowWhen(true)
                     setUsesChronometer(true)
                     setChronometerCountDown(true)

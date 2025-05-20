@@ -1631,8 +1631,19 @@ class GdkSession constructor(
 
         setupDeviceToSession(device)
 
-        updateAccountsAndBalances()
-        updateWalletTransactions()
+        // Login into Multisig
+        val newNetworks = networks(isTestnet = isTestnet, isWatchOnly = false, device = device).subtract(gdkSessions.keys.toList())
+
+        scope.launch {
+            newNetworks.forEach {
+                initNetworkIfNeeded(network = it) {
+
+                }
+            }
+
+            updateAccountsAndBalances()
+            updateWalletTransactions()
+        }
     }
 
     private fun setupDeviceToSession(device: GreenDevice?) {

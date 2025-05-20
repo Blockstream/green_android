@@ -37,8 +37,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
-abstract class HomeViewModelAbstract() : GreenViewModel() {
-    override fun screenName(): String? = "Home"
+abstract class HomeViewModelAbstract(val isGetStarted: Boolean = false) : GreenViewModel() {
+    override fun screenName(): String? = if(isGetStarted) "GetStarted" else "Home"
 
     @NativeCoroutinesState
     abstract val isEmptyWallet: StateFlow<Boolean?>
@@ -50,7 +50,7 @@ abstract class HomeViewModelAbstract() : GreenViewModel() {
     abstract val showV5Upgrade: StateFlow<Boolean>
 }
 
-class HomeViewModel(val isGetStarted: Boolean = false) : HomeViewModelAbstract() {
+class HomeViewModel(isGetStarted: Boolean = false) : HomeViewModelAbstract(isGetStarted = isGetStarted) {
 
     class LocalEvents {
         object GetStarted : Event
