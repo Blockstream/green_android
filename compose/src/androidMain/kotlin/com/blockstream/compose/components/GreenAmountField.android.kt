@@ -19,7 +19,7 @@ fun GreenAmountFieldPreview() {
 
         GreenColumn {
             var amount by remember {
-                mutableStateOf("123999999999999999999")
+                mutableStateOf("")
             }
             val secondaryValue by remember { derivedStateOf {
                 amount

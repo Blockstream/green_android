@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,9 +32,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
@@ -106,6 +109,29 @@ fun GreenAmountField(
         )
     }
 
+    // Holds the latest internal TextFieldValue state. We need to keep it to have the correct value
+    // of the composition.
+    var textFieldValueState by remember {
+        mutableStateOf(
+            TextFieldValue(
+                text = value, selection = TextRange(value.length)
+            )
+        )
+    }
+
+    // Holds the latest TextFieldValue that BasicTextField was recomposed with. We couldn't simply
+    // pass `TextFieldValue(text = value)` to the CoreTextField because we need to preserve the
+    // composition.
+    val textFieldValue = textFieldValueState.copy(text = value)
+
+    SideEffect {
+        if (textFieldValue.selection != textFieldValueState.selection ||
+            textFieldValue.composition != textFieldValueState.composition
+        ) {
+            textFieldValueState = textFieldValue
+        }
+    }
+
     Column {
         val isEditable = enabled && !isAmountLocked
 
@@ -133,9 +159,11 @@ fun GreenAmountField(
                             .padding(horizontal = max(startRowWidth, endRowWidth))
                     ) {
                         BasicTextField(
-                            value = value,
+                            value = textFieldValueState,
                             onValueChange = {
-                                onValueChange(formatter.cleanup(it))
+                                textFieldValueState = formatter.cleanup(it).also {
+                                    onValueChange(it.text)
+                                }
                             },
                             enabled = isEditable,
                             readOnly = isReadyOnly,

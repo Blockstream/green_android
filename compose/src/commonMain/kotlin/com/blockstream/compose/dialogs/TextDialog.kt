@@ -38,12 +38,12 @@ import com.blockstream.common.utils.DecimalFormat
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.utils.DecimalFormatter
 import com.blockstream.compose.utils.OpenKeyboard
+import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -109,7 +109,7 @@ fun TextDialog(
                     value = textFieldValueState,
                     onValueChange = {
                         textFieldValueState = if(keyboardOptions?.keyboardType == KeyboardType.Decimal){
-                            it.copy(text = formatter.cleanup(it.text))
+                            formatter.cleanup(it)
                         }else{
                             it
                         }

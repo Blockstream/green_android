@@ -1,10 +1,28 @@
 package com.blockstream.compose.utils
 
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
+
+
 class DecimalFormatter(
     val decimalSeparator: Char,
     val groupingSeparator: Char
 ) {
+    fun cleanup(input: TextFieldValue): TextFieldValue {
+        val originalSize = input.text.length
+        val cleanup = cleanup(input.text)
+        val newSize = cleanup.length
+
+        return input.copy(
+            text = cleanup,
+            selection = if (originalSize != newSize) TextRange(newSize) else input.selection
+        )
+    }
+
     fun cleanup(input: String): String {
+        if (input == decimalSeparator.toString() || input == groupingSeparator.toString()) {
+            return "0$decimalSeparator"
+        }
 
         if (input.matches("\\D".toRegex())) return ""
         if (input.matches("0+".toRegex())) return "0"
