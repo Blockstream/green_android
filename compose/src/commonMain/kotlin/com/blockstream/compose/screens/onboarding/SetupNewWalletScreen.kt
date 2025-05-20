@@ -84,7 +84,7 @@ fun SetupNewWalletScreen(
                 enabled = !onProgress,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                viewModel.postEvent(SetupNewWalletViewModel.LocalEvents.SetupMobileWallet)
+                viewModel.onSetupNewWallet()
             }
 
             GreenButton(

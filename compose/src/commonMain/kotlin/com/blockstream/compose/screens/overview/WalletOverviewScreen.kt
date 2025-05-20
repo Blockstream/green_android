@@ -357,7 +357,7 @@ fun WalletOverviewScreen(
                                 text = stringResource(Res.string.id_continue),
                                 size = GreenButtonSize.BIG
                             ) {
-                                viewModel.showWalletOnboarding.value = false
+                                viewModel.dismissWalletOnboarding()
                             }
                         }
                     }

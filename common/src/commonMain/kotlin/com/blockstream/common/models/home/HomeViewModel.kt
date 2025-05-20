@@ -38,7 +38,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 abstract class HomeViewModelAbstract(val isGetStarted: Boolean = false) : GreenViewModel() {
-    override fun screenName(): String? = if(isGetStarted) "GetStarted" else "Home"
+    override fun screenName(): String? = if (isGetStarted) "GetStarted" else "Home"
 
     @NativeCoroutinesState
     abstract val isEmptyWallet: StateFlow<Boolean?>
@@ -50,7 +50,8 @@ abstract class HomeViewModelAbstract(val isGetStarted: Boolean = false) : GreenV
     abstract val showV5Upgrade: StateFlow<Boolean>
 }
 
-class HomeViewModel(isGetStarted: Boolean = false) : HomeViewModelAbstract(isGetStarted = isGetStarted) {
+class HomeViewModel(isGetStarted: Boolean = false) :
+    HomeViewModelAbstract(isGetStarted = isGetStarted) {
 
     class LocalEvents {
         object GetStarted : Event
@@ -68,9 +69,12 @@ class HomeViewModel(isGetStarted: Boolean = false) : HomeViewModelAbstract(isGet
             !it
         }).stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
-    override val showV5Upgrade: StateFlow<Boolean> = combine(settingsManager.isV5UpgradedFlow(), isEmptyWallet.filterNotNull()) { isV5Upgraded, isEmptyWallet ->
-        if(!isV5Upgraded) {
-            if(isEmptyWallet){
+    override val showV5Upgrade: StateFlow<Boolean> = combine(
+        settingsManager.isV5UpgradedFlow(),
+        isEmptyWallet.filterNotNull()
+    ) { isV5Upgraded, isEmptyWallet ->
+        if (!isV5Upgraded) {
+            if (isEmptyWallet) {
                 // Mark it as upgraded
                 settingsManager.setV5Upgraded()
             }
@@ -190,6 +194,7 @@ class HomeViewModel(isGetStarted: Boolean = false) : HomeViewModelAbstract(isGet
             is LocalEvents.GetStarted -> {
                 if (handleConsentDialog()) {
                     postSideEffect(SideEffects.NavigateTo(NavigateDestinations.SetupNewWallet))
+                    countly.getStarted()
                 }
             }
 

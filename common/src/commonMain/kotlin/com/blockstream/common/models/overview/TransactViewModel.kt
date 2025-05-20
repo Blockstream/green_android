@@ -33,11 +33,13 @@ abstract class TransactViewModelAbstract(
     abstract val transactions: StateFlow<DataState<List<TransactionLook>>>
 
     fun buy() {
+        countly.buyInitiate()
         postEvent(
             NavigateDestinations.Buy(
                 greenWallet = greenWallet
             )
         )
+        countly.buyInitiate()
     }
 }
 

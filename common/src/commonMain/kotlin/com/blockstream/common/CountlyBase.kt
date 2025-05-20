@@ -462,6 +462,18 @@ abstract class CountlyBase(
         eventRecord(Events.BUY_REDIRECT.toString())
     }
 
+    fun getStarted() {
+        eventRecord(Events.GET_STARTED.toString())
+    }
+
+    fun swwCreated() {
+        eventRecord(Events.SWW_CREATED.toString())
+    }
+
+    fun setupSww() {
+        eventRecord(Events.SETUP_SWW.toString())
+    }
+
     fun addWallet() {
         eventRecord(Events.WALLET_ADD.toString())
     }
@@ -863,6 +875,10 @@ abstract class CountlyBase(
 
         BUY_INITIATE("buy_initiate"),
         BUY_REDIRECT("buy_redirect"),
+
+        GET_STARTED("get_started"),
+        SWW_CREATED("sww_created"),
+        SETUP_SWW("setup_sww"),
 
         WALLET_ADD("wallet_add"),
         WALLET_HWW("wallet_hww"),

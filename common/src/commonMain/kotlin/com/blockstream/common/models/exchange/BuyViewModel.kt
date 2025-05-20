@@ -122,7 +122,9 @@ abstract class BuyViewModelAbstract(
             onProgress.value = false
             _onProgressBuy.value = false
             onProgressDescription.value = null
+            countly.buyRedirect()
         }, onSuccess = {
+            countly.buyRedirect()
             postSideEffect(SideEffects.OpenBrowser(url = it, type = OpenBrowserType.MELD))
         })
     }

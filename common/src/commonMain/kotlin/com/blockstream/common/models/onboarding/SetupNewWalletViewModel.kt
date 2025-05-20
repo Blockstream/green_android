@@ -30,6 +30,12 @@ import org.koin.core.component.inject
 abstract class SetupNewWalletViewModelAbstract(greenWalletOrNull: GreenWallet? = null) :
     GreenViewModel(greenWalletOrNull = greenWalletOrNull) {
     override fun screenName(): String = "SetupNewWallet"
+
+    fun onSetupNewWallet(){
+        postEvent(SetupNewWalletViewModel.LocalEvents.SetupMobileWallet)
+        countly.setupSww()
+    }
+
 }
 
 class SetupNewWalletViewModel(greenWalletOrNull: GreenWallet? = null) :

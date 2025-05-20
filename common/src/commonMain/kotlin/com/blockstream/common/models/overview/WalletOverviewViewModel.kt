@@ -116,7 +116,10 @@ abstract class WalletOverviewViewModelAbstract(
                             )
                         }),
                         title = asset.name(session).getStringOrNull(),
-                        message = getString(Res.string.id_your_s_total_balance_is_the_sum_of, asset.name(session).getString()),
+                        message = getString(
+                            Res.string.id_your_s_total_balance_is_the_sum_of,
+                            asset.name(session).getString()
+                        ),
                         withAsset = false,
                         withArrow = false,
                         withAssetIcon = false,
@@ -133,6 +136,12 @@ abstract class WalletOverviewViewModelAbstract(
                 greenWallet = greenWallet,
             )
         )
+        countly.buyInitiate()
+    }
+
+    fun dismissWalletOnboarding() {
+        countly.swwCreated()
+        showWalletOnboarding.value = false
     }
 }
 
