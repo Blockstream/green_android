@@ -39,6 +39,7 @@ import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.Rive
 import com.blockstream.compose.components.RiveAnimation
+import com.blockstream.compose.components.ScreenContainer
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
@@ -68,96 +69,96 @@ fun JadeGuideScreen(
         step = (step + 1).takeIf { it < 3 } ?: 0
     }
 
-    Column {
-
-        Box(modifier = Modifier.weight(1f)) {
-            if (!LocalInspectionMode.current) {
-                (0 until 3).forEach {
-                    androidx.compose.animation.AnimatedVisibility(
-                        visible = step == it,
-                        enter = fadeIn(),
-                        exit = fadeOut()
-                    ) {
-                        Rive(
-                            riveAnimation = when (it) {
-                                0 -> RiveAnimation.JADE_BUTTON
-                                1 -> RiveAnimation.RECOVERY_PHRASE
-                                else -> RiveAnimation.JADE_SCROLL
-                            }
-                        )
-                    }
-                }
-            }
-        }
-
-        GreenColumn {
-
-            GreenColumn(padding = 0, space = 8) {
-
-                (0 until 3).forEachIndexed { index, s ->
-                    GreenCard(
-                        onClick = {
-                            step = s
-                        },
-                        border = BorderStroke(
-                            1.dp,
-                            if (step == s) green else MaterialTheme.colorScheme.outlineVariant
-                        )
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.fillMaxWidth()
+    ScreenContainer(viewModel = viewModel, withPadding = false) {
+        Column {
+            Box(
+                modifier = Modifier.weight(1f), contentAlignment = Alignment.Center
+            ) {
+                if (!LocalInspectionMode.current) {
+                    (0 until 3).forEach {
+                        androidx.compose.animation.AnimatedVisibility(
+                            visible = step == it,
+                            enter = fadeIn(),
+                            exit = fadeOut()
                         ) {
-                            Text(
-                                text = stringResource(Res.string.id_step_1s, (index + 1)),
-                                color = green,
-                                style = labelMedium,
-                                textAlign = TextAlign.Center
-                            )
-
-                            when (s) {
-                                0 -> Res.string.id_initialize_and_create_wallet
-                                1 -> Res.string.id_backup_recovery_phrase
-                                else -> Res.string.id_verify_recovery_phrase
-                            }.also {
-                                Text(
-                                    stringResource(it),
-                                    textAlign = TextAlign.Center,
-                                    style = labelLarge,
-                                    color = if (step == s) whiteHigh else whiteMedium
-                                )
-                            }
-
-                            AnimatedVisibility(visible = step == s) {
-                                when (s) {
-                                    0 -> Res.string.id_select_initialize_and_choose_to
-                                    1 -> Res.string.id_note_down_your_recovery_phrase
-                                    else -> Res.string.id_use_the_jogwheel_to_select_the
-                                }.also {
-                                    Text(
-                                        stringResource(it),
-                                        textAlign = TextAlign.Center,
-                                        style = bodyMedium,
-                                        color = whiteMedium,
-                                        minLines = 2
-                                    )
+                            Rive(
+                                riveAnimation = when (it) {
+                                    0 -> RiveAnimation.JADE_BUTTON
+                                    1 -> RiveAnimation.RECOVERY_PHRASE
+                                    else -> RiveAnimation.JADE_SCROLL
                                 }
-                            }
+                            )
                         }
                     }
                 }
             }
 
-            GreenButton(
-                text = stringResource(Res.string.id_exit_guide),
-                modifier = Modifier
-                    .padding(top = 16.dp)
-                    .fillMaxWidth(),
-                size = GreenButtonSize.BIG,
-                type = GreenButtonType.OUTLINE,
-                color = GreenButtonColor.WHITE,
-            ) {
-                viewModel.postEvent(Events.NavigateBack)
+            GreenColumn {
+
+                GreenColumn(padding = 0, space = 8) {
+
+                    (0 until 3).forEachIndexed { index, s ->
+                        GreenCard(
+                            onClick = {
+                                step = s
+                            }, border = BorderStroke(
+                                1.dp,
+                                if (step == s) green else MaterialTheme.colorScheme.outlineVariant
+                            )
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = stringResource(Res.string.id_step_1s, (index + 1)),
+                                    color = green,
+                                    style = labelMedium,
+                                    textAlign = TextAlign.Center
+                                )
+
+                                when (s) {
+                                    0 -> Res.string.id_initialize_and_create_wallet
+                                    1 -> Res.string.id_backup_recovery_phrase
+                                    else -> Res.string.id_verify_recovery_phrase
+                                }.also {
+                                    Text(
+                                        stringResource(it),
+                                        textAlign = TextAlign.Center,
+                                        style = labelLarge,
+                                        color = if (step == s) whiteHigh else whiteMedium
+                                    )
+                                }
+
+                                AnimatedVisibility(visible = step == s) {
+                                    when (s) {
+                                        0 -> Res.string.id_select_initialize_and_choose_to
+                                        1 -> Res.string.id_note_down_your_recovery_phrase
+                                        else -> Res.string.id_use_the_jogwheel_to_select_the
+                                    }.also {
+                                        Text(
+                                            stringResource(it),
+                                            textAlign = TextAlign.Center,
+                                            style = bodyMedium,
+                                            color = whiteMedium,
+                                            minLines = 2
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                GreenButton(
+                    text = stringResource(Res.string.id_exit_guide),
+                    modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
+                    size = GreenButtonSize.BIG,
+                    type = GreenButtonType.OUTLINE,
+                    color = GreenButtonColor.WHITE,
+                ) {
+                    viewModel.postEvent(Events.NavigateBack)
+                }
             }
         }
     }
