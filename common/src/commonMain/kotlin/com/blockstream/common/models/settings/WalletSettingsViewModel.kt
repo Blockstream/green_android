@@ -13,7 +13,6 @@ import blockstream_green.common.generated.resources.id_about
 import blockstream_green.common.generated.resources.id_another_2fa_method_is_already
 import blockstream_green.common.generated.resources.id_confirm_via_2fa_that_you
 import blockstream_green.common.generated.resources.id_copied_to_clipboard
-import blockstream_green.common.generated.resources.id_copy_amp_id
 import blockstream_green.common.generated.resources.id_creating_your_s_account
 import blockstream_green.common.generated.resources.id_customize_2fa_expiration_of
 import blockstream_green.common.generated.resources.id_general
@@ -57,6 +56,7 @@ import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.extensions.tryCatchNull
+import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.Settings
@@ -159,6 +159,7 @@ class WalletSettingsViewModel(
         object RecoveryPhrase : Event
         object SupportId : Event
 
+        data class CopyAmpId(val account: Account? = null) : Event
         data class ChooseAccountType(val accountType: AccountType) : Event
         data object DisableLightning: Event
         data class CreateAccount(val accountType: AccountType, val asset: EnrichedAsset? = null) : Event
@@ -171,6 +172,7 @@ class WalletSettingsViewModel(
         data class OpenTwoFactorThershold(val threshold: String) : SideEffect
         data class Disable2FA(val title: String, val message: String, val method: TwoFactorMethod, val availableMethods: List<TwoFactorMethod>, val network: Network): SideEffect
         object LaunchBiometrics : SideEffect
+        data class CopyAmpId(val accounts: List<Account>) : SideEffect
 
         class ArchivedAccountDialog(event: Event) : SideEffects.SideEffectEvent(event) {
             constructor(sideEffect: SideEffect) : this(Events.EventSideEffect(sideEffect))
@@ -362,21 +364,8 @@ class WalletSettingsViewModel(
                     list += WalletSetting.Text(getString(Res.string.id_wallet))
                     list += listOfNotNull(
                         WalletSetting.Lightning(enabled = session.hasLightning).takeIf { session.lightning != null },
-                        WalletSetting.CreateAmpAccount.takeIf { session.accounts.value.find { it.type == AccountType.AMP_ACCOUNT } == null }
-                    )
-
-                    list += session.accounts.value.filter { it.type == AccountType.AMP_ACCOUNT }.let { accounts ->
-                        accounts.map { account ->
-                            WalletSetting.CopyAmpId(
-                                title = getString(Res.string.id_copy_amp_id).let {
-                                    it + (" (${account.name})".takeIf { accounts.size > 1 } ?: "")
-                                }.trim(),
-                                receivingId = account.receivingId
-                            )
-                        }
-                    }
-
-                    list += listOfNotNull(
+                        WalletSetting.CreateAmpAccount.takeIf { session.accounts.value.find { it.type == AccountType.AMP_ACCOUNT } == null },
+                        WalletSetting.CopyAmpId.takeIf { session.accounts.value.any { it.type == AccountType.AMP_ACCOUNT } },
                         WalletSetting.WatchOnly,
                         WalletSetting.RenameWallet,
                         WalletSetting.ArchivedAccounts
@@ -408,6 +397,13 @@ class WalletSettingsViewModel(
         super.handleEvent(event)
 
         when (event) {
+            is LocalEvents.CopyAmpId -> {
+                if (event.account == null) {
+                    postSideEffect(LocalSideEffects.CopyAmpId(session.accounts.value.filter { it.type == AccountType.AMP_ACCOUNT }))
+                } else {
+                    postSideEffect(SideEffects.CopyToClipboard(event.account.receivingId))
+                }
+            }
             is LocalEvents.ChooseAccountType -> {
                 chooseAccountType(event.accountType)
             }

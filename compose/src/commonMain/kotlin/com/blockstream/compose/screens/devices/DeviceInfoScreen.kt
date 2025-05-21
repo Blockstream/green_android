@@ -112,7 +112,7 @@ fun DeviceInfoScreen(
     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
 
     SetupScreen(viewModel = viewModel, withPadding = false, onProgressStyle = OnProgressStyle.Disabled, sideEffectsHandler = {
-        if(it is DeviceInfoViewModel.LocalSideEffects.SelectFirmwareChannel) {
+        if (it is DeviceInfoViewModel.LocalSideEffects.SelectFirmwareChannel) {
             channels = it.channels
             viewModel.postEvent(
                 NavigateDestinations.Menu(
@@ -121,7 +121,8 @@ fun DeviceInfoScreen(
                         MenuEntry(
                             title = it,
                         )
-                    }))
+                    })
+                )
             )
         }
     }) {

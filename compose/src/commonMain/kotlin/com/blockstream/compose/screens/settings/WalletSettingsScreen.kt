@@ -44,6 +44,7 @@ import blockstream_green.common.generated.resources.id_biometric_login_is_disabl
 import blockstream_green.common.generated.resources.id_biometric_login_is_enabled
 import blockstream_green.common.generated.resources.id_change_pin
 import blockstream_green.common.generated.resources.id_continue
+import blockstream_green.common.generated.resources.id_copy_amp_id
 import blockstream_green.common.generated.resources.id_copy_support_id
 import blockstream_green.common.generated.resources.id_denomination__exchange_rate
 import blockstream_green.common.generated.resources.id_display_values_in_s_and
@@ -84,8 +85,9 @@ import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorSetupAction
 import com.blockstream.common.data.WalletSetting
-import com.blockstream.common.events.Events
 import com.blockstream.common.events.Events.Logout
+import com.blockstream.common.gdk.data.AccountAssetBalance
+import com.blockstream.common.gdk.data.AccountAssetBalanceList
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.models.settings.DenominationExchangeRateViewModel
 import com.blockstream.common.models.settings.WalletSettingsSection
@@ -102,7 +104,6 @@ import com.blockstream.common.navigation.NavigateDestinations.RenameWallet
 import com.blockstream.common.navigation.NavigateDestinations.Support
 import com.blockstream.common.navigation.NavigateDestinations.WalletSettings
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.sideeffects.SideEffects.CopyToClipboard
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.getBitcoinOrLiquidUnit
 import com.blockstream.compose.LocalBiometricState
@@ -250,6 +251,10 @@ fun WalletSettingsScreen(
         viewModel.postEvent(LocalEvents.CreateLightningAccount(it.result))
     }
 
+    NavigateDestinations.Accounts.getResult<AccountAssetBalance> {
+        viewModel.postEvent(LocalEvents.CopyAmpId(it.account))
+    }
+
     val items by viewModel.items.collectAsStateWithLifecycle()
     val innerPadding = LocalInnerPadding.current
     val dialog = LocalDialog.current
@@ -262,6 +267,18 @@ fun WalletSettingsScreen(
         onProgressStyle = OnProgressStyle.Full(bluBackground = true),
         sideEffectsHandler = {
         when (it) {
+            is LocalSideEffects.CopyAmpId -> {
+                viewModel.postEvent(
+                    NavigateDestinations.Accounts(
+                        greenWallet = viewModel.greenWallet,
+                        title = getString(Res.string.id_copy_amp_id),
+                        accounts = AccountAssetBalanceList(it.accounts.map { it.accountAssetBalance }),
+                        withAsset = false,
+                        withAssetIcon = false,
+                        withArrow = false,
+                    )
+                )
+            }
             is LocalSideEffects.ArchivedAccountDialog -> {
                 launch {
                     dialog.openDialog(
@@ -680,10 +697,10 @@ fun WalletSettingsScreen(
 
                     is WalletSetting.CopyAmpId -> {
                         Setting(
-                            title = item.title,
-                            imageVector = PhosphorIcons.Regular.Copy,
+                            title = stringResource(Res.string.id_copy_amp_id),
+                            imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
-                                viewModel.postEvent(Events.EventSideEffect(CopyToClipboard(item.receivingId)))
+                                 viewModel.postEvent(LocalEvents.CopyAmpId())
                             }
                         )
                     }

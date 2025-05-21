@@ -88,22 +88,6 @@ val AppTypeMap = mapOf(
 inline fun <reified T : Any> NavGraphBuilder.appComposable(noinline content: @Composable (AnimatedContentScope.(NavBackStackEntry) -> Unit)) {
     composable<T>(
         typeMap = AppTypeMap,
-        enterTransition = {
-            fadeIn() + slideInHorizontally(initialOffsetX = {
-                it / 2
-            })
-        },
-        exitTransition = {
-            fadeOut() + slideOutHorizontally()
-        },
-        popEnterTransition = {
-            fadeIn() + slideInHorizontally()
-        },
-        popExitTransition = {
-            fadeOut() + slideOutHorizontally(targetOffsetX = {
-                it
-            })
-        }
     ) {
         // Inject LocalNavBackStackEntry to every Screen
         CompositionLocalProvider(

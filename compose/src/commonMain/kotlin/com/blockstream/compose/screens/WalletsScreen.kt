@@ -40,7 +40,6 @@ import com.blockstream.compose.views.WalletListItem
 import com.blockstream.compose.views.WalletListItemCallbacks
 import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 open class WalletSectionCallbacks constructor(

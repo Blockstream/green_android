@@ -507,6 +507,8 @@ fun HandleSideEffect(
                                     },
                                     onSecondary = {
                                         viewModel.postEvent(Events.RespondToFirmwareUpgrade(index = null))
+                                    }, onDismiss = {
+                                        viewModel.postEvent(Events.RespondToFirmwareUpgrade(index = null))
                                     }, onItem = {
                                         if (it != null) {
                                             viewModel.postEvent(

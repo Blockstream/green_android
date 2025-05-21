@@ -1,6 +1,10 @@
 package com.blockstream.compose.navigation
 
 
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -203,7 +207,23 @@ fun Router(
     ) {
         NavHost(
             navController = navController,
-            startDestination = startDestination
+            startDestination = startDestination,
+            enterTransition = {
+                fadeIn() + slideInHorizontally(initialOffsetX = {
+                    it / 2
+                })
+            },
+            exitTransition = {
+                fadeOut() + slideOutHorizontally()
+            },
+            popEnterTransition = {
+                fadeIn() + slideInHorizontally()
+            },
+            popExitTransition = {
+                fadeOut() + slideOutHorizontally(targetOffsetX = {
+                    it
+                })
+            }
         ) {
             appComposable<NavigateDestinations.Home> {
                 HomeScreen(viewModel { HomeViewModel() })
