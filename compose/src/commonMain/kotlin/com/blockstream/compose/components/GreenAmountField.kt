@@ -122,10 +122,14 @@ fun GreenAmountField(
     // Holds the latest TextFieldValue that BasicTextField was recomposed with. We couldn't simply
     // pass `TextFieldValue(text = value)` to the CoreTextField because we need to preserve the
     // composition.
-    val textFieldValue = textFieldValueState.copy(text = value)
+    val textFieldValue = textFieldValueState.copy(
+        text = value,
+        selection = if (textFieldValueState.text.length != value.length) TextRange(value.length) else textFieldValueState.selection
+    )
 
     SideEffect {
         if (textFieldValue.selection != textFieldValueState.selection ||
+            textFieldValue.text != textFieldValueState.text ||
             textFieldValue.composition != textFieldValueState.composition
         ) {
             textFieldValueState = textFieldValue
