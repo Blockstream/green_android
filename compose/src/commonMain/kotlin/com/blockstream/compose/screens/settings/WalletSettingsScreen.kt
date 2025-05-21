@@ -50,6 +50,7 @@ import blockstream_green.common.generated.resources.id_display_values_in_s_and
 import blockstream_green.common.generated.resources.id_enabled
 import blockstream_green.common.generated.resources.id_experimental_feature
 import blockstream_green.common.generated.resources.id_experimental_features_might
+import blockstream_green.common.generated.resources.id_generate_amp_id
 import blockstream_green.common.generated.resources.id_genuine_check
 import blockstream_green.common.generated.resources.id_get_support
 import blockstream_green.common.generated.resources.id_i_lost_my_2fa
@@ -83,6 +84,7 @@ import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorSetupAction
 import com.blockstream.common.data.WalletSetting
+import com.blockstream.common.events.Events
 import com.blockstream.common.events.Events.Logout
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.models.settings.DenominationExchangeRateViewModel
@@ -96,8 +98,11 @@ import com.blockstream.common.models.settings.WalletSettingsViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.navigation.NavigateDestinations.ArchivedAccounts
 import com.blockstream.common.navigation.NavigateDestinations.JadeGenuineCheck
+import com.blockstream.common.navigation.NavigateDestinations.RenameWallet
+import com.blockstream.common.navigation.NavigateDestinations.Support
 import com.blockstream.common.navigation.NavigateDestinations.WalletSettings
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.sideeffects.SideEffects.CopyToClipboard
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.getBitcoinOrLiquidUnit
 import com.blockstream.compose.LocalBiometricState
@@ -385,7 +390,7 @@ fun WalletSettingsScreen(
                                 color = whiteHigh
                             ),
                             modifier = Modifier.clickable {
-                                viewModel.postEvent(WalletSettingsViewModel.LocalEvents.DenominationExchangeRate)
+                                viewModel.postEvent(LocalEvents.DenominationExchangeRate)
                             }
                         )
                     }
@@ -408,7 +413,7 @@ fun WalletSettingsScreen(
                             title = stringResource(Res.string.id_wallet_details),
                             imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
-                                viewModel.postEvent(WalletSettingsViewModel.LocalEvents.WatchOnly)
+                                viewModel.postEvent(LocalEvents.WatchOnly)
                             }
                         )
                     }
@@ -421,7 +426,7 @@ fun WalletSettingsScreen(
                                 item.timeout
                             ),
                             modifier = Modifier.clickable {
-                                viewModel.postEvent(WalletSettingsViewModel.LocalEvents.AutologoutTimeout)
+                                viewModel.postEvent(LocalEvents.AutologoutTimeout)
                             })
                     }
 
@@ -440,10 +445,10 @@ fun WalletSettingsScreen(
                             title = stringResource(Res.string.id_recovery_transaction_emails),
                             checked = item.enabled,
                             onCheckedChange = {
-                                viewModel.postEvent(WalletSettingsViewModel.LocalEvents.RecoveryTransactionEmails)
+                                viewModel.postEvent(LocalEvents.RecoveryTransactionEmails)
                             },
                             modifier = Modifier.clickable {
-                                viewModel.postEvent(WalletSettingsViewModel.LocalEvents.RecoveryTransactionEmails)
+                                viewModel.postEvent(LocalEvents.RecoveryTransactionEmails)
                             }
                         )
                     }
@@ -452,7 +457,7 @@ fun WalletSettingsScreen(
                         Setting(
                             title = stringResource(Res.string.id_request_recovery_transactions),
                             modifier = Modifier.clickable {
-                                viewModel.postEvent(WalletSettingsViewModel.LocalEvents.RequestRecoveryTransactions)
+                                viewModel.postEvent(LocalEvents.RequestRecoveryTransactions)
                             })
                     }
 
@@ -461,7 +466,7 @@ fun WalletSettingsScreen(
                             title = stringResource(Res.string.id_set_an_email_for_recovery),
                             imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
-                                viewModel.postEvent(WalletSettingsViewModel.LocalEvents.SetupEmailRecovery)
+                                viewModel.postEvent(LocalEvents.SetupEmailRecovery)
                             })
                     }
 
@@ -470,7 +475,7 @@ fun WalletSettingsScreen(
                             title = stringResource(Res.string.id_change_pin),
                             imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
-                                viewModel.postEvent(WalletSettingsViewModel.LocalEvents.ChangePin)
+                                viewModel.postEvent(LocalEvents.ChangePin)
                             })
                     }
 
@@ -491,11 +496,11 @@ fun WalletSettingsScreen(
                             checked = item.enabled,
                             enabled = !onProgress,
                             onCheckedChange = {
-                                viewModel.postEvent(WalletSettingsViewModel.LocalEvents.LoginWithBiometrics)
+                                viewModel.postEvent(LocalEvents.LoginWithBiometrics)
                             },
                             modifier = Modifier.clickable {
                                 if (!onProgress) {
-                                    viewModel.postEvent(WalletSettingsViewModel.LocalEvents.LoginWithBiometrics)
+                                    viewModel.postEvent(LocalEvents.LoginWithBiometrics)
                                 }
                             }
                         )
@@ -506,7 +511,7 @@ fun WalletSettingsScreen(
                             title = stringResource(Res.string.id_pgp_key),
                             subtitle = if (item.enabled) null else stringResource(Res.string.id_add_a_pgp_public_key_to_receive),
                             modifier = Modifier.clickable {
-                                viewModel.postEvent(WalletSettingsViewModel.LocalEvents.PgpKey)
+                                viewModel.postEvent(LocalEvents.PgpKey)
                             }
                         )
                     }
@@ -516,7 +521,7 @@ fun WalletSettingsScreen(
                             title = stringResource(Res.string.id_twofactor_authentication),
                             imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
-                                viewModel.postEvent(WalletSettingsViewModel.LocalEvents.TwoFactorAuthentication)
+                                viewModel.postEvent(LocalEvents.TwoFactorAuthentication)
                             }
                         )
                     }
@@ -527,7 +532,7 @@ fun WalletSettingsScreen(
                             subtitle = stringResource(Res.string.id_touch_to_display),
                             imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
-                                viewModel.postEvent(WalletSettingsViewModel.LocalEvents.RecoveryPhrase)
+                                viewModel.postEvent(LocalEvents.RecoveryPhrase)
                             }
                         )
                     }
@@ -548,7 +553,7 @@ fun WalletSettingsScreen(
                             subtitle = stringResource(Res.string.id_copy_support_id),
                             imageVector = PhosphorIcons.Regular.Copy,
                             modifier = Modifier.clickable {
-                                viewModel.postEvent(WalletSettingsViewModel.LocalEvents.SupportId)
+                                viewModel.postEvent(LocalEvents.SupportId)
                             })
                     }
 
@@ -581,7 +586,7 @@ fun WalletSettingsScreen(
                             title = stringResource(Res.string.id_2fa_threshold),
                             subtitle = item.subtitle,
                             modifier = Modifier.clickable {
-                                viewModel.postEvent(WalletSettingsViewModel.LocalEvents.TwoFactorThreshold)
+                                viewModel.postEvent(LocalEvents.TwoFactorThreshold)
                             }
                         )
                     }
@@ -655,7 +660,7 @@ fun WalletSettingsScreen(
                             imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(
-                                    NavigateDestinations.Support(
+                                    Support(
                                         type = SupportType.INCIDENT,
                                         supportData = SupportData.create(session = viewModel.sessionOrNull),
                                         greenWalletOrNull = viewModel.greenWalletOrNull
@@ -668,7 +673,25 @@ fun WalletSettingsScreen(
                         Setting(
                             title = stringResource(Res.string.id_rename_wallet),
                             modifier = Modifier.clickable {
-                                viewModel.postEvent(NavigateDestinations.RenameWallet(viewModel.greenWallet))
+                                viewModel.postEvent(RenameWallet(viewModel.greenWallet))
+                            }
+                        )
+                    }
+
+                    is WalletSetting.CopyAmpId -> {
+                        Setting(
+                            title = item.title,
+                            imageVector = PhosphorIcons.Regular.Copy,
+                            modifier = Modifier.clickable {
+                                viewModel.postEvent(Events.EventSideEffect(CopyToClipboard(item.receivingId)))
+                            }
+                        )
+                    }
+                    WalletSetting.CreateAmpAccount -> {
+                        Setting(
+                            title = stringResource(Res.string.id_generate_amp_id),
+                            modifier = Modifier.clickable {
+                                viewModel.postEvent(LocalEvents.ChooseAccountType(AccountType.AMP_ACCOUNT))
                             }
                         )
                     }

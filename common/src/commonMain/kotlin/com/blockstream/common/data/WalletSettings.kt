@@ -41,6 +41,13 @@ sealed class WalletSetting{
         val subtitle: String
     ) : WalletSetting()
 
+    data class CopyAmpId(
+        val title: String,
+        val receivingId: String,
+    ) : WalletSetting()
+
+    data object CreateAmpAccount : WalletSetting()
+
     data object RenameWallet : WalletSetting()
     data object GetSupport : WalletSetting()
     data object SupportId : WalletSetting()

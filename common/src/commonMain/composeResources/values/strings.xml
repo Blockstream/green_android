@@ -1672,4 +1672,6 @@
     <string name="id_wallet_details">Wallet Details</string>
     <string name="id_your_s_total_balance_is_the_sum_of">Your %1$d total balance is the sum of the balances across these accounts.</string>
     <string name="id_total_bitcoin_balance">Total Bitcoin Balance</string>
+    <string name="id_generate_amp_id">Generate AMP ID</string>
+    <string name="id_copy_amp_id">Copy AMP ID</string>
 </resources>

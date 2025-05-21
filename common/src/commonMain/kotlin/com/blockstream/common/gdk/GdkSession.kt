@@ -402,6 +402,9 @@ class GdkSession constructor(
     var isLightningShortcut : Boolean = false
         private set
 
+    val hasAmpAccount: Boolean
+        get() = accounts.value.find { it.type == AccountType.AMP_ACCOUNT } != null
+
     private var _lightningAccount: Account? = null
 
     val lightningAccount : Account

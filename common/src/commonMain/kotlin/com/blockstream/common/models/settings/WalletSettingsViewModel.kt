@@ -13,6 +13,7 @@ import blockstream_green.common.generated.resources.id_about
 import blockstream_green.common.generated.resources.id_another_2fa_method_is_already
 import blockstream_green.common.generated.resources.id_confirm_via_2fa_that_you
 import blockstream_green.common.generated.resources.id_copied_to_clipboard
+import blockstream_green.common.generated.resources.id_copy_amp_id
 import blockstream_green.common.generated.resources.id_creating_your_s_account
 import blockstream_green.common.generated.resources.id_customize_2fa_expiration_of
 import blockstream_green.common.generated.resources.id_general
@@ -361,7 +362,21 @@ class WalletSettingsViewModel(
                     list += WalletSetting.Text(getString(Res.string.id_wallet))
                     list += listOfNotNull(
                         WalletSetting.Lightning(enabled = session.hasLightning).takeIf { session.lightning != null },
-                        // WalletSetting.AMP(enabled = false)
+                        WalletSetting.CreateAmpAccount.takeIf { session.accounts.value.find { it.type == AccountType.AMP_ACCOUNT } == null }
+                    )
+
+                    list += session.accounts.value.filter { it.type == AccountType.AMP_ACCOUNT }.let { accounts ->
+                        accounts.map { account ->
+                            WalletSetting.CopyAmpId(
+                                title = getString(Res.string.id_copy_amp_id).let {
+                                    it + (" (${account.name})".takeIf { accounts.size > 1 } ?: "")
+                                }.trim(),
+                                receivingId = account.receivingId
+                            )
+                        }
+                    }
+
+                    list += listOfNotNull(
                         WalletSetting.WatchOnly,
                         WalletSetting.RenameWallet,
                         WalletSetting.ArchivedAccounts

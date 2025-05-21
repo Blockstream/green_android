@@ -171,10 +171,10 @@ sealed class NavigateDestinations : NavigateDestination() {
                                 session = viewModel.session,
                                 viewModel.session.liquid?.policyAsset
                             ),
-                        ) + (viewModel.session.enrichedAssets.value.takeIf { viewModel.session.liquid != null }?.map {
+                        ) + (viewModel.session.enrichedAssets.value.takeIf { viewModel.session.liquid != null }?.filter { !it.isAmp || viewModel.session.hasAmpAccount }?.map {
                             EnrichedAsset.create(session = viewModel.session, assetId = it.assetId)
                         } ?: listOf()) + listOfNotNull(
-                            EnrichedAsset.createAnyAsset(session = viewModel.session, isAmp = false),
+                            EnrichedAsset.createAnyAsset(session = viewModel.session, isAmp = false).takeIf { viewModel.session.hasAmpAccount },
                             EnrichedAsset.createAnyAsset(session = viewModel.session, isAmp = true).takeIf { !viewModel.session.isHwWatchOnly }
                         ).sortedWith(viewModel.session::sortEnrichedAssets)).let { list ->
                             list.map {
