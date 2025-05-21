@@ -5,7 +5,7 @@ import org.koin.dsl.module
 
 val btcPriceHistoryModule = module {
     single {
-        BitcoinPriceHistoryHttpClient()
+        BitcoinPriceHistoryHttpClient(get())
     }
 
     single {

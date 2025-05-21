@@ -391,6 +391,7 @@ class WalletOverviewViewModel(
 
             is LocalEvents.Refresh -> {
                 sessionOrNull?.refresh()
+                refetchBitcoinPriceHistory()
             }
 
             is Events.DismissSystemMessage -> {

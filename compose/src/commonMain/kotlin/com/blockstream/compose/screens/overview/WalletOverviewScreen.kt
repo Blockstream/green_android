@@ -12,8 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.pullToRefresh
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -78,6 +77,8 @@ import com.blockstream.ui.utils.bottom
 import com.blockstream.ui.utils.plus
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 
 @Composable
@@ -149,14 +150,12 @@ fun WalletOverviewScreen(
         }
     }
 
-    var isRefreshing by remember {
-        mutableStateOf(false)
-    }
-    val state = rememberPullToRefreshState()
-    if (isRefreshing) {
-        LaunchedEffect(true) {
+    var isRefreshing by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isRefreshing) {
+        if(isRefreshing){
             viewModel.postEvent(WalletOverviewViewModel.LocalEvents.Refresh)
-            delay(1500)
+            delay(1.toDuration(DurationUnit.SECONDS))
             isRefreshing = false
         }
     }
@@ -166,7 +165,8 @@ fun WalletOverviewScreen(
     SetupScreen(viewModel = viewModel, sideEffectsHandler = {
         when (it) {
             is SideEffects.OpenDenominationExchangeRate -> {
-                denominationExchangeRateViewModel = DenominationExchangeRateViewModel(viewModel.greenWallet)
+                denominationExchangeRateViewModel =
+                    DenominationExchangeRateViewModel(viewModel.greenWallet)
             }
 
             is SideEffects.AppReview -> {
@@ -179,8 +179,13 @@ fun WalletOverviewScreen(
         }
     }, withPadding = false, withBottomInsets = false) {
 
-        Box(modifier = Modifier.fillMaxSize()) {
-
+        PullToRefreshBox(
+            modifier =  Modifier.fillMaxSize(),
+            isRefreshing = isRefreshing,
+            onRefresh = {
+                isRefreshing = true
+            },
+        ) {
             val isWalletOnboarding by viewModel.showWalletOnboarding.collectAsStateWithLifecycle()
             val alerts by viewModel.alerts.collectAsStateWithLifecycle()
             val assets by viewModel.assets.collectAsStateWithLifecycle()
@@ -196,9 +201,6 @@ fun WalletOverviewScreen(
                     .bottom()
                     .plus(PaddingValues(horizontal = 16.dp))
                     .plus(PaddingValues(bottom = (80.dp + 16.dp))),
-                modifier = Modifier.pullToRefresh(isRefreshing = isRefreshing, state = state) {
-                    isRefreshing = true
-                }
             ) {
                 item(key = "WalletBalance") {
                     WalletBalance(viewModel = viewModel)
@@ -349,7 +351,10 @@ fun WalletOverviewScreen(
                                 modifier = Modifier.align(Alignment.CenterHorizontally)
                             )
 
-                            GreenButton(text = stringResource(Res.string.id_continue), size = GreenButtonSize.BIG) {
+                            GreenButton(
+                                text = stringResource(Res.string.id_continue),
+                                size = GreenButtonSize.BIG
+                            ) {
                                 viewModel.showWalletOnboarding.value = false
                             }
                         }
