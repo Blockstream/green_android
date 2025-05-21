@@ -24,7 +24,6 @@ import com.blockstream.compose.LocalPreview
 import com.blockstream.compose.R
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 actual fun Rive(riveAnimation: RiveAnimation) {
     val path = when (riveAnimation) {
@@ -37,6 +36,7 @@ actual fun Rive(riveAnimation: RiveAnimation) {
         RiveAnimation.JADE_SCROLL -> "jade_scroll.riv"
         RiveAnimation.JADE_POWER -> "jade_power.riv"
         RiveAnimation.RECOVERY_PHRASE -> "recovery_phrase.riv"
+        RiveAnimation.GREEN_TO_BLOCKSTREAM -> "green_to_blockstream.riv"
         RiveAnimation.NONE -> null
     }?.let {
         "files/rive/$it"

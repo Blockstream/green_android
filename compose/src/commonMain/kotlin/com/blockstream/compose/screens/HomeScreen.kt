@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
@@ -24,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.brand
-import blockstream_green.common.generated.resources.green_to_blockstream
 import blockstream_green.common.generated.resources.id_by_using_blockstream_app_you_agree
 import blockstream_green.common.generated.resources.id_connect_jade
 import blockstream_green.common.generated.resources.id_everything_you_need_to_take
@@ -44,6 +44,8 @@ import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.Promo
+import com.blockstream.compose.components.Rive
+import com.blockstream.compose.components.RiveAnimation
 import com.blockstream.compose.extensions.colorText
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
@@ -57,7 +59,6 @@ import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.navigation.getResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun HomeScreen(
@@ -68,9 +69,7 @@ fun HomeScreen(
     }
 
     SetupScreen(
-        viewModel = viewModel,
-        withPadding = false,
-        modifier = Modifier.padding(horizontal = 16.dp)
+        viewModel = viewModel, withPadding = false, modifier = Modifier.padding(horizontal = 16.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
 
@@ -78,9 +77,7 @@ fun HomeScreen(
                 Image(
                     painter = painterResource(Res.drawable.brand),
                     contentDescription = null,
-                    modifier = Modifier
-                        .height(70.dp)
-                        .padding(bottom = 24.dp)
+                    modifier = Modifier.height(70.dp).padding(bottom = 24.dp)
                 )
 
                 Banner(viewModel = viewModel, withTopPadding = true)
@@ -90,8 +87,7 @@ fun HomeScreen(
                 when (isEmptyWallet) {
                     true -> {
                         Column(
-                            modifier = Modifier.weight(1f)
-                                .verticalScroll(rememberScrollState()),
+                            modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.SpaceAround
                         ) {
@@ -119,8 +115,7 @@ fun HomeScreen(
                             }
 
                             GreenColumn(
-                                padding = 0,
-                                horizontalAlignment = Alignment.CenterHorizontally
+                                padding = 0, horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
 
@@ -147,10 +142,8 @@ fun HomeScreen(
                                 val annotatedString = colorText(
                                     text = stringResource(Res.string.id_by_using_blockstream_app_you_agree),
                                     coloredTexts = listOf(
-                                        Res.string.id_terms_of_service,
-                                        Res.string.id_privacy_policy
-                                    ).map { stringResource(it) }
-                                )
+                                        Res.string.id_terms_of_service, Res.string.id_privacy_policy
+                                    ).map { stringResource(it) })
 
                                 ClickableText(
                                     text = annotatedString,
@@ -159,9 +152,7 @@ fun HomeScreen(
                                     style = bodyMedium.copy(textAlign = TextAlign.Center),
                                     onClick = {
                                         annotatedString.getStringAnnotations(
-                                            "Index",
-                                            start = it,
-                                            end = it
+                                            "Index", start = it, end = it
                                         ).firstOrNull()?.item?.toIntOrNull()?.also { index ->
                                             (if (index == 0) {
                                                 HomeViewModel.LocalEvents.ClickTermsOfService()
@@ -171,8 +162,7 @@ fun HomeScreen(
                                                 viewModel.postEvent(event)
                                             }
                                         }
-                                    }
-                                )
+                                    })
                             }
                         }
 
@@ -180,17 +170,14 @@ fun HomeScreen(
 
                     false -> {
                         WalletsScreen(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(top = 8.dp),
+                            modifier = Modifier.weight(1f).padding(top = 8.dp),
                             viewModel = viewModel,
                         )
                     }
 
                     null -> {
                         Spacer(
-                            modifier = Modifier
-                                .weight(1f)
+                            modifier = Modifier.weight(1f)
                         )
                     }
                 }
@@ -199,27 +186,18 @@ fun HomeScreen(
 
             val showV5Upgrade by viewModel.showV5Upgrade.collectAsStateWithLifecycle()
 
-            if(showV5Upgrade) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .noRippleClickable {
-                            // catch all clicks
-                        }
-                        .background(md_theme_background.copy(alpha = 0.9f))
-                ) {
+            if (showV5Upgrade) {
+                Box(modifier = Modifier.fillMaxSize().noRippleClickable {
+                    // catch all clicks
+                }.background(md_theme_background)) {
 
                     GreenColumn(
                         space = 24,
-                        modifier = Modifier
-                            .align(Alignment.Center),
+                        modifier = Modifier.align(Alignment.Center).padding(bottom = 60.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
 
-                        Image(
-                            imageVector = vectorResource(Res.drawable.green_to_blockstream),
-                            contentDescription = null
-                        )
+                        Box(modifier = Modifier.size(160.dp)) { Rive(RiveAnimation.GREEN_TO_BLOCKSTREAM) }
 
                         Text(
                             text = stringResource(Res.string.id_green_is_now_the_blockstream_app),
