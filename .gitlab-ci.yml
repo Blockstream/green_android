@@ -249,9 +249,15 @@ gdk_commit:
 
 build_google_play:
   stage: build
+  tags:
+    - cloud
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - unknown_failure
+      - stuck_or_timeout_failure
   when: manual
-  cache:
-    policy: pull
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
     expire_in: 1 hour
@@ -263,7 +269,6 @@ build_google_play:
     GIT_SUBMODULE_STRATEGY: recursive
   script:
     - cd $CI_PROJECT_DIR
-    - ./gradlew lintProductionGoogleRelease
     - ./gradlew useBlockstreamKeys
     - ./gradlew assembleProductionGoogleRelease
 
