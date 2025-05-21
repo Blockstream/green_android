@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.arrow_square_out
+import blockstream_green.common.generated.resources.blockstream_devices
 import blockstream_green.common.generated.resources.hardware_security
 import blockstream_green.common.generated.resources.id_check_our_store
 import blockstream_green.common.generated.resources.id_connect_a_different_hardware
@@ -37,7 +38,6 @@ import blockstream_green.common.generated.resources.id_offline_key_storage
 import blockstream_green.common.generated.resources.id_qr_mode_allows_you_to
 import blockstream_green.common.generated.resources.id_welcome_to_blockstream_jade
 import blockstream_green.common.generated.resources.id_your_bitcoin_and_liquid_assets
-import blockstream_green.common.generated.resources.jade_welcome
 import blockstream_green.common.generated.resources.offline_key_storage
 import blockstream_green.common.generated.resources.qr_airgapped
 import com.blockstream.common.models.onboarding.hardware.UseHardwareDeviceViewModel
@@ -91,7 +91,7 @@ fun UseHardwareDeviceScreen(
                     else -> stringResource(Res.string.id_qr_mode_allows_you_to)
                 }
                 val image = when (page) {
-                    0 -> painterResource(Res.drawable.jade_welcome)
+                    0 -> painterResource(Res.drawable.blockstream_devices)
                     1 -> painterResource(Res.drawable.hardware_security)
                     2 -> painterResource(Res.drawable.offline_key_storage)
                     else -> painterResource(Res.drawable.qr_airgapped)

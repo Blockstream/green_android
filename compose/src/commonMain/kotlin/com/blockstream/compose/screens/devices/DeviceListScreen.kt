@@ -216,15 +216,6 @@ fun DeviceListScreen(
                                         space = 0,
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
-//                                    Box(modifier = Modifier.weight(1f)) {
-//                                        Rive(
-//                                            riveAnimation = when (page) {
-//                                                0 -> RiveAnimation.JADE_POWER
-//                                                1 -> RiveAnimation.JADE_BUTTON
-//                                                else -> RiveAnimation.JADE_SCROLL
-//                                            }
-//                                        )
-//                                    }
 
                                         GreenCard {
                                             GreenColumn(

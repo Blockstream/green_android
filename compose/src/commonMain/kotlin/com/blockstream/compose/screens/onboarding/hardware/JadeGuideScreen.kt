@@ -39,14 +39,13 @@ import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.Rive
 import com.blockstream.compose.components.RiveAnimation
-import com.blockstream.compose.components.ScreenContainer
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.ui.components.GreenColumn
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
@@ -58,8 +57,6 @@ import kotlin.time.toDuration
 fun JadeGuideScreen(
     viewModel: JadeGuideViewModelAbstract
 ) {
-    HandleSideEffect(viewModel = viewModel)
-
     var step by remember {
         mutableStateOf(0)
     }
@@ -68,9 +65,9 @@ fun JadeGuideScreen(
         delay(5.toDuration(DurationUnit.SECONDS))
         step = (step + 1).takeIf { it < 3 } ?: 0
     }
-
-    ScreenContainer(viewModel = viewModel, withPadding = false) {
-        Column {
+    
+    SetupScreen(viewModel = viewModel, withPadding = false) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Box(
                 modifier = Modifier.weight(1f), contentAlignment = Alignment.Center
             ) {
