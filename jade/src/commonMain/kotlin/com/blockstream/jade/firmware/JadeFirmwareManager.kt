@@ -266,7 +266,7 @@ class JadeFirmwareManager constructor(
     // fw-server, to read the index or download the firmware are not errors that prevent the connection
     // to Jade being made.
     // The function returns whether the current firmware is valid/allowed, regardless of any OTA occurring.
-    suspend fun checkFirmware(jade: JadeAPI, checkIfUninitialized: Boolean = false): Boolean {
+    suspend fun checkFirmware(jade: JadeAPI, checkIfUninitialized: Boolean = false, responseHandler: ((message: String)->Unit)? = null): Boolean {
         // Do firmware check and ota if necessary
         val verInfo: VersionInfo = jade.getVersionInfo()
         val currentVersion = JadeVersion(verInfo.jadeVersion)
@@ -308,6 +308,7 @@ class JadeFirmwareManager constructor(
             val updates = delta.toList() + full.toList()
             if (updates.isEmpty()) {
                 logger.i { "No firmware updates currently available." }
+                responseHandler?.invoke("No firmware updates currently available.")
                 return  fwValid
             }
 

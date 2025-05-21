@@ -96,6 +96,7 @@ import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.components.GreenSpacer
 import com.blockstream.ui.navigation.getResult
+import com.blockstream.ui.navigation.setResult
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.getString
@@ -152,6 +153,10 @@ fun LoginScreen(
 
             is SideEffects.WalletDelete -> {
                 viewModel.postEvent(NavigateDestinations.Home)
+            }
+
+            is SideEffects.NavigateBack -> {
+                NavigateDestinations.Login.setResult(viewModel.greenWallet)
             }
         }
     }, withPadding = false, onProgressStyle = OnProgressStyle.Disabled) {

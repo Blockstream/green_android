@@ -13,6 +13,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -45,8 +48,12 @@ import com.adamglin.phosphoricons.regular.SealCheck
 import com.adamglin.phosphoricons.regular.ShieldChevron
 import com.blockstream.common.data.AlertType
 import com.blockstream.common.data.CredentialType
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.MenuEntry
+import com.blockstream.common.data.MenuEntryList
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.models.overview.SecurityViewModel
+import com.blockstream.common.models.overview.SecurityViewModel.LocalSideEffects
 import com.blockstream.common.models.overview.SecurityViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenAlert
@@ -56,6 +63,7 @@ import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.ListHeader
+import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.components.Promo
 import com.blockstream.compose.theme.displaySmall
 import com.blockstream.compose.theme.green
@@ -66,6 +74,7 @@ import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.navigation.LocalInnerPadding
+import com.blockstream.ui.navigation.getResult
 import com.blockstream.ui.utils.bottom
 import com.blockstream.ui.utils.plus
 import org.jetbrains.compose.resources.stringResource
@@ -73,20 +82,52 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun SecurityScreen(viewModel: SecurityViewModelAbstract) {
 
-    SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false) {
+    var channels by remember { mutableStateOf<List<String>?>(null) }
 
-        val credentials by viewModel.credentials.collectAsStateWithLifecycle()
-        val showRecoveryConfirmation by viewModel.showRecoveryConfirmation.collectAsStateWithLifecycle()
+    NavigateDestinations.Menu.getResult<Int> {
+        channels?.getOrNull(it)?.also { channel ->
+            viewModel.firmwareUpdate(channel = channel)
+        }
+    }
 
-        val innerPadding = LocalInnerPadding.current
-        val listState = rememberLazyListState()
+    NavigateDestinations.Login.getResult<GreenWallet> {
+        viewModel.executePendingAction()
+    }
 
-        val isHardware = viewModel.isHardware
-        val isJade = viewModel.isJade
+    val credentials by viewModel.credentials.collectAsStateWithLifecycle()
+    val showRecoveryConfirmation by viewModel.showRecoveryConfirmation.collectAsStateWithLifecycle()
 
-        val isWatchOnly by viewModel.isWatchOnly.collectAsStateWithLifecycle()
-        val showGenuineCheck by viewModel.showGenuineCheck.collectAsStateWithLifecycle()
-        val isHwWatchOnly by viewModel.isHwWatchOnly.collectAsStateWithLifecycle()
+    val innerPadding = LocalInnerPadding.current
+    val listState = rememberLazyListState()
+
+    val isHardware = viewModel.isHardware
+    val isJade by viewModel.isJade.collectAsStateWithLifecycle()
+
+    val isWatchOnly by viewModel.isWatchOnly.collectAsStateWithLifecycle()
+    val showGenuineCheck by viewModel.showGenuineCheck.collectAsStateWithLifecycle()
+    val isHwWatchOnly by viewModel.isHwWatchOnly.collectAsStateWithLifecycle()
+
+    SetupScreen(
+        viewModel = viewModel,
+        withPadding = false,
+        withBottomInsets = false,
+        onProgressStyle = OnProgressStyle.Full(),
+        sideEffectsHandler = {
+            if (it is LocalSideEffects.SelectFirmwareChannel) {
+                channels = it.channels
+                viewModel.postEvent(
+                    NavigateDestinations.Menu(
+                        title = "Select Firmware Channel",
+                        entries = MenuEntryList(it.channels.map {
+                            MenuEntry(
+                                title = it,
+                            )
+                        })
+                    )
+                )
+            }
+        }) {
+
 
         LazyColumn(
             state = listState,
@@ -143,23 +184,24 @@ fun SecurityScreen(viewModel: SecurityViewModelAbstract) {
                     }
                 }
 
-                if (isHwWatchOnly) {
-                    item {
-                        SecurityItem(
-                            title = stringResource(Res.string.id_connect_hardware_wallet),
-                            icon = PhosphorIcons.Regular.PlugsConnected,
-                            state = null,
-                        ) {
-                            viewModel.postEvent(
-                                NavigateDestinations.DeviceScan(
-                                    greenWallet = viewModel.greenWallet,
-                                    isWatchOnlyUpgrade = true
-                                )
-                            )
-                        }
-                    }
+//                if (isHwWatchOnly) {
+//                    item {
+//                        SecurityItem(
+//                            title = stringResource(Res.string.id_connect_hardware_wallet),
+//                            icon = PhosphorIcons.Regular.PlugsConnected,
+//                            state = null,
+//                        ) {
+//                            viewModel.postEvent(
+//                                NavigateDestinations.DeviceScan(
+//                                    greenWallet = viewModel.greenWallet,
+//                                    isWatchOnlyUpgrade = true
+//                                )
+//                            )
+//                        }
+//                    }
+//                }
 
-                } else if (isJade) {
+                if (isJade) {
                     if (showGenuineCheck) {
                         item {
                             SecurityItem(
@@ -179,6 +221,16 @@ fun SecurityScreen(viewModel: SecurityViewModelAbstract) {
                             state = null,
                         ) {
                             viewModel.firmwareUpdate()
+                        }
+                    }
+                } else {
+                    item {
+                        SecurityItem(
+                            title = stringResource(Res.string.id_connect_hardware_wallet),
+                            icon = PhosphorIcons.Regular.PlugsConnected,
+                            state = null,
+                        ) {
+                            viewModel.connectDevice()
                         }
                     }
                 }

@@ -6,19 +6,22 @@ import com.blockstream.common.crypto.PlatformCipher
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.database.wallet.LoginCredentials
+import com.blockstream.common.devices.DeviceModel
 import com.blockstream.common.devices.jadeDevice
-import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.overview.SecurityViewModel.LocalSideEffects
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.usecases.SetBiometricsUseCase
+import com.blockstream.common.utils.StringHolder
 import com.blockstream.green.utils.Loggable
 import com.blockstream.jade.firmware.JadeFirmwareManager
+import com.blockstream.jade.firmware.JadeFirmwareManager.Companion.JADE_FW_VERSIONS_LATEST
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.blockstream.ui.sideeffects.SideEffect
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.launch
@@ -31,9 +34,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
+@Serializable
+enum class PendingAction{
+    CONNECT, GENUINE_CHECK, FIRMWARE_UPDATE
+}
 
 abstract class SecurityViewModelAbstract(
     greenWallet: GreenWallet
@@ -42,33 +50,65 @@ abstract class SecurityViewModelAbstract(
     override fun screenName(): String = "Security"
 
     abstract val isHardware: Boolean
-    abstract val isJade: Boolean
-
-    @NativeCoroutinesState
+    abstract val isJade: StateFlow<Boolean>
     abstract val credentials: StateFlow<List<Pair<CredentialType, LoginCredentials?>>>
-
-    @NativeCoroutinesState
     abstract val showRecoveryConfirmation: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val showGenuineCheck: StateFlow<Boolean>
 
     internal val credentialTypes =
         listOf(CredentialType.BIOMETRICS_MNEMONIC, CredentialType.PIN_PINDATA)
 
+    private var pendingAction: PendingAction? = null
+
     fun genuineCheck() {
-        postEvent(NavigateDestinations.JadeGenuineCheck(greenWalletOrNull = greenWallet))
+        if (isHwWatchOnly.value) {
+            connectDevice(pendingAction = PendingAction.GENUINE_CHECK)
+        } else {
+            postEvent(NavigateDestinations.JadeGenuineCheck(greenWalletOrNull = greenWallet))
+        }
     }
 
-    fun firmwareUpdate() {
-        doAsync({
-            val firmwareManager = JadeFirmwareManager(
-                firmwareInteraction = this,
-                httpRequestHandler = sessionManager.httpRequestHandler,
+    fun connectDevice(pendingAction: PendingAction = PendingAction.CONNECT) {
+        this.pendingAction = pendingAction
+        postEvent(
+            NavigateDestinations.DeviceScan(
+                greenWallet = greenWallet,
+                isWatchOnlyUpgrade = true
             )
+        )
+    }
 
-            firmwareManager.checkFirmware(jade = session.device!!.jadeDevice()!!.jadeApi!!)
-        })
+    fun firmwareUpdate(channel: String? = null) {
+        if (isHwWatchOnly.value) {
+            connectDevice(PendingAction.FIRMWARE_UPDATE)
+        } else {
+            if (appInfo.isDevelopmentOrDebug && channel == null) {
+                postSideEffect(LocalSideEffects.SelectFirmwareChannel())
+            } else {
+                doAsync({
+                    val firmwareManager = JadeFirmwareManager(
+                        firmwareInteraction = this,
+                        httpRequestHandler = sessionManager.httpRequestHandler,
+                        jadeFwVersionsFile = channel ?: JADE_FW_VERSIONS_LATEST,
+                        forceFirmwareUpdate = true
+                    )
+
+                    firmwareManager.checkFirmware(jade = session.device!!.jadeDevice()!!.jadeApi!!) {
+                        postSideEffect(SideEffects.Snackbar(StringHolder.create(it)))
+                    }
+                })
+            }
+        }
+    }
+
+    fun executePendingAction() {
+        if (!isHwWatchOnly.value) {
+            when (pendingAction) {
+                PendingAction.GENUINE_CHECK -> genuineCheck()
+                PendingAction.FIRMWARE_UPDATE -> firmwareUpdate()
+                else -> null
+            }
+        }
     }
 }
 
@@ -80,8 +120,10 @@ class SecurityViewModel(greenWallet: GreenWallet) :
     override val isHardware: Boolean
         get() = greenWalletOrNull?.isHardware == true
 
-    override val isJade: Boolean
-        get() = sessionOrNull?.device?.isJade == true
+    override val isJade: StateFlow<Boolean> = session.isWatchOnly.map {
+        (session.device?.isJade
+            ?: greenWalletOrNull?.deviceIdentifiers?.any { it.model?.isJade == true }) == true
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), false)
 
     override fun segmentation(): HashMap<String, Any> =
         countly.sessionSegmentation(session = session)
@@ -105,19 +147,26 @@ class SecurityViewModel(greenWallet: GreenWallet) :
             false
         )
 
-    override val showGenuineCheck: StateFlow<Boolean> = session.ifConnected {
-        isHwWatchOnly.map {
-            session.device?.jadeDevice()?.supportsGenuineCheck() ?: false
-        }
-    }?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), false) ?: MutableStateFlow(
-        false
-    )
+    override val showGenuineCheck: StateFlow<Boolean> = session.isWatchOnly.map {
+        (session.device?.jadeDevice()?.supportsGenuineCheck()
+            ?: greenWalletOrNull?.deviceIdentifiers?.any { it.model == DeviceModel.BlockstreamJadePlus }) == true
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), false)
 
     class LocalEvents {
         data object EnableBiometrics : Event
         data object DisableBiometrics : Event
         data object EnablePin : Event
         data object DisablePin : Event
+    }
+
+    class LocalSideEffects {
+        data class SelectFirmwareChannel(
+            val channels: List<String> = listOf(
+                JadeFirmwareManager.JADE_FW_VERSIONS_BETA,
+                JadeFirmwareManager.JADE_FW_VERSIONS_LATEST,
+                JadeFirmwareManager.JADE_FW_VERSIONS_PREVIOUS
+            )
+        ) : SideEffect
     }
 
     init {
@@ -208,9 +257,7 @@ class SecurityViewModel(greenWallet: GreenWallet) :
 class SecurityViewModelPreview(override val isHardware: Boolean = false) :
     SecurityViewModelAbstract(greenWallet = previewWallet(isHardware = isHardware)) {
 
-    override val isJade: Boolean
-        get() = isHardware
-
+    override val isJade: StateFlow<Boolean> = MutableStateFlow(isHardware)
     override val showRecoveryConfirmation: StateFlow<Boolean> = MutableStateFlow(true)
     override val showGenuineCheck: StateFlow<Boolean> = MutableStateFlow(false)
 

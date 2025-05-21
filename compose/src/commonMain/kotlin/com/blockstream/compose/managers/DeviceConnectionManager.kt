@@ -109,7 +109,6 @@ open class DeviceConnectionManager(
         val firmwareManager = jadeFirmwareManager ?: JadeFirmwareManager(
             firmwareInteraction = interaction,
             httpRequestHandler = httpRequestHandler,
-            jadeFwVersionsFile = JadeFirmwareManager.JADE_FW_VERSIONS_LATEST,
             forceFirmwareUpdate = false
         )
 
