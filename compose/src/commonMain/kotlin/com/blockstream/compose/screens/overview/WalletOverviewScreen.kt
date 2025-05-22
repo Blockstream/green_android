@@ -288,9 +288,11 @@ fun WalletOverviewScreen(
                     }
 
                     item {
-                        BitcoinPriceChart(viewModel.bitcoinChartData, {
-                            viewModel.navigateToBuy()
-                        })
+                        BitcoinPriceChart(
+                            viewModel.bitcoinChartData,
+                            onClickRetry = { viewModel.refetchBitcoinPriceHistory() },
+                            onClickBuyNow = { viewModel.navigateToBuy() }
+                        )
                     }
 
                     transaction.data()?.also { transaction ->

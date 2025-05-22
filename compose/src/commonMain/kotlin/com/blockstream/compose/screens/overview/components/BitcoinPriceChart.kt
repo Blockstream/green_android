@@ -37,12 +37,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.bitcoin
 import blockstream_green.common.generated.resources.id_buy_now
+import blockstream_green.common.generated.resources.id_data_not_available
+import blockstream_green.common.generated.resources.id_retry
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.TrendDown
 import com.adamglin.phosphoricons.regular.TrendUp
 import com.blockstream.common.btcpricehistory.model.BitcoinChartData
 import com.blockstream.common.btcpricehistory.model.BitcoinChartPeriod
+import com.blockstream.common.data.DataState
 import com.blockstream.common.utils.DecimalFormat
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
@@ -70,25 +73,41 @@ import org.jetbrains.compose.resources.stringResource
 import kotlin.math.absoluteValue
 
 @Composable
-fun BitcoinPriceChart(pricesState: StateFlow<BitcoinChartData?>, onClickBuyNow: () -> Unit) {
+fun BitcoinPriceChart(
+    pricesState: StateFlow<DataState<BitcoinChartData>?>,
+    onClickRetry: () -> Unit,
+    onClickBuyNow: () -> Unit,
+) {
     val chartPrices by pricesState.collectAsStateWithLifecycle()
     var chartPeriod by remember { mutableStateOf(BitcoinChartPeriod.ONE_DAY) }
 
-    val currentPrice = chartPrices?.currentPrice
-    val currentPeriodPrices = chartPrices?.prices?.get(chartPeriod) ?: emptyList()
+    val currentPrice = chartPrices?.data()?.currentPrice
+    val currentPeriodPrices = chartPrices?.data()?.prices?.get(chartPeriod) ?: emptyList()
     val chartDataStartPrice = currentPeriodPrices.firstOrNull()?.second ?: 0f
+    val currency = chartPrices?.data()?.currency ?: ""
 
 
     Column(
         modifier = Modifier.background(
             color = MaterialTheme.colorScheme.surface,
-        ).border(1.dp, SolidColor(MaterialTheme.colorScheme.outline), RoundedCornerShape(6.dp)).padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        ).border(1.dp, SolidColor(MaterialTheme.colorScheme.outline), RoundedCornerShape(6.dp))
+            .padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
 
-        BitcoinPrice(startPrice = chartDataStartPrice, currentPrice = currentPrice ?: -1f, currency = chartPrices?.currency ?: "")
+        BitcoinPrice(
+            startPrice = chartDataStartPrice,
+            currentPrice = currentPrice ?: -1f,
+            currency = currency
+        )
 
-        XYChartLayout(currentPeriodPrices)
+        when (chartPrices) {
+            is DataState.Error -> {
+                RetryButton(onClick = onClickRetry)
+            }
+            else -> {
+                XYChartLayout(currentPeriodPrices)
+            }
+        }
 
         ChartPeriodSelector(chartPeriod, {
             chartPeriod = it
@@ -121,9 +140,14 @@ private fun BitcoinPrice(startPrice: Float, currentPrice: Float, currency: Strin
     }
 
     Row(
-        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Image(
                 modifier = Modifier.size(32.dp).padding(2.dp),
                 painter = painterResource(Res.drawable.bitcoin),
@@ -134,7 +158,10 @@ private fun BitcoinPrice(startPrice: Float, currentPrice: Float, currency: Strin
 
         composeIf(currentPrice >= 0f) { // only render if current price is available, setting -1f in case its null (loading state)
             Column(horizontalAlignment = Alignment.End) {
-                Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
                         text = changePercentageInPrice.formatPercentage(),
                         style = labelMedium.copy(color = trendColor, lineHeight = 16.sp)
@@ -204,12 +231,17 @@ private fun XYChartLayout(chartPrices: List<Pair<Long, Float>>) {
         ) {
             AreaPlot(
                 modifier = Modifier, data = data, lineStyle = LineStyle(
-                    brush = SolidColor(MaterialTheme.colorScheme.primary), strokeWidth = 1.dp, pathEffect = PathEffect.cornerPathEffect(20f)
+                    brush = SolidColor(MaterialTheme.colorScheme.primary),
+                    strokeWidth = 1.dp,
+                    pathEffect = PathEffect.cornerPathEffect(20f)
                 ), areaStyle = AreaStyle(
                     brush = Brush.linearGradient(
                         colors = listOf(0f, 0.05f, 0.075f, 0.1f, 0.2f, 0.3f).map {
                             MaterialTheme.colorScheme.primary.copy(alpha = it)
-                        }, start = Offset(0f, Float.POSITIVE_INFINITY), end = Offset(0f, 0f), tileMode = TileMode.Clamp
+                        },
+                        start = Offset(0f, Float.POSITIVE_INFINITY),
+                        end = Offset(0f, 0f),
+                        tileMode = TileMode.Clamp
                     )
                 ), areaBaseline = AreaBaseline.ConstantLine(0f)
 
@@ -226,11 +258,15 @@ private fun ChartPeriodSelector(
     val periods = BitcoinChartPeriod.entries.toTypedArray()
 
     Row(
-        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         periods.forEach { period ->
             ChartPeriodSelectorItem(
-                period = period, isSelected = selectedPeriod == period, onChangePeriod = onChangePeriod
+                period = period,
+                isSelected = selectedPeriod == period,
+                onChangePeriod = onChangePeriod
             )
         }
     }
@@ -254,13 +290,40 @@ private fun ChartPeriodSelectorItem(
 
     TextButton(
         onClick = { onChangePeriod(period) },
-        colors = ButtonDefaults.textButtonColors().copy(containerColor = containerColor, contentColor = contentColor)
+        colors = ButtonDefaults.textButtonColors()
+            .copy(containerColor = containerColor, contentColor = contentColor)
     ) {
         Text(
-            modifier = Modifier.padding(horizontal = 8.dp), text = period.label, style = MaterialTheme.typography.bodyMedium
+            modifier = Modifier.padding(horizontal = 8.dp),
+            text = period.label,
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 
+}
+
+@Composable
+private fun RetryButton(onClick: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxWidth().height(100.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+
+        Text(
+            text = stringResource(Res.string.id_data_not_available),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+
+        TextButton(
+            onClick = onClick,
+        ) {
+            Text(
+                text = stringResource(Res.string.id_retry),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+    }
 }
 
 private fun Float.formatPercentage(): String {
@@ -290,3 +353,4 @@ private fun Float.formatFiatPrice(currency: String): String {
 
     return "$formatted ${currency.uppercase()}"
 }
+

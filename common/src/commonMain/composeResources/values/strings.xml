@@ -1674,4 +1674,5 @@
     <string name="id_total_bitcoin_balance">Total Bitcoin Balance</string>
     <string name="id_generate_amp_id">Generate AMP ID</string>
     <string name="id_copy_amp_id">Copy AMP ID</string>
+    <string name="id_data_not_available">Data not available</string>
 </resources>

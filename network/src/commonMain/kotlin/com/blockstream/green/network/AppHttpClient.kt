@@ -49,6 +49,22 @@ inline fun <reified T> NetworkResponse<T>.dataOrThrow(): T {
     throw Exception((this as? NetworkResponse.Error)?.message ?: "Something went wrong")
 }
 
+inline fun <reified T> NetworkResponse<T>.error(): String {
+    if (this is NetworkResponse.Error) {
+        return this.message
+    }
+    return "Something went wrong"
+}
+
+inline fun <reified T> NetworkResponse<T>.exception(): Exception {
+    if (this is NetworkResponse.Error) {
+        return Exception(this.message)
+    }
+    return Exception("Something went wrong")
+}
+
+
+
 abstract class AppHttpClient(
     enableLogging: Boolean = false, configBlock: HttpClientConfig<*>.() -> Unit = {}
 ) {

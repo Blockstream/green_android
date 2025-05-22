@@ -90,7 +90,7 @@ abstract class WalletOverviewViewModelAbstract(
     abstract val showHardwareTransferFunds: StateFlow<Boolean>
 
     @NativeCoroutinesState
-    abstract val bitcoinChartData: StateFlow<BitcoinChartData?>
+    abstract val bitcoinChartData: StateFlow<DataState<BitcoinChartData>?>
 
     abstract fun refetchBitcoinPriceHistory()
 
@@ -485,7 +485,7 @@ class WalletOverviewViewModelPreview(val isEmpty: Boolean = false, val isHardwar
 
     override val showHardwareTransferFunds: StateFlow<Boolean> = MutableStateFlow(true)
 
-    override val bitcoinChartData: StateFlow<BitcoinChartData?> = MutableStateFlow(
+    override val bitcoinChartData: StateFlow<DataState<BitcoinChartData>?> = MutableStateFlow(
         null
     )
 
