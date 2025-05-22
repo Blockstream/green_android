@@ -29,11 +29,24 @@ actual class LocaleManager constructor(
 
     actual fun getCountry(): String? {
         return tryCatchNull {
-            getSystemService(
+            val tm = getSystemService(
                 context,
                 TelephonyManager::class.java
-            )?.networkCountryIso
-        } ?: Locale.getDefault().country
+            )
+
+            val fromNetwork = tm?.networkCountryIso
+                ?.takeIf { it.isNotBlank() }
+
+            val fromSim = tm?.simCountryIso
+                ?.takeIf { it.isNotBlank() }
+
+            val fromLocale = Locale.getDefault().country
+                .takeIf { it.isNotBlank() }
+
+            fromNetwork
+                ?: fromSim
+                ?: fromLocale
+        }
     }
 
     companion object : Loggable()

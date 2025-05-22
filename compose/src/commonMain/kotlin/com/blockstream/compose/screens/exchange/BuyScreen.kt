@@ -77,6 +77,7 @@ fun BuyScreen(
     val onProgressQuote by viewModel.onProgressQuote.collectAsStateWithLifecycle()
     val onProgressBuy by viewModel.onProgressBuy.collectAsStateWithLifecycle()
     val quote by viewModel.quote.collectAsStateWithLifecycle()
+    val error by viewModel.error.collectAsStateWithLifecycle()
     val showRecoveryConfirmation by viewModel.showRecoveryConfirmation.collectAsStateWithLifecycle()
 
     val bottomSheetNavigator = LocalNavigator.current.navigatorProvider[BottomSheetNavigator::class]
@@ -152,6 +153,7 @@ fun BuyScreen(
                     MeldProvider(
                         title = stringResource(Res.string.id_exchange),
                         quote = quote,
+                        error = error,
                         onProgress = onProgressQuote,
                         withEditIcon = true,
                         onClick = {

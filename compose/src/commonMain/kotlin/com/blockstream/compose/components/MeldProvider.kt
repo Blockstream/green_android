@@ -38,6 +38,7 @@ fun MeldProvider(
     quote: QuoteResponse?,
     title: String? = null,
     badge: String? = null,
+    error: String? = null,
     onProgress: Boolean,
     isChecked: Boolean = false,
     withEditIcon: Boolean = false,
@@ -54,11 +55,13 @@ fun MeldProvider(
     ) {
 
         Box {
-            if (!onProgress && quote == null) {
+            if (!onProgress && (quote == null || error != null)) {
                 Text(
-                    stringResource(Res.string.id_no_quotes_available_for_this_amount),
+                    error ?: stringResource(Res.string.id_no_quotes_available_for_this_amount),
                     color = whiteMedium,
-                    modifier = Modifier.align(Alignment.Center)
+                    style = bodySmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.align(Alignment.Center).padding(16.dp)
                 )
             }
 

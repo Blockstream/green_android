@@ -8,6 +8,7 @@ import com.blockstream.common.gdk.GdkSession
 import com.blockstream.green.data.meld.MeldRepository
 import com.blockstream.green.data.meld.data.CryptoQuoteRequest
 import com.blockstream.green.data.meld.data.QuoteResponse
+import com.blockstream.green.network.NetworkResponse
 import com.blockstream.green.network.dataOrNull
 
 
@@ -21,7 +22,7 @@ class CreateCryptoQuoteUseCase constructor(
         enrichedAsset: EnrichedAsset,
         denomination: Denomination,
         greenWallet: GreenWallet? = null
-    ): List<QuoteResponse> {
+    ): NetworkResponse<List<QuoteResponse>> {
         val sourceAmount: String
 
         if (!denomination.isFiat) {
@@ -40,10 +41,19 @@ class CreateCryptoQuoteUseCase constructor(
             countryCode = country,
             sourceAmount = sourceAmount,
             sourceCurrencyCode = sourceCurrencyCode,
-            destinationCurrencyCode = enrichedAsset.ticker(session = session)?.uppercase() ?: BTC_UNIT,
+            destinationCurrencyCode = enrichedAsset.ticker(session = session)?.uppercase()
+                ?: BTC_UNIT,
             // externalCustomerId = greenWallet?.xPubHashId // Disable it for now, to allow cache to work for all users
         )
 
-        return meldRepository.createCryptoQuote(cryptoQuote = cryptoQuote).dataOrNull()?.quotes?.sortedByDescending { it.destinationAmount } ?: emptyList()
+        return when (val response = meldRepository.createCryptoQuote(cryptoQuote = cryptoQuote)) {
+            is NetworkResponse.Success -> {
+                val quotes =
+                    response.data.quotes?.sortedByDescending { it.destinationAmount } ?: emptyList()
+                NetworkResponse.Success(quotes)
+            }
+
+            is NetworkResponse.Error -> response
+        }
     }
 }

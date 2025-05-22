@@ -14,7 +14,6 @@ import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnected
-import com.blockstream.common.extensions.isBlank
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewWallet
@@ -45,7 +44,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.sync.Mutex
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
@@ -67,7 +65,10 @@ abstract class BuyViewModelAbstract(
 
     abstract val suggestedAmounts: StateFlow<List<String>>
 
-    internal val country = MutableStateFlow((settingsManager.getCountry() ?: localeManager.getCountry() ?: "US").uppercase())
+    internal val country = MutableStateFlow(
+        (settingsManager.getCountry() ?: localeManager.getCountry() ?: "US").uppercase()
+    )
+
 
     internal val userPickedQuote = MutableStateFlow(false)
 
@@ -97,7 +98,9 @@ abstract class BuyViewModelAbstract(
             postSideEffect(
                 SideEffects.NavigateTo(
                     NavigateDestinations.BuyQuotes(
-                        greenWallet = greenWallet, quotes = QuotesResponse(quotes = quotes.value), selectedServiceProvider = this._quote.value?.serviceProvider
+                        greenWallet = greenWallet,
+                        quotes = QuotesResponse(quotes = quotes.value),
+                        selectedServiceProvider = this._quote.value?.serviceProvider
                     )
                 )
             )
@@ -117,7 +120,8 @@ abstract class BuyViewModelAbstract(
         }, preAction = {
             onProgress.value = true
             _onProgressBuy.value = true
-            onProgressDescription.value = getString(Res.string.id_connecting_to_s, quote.value?.serviceProvider ?: "")
+            onProgressDescription.value =
+                getString(Res.string.id_connecting_to_s, quote.value?.serviceProvider ?: "")
         }, postAction = {
             onProgress.value = false
             _onProgressBuy.value = false
@@ -185,8 +189,10 @@ class BuyViewModel(greenWallet: GreenWallet) :
                     )
                 )
             } else {
-                val activeAccountId = (accountAsset.value?.account?.id ?: session.activeAccount.value?.id)
-                accountAsset.value = accounts.find { it.id == activeAccountId }?.accountAsset ?: accounts.first().accountAsset
+                val activeAccountId =
+                    (accountAsset.value?.account?.id ?: session.activeAccount.value?.id)
+                accountAsset.value = accounts.find { it.id == activeAccountId }?.accountAsset
+                    ?: accounts.first().accountAsset
             }
         }
 
@@ -296,7 +302,6 @@ class BuyViewModel(greenWallet: GreenWallet) :
     }
 
     private var updateQuotesJob: Job? = null
-    private val updateQuotesMutex = Mutex()
 
     private fun updateQuotes(amount: String) {
         updateQuotesJob?.cancel()
@@ -312,10 +317,9 @@ class BuyViewModel(greenWallet: GreenWallet) :
                         amount = amount,
                         denomination = denomination.value,
                         greenWallet = greenWallet
-                    )
+                    ).dataOrThrow()
                 }
             },
-            mutex = updateQuotesMutex,
             preAction = {
                 onProgress.value = true
                 _onProgressQuote.value = true
@@ -325,9 +329,10 @@ class BuyViewModel(greenWallet: GreenWallet) :
             },
             onSuccess = {
                 quotes.value = it ?: emptyList()
+                _error.value = null
             }, onError = {
+                _error.value = it.message
                 quotes.value = emptyList()
-                it.printStackTrace()
             }
         )
     }

@@ -26,7 +26,6 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.UserInput
 import com.blockstream.common.utils.toAmountLook
 import com.blockstream.common.utils.toAmountLookOrNa
-import com.blockstream.domain.meld.CreateCryptoQuoteUseCase
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
@@ -40,7 +39,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
 import org.jetbrains.compose.resources.getString
-import org.koin.core.component.inject
 
 abstract class OnOffRampsViewModelAbstract(
     greenWallet: GreenWallet
@@ -72,8 +70,6 @@ abstract class OnOffRampsViewModelAbstract(
 
 class OnOffRampsViewModel(greenWallet: GreenWallet) :
     OnOffRampsViewModelAbstract(greenWallet = greenWallet) {
-
-    private val createCryptoQuoteUseCase: CreateCryptoQuoteUseCase by inject()
 
     private val hideWalletBackupAlert = MutableStateFlow(false)
 

@@ -8,6 +8,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
@@ -139,13 +140,14 @@ fun AppScaffold(
                 navData = navData,
                 goBack = goBack
             )
-        },
-        snackbarHost = {
+        }, snackbarHost = {
             snackbarHostState?.also {
-                SnackbarHost(hostState = it)
+                SnackbarHost(
+                    // provide ime padding to show the snackbar above the keyboard
+                    modifier = Modifier.imePadding(), hostState = it
+                )
             }
-        }
-    ) { innerPadding ->
+        }) { innerPadding ->
 
         Box(modifier = Modifier.fillMaxSize()) {
 
