@@ -26,11 +26,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_all
 import blockstream_green.common.generated.resources.id_assets
 import blockstream_green.common.generated.resources.id_bitcoin_price
 import blockstream_green.common.generated.resources.id_continue
-import blockstream_green.common.generated.resources.id_latest_transactions
 import blockstream_green.common.generated.resources.id_learn_more
 import blockstream_green.common.generated.resources.id_transfer_your_funds
 import blockstream_green.common.generated.resources.id_transfer_your_funds_from_your_old_wallet
@@ -50,7 +48,6 @@ import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
-import com.blockstream.compose.components.GreenTransaction
 import com.blockstream.compose.components.ListHeader
 import com.blockstream.compose.components.Promo
 import com.blockstream.compose.components.WalletBalance
@@ -190,7 +187,6 @@ fun WalletOverviewScreen(
             val alerts by viewModel.alerts.collectAsStateWithLifecycle()
             val assets by viewModel.assets.collectAsStateWithLifecycle()
             val showHardwareTransferFunds by viewModel.showHardwareTransferFunds.collectAsStateWithLifecycle()
-            val transaction by viewModel.transaction.collectAsStateWithLifecycle()
             val innerPadding = LocalInnerPadding.current
 
             val listState = rememberLazyListState()
@@ -293,24 +289,6 @@ fun WalletOverviewScreen(
                             onClickRetry = { viewModel.refetchBitcoinPriceHistory() },
                             onClickBuyNow = { viewModel.navigateToBuy() }
                         )
-                    }
-
-                    transaction.data()?.also { transaction ->
-                        item(key = "LatestTransactionsHeader") {
-                            ListHeader(
-                                title = stringResource(Res.string.id_latest_transactions),
-                                cta = stringResource(Res.string.id_all),
-                                onClick = {
-                                    viewModel.postEvent(NavigateDestinations.Transact(greenWallet = viewModel.greenWallet))
-                                }
-                            )
-                        }
-
-                        item(key = "LatestTransactions") {
-                            GreenTransaction(transactionLook = transaction) {
-                                viewModel.postEvent(Events.Transaction(transaction = it.transaction))
-                            }
-                        }
                     }
                 }
             }

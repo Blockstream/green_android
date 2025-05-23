@@ -4,7 +4,6 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_home
 import blockstream_green.common.generated.resources.id_your_s_total_balance_is_the_sum_of
 import breez_sdk.HealthCheckStatus
-import com.blockstream.common.Urls
 import com.blockstream.common.btcpricehistory.model.BitcoinChartData
 import com.blockstream.common.data.AlertType
 import com.blockstream.common.data.DataState
@@ -18,7 +17,6 @@ import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewAssetBalance
-import com.blockstream.common.extensions.previewTransactionLook
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.gdk.data.Account
@@ -64,9 +62,6 @@ abstract class WalletOverviewViewModelAbstract(
 ) : WalletBalanceViewModel(greenWallet = greenWallet) {
 
     override fun screenName(): String = "WalletOverview"
-
-    @NativeCoroutinesState
-    abstract val transaction: StateFlow<DataState<TransactionLook?>>
 
     @NativeCoroutinesState
     abstract val alerts: StateFlow<List<AlertType>>
@@ -235,17 +230,6 @@ class WalletOverviewViewModel(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), DataState.Loading)
 
-    // Re-calculate if needed (hideAmount or denomination & exchange rate change)
-    override val transaction: StateFlow<DataState<TransactionLook?>> = combine(
-        hideAmounts, _transaction
-    ) { hideAmounts, transactionsLook ->
-        if (transactionsLook is DataState.Success && hideAmounts) {
-            DataState.Success(transactionsLook.data?.asMasked)
-        } else {
-            transactionsLook
-        }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), DataState.Loading)
-
     private val _systemMessage: MutableStateFlow<AlertType?> = MutableStateFlow(null)
     private val _twoFactorState: MutableStateFlow<AlertType?> = MutableStateFlow(null)
 
@@ -282,7 +266,7 @@ class WalletOverviewViewModel(
         it.filter { it.hidden && it.hasHistory(session) }.size
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), 0)
 
-    override val showHardwareTransferFunds = transaction.map {
+    override val showHardwareTransferFunds = _transaction.map {
         sessionOrNull?.isHardwareWallet == true && (it is DataState.Success && it.data == null)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), false)
 
@@ -300,7 +284,6 @@ class WalletOverviewViewModel(
         object Receive : Event
         object DenominationExchangeRate : Event
         object ClickLightningSweep : Event
-        object ClickLightningLearnMore : Events.OpenBrowser(Urls.HELP_RECEIVE_CAPACITY)
 
         object OpenOptionsMenu : Event
         object MenuNewAccountClick : Event
@@ -456,12 +439,6 @@ class WalletOverviewViewModel(
 
 class WalletOverviewViewModelPreview(val isEmpty: Boolean = false, val isHardware: Boolean = true) :
     WalletOverviewViewModelAbstract(greenWallet = previewWallet(isHardware = isHardware)) {
-
-    override val transaction: StateFlow<DataState<TransactionLook?>> = MutableStateFlow(
-        DataState.Success(
-            if (isEmpty) null else previewTransactionLook()
-        )
-    )
 
     override val showWalletOnboarding: MutableStateFlow<Boolean> = MutableStateFlow(isEmpty)
 
