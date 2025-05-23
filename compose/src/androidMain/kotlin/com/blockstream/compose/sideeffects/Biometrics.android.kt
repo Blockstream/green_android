@@ -15,8 +15,8 @@ import androidx.fragment.app.FragmentActivity
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_authentication_error_s
 import blockstream_green.common.generated.resources.id_authentication_failed
-import blockstream_green.common.generated.resources.id_cancel
 import blockstream_green.common.generated.resources.id_blockstream_app_uses_biometric
+import blockstream_green.common.generated.resources.id_cancel
 import blockstream_green.common.generated.resources.id_login_with_biometrics
 import blockstream_green.common.generated.resources.id_please_activate_at_least_one
 import blockstream_green.common.generated.resources.id_user_authentication
@@ -342,55 +342,6 @@ actual class BiometricsState(
             }
         }
     }
-
-//    actual suspend fun launchUserPresencePromptForLightningShortcut(viewModel: LoginViewModelAbstract) {
-//        activeBiometricPrompt?.cancelAuthentication()
-//
-//        val promptInfo = BiometricPrompt.PromptInfo.Builder()
-//            .setTitle(getString(Res.string.id_authenticate))
-//            .setConfirmationRequired(true)
-//
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//            promptInfo.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
-//        } else {
-//            promptInfo.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
-//        }
-//
-//        activeBiometricPrompt = BiometricPrompt(
-//            activity,
-//            ContextCompat.getMainExecutor(activity),
-//            object : AuthenticationCallback(state = this@BiometricsState) {
-//                override fun onAuthenticationError(
-//                    errorCode: Int,
-//                    errString: CharSequence
-//                ) {
-//                    if (errorCode == BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL) {
-//                        // User hasn't enabled any device credential,
-//                        viewModel.postEvent(LoginViewModel.LocalEvents.LoginLightningShortcut(true))
-//                    } else {
-//                        super.onAuthenticationError(errorCode, errString)
-//                    }
-//                }
-//
-//                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-//                    super.onAuthenticationSucceeded(result)
-//                    viewModel.postEvent(LoginViewModel.LocalEvents.LoginLightningShortcut(true))
-//                }
-//            })
-//
-//        try {
-//            // Ask for user presence
-//            activeBiometricPrompt?.authenticate(promptInfo.build())
-//        } catch (e: Exception) {
-//            scope.launch {
-//                dialogState.openErrorDialog(e) {
-//                    // If an unsupported method is initiated, it's better to show the words rather than
-//                    // block the user from retrieving his words
-//                    viewModel.postEvent(LoginViewModel.LocalEvents.LoginLightningShortcut(true))
-//                }
-//            }
-//        }
-//    }
 
     actual suspend  fun launchUserPresencePrompt(
         title: String,
