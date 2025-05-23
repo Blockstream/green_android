@@ -16,7 +16,7 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_authentication_error_s
 import blockstream_green.common.generated.resources.id_authentication_failed
 import blockstream_green.common.generated.resources.id_cancel
-import blockstream_green.common.generated.resources.id_green_uses_biometric
+import blockstream_green.common.generated.resources.id_blockstream_app_uses_biometric
 import blockstream_green.common.generated.resources.id_login_with_biometrics
 import blockstream_green.common.generated.resources.id_please_activate_at_least_one
 import blockstream_green.common.generated.resources.id_user_authentication
@@ -285,7 +285,7 @@ actual class BiometricsState(
 
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle(getString(Res.string.id_login_with_biometrics))
-            .setDescription(getString(Res.string.id_green_uses_biometric))
+            .setDescription(getString(Res.string.id_blockstream_app_uses_biometric))
             .setNegativeButtonText(getString(Res.string.id_cancel))
             .setConfirmationRequired(true)
             .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)

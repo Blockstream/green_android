@@ -350,7 +350,7 @@ class JadeHWWallet constructor(
                     // Re-try
                     null
                 } ?: run {
-                    hwInteraction?.interactionRequest(this@JadeHWWallet, "id_green_needs_the_master_blinding", true, completable)
+                    hwInteraction?.interactionRequest(this@JadeHWWallet, "id_blockstream_app_needs_the_master_blinding", true, completable)
                     // Ask user for master blinding key export
                     jade.getMasterBlindingKey(false)
                 }).toHexString().also {

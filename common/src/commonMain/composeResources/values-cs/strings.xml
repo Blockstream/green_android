@@ -36,7 +36,7 @@
     <string name="id_a_funding_fee_of_s_minimum_s_is">Poplatek za financování ve výši %1$s (minimálně %2$s) je účtován při příjmu částek nad vaši aktuální přijímací kapacitu %3$s</string>
     <string name="id_a_funding_fee_of_s_s_is_applied">Poplatek za financování ve výši %1$s (%2$s) Je účtovám v případě, že přijímáte částky přesahující vaši aktuální přijímací kapacitu %3$s (%4$s)</string>
     <string name="id_a_new_transaction_has_just">Do vaší peněženky právě dorazila nová transakce.</string>
-    <string name="id_a_newer_version_of_blockstream">Nyní je k dispozici novější verze aplikace Blockstream Green</string>
+    <string name="id_a_newer_version_of_blockstream">Nyní je k dispozici novější verze aplikace Blockstream App</string>
     <string name="id_a_powerful_hardware_wallet_for">Výkonná hardwarová peněženka pro zabezpečení vašeho Bitcoinu.</string>
     <string name="id_a_screen_lock_must_be_enabled">V nastavení systému Android musí být povolen zámek obrazovky</string>
     <string name="id_a_set_up_funding_fee_of_s_s">Na přijatou částku bude uplatněn poplatek za zřízení financování ve výši %1$s (%2$s).</string>
@@ -186,9 +186,9 @@
     <string name="id_blocks_confirmed">potvrzené bloky</string>
     <string name="id_blockstream_devices">Zařízení Blockstream</string>
     <string name="id_blockstream_does_not_have">Blockstream nemá přístup k zálohám vaší peněženky a v případě ztráty vám nebude schopen pomoci</string>
-    <string name="id_blockstream_green_needs_access">Aby se Blockstream Green mohl připojit k hardwarovým peněženkám, potřebuje přístup k Bluetooth. Údaje o poloze Blockstream nepoužívá ani neuchovává.</string>
-    <string name="id_blockstream_green_supports_both">Blockstream Green podporuje Bitcoin i Liquid Network.</string>
-    <string name="id_blockstream_greennsimple_and">Blockstream Green:\nJednoduše a bezpečně</string>
+    <string name="id_blockstream_app_needs_access">Aby se Blockstream App mohl připojit k hardwarovým peněženkám, potřebuje přístup k Bluetooth. Údaje o poloze Blockstream nepoužívá ani neuchovává.</string>
+    <string name="id_blockstream_app_supports_both">Blockstream App podporuje Bitcoin i Liquid Network.</string>
+    <string name="id_blockstream_appnsimple_and">Blockstream App:\nJednoduše a bezpečně</string>
     <string name="id_blockstream_store">Blockstream obchod</string>
     <string name="id_bluetooth">Bluetooth</string>
     <string name="id_btchip_is_not_set_up_please_set">BTChip není nastaven. Chcete-li ho používat, nastavte ho pomocí stolního klienta.</string>
@@ -219,7 +219,7 @@
     <string name="id_check_your_backup">Zkontrolujte svou zálohu</string>
     <string name="id_check_your_device">Zkontrolujte své zařízení</string>
     <string name="id_choose">Zvolit</string>
-    <string name="id_choose_a_name_for_your_new">Zvolte název své nové Blockstream Green peněženky.</string>
+    <string name="id_choose_a_name_for_your_new">Zvolte název své nové Blockstream App peněženky.</string>
     <string name="id_choose_a_name_for_your_wallet">Zvolte název své peněženky</string>
     <string name="id_choose_a_swap_option">Výběr možnosti výměny</string>
     <string name="id_choose_a_usb_or_bluetooth">Po ověření fráze pro obnovení zvolte připojení USB nebo Bluetooth v zařízení Jade.</string>
@@ -290,8 +290,8 @@
     <string name="id_connect_via_qr">Připojení prostřednictvím QR kódu</string>
     <string name="id_connect_with_bluetooth">Připojení pomocí Bluetooth</string>
     <string name="id_connect_with_tor">Připojit se přes Tor</string>
-    <string name="id_connect_your_jade_to_use_it">Připojte svůj Jade a použijte jej s Green peněženkou</string>
-    <string name="id_connect_your_ledger_to_use_it">Připojte svůj Ledger a použijte jej s Green peněženkou</string>
+    <string name="id_connect_your_jade_to_use_it">Připojte svůj Jade a použijte jej s Blockstream App peněženkou</string>
+    <string name="id_connect_your_ledger_to_use_it">Připojte svůj Ledger a použijte jej s Blockstream App peněženkou</string>
     <string name="id_connected_to_jade">Připojeno k Jade</string>
     <string name="id_connected_wallets">Připojené peněženky</string>
     <string name="id_connecting">Připojování...</string>
@@ -371,7 +371,7 @@
     <string name="id_default_transaction_priority">Výchozí priorita transakce</string>
     <string name="id_delete">Smazat</string>
     <string name="id_delete_credentials">Odstranit přístupové údaje</string>
-    <string name="id_delete_permanently_your_wallet">Trvale odstraňte svou peněženku z databáze Blockstream Green. Poté se k ní již nikdy nebudete moci přihlásit.</string>
+    <string name="id_delete_permanently_your_wallet">Trvale odstraňte svou peněženku z databáze Blockstream App. Poté se k ní již nikdy nebudete moci přihlásit.</string>
     <string name="id_delete_s_twofactor">Smazat %1$s 2-Faktor</string>
     <string name="id_delete_wallet">Smazat peněženku</string>
     <string name="id_deleting_your_pin_will_remove">Smazáním kódu PIN se trvale odstraní přístup k peněžence, pokud nemáte k dispozici mnemonickou frázi. Pokračujte stisknutím tlačítka „OK“.</string>
@@ -500,7 +500,7 @@
     <string name="id_expiration">Expirace</string>
     <string name="id_explore_your_wallet">Prozkoumejte svou peněženku</string>
     <string name="id_export">Export</string>
-    <string name="id_export_lightning_key_to_green">Exportovat Lightning klíč do Green peneženky</string>
+    <string name="id_export_lightning_key_to_blockstream_app">Exportovat Lightning klíč do Blockstream App peneženky</string>
     <string name="id_export_transactions_to_csv_file">Exportovat transakce do souboru CSV</string>
     <string name="id_exports_an_accounts_extended">Exportuje rozšířený veřejný klíč účtu (xPub/yPub/zPub) pro zobrazení pouze pro sledování.</string>
     <string name="id_extended_public_key">Rozšířený veřejný klíč</string>
@@ -563,16 +563,16 @@
     <string name="id_go_to_receive_to_get_your">Chcete-li získat své ID účtu, přejděte do Přijmout.</string>
     <string name="id_go_to_wallet">Přejít do Peněženky</string>
     <string name="id_got_it_written_down_great_you">Máš ho zapsaný? Skvěle. Můžete ho zadat zde. Neztrať ho, zůstane stejný.</string>
-    <string name="id_green_is_a_noncustodial_wallet">Green peněženka nedrží vaše prostředky</string>
-    <string name="id_green_logo">Green Logo</string>
-    <string name="id_green_mnemonic_qr_code">Green Mnemotechnický QR Code</string>
-    <string name="id_green_needs_the_master_blinding">Green potřebuje hlavní zaslepený klíč od Jade.</string>
-    <string name="id_green_only_supports_one_pin_for">Green peněženka podporuje pouze jeden PIN pro každou síť. Nové peněženky budou vyžadovat mnemotechnickou frázi pokaždé, když se přihlásíte.</string>
-    <string name="id_green_only_supports_one_pin_per">Green podporuje pouze jeden PIN pro síť. Chcete-li nastavit PIN pro tuto peněženku, nejprve deaktivujte PIN na původní peněžence.</string>
-    <string name="id_green_uses_biometric">Green používá biometrické ověřování, které umožňuje snadný přístup k peněžence</string>
-    <string name="id_green_uses_bluetooth_for">Green používá Bluetooth pro komunikaci s hardwarovými peněženkami</string>
-    <string name="id_green_uses_bluetooth_to_connect">Green používá Bluetooth pro připojení k hardwarovým peněženkám</string>
-    <string name="id_green_uses_multisig_with_one">Green používá multisig s jedním podpisem generovaným vaším zařízením a jedním podpisem generovaným servery společnosti Blockstream. Nastavení dvoufaktorového ověřování umožňuje další vrstvu zabezpečení pro podpis na straně serveru.</string>
+    <string name="id_blockstream_app_is_a_noncustodial_wallet">Blockstream App peněženka nedrží vaše prostředky</string>
+    <string name="id_blockstream_app_logo">Blockstream App Logo</string>
+    <string name="id_blockstream_app_mnemonic_qr_code">Blockstream App Mnemotechnický QR Code</string>
+    <string name="id_blockstream_app_needs_the_master_blinding">Blockstream App potřebuje hlavní zaslepený klíč od Jade.</string>
+    <string name="id_blockstream_app_only_supports_one_pin_for">Blockstream App peněženka podporuje pouze jeden PIN pro každou síť. Nové peněženky budou vyžadovat mnemotechnickou frázi pokaždé, když se přihlásíte.</string>
+    <string name="id_blockstream_app_only_supports_one_pin_per">Blockstream App podporuje pouze jeden PIN pro síť. Chcete-li nastavit PIN pro tuto peněženku, nejprve deaktivujte PIN na původní peněžence.</string>
+    <string name="id_blockstream_app_uses_biometric">Blockstream App používá biometrické ověřování, které umožňuje snadný přístup k peněžence</string>
+    <string name="id_blockstream_app_uses_bluetooth_for">Blockstream App používá Bluetooth pro komunikaci s hardwarovými peněženkami</string>
+    <string name="id_blockstream_app_uses_bluetooth_to_connect">Blockstream App používá Bluetooth pro připojení k hardwarovým peněženkám</string>
+    <string name="id_blockstream_app_uses_multisig_with_one">Blockstream App používá multisig s jedním podpisem generovaným vaším zařízením a jedním podpisem generovaným servery společnosti Blockstream. Nastavení dvoufaktorového ověřování umožňuje další vrstvu zabezpečení pro podpis na straně serveru.</string>
     <string name="id_hardware_devices">Hardwarová zařízení</string>
     <string name="id_hardware_security">Hardwarové zabezpečení</string>
     <string name="id_hardware_wallet">Hardwarová peněženka</string>
@@ -581,7 +581,7 @@
     <string name="id_hash">Hash</string>
     <string name="id_hash_s">Hash: %1$s</string>
     <string name="id_help">Pomoc</string>
-    <string name="id_help_green_improve">Pomozte zlepšit Green</string>
+    <string name="id_help_blockstream_app_improve">Pomozte zlepšit Blockstream App</string>
     <string name="id_helpblockstreamcom">help.blockstream.com</string>
     <string name="id_here">zde</string>
     <string name="id_heres_the_proof_of_ownership_of">Zde je důkaz o vlastnictví adresy</string>
@@ -592,7 +592,7 @@
     <string name="id_hide_details">Skrýt podrobnosti</string>
     <string name="id_high">Vysoký</string>
     <string name="id_hold_button_to_send">Podržením tlačítka odešlete</string>
-    <string name="id_hold_the_green_button_on_the">Podržte zelené tlačítko na spodní straně zařízení Jade, dokud se nespustí.</string>
+    <string name="id_hold_the_blockstream_app_button_on_the">Podržte zelené tlačítko na spodní straně zařízení Jade, dokud se nespustí.</string>
     <string name="id_hold_your_nfc_tag_close_to_the">Držte NFC tag v blízkosti zařízení</string>
     <string name="id_home">Domů</string>
     <string name="id_hour">hodina</string>
@@ -612,7 +612,7 @@
     <string name="id_i_understand_amounts_could_be">Chápu, že částky mohou být nesprávné</string>
     <string name="id_id">ID</string>
     <string name="id_if_for_any_reason_you_cant">Pokud se z nějakého důvodu nemůžete přihlásit do peněženky, můžete obnovit frázi pro obnovení pomocí kódu PIN/biometrických údajů.</string>
-    <string name="id_if_you_agree_green_will_collect">Pokud souhlasíte, bude Green shromažďovat omezené údaje o používání za účelem optimalizace uživatelského prostředí. Nebudou shromažďovány žádné citlivé údaje o uživateli nebo peněžence.</string>
+    <string name="id_if_you_agree_blockstream_app_will_collect">Pokud souhlasíte, bude Blockstream App shromažďovat omezené údaje o používání za účelem optimalizace uživatelského prostředí. Nebudou shromažďovány žádné citlivé údaje o uživateli nebo peněžence.</string>
     <string name="id_if_you_are_the_rightful_owner">Pokud jste oprávněným vlastníkem této peněženky a stále máte jednu z jejích aktivních 2FA, metod zrušte reset, abyste mohli odeslat prostředky a vyprázdnit peněženku.</string>
     <string name="id_if_you_did_not_change_your">Pokud jste nastavení Oracle v systému Jade nezměnili, nepokračujte a kontaktujte podporu společnosti Blockstream.</string>
     <string name="id_if_you_did_not_request_the">Pokud jste o resetování nepožádali, ale nemůžete proces resetování zrušit, protože nemáte přístup k žádným stávajícím metodám dvoufaktorové autorizace, zpochybněte toto resetování 2FA. Tím dojde k trvalému zablokování vaší peněženky, ale tuto akci můžete vzít zpět.</string>
@@ -621,8 +621,8 @@
     <string name="id_if_you_have_some_coins_on_the">Pokud máte nějaké mince na starším typu adresy a v nejbližší době je neutratíte, možná budete muset nastavit e-mail a přijímat transakce na obnovu, abyste měli jistotu, že máte své prostředky vždy pod kontrolou.</string>
     <string name="id_if_you_initiated_the_2fa_reset">Pokud jste spor o resetování 2FA zahájili omylem, můžete jej vrátit zpět a nastavit peněženku zpět do stavu resetování 2FA.</string>
     <string name="id_import">Import</string>
-    <string name="id_import_a_multisig_shield_wallet">Importovat Multisig Shield peněženku vytvořenou na Blockstream Green.</string>
-    <string name="id_import_a_wallet_created_on">Importujte peněženku vytvořenou na Blockstream Green.</string>
+    <string name="id_import_a_multisig_shield_wallet">Importovat Multisig Shield peněženku vytvořenou na Blockstream App.</string>
+    <string name="id_import_a_wallet_created_on">Importujte peněženku vytvořenou na Blockstream App.</string>
     <string name="id_import_a_wallet_created_with">Importujte peněženku vytvořenou pomocí jiných aplikací. Tato možnost funguje pouze s peněženkami s jedním podpisem používajícími mnemonické fráze BIP39 s následujícími derivacemi BIP44, BIP49 nebo BIP84.</string>
     <string name="id_import_from_file">Import ze souboru</string>
     <string name="id_in_progress">Probíhá</string>
@@ -687,7 +687,7 @@
     <string name="id_jade_is_trying_to_connect_to_a">Jade se pokouší připojit k jinému než výchozímu zaslepenému orákulu PIN. Okamžitě kontaktujte podporu a získejte další informace.</string>
     <string name="id_jade_unlocked">Jade odemčen</string>
     <string name="id_jade_was_initialized_for_testnet">Jade byl inicializován pro testnet</string>
-    <string name="id_jade_will_securely_create_and">Jade bezpečně vytvoří a přenese nový klíč do vaší Green aplikace. Jade nebude potřeba k autorizaci lightning transakcí, protože Green bude tento nový klíč používat pro vaše lightning transakce.\n\nNedělejte si starosti s žádnými novými zálohami, vaše stávající záloha obnovovací fráze bude stačit k obnovení vašich prostředků onchain i lightning.</string>
+    <string name="id_jade_will_securely_create_and">Jade bezpečně vytvoří a přenese nový klíč do vaší Blockstream App aplikace. Jade nebude potřeba k autorizaci lightning transakcí, protože Blockstream App bude tento nový klíč používat pro vaše lightning transakce.\n\nNedělejte si starosti s žádnými novými zálohami, vaše stávající záloha obnovovací fráze bude stačit k obnovení vašich prostředků onchain i lightning.</string>
     <string name="id_just_a_few_more_steps_to_get">Ještě pár kroků k nastavení.</string>
     <string name="id_label">Popisek</string>
     <string name="id_language">Jazyk</string>
@@ -789,7 +789,7 @@
     <string name="id_message_from_recipient_s">Zpráva od příjemce: %1$s</string>
     <string name="id_message_hash">Hash zprávy</string>
     <string name="id_migrate_another_wallet">Migrace další peněženky</string>
-    <string name="id_migrating_to_blockstream_green">Přecházíte na Blockstream Green? Máte stávající peněženku Blockstream Green, kterou byste chtěli importovat? Jdeme na to!</string>
+    <string name="id_migrating_to_blockstream_app">Přecházíte na Blockstream App? Máte stávající peněženku Blockstream App, kterou byste chtěli importovat? Jdeme na to!</string>
     <string name="id_minimum">Minimum</string>
     <string name="id_minute">minuta</string>
     <string name="id_minutes">minuty</string>
@@ -936,7 +936,7 @@
     <string name="id_pin_has_to_be_between_4_and_15">PIN musí být mezi 4 a 15 číslicemi</string>
     <string name="id_pins_do_not_match_please_try">PINy se neshodují, zkuste to znovu.</string>
     <string name="id_please_activate_at_least_one">Chcete-li použít biometrické přihlášení, aktivujte v nastavení systému Android alespoň jeden otisk prstu</string>
-    <string name="id_please_contribute_if_you_find">Prosím, přispějte, pokud shledáte Blockstream Green užitečným</string>
+    <string name="id_please_contribute_if_you_find">Prosím, přispějte, pokud shledáte Blockstream App užitečným</string>
     <string name="id_please_disable_biometric">Před odstraněním kódu PIN deaktivujte biometrické ověřování</string>
     <string name="id_please_disconnect_your_ledger">Odpojte Ledger Nano X, vypněte jej dlouhým stisknutím obou tlačítek, poté jej znovu připojte a zadejte jeho PIN</string>
     <string name="id_please_enable_another">Povolte prosím jinou metodu ověřování, abyste zabránili ztrátě přístupu k vašim prostředkům.</string>
@@ -975,7 +975,7 @@
     <string name="id_proxy_settings">NASTAVENÍ PROXY</string>
     <string name="id_pseudonymous_identifier_country">Pseudonymní identifikátor, země</string>
     <string name="id_qr_code">QR kód</string>
-    <string name="id_qr_mode_allows_you_to">Režim QR umožňuje komunikovat s aplikací Green pomocí fotoaparátu Jade a QR kódů (namísto USB nebo Bluetooth).</string>
+    <string name="id_qr_mode_allows_you_to">Režim QR umožňuje komunikovat s aplikací Blockstream App pomocí fotoaparátu Jade a QR kódů (namísto USB nebo Bluetooth).</string>
     <string name="id_qr_pin_unlock">Odemykání pomocí kódu QR PIN</string>
     <string name="id_qr_scanner">QR čtečka</string>
     <string name="id_quick_setup_2fa_account_ideal">Rychlé nastavení 2FA účtu, ideální pro aktivní uživatele (2FA vyprší, pokud po dobu 1 roku neprovedete žádný pohyb prostředků).</string>
@@ -1016,7 +1016,7 @@
     <string name="id_recovery_words">Obnovovací slova</string>
     <string name="id_recovery_xpub">Obnovovací xpub</string>
     <string name="id_redeem">Uplatnit</string>
-    <string name="id_redeem_your_deposited_funds">Vyberte své uložené prostředky bez podpisu Blockstream Green po předem definované době.</string>
+    <string name="id_redeem_your_deposited_funds">Vyberte své uložené prostředky bez podpisu Blockstream App po předem definované době.</string>
     <string name="id_redeposit">Opětovné vložení</string>
     <string name="id_redeposit_expired_2fa_coins">Opětovné vložení expirovaných 2FA mincí</string>
     <string name="id_redeposited">Opětovné vrácení</string>
@@ -1055,10 +1055,10 @@
     <string name="id_reset_spv">Resetovat SPV</string>
     <string name="id_resetting_your_twofactor_takes">Resetování vašeho 2-Faktoru trvá minimálně 12 měsíců. Pokud jste si jisti, že jste ztratili svůj 2-Faktor, zadejte níže novou e-mailovou adresu, na kterou chcete resetovat.</string>
     <string name="id_restore">Obnovit</string>
-    <string name="id_restore_a_blockstream_green">Obnovte Blockstream Green peněženku pomocí vaší mnemotechnické zálohy 24 slov. Najdete ji v nastavení jakékoli aplikace Blockstream Green.</string>
-    <string name="id_restore_a_singlesig_wallet">Obnovte Singlesig peněženku vytvořenou v aplikaci Blockstream Green nebo importujte peněženku vytvořenou pomocí jiných aplikací. Tato možnost funguje pouze s peněženkami Singlesig používající BIP39 standard a následující BIP44, BIP49 nebo BIP84 derivace.</string>
+    <string name="id_restore_a_blockstream_app">Obnovte Blockstream App peněženku pomocí vaší mnemotechnické zálohy 24 slov. Najdete ji v nastavení jakékoli aplikace Blockstream App.</string>
+    <string name="id_restore_a_singlesig_wallet">Obnovte Singlesig peněženku vytvořenou v aplikaci Blockstream App nebo importujte peněženku vytvořenou pomocí jiných aplikací. Tato možnost funguje pouze s peněženkami Singlesig používající BIP39 standard a následující BIP44, BIP49 nebo BIP84 derivace.</string>
     <string name="id_restore_a_wallet">Obnovit peněženku</string>
-    <string name="id_restore_green_wallet">Obnovit Green peněženku</string>
+    <string name="id_restore_blockstream_app_wallet">Obnovit Blockstream App peněženku</string>
     <string name="id_restore_temporary_wallet">Obnovit dočasnou peněženku</string>
     <string name="id_restore_wallet">Obnovit peněženku</string>
     <string name="id_restore_with_recovery_phrase">Obnovit pomocí fráze pro obnovení</string>
@@ -1147,10 +1147,10 @@
     <string name="id_set_locktime">Nastavit časový zámek</string>
     <string name="id_set_timelock">Nastavit časový zámek</string>
     <string name="id_set_twofactor_threshold">Nastavit limit 2-Faktoru</string>
-    <string name="id_set_up_a_passcode_for_your_ios">Nastate přístupový kód pro vaše iOS zařízení a nastavte PIN pro Blockstream Green</string>
+    <string name="id_set_up_a_passcode_for_your_ios">Nastate přístupový kód pro vaše iOS zařízení a nastavte PIN pro Blockstream App</string>
     <string name="id_set_up_a_screen_lock_for_your">Nastavte zámek obrazovky, chcete-li odemknout peněženku pomocí zámku obrazovky Android, </string>
     <string name="id_set_up_an_email_to_get">Nastavte si e-mail a získejte předem podepsané transakce k obnovení. E-mailová oznámení obsahují vaše šifrovaná data pro obnovení.</string>
-    <string name="id_set_up_credentials_to_access_in">Nastavit přihlašovací údaje pro přístup v režimu Pouze-pro-sledování k přijímání mincí bez ohrožení vašich soukromých klíčů. Přístup z jakéhokoli zařízení pomocí aplikace Blockstream Green</string>
+    <string name="id_set_up_credentials_to_access_in">Nastavit přihlašovací údaje pro přístup v režimu Pouze-pro-sledování k přijímání mincí bez ohrožení vašich soukromých klíčů. Přístup z jakéhokoli zařízení pomocí aplikace Blockstream App</string>
     <string name="id_set_up_pgp_key_for">Nastavte PGP klíč pro komunikaci</string>
     <string name="id_set_up_twofactor_authentication">Nastavte 2-Faktorové ověřování</string>
     <string name="id_set_up_watchonly">Nastavit pouze-pro-sledování</string>
@@ -1208,7 +1208,7 @@
     <string name="id_socks5_hostname">Socks5 Hostname</string>
     <string name="id_socks5_port">Socks5 Port</string>
     <string name="id_socks5_proxy_and_port_must_be">SOCKS5 proxy a port musí být nastaveny</string>
-    <string name="id_some_accounts_cannot_be_logged">Some accounts cannot be logged into due to network issues. Please update the Green app and try again later.</string>
+    <string name="id_some_accounts_cannot_be_logged">Some accounts cannot be logged into due to network issues. Please update the Blockstream App app and try again later.</string>
     <string name="id_some_coins_in_your_wallet">Některé mince se ve vaší peněžence už dlouho nepohybují, takže platnost 2FA vypršela, abyste měli vše pod kontrolou. Chcete-li 2FA znovu aktivovat:\n\n- Odešlete normálně a obnovte 2FA na vrácených mincích (optimalizuje poplatky).\n- Znovu uložte všechny mince 2FA, jejichž platnost vypršela.</string>
     <string name="id_something_went_wrong">Něco se pokazilo</string>
     <string name="id_speed_up_transaction">Urychlení transakce</string>
@@ -1248,7 +1248,7 @@
     <string name="id_sweep_into_s">Vybrat prostředky (sweep) do %1$s</string>
     <string name="id_switch_network">Přepnout síť</string>
     <string name="id_synchronize_spv_on_mobile">Synchronizovat SPV na mobilu</string>
-    <string name="id_syou_need_ton1_reset_greens">%1$s. Musíte:\n1. Obnovit přihlašovací údaje Green Face/TouchID,\n2. Přihlásit se s PINem,\n3. Znovu aktivovat Face/TouchID z Green nastavení.</string>
+    <string name="id_syou_need_ton1_reset_blockstream_apps">%1$s. Musíte:\n1. Obnovit přihlašovací údaje Blockstream App Face/TouchID,\n2. Přihlásit se s PINem,\n3. Znovu aktivovat Face/TouchID z Blockstream App nastavení.</string>
     <string name="id_system_location">Umístění systému</string>
     <string name="id_system_message">Systémová zpráva</string>
     <string name="id_take_control_your_keys_your">Převezměte kontrolu: Vaše klíče, vaše bitcoiny</string>
@@ -1264,7 +1264,7 @@
     <string name="id_testnet_and_liquid_testnet">Testnet a Liquid Testnet</string>
     <string name="id_testnet_electrum_server">Server Testnet Electrum</string>
     <string name="id_testnet_wallets">Testnet peněženky</string>
-    <string name="id_thank_you_for_downloading_green">Děkujeme za stažení Green! Pokud máte čas, zanechte nám prosím recenzi</string>
+    <string name="id_thank_you_for_downloading_blockstream_app">Děkujeme za stažení Green! Pokud máte čas, zanechte nám prosím recenzi</string>
     <string name="id_thank_you_for_your_feedback">Děkujeme za vaši zpětnou vazbu</string>
     <string name="id_the_1_year_2fa_reset_process">Proces resetování 2FA na 1 rok probíhal, ale někdo jej zablokoval zpochybněním resetování 2FA.</string>
     <string name="id_the_address_is_valid">Adresa je platná.</string>
@@ -1278,7 +1278,7 @@
     <string name="id_the_importance_of_twofactor">Důležitost dvoufázového ověřování</string>
     <string name="id_the_lightning_service_is">Služba Lightning je v současné době nedostupná. Omlouváme se za přerušení a pracujeme na obnovení služby.</string>
     <string name="id_the_liquid_network_is_a_bitcoin">Liquid Network je řešení druhé vrstvy Bitcoinu, které umožňuje rychlé a důvěrné vypořádání a vydávání digitálních aktiv, jako jsou stablecoiny, tokeny cenných papírů a další finanční nástroje, nad timechainem Bitcoinu.</string>
-    <string name="id_the_network_selected_on_the">Síť vybraná v aplikaci Green se liší od sítě vybrané v hardwarové peněžence. Vyberte stejnou síť na obou zařízeních.</string>
+    <string name="id_the_network_selected_on_the">Síť vybraná v aplikaci Blockstream App se liší od sítě vybrané v hardwarové peněžence. Vyberte stejnou síť na obou zařízeních.</string>
     <string name="id_the_new_email_will_be_used_for">Po dokončení resetu bude nový e-mail použit pro 2-Faktorové ověření. Reset trvá 12 měsíců plus zbývající časový blok.</string>
     <string name="id_the_new_firmware_requires_you">Nový firmware vyžaduje zrušení párování zařízení Jade v nastavení Bluetooth.</string>
     <string name="id_the_password_cant_be_empty">Heslo nemůže být prázdné</string>
@@ -1296,7 +1296,7 @@
     <string name="id_there_is_already_a_swap_in">Swap již probíhá. V jednu chvíli je povolen pouze jeden</string>
     <string name="id_there_is_already_an_archived">Již existuje archivovaný účet.\n\nChcete si vytvořit nový?</string>
     <string name="id_these_are_some_compatible">Zde jsou některé kompatibilní peněženky:</string>
-    <string name="id_these_settings_apply_for_every">Tato nastavení platí pro každou peněženku, kterou používáte na Blockstream Green.</string>
+    <string name="id_these_settings_apply_for_every">Tato nastavení platí pro každou peněženku, kterou používáte na Blockstream App.</string>
     <string name="id_this_amount_is_below_the">Tato částka je nižší než minimální poplatek %1$s (%2$s).</string>
     <string name="id_this_feature_is_coming_soon">Tato funkce se brzy objeví, zůstaňte naladěni!</string>
     <string name="id_this_is_not_the_default_blind">Toto není výchozí zaslepené PIN orákulum</string>
@@ -1358,7 +1358,7 @@
     <string name="id_tx_count">Počet TX</string>
     <string name="id_txid">TXID</string>
     <string name="id_type_the_next_word">Zadejte další slovo</string>
-    <string name="id_unable_to_contact_the_green">Nelze kontaktovat Green službu. Zkontrolujte připojení k síti a počkejte, až se znovu připojí.</string>
+    <string name="id_unable_to_contact_the_blockstream_app">Nelze kontaktovat Blockstream App službu. Zkontrolujte připojení k síti a počkejte, až se znovu připojí.</string>
     <string name="id_unarchive">Odarchivovat</string>
     <string name="id_unarchive_account">Zrušit archivaci účtu</string>
     <string name="id_unblinding_data">Odtajněná data</string>
@@ -1369,7 +1369,7 @@
     <string name="id_unknown_custom">Neznámý (vlastní)</string>
     <string name="id_unknown_firmware">Neznámý firmware</string>
     <string name="id_unlock">Odemknout</string>
-    <string name="id_unlock_green">Odemknout Green</string>
+    <string name="id_unlock_blockstream_app">Odemknout Blockstream App</string>
     <string name="id_unlock_jade_to_continue">Chcete-li pokračovat, odemkněte Jade</string>
     <string name="id_unlock_your_device_to_continue">Odemkněte zařízení a pokračujte</string>
     <string name="id_unlock_your_jade_to_continue">Odemkněte svůj Jade a pokračujte</string>
@@ -1518,7 +1518,7 @@
     <string name="id_youll_need_your_pin_to_log_in">K přihlášení do peněženky budete potřebovat PIN. Tento PIN zajišťuje peněženku pouze na tomto zařízení.</string>
     <string name="id_youll_need_your_recovery_phrase">K obnovení této peněženky budete potřebovat frázi pro obnovení.</string>
     <string name="id_youll_see_your_coins_here_when">Zde uvidíte své mince, jakmile obdržíte finanční prostředky.</string>
-    <string name="id_your_2fa_expires_so_that_if_you">Platnost vašeho 2FA vyprší, takže pokud ztratíte přístup ke své metodě 2FA nebo služba Blockstream Green nebude k dispozici, můžete své bitcoiny kdykoli obnovit pomocí tohoto nástroje s otevřeným zdrojovým kódem</string>
+    <string name="id_your_2fa_expires_so_that_if_you">Platnost vašeho 2FA vyprší, takže pokud ztratíte přístup ke své metodě 2FA nebo služba Blockstream App nebude k dispozici, můžete své bitcoiny kdykoli obnovit pomocí tohoto nástroje s otevřeným zdrojovým kódem</string>
     <string name="id_your_bitcoin_and_liquid_assets">Vaše aktiva Bitcoin a Liquid jsou uložena v blockchainu a lze je utratit pouze pomocí klíčů uložených v Jade.</string>
     <string name="id_your_bluetooth_adapter_is">Adaptér Bluetooth je vypnutý</string>
     <string name="id_your_current_receive_capacity">Vaše aktuální přijímací kapacita je %1$s.</string>
@@ -1528,7 +1528,7 @@
     <string name="id_your_funds_are_secured_by_a">Vaše prostředky jsou zabezpečeny jediným klíčem drženým ve vašem zařízení. Jednodušší nastavení a provoz než multisig. Pokud máte pochybnosti, vyberte tuto možnost.</string>
     <string name="id_your_funds_are_secured_by_your">Vaše finanční prostředky jsou zabezpečeny vaším PIN kódem. Snadno se používají, jsou standardní a přenosné na většině bitcoinových peněženek.</string>
     <string name="id_your_funds_have_grown">Vaše finanční prostředky se v poslední době rozrostly.\n\nZvažte použití účtu chráněného 2FA, aby všechny vaše odchozí transakce měly další vrstvu ochrany.\nK tomu budete potřebovat:\n\n1. Vytvořit účet chráněný 2FA;\n2. Nastavit metodu 2FA;\n3. Přesubout finanční prostředky na nový účet;\n4. Archivovat starý účet;</string>
-    <string name="id_your_green_wallet_is_now_ready">Vaše Green peněženka je nyní připravena k použití.</string>
+    <string name="id_your_blockstream_app_wallet_is_now_ready">Vaše Blockstream App peněženka je nyní připravena k použití.</string>
     <string name="id_your_ios_device_might_not_be">Vaše iOS zařízení nemusí být podporováno</string>
     <string name="id_your_keys_secure_your_coins_on">Vaše klíče zabezpečují vaše mince v blockchainu.</string>
     <string name="id_your_keys_will_be_secured_on_a">Vaše klíče budou uloženy ve speciálním offline zařízení chráněném PIN kódem.</string>
@@ -1544,7 +1544,7 @@
     <string name="id_your_transaction_was">Vaše transakce byla úspěšně odeslána</string>
     <string name="id_your_transactions_will_be_shown">Zde se zobrazí vaše transakce.</string>
     <string name="id_your_twofactor_threshold_is_s">Váš 2-Faktorový limit je %1$s.</string>
-    <string name="id_your_wallet_backup_is_made_of">Záloha vaší peněženky se skládá z 24 slov, známých také jako mnemotechnická fráze. Ujistěte se, že máte zálohu a udržujte ji v bezpečí. Každý, kdo ji najde, může ukrást vaše peníze. Můžete ji také použít k obnovení vaší peněženky Blockstream Green na jiném zařízení v případě ztráty, poškození nebo odcizení.</string>
+    <string name="id_your_wallet_backup_is_made_of">Záloha vaší peněženky se skládá z 24 slov, známých také jako mnemotechnická fráze. Ujistěte se, že máte zálohu a udržujte ji v bezpečí. Každý, kdo ji najde, může ukrást vaše peníze. Můžete ji také použít k obnovení vaší peněženky Blockstream App na jiném zařízení v případě ztráty, poškození nebo odcizení.</string>
     <string name="id_your_wallet_is_locked_for_a">Vaše peněženka je uzamčena pro resetování dvoufaktorového ověření. Reset bude dokončen za %1$d dní.</string>
     <string name="id_your_wallet_is_locked_under_2fa">Vaše peněženka je uzamčena v rámci sporu 2FA.</string>
     <string name="id_your_wallet_is_not_yet_fully">Vaše peněženka ještě není zcela zabezpečená.\nAktivujte prosím 2-Faktorové ověřování.</string>

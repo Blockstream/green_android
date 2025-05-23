@@ -1,6 +1,6 @@
-Blockstream Green is a simple and secure Bitcoin wallet that makes it easy to get started sending and receiving Bitcoin and Liquid-based assets such as Liquid Bitcoin (LBTC) and Tether’s USDt.
+Blockstream App is a simple and secure Bitcoin wallet that makes it easy to get started sending and receiving Bitcoin and Liquid-based assets such as Liquid Bitcoin (LBTC) and Tether’s USDt.
 
-Built by Blockstream, one of the most  security-focused teams in the Bitcoin industry, Blockstream Green is supported across multiple platforms and is designed for Bitcoin beginners and power users alike.
+Built by Blockstream, one of the most  security-focused teams in the Bitcoin industry, Blockstream App is supported across multiple platforms and is designed for Bitcoin beginners and power users alike.
 
 EASY SETUP
 No registration or personal details are required to get started, just write down your recovery phrase and start making Bitcoin transactions right away.

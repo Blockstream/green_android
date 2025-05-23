@@ -36,7 +36,7 @@
     <string name="id_a_funding_fee_of_s_minimum_s_is">A funding fee of %1$s (minimum %2$s) is applied when receiving amounts above your current receive capacity of %3$s</string>
     <string name="id_a_funding_fee_of_s_s_is_applied">A funding fee of %1$s (%2$s) is applied when receiving amounts above your current receive capacity %3$s (%4$s)</string>
     <string name="id_a_new_transaction_has_just">Нова транзакція щойно надійшла на ваш гаманець.</string>
-    <string name="id_a_newer_version_of_blockstream">Доступна нова версія Blockstream Green</string>
+    <string name="id_a_newer_version_of_blockstream">Доступна нова версія Blockstream App</string>
     <string name="id_a_powerful_hardware_wallet_for">A powerful hardware wallet for securing your Bitcoin.</string>
     <string name="id_a_screen_lock_must_be_enabled">Блокування екрану повинно бути включено в настройках Android</string>
     <string name="id_a_set_up_funding_fee_of_s_s">A set up funding fee of %1$s (%2$s) will be applied to the received amount.</string>
@@ -186,9 +186,9 @@
     <string name="id_blocks_confirmed">підтверджені блоки</string>
     <string name="id_blockstream_devices">Blockstream-пристрої</string>
     <string name="id_blockstream_does_not_have">Blockstream не має доступу до збереженої копії вашого гаманця і не зможе допомогти вам у разі його втрати</string>
-    <string name="id_blockstream_green_needs_access">Blockstream Green необхідний доступ до Bluetooth для підключення до апаратних гаманців. Дані про місцезнаходження не використовуються і не зберігаються компанією Blockstream.</string>
-    <string name="id_blockstream_green_supports_both">Blockstream Green підтримує як Bitcoin, так і Liquid Network.</string>
-    <string name="id_blockstream_greennsimple_and">Blockstream Green:\nПросто і безпечно</string>
+    <string name="id_blockstream_app_needs_access">Blockstream App необхідний доступ до Bluetooth для підключення до апаратних гаманців. Дані про місцезнаходження не використовуються і не зберігаються компанією Blockstream.</string>
+    <string name="id_blockstream_app_supports_both">Blockstream App підтримує як Bitcoin, так і Liquid Network.</string>
+    <string name="id_blockstream_appnsimple_and">Blockstream App:\nПросто і безпечно</string>
     <string name="id_blockstream_store">Магазин Blockstream</string>
     <string name="id_bluetooth">Bluetooth</string>
     <string name="id_btchip_is_not_set_up_please_set">BTChip не налаштовано. Для налаштування, будь ласка, встановіть програму за допомогою десктоп-клієнта.</string>
@@ -219,7 +219,7 @@
     <string name="id_check_your_backup">Перевірте свою резервну копію</string>
     <string name="id_check_your_device">Check your device</string>
     <string name="id_choose">Обрати</string>
-    <string name="id_choose_a_name_for_your_new">Оберіть ім&apos;я для свого нового гаманця Blockstream Green.</string>
+    <string name="id_choose_a_name_for_your_new">Оберіть ім&apos;я для свого нового гаманця Blockstream App.</string>
     <string name="id_choose_a_name_for_your_wallet">Оберіть ім&apos;я для свого гаманця</string>
     <string name="id_choose_a_swap_option">Оберіть варіант свопу</string>
     <string name="id_choose_a_usb_or_bluetooth">Оберіть з&apos;єднання USB або Bluetooth на пристрої Jade після перевірки вашої фрази відновлення.</string>
@@ -290,8 +290,8 @@
     <string name="id_connect_via_qr">Connect via QR</string>
     <string name="id_connect_with_bluetooth">Connect with Bluetooth</string>
     <string name="id_connect_with_tor">Встановити з’єднання з Tor</string>
-    <string name="id_connect_your_jade_to_use_it">Підключіть свій Jade, щоб використовувати його з Green</string>
-    <string name="id_connect_your_ledger_to_use_it">Підключіть свій Ledger, щоб використовувати його з Green</string>
+    <string name="id_connect_your_jade_to_use_it">Підключіть свій Jade, щоб використовувати його з Blockstream App</string>
+    <string name="id_connect_your_ledger_to_use_it">Підключіть свій Ledger, щоб використовувати його з Blockstream App</string>
     <string name="id_connected_to_jade">Підключений до Jade</string>
     <string name="id_connected_wallets">Підключені гаманці</string>
     <string name="id_connecting">Підключення …</string>
@@ -371,7 +371,7 @@
     <string name="id_default_transaction_priority">Стандартний пріоритет транзакції</string>
     <string name="id_delete">Видалити</string>
     <string name="id_delete_credentials">Видалити облікові дані</string>
-    <string name="id_delete_permanently_your_wallet">Видалити назавжди ваш гаманець з бази даних Blockstream Green. Після цього ви ніколи не зможете увійти в нього.</string>
+    <string name="id_delete_permanently_your_wallet">Видалити назавжди ваш гаманець з бази даних Blockstream App. Після цього ви ніколи не зможете увійти в нього.</string>
     <string name="id_delete_s_twofactor">Видалити %1$s двофакторне налаштування</string>
     <string name="id_delete_wallet">Видалити гаманець</string>
     <string name="id_deleting_your_pin_will_remove">Видалення PIN-коду заблокує ваш гаманець, доки ви не скористуєтесь мнемонічною фразою для відновлення доступу. Натисніть &quot;OK&quot; для продовження.</string>
@@ -500,7 +500,7 @@
     <string name="id_expiration">Expiration</string>
     <string name="id_explore_your_wallet">Дослідити свій гаманець</string>
     <string name="id_export">Export</string>
-    <string name="id_export_lightning_key_to_green">Export Lightning Key to Green</string>
+    <string name="id_export_lightning_key_to_blockstream_app">Export Lightning Key to Blockstream App</string>
     <string name="id_export_transactions_to_csv_file">Експорт транзакцій у файл CSV</string>
     <string name="id_exports_an_accounts_extended">Експортує розширений публічний ключ акаунту (xPub/yPub/zPub)  для використання в режимі &quot;тільки для перегляду\</string>
     <string name="id_extended_public_key">Розширений публічний ключ</string>
@@ -563,16 +563,16 @@
     <string name="id_go_to_receive_to_get_your">Перейдіть до розділу «Отримати», щоб отримати ідентифікатор свого облікового запису.</string>
     <string name="id_go_to_wallet">Перейти до гаманця</string>
     <string name="id_got_it_written_down_great_you">Got it written down? Great. You can enter it here. Don&apos;t lose it, it&apos;ll stay the same.</string>
-    <string name="id_green_is_a_noncustodial_wallet">Green - гаманець, який дозволяє повністю контролювати кошти тільки його власнику</string>
-    <string name="id_green_logo">Логотип гаманця Green</string>
-    <string name="id_green_mnemonic_qr_code">Мнемонічний QR-код гаманця Green</string>
-    <string name="id_green_needs_the_master_blinding">Green needs the master blinding key from Jade</string>
-    <string name="id_green_only_supports_one_pin_for">Green підтримує лише один PIN-код для кожної мережі. Новий гаманець вимагає введення мнемонічної фрази кожного разу при вході в систему.</string>
-    <string name="id_green_only_supports_one_pin_per">Green підтримує тільки один PIN-код для однієї мережі. Щоб встановити PIN-код для цього гаманця, спочатку відключіть PIN-код на оригінальному гаманці.</string>
-    <string name="id_green_uses_biometric">Green використовує біометричну аутентифікацію для того, щоб забезпечити легкий доступ до гаманця </string>
-    <string name="id_green_uses_bluetooth_for">Green використовує Bluetooth для зв&apos;язку з апаратними гаманцями</string>
-    <string name="id_green_uses_bluetooth_to_connect">Green використовує Bluetooth для підключення до апаратних гаманців</string>
-    <string name="id_green_uses_multisig_with_one">Green uses multisig with one signature generated by your device, and one by Blockstream&apos;s servers. Setting up your Two-Factor Authentication enables an extra layer of security for the server-side signature.</string>
+    <string name="id_blockstream_app_is_a_noncustodial_wallet">Blockstream App - гаманець, який дозволяє повністю контролювати кошти тільки його власнику</string>
+    <string name="id_blockstream_app_logo">Логотип гаманця Blockstream App</string>
+    <string name="id_blockstream_app_mnemonic_qr_code">Мнемонічний QR-код гаманця Blockstream App</string>
+    <string name="id_blockstream_app_needs_the_master_blinding">Blockstream App needs the master blinding key from Jade</string>
+    <string name="id_blockstream_app_only_supports_one_pin_for">Blockstream App підтримує лише один PIN-код для кожної мережі. Новий гаманець вимагає введення мнемонічної фрази кожного разу при вході в систему.</string>
+    <string name="id_blockstream_app_only_supports_one_pin_per">Blockstream App підтримує тільки один PIN-код для однієї мережі. Щоб встановити PIN-код для цього гаманця, спочатку відключіть PIN-код на оригінальному гаманці.</string>
+    <string name="id_blockstream_app_uses_biometric">Blockstream App використовує біометричну аутентифікацію для того, щоб забезпечити легкий доступ до гаманця </string>
+    <string name="id_blockstream_app_uses_bluetooth_for">Blockstream App використовує Bluetooth для зв&apos;язку з апаратними гаманцями</string>
+    <string name="id_blockstream_app_uses_bluetooth_to_connect">Blockstream App використовує Bluetooth для підключення до апаратних гаманців</string>
+    <string name="id_blockstream_app_uses_multisig_with_one">Blockstream App uses multisig with one signature generated by your device, and one by Blockstream&apos;s servers. Setting up your Two-Factor Authentication enables an extra layer of security for the server-side signature.</string>
     <string name="id_hardware_devices">Апаратні пристрої</string>
     <string name="id_hardware_security">Апаратна безпека</string>
     <string name="id_hardware_wallet">Апаратний гаманець</string>
@@ -581,7 +581,7 @@
     <string name="id_hash">Хеш</string>
     <string name="id_hash_s">Хеш: %1$s</string>
     <string name="id_help">Допомога</string>
-    <string name="id_help_green_improve">Допоможіть Green покращитися</string>
+    <string name="id_help_blockstream_app_improve">Допоможіть Blockstream App покращитися</string>
     <string name="id_helpblockstreamcom">help.blockstream.com</string>
     <string name="id_here">тут</string>
     <string name="id_heres_the_proof_of_ownership_of">Here&apos;s the proof of ownership of the address</string>
@@ -592,7 +592,7 @@
     <string name="id_hide_details">Приховати деталі</string>
     <string name="id_high">Високий</string>
     <string name="id_hold_button_to_send">Утримуйте кнопку, щоб надіслати</string>
-    <string name="id_hold_the_green_button_on_the">Утримуйте зелену кнопку в нижній частині Jade, доки він не увімкнеться.</string>
+    <string name="id_hold_the_blockstream_app_button_on_the">Утримуйте зелену кнопку в нижній частині Jade, доки він не увімкнеться.</string>
     <string name="id_hold_your_nfc_tag_close_to_the">Тримайте NFC-тег поряд із вашим приcтроєм</string>
     <string name="id_home">Домашня сторінка</string>
     <string name="id_hour">година</string>
@@ -612,7 +612,7 @@
     <string name="id_i_understand_amounts_could_be">Я розумію, що суми можуть бути неправильними</string>
     <string name="id_id">ID</string>
     <string name="id_if_for_any_reason_you_cant">Якщо з будь-якої причини ви не можете ввійти у свій гаманець, ви можете відновити фразу відновлення за допомогою PIN-коду/біометричних даних.</string>
-    <string name="id_if_you_agree_green_will_collect">Якщо ви погодитеся, Green збиратиме обмежені дані про використання для оптимізації взаємодії з користувачем. Конфіденційна інформація про користувача або гаманець не збирається.</string>
+    <string name="id_if_you_agree_blockstream_app_will_collect">Якщо ви погодитеся, Blockstream App збиратиме обмежені дані про використання для оптимізації взаємодії з користувачем. Конфіденційна інформація про користувача або гаманець не збирається.</string>
     <string name="id_if_you_are_the_rightful_owner">Якщо ви є власником цього гаманця і у вас все ще є один з активних методів 2FA, скасуйте скидання, щоб мати можливість витратити кошти і очистити цей гаманець.</string>
     <string name="id_if_you_did_not_change_your">If you did not change your oracle settings on Jade, do not proceed and contact Blockstream support.</string>
     <string name="id_if_you_did_not_request_the">Якщо ви не запитували скидання, але не можете скасувати процес скидання, тому що у вас немає доступу до жодних існуючих методів двофакторної авторизації, ви маєте можливість оскаржити це скидання 2FA. Це назавжди заблокує ваш гаманець, але ви зможете скасувати цю дію.</string>
@@ -621,8 +621,8 @@
     <string name="id_if_you_have_some_coins_on_the">Якщо у вас є монети на legacy-адресі і ви не збираєтеся витрачати їх найближчим часом, вам можливо буде потрібно налаштувати електронну пошту і отримувати транзакції відновлення, щоб бути впевненим, що ви завжди контролюєте свої кошти.</string>
     <string name="id_if_you_initiated_the_2fa_reset">Якщо ви помилково ініціювали оскарження скидання 2FA, ви можете його скасувати  і повернути гаманець в стан скидання 2FA.</string>
     <string name="id_import">Import</string>
-    <string name="id_import_a_multisig_shield_wallet">Імпортуйте гаманець Multisig Shield, створений у Blockstream Green.</string>
-    <string name="id_import_a_wallet_created_on">Імпортуйте гаманець, створений у Blockstream Green.</string>
+    <string name="id_import_a_multisig_shield_wallet">Імпортуйте гаманець Multisig Shield, створений у Blockstream App.</string>
+    <string name="id_import_a_wallet_created_on">Імпортуйте гаманець, створений у Blockstream App.</string>
     <string name="id_import_a_wallet_created_with">Імпортуйте гаманець, створений в інших додатках. Ця опція працює тільки з однопідписними гаманцями, які використовують мнемоніку BIP39 і її похідні BIP44, BIP49 або BIP84.</string>
     <string name="id_import_from_file">Import from file</string>
     <string name="id_in_progress">In Progress</string>
@@ -687,7 +687,7 @@
     <string name="id_jade_is_trying_to_connect_to_a">Jade is trying to connect to a non-default blind PIN oracle. Contact support immediately for further information.</string>
     <string name="id_jade_unlocked">Jade розблоковано</string>
     <string name="id_jade_was_initialized_for_testnet">Jade було ініціалізовано для тестнету</string>
-    <string name="id_jade_will_securely_create_and">Jade will securely create and transfer a new key to your Green app. Jade will not be needed to authorize lightning transactions, because Green will use this new key for your lightning transactions.\n\nDon&apos;t worry about any new backups, your existing recovery phrase backup will be sufficient to restore both your funds onchain and on lightning.</string>
+    <string name="id_jade_will_securely_create_and">Jade will securely create and transfer a new key to your Blockstream App app. Jade will not be needed to authorize lightning transactions, because Blockstream App will use this new key for your lightning transactions.\n\nDon&apos;t worry about any new backups, your existing recovery phrase backup will be sufficient to restore both your funds onchain and on lightning.</string>
     <string name="id_just_a_few_more_steps_to_get">Ще кілька кроків для настройки.</string>
     <string name="id_label">Мітка</string>
     <string name="id_language">Мова</string>
@@ -789,7 +789,7 @@
     <string name="id_message_from_recipient_s">Message from recipient: %1$s</string>
     <string name="id_message_hash">Хеш повідомлення</string>
     <string name="id_migrate_another_wallet">Перенести інший гаманець</string>
-    <string name="id_migrating_to_blockstream_green">Migrating to Blockstream Green? Have an existing Blockstream Green wallet you&apos;d like to import? Let&apos;s go!</string>
+    <string name="id_migrating_to_blockstream_app">Migrating to Blockstream App? Have an existing Blockstream App wallet you&apos;d like to import? Let&apos;s go!</string>
     <string name="id_minimum">Minimum</string>
     <string name="id_minute">хвилина</string>
     <string name="id_minutes">хвилин</string>
@@ -936,7 +936,7 @@
     <string name="id_pin_has_to_be_between_4_and_15">PIN-код має містити від 4 до 15 символів</string>
     <string name="id_pins_do_not_match_please_try">PIN-коди не співпадають, спробуйте ще раз.</string>
     <string name="id_please_activate_at_least_one">Будь ласка, активуйте хоча б один відбиток пальця в настройках Android, щоб використовувати біометричний вхід</string>
-    <string name="id_please_contribute_if_you_find">Будь ласка, внесіть свій внесок, якщо вважаєте Blockstream Green корисним</string>
+    <string name="id_please_contribute_if_you_find">Будь ласка, внесіть свій внесок, якщо вважаєте Blockstream App корисним</string>
     <string name="id_please_disable_biometric">Будь ласка, вимкніть біометричну аутентифікацію перед видаленням PIN-коду</string>
     <string name="id_please_disconnect_your_ledger">Відімкніть Ledger Nano X, вимкніть його, натиснувши та утримуючи обидві кнопки, потім знову підключіть його і введіть PIN-код</string>
     <string name="id_please_enable_another">Будь ласка, підключіть ще один метод автентифікації для запобігання втрати доступу до ваших коштів.</string>
@@ -975,7 +975,7 @@
     <string name="id_proxy_settings">НАЛАШТУВАННЯ ПРОКСІ-СЕРВЕРУ</string>
     <string name="id_pseudonymous_identifier_country">Псевдонімний ідентифікатор, країна</string>
     <string name="id_qr_code">QR-код</string>
-    <string name="id_qr_mode_allows_you_to">QR Mode allows you to communicate with Green using Jade&apos;s camera and QR codes (instead of USB or Bluetooth).</string>
+    <string name="id_qr_mode_allows_you_to">QR Mode allows you to communicate with Blockstream App using Jade&apos;s camera and QR codes (instead of USB or Bluetooth).</string>
     <string name="id_qr_pin_unlock">QR PIN Unlock</string>
     <string name="id_qr_scanner">QR-сканер</string>
     <string name="id_quick_setup_2fa_account_ideal">Швидке налаштування 2FA акаунту, ідеально підходить для активних користувачів (2FA припиняється, якщо ви не переміщували кошти протягом 1 року).</string>
@@ -1016,7 +1016,7 @@
     <string name="id_recovery_words">Слова відновлення</string>
     <string name="id_recovery_xpub">Відновлення xpub</string>
     <string name="id_redeem">Redeem</string>
-    <string name="id_redeem_your_deposited_funds">Викупіть свої депоновані кошти без підпису Blockstream Green після закінчення заздалегідь визначеного періоду часу.</string>
+    <string name="id_redeem_your_deposited_funds">Викупіть свої депоновані кошти без підпису Blockstream App після закінчення заздалегідь визначеного періоду часу.</string>
     <string name="id_redeposit">Redeposit</string>
     <string name="id_redeposit_expired_2fa_coins">Redeposit Expired 2FA Coins</string>
     <string name="id_redeposited">Внесений повторно</string>
@@ -1055,10 +1055,10 @@
     <string name="id_reset_spv">Скинути SPV</string>
     <string name="id_resetting_your_twofactor_takes">Скидання двофакторки триватиме мінімум 12 місяців. Якщо ви впевнені, що втратили свою двофакторку,  вкажіть нову адресу електронної пошти нижче, щоб здійснити перезавантаження.</string>
     <string name="id_restore">Відновити</string>
-    <string name="id_restore_a_blockstream_green">Відновіть гаманець Blockstream Green, використовуючи мнемонічну фразу з 24 слів. Можна знайти в налаштуваннях будь-якого додатку Blockstream Green.</string>
-    <string name="id_restore_a_singlesig_wallet">Відновіть гаманець Singlesig, створений у Blockstream Green, або імпортуйте гаманець, створений за допомогою інших додатків. Ця опція працює тільки з однопідписним гаманцями, які використовують мнемоніку BIP39, і дотримуючись BIP44, BIP49 або BIP84 стандартів.</string>
+    <string name="id_restore_a_blockstream_app">Відновіть гаманець Blockstream App, використовуючи мнемонічну фразу з 24 слів. Можна знайти в налаштуваннях будь-якого додатку Blockstream App.</string>
+    <string name="id_restore_a_singlesig_wallet">Відновіть гаманець Singlesig, створений у Blockstream App, або імпортуйте гаманець, створений за допомогою інших додатків. Ця опція працює тільки з однопідписним гаманцями, які використовують мнемоніку BIP39, і дотримуючись BIP44, BIP49 або BIP84 стандартів.</string>
     <string name="id_restore_a_wallet">Відновити гаманець</string>
-    <string name="id_restore_green_wallet">Відновити Green-гаманець</string>
+    <string name="id_restore_blockstream_app_wallet">Відновити Green-гаманець</string>
     <string name="id_restore_temporary_wallet">Відновити тимчасовий гаманець</string>
     <string name="id_restore_wallet">Відновити гаманець</string>
     <string name="id_restore_with_recovery_phrase">Відновити за допомогою фрази відновлення</string>
@@ -1147,10 +1147,10 @@
     <string name="id_set_locktime">Встановити Locktime</string>
     <string name="id_set_timelock">Встановити timelock</string>
     <string name="id_set_twofactor_threshold">Встановити двофакторний поріг</string>
-    <string name="id_set_up_a_passcode_for_your_ios">Налаштуйте пароль для свого пристрою iOS, щоб встановити PIN-код для Blockstream Green</string>
+    <string name="id_set_up_a_passcode_for_your_ios">Налаштуйте пароль для свого пристрою iOS, щоб встановити PIN-код для Blockstream App</string>
     <string name="id_set_up_a_screen_lock_for_your">Налаштуйте блокування екрана на пристрої Android, щоб розблокувати гаманець за допомогою блокування екрану Android</string>
     <string name="id_set_up_an_email_to_get">Налаштуйте електронну пошту, щоб отримувати попередньо підписані транзакції для відновлення. Повідомлення по електронній пошті містять ваші зашифровані дані для відновлення.</string>
-    <string name="id_set_up_credentials_to_access_in">Налаштуйте облікові дані для доступу в режимі watch-only, щоб отримувати монети, не піддаючи ризику свої особисті ключі. Доступ з будь-якого пристрою за допомогою додатка Blockstream Green</string>
+    <string name="id_set_up_credentials_to_access_in">Налаштуйте облікові дані для доступу в режимі watch-only, щоб отримувати монети, не піддаючи ризику свої особисті ключі. Доступ з будь-якого пристрою за допомогою додатка Blockstream App</string>
     <string name="id_set_up_pgp_key_for">Встановити PGP-ключ для зв&apos;язку</string>
     <string name="id_set_up_twofactor_authentication">Встановити двофакторну аутентифікацію</string>
     <string name="id_set_up_watchonly">Налаштувати холодний гаманець</string>
@@ -1208,7 +1208,7 @@
     <string name="id_socks5_hostname">Ім&apos;я хоста Socks5</string>
     <string name="id_socks5_port">Порт Socks5</string>
     <string name="id_socks5_proxy_and_port_must_be">Проксі і порт SOCKS5 повинні бути налаштовані</string>
-    <string name="id_some_accounts_cannot_be_logged">Some accounts cannot be logged into due to network issues. Please update the Green app and try again later.</string>
+    <string name="id_some_accounts_cannot_be_logged">Some accounts cannot be logged into due to network issues. Please update the Blockstream App app and try again later.</string>
     <string name="id_some_coins_in_your_wallet">Some coins in your wallet haven&apos;t moved for a long time, so 2FA expired to keep you in control. To reactivate 2FA:\n\n• Send normally and refresh the 2FA on change coins (optimizes fees)\n• Redeposit all your expired 2FA coins</string>
     <string name="id_something_went_wrong">Щось пішло не так</string>
     <string name="id_speed_up_transaction">Speed up Transaction</string>
@@ -1248,7 +1248,7 @@
     <string name="id_sweep_into_s">Змести в %1$s</string>
     <string name="id_switch_network">Переключити мережу</string>
     <string name="id_synchronize_spv_on_mobile">Синхронізуйте SPV на мобільному телефоні</string>
-    <string name="id_syou_need_ton1_reset_greens">%1$s.Вам необхідно:\n1. Скинути Green Face / TouchID логін,\n2. Увійти в систему за допомогою PIN-коду,\n3. Повторно активуйте Face / TouchID в налаштуваннях Green.</string>
+    <string name="id_syou_need_ton1_reset_blockstream_apps">%1$s.Вам необхідно:\n1. Скинути Blockstream App Face / TouchID логін,\n2. Увійти в систему за допомогою PIN-коду,\n3. Повторно активуйте Face / TouchID в налаштуваннях Green.</string>
     <string name="id_system_location">Розташування системи</string>
     <string name="id_system_message">Системне повідомлення</string>
     <string name="id_take_control_your_keys_your">Беріть контроль: Ваші ключі, Ваші біткоїни</string>
@@ -1264,7 +1264,7 @@
     <string name="id_testnet_and_liquid_testnet">Testnet та Liquid Testnet</string>
     <string name="id_testnet_electrum_server">Сервер Testnet Electrum</string>
     <string name="id_testnet_wallets">Testnet-гаманці</string>
-    <string name="id_thank_you_for_downloading_green">Дякуємо вам за завантаження гаманця Green! Будь ласка, залиште свій відгук, якщо у вас буде така можливість</string>
+    <string name="id_thank_you_for_downloading_blockstream_app">Дякуємо вам за завантаження гаманця Green! Будь ласка, залиште свій відгук, якщо у вас буде така можливість</string>
     <string name="id_thank_you_for_your_feedback">Дякуємо за ваш відгук</string>
     <string name="id_the_1_year_2fa_reset_process">Процес скидання 2FA тривав протягом 1 року, але хтось заблокував його, оскарживши скидання 2FA.</string>
     <string name="id_the_address_is_valid">Адреса дійсна.</string>
@@ -1296,7 +1296,7 @@
     <string name="id_there_is_already_a_swap_in">There is already a swap in progress. Only one at a time is allowed</string>
     <string name="id_there_is_already_an_archived">Вже існує заархівований аккаунт.\n\nБажаєте створити новий?</string>
     <string name="id_these_are_some_compatible">Ось декілька сумісних гаманців:</string>
-    <string name="id_these_settings_apply_for_every">Ці настройки застосовуються для кожного гаманця, який ви використовуєте в Blockstream Green.</string>
+    <string name="id_these_settings_apply_for_every">Ці настройки застосовуються для кожного гаманця, який ви використовуєте в Blockstream App.</string>
     <string name="id_this_amount_is_below_the">This amount is below the minimum fee %1$s (%2$s).</string>
     <string name="id_this_feature_is_coming_soon">Ця функція скоро з&apos;явиться, слідкуйте за оновленнями!</string>
     <string name="id_this_is_not_the_default_blind">This is not the default blind PIN oracle</string>
@@ -1358,7 +1358,7 @@
     <string name="id_tx_count">Кількість транзакцій TX</string>
     <string name="id_txid">TXID</string>
     <string name="id_type_the_next_word">Type the next word</string>
-    <string name="id_unable_to_contact_the_green">Не вдалося зв&apos;язатися зі службою підтримки Green. Перевірте підключення до мережі і дочекайтеся повторного підключення.</string>
+    <string name="id_unable_to_contact_the_blockstream_app">Не вдалося зв&apos;язатися зі службою підтримки Green. Перевірте підключення до мережі і дочекайтеся повторного підключення.</string>
     <string name="id_unarchive">Розархівувати</string>
     <string name="id_unarchive_account">Розархівувати акаунт</string>
     <string name="id_unblinding_data">Розкриття даних</string>
@@ -1369,7 +1369,7 @@
     <string name="id_unknown_custom">Невідомий (спеціалізований)</string>
     <string name="id_unknown_firmware">Невідома прошивка</string>
     <string name="id_unlock">Розблокувати</string>
-    <string name="id_unlock_green">Розблокувати Green</string>
+    <string name="id_unlock_blockstream_app">Розблокувати Blockstream App</string>
     <string name="id_unlock_jade_to_continue">Розблокуйте Jade, щоб продовжити</string>
     <string name="id_unlock_your_device_to_continue">Щоб продовжити, розблокуйте свій пристрій</string>
     <string name="id_unlock_your_jade_to_continue">Unlock your Jade to continue</string>
@@ -1518,7 +1518,7 @@
     <string name="id_youll_need_your_pin_to_log_in">Вам знадобиться PIN-код, щоб увійти в свій гаманець. Цей PIN-код захищає гаманець тільки на цьому пристрої.</string>
     <string name="id_youll_need_your_recovery_phrase">Вам знадобиться фраза відновлення, щоб відновити цей гаманець</string>
     <string name="id_youll_see_your_coins_here_when">Ви побачите тут свої монети тоді, коли отримаєте кошти</string>
-    <string name="id_your_2fa_expires_so_that_if_you">Термін дії вашої 2FA закінчується, тому, якщо ви втратите доступ до свого методу 2FA або служба Blockstream Green стане недоступною, ви завжди можете відновити свої біткоіни за допомогою цього інструменту з відкритим вихідним кодом.</string>
+    <string name="id_your_2fa_expires_so_that_if_you">Термін дії вашої 2FA закінчується, тому, якщо ви втратите доступ до свого методу 2FA або служба Blockstream App стане недоступною, ви завжди можете відновити свої біткоіни за допомогою цього інструменту з відкритим вихідним кодом.</string>
     <string name="id_your_bitcoin_and_liquid_assets">Ваші біткоїни та активи Liquid зберігаються на блокчейні і можуть бути витрачені тільки з використанням ключів, що зберігаються на Jade.</string>
     <string name="id_your_bluetooth_adapter_is">Ваш адаптер Bluetooth вимкнено</string>
     <string name="id_your_current_receive_capacity">Your current receive capacity is %1$s.</string>
@@ -1528,7 +1528,7 @@
     <string name="id_your_funds_are_secured_by_a">Ваші кошти захищені одним ключем на вашому пристрої. Простіше в налаштуванні і експлуатації, ніж з мультіподпісью. Якщо маєте сумніви, оберіть цей варіант.</string>
     <string name="id_your_funds_are_secured_by_your">Ваші кошти захищені PIN-кодом. Простий у використанні, стандартний та переносний на більшість біткоїн-гаманців.</string>
     <string name="id_your_funds_have_grown">Ваші кошти нещодавно збільшилися.\n\nРозгляньте можливість використання акаунту з 2FA, щоб усі ваші вихідні транзакції були додатково захищені.\nДля цього:\n1. Створіть акаунт з 2FA;\n2. Налаштуйте метод 2FA;\n3. Перенесіть кошти на новий акаунт;\n4. Архівуйте старий акаунт;</string>
-    <string name="id_your_green_wallet_is_now_ready">Ваш Green-гаманець готовий для використання.</string>
+    <string name="id_your_blockstream_app_wallet_is_now_ready">Ваш Green-гаманець готовий для використання.</string>
     <string name="id_your_ios_device_might_not_be">Ваше пристрій iOS може не підтримуватися</string>
     <string name="id_your_keys_secure_your_coins_on">Ваші ключі забезпечують безпеку ваших монет на блокчейні.</string>
     <string name="id_your_keys_will_be_secured_on_a">Your keys will be secured on a dedicated cold storage device, PIN protected.</string>
@@ -1544,7 +1544,7 @@
     <string name="id_your_transaction_was">Your transaction was successfully sent</string>
     <string name="id_your_transactions_will_be_shown">Ваші транзакції будуть показані тут.</string>
     <string name="id_your_twofactor_threshold_is_s">Ваш двофакторний ліміт витрат становить %1$s.</string>
-    <string name="id_your_wallet_backup_is_made_of">Резервна копія вашого гаманця складається з 24 слів, також відомих як ваша мнемонічна фраза. Переконайтеся, що у вас є резервна копія, і збережіть її. Той, хто її знайде, може вкрасти ваші гроші. Ви можете використовувати її для відновлення свого гаманця Blockstream Green на іншому пристрої у випадку втрати, пошкодження або крадіжки вашого гаманця.</string>
+    <string name="id_your_wallet_backup_is_made_of">Резервна копія вашого гаманця складається з 24 слів, також відомих як ваша мнемонічна фраза. Переконайтеся, що у вас є резервна копія, і збережіть її. Той, хто її знайде, може вкрасти ваші гроші. Ви можете використовувати її для відновлення свого гаманця Blockstream App на іншому пристрої у випадку втрати, пошкодження або крадіжки вашого гаманця.</string>
     <string name="id_your_wallet_is_locked_for_a">Ваш гаманець заблокований для скидання двофакторної аутентифікації. Скидання буде завершено через %1$d днів.</string>
     <string name="id_your_wallet_is_locked_under_2fa">Ваш кошелек заблокований під час оскарження 2FA.</string>
     <string name="id_your_wallet_is_not_yet_fully">Ваш гаманець ще не надійно захищений.\nБудь ласка, увімкніть двофакторну аутентифікацію.</string>

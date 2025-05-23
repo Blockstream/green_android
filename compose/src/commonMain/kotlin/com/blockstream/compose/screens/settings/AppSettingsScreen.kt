@@ -57,7 +57,7 @@ import blockstream_green.common.generated.resources.id_enable_testnet
 import blockstream_green.common.generated.resources.id_enable_tls
 import blockstream_green.common.generated.resources.id_enhanced_privacy
 import blockstream_green.common.generated.resources.id_experimental_features_might
-import blockstream_green.common.generated.resources.id_help_green_improve
+import blockstream_green.common.generated.resources.id_help_blockstream_app_improve
 import blockstream_green.common.generated.resources.id_host_ip
 import blockstream_green.common.generated.resources.id_language
 import blockstream_green.common.generated.resources.id_liquid_electrum_server
@@ -363,7 +363,7 @@ fun AppSettingsScreen(
                     val analyticsEnabled by viewModel.analyticsEnabled.collectAsStateWithLifecycle()
                     Column {
                         GreenSwitch(
-                            title = stringResource(Res.string.id_help_green_improve),
+                            title = stringResource(Res.string.id_help_blockstream_app_improve),
                             caption = stringResource(Res.string.id_enable_limited_usage_data),
                             checked = analyticsEnabled,
                             painter = painterResource(Res.drawable.users_three),

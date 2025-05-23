@@ -36,7 +36,7 @@
     <string name="id_a_funding_fee_of_s_minimum_s_is">A funding fee of %1$s (minimum %2$s) is applied when receiving amounts above your current receive capacity of %3$s</string>
     <string name="id_a_funding_fee_of_s_s_is_applied">A funding fee of %1$s (%2$s) is applied when receiving amounts above your current receive capacity %3$s (%4$s)</string>
     <string name="id_a_new_transaction_has_just">A new transaction has just arrived in your wallet.</string>
-    <string name="id_a_newer_version_of_blockstream">A newer version of Blockstream Green is now available</string>
+    <string name="id_a_newer_version_of_blockstream">A newer version of Blockstream App is now available</string>
     <string name="id_a_powerful_hardware_wallet_for">A powerful hardware wallet for securing your Bitcoin.</string>
     <string name="id_a_screen_lock_must_be_enabled">A screen lock must be enabled from Android settings</string>
     <string name="id_a_set_up_funding_fee_of_s_s">A set up funding fee of %1$s (%2$s) will be applied to the received amount.</string>
@@ -186,9 +186,9 @@
     <string name="id_blocks_confirmed">blocks confirmed</string>
     <string name="id_blockstream_devices">Blockstream Devices</string>
     <string name="id_blockstream_does_not_have">Blockstream does not have access to your wallet backup and will not be able to help you in case you lose it</string>
-    <string name="id_blockstream_green_needs_access">Blockstream Green needs access to Bluetooth in order to connect to hardware wallets. Location data is not used or kept by Blockstream.</string>
-    <string name="id_blockstream_green_supports_both">Blockstream Green supports both Bitcoin and the Liquid Network.</string>
-    <string name="id_blockstream_greennsimple_and">Blockstream Green:\nSimple and Secure</string>
+    <string name="id_blockstream_app_needs_access">Blockstream App needs access to Bluetooth in order to connect to hardware wallets. Location data is not used or kept by Blockstream.</string>
+    <string name="id_blockstream_app_supports_both">Blockstream App supports both Bitcoin and the Liquid Network.</string>
+    <string name="id_blockstream_appnsimple_and">Blockstream App:\nSimple and Secure</string>
     <string name="id_blockstream_store">Blockstream Store</string>
     <string name="id_bluetooth">Bluetooth</string>
     <string name="id_btchip_is_not_set_up_please_set">BTChip is not set up. Please set it up using a desktop client to be able to use it.</string>
@@ -219,7 +219,7 @@
     <string name="id_check_your_backup">Check your backup</string>
     <string name="id_check_your_device">Check your device</string>
     <string name="id_choose">Choose</string>
-    <string name="id_choose_a_name_for_your_new">Choose a name for your new Blockstream Green wallet.</string>
+    <string name="id_choose_a_name_for_your_new">Choose a name for your new Blockstream App wallet.</string>
     <string name="id_choose_a_name_for_your_wallet">Choose a name for your wallet</string>
     <string name="id_choose_a_swap_option">Choose a Swap Option</string>
     <string name="id_choose_a_usb_or_bluetooth">Choose a USB or Bluetooth connection on Jade after verifying your recovery phrase</string>
@@ -290,8 +290,8 @@
     <string name="id_connect_via_qr">Connect via QR</string>
     <string name="id_connect_with_bluetooth">Connect with Bluetooth</string>
     <string name="id_connect_with_tor">Connect with Tor</string>
-    <string name="id_connect_your_jade_to_use_it">Connect your Jade to use it with Green</string>
-    <string name="id_connect_your_ledger_to_use_it">Connect your Ledger to use it in Green</string>
+    <string name="id_connect_your_jade_to_use_it">Connect your Jade to use it with Blockstream App</string>
+    <string name="id_connect_your_ledger_to_use_it">Connect your Ledger to use it in Blockstream App</string>
     <string name="id_connected_to_jade">Connected to Jade</string>
     <string name="id_connected_wallets">Connected wallets</string>
     <string name="id_connecting">Connecting…</string>
@@ -371,7 +371,7 @@
     <string name="id_default_transaction_priority">Default transaction priority</string>
     <string name="id_delete">Delete</string>
     <string name="id_delete_credentials">Delete credentials</string>
-    <string name="id_delete_permanently_your_wallet">Delete permanently your wallet from the Blockstream Green database. You will never be able to log in to it thereafter.</string>
+    <string name="id_delete_permanently_your_wallet">Delete permanently your wallet from the Blockstream App database. You will never be able to log in to it thereafter.</string>
     <string name="id_delete_s_twofactor">Delete %1$s Two-Factor</string>
     <string name="id_delete_wallet">Delete Wallet</string>
     <string name="id_deleting_your_pin_will_remove">Deleting your PIN will remove wallet access permanently unless you have your mnemonic available. Press &quot;OK&quot; to continue.</string>
@@ -500,7 +500,7 @@
     <string name="id_expiration">Expiration</string>
     <string name="id_explore_your_wallet">Explore Your Wallet</string>
     <string name="id_export">Export</string>
-    <string name="id_export_lightning_key_to_green">Export Lightning Key to Green</string>
+    <string name="id_export_lightning_key_to_blockstream_app">Export Lightning Key to Blockstream App</string>
     <string name="id_export_transactions_to_csv_file">Export transactions to CSV file</string>
     <string name="id_exports_an_accounts_extended">Exports an account&apos;s extended public key (xPub/yPub/zPub) to view as a watch-only</string>
     <string name="id_extended_public_key">Extended Public Key</string>
@@ -563,16 +563,16 @@
     <string name="id_go_to_receive_to_get_your">Go to Receive to get your Account ID.</string>
     <string name="id_go_to_wallet">Go to Wallet</string>
     <string name="id_got_it_written_down_great_you">Got it written down? Great. You can enter it here. Don&apos;t lose it, it&apos;ll stay the same.</string>
-    <string name="id_green_is_a_noncustodial_wallet">Green is a non-custodial wallet</string>
-    <string name="id_green_logo">Green Logo</string>
-    <string name="id_green_mnemonic_qr_code">Green Mnemonic QR Code</string>
-    <string name="id_green_needs_the_master_blinding">Green needs the master blinding key from Jade</string>
-    <string name="id_green_only_supports_one_pin_for">Green only supports one PIN for each network. New wallets will require a mnemonic every time you log in.</string>
-    <string name="id_green_only_supports_one_pin_per">Green only supports one PIN per network. To set a PIN for this wallet, disable the PIN on your original wallet first.</string>
-    <string name="id_green_uses_biometric">Green uses biometric authentication to allow easy access to the wallet</string>
-    <string name="id_green_uses_bluetooth_for">Green uses Bluetooth for communication with hardware wallets</string>
-    <string name="id_green_uses_bluetooth_to_connect">Green uses Bluetooth to connect to hardware wallets</string>
-    <string name="id_green_uses_multisig_with_one">Green uses multisig with one signature generated by your device, and one by Blockstream&apos;s servers. Setting up your Two-Factor Authentication enables an extra layer of security for the server-side signature.</string>
+    <string name="id_blockstream_app_is_a_noncustodial_wallet">Blockstream App is a non-custodial wallet</string>
+    <string name="id_blockstream_app_logo">Blockstream App Logo</string>
+    <string name="id_blockstream_app_mnemonic_qr_code">Blockstream App Mnemonic QR Code</string>
+    <string name="id_blockstream_app_needs_the_master_blinding">Blockstream App needs the master blinding key from Jade</string>
+    <string name="id_blockstream_app_only_supports_one_pin_for">Blockstream App only supports one PIN for each network. New wallets will require a mnemonic every time you log in.</string>
+    <string name="id_blockstream_app_only_supports_one_pin_per">Blockstream App only supports one PIN per network. To set a PIN for this wallet, disable the PIN on your original wallet first.</string>
+    <string name="id_blockstream_app_uses_biometric">Blockstream App uses biometric authentication to allow easy access to the wallet</string>
+    <string name="id_blockstream_app_uses_bluetooth_for">Blockstream App uses Bluetooth for communication with hardware wallets</string>
+    <string name="id_blockstream_app_uses_bluetooth_to_connect">Blockstream App uses Bluetooth to connect to hardware wallets</string>
+    <string name="id_blockstream_app_uses_multisig_with_one">Blockstream App uses multisig with one signature generated by your device, and one by Blockstream&apos;s servers. Setting up your Two-Factor Authentication enables an extra layer of security for the server-side signature.</string>
     <string name="id_hardware_devices">Hardware Devices</string>
     <string name="id_hardware_security">Hardware Security</string>
     <string name="id_hardware_wallet">Hardware wallet</string>
@@ -581,7 +581,7 @@
     <string name="id_hash">Hash</string>
     <string name="id_hash_s">Hash: %1$s</string>
     <string name="id_help">Help</string>
-    <string name="id_help_green_improve">Help Green Improve</string>
+    <string name="id_help_blockstream_app_improve">Help Blockstream App Improve</string>
     <string name="id_helpblockstreamcom">help.blockstream.com</string>
     <string name="id_here">here</string>
     <string name="id_heres_the_proof_of_ownership_of">Here&apos;s the proof of ownership of the address</string>
@@ -592,7 +592,7 @@
     <string name="id_hide_details">Hide details</string>
     <string name="id_high">High</string>
     <string name="id_hold_button_to_send">Hold button to Send</string>
-    <string name="id_hold_the_green_button_on_the">Hold the green button on the bottom of Jade until it boots up</string>
+    <string name="id_hold_the_blockstream_app_button_on_the">Hold the Blockstream App button on the bottom of Jade until it boots up</string>
     <string name="id_hold_your_nfc_tag_close_to_the">Hold your NFC tag close to the device</string>
     <string name="id_home">Home</string>
     <string name="id_hour">hour</string>
@@ -612,7 +612,7 @@
     <string name="id_i_understand_amounts_could_be">I understand amounts could be incorrect</string>
     <string name="id_id">ID</string>
     <string name="id_if_for_any_reason_you_cant">If for any reason you can&apos;t login into your wallet, you can recover your recovery phrase using your PIN/Biometrics.</string>
-    <string name="id_if_you_agree_green_will_collect">If you agree, Green will collect limited usage data to optimize the user experience. No sensitive user or wallet info is collected.</string>
+    <string name="id_if_you_agree_blockstream_app_will_collect">If you agree, Blockstream App will collect limited usage data to optimize the user experience. No sensitive user or wallet info is collected.</string>
     <string name="id_if_you_are_the_rightful_owner">If you are the rightful owner of this wallet, and you still possess one of its active 2FA methods, cancel the reset to be able to spend and empty this wallet.</string>
     <string name="id_if_you_did_not_change_your">If you did not change your oracle settings on Jade, do not proceed and contact Blockstream support.</string>
     <string name="id_if_you_did_not_request_the">If you did not request the reset, but you cannot cancel the reset process because you can&apos;t access any existing Two-Factor Authorization methods, dispute this 2FA reset. This will permanently block your wallet, but you can undo this action.</string>
@@ -621,8 +621,8 @@
     <string name="id_if_you_have_some_coins_on_the">If you have some coins on the legacy address type, and you won&apos;t spend them shortly, you might need to setup an email and receive your recovery transactions to be sure you are always in control of your funds.</string>
     <string name="id_if_you_initiated_the_2fa_reset">If you initiated the 2FA reset dispute by mistake, you can undo it and set the wallet back to 2FA reset state.</string>
     <string name="id_import">Import</string>
-    <string name="id_import_a_multisig_shield_wallet">Import a Multisig Shield wallet created on Blockstream Green.</string>
-    <string name="id_import_a_wallet_created_on">Import a wallet created on Blockstream Green.</string>
+    <string name="id_import_a_multisig_shield_wallet">Import a Multisig Shield wallet created on Blockstream App.</string>
+    <string name="id_import_a_wallet_created_on">Import a wallet created on Blockstream App.</string>
     <string name="id_import_a_wallet_created_with">Import a wallet created with other apps. This option only works with singlesig wallets using BIP39 mnemonics, and following the BIP44, BIP49, or BIP84 derivations.</string>
     <string name="id_import_from_file">Import from file</string>
     <string name="id_in_progress">In Progress</string>
@@ -687,7 +687,7 @@
     <string name="id_jade_is_trying_to_connect_to_a">Jade is trying to connect to a non-default blind PIN oracle. Contact support immediately for further information.</string>
     <string name="id_jade_unlocked">Jade unlocked</string>
     <string name="id_jade_was_initialized_for_testnet">Jade was initialized for testnet</string>
-    <string name="id_jade_will_securely_create_and">Jade will securely create and transfer a new key to your Green app. Jade will not be needed to authorize lightning transactions, because Green will use this new key for your lightning transactions.\n\nDon&apos;t worry about any new backups, your existing recovery phrase backup will be sufficient to restore both your funds onchain and on lightning.</string>
+    <string name="id_jade_will_securely_create_and">Jade will securely create and transfer a new key to your Blockstream App app. Jade will not be needed to authorize lightning transactions, because Blockstream App will use this new key for your lightning transactions.\n\nDon&apos;t worry about any new backups, your existing recovery phrase backup will be sufficient to restore both your funds onchain and on lightning.</string>
     <string name="id_just_a_few_more_steps_to_get">Just a few more steps to get you set up.</string>
     <string name="id_label">Label</string>
     <string name="id_language">Language</string>
@@ -789,7 +789,7 @@
     <string name="id_message_from_recipient_s">Message from recipient: %1$s</string>
     <string name="id_message_hash">Message hash</string>
     <string name="id_migrate_another_wallet">Migrate Another Wallet</string>
-    <string name="id_migrating_to_blockstream_green">Migrating to Blockstream Green? Have an existing Blockstream Green wallet you&apos;d like to import? Let&apos;s go!</string>
+    <string name="id_migrating_to_blockstream_app">Migrating to Blockstream App? Have an existing Blockstream App wallet you&apos;d like to import? Let&apos;s go!</string>
     <string name="id_minimum">Minimum</string>
     <string name="id_minute">minute</string>
     <string name="id_minutes">minutes</string>
@@ -936,7 +936,7 @@
     <string name="id_pin_has_to_be_between_4_and_15">PIN has to be between 4 and 15 digits</string>
     <string name="id_pins_do_not_match_please_try">PINs do not match, please try again.</string>
     <string name="id_please_activate_at_least_one">Please activate at least one fingerprint in Android settings in order to use biometric login</string>
-    <string name="id_please_contribute_if_you_find">Please contribute if you find Blockstream Green useful</string>
+    <string name="id_please_contribute_if_you_find">Please contribute if you find Blockstream App useful</string>
     <string name="id_please_disable_biometric">Please disable biometric authentication before deleting PIN</string>
     <string name="id_please_disconnect_your_ledger">Please disconnect your Ledger Nano X, power it off by long-pressing both buttons, then reconnect it and enter its PIN</string>
     <string name="id_please_enable_another">Please enable another authentication method to avoid losing access to your funds.</string>
@@ -975,7 +975,7 @@
     <string name="id_proxy_settings">PROXY SETTINGS</string>
     <string name="id_pseudonymous_identifier_country">Pseudonymous identifier, country</string>
     <string name="id_qr_code">QR Code</string>
-    <string name="id_qr_mode_allows_you_to">QR Mode allows you to communicate with Green using Jade&apos;s camera and QR codes (instead of USB or Bluetooth).</string>
+    <string name="id_qr_mode_allows_you_to">QR Mode allows you to communicate with Blockstream App using Jade&apos;s camera and QR codes (instead of USB or Bluetooth).</string>
     <string name="id_qr_pin_unlock">QR PIN Unlock</string>
     <string name="id_qr_scanner">QR Scanner</string>
     <string name="id_quick_setup_2fa_account_ideal">Quick setup 2FA account, ideal for active spenders (2FA expires if you don&apos;t move funds for 1 year).</string>
@@ -1016,7 +1016,7 @@
     <string name="id_recovery_words">Recovery words</string>
     <string name="id_recovery_xpub">Recovery xpub</string>
     <string name="id_redeem">Redeem</string>
-    <string name="id_redeem_your_deposited_funds">Redeem your deposited funds without Blockstream Green signature after a pre-defined period of time.</string>
+    <string name="id_redeem_your_deposited_funds">Redeem your deposited funds without Blockstream App signature after a pre-defined period of time.</string>
     <string name="id_redeposit">Redeposit</string>
     <string name="id_redeposit_expired_2fa_coins">Redeposit Expired 2FA Coins</string>
     <string name="id_redeposited">Redeposited</string>
@@ -1055,10 +1055,10 @@
     <string name="id_reset_spv">Reset SPV</string>
     <string name="id_resetting_your_twofactor_takes">Resetting your Two-Factor takes 12 months minimum. If you are sure you have lost your Two-Factor, please provide a new email address below to receive the reset.</string>
     <string name="id_restore">Restore</string>
-    <string name="id_restore_a_blockstream_green">Restore a Blockstream Green wallet using your 24 words mnemonic backup. You can find it in the settings of any Blockstream Green app.</string>
-    <string name="id_restore_a_singlesig_wallet">Restore a Singlesig wallet created on Blockstream Green, or import a wallet created with other apps. This option only works with singlesig wallets using BIP39 mnemonics, and following the BIP44, BIP49, or BIP84 derivations.</string>
+    <string name="id_restore_a_blockstream_app">Restore a Blockstream App wallet using your 24 words mnemonic backup. You can find it in the settings of any Blockstream App app.</string>
+    <string name="id_restore_a_singlesig_wallet">Restore a Singlesig wallet created on Blockstream App, or import a wallet created with other apps. This option only works with singlesig wallets using BIP39 mnemonics, and following the BIP44, BIP49, or BIP84 derivations.</string>
     <string name="id_restore_a_wallet">Restore a Wallet</string>
-    <string name="id_restore_green_wallet">Restore Green Wallet</string>
+    <string name="id_restore_blockstream_app_wallet">Restore Blockstream App Wallet</string>
     <string name="id_restore_temporary_wallet">Restore temporary wallet</string>
     <string name="id_restore_wallet">Restore Wallet</string>
     <string name="id_restore_with_recovery_phrase">Restore with recovery phrase</string>
@@ -1147,10 +1147,10 @@
     <string name="id_set_locktime">Set Locktime</string>
     <string name="id_set_timelock">Set timelock</string>
     <string name="id_set_twofactor_threshold">Set Two-Factor threshold</string>
-    <string name="id_set_up_a_passcode_for_your_ios">Set up a passcode for your iOS device to set a PIN for Blockstream Green</string>
+    <string name="id_set_up_a_passcode_for_your_ios">Set up a passcode for your iOS device to set a PIN for Blockstream App</string>
     <string name="id_set_up_a_screen_lock_for_your">Set up a screen lock for your Android device to unlock your wallet using Android screen lock</string>
     <string name="id_set_up_an_email_to_get">Set up an email to get pre-signed transactions for recovery. Email notifications contain your encrypted recovery data.</string>
-    <string name="id_set_up_credentials_to_access_in">Set up credentials to access in watch-only mode to receive coins without putting your private keys at risk. Access from any device using a Blockstream Green app</string>
+    <string name="id_set_up_credentials_to_access_in">Set up credentials to access in watch-only mode to receive coins without putting your private keys at risk. Access from any device using a Blockstream App app</string>
     <string name="id_set_up_pgp_key_for">Set up PGP key for communications</string>
     <string name="id_set_up_twofactor_authentication">Set up Two-Factor authentication</string>
     <string name="id_set_up_watchonly">Set up watch-only</string>
@@ -1208,7 +1208,7 @@
     <string name="id_socks5_hostname">Socks5 Hostname</string>
     <string name="id_socks5_port">Socks5 Port</string>
     <string name="id_socks5_proxy_and_port_must_be">SOCKS5 proxy and port must be set</string>
-    <string name="id_some_accounts_cannot_be_logged">Some accounts cannot be logged into due to network issues. Please update the Green app and try again later.</string>
+    <string name="id_some_accounts_cannot_be_logged">Some accounts cannot be logged into due to network issues. Please update the Blockstream App app and try again later.</string>
     <string name="id_some_coins_in_your_wallet">Some coins in your wallet haven&apos;t moved for a long time, so 2FA expired to keep you in control. To reactivate 2FA:\n\n• Send normally and refresh the 2FA on change coins (optimizes fees)\n• Redeposit all your expired 2FA coins</string>
     <string name="id_something_went_wrong">Something went wrong</string>
     <string name="id_speed_up_transaction">Speed up Transaction</string>
@@ -1248,7 +1248,7 @@
     <string name="id_sweep_into_s">Sweep into %1$s</string>
     <string name="id_switch_network">Switch Network</string>
     <string name="id_synchronize_spv_on_mobile">Synchronize SPV on mobile</string>
-    <string name="id_syou_need_ton1_reset_greens">%1$s.You need to:\n1. Reset Green&apos;s Face/TouchID login,\n2. Log in with PIN,\n3. Re-activate Face/TouchID from Green Settings.</string>
+    <string name="id_syou_need_ton1_reset_blockstream_apps">%1$s.You need to:\n1. Reset Green&apos;s Face/TouchID login,\n2. Log in with PIN,\n3. Re-activate Face/TouchID from Blockstream App Settings.</string>
     <string name="id_system_location">System location</string>
     <string name="id_system_message">System Message</string>
     <string name="id_take_control_your_keys_your">Take Control: Your Keys, Your Bitcoin</string>
@@ -1264,7 +1264,7 @@
     <string name="id_testnet_and_liquid_testnet">Testnet and Liquid Testnet</string>
     <string name="id_testnet_electrum_server">Testnet Electrum server</string>
     <string name="id_testnet_wallets">Testnet wallets</string>
-    <string name="id_thank_you_for_downloading_green">Thank you for downloading Green! Please leave us a review when you get a chance</string>
+    <string name="id_thank_you_for_downloading_blockstream_app">Thank you for downloading Green! Please leave us a review when you get a chance</string>
     <string name="id_thank_you_for_your_feedback">Thank you for your feedback</string>
     <string name="id_the_1_year_2fa_reset_process">The 1 year 2FA reset process was ongoing, but someone blocked it by disputing the 2FA reset.</string>
     <string name="id_the_address_is_valid">The address is valid.</string>
@@ -1278,7 +1278,7 @@
     <string name="id_the_importance_of_twofactor">The Importance of Two-Factor Authentication</string>
     <string name="id_the_lightning_service_is">The Lightning service is currently unavailable. We apologize for the disruption, we are working to bring the service back online.</string>
     <string name="id_the_liquid_network_is_a_bitcoin">The Liquid Network is a Bitcoin layer-2 solution enabling the fast, confidential settlement and issuance of digital assets, such as stablecoins, security tokens, and other financial instruments, on top of the Bitcoin timechain.</string>
-    <string name="id_the_network_selected_on_the">The network selected on the Green app is different from the one selected on the hardware wallet. Select the same network on both devices.</string>
+    <string name="id_the_network_selected_on_the">The network selected on the Blockstream App app is different from the one selected on the hardware wallet. Select the same network on both devices.</string>
     <string name="id_the_new_email_will_be_used_for">The new email will be used for Two-Factor Authentication when the reset is complete. The reset takes 12 months plus any remaining timelock.</string>
     <string name="id_the_new_firmware_requires_you">The new firmware requires you to unpair your Jade from the Bluetooth settings.</string>
     <string name="id_the_password_cant_be_empty">The password can&apos;t be empty</string>
@@ -1296,7 +1296,7 @@
     <string name="id_there_is_already_a_swap_in">There is already a swap in progress. Only one at a time is allowed</string>
     <string name="id_there_is_already_an_archived">There is already an archived account.\n\nDo you want to create a new one?</string>
     <string name="id_these_are_some_compatible">These are some compatible wallets:</string>
-    <string name="id_these_settings_apply_for_every">These settings apply for every wallet you use on Blockstream Green.</string>
+    <string name="id_these_settings_apply_for_every">These settings apply for every wallet you use on Blockstream App.</string>
     <string name="id_this_amount_is_below_the">This amount is below the minimum fee %1$s (%2$s).</string>
     <string name="id_this_feature_is_coming_soon">This feature is coming soon, stay tuned!</string>
     <string name="id_this_is_not_the_default_blind">This is not the default blind PIN oracle</string>
@@ -1358,7 +1358,7 @@
     <string name="id_tx_count">TX Count</string>
     <string name="id_txid">TXID</string>
     <string name="id_type_the_next_word">Type the next word</string>
-    <string name="id_unable_to_contact_the_green">Unable to contact the Green service. Please check your network connection and wait to be reconnected.</string>
+    <string name="id_unable_to_contact_the_blockstream_app">Unable to contact the Blockstream App service. Please check your network connection and wait to be reconnected.</string>
     <string name="id_unarchive">Unarchive</string>
     <string name="id_unarchive_account">Unarchive account</string>
     <string name="id_unblinding_data">Unblinding data</string>
@@ -1369,7 +1369,7 @@
     <string name="id_unknown_custom">Unknown (Custom)</string>
     <string name="id_unknown_firmware">Unknown firmware</string>
     <string name="id_unlock">Unlock</string>
-    <string name="id_unlock_green">Unlock Green</string>
+    <string name="id_unlock_blockstream_app">Unlock Blockstream App</string>
     <string name="id_unlock_jade_to_continue">Unlock Jade to continue</string>
     <string name="id_unlock_your_device_to_continue">Unlock your Device to continue</string>
     <string name="id_unlock_your_jade_to_continue">Unlock your Jade to continue</string>
@@ -1518,7 +1518,7 @@
     <string name="id_youll_need_your_pin_to_log_in">You&apos;ll need your PIN to log in to your wallet. This PIN secures the wallet on this device only.</string>
     <string name="id_youll_need_your_recovery_phrase">You&apos;ll need your recovery phrase to restore this wallet</string>
     <string name="id_youll_see_your_coins_here_when">You&apos;ll see your coins here when you receive funds</string>
-    <string name="id_your_2fa_expires_so_that_if_you">Your 2FA expires, so that if you lose access to your 2FA method, or the Blockstream Green service becomes unavailable, you can always recover your bitcoin using this open source tool</string>
+    <string name="id_your_2fa_expires_so_that_if_you">Your 2FA expires, so that if you lose access to your 2FA method, or the Blockstream App service becomes unavailable, you can always recover your bitcoin using this open source tool</string>
     <string name="id_your_bitcoin_and_liquid_assets">Your bitcoin and Liquid assets are stored on the blockchain, and can only be spent using the keys stored on Jade.</string>
     <string name="id_your_bluetooth_adapter_is">Your Bluetooth adapter is disabled</string>
     <string name="id_your_current_receive_capacity">Your current receive capacity is %1$s.</string>
@@ -1528,7 +1528,7 @@
     <string name="id_your_funds_are_secured_by_a">Your funds are secured by a single key held on your device. Simpler to set up and operate than multisig. If in doubt, select this option.</string>
     <string name="id_your_funds_are_secured_by_your">Your funds are secured by your PIN. Easy to use, standard and portable on most bitcoin wallets.</string>
     <string name="id_your_funds_have_grown">Your funds have grown recently.\n\nConsider using a 2FA protected account, so all your outgoing transactions will have an extra layer of protection.\nFor that you will need to:\n\n1. Create a 2FA protected account;\n2. Setup your 2FA method;\n3. Move funds to the new account;\n4. Archive the old account;</string>
-    <string name="id_your_green_wallet_is_now_ready">Your Green wallet is now ready to use.</string>
+    <string name="id_your_blockstream_app_wallet_is_now_ready">Your Blockstream App wallet is now ready to use.</string>
     <string name="id_your_ios_device_might_not_be">Your iOS device might not be supported</string>
     <string name="id_your_keys_secure_your_coins_on">Your keys secure your coins on the blockchain</string>
     <string name="id_your_keys_will_be_secured_on_a">Your keys will be secured on a dedicated cold storage device, PIN protected.</string>
@@ -1544,7 +1544,7 @@
     <string name="id_your_transaction_was">Your transaction was successfully sent</string>
     <string name="id_your_transactions_will_be_shown">Your transactions will be shown here.</string>
     <string name="id_your_twofactor_threshold_is_s">Your Two-Factor threshold is %1$s.</string>
-    <string name="id_your_wallet_backup_is_made_of">Your wallet backup is made of 24 words, also known as your mnemonic. Make sure you have a backup and keep it safe. Anyone who finds it can steal your money. You can use it to restore your Blockstream Green wallet on another device in case yours is lost, damaged or stolen.</string>
+    <string name="id_your_wallet_backup_is_made_of">Your wallet backup is made of 24 words, also known as your mnemonic. Make sure you have a backup and keep it safe. Anyone who finds it can steal your money. You can use it to restore your Blockstream App wallet on another device in case yours is lost, damaged or stolen.</string>
     <string name="id_your_wallet_is_locked_for_a">Your wallet is locked for a Two-Factor Authentication reset. The reset will be completed in %1$d days.</string>
     <string name="id_your_wallet_is_locked_under_2fa">Your wallet is locked under 2FA dispute.</string>
     <string name="id_your_wallet_is_not_yet_fully">Your wallet is not yet fully secured.\nPlease enable Two-Factor authentication.</string>

@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_bitcoin_is_the_worlds_leading
-import blockstream_green.common.generated.resources.id_blockstream_green_supports_both
+import blockstream_green.common.generated.resources.id_blockstream_app_supports_both
 import blockstream_green.common.generated.resources.id_choose_your_network
 import blockstream_green.common.generated.resources.id_the_liquid_network_is_a_bitcoin
 import com.blockstream.common.gdk.data.Network
@@ -44,7 +44,7 @@ fun WatchOnlyNetworkScreen(
             )
 
             Text(
-                text = stringResource(Res.string.id_blockstream_green_supports_both),
+                text = stringResource(Res.string.id_blockstream_app_supports_both),
                 style = bodyLarge,
             )
             GreenColumn(

@@ -36,7 +36,7 @@
     <string name="id_a_funding_fee_of_s_minimum_s_is">A funding fee of %1$s (minimum %2$s) is applied when receiving amounts above your current receive capacity of %3$s</string>
     <string name="id_a_funding_fee_of_s_s_is_applied">A funding fee of %1$s (%2$s) is applied when receiving amounts above your current receive capacity %3$s (%4$s)</string>
     <string name="id_a_new_transaction_has_just">貴方のウォレットに新しいトランザクションが届きました。</string>
-    <string name="id_a_newer_version_of_blockstream">新しいバージョンのBlockstream Greenがご利用いただけます</string>
+    <string name="id_a_newer_version_of_blockstream">新しいバージョンのBlockstream Appがご利用いただけます</string>
     <string name="id_a_powerful_hardware_wallet_for">A powerful hardware wallet for securing your Bitcoin.</string>
     <string name="id_a_screen_lock_must_be_enabled">アンドロイドの設定から画面ロックを有効化してください。</string>
     <string name="id_a_set_up_funding_fee_of_s_s">A set up funding fee of %1$s (%2$s) will be applied to the received amount.</string>
@@ -186,9 +186,9 @@
     <string name="id_blocks_confirmed">検証済みブロック</string>
     <string name="id_blockstream_devices">Blockstreamデバイス</string>
     <string name="id_blockstream_does_not_have">Blockstreamはあなたのウォレットのバックアップを保持しないため、紛失時に復旧をお手伝いできません</string>
-    <string name="id_blockstream_green_needs_access">Blockstream Greenはハードウェアウォレットに接続するためにBluetoothを使用する必要があります。Blockstreamは位置情報データを使用せず、保管もしません。</string>
-    <string name="id_blockstream_green_supports_both">Blockstream GreenはBitcoinとLiquid Networkの両方に対応しています。</string>
-    <string name="id_blockstream_greennsimple_and">Blockstream Green:\nシンプルでセキュア</string>
+    <string name="id_blockstream_app_needs_access">Blockstream Appはハードウェアウォレットに接続するためにBluetoothを使用する必要があります。Blockstreamは位置情報データを使用せず、保管もしません。</string>
+    <string name="id_blockstream_app_supports_both">Blockstream AppはBitcoinとLiquid Networkの両方に対応しています。</string>
+    <string name="id_blockstream_appnsimple_and">Blockstream App:\nシンプルでセキュア</string>
     <string name="id_blockstream_store">Blockstream Store</string>
     <string name="id_bluetooth">Bluetooth</string>
     <string name="id_btchip_is_not_set_up_please_set">BTChipが設定されていません。デスクトップ・クライアントを利用し設定を終えてからもう一度お試しください。</string>
@@ -219,7 +219,7 @@
     <string name="id_check_your_backup">バックアップを確認する</string>
     <string name="id_check_your_device">Check your device</string>
     <string name="id_choose">選択</string>
-    <string name="id_choose_a_name_for_your_new">新しいBlockstream Greenウォレットに名前をつけてください。</string>
+    <string name="id_choose_a_name_for_your_new">新しいBlockstream Appウォレットに名前をつけてください。</string>
     <string name="id_choose_a_name_for_your_wallet">ウォレットに名前をつける</string>
     <string name="id_choose_a_swap_option">Swap Optionを選択する</string>
     <string name="id_choose_a_usb_or_bluetooth">リカバリーフレーズを確認後、Jadeとの接続をUSBとBluetoothのどちらで行うか選択します</string>
@@ -371,7 +371,7 @@
     <string name="id_default_transaction_priority">既定のトランザクション優先順位</string>
     <string name="id_delete">消去</string>
     <string name="id_delete_credentials">認証情報を削除する</string>
-    <string name="id_delete_permanently_your_wallet">Blockstream Greenデータベースから永久にウォレットを消去します。その後二度とログインすることはできません。</string>
+    <string name="id_delete_permanently_your_wallet">Blockstream Appデータベースから永久にウォレットを消去します。その後二度とログインすることはできません。</string>
     <string name="id_delete_s_twofactor">%1$sの2段階認証を消去</string>
     <string name="id_delete_wallet">ウォレットを消去する</string>
     <string name="id_deleting_your_pin_will_remove">PINを削除した場合、ニモニックが無いと永久にウォレットへのアクセスが出来なくなります。続行するには&quot;OK&quot;ボタンを押してください。</string>
@@ -500,7 +500,7 @@
     <string name="id_expiration">Expiration</string>
     <string name="id_explore_your_wallet">ウォレットを探検する</string>
     <string name="id_export">Export</string>
-    <string name="id_export_lightning_key_to_green">Export Lightning Key to Green</string>
+    <string name="id_export_lightning_key_to_blockstream_app">Export Lightning Key to Blockstream App</string>
     <string name="id_export_transactions_to_csv_file">トランザクション一覧をCSVファイルに出力</string>
     <string name="id_exports_an_accounts_extended">アカウントの拡張公開鍵(xPub/yPub/zPub)を出力して読み取りモードのウォレットを作る</string>
     <string name="id_extended_public_key">拡張公開鍵</string>
@@ -563,16 +563,16 @@
     <string name="id_go_to_receive_to_get_your">受け取り画面からアカウントIDを確認できます。</string>
     <string name="id_go_to_wallet">ウォレットを確認</string>
     <string name="id_got_it_written_down_great_you">Got it written down? Great. You can enter it here. Don&apos;t lose it, it&apos;ll stay the same.</string>
-    <string name="id_green_is_a_noncustodial_wallet">Greenはノンカストディアルウォレットです</string>
-    <string name="id_green_logo">Greenロゴ</string>
-    <string name="id_green_mnemonic_qr_code">GreenニモニックQRコード</string>
-    <string name="id_green_needs_the_master_blinding">Green needs the master blinding key from Jade</string>
-    <string name="id_green_only_supports_one_pin_for">Greenは各ネットワークにつきひとつのPINをサポートします。追加のウォレットはログインの度にニモニックが必要となります。</string>
-    <string name="id_green_only_supports_one_pin_per">Greenは各ネットワークにつきひとつのPINのみサポートします。このウォレットにPINを設定する場合は、まず他のウォレットのPIN設定を無効化してください。</string>
-    <string name="id_green_uses_biometric">Greenはウォレットへの簡単なアクセスの為に生体認証技術を使用します。</string>
-    <string name="id_green_uses_bluetooth_for">GreenはBluetoothを使ってハードウェアウォレットと通信します</string>
-    <string name="id_green_uses_bluetooth_to_connect">GreenはBluetoothでハードウェアウォレットに接続します</string>
-    <string name="id_green_uses_multisig_with_one">Green uses multisig with one signature generated by your device, and one by Blockstream&apos;s servers. Setting up your Two-Factor Authentication enables an extra layer of security for the server-side signature.</string>
+    <string name="id_blockstream_app_is_a_noncustodial_wallet">Blockstream Appはノンカストディアルウォレットです</string>
+    <string name="id_blockstream_app_logo">Blockstream Appロゴ</string>
+    <string name="id_blockstream_app_mnemonic_qr_code">Blockstream AppニモニックQRコード</string>
+    <string name="id_blockstream_app_needs_the_master_blinding">Blockstream App needs the master blinding key from Jade</string>
+    <string name="id_blockstream_app_only_supports_one_pin_for">Blockstream Appは各ネットワークにつきひとつのPINをサポートします。追加のウォレットはログインの度にニモニックが必要となります。</string>
+    <string name="id_blockstream_app_only_supports_one_pin_per">Blockstream Appは各ネットワークにつきひとつのPINのみサポートします。このウォレットにPINを設定する場合は、まず他のウォレットのPIN設定を無効化してください。</string>
+    <string name="id_blockstream_app_uses_biometric">Blockstream Appはウォレットへの簡単なアクセスの為に生体認証技術を使用します。</string>
+    <string name="id_blockstream_app_uses_bluetooth_for">Blockstream AppはBluetoothを使ってハードウェアウォレットと通信します</string>
+    <string name="id_blockstream_app_uses_bluetooth_to_connect">Blockstream AppはBluetoothでハードウェアウォレットに接続します</string>
+    <string name="id_blockstream_app_uses_multisig_with_one">Blockstream App uses multisig with one signature generated by your device, and one by Blockstream&apos;s servers. Setting up your Two-Factor Authentication enables an extra layer of security for the server-side signature.</string>
     <string name="id_hardware_devices">ハードウェアデバイス</string>
     <string name="id_hardware_security">ハードウェアセキュリティ</string>
     <string name="id_hardware_wallet">ハードウェアウォレット</string>
@@ -581,7 +581,7 @@
     <string name="id_hash">ハッシュ</string>
     <string name="id_hash_s">ハッシュ値：%1$s</string>
     <string name="id_help">ヘルプ</string>
-    <string name="id_help_green_improve">Greenの改善にご協力ください</string>
+    <string name="id_help_blockstream_app_improve">Blockstream Appの改善にご協力ください</string>
     <string name="id_helpblockstreamcom">help.blockstream.com</string>
     <string name="id_here">ここ</string>
     <string name="id_heres_the_proof_of_ownership_of">Here&apos;s the proof of ownership of the address</string>
@@ -592,7 +592,7 @@
     <string name="id_hide_details">詳細を隠す</string>
     <string name="id_high">高い</string>
     <string name="id_hold_button_to_send">ボタン長押しで送信</string>
-    <string name="id_hold_the_green_button_on_the">Jade底面の緑色のボタンを長押しして起動します</string>
+    <string name="id_hold_the_blockstream_app_button_on_the">Jade底面の緑色のボタンを長押しして起動します</string>
     <string name="id_hold_your_nfc_tag_close_to_the">デバイスにNFCタグを近づけて下さい</string>
     <string name="id_home">ホーム</string>
     <string name="id_hour">時間</string>
@@ -612,7 +612,7 @@
     <string name="id_i_understand_amounts_could_be">金額が不正確な可能性があることを理解した</string>
     <string name="id_id">ID</string>
     <string name="id_if_for_any_reason_you_cant">もしウォレットにログインできなくなった場合、PINや生体認証でリカバリーフレーズを復元することができます。</string>
-    <string name="id_if_you_agree_green_will_collect">同意するとGreenはユーザー体験向上のために限られた範囲内で利用データを収集します。機密性の高いユーザーやウォレットについてのデータは収集しません。</string>
+    <string name="id_if_you_agree_blockstream_app_will_collect">同意するとGreenはユーザー体験向上のために限られた範囲内で利用データを収集します。機密性の高いユーザーやウォレットについてのデータは収集しません。</string>
     <string name="id_if_you_are_the_rightful_owner">あなたがこのウォレットの所有者で2段階認証手段が１つでも残されている場合、リセットをキャンセルしてウォレット内の資金を退避させてください。</string>
     <string name="id_if_you_did_not_change_your">If you did not change your oracle settings on Jade, do not proceed and contact Blockstream support.</string>
     <string name="id_if_you_did_not_request_the">リセットを申請したのが貴方ではなく、2段階認証手段も失ってしまったためにキャンセルできない場合、2段階認証のリセットを係争申請してください。ウォレットの利用ができなくなりますが、この申請は取り消すこともできます。</string>
@@ -621,8 +621,8 @@
     <string name="id_if_you_have_some_coins_on_the">レガシーアドレスに資金があり、近日中に送金する予定がない場合、万が一の際に資金にアクセスできるようメールアドレスを登録してリカバリー用トランザクションを受け取る必要があります。</string>
     <string name="id_if_you_initiated_the_2fa_reset">誤って2段階認証リセットの係争申請をしてしまった場合、取り消すことでウォレットを2段階認証リセット中の状態に戻すことができます。</string>
     <string name="id_import">Import</string>
-    <string name="id_import_a_multisig_shield_wallet">Blockstream Greenで作成されたマルチシグ・シールドウォレットを取り込みます。</string>
-    <string name="id_import_a_wallet_created_on">Blockstream Greenで作成されたウォレットを取り込みます。</string>
+    <string name="id_import_a_multisig_shield_wallet">Blockstream Appで作成されたマルチシグ・シールドウォレットを取り込みます。</string>
+    <string name="id_import_a_wallet_created_on">Blockstream Appで作成されたウォレットを取り込みます。</string>
     <string name="id_import_a_wallet_created_with">他のアプリで作成されたウォレットを取り込みます。BIP39のニモニックとBIP44, BIP49, BIP84のいずれかの標準デリベーションを使って作成されたウォレットのみ対応しています。</string>
     <string name="id_import_from_file">Import from file</string>
     <string name="id_in_progress">In Progress</string>
@@ -687,7 +687,7 @@
     <string name="id_jade_is_trying_to_connect_to_a">Jade is trying to connect to a non-default blind PIN oracle. Contact support immediately for further information.</string>
     <string name="id_jade_unlocked">Jadeのアンロックが成功</string>
     <string name="id_jade_was_initialized_for_testnet">JadeがTestnet用に初期化されました</string>
-    <string name="id_jade_will_securely_create_and">Jade will securely create and transfer a new key to your Green app. Jade will not be needed to authorize lightning transactions, because Green will use this new key for your lightning transactions.\n\nDon&apos;t worry about any new backups, your existing recovery phrase backup will be sufficient to restore both your funds onchain and on lightning.</string>
+    <string name="id_jade_will_securely_create_and">Jade will securely create and transfer a new key to your Blockstream App app. Jade will not be needed to authorize lightning transactions, because Blockstream App will use this new key for your lightning transactions.\n\nDon&apos;t worry about any new backups, your existing recovery phrase backup will be sufficient to restore both your funds onchain and on lightning.</string>
     <string name="id_just_a_few_more_steps_to_get">セットアップはあと少しで完了します。</string>
     <string name="id_label">ラベル</string>
     <string name="id_language">言語</string>
@@ -717,7 +717,7 @@
     <string name="id_lightning_invoice">Lightning Invoice</string>
     <string name="id_lightning_invoice__lnurl">Lightning Invoice / LNURL</string>
     <string name="id_lightning_invoice_is_expired">Lightning invoice is expired</string>
-    <string name="id_lightning_network_account">Greenlightを利用したLightning Networkアカウント。ご自身のCLNノードに乗り換えることもできます。</string>
+    <string name="id_lightning_network_account">Blockstream Applightを利用したLightning Networkアカウント。ご自身のCLNノードに乗り換えることもできます。</string>
     <string name="id_lightning_notifications">Lightning Notifications</string>
     <string name="id_lightning_service_is_undergoing">Lightning service is undergoing maintenance, but it will be back soon.</string>
     <string name="id_lightning_shortcut">Lightning shortcut</string>
@@ -789,7 +789,7 @@
     <string name="id_message_from_recipient_s">Message from recipient: %1$s</string>
     <string name="id_message_hash">メッセージ・ハッシュ</string>
     <string name="id_migrate_another_wallet">別のウォレットを移行する</string>
-    <string name="id_migrating_to_blockstream_green">Migrating to Blockstream Green? Have an existing Blockstream Green wallet you&apos;d like to import? Let&apos;s go!</string>
+    <string name="id_migrating_to_blockstream_app">Migrating to Blockstream App? Have an existing Blockstream App wallet you&apos;d like to import? Let&apos;s go!</string>
     <string name="id_minimum">Minimum</string>
     <string name="id_minute">分</string>
     <string name="id_minutes">分</string>
@@ -936,7 +936,7 @@
     <string name="id_pin_has_to_be_between_4_and_15">PINは4から15文字で設定してください</string>
     <string name="id_pins_do_not_match_please_try">PINが一致しません、もう一度お試しください。</string>
     <string name="id_please_activate_at_least_one">生体認証ログインを使用するにはAndroidの設定から少なくとも1つの指紋を有効にしてください</string>
-    <string name="id_please_contribute_if_you_find">Blockstream Greenがお役立ちであれば、ぜひ開発に貢献してください</string>
+    <string name="id_please_contribute_if_you_find">Blockstream Appがお役立ちであれば、ぜひ開発に貢献してください</string>
     <string name="id_please_disable_biometric">PINの削除の前に生体認証を無効にして下さい。</string>
     <string name="id_please_disconnect_your_ledger">Ledger Nano Xを取り外し、両方のボタンを長押しすることで電源を切り、再接続してPINを入力してください。</string>
     <string name="id_please_enable_another">資金にアクセスできない事態を防ぐために認証方法をもう１つ有効にして下さい。</string>
@@ -975,7 +975,7 @@
     <string name="id_proxy_settings">プロキシ設定</string>
     <string name="id_pseudonymous_identifier_country">匿名化された識別子、利用国</string>
     <string name="id_qr_code">QRコード</string>
-    <string name="id_qr_mode_allows_you_to">QR Mode allows you to communicate with Green using Jade&apos;s camera and QR codes (instead of USB or Bluetooth).</string>
+    <string name="id_qr_mode_allows_you_to">QR Mode allows you to communicate with Blockstream App using Jade&apos;s camera and QR codes (instead of USB or Bluetooth).</string>
     <string name="id_qr_pin_unlock">QR PIN Unlock</string>
     <string name="id_qr_scanner">QRスキャナー</string>
     <string name="id_quick_setup_2fa_account_ideal">送金機会の多い方におすすめなクイックセットアップ2段階認証アカウント。(1年間無送金だと2段階認証が解除されます)</string>
@@ -1016,7 +1016,7 @@
     <string name="id_recovery_words">リカバリー単語</string>
     <string name="id_recovery_xpub">リカバリーxpub</string>
     <string name="id_redeem">Redeem</string>
-    <string name="id_redeem_your_deposited_funds">Blockstream Greenによる署名なしでも事前に指定した時間経過後に資金を引き出せるようにする。</string>
+    <string name="id_redeem_your_deposited_funds">Blockstream Appによる署名なしでも事前に指定した時間経過後に資金を引き出せるようにする。</string>
     <string name="id_redeposit">Redeposit</string>
     <string name="id_redeposit_expired_2fa_coins">Redeposit Expired 2FA Coins</string>
     <string name="id_redeposited">再入金</string>
@@ -1055,10 +1055,10 @@
     <string name="id_reset_spv">SPVリセット</string>
     <string name="id_resetting_your_twofactor_takes">2段階認証をリセットするには最低12ヶ月を要します。2段階認証に必要な情報を確実に忘れた場合、リセットのため新しいEメールアドレスをお知らせください。</string>
     <string name="id_restore">修復</string>
-    <string name="id_restore_a_blockstream_green">24単語のニモニックによるバックアップからBlockstream Greenウォレットを復元できます。アプリ内の設定画面に向かいましょう。</string>
-    <string name="id_restore_a_singlesig_wallet">Blockstream Greenで作ったシングルシグウォレットを復元するか、あるいは他のアプリで作成したウォレットを読み込みます。BIP39のニモニックとBIP44, BIP49, BIP84のいずれかの標準デリベーションを使って作成されたウォレットのみ対応しています。</string>
+    <string name="id_restore_a_blockstream_app">24単語のニモニックによるバックアップからBlockstream Appウォレットを復元できます。アプリ内の設定画面に向かいましょう。</string>
+    <string name="id_restore_a_singlesig_wallet">Blockstream Appで作ったシングルシグウォレットを復元するか、あるいは他のアプリで作成したウォレットを読み込みます。BIP39のニモニックとBIP44, BIP49, BIP84のいずれかの標準デリベーションを使って作成されたウォレットのみ対応しています。</string>
     <string name="id_restore_a_wallet">ウォレットを復元する</string>
-    <string name="id_restore_green_wallet">Greenウォレットの復元</string>
+    <string name="id_restore_blockstream_app_wallet">Blockstream Appウォレットの復元</string>
     <string name="id_restore_temporary_wallet">一時的なウォレットの復元</string>
     <string name="id_restore_wallet">ウォレットの復元</string>
     <string name="id_restore_with_recovery_phrase">リカバリーフレーズから復元する</string>
@@ -1147,10 +1147,10 @@
     <string name="id_set_locktime">ロックタイムの設定</string>
     <string name="id_set_timelock">タイムロックを設定する</string>
     <string name="id_set_twofactor_threshold">2段階認証の閾値を設定する</string>
-    <string name="id_set_up_a_passcode_for_your_ios">Blockstream GreenにPINを設定するには、まずiOSデバイスのパスコードを設定してください</string>
+    <string name="id_set_up_a_passcode_for_your_ios">Blockstream AppにPINを設定するには、まずiOSデバイスのパスコードを設定してください</string>
     <string name="id_set_up_a_screen_lock_for_your">画面ロックでウォレットにアクセスするには、まずAndroidデバイスの画面ロックを設定してください</string>
     <string name="id_set_up_an_email_to_get">復元用の署名済みトランザクションを受け取るメールアドレスを設定します。メール通知には暗号化されたリカバリー用データが添付されます。</string>
-    <string name="id_set_up_credentials_to_access_in">秘密鍵を危険に晒さない読み取りモードでウォレットにアクセスするための認証を設定します。Blockstream Greenアプリを使っていかなるデバイスからもアクセスできます。</string>
+    <string name="id_set_up_credentials_to_access_in">秘密鍵を危険に晒さない読み取りモードでウォレットにアクセスするための認証を設定します。Blockstream Appアプリを使っていかなるデバイスからもアクセスできます。</string>
     <string name="id_set_up_pgp_key_for">連絡の暗号化用にPGPキーを設定する</string>
     <string name="id_set_up_twofactor_authentication">2段階認証を設定する</string>
     <string name="id_set_up_watchonly">読み取りモードの設定</string>
@@ -1208,7 +1208,7 @@
     <string name="id_socks5_hostname">Socks5ホスト名</string>
     <string name="id_socks5_port">Socks5ポート</string>
     <string name="id_socks5_proxy_and_port_must_be">SOCKS5プロキシとポートの設定が必要です</string>
-    <string name="id_some_accounts_cannot_be_logged">Some accounts cannot be logged into due to network issues. Please update the Green app and try again later.</string>
+    <string name="id_some_accounts_cannot_be_logged">Some accounts cannot be logged into due to network issues. Please update the Blockstream App app and try again later.</string>
     <string name="id_some_coins_in_your_wallet">Some coins in your wallet haven&apos;t moved for a long time, so 2FA expired to keep you in control. To reactivate 2FA:\n\n• Send normally and refresh the 2FA on change coins (optimizes fees)\n• Redeposit all your expired 2FA coins</string>
     <string name="id_something_went_wrong">問題が生じました。</string>
     <string name="id_speed_up_transaction">Speed up Transaction</string>
@@ -1248,7 +1248,7 @@
     <string name="id_sweep_into_s">%1$sへと資金を引き上げる</string>
     <string name="id_switch_network">ネットワークを切り替える</string>
     <string name="id_synchronize_spv_on_mobile">モバイルでSPVをシンクロする</string>
-    <string name="id_syou_need_ton1_reset_greens">%1$sに必要な手順:\n1. GreenのFace/TouchIDログインをリセットする\n2. PINでログインする\n3. Face/TouchIDログインを設定画面から再度有効化する</string>
+    <string name="id_syou_need_ton1_reset_blockstream_apps">%1$sに必要な手順:\n1. GreenのFace/TouchIDログインをリセットする\n2. PINでログインする\n3. Face/TouchIDログインを設定画面から再度有効化する</string>
     <string name="id_system_location">システムの位置</string>
     <string name="id_system_message">システムメッセージ</string>
     <string name="id_take_control_your_keys_your">自由になろう。自分で扱うものが、自分のビットコイン。</string>
@@ -1264,7 +1264,7 @@
     <string name="id_testnet_and_liquid_testnet">Testnet及びLiquid Testnet</string>
     <string name="id_testnet_electrum_server">Testnet Electrum server</string>
     <string name="id_testnet_wallets">Testnetウォレット</string>
-    <string name="id_thank_you_for_downloading_green">Greenをダウンロードして下さり誠にありがとうございます。お時間があればレビューもお願いします。</string>
+    <string name="id_thank_you_for_downloading_blockstream_app">Blockstream Appをダウンロードして下さり誠にありがとうございます。お時間があればレビューもお願いします。</string>
     <string name="id_thank_you_for_your_feedback">貴重なご意見をありがとうございました。</string>
     <string name="id_the_1_year_2fa_reset_process">1年間かかる2段階認証リセット処理が進行していましたが、誰かがリセットに関して係争を申し込んだため中断されました。</string>
     <string name="id_the_address_is_valid">このアドレスは有効です。</string>
@@ -1278,7 +1278,7 @@
     <string name="id_the_importance_of_twofactor">The Importance of Two-Factor Authentication</string>
     <string name="id_the_lightning_service_is">The Lightning service is currently unavailable. We apologize for the disruption, we are working to bring the service back online.</string>
     <string name="id_the_liquid_network_is_a_bitcoin">Liquid Networkはステーブルコインや証券トークンを始めとする金融商品をビットコイン・タイムチェーン上で高速でプライベートに取引・発行するためのビットコイン・レイヤー２ソリューションです。</string>
-    <string name="id_the_network_selected_on_the">Greenアプリ内で選択されているネットワークとハードウェアウォレットで選択されているネットワークが一致しません。同じネットワークを選択してください。</string>
+    <string name="id_the_network_selected_on_the">Blockstream Appアプリ内で選択されているネットワークとハードウェアウォレットで選択されているネットワークが一致しません。同じネットワークを選択してください。</string>
     <string name="id_the_new_email_will_be_used_for">リセット完了後、新しいメールアドレスが2段階認証に使用されます。リセットには12ヶ月とタイムロックの残存期間の合計がかかります。</string>
     <string name="id_the_new_firmware_requires_you">新しいファームウェアを利用するには一度Bluetooth設定よりJadeとのペアリングを解除する必要があります。</string>
     <string name="id_the_password_cant_be_empty">パスワードが空欄です</string>
@@ -1296,7 +1296,7 @@
     <string name="id_there_is_already_a_swap_in">There is already a swap in progress. Only one at a time is allowed</string>
     <string name="id_there_is_already_an_archived">既にアーカイブ済みのアカウントが存在します。\n\nアカウントを新規作成しますか？</string>
     <string name="id_these_are_some_compatible">互換性のあるウォレットの例です:</string>
-    <string name="id_these_settings_apply_for_every">これらの設定はBlockstream Green上のすべてのウォレットに適用されます。</string>
+    <string name="id_these_settings_apply_for_every">これらの設定はBlockstream App上のすべてのウォレットに適用されます。</string>
     <string name="id_this_amount_is_below_the">This amount is below the minimum fee %1$s (%2$s).</string>
     <string name="id_this_feature_is_coming_soon">この機能はまもなく追加予定です！</string>
     <string name="id_this_is_not_the_default_blind">This is not the default blind PIN oracle</string>
@@ -1358,7 +1358,7 @@
     <string name="id_tx_count">トランザクション数</string>
     <string name="id_txid">TXID</string>
     <string name="id_type_the_next_word">Type the next word</string>
-    <string name="id_unable_to_contact_the_green">Greenサービスに接続できません。ネットワーク状態を確認してからもう一度お試しください。</string>
+    <string name="id_unable_to_contact_the_blockstream_app">Blockstream Appサービスに接続できません。ネットワーク状態を確認してからもう一度お試しください。</string>
     <string name="id_unarchive">アーカイブから戻す</string>
     <string name="id_unarchive_account">アカウントをアーカイブから復元する</string>
     <string name="id_unblinding_data">ブラインディング解除用データ</string>
@@ -1369,7 +1369,7 @@
     <string name="id_unknown_custom">無効(カスタム)</string>
     <string name="id_unknown_firmware">不明なファームウェア</string>
     <string name="id_unlock">アンロック</string>
-    <string name="id_unlock_green">Greenをアンロックする</string>
+    <string name="id_unlock_blockstream_app">Blockstream Appをアンロックする</string>
     <string name="id_unlock_jade_to_continue">Jadeのロックを解除して続行してください</string>
     <string name="id_unlock_your_device_to_continue">デバイスをアンロックしてください</string>
     <string name="id_unlock_your_jade_to_continue">Unlock your Jade to continue</string>
@@ -1518,7 +1518,7 @@
     <string name="id_youll_need_your_pin_to_log_in">PINがないとウォレットにログインできません。設定したPINはこのデバイス上でのみウォレットを保護します。</string>
     <string name="id_youll_need_your_recovery_phrase">このウォレットの復元にはリカバリーフレーズが必要です</string>
     <string name="id_youll_see_your_coins_here_when">送金を受け取るとここにコインが表示されます</string>
-    <string name="id_your_2fa_expires_so_that_if_you">2段階認証が失効することで、2段階認証手段を失ったりBlockstream Greenがサービスを終了した場合でもご自身のビットコインをこのオープンソースのツールを使って回収することができます。</string>
+    <string name="id_your_2fa_expires_so_that_if_you">2段階認証が失効することで、2段階認証手段を失ったりBlockstream Appがサービスを終了した場合でもご自身のビットコインをこのオープンソースのツールを使って回収することができます。</string>
     <string name="id_your_bitcoin_and_liquid_assets">ブロックチェーン上のあなたのビットコインやLiquidアセットはJade上の秘密鍵によってのみ送金可能です。</string>
     <string name="id_your_bluetooth_adapter_is">Bluetoothアダプターを有効にしてください</string>
     <string name="id_your_current_receive_capacity">Your current receive capacity is %1$s.</string>
@@ -1528,7 +1528,7 @@
     <string name="id_your_funds_are_secured_by_a">貴方の資金はデバイス上の１つの鍵で管理されます。マルチシグより生成や利用が簡単です。何のことかわからない場合、これがおすすめです。</string>
     <string name="id_your_funds_are_secured_by_your">あなたの資産はPINコードで守られます。利用が簡単で、大半のビットコインウォレットに移行もできる標準的な形式です。</string>
     <string name="id_your_funds_have_grown">残高が増えてきたようです。\n\n送金に必要なセキュリティを強化するために2段階認証を設定したアカウントの利用をおすすめします。\n以下の手順で行うことができます。\n\n1. 2段階認証を設定したアカウントの新規作成\n2. 2段階認証手段のセットアップ\n3. 新アカウントへ資金の移動\n4. 旧アカウントのアーカイブ</string>
-    <string name="id_your_green_wallet_is_now_ready">Green ウォレットを使用できます。</string>
+    <string name="id_your_blockstream_app_wallet_is_now_ready">Blockstream App ウォレットを使用できます。</string>
     <string name="id_your_ios_device_might_not_be">貴方のiOSデバイスは非対応の可能性があります</string>
     <string name="id_your_keys_secure_your_coins_on">ブロックチェーン上の資産はあなたの秘密鍵によって守られます</string>
     <string name="id_your_keys_will_be_secured_on_a">Your keys will be secured on a dedicated cold storage device, PIN protected.</string>
@@ -1544,7 +1544,7 @@
     <string name="id_your_transaction_was">Your transaction was successfully sent</string>
     <string name="id_your_transactions_will_be_shown">トランザクションはこちらから確認できます。</string>
     <string name="id_your_twofactor_threshold_is_s">あなたの2段階認証の閾値は %1$sです。</string>
-    <string name="id_your_wallet_backup_is_made_of">ウォレットのバックアップは24単語で、ニモニックともいいます。書き留めて安全に保管してください。ニモニックが流出すると資金も盗まれてしまいます。ニモニックはデバイスの紛失、故障、盗難の際に新しいデバイスにBlockstream Greenウォレットを復旧するのに必要です。</string>
+    <string name="id_your_wallet_backup_is_made_of">ウォレットのバックアップは24単語で、ニモニックともいいます。書き留めて安全に保管してください。ニモニックが流出すると資金も盗まれてしまいます。ニモニックはデバイスの紛失、故障、盗難の際に新しいデバイスにBlockstream Appウォレットを復旧するのに必要です。</string>
     <string name="id_your_wallet_is_locked_for_a">2段階認証のリセットのためにウォレットがロックされています。リセットは残り%1$d日で完了します。</string>
     <string name="id_your_wallet_is_locked_under_2fa">あなたのウォレットは2段階認証リセットの係争中につきロックされています。</string>
     <string name="id_your_wallet_is_not_yet_fully">ウォレットが安全ではありません。\n2段階認証を設定してください。</string>

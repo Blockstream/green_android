@@ -1,4 +1,4 @@
-# Build Blockstream Green
+# Build Blockstream App
 
 ## Build requirements
 

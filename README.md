@@ -1,10 +1,10 @@
-# Blockstream Green - A native bitcoin wallet for Android
+# Blockstream App - A native bitcoin wallet for Android
 
 [![Build Status](https://travis-ci.org/Blockstream/green_android.png?branch=master)](https://travis-ci.org/Blockstream/green_android)
 
-## What is Blockstream Green?
+## What is Blockstream App?
 
-Blockstream Green is a non-custodial Bitcoin wallet - it allows you to safely store, send, and receive your Bitcoin. 
+Blockstream App is a non-custodial Bitcoin wallet - it allows you to safely store, send, and receive your Bitcoin. 
 
 It's a mobile app available for Android and [iOS](https://github.com/Blockstream/green_ios), based on [gdk](https://github.com/blockstream/gdk), our cross-platform wallet library.
 
@@ -18,7 +18,7 @@ All of these (and more) are explained in more detail [here](https://help.blockst
 
 ## Build
 
-For instructions on how to build Blockstream Green please refer to [BUILD.md](BUILD.md)
+For instructions on how to build Blockstream App please refer to [BUILD.md](BUILD.md)
 
 ## Contributing
 
@@ -36,7 +36,7 @@ Read [our FAQ](https://greenaddress.it/en/faq.html) or contact us at [info@green
 
 ## License
 
-Blockstream Green is released under the terms of the GNU General Public License. See [LICENSE](LICENSE) for more information or see https://opensource.org/licenses/GPL-3.0 
+Blockstream App is released under the terms of the GNU General Public License. See [LICENSE](LICENSE) for more information or see https://opensource.org/licenses/GPL-3.0 
 
 ## Authenticity
 

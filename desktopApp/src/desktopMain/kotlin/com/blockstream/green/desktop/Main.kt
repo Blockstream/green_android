@@ -23,7 +23,7 @@ fun main() = application {
 
     Window(
         onCloseRequest = ::exitApplication,
-        title = "Blockstream Green",
+        title = "Blockstream App",
     ) {
         DesktopApp()
     }

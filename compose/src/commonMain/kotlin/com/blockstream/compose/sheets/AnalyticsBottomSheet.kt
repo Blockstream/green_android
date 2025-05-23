@@ -33,9 +33,9 @@ import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_allow_data_collection
 import blockstream_green.common.generated.resources.id_dont_collect_data
-import blockstream_green.common.generated.resources.id_help_green_improve
+import blockstream_green.common.generated.resources.id_help_blockstream_app_improve
 import blockstream_green.common.generated.resources.id_hide_details
-import blockstream_green.common.generated.resources.id_if_you_agree_green_will_collect
+import blockstream_green.common.generated.resources.id_if_you_agree_blockstream_app_will_collect
 import blockstream_green.common.generated.resources.id_learn_more
 import blockstream_green.common.generated.resources.id_os__app_version_loading_times
 import blockstream_green.common.generated.resources.id_page_visits_button_presses
@@ -67,7 +67,7 @@ internal fun AnalyticsBottomSheet(
     onDismissRequest: () -> Unit,
 ) {
     GreenBottomSheet(
-        title = stringResource(Res.string.id_help_green_improve),
+        title = stringResource(Res.string.id_help_blockstream_app_improve),
         viewModel = viewModel,
         sheetState = rememberModalBottomSheetState(
             skipPartiallyExpanded = true,
@@ -88,7 +88,7 @@ internal fun AnalyticsBottomSheet(
             }
         }
 
-        Text(text = stringResource(Res.string.id_if_you_agree_green_will_collect))
+        Text(text = stringResource(Res.string.id_if_you_agree_blockstream_app_will_collect))
 
         Card(
             colors = elevatedCardColors(
