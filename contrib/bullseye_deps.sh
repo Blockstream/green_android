@@ -32,7 +32,7 @@ ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "platform-tools" "build-
 ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "extras;android;m2repository" "extras;google;m2repository" "extras;google;google_play_services"
 
 # The `yes` is for accepting all non-standard tool licenses.
-yes | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "platforms;android-35"
+yes | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "platforms;android-35" "platforms;android-36"
 
 apt autoremove -yqq
 apt clean -yqq

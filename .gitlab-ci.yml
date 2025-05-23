@@ -27,7 +27,7 @@ cache:
 # Defaults applied to all jobs unless overridden
 default:
   image: # 5592d41c-20250213165311
-    name: blockstream/green_android@sha256:38662be11766c3c07218ae158979deff6d40e001253b4796d1b28454bcf54bb3
+    name: blockstream/green_android@sha256:cd1d467824e81614a9d9d742bb0f67466f21e042e445adb8e6cdcc8a3cf41cca
     entrypoint: [""]
   tags:
     - ga
@@ -56,15 +56,15 @@ default:
 # Pushes two tags - :short_commit_sha and :latest
 build_default_image:
   extends: .prep_dind
-  stage: .pre
+  stage: build
   variables:
     DOCKERFILE: contrib/Dockerfile
     ANDROID_IMAGE_SHA: ${ANDROID_IMAGE}:${CI_COMMIT_SHORT_SHA}
     ANDROID_IMAGE_LATEST: ${ANDROID_IMAGE}:latest
   when: manual
-  #  rules:
-  #    - changes:
-  #      - ${DOCKERFILE}
+#  rules:
+#    - changes:
+#      - ${DOCKERFILE}
   script:
     - apk add jq curl
     - docker buildx build
