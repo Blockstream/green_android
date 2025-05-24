@@ -1871,16 +1871,16 @@ class GdkSession constructor(
         }
     }
 
-    suspend fun getReceiveAddress(account: Account) = authHandler(
-        account.network,
-        gdk.getReceiveAddress(gdkSession(account.network),
-            ReceiveAddressParams(account.pointer)
-        )
-    ).result<Address>()
+    suspend fun getReceiveAddress(account: Account) =
+        if (account.isLightning) Address(address = lightningSdk.receiveOnchain().bitcoinAddress) else authHandler(
+            account.network,
+            gdk.getReceiveAddress(
+                gdkSession(account.network),
+                ReceiveAddressParams(account.pointer)
+            )
+        ).result<Address>()
 
-    suspend fun getReceiveAddressAsString(account: Account): String = if (account.isLightning) lightningSdk.receiveOnchain().let {
-            it.bitcoinAddress
-    } else getReceiveAddress(account).address
+    suspend fun getReceiveAddressAsString(account: Account): String = getReceiveAddress(account).address
 
     // Combine with receive address
     fun receiveOnchain(): SwapInfo {

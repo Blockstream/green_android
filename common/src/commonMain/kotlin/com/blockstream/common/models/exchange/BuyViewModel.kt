@@ -220,12 +220,19 @@ class BuyViewModel(greenWallet: GreenWallet) :
             }.launchIn(this)
         }
 
-        quote.onEach {
-            _isValid.value = it != null
+        combine(quote, address) { quote, address ->
+            _isValid.value = quote != null && address != null
         }.launchIn(this)
 
         accountAsset.filterNotNull().onEach {
-            address.value = session.getReceiveAddress(it.account)
+            doAsync({
+                session.getReceiveAddress(it.account)
+            }, onSuccess = {
+                address.value = it
+            }, onError = {
+                address.value = null
+                postSideEffect(SideEffects.ErrorDialog(error = it, supportData = errorReport(it)))
+            })
         }.launchIn(this)
 
         bootstrap()

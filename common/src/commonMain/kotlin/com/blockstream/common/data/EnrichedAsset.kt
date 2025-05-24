@@ -54,8 +54,8 @@ data class EnrichedAsset constructor(
 
     fun ticker(session: GdkSession): String? {
         return if (assetId.isPolicyAsset(session)) {
-            when{
-                assetId.isBitcoinPolicyAsset() -> "BTC"
+            when {
+                assetId.isBitcoinPolicyAsset() || assetId.isLightningPolicyAsset() -> "BTC"
                 assetId.isPolicyAsset(session.liquid) -> "LBTC"
                 else -> throw Exception("No supported network")
             }.let {
