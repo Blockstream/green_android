@@ -14,11 +14,8 @@ import blockstream_green.common.generated.resources.question
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
 import com.blockstream.common.crypto.PlatformCipher
-import com.blockstream.ui.navigation.NavAction
-import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.Redact
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.launchIn
@@ -26,12 +23,15 @@ import com.blockstream.common.gdk.Wally
 import com.blockstream.common.gdk.getBip39WordList
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.ui.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.usecases.CheckRecoveryPhraseUseCase
 import com.blockstream.common.usecases.RestoreWalletUseCase
-import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.randomChars
+import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavAction
+import com.blockstream.ui.navigation.NavData
+import com.blockstream.ui.sideeffects.SideEffect
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
@@ -180,7 +180,7 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
             )
         }
 
-        combine(recoveryPhrase,recoveryPhraseSize, activeWord) { _, _, _ ->
+        combine(recoveryPhrase, recoveryPhraseSize, activeWord) { _, _, _ ->
             checkRecoveryPhrase()
         }.launchIn(viewModelScope.coroutineScope)
     }
@@ -298,6 +298,14 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
         enabledKeys.value = if(recoveryPhrase.value.count() >= 27 && activeWord.value != -1) setOf() else enabled
 
         rows.value = (ceil(max(recoveryPhrase.value.size, recoveryPhraseSize.value) / 3f).toInt())
+
+        if (recoveryPhrase.value.size > recoveryPhraseSize.value) {
+            if (recoveryPhrase.value.size > 24) {
+                recoveryPhraseSize.value = 27
+            } else {
+                recoveryPhraseSize.value = 24
+            }
+        }
     }
 
     private fun removeWord() {

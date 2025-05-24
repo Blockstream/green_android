@@ -255,7 +255,7 @@ fun ReceiveScreen(
                     accountAsset?.account?.takeIf { assetAccounts.size > 1 }?.also {
                         GreenAccountSelector(
                             account = it,
-                            modifier = Modifier.padding(top = 8.dp, start = 4.dp),
+                            modifier = Modifier.padding(top = 16.dp, start = 4.dp, bottom = 8.dp),
                             onClick = {
                                 viewModel.postEvent(
                                     NavigateDestinations.Accounts(

@@ -1935,7 +1935,7 @@ class GdkSession constructor(
 
             // Set active account as the first funded account or the first with history
             (accounts.value.find { !it.isLightning && it.isFunded(this@GdkSession) } ?:
-            accounts.value.find { it.hasHistory(this@GdkSession) })?.also {
+            accounts.value.find { !it.isLightning && it.hasHistory(this@GdkSession) })?.also {
                 setActiveAccount(it)
             }
         }

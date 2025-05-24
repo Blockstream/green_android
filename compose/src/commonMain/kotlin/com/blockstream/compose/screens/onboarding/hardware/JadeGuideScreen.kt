@@ -80,9 +80,9 @@ fun JadeGuideScreen(
                         ) {
                             Rive(
                                 riveAnimation = when (it) {
-                                    0 -> RiveAnimation.JADE_BUTTON
+                                    0 -> RiveAnimation.JADE_PLUS_BUTTON
                                     1 -> RiveAnimation.RECOVERY_PHRASE
-                                    else -> RiveAnimation.JADE_SCROLL
+                                    else -> RiveAnimation.JADE_PLUS_SCROLL
                                 }
                             )
                         }

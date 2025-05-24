@@ -22,7 +22,6 @@ import app.rive.runtime.kotlin.RiveAnimationView
 import blockstream_green.common.generated.resources.Res
 import com.blockstream.compose.LocalPreview
 import com.blockstream.compose.R
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 @Composable
 actual fun Rive(riveAnimation: RiveAnimation) {
@@ -32,11 +31,17 @@ actual fun Rive(riveAnimation: RiveAnimation) {
         RiveAnimation.ACCOUNT_ARCHIVED -> "account_archived.riv"
         RiveAnimation.CHECKMARK -> "checkmark.riv"
         RiveAnimation.WALLET -> "wallet.riv"
+        RiveAnimation.RECOVERY_PHRASE -> "recovery_phrase.riv"
+        RiveAnimation.GREEN_TO_BLOCKSTREAM -> "green_to_blockstream.riv"
+        RiveAnimation.CREATE_WALLET -> "create_wallet.riv"
         RiveAnimation.JADE_BUTTON -> "jade_button.riv"
         RiveAnimation.JADE_SCROLL -> "jade_scroll.riv"
         RiveAnimation.JADE_POWER -> "jade_power.riv"
-        RiveAnimation.RECOVERY_PHRASE -> "recovery_phrase.riv"
-        RiveAnimation.GREEN_TO_BLOCKSTREAM -> "green_to_blockstream.riv"
+        RiveAnimation.JADE_UPDATE -> "jade_power.riv"
+        RiveAnimation.JADE_PLUS_BUTTON -> "jade_plus_button.riv"
+        RiveAnimation.JADE_PLUS_SCROLL -> "jade_plus_scroll.riv"
+        RiveAnimation.JADE_PLUS_POWER -> "jade_plus_power.riv"
+        RiveAnimation.JADE_PLUS_UPDATE -> "jade_plus_update.riv"
         RiveAnimation.NONE -> null
     }?.let {
         "files/rive/$it"

@@ -1,6 +1,7 @@
 package com.blockstream.compose.screens.onboarding
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
@@ -56,14 +57,12 @@ fun SetupNewWalletScreen(
     ) {
         val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
 
-        GreenColumn(
-            padding = 0,
-            space = 32,
+        Column(
             modifier = Modifier.padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.Center,
         ) {
             Rive(
-                riveAnimation = RiveAnimation.WALLET
+                riveAnimation = RiveAnimation.CREATE_WALLET
             )
 
             Text(

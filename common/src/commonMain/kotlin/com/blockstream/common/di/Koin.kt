@@ -84,7 +84,7 @@ private fun commonModules(appConfig: AppConfig): List<Module> {
             SessionManager(get(), get(), get(), get(), get(), get(), get(), get())
         }
         single {
-            LifecycleManager(get(), get(), get())
+            LifecycleManager(get(), get())
         }
         single {
             Database(get(), get())

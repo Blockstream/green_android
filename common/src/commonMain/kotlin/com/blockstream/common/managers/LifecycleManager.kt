@@ -1,9 +1,10 @@
 package com.blockstream.common.managers
 
 import com.blockstream.common.crypto.GreenKeystore
-import com.blockstream.common.di.ApplicationScope
 import com.blockstream.green.utils.Loggable
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,8 +28,8 @@ enum class LifecycleState {
 class LifecycleManager constructor(
     val settingsManager: SettingsManager,
     val keystore: GreenKeystore,
-    val scope: ApplicationScope
 ) {
+    private val scope = CoroutineScope(context = Dispatchers.Default)
     private val _lifecycleState = MutableStateFlow(LifecycleState.Background)
 
     @NativeCoroutinesState

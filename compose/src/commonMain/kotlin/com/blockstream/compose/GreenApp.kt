@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalSettingsApi::class)
+
 package com.blockstream.compose
 
 import androidx.compose.animation.AnimatedVisibility
@@ -28,9 +30,12 @@ import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.AsyncImagePreviewHandler
 import coil3.compose.LocalAsyncImagePreviewHandler
 import coil3.test.FakeImage
+import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.crypto.NoKeystore
 import com.blockstream.common.managers.BluetoothManager
 import com.blockstream.common.managers.DeviceManager
+import com.blockstream.common.managers.LifecycleManager
+import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.models.MainViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.managers.LocalPlatformManager
@@ -51,6 +56,7 @@ import com.blockstream.ui.navigation.LocalNavData
 import com.blockstream.ui.navigation.LocalNavigator
 import com.blockstream.ui.navigation.bottomsheet.ModalBottomSheetLayout
 import com.blockstream.ui.navigation.bottomsheet.rememberBottomSheetNavigator
+import com.russhwolf.settings.ExperimentalSettingsApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -222,8 +228,17 @@ fun GreenPreview(content: @Composable () -> Unit) {
     // startKoin only once
     KoinPlatformTools.defaultContext().getOrNull() ?: startKoin {
         modules(module {
+            single<GreenKeystore> { NoKeystore() }
+            single<BluetoothManager?> { null }
+            // single<ObservableSettings> { Settings().makeObservable() }
+            single { LifecycleManager(get(), get()) }
             single {
-                NoKeystore()
+                SettingsManager(
+                    settings = get(),
+                    analyticsFeatureEnabled = true,
+                    lightningFeatureEnabled = true,
+                    storeRateEnabled = true
+                )
             }
             single {
                 AppInfo(
@@ -233,15 +248,12 @@ fun GreenPreview(content: @Composable () -> Unit) {
                     isDevelopment = true
                 )
             }
-            single<BluetoothManager?> {
-                null
-            }
         })
     }
 
     val dialogState = remember { DialogState() }
     val navController = rememberNavController()
-//    val platformManager = rememberPlatformManager()
+    val platformManager = rememberPlatformManager()
 
     // Coil preview faker
     val previewHandler = AsyncImagePreviewHandler {
@@ -253,7 +265,7 @@ fun GreenPreview(content: @Composable () -> Unit) {
         CompositionLocalProvider(
             LocalDialog provides dialogState,
             LocalNavigator provides navController,
-//            LocalPlatformManager provides platformManager,
+            LocalPlatformManager provides platformManager,
             LocalAsyncImagePreviewHandler provides previewHandler
         ) {
             DialogHost(state = dialogState)

@@ -10,7 +10,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
+import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.managers.BluetoothManager
+import com.blockstream.common.managers.LifecycleManager
 import com.blockstream.common.managers.LocaleManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.utils.AndroidKeystore
@@ -44,6 +46,9 @@ fun GreenAndroidPreview(content: @Composable () -> Unit) {
                 LocaleManager(get())
             }
             single {
+                LifecycleManager(get(), get())
+            }
+            single<GreenKeystore> {
                 AndroidKeystore(androidContext())
             }
             single<ObservableSettings> {
