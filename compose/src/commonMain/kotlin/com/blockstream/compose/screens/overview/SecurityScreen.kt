@@ -55,7 +55,9 @@ import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.models.overview.SecurityViewModel
 import com.blockstream.common.models.overview.SecurityViewModel.LocalSideEffects
 import com.blockstream.common.models.overview.SecurityViewModelAbstract
+import com.blockstream.common.models.overview.SecurityViewModelPreview
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
@@ -78,6 +80,7 @@ import com.blockstream.ui.navigation.getResult
 import com.blockstream.ui.utils.bottom
 import com.blockstream.ui.utils.plus
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun SecurityScreen(viewModel: SecurityViewModelAbstract) {
@@ -235,6 +238,8 @@ fun SecurityScreen(viewModel: SecurityViewModelAbstract) {
                     }
                 }
 
+            } else if (isWatchOnly) {
+
             } else {
 
                 if (showRecoveryConfirmation) {
@@ -341,5 +346,13 @@ fun SecurityItem(title: String, icon: ImageVector, state: Boolean?, onClick: () 
                 contentDescription = null
             )
         }
+    }
+}
+
+@Preview
+@Composable
+fun PreviewSecurityScreenCommon() {
+    GreenPreview {
+        SecurityScreen(viewModel = SecurityViewModelPreview.preview(isHardware = true))
     }
 }

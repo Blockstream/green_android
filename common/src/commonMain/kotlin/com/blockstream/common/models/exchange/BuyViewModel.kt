@@ -134,7 +134,7 @@ abstract class BuyViewModelAbstract(
     }
 
     fun changeAccount() {
-        session.accounts.value.filter { it.isBitcoinOrLightning }.also { accounts ->
+        session.accounts.value.filter { it.isBitcoin }.also { accounts ->
             postEvent(
                 NavigateDestinations.Accounts(
                     greenWallet = greenWallet,
@@ -163,7 +163,7 @@ class BuyViewModel(greenWallet: GreenWallet) :
         )
 
     override val showAccountSelector: StateFlow<Boolean> = session.ifConnected {
-        MutableStateFlow(session.accounts.value.filter { it.isBitcoinOrLightning }.size > 1)
+        MutableStateFlow(session.accounts.value.filter { it.isBitcoin }.size > 1)
     } ?: MutableStateFlow(false)
 
     private val _suggestedAmounts = MutableStateFlow(emptyList<String>())
@@ -179,7 +179,7 @@ class BuyViewModel(greenWallet: GreenWallet) :
         _denomination.value = Denomination.defaultOrFiat(session, isFiat = true)
 
         session.ifConnected {
-            val accounts = session.accounts.value.filter { it.isBitcoinOrLightning }
+            val accounts = session.accounts.value.filter { it.isBitcoin }
 
             if (accounts.isEmpty()) {
                 postSideEffect(

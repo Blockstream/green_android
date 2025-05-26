@@ -558,6 +558,20 @@ fun LoginScreen(
                                     )
                                 }
                             }
+                        } else if (biometricsCredentials.isNotEmpty()) {
+
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                Icon(
+                                    imageVector = PhosphorIcons.Regular.Fingerprint,
+                                    contentDescription = "Fingerprint",
+                                    modifier = Modifier
+                                        .size(128.dp)
+                                        .align(Alignment.Center)
+                                        .noRippleClickable {
+                                            viewModel.postEvent(LoginViewModel.LocalEvents.ClickBiometrics)
+                                        }
+                                )
+                            }
                         } else if (mnemonicCredentials.isNotEmpty()) {
 
                             Image(
@@ -578,20 +592,6 @@ fun LoginScreen(
                                         LoginViewModel.LocalEvents.Login
                                     )
                                 }
-                            }
-                        } else if (biometricsCredentials.isNotEmpty()) {
-
-                            Box(modifier = Modifier.fillMaxSize()) {
-                                Icon(
-                                    imageVector = PhosphorIcons.Regular.Fingerprint,
-                                    contentDescription = "Fingerprint",
-                                    modifier = Modifier
-                                        .size(128.dp)
-                                        .align(Alignment.Center)
-                                        .noRippleClickable {
-                                            viewModel.postEvent(LoginViewModel.LocalEvents.ClickBiometrics)
-                                        }
-                                )
                             }
                         }
                     }

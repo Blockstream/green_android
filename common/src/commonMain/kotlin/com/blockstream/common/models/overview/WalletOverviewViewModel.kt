@@ -446,7 +446,7 @@ class WalletOverviewViewModelPreview(val isEmpty: Boolean = false, val isHardwar
 
     override val balancePrimary: StateFlow<String?> = MutableStateFlow("1.00000 BTC")
 
-    override val balanceSecondary: StateFlow<String?> = MutableStateFlow("90.000 USD")
+    // override val balanceSecondary: StateFlow<String?> = MutableStateFlow("90.000 USD")
 
     override val hideAmounts: StateFlow<Boolean> = MutableStateFlow(false)
 

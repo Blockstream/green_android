@@ -57,6 +57,9 @@ import com.blockstream.ui.navigation.LocalNavigator
 import com.blockstream.ui.navigation.bottomsheet.ModalBottomSheetLayout
 import com.blockstream.ui.navigation.bottomsheet.rememberBottomSheetNavigator
 import com.russhwolf.settings.ExperimentalSettingsApi
+import com.russhwolf.settings.ObservableSettings
+import com.russhwolf.settings.Settings
+import com.russhwolf.settings.observable.makeObservable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -230,7 +233,7 @@ fun GreenPreview(content: @Composable () -> Unit) {
         modules(module {
             single<GreenKeystore> { NoKeystore() }
             single<BluetoothManager?> { null }
-            // single<ObservableSettings> { Settings().makeObservable() }
+            single<ObservableSettings> { Settings().makeObservable() }
             single { LifecycleManager(get(), get()) }
             single {
                 SettingsManager(
@@ -253,7 +256,7 @@ fun GreenPreview(content: @Composable () -> Unit) {
 
     val dialogState = remember { DialogState() }
     val navController = rememberNavController()
-    val platformManager = rememberPlatformManager()
+//    val platformManager = rememberPlatformManager()
 
     // Coil preview faker
     val previewHandler = AsyncImagePreviewHandler {
@@ -265,7 +268,7 @@ fun GreenPreview(content: @Composable () -> Unit) {
         CompositionLocalProvider(
             LocalDialog provides dialogState,
             LocalNavigator provides navController,
-            LocalPlatformManager provides platformManager,
+//            LocalPlatformManager provides platformManager,
             LocalAsyncImagePreviewHandler provides previewHandler
         ) {
             DialogHost(state = dialogState)

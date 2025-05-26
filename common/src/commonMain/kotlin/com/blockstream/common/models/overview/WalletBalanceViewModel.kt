@@ -3,7 +3,6 @@ package com.blockstream.common.models.overview
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.launchIn
-import com.blockstream.common.extensions.toggle
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.utils.toAmountLook
 import com.blockstream.ui.events.Event
@@ -18,42 +17,53 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
-interface IWalletBalance: IPostEvent {
+interface IWalletBalance : IPostEvent {
     val hideAmounts: StateFlow<Boolean>
     val balancePrimary: StateFlow<String?>
-    val balanceSecondary: StateFlow<String?>
+    // val balanceSecondary: StateFlow<String?>
 }
 
 
-open class WalletBalanceViewModel(greenWallet: GreenWallet): GreenViewModel(greenWalletOrNull = greenWallet), IWalletBalance {
+open class WalletBalanceViewModel(greenWallet: GreenWallet) :
+    GreenViewModel(greenWalletOrNull = greenWallet), IWalletBalance {
 
     override val hideAmounts: StateFlow<Boolean> = settingsManager.appSettingsStateFlow.map {
         it.hideAmounts
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), settingsManager.appSettings.hideAmounts)
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(),
+        settingsManager.appSettings.hideAmounts
+    )
 
     private val _balancePrimary: MutableStateFlow<String?> = MutableStateFlow(null)
     override val balancePrimary: StateFlow<String?> = _balancePrimary.asStateFlow()
 
-    private val _balanceSecondary: MutableStateFlow<String?> = MutableStateFlow(null)
-    override val balanceSecondary: StateFlow<String?> = _balanceSecondary.asStateFlow()
-
-    private val primaryBalanceInFiat: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    // private val _balanceSecondary: MutableStateFlow<String?> = MutableStateFlow(null)
+    // override val balanceSecondary: StateFlow<String?> = _balanceSecondary.asStateFlow()
 
     class LocalEvents {
         object ToggleBalance : Event
-        object ToggleHideAmounts: Event
+        object ToggleHideAmounts : Event
     }
 
     override fun bootstrap() {
         super.bootstrap()
 
-        combine(session.walletTotalBalance, primaryBalanceInFiat, hideAmounts, session.settings()) { _, _, _, _ ->
+        combine(
+            session.walletTotalBalance,
+            session.walletTotalBalanceDenominationSharedFlow,
+            hideAmounts,
+            session.settings()
+        ) { _, _, _, _ ->
             session.isConnected
         }.filter { isConnected ->
             // Prevent from updating on non connected sessions
             isConnected
         }.onEach {
-            updateBalance()
+            updateBalance(
+                session.walletTotalBalance.value,
+                session.walletTotalBalanceDenominationSharedFlow.value
+            )
         }.launchIn(this)
     }
 
@@ -62,8 +72,16 @@ open class WalletBalanceViewModel(greenWallet: GreenWallet): GreenViewModel(gree
 
         when (event) {
             is LocalEvents.ToggleBalance -> {
-                primaryBalanceInFiat.toggle()
+                session.walletTotalBalanceDenominationSharedFlow.value =
+                    session.walletTotalBalanceDenominationSharedFlow.value.let {
+                        if (it == Denomination.BTC) {
+                            Denomination.fiat(session)!!
+                        } else {
+                            Denomination.BTC
+                        }
+                    }
             }
+
             is LocalEvents.ToggleHideAmounts -> {
                 settingsManager.saveApplicationSettings(
                     settingsManager.getApplicationSettings().let {
@@ -77,29 +95,19 @@ open class WalletBalanceViewModel(greenWallet: GreenWallet): GreenViewModel(gree
         }
     }
 
-    private suspend fun updateBalance() {
+    private suspend fun updateBalance(value: Long, denomination: Denomination) {
         // Loading
-        if (session.walletTotalBalance.value == -1L) {
+        if (value == -1L) {
             _balancePrimary.value = null
-            _balanceSecondary.value = null
         } else {
-            val balance = session.starsOrNull ?: session.walletTotalBalance.value.toAmountLook(
+            val balance = session.starsOrNull ?: value.toAmountLook(
                 session = session,
-                assetId = session.walletAssets.value.data()?.policyId ?: session.defaultNetwork.policyAsset
+                assetId = session.walletAssets.value.data()?.policyId
+                    ?: session.defaultNetwork.policyAsset,
+                denomination = denomination.takeIf { !it.isFiat } ?: Denomination.fiat(session) // Always create fiat from session, so that we get the correct fiat denomination
             )
 
-            val fiat = session.starsOrNull ?: session.walletTotalBalance.value.toAmountLook(
-                session = session,
-                denomination = Denomination.fiat(session)
-            )
-
-            if (primaryBalanceInFiat.value) {
-                _balancePrimary.value = fiat
-                _balanceSecondary.value = balance
-            } else {
-                _balancePrimary.value = balance
-                _balanceSecondary.value = fiat
-            }
+            _balancePrimary.value = balance
         }
     }
 }

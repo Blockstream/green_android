@@ -13,6 +13,7 @@ import com.blockstream.common.CountlyBase
 import com.blockstream.common.LN_BTC_POLICY_ASSET
 import com.blockstream.common.data.CountlyAsset
 import com.blockstream.common.data.DataState
+import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.ExceptionWithSupportData
 import com.blockstream.common.data.GreenWallet
@@ -289,6 +290,7 @@ class GdkSession constructor(
     val activeAccount get() = _activeAccountStateFlow.asStateFlow()
 
     val walletTotalBalance get() = _walletTotalBalanceSharedFlow.asStateFlow()
+    val walletTotalBalanceDenominationSharedFlow = MutableStateFlow<Denomination>(Denomination.BTC)
 
     val walletAssets: StateFlow<DataState<Assets>> get() = _walletAssetsFlow.asStateFlow()
 
@@ -805,6 +807,7 @@ class GdkSession constructor(
 
         // Clear total balance
         _walletTotalBalanceSharedFlow.value = -1L
+        walletTotalBalanceDenominationSharedFlow.value = Denomination.BTC
 
         // Clear Assets
         _walletAssetsFlow.value = DataState.Loading
