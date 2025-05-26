@@ -162,6 +162,8 @@ kotlin {
             api(libs.uri.kmp)
             api(libs.uuid)
             api(libs.multiplatform.settings)
+            api(libs.multiplatform.settings.no.arg)
+            api(libs.multiplatform.settings.make.observable)
             api(libs.multiplatform.settings.coroutines)
             api(libs.okio) // Filesystem
             api(libs.state.keeper)
@@ -180,7 +182,7 @@ kotlin {
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
-            implementation(libs.koin.test)
+            // implementation(libs.koin.test)
 
             compileOnly(compose.runtime)
             compileOnly(compose.runtimeSaveable)
@@ -222,8 +224,8 @@ kotlin {
             implementation(libs.sqldelight.sqlite.driver)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)
-            implementation(libs.koin.test)
-            implementation(libs.koin.test.junit4)
+            // implementation(libs.koin.test)
+            // implementation(libs.koin.test.junit4)
             implementation(libs.mockk)
         }
 
