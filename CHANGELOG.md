@@ -3,6 +3,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [5.0.0] - 2025-05-26
+
+#### Added
+- UI Refresh
+- New tab based navigation
+- Bitcoin price chart in Home
+- Nags to backup recovery phrase
+- Notifications for buy related events
+
+#### Changed
+- Streamlined onboarding postponing recovery phrase backup
+- Improved buy bitcoin experience with in app selection of best quote and exchange
+- Allow access in watchonly mode for Jade users with singlesig accounts
+- Unlock Jade from within the wallet to perform operations with the device
+- Update gdk to version 0.75.1
+- Update breez to version 0.7.1
+
 ## [4.1.8] - 2025-03-13
 
 ### Added
